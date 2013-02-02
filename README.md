@@ -43,3 +43,13 @@ To create a virtual Python environment::
 
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
+
+POSTGIS Installation
+--------------------
+
+Installation for Mac users.
+
+The following should create an `osmtm` database::
+
+    brew install postgis
+    sh osmtm/scripts/postgis_installation_mac.sh
