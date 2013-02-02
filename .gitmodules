@@ -1,0 +1,3 @@
+[submodule "osmtm/static/bootstrap"]
+	path = osmtm/static/bootstrap
+	url = git://github.com/twitter/bootstrap.git

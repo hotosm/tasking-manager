@@ -53,3 +53,11 @@ The following should create an `osmtm` database::
 
     brew install postgis
     sh osmtm/scripts/postgis_installation_mac.sh
+
+Styles
+------
+
+The CSS stylesheet are compiled using less. Launch the following command as
+soon as you change the css::
+
+    lessc osmtm/static/css/main.less > osmtm/static/css/main.css
