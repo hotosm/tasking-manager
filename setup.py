@@ -15,6 +15,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'psycopg2',
+    'markdown'
     ]
 
 setup(name='osmtm',

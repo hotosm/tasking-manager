@@ -33,7 +33,7 @@
                 </li>
             </ul>
             <h4>
-                ${job.title}
+                <a href="${request.route_url('job', job=job.id)}">${job.title}</a>
             </h4>
             <div class="clear"></div>
             <div class="created-by">

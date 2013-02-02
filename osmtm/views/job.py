@@ -6,6 +6,12 @@ from ..models import (
     Job,
     )
 
+@view_config(route_name='job', renderer='job.mako', http_cache=0)
+def job(request):
+    id = request.matchdict['job']
+    job = DBSession.query(Job).get(id)
+    return {}
+
 @view_config(route_name='job_new', renderer='job.new.mako',)
 def job_new(request):
     if 'form.submitted' in request.params:

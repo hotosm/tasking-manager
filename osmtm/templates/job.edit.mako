@@ -38,6 +38,7 @@
             </div>
         </div>
         <div class="form-actions">
+            <a class="btn" href="${request.route_url('job', job=job.id)}">Cancel</a>
             <input type="submit" class="btn btn-primary" value="Save the modifications" id="id_submit" name="form.submitted"/>
         </div>
     </form>
