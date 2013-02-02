@@ -12,15 +12,12 @@
             </div>
         </div>
         <div class="row">
-            <div class="span6">
+            <div>
                 <label class="control-label">Area of interest</label>
                 <div class="control-group">
                     <div class="controls">
-                        <div id="map">
-                        </div>
-                        <p class="help-block">
-                            Draw the area on the map
-                        </p>
+                        <div id="map" class="span6"></div>
+                        <input type="hidden" id="geometry" name="geometry" value="" />
                     </div>
                 </div>
             </div>
@@ -51,7 +48,11 @@
             </div>
         </div>
         <div class="form-actions">
-            <input type="submit" class="btn btn-primary" value="Create the job" id="id_submit" name="form.submitted" />
+            <input type="submit" class="btn btn-primary" value="Create the job" id="id_submit" name="form.submitted" disabled="disabled"/>
         </div>
     </form>
 </div>
+<script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}">
+<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
+<script type="text/javascript" src="${request.static_url('osmtm:static/js/job.new.js')}"></script>

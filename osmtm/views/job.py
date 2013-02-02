@@ -19,13 +19,15 @@ def job(request):
 
 @view_config(route_name='job_new', renderer='job.new.mako',)
 def job_new(request):
-    job = Job(
-        request.params['title'],
-    )
+    if 'form.submitted' in request.params:
+        job = Job(
+            request.params['title'],
+        )
 
-    DBSession.add(job)
-    DBSession.flush()
-    return HTTPFound(location = route_url('job_edit', request, job=job.id))
+        DBSession.add(job)
+        DBSession.flush()
+        return HTTPFound(location = route_url('job_edit', request, job=job.id))
+    return {}
 
 @view_config(route_name='job_edit', renderer='job.edit.mako', )
 def job_edit(request):

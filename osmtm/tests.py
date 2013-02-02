@@ -23,6 +23,7 @@ def _initTestingDB():
 
 def _registerRoutes(config):
     config.add_route('home', '/')
+    config.add_route('job_new', '/job/new')
     config.add_route('job', '/job/{job}')
     config.add_route('job_edit', '/job/{job}/edit')
 
@@ -63,8 +64,13 @@ class TestJobNew(unittest.TestCase):
 
     def test_it(self):
         from .views.job import job_new
+
+        request = testing.DummyRequest()
+        response = job_new(request)
+
         request = testing.DummyRequest()
         request.params = {
+            'form.submitted': True,
             'title':u'NewJob',
         }
         response = job_new(request)

@@ -1,3 +1,6 @@
 [submodule "osmtm/static/bootstrap"]
 	path = osmtm/static/bootstrap
 	url = git://github.com/twitter/bootstrap.git
+[submodule "osmtm/static/js/lib/Leaflet.draw"]
+	path = osmtm/static/js/lib/Leaflet.draw
+	url = git://github.com/Leaflet/Leaflet.draw.git
