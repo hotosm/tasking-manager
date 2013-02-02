@@ -5123,10 +5123,6 @@ body {
   line-height: 18px;
 }
 .footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
   background-color: #eee;
   min-width: 940px;
   padding: 30px 0;

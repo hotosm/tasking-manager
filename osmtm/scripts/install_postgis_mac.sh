@@ -31,7 +31,3 @@ psql -d postgis_template -c "CREATE SCHEMA gis_schema AUTHORIZATION gisgroup;"
 createuser -i -l -S -R -d www-data 
  
 psql -d postgres -c 'GRANT gisgroup TO "www-data";'
- 
-#5. Create your app database
-dropdb osmtm
-createdb -T postgis_template -O www-data osmtm;
