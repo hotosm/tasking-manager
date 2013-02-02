@@ -61,3 +61,14 @@ The CSS stylesheet are compiled using less. Launch the following command as
 soon as you change the css::
 
     lessc osmtm/static/css/main.less > osmtm/static/css/main.css
+
+Tests
+-----
+
+To run tests, create the tests database::
+
+    sh osmtm/scripts/create_tests_dc.sh
+
+Then run the tests::
+
+    env/bin/nosetests

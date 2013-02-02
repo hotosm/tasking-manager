@@ -10,4 +10,11 @@
         ${job.title}
         </h3>
     </div>
+    <div class="row">
+        <div class="span6">
+            <div class="tab-pane active" id="description">
+                <p>${markdown.markdown(job.description)|n}</p>
+            </div>
+        </div>
+    </div>
 </div>
