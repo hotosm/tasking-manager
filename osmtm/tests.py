@@ -13,13 +13,13 @@ class TestMyView(unittest.TestCase):
         engine = create_engine('sqlite://')
         from .models import (
             Base,
-            MyModel,
+            Job,
             )
         DBSession.configure(bind=engine)
         Base.metadata.create_all(engine)
         with transaction.manager:
-            model = MyModel(name='one', value=55)
-            DBSession.add(model)
+            job = Job(title='one')
+            DBSession.add(job)
 
     def tearDown(self):
         DBSession.remove()
@@ -29,5 +29,5 @@ class TestMyView(unittest.TestCase):
         from .views import my_view
         request = testing.DummyRequest()
         info = my_view(request)
-        self.assertEqual(info['one'].name, 'one')
+        self.assertEqual(info['one'].title, 'one')
         self.assertEqual(info['project'], 'osmtm')
