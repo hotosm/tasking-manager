@@ -12,12 +12,8 @@ from ..models import (
     Job,
     )
 
-@view_config(route_name='home', renderer='home.mako', permission='edit')
+@view_config(route_name='home', renderer='home.mako')
 def home(request):
-    try:
-        one = DBSession.query(Job).filter(Job.title == 'one').first()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
     jobs = DBSession.query(Job).order_by(desc(Job.id))
 
