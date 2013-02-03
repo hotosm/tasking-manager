@@ -22,6 +22,7 @@ def job_new(request):
     if 'form.submitted' in request.params:
         job = Job(
             request.params['title'],
+            request.params['geometry']
         )
 
         DBSession.add(job)

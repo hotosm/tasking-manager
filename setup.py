@@ -17,7 +17,9 @@ requires = [
     'psycopg2',
     'markdown',
     'nose',
-    'coverage'
+    'coverage',
+    'geoalchemy',
+    'geojson'
     ]
 
 setup(name='osmtm',

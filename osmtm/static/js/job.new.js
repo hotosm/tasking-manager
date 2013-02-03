@@ -53,6 +53,7 @@ var toGeoJSON = function(polygon) {
     var json, type, latlng, latlngs = [], i;
 
     type = 'Polygon';
+    polygon._latlngs.push(polygon._latlngs[0]);
     latlngs = LatLngsToCoords(polygon._latlngs, 1);
     return JSON.stringify({"type": type, "coordinates": [latlngs]});
 };

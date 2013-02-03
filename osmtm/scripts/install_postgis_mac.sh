@@ -13,6 +13,8 @@ psql -d postgis_template -f /usr/local/Cellar/postgis/2.0.2/share/postgis/postgi
 #[Mac OSX] Import Postgis Data
 psql -d postgis_template -f /usr/local/Cellar/postgis/2.0.2/share/postgis/postgis.sql
 psql -d postgis_template -f /usr/local/Cellar/postgis/2.0.2/share/postgis/spatial_ref_sys.sql
+psql -d postgis_template -f /usr/local/Cellar/postgis/2.0.2/share/postgis/rtpostgis.sql
+psql -d postgis_template -f /usr/local/Cellar/postgis/2.0.2/share/postgis/legacy_minimal.sql
  
 psql -d postgis_template -f /usr/local/Cellar/postgis/2.0.2/share/postgis/topology.sql
  

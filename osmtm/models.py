@@ -5,6 +5,13 @@ from sqlalchemy import (
     Unicode,
     )
 
+from geoalchemy import *
+from geoalchemy.utils import (
+    to_wkt
+    )
+
+from geojson import loads
+
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.orm import (
@@ -29,9 +36,13 @@ class Job(Base):
     status = Column(Integer)
     description = Column(Unicode)
     short_description = Column(Unicode)
+    geometry = GeometryColumn(Polygon(2))
 
-    def __init__(self, title=None,):
+    def __init__(self, title, geometry):
         self.title = title
         self.status = 2
         self.short_description = u''
         self.description = u''
+        self.geometry = to_wkt(loads(geometry))
+
+GeometryDDL(Job.__table__)
