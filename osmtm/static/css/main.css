@@ -5165,6 +5165,9 @@ body {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcccccc', endColorstr='#ffeeeeee', GradientType=0);
 }
+#job #map {
+  height: 240px;
+}
 #job_new #map {
   height: 240px;
 }
