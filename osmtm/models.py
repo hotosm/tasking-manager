@@ -3,6 +3,7 @@ from sqlalchemy import (
     Integer,
     Text,
     Unicode,
+    event
     )
 
 from geoalchemy import *
@@ -36,7 +37,7 @@ class Job(Base):
     status = Column(Integer)
     description = Column(Unicode)
     short_description = Column(Unicode)
-    geometry = GeometryColumn(Polygon(2))
+    geometry = GeometryColumn(Polygon(2, srid=4326))
 
     def __init__(self, title, geometry):
         self.title = title

@@ -32,6 +32,7 @@
 
         geometry = loads(str(job.geometry.geom_wkb))
     %>
+    var job_id = ${job.id};
     var geometry = ${dumps(geometry)|n};
 </script>
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/job.js')}"></script>

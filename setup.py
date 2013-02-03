@@ -19,7 +19,7 @@ requires = [
     'nose',
     'coverage',
     'geoalchemy',
-    'geojson'
+    'geojson',
     ]
 
 setup(name='osmtm',

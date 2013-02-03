@@ -6,6 +6,8 @@ from ..models import (
     Job,
     )
 
+import mapnik
+
 @view_config(route_name='job', renderer='job.mako', http_cache=0)
 def job(request):
     id = request.matchdict['job']
@@ -44,3 +46,26 @@ def job_edit(request):
         return HTTPFound(location = route_url('job', request, job=job.id))
 
     return dict(job=job)
+
+
+import mapnik
+
+@view_config(route_name='job_mapnik', renderer='mapnik')
+def job_mapnik(request):
+    x = request.matchdict['x']
+    y = request.matchdict['y']
+    z = request.matchdict['z']
+    job = request.matchdict['job']
+
+    query = '(SELECT * FROM jobs WHERE id = %s) as jobs' % (str(job))
+    print query
+    layer = mapnik.Layer('Job from PostGIS')
+    layer.datasource = mapnik.PostGIS(
+        host='localhost',
+        user='www-data',
+        dbname='osmtm',
+        table=query
+    )
+    layer.styles.append('job')
+
+    return layer
