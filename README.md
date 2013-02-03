@@ -44,6 +44,14 @@ To create a virtual Python environment::
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
 
+In order to see jobs and tiles on the maps, you'll need to have Mapnik as
+a Python module.
+First install mapnik (using homebrew if on Mac).
+Then, you'll probably need to add a symbolic link to the Mapnik package in your
+virtualenv site-packages::
+
+    ln -s /Library/Python/2.7/site-packages/mapnik env/lib/python2.7/site-packages/
+
 POSTGIS Installation
 --------------------
 
