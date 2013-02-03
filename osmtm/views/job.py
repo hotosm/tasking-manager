@@ -58,7 +58,6 @@ def job_mapnik(request):
     job = request.matchdict['job']
 
     query = '(SELECT * FROM jobs WHERE id = %s) as jobs' % (str(job))
-    print query
     layer = mapnik.Layer('Job from PostGIS')
     layer.datasource = mapnik.PostGIS(
         host='localhost',
