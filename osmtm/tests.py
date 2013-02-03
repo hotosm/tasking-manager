@@ -158,3 +158,6 @@ class FunctionalTests(unittest.TestCase):
     def test_job_mapnik(self):
         res = self.testapp.get('/job/1/10/532/383.png')
         self.assertTrue(res.content_type == 'image/png')
+
+        res = self.testapp.get('/job/1/10/532/383.json')
+        self.assertTrue('grid' in res.body)
