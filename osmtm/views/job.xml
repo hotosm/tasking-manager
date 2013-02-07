@@ -1,10 +1,15 @@
 <Map srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over">
   <Style name="job">
     <Rule>
-      <LineSymbolizer stroke-width="2" stroke="#FF0000" />
+      <LineSymbolizer stroke-width="2" stroke="#3333FF" />
+    </Rule>
+  </Style>
+  <Style name="tile">
+    <Rule>
+      <LineSymbolizer stroke-width="0.5" stroke="#555" />
     </Rule>
     <Rule>
-      <PolygonSymbolizer fill-opacity="0.5" fill="#FF0000" />
+      <PolygonSymbolizer fill-opacity="0.2" fill="#ccc" />
     </Rule>
   </Style>
 </Map>

@@ -30,7 +30,7 @@
         from shapely.wkb import loads
         from geojson import Feature, FeatureCollection, dumps
 
-        geometry = loads(str(job.geometry.geom_wkb))
+        geometry = loads(str(job.geometry.data))
     %>
     var job_id = ${job.id};
     var geometry = ${dumps(geometry)|n};

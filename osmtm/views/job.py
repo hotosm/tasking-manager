@@ -58,13 +58,24 @@ def job_mapnik(request):
     job = request.matchdict['job']
 
     query = '(SELECT * FROM jobs WHERE id = %s) as jobs' % (str(job))
-    layer = mapnik.Layer('Job from PostGIS')
-    layer.datasource = mapnik.PostGIS(
+    job_layers = mapnik.Layer('Job from PostGIS')
+    job_layers.datasource = mapnik.PostGIS(
         host='localhost',
         user='www-data',
         dbname='osmtm',
         table=query
     )
-    layer.styles.append('job')
+    job_layers.styles.append('job')
 
-    return layer
+    query = '(SELECT * FROM tiles WHERE job_id = %s) as tiles' % (str(job))
+    tiles = mapnik.Layer('Job tiles from PostGIS')
+    tiles.datasource = mapnik.PostGIS(
+        host='localhost',
+        user='www-data',
+        dbname='osmtm',
+        table=query
+    )
+    tiles.styles.append('tile')
+    tiles.srs = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over"
+
+    return [job_layers, tiles]

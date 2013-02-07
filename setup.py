@@ -8,7 +8,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'pyramid',
-    'SQLAlchemy',
+    #'SQLAlchemy', # should be installed along with GeoAlchemy2
     'transaction',
     'pyramid_tm',
     'pyramid_debugtoolbar',

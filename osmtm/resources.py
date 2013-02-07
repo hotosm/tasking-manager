@@ -20,7 +20,7 @@ class MapnikRendererFactory:
     def __init__(self, info):
         self.mapfile = abspath_from_asset_spec(info.name)
 
-    def __call__(self, layer, system):
+    def __call__(self, layers, system):
         request = system['request']
 
         # get image width and height
@@ -43,7 +43,8 @@ class MapnikRendererFactory:
         m = Map(width, height)
         load_map(m, abspath_from_asset_spec('osmtm:views/job.xml'))
 
-        m.layers.append(layer)
+        for l in layers:
+            m.layers.append(l)
 
         m.zoom_to_box(bbox)
 

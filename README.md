@@ -44,6 +44,11 @@ To create a virtual Python environment::
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
 
+GeoAlchemy2 is required but not currently installable via pypi. 
+
+    source env/bin/activate
+    pip install -e git+https://github.com/geoalchemy/geoalchemy2#egg=geoalchemy2
+
 In order to see jobs and tiles on the maps, you'll need to have Mapnik as
 a Python module.
 First install mapnik (using homebrew if on Mac).
