@@ -42,7 +42,7 @@ class Tile(Base):
     x = Column(Integer, primary_key=True)
     y = Column(Integer, primary_key=True)
     zoom = Column(Integer, primary_key=True)
-    job_id = Column(Integer, ForeignKey('jobs.id'), primary_key=True, index=True)
+    map_id = Column(Integer, ForeignKey('maps.id'), primary_key=True, index=True)
     geometry = Column(Geometry('Polygon', srid=3857))
 
     def __init__(self, x, y, zoom):
@@ -57,8 +57,8 @@ class Tile(Base):
         tb = TileBuilder(step)
         return tb.create_square(self.x, self.y)
 
-class Job(Base):
-    __tablename__ = 'jobs'
+class Map(Base):
+    __tablename__ = 'maps'
     id = Column(Integer, primary_key=True)
     title = Column(Unicode)
     # statuses are:
@@ -70,7 +70,7 @@ class Job(Base):
     description = Column(Unicode)
     short_description = Column(Unicode)
     geometry = Column(Geometry('Polygon', srid=4326))
-    tiles = relationship(Tile, backref='job', cascade="all, delete, delete-orphan")
+    tiles = relationship(Tile, backref='map', cascade="all, delete, delete-orphan")
 
     def __init__(self, title, geometry):
         self.title = title

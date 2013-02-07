@@ -2,24 +2,24 @@
     import markdown
 %>
 <%inherit file="/base.mako"/>
-<%def name="id()">job</%def>
-<%def name="title()">Job - ${job.title}</%def>
+<%def name="id()">map</%def>
+<%def name="title()">Map - ${map.title}</%def>
 <div class="container">
     <div class="page-header">
         <h3>
-        ${job.title}
+        ${map.title}
         </h3>
     </div>
     <div class="row">
         <div class="span6">
             <div class="tab-pane active" id="description">
-                <p>${markdown.markdown(job.description)|n}</p>
+                <p>${markdown.markdown(map.description)|n}</p>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="span6">
-            <div id="map">
+            <div id="leaflet">
             </div>
         </div>
     </div>
@@ -30,9 +30,9 @@
         from shapely.wkb import loads
         from geojson import Feature, FeatureCollection, dumps
 
-        geometry = loads(str(job.geometry.data))
+        geometry = loads(str(map.geometry.data))
     %>
-    var job_id = ${job.id};
+    var map_id = ${map.id};
     var geometry = ${dumps(geometry)|n};
 </script>
-<script type="text/javascript" src="${request.static_url('osmtm:static/js/job.js')}"></script>
+<script type="text/javascript" src="${request.static_url('osmtm:static/js/map.js')}"></script>

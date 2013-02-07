@@ -9,15 +9,15 @@ from sqlalchemy import (
 
 from ..models import (
     DBSession,
-    Job,
+    Map,
     )
 
 @view_config(route_name='home', renderer='home.mako')
 def home(request):
 
-    jobs = DBSession.query(Job).order_by(desc(Job.id))
+    maps = DBSession.query(Map).order_by(desc(Map.id))
 
-    return dict(jobs=jobs,)
+    return dict(maps=maps,)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

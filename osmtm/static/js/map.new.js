@@ -16,7 +16,7 @@ $('#id_title')
         updateSubmitBtnStatus();
     });
 
-var map = L.map('map').setView([0, 0], 0);
+var map = L.map('leaflet').setView([0, 0], 0);
 // create the tile layer with correct attribution
 var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 var osmAttrib='Map data © OpenStreetMap contributors';

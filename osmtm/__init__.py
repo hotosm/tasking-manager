@@ -22,10 +22,10 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
-    config.add_route('job_new', '/job/new')
-    config.add_route('job', '/job/{job}')
-    config.add_route('job_edit', '/job/{job}/edit')
-    config.add_route('job_mapnik', '/job/{job}/{z}/{x}/{y}.{format}')
+    config.add_route('map_new', '/map/new')
+    config.add_route('map', '/map/{map}')
+    config.add_route('map_edit', '/map/{map}/edit')
+    config.add_route('map_mapnik', '/map/{map}/{z}/{x}/{y}.{format}')
 
     config.add_renderer('mapnik', MapnikRendererFactory)
 

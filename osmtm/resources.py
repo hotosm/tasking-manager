@@ -41,7 +41,7 @@ class MapnikRendererFactory:
         bbox = Box2d(xmin, ymax, xmax, ymin)
 
         m = Map(width, height)
-        load_map(m, abspath_from_asset_spec('osmtm:views/job.xml'))
+        load_map(m, abspath_from_asset_spec('osmtm:views/map.xml'))
 
         for l in layers:
             m.layers.append(l)

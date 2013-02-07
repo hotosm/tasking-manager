@@ -3,17 +3,17 @@
 <%def name="title()">Home Page</%def>
 <div class="container">
     <div class="row">
-        % for job in jobs:
-            ${job_item(job)}
+        % for map in maps:
+            ${map_item(map)}
         % endfor
     </div>
 </div>
 
 
-<%def name="job_item(job)">
-    <div id="jobs" data-bind="foreach: jobs">
-        <div class="job well">
-            <ul class="nav job-stats">
+<%def name="map_item(map)">
+    <div id="maps" data-bind="foreach: maps">
+        <div class="map well">
+            <ul class="nav map-stats">
                 <li>
                     <i class="icon-user"></i>
                     <span></span>
@@ -33,7 +33,7 @@
                 </li>
             </ul>
             <h4>
-                <a href="${request.route_url('job', job=job.id)}">${job.title}</a>
+                <a href="${request.route_url('map', map=map.id)}">${map.title}</a>
             </h4>
             <div class="clear"></div>
             <div class="created-by">

@@ -11,7 +11,7 @@ from pyramid.paster import (
 
 from ..models import (
     DBSession,
-    Job,
+    Map,
     Base,
     )
 
@@ -33,8 +33,8 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
-        job = Job(
-            title='First job',
+        map = Map(
+            title='First map',
             geometry='{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
         )
-        DBSession.add(job)
+        DBSession.add(map)

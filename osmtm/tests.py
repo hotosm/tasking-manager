@@ -11,27 +11,27 @@ def _initTestingDB():
     engine = create_engine('postgresql://www-data@localhost/osmtm_tests')
     from .models import (
         Base,
-        Job,
+        Map,
         )
     DBSession.configure(bind=engine)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
     with transaction.manager:
-        job = Job(
+        map = Map(
             title=u'one',
             geometry='{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
         )
-        DBSession.add(job)
+        DBSession.add(map)
 
 def _registerRoutes(config):
     config.add_route('home', '/')
-    config.add_route('job_new', '/job/new')
-    config.add_route('job', '/job/{job}')
-    config.add_route('job_edit', '/job/{job}/edit')
-    config.add_route('job_mapnik', '/job/{job}/{z}/{x}/{y}.{format}')
+    config.add_route('map_new', '/map/new')
+    config.add_route('map', '/map/{map}')
+    config.add_route('map_edit', '/map/{map}/edit')
+    config.add_route('map_mapnik', '/map/{map}/{z}/{x}/{y}.{format}')
 
-class TestJob(unittest.TestCase):
+class TestMap(unittest.TestCase):
     def setUp(self):
         _initTestingDB()
         self.config = testing.setUp()
@@ -42,20 +42,20 @@ class TestJob(unittest.TestCase):
         testing.tearDown()
 
     def test_it(self):
-        from .views.job import job
+        from .views.map import map
         request = testing.DummyRequest()
 
-        request.matchdict = {'job': 1}
-        info = job(request)
-        from .models import Job
-        self.assertEqual(info['job'], DBSession.query(Job).get(1))
+        request.matchdict = {'map': 1}
+        info = map(request)
+        from .models import Map
+        self.assertEqual(info['map'], DBSession.query(Map).get(1))
 
         # doesn't exist
-        request.matchdict = {'job': 999}
-        response = job(request)
+        request.matchdict = {'map': 999}
+        response = map(request)
         self.assertEqual(response.location, 'http://example.com/')
 
-class TestJobNew(unittest.TestCase):
+class TestMapNew(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -66,21 +66,21 @@ class TestJobNew(unittest.TestCase):
         testing.tearDown()
 
     def test_it(self):
-        from .views.job import job_new
+        from .views.map import map_new
 
         request = testing.DummyRequest()
-        response = job_new(request)
+        response = map_new(request)
 
         request = testing.DummyRequest()
         request.params = {
             'form.submitted': True,
-            'title':u'NewJob',
+            'title':u'NewMap',
             'geometry':'{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
         }
-        response = job_new(request)
-        self.assertEqual(response.location, 'http://example.com/job/2/edit')
+        response = map_new(request)
+        self.assertEqual(response.location, 'http://example.com/map/2/edit')
 
-class TestJobEdit(unittest.TestCase):
+class TestMapEdit(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -91,26 +91,26 @@ class TestJobEdit(unittest.TestCase):
         testing.tearDown()
 
     def test_it(self):
-        from .views.job import job_edit
+        from .views.map import map_edit
 
         request = testing.DummyRequest()
-        request.matchdict = {'job': 1}
-        response = job_edit(request)
-        from .models import Job
-        self.assertEqual(response['job'], DBSession.query(Job).get(1))
+        request.matchdict = {'map': 1}
+        response = map_edit(request)
+        from .models import Map
+        self.assertEqual(response['map'], DBSession.query(Map).get(1))
 
         request = testing.DummyRequest()
-        request.matchdict = {'job': 1}
+        request.matchdict = {'map': 1}
         request.params = {
             'form.submitted': True,
-            'title':u'NewJob',
+            'title':u'NewMap',
             'short_description':u'SomeShortDescription',
             'description':u'SomeDescription',
         }
-        response = job_edit(request)
-        self.assertEqual(response.location, 'http://example.com/job/1')
+        response = map_edit(request)
+        self.assertEqual(response.location, 'http://example.com/map/1')
 
-class TestJobMapnik(unittest.TestCase):
+class TestMapMapnik(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -121,17 +121,17 @@ class TestJobMapnik(unittest.TestCase):
         testing.tearDown()
 
     def test_it(self):
-        from .views.job import job_mapnik
+        from .views.map import map_mapnik
 
         request = testing.DummyRequest()
         request.matchdict = {
-            'job': 1,
+            'map': 1,
             'x': 532,
             'y': 383,
             'z': 10,
             'format': 'png'
         }
-        response = job_mapnik(request)
+        response = map_mapnik(request)
         import mapnik
         self.assertEqual(isinstance(response[0], mapnik.Layer), True)
 
@@ -155,9 +155,9 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get('', status=200)
         self.failUnless('one' in res.body)
 
-    def test_job_mapnik(self):
-        res = self.testapp.get('/job/1/10/532/383.png')
+    def test_map_mapnik(self):
+        res = self.testapp.get('/map/1/10/532/383.png')
         self.assertTrue(res.content_type == 'image/png')
 
-        res = self.testapp.get('/job/1/10/532/383.json')
+        res = self.testapp.get('/map/1/10/532/383.json')
         self.assertTrue('grid' in res.body)

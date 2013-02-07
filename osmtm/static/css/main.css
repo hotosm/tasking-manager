@@ -5140,22 +5140,22 @@ body {
   color: #666;
   margin: 0;
 }
-#home ul.job-stats {
+#home ul.map-stats {
   float: right;
   font-size: 11px;
 }
-#home ul.job-stats li {
+#home ul.map-stats li {
   float: left;
   margin-left: 10px;
   color: #666;
 }
-#home ul.job-stats .progress {
+#home ul.map-stats .progress {
   height: 10px;
   width: 30px;
   border: 1px solid #ccc;
   margin-bottom: 0;
 }
-#home ul.job-stats .progress .bar {
+#home ul.map-stats .progress .bar {
   background-color: #dadada;
   background-image: -moz-linear-gradient(top, #cccccc, #eeeeee);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#cccccc), to(#eeeeee));
@@ -5165,13 +5165,13 @@ body {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcccccc', endColorstr='#ffeeeeee', GradientType=0);
 }
-#job #map {
+#map #leaflet {
   height: 240px;
 }
-#job_new #map {
+#map_new #leaflet {
   height: 240px;
 }
-#job_new #zoom_level_info {
+#map_new #zoom_level_info {
   display: none;
 }
 .clear {
