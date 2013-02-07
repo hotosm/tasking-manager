@@ -79,7 +79,6 @@ class Job(Base):
         self.description = u''
 
         geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
-        print type(geometry)
         geometry = shapely.geometry.asShape(geometry)
         geometry = shape.from_shape(geometry, 4326)
         self.geometry = geometry
@@ -87,7 +86,6 @@ class Job(Base):
         geom_3857 = DBSession.execute(ST_Transform(self.geometry, 3857)).scalar()
 
         geom_3857 = shape.to_shape(geom_3857)
-        print geom_3857
 
         tiles = []
         for i in get_tiles_in_geom(geom_3857, 12):

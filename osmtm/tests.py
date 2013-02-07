@@ -133,7 +133,7 @@ class TestJobMapnik(unittest.TestCase):
         }
         response = job_mapnik(request)
         import mapnik
-        self.assertEqual(isinstance(response, mapnik.Layer), True)
+        self.assertEqual(isinstance(response[0], mapnik.Layer), True)
 
 class FunctionalTests(unittest.TestCase):
 
