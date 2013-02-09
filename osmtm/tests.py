@@ -36,6 +36,7 @@ def _registerRoutes(config):
     config.add_route('map_new', '/map/new')
     config.add_route('map', '/map/{map}')
     config.add_route('map_edit', '/map/{map}/edit')
+    config.add_route('task_new', '/map/{map}/task/new')
     config.add_route('task_mapnik', '/task/{task}/{z}/{x}/{y}.{format}')
 
 class TileModelTests(unittest.TestCase):
@@ -141,7 +142,7 @@ class TestMapEdit(unittest.TestCase):
         response = map_edit(request)
         self.assertEqual(response.location, 'http://example.com/map/1')
 
-class TestMapMapnik(unittest.TestCase):
+class TestTaskNew(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -152,7 +153,33 @@ class TestMapMapnik(unittest.TestCase):
         testing.tearDown()
 
     def test_it(self):
-        from .views.map import task_mapnik
+        from .views.task import task_new
+
+        request = testing.DummyRequest()
+        response = task_new(request)
+
+        request = testing.DummyRequest()
+        request.matchdict = {'map': 1}
+        request.params = {
+            'form.submitted': True,
+            'short_description':u'NewTask',
+            'zoom': 13
+        }
+        response = task_new(request)
+        self.assertEqual(response.location, 'http://example.com/map/1/edit')
+
+class TestTaskMapnik(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        _registerRoutes(self.config)
+
+    def tearDown(self):
+        DBSession.remove()
+        testing.tearDown()
+
+    def test_it(self):
+        from .views.task import task_mapnik
 
         request = testing.DummyRequest()
         request.matchdict = {
@@ -187,7 +214,11 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get('', status=200)
         self.failUnless('one' in res.body)
 
-    def test_map_mapnik(self):
+    def test_tak_mapnik(self):
+        task = DBSession.query(Task).get(1)
+        self.assertEqual(len(task.tiles), 6)
+
+    def test_task_mapnik(self):
         res = self.testapp.get('/map/1/task/1/10/532/383.png')
         self.assertTrue(res.content_type == 'image/png')
 

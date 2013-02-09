@@ -72,7 +72,7 @@ class Task(Base):
         self.short_description = short_description
         self.map = map
 
-        geom_3857 = DBSession.execute(ST_Transform(self.map.geometry, 3857)).scalar()
+        geom_3857 = DBSession.execute(ST_Transform(map.geometry, 3857)).scalar()
 
         geom_3857 = shape.to_shape(geom_3857)
 
@@ -106,4 +106,3 @@ class Map(Base):
         geometry = shapely.geometry.asShape(geometry)
         geometry = shape.from_shape(geometry, 4326)
         self.geometry = geometry
-
