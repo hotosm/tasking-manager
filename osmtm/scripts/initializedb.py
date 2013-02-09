@@ -12,6 +12,7 @@ from pyramid.paster import (
 from ..models import (
     DBSession,
     Map,
+    Task,
     Base,
     )
 
@@ -31,6 +32,7 @@ def main(argv=sys.argv):
     settings = get_appsettings(config_uri)
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
         map = Map(
@@ -38,3 +40,10 @@ def main(argv=sys.argv):
             geometry='{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
         )
         DBSession.add(map)
+
+        task = Task(
+            map,
+            'Map all primary roads',
+            13
+        )
+        DBSession.add(task)

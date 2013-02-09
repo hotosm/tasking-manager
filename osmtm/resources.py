@@ -58,6 +58,6 @@ class MapnikRendererFactory:
 
         elif format == 'json':
             grid = Grid(width, height)
-            render_layer(m, grid, layer=0, fields=['title'])
+            #render_layer(m, grid, layer=0, fields=['title'])
             utfgrid = grid.encode('utf', resolution=4)
             return json.dumps(utfgrid)

@@ -25,7 +25,7 @@ def main(global_config, **settings):
     config.add_route('map_new', '/map/new')
     config.add_route('map', '/map/{map}')
     config.add_route('map_edit', '/map/{map}/edit')
-    config.add_route('map_mapnik', '/map/{map}/{z}/{x}/{y}.{format}')
+    config.add_route('task_mapnik', '/task/{task}/{z}/{x}/{y}.{format}')
 
     config.add_renderer('mapnik', MapnikRendererFactory)
 

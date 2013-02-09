@@ -4,6 +4,7 @@ from pyramid.url import route_url
 from ..models import (
     DBSession,
     Map,
+    Task
     )
 
 import mapnik
@@ -50,24 +51,26 @@ def map_edit(request):
 
 import mapnik
 
-@view_config(route_name='map_mapnik', renderer='mapnik')
-def map_mapnik(request):
+@view_config(route_name='task_mapnik', renderer='mapnik')
+def task_mapnik(request):
     x = request.matchdict['x']
     y = request.matchdict['y']
     z = request.matchdict['z']
-    map = request.matchdict['map']
+    id = request.matchdict['task']
 
-    query = '(SELECT * FROM maps WHERE id = %s) as maps' % (str(map))
-    map_layers = mapnik.Layer('Map from PostGIS')
-    map_layers.datasource = mapnik.PostGIS(
+    task = DBSession.query(Task).get(id)
+
+    query = '(SELECT * FROM maps WHERE id = %s) as maps' % (str(task.map_id))
+    map_layer = mapnik.Layer('Map from PostGIS')
+    map_layer.datasource = mapnik.PostGIS(
         host='localhost',
         user='www-data',
         dbname='osmtm',
         table=query
     )
-    map_layers.styles.append('map')
+    map_layer.styles.append('map')
 
-    query = '(SELECT * FROM tiles WHERE map_id = %s) as tiles' % (str(map))
+    query = '(SELECT * FROM tiles WHERE task_id = %s) as tiles' % (str(id))
     tiles = mapnik.Layer('Map tiles from PostGIS')
     tiles.datasource = mapnik.PostGIS(
         host='localhost',
@@ -78,4 +81,4 @@ def map_mapnik(request):
     tiles.styles.append('tile')
     tiles.srs = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over"
 
-    return [map_layers, tiles]
+    return [map_layer, tiles]
