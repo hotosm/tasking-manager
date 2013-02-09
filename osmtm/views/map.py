@@ -1,5 +1,5 @@
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPBadRequest
 from pyramid.url import route_url
 from ..models import (
     DBSession,
@@ -53,12 +53,16 @@ import mapnik
 
 @view_config(route_name='task_mapnik', renderer='mapnik')
 def task_mapnik(request):
+    map_id = request.matchdict['map']
     x = request.matchdict['x']
     y = request.matchdict['y']
     z = request.matchdict['z']
-    id = request.matchdict['task']
+    task_id = request.matchdict['task']
 
-    task = DBSession.query(Task).get(id)
+    task = DBSession.query(Task).get(task_id)
+    if task.map_id != int(map_id):
+        # map and task don't match
+        return HTTPBadRequest('Map and Task don\'t match')
 
     query = '(SELECT * FROM maps WHERE id = %s) as maps' % (str(task.map_id))
     map_layer = mapnik.Layer('Map from PostGIS')
@@ -70,7 +74,7 @@ def task_mapnik(request):
     )
     map_layer.styles.append('map')
 
-    query = '(SELECT * FROM tiles WHERE task_id = %s) as tiles' % (str(id))
+    query = '(SELECT * FROM tiles WHERE task_id = %s) as tiles' % (str(task_id))
     tiles = mapnik.Layer('Map tiles from PostGIS')
     tiles.datasource = mapnik.PostGIS(
         host='localhost',

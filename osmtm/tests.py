@@ -156,6 +156,7 @@ class TestMapMapnik(unittest.TestCase):
 
         request = testing.DummyRequest()
         request.matchdict = {
+            'map': 1,
             'task': 1,
             'x': 532,
             'y': 383,
@@ -187,8 +188,8 @@ class FunctionalTests(unittest.TestCase):
         self.failUnless('one' in res.body)
 
     def test_map_mapnik(self):
-        res = self.testapp.get('/task/1/10/532/383.png')
+        res = self.testapp.get('/map/1/task/1/10/532/383.png')
         self.assertTrue(res.content_type == 'image/png')
 
-        res = self.testapp.get('/task/1/10/532/383.json')
+        res = self.testapp.get('/map/1/task/1/10/532/383.json')
         self.assertTrue('grid' in res.body)

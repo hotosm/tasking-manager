@@ -5,7 +5,8 @@ var osmAttrib='Map data © OpenStreetMap contributors';
 var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
 map.addLayer(osm);
 
-var url='/task/' + map_id + '/{z}/{x}/{y}.png';
+var task_id = 1;
+var url='/map/' + map_id + '/task/' + task_id + '/{z}/{x}/{y}.png';
 var layer = new L.TileLayer(url);
 map.addLayer(layer);
 
