@@ -193,3 +193,5 @@ class FunctionalTests(unittest.TestCase):
 
         res = self.testapp.get('/map/1/task/1/10/532/383.json')
         self.assertTrue('grid' in res.body)
+
+        res = self.testapp.get('/map/2/task/1/10/532/383.png', status=400)
