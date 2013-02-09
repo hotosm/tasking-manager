@@ -20,7 +20,8 @@ requires = [
     'coverage',
     'geoalchemy',
     'geojson',
-    'webtest'
+    'webtest',
+    'BeautifulSoup'
     ]
 
 setup(name='osmtm',

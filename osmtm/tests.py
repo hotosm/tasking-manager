@@ -11,6 +11,8 @@ from .models import (
     Tile
     )
 
+from BeautifulSoup import BeautifulSoup
+
 
 def _initTestingDB():
     from sqlalchemy import create_engine
@@ -37,6 +39,7 @@ def _registerRoutes(config):
     config.add_route('map', '/map/{map}')
     config.add_route('map_edit', '/map/{map}/edit')
     config.add_route('task_new', '/map/{map}/task/new')
+    config.add_route('tasks_manage', '/map/{map}/tasks/manage')
     config.add_route('task_mapnik', '/task/{task}/{z}/{x}/{y}.{format}')
 
 class TileModelTests(unittest.TestCase):
@@ -166,7 +169,7 @@ class TestTaskNew(unittest.TestCase):
             'zoom': 13
         }
         response = task_new(request)
-        self.assertEqual(response.location, 'http://example.com/map/1/edit')
+        self.assertEqual(response.location, 'http://example.com/map/1/tasks/manage')
 
 class TestTaskMapnik(unittest.TestCase):
 
@@ -214,9 +217,13 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get('', status=200)
         self.failUnless('one' in res.body)
 
-    def test_tak_mapnik(self):
+    def test_tasks(self):
         task = DBSession.query(Task).get(1)
         self.assertEqual(len(task.tiles), 6)
+
+    def test_tasks_manage(self):
+        res = self.testapp.get('/map/1/tasks/manage')
+        self.assertEqual(len(res.html.findAll('li', {'class': 'task'})), 1)
 
     def test_task_mapnik(self):
         res = self.testapp.get('/map/1/task/1/10/532/383.png')

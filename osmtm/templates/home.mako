@@ -11,7 +11,6 @@
 
 
 <%def name="map_item(map)">
-    <div id="maps" data-bind="foreach: maps">
         <div class="map well">
             <ul class="nav map-stats">
                 <li>
@@ -47,5 +46,4 @@
                 Updated <span>10 min</span> ago
             </div>
         </div>
-    </div>
 </%def>
