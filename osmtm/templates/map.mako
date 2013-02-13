@@ -22,6 +22,13 @@
             <div id="leaflet">
             </div>
         </div>
+        <div class="span3">
+            <select id="id_task">
+                %for task in map.tasks:
+                <option value="${task.id}">${task.short_description}</option>
+                %endfor
+            </select>
+        </div>
     </div>
 </div>
 <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>

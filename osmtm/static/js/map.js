@@ -5,10 +5,17 @@ var osmAttrib='Map data © OpenStreetMap contributors';
 var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
 map.addLayer(osm);
 
-var task_id = 1;
-var url='/map/' + map_id + '/task/' + task_id + '/{z}/{x}/{y}.png';
-var layer = new L.TileLayer(url);
+var layer = new L.geoJson(geometry);
 map.addLayer(layer);
-
-layer = new L.geoJson(geometry);
 map.fitBounds(layer.getBounds());
+
+function getTaskTilesUrl(task_id) {
+    return '/map/' + map_id + '/task/' + task_id + '/{z}/{x}/{y}.png';
+}
+var tiles = new L.TileLayer(getTaskTilesUrl($('#id_task')[0].value));
+map.addLayer(tiles);
+
+$('#id_task').change(function() {
+    tiles._url = getTaskTilesUrl($(this)[0].value);
+    tiles.redraw();
+});

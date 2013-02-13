@@ -45,16 +45,6 @@ def task_mapnik(request):
         # map and task don't match
         return HTTPBadRequest('Map and Task don\'t match')
 
-    query = '(SELECT * FROM maps WHERE id = %s) as maps' % (str(task.map_id))
-    map_layer = mapnik.Layer('Map from PostGIS')
-    map_layer.datasource = mapnik.PostGIS(
-        host='localhost',
-        user='www-data',
-        dbname='osmtm',
-        table=query
-    )
-    map_layer.styles.append('map')
-
     query = '(SELECT * FROM tiles WHERE task_id = %s) as tiles' % (str(task_id))
     tiles = mapnik.Layer('Map tiles from PostGIS')
     tiles.datasource = mapnik.PostGIS(
@@ -66,4 +56,4 @@ def task_mapnik(request):
     tiles.styles.append('tile')
     tiles.srs = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over"
 
-    return [map_layer, tiles]
+    return [tiles]
