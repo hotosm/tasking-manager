@@ -10,7 +10,7 @@ from ..models import (
 
 import mapnik
 
-@view_config(route_name='task_new', renderer='task.new.mako')
+@view_config(route_name='task_new', renderer='task.new.jade')
 def task_new(request):
     if 'form.submitted' in request.params:
         map_id = request.matchdict['map']
@@ -23,14 +23,14 @@ def task_new(request):
         DBSession.add(task)
         DBSession.flush()
         return HTTPFound(location = route_url('tasks_manage', request, map=map.id))
-    return {}
+    return dict(title='task_new')
 
-@view_config(route_name='tasks_manage', renderer='task.manage.mako')
+@view_config(route_name='tasks_manage', renderer='task.manage.jade')
 def tasks_manage(request):
     map_id = request.matchdict['map']
     map = DBSession.query(Map).get(map_id)
     tasks = DBSession.query(Task).filter(Task.map_id==map_id).all()
-    return {'map': map, 'tasks': tasks}
+    return {'title': 'tasks_manage', 'map': map, 'tasks': tasks}
 
 @view_config(route_name='task_mapnik', renderer='mapnik')
 def task_mapnik(request):

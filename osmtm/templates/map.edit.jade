@@ -1,0 +1,30 @@
+extends base
+
+block content
+    .container
+        form.form-horizontal(method='post', action='', enctype='multipart/form-data')
+            legend Edit Map
+            .control-group
+              label.control-label(for='id_title') Title
+              .controls
+                input#id_title.text.input-xxlarge(type='text', name='title', value='${map.title}')
+            .row
+              .span7
+                .control-group
+                  label.control-label(for='id_short_description') Short Description
+                  .controls
+                    textarea#id_short_description.text.span5(name='short_description', rows='5') ${map.short_description}
+              .span5
+                span#short_description_preview
+            .row
+              .span7
+                .control-group
+                  label.control-label(for='id_description') Description
+                  .controls
+                    textarea#id_description.text.span5(name='description', rows='10') ${map.description}
+              .span5
+                span#description_preview
+            .form-actions
+              a.btn(href='${request.route_url(\'map\', map=map.id)}') Cancel
+              input#id_submit.btn.btn-primary(type='submit', value='Save the modifications', name='form.submitted')
+        script(type='text/javascript', src='${request.static_url(\'osmtm:static/js/map.edit.js\')}')

@@ -1,0 +1,32 @@
+extends base
+
+block content
+    <%
+    |import markdown
+    %>
+    .container
+        .page-header
+            h3
+              | ${map.title}
+          .row
+            .span6
+              #description.tab-pane.active
+                p ${markdown.markdown(map.description)|n}
+          .row
+            .span6
+              #leaflet
+            .span3
+              select#id_task
+                for task in map.tasks
+                    option(value='${task.id}') ${task.short_description}
+                endfor
+        script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
+        script
+          <%
+          from shapely.wkb import loads
+          from geojson import Feature, FeatureCollection, dumps
+          geometry = loads(str(map.geometry.data))
+          %>
+          var map_id = ${map.id};
+          var geometry = ${dumps(geometry)|n};
+        script(type='text/javascript', src="${request.static_url('osmtm:static/js/map.js')}")

@@ -1,0 +1,26 @@
+!!!5
+html
+    head
+        title OSM Tasking Manager
+        link(rel='stylesheet', href="${request.static_url('osmtm:static/css/main.css')}")
+        link(rel='stylesheet', href='http://cdn.leafletjs.com/leaflet-0.5/leaflet.css')
+        script(src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}")
+        script(src="${request.static_url('osmtm:static/js/lib/showdown.js')}")
+        link
+    body(id="${title}")
+        .navbar.navbar-fixed-top
+            .navbar-inner
+                .container
+                    a.brand(href="${request.route_url('home')}") OSM Tasking Manager
+                    ul.nav
+        block content
+        footer.footer
+            .container
+                p.span6 Designed and built for the
+                    a(href="http://hot.openstreetmap.org) Humanitarian OpenStreetMap Team
+                    with initial sponsorship from the Australia-Indonesia Facility for Disaster Reduction.
+                p.pull-right Fork the code on
+                    a(href="http://github.com/hotosm/osm-tasking-manager") github
+                    .
+            </div>
+        </footer>

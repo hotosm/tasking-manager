@@ -1,0 +1,22 @@
+extends base
+
+block content
+    .container
+        form.form-horizontal(method='post')
+            legend New Map
+            .control-group
+                label.control-label(for='id_title') Title
+                .controls
+                    input#id_title.text.input-xxlarge(name='title')
+            .row
+                label.control-label Area of Interest
+                .control-group
+                    .controls
+                        #leaflet.span6
+                        input#geometry(type='hidden', name='geometry')
+            .form-actions
+                input#id_submit.btn.btn-primary(type='submit', value='Create the map', name='form.submitted', disabled='disabled')
+    link(rel='stylesheet', href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}")
+    script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
+    script(src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}")
+    script(src="${request.static_url('osmtm:static/js/map.new.js')}")

@@ -21,7 +21,8 @@ requires = [
     'geoalchemy',
     'geojson',
     'webtest',
-    'BeautifulSoup'
+    'BeautifulSoup',
+    'pyjade'
     ]
 
 setup(name='osmtm',

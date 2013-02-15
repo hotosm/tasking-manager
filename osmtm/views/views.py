@@ -12,12 +12,12 @@ from ..models import (
     Map,
     )
 
-@view_config(route_name='home', renderer='home.mako')
+@view_config(route_name='home', renderer='home.jade')
 def home(request):
 
     maps = DBSession.query(Map).order_by(desc(Map.id))
 
-    return dict(maps=maps,)
+    return dict(title="home", maps=maps,)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

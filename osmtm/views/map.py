@@ -7,7 +7,7 @@ from ..models import (
     Task
     )
 
-@view_config(route_name='map', renderer='map.mako', http_cache=0)
+@view_config(route_name='map', renderer='map.jade', http_cache=0)
 def map(request):
     id = request.matchdict['map']
     map = DBSession.query(Map).get(id)
@@ -16,9 +16,9 @@ def map(request):
         request.session.flash("Sorry, this map doesn't  exist")
         return HTTPFound(location = route_url('home', request))
 
-    return dict(map=map)
+    return dict(title='map', map=map)
 
-@view_config(route_name='map_new', renderer='map.new.mako',)
+@view_config(route_name='map_new', renderer='map.new.jade',)
 def map_new(request):
     if 'form.submitted' in request.params:
         map = Map(
@@ -29,9 +29,9 @@ def map_new(request):
         DBSession.add(map)
         DBSession.flush()
         return HTTPFound(location = route_url('map_edit', request, map=map.id))
-    return {}
+    return dict(title='map_new')
 
-@view_config(route_name='map_edit', renderer='map.edit.mako', )
+@view_config(route_name='map_edit', renderer='map.edit.jade', )
 def map_edit(request):
     id = request.matchdict['map']
     map = DBSession.query(Map).get(id)
@@ -44,4 +44,4 @@ def map_edit(request):
         DBSession.add(map)
         return HTTPFound(location = route_url('map', request, map=map.id))
 
-    return dict(map=map)
+    return dict(title='Edit Map', map=map)

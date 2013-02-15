@@ -1,0 +1,14 @@
+extends base
+
+block content
+    .container
+        .page-header
+            h3
+              ${map.title}
+              small Manage Tasks
+          .row
+            ul
+              for task in tasks
+                  li.task ${task.short_description}
+              endfor
+            a.btn(href="${request.route_url('task_new', map=map.id)}") + Add a task
