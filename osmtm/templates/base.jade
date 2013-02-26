@@ -6,6 +6,7 @@ html
         link(rel='stylesheet', href='http://cdn.leafletjs.com/leaflet-0.5/leaflet.css')
         script(src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}")
         script(src="${request.static_url('osmtm:static/js/lib/showdown.js')}")
+        script(src="${request.static_url('osmtm:static/js/shared.js')}")
         link
     body(id="${title}")
         .navbar.navbar-fixed-top
@@ -13,10 +14,20 @@ html
                 .container
                     a.brand(href="${request.route_url('home')}") OSM Tasking Manager
                     ul.nav
+        if request.session.peek_flash()
+            div.container
+                div.row
+                    div#flash.alert
+                        <% flash = request.session.pop_flash() %>
+                        for message in flash
+                            ${message}
+                            br
+                        endfor
+        endif
         block content
         footer.footer
             .container
-                p.span6 Designed and built for the
+                p.span6 Designed and built for the 
                     a(href="http://hot.openstreetmap.org) Humanitarian OpenStreetMap Team
                     with initial sponsorship from the Australia-Indonesia Facility for Disaster Reduction.
                 p.pull-right Fork the code on
