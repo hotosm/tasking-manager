@@ -7,13 +7,27 @@ html
         script(src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}")
         script(src="${request.static_url('osmtm:static/js/lib/showdown.js')}")
         script(src="${request.static_url('osmtm:static/js/shared.js')}")
-        link
+        <%
+        |from pyramid.security import authenticated_userid
+        |from osmtm.models import DBSession, User
+        |username = authenticated_userid(request)
+        |if username is not None:
+        |    user = DBSession.query(User).get(username)
+        |else:
+        |    user = None
+        %>
     body(id="${title}")
         .navbar.navbar-fixed-top
             .navbar-inner
                 .container
                     a.brand(href="${request.route_url('home')}") OSM Tasking Manager
                     ul.nav
+                    if user is not None
+                        ul.nav.pull-right
+                            li.dropdown
+                                a.dropdown-toggle(href="#", data-toggle="dropdown") ${user.username}
+                                    b.caret
+                    endif
         if request.session.peek_flash()
             div.container
                 div.row

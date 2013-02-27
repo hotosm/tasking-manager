@@ -4,6 +4,7 @@ from sqlalchemy import (
     Text,
     Unicode,
     ForeignKey,
+    Boolean,
     )
 
 from geoalchemy2 import (
@@ -106,3 +107,15 @@ class Map(Base):
         geometry = shapely.geometry.asShape(geometry)
         geometry = shape.from_shape(geometry, 4326)
         self.geometry = geometry
+
+class User(Base):
+    __tablename__ = "users"
+    username = Column(Unicode, primary_key=True)
+    admin = Column(Boolean)
+
+    def __init__(self, username, admin=False):
+        self.username = username
+        self.admin = admin
+
+    def is_admin(self):
+        return self.admin == True

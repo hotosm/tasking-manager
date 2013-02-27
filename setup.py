@@ -22,7 +22,8 @@ requires = [
     'geojson',
     'webtest',
     'BeautifulSoup',
-    'pyjade'
+    'pyjade',
+    'oauth2'
     ]
 
 setup(name='osmtm',

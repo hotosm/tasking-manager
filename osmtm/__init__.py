@@ -1,7 +1,8 @@
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
+from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
-session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
 
 from .models import (
     DBSession,
@@ -21,13 +22,23 @@ def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
-    config = Configurator(settings=settings)
 
+    authn_policy = AuthTktAuthenticationPolicy(
+            secret='super_secret')
+    authz_policy = ACLAuthorizationPolicy()
+    config = Configurator(settings=settings,
+            authentication_policy=authn_policy,
+            authorization_policy=authz_policy)
+
+    session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
     config.set_session_factory(session_factory)
 
     config.include('pyjade.ext.pyramid')
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
+    config.add_route('login', '/login')
+    config.add_route('logout', '/logout')
+    config.add_route('oauth_callback', '/oauth_callback')
     config.add_route('map_new', '/map/new')
     config.add_route('map', '/map/{map}')
     config.add_route('map_edit', '/map/{map}/edit')
