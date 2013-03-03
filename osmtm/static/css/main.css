@@ -232,6 +232,9 @@ a:hover {
   -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) 1px 2px #cccccc;
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) 1px 2px #cccccc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) 1px 2px #cccccc;
 }
 .img-circle {
   -webkit-border-radius: 500px;
@@ -937,6 +940,9 @@ input[type="color"],
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
   -webkit-transition: border linear .2s, box-shadow linear .2s;
   -moz-transition: border linear .2s, box-shadow linear .2s;
   -o-transition: border linear .2s, box-shadow linear .2s;
@@ -966,6 +972,9 @@ input[type="color"]:focus,
   -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
   -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
   box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) 1px 2px #cccccc;
 }
 input[type="radio"],
 input[type="checkbox"] {
@@ -1022,6 +1031,9 @@ input[type="checkbox"]:focus {
   -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
   -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025) 1px 2px #cccccc;
   cursor: not-allowed;
 }
 .uneditable-input {
@@ -1208,6 +1220,9 @@ input[type="checkbox"][readonly] {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
 }
 .control-group.warning input:focus,
 .control-group.warning select:focus,
@@ -1216,6 +1231,9 @@ input[type="checkbox"][readonly] {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e;
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e 1px 2px #cccccc;
 }
 .control-group.warning .input-prepend .add-on,
 .control-group.warning .input-append .add-on {
@@ -1242,6 +1260,9 @@ input[type="checkbox"][readonly] {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
 }
 .control-group.error input:focus,
 .control-group.error select:focus,
@@ -1250,6 +1271,9 @@ input[type="checkbox"][readonly] {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 1px 2px #cccccc;
 }
 .control-group.error .input-prepend .add-on,
 .control-group.error .input-append .add-on {
@@ -1276,6 +1300,9 @@ input[type="checkbox"][readonly] {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
 }
 .control-group.success input:focus,
 .control-group.success select:focus,
@@ -1284,6 +1311,9 @@ input[type="checkbox"][readonly] {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b;
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b 1px 2px #cccccc;
 }
 .control-group.success .input-prepend .add-on,
 .control-group.success .input-append .add-on {
@@ -1310,6 +1340,9 @@ input[type="checkbox"][readonly] {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) 1px 2px #cccccc;
 }
 .control-group.info input:focus,
 .control-group.info select:focus,
@@ -1318,6 +1351,9 @@ input[type="checkbox"][readonly] {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3 1px 2px #cccccc;
 }
 .control-group.info .input-prepend .add-on,
 .control-group.info .input-append .add-on {
@@ -1338,6 +1374,9 @@ select:focus:invalid:focus {
   -webkit-box-shadow: 0 0 6px #f8b9b7;
   -moz-box-shadow: 0 0 6px #f8b9b7;
   box-shadow: 0 0 6px #f8b9b7;
+  -webkit-box-shadow: 0 0 6px #f8b9b7 1px 2px #cccccc;
+  -moz-box-shadow: 0 0 6px #f8b9b7 1px 2px #cccccc;
+  box-shadow: 0 0 6px #f8b9b7 1px 2px #cccccc;
 }
 .form-actions {
   padding: 19px 20px 20px;
@@ -1897,7 +1936,7 @@ table th[class*="span"],
   *margin-right: .3em;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("../img/glyphicons-halflings.png");
+  background-image: url("../bootstrap/img/glyphicons-halflings.png");
   background-position: 14px 14px;
   background-repeat: no-repeat;
   margin-top: 1px;
@@ -2387,6 +2426,9 @@ table th[class*="span"],
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) 1px 2px #cccccc;
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) 1px 2px #cccccc;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) 1px 2px #cccccc;
   -webkit-background-clip: padding-box;
   -moz-background-clip: padding;
   background-clip: padding-box;
@@ -2547,6 +2589,9 @@ table th[class*="span"],
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05) 1px 2px #cccccc;
 }
 .well blockquote {
   border-color: #ddd;
@@ -2649,6 +2694,9 @@ button.close {
   -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
   -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
 }
 .btn:hover,
 .btn:active,
@@ -2687,6 +2735,9 @@ button.close {
   -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
   -moz-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
   box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
+  -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
 }
 .btn.disabled,
 .btn[disabled] {
@@ -2697,6 +2748,9 @@ button.close {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
+  -webkit-box-shadow: none 1px 2px #cccccc;
+  -moz-box-shadow: none 1px 2px #cccccc;
+  box-shadow: none 1px 2px #cccccc;
 }
 .btn-large {
   padding: 11px 19px;
@@ -2979,6 +3033,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
+  -webkit-box-shadow: none 1px 2px #cccccc;
+  -moz-box-shadow: none 1px 2px #cccccc;
+  box-shadow: none 1px 2px #cccccc;
 }
 .btn-link {
   border-color: transparent;
@@ -3100,6 +3157,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: inset 1px 0 0 rgba(255,255,255,.125), inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
   -moz-box-shadow: inset 1px 0 0 rgba(255,255,255,.125), inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
   box-shadow: inset 1px 0 0 rgba(255,255,255,.125), inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+  -webkit-box-shadow: inset 1px 0 0 rgba(255,255,255,.125), inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
+  -moz-box-shadow: inset 1px 0 0 rgba(255,255,255,.125), inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
+  box-shadow: inset 1px 0 0 rgba(255,255,255,.125), inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
   *padding-top: 5px;
   *padding-bottom: 5px;
 }
@@ -3124,6 +3184,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
   -moz-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
   box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
+  -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05) 1px 2px #cccccc;
 }
 .btn-group.open .btn.dropdown-toggle {
   background-color: #e6e6e6;
@@ -3624,6 +3687,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
   -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065) 1px 2px #cccccc;
+  -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065) 1px 2px #cccccc;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065) 1px 2px #cccccc;
   *zoom: 1;
 }
 .navbar-inner:before,
@@ -3782,6 +3848,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 1px 10px rgba(0,0,0,.1);
   -moz-box-shadow: 0 1px 10px rgba(0,0,0,.1);
   box-shadow: 0 1px 10px rgba(0,0,0,.1);
+  -webkit-box-shadow: 0 1px 10px rgba(0,0,0,.1) 1px 2px #cccccc;
+  -moz-box-shadow: 0 1px 10px rgba(0,0,0,.1) 1px 2px #cccccc;
+  box-shadow: 0 1px 10px rgba(0,0,0,.1) 1px 2px #cccccc;
 }
 .navbar-fixed-bottom {
   bottom: 0;
@@ -3790,6 +3859,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 -1px 10px rgba(0,0,0,.1);
   -moz-box-shadow: 0 -1px 10px rgba(0,0,0,.1);
   box-shadow: 0 -1px 10px rgba(0,0,0,.1);
+  -webkit-box-shadow: 0 -1px 10px rgba(0,0,0,.1) 1px 2px #cccccc;
+  -moz-box-shadow: 0 -1px 10px rgba(0,0,0,.1) 1px 2px #cccccc;
+  box-shadow: 0 -1px 10px rgba(0,0,0,.1) 1px 2px #cccccc;
 }
 .navbar .nav {
   position: relative;
@@ -3830,6 +3902,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
   -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
   box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+  -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125) 1px 2px #cccccc;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125) 1px 2px #cccccc;
 }
 .navbar .btn-navbar {
   display: none;
@@ -3856,6 +3931,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075);
   -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075) 1px 2px #cccccc;
 }
 .navbar .btn-navbar:hover,
 .navbar .btn-navbar:active,
@@ -3881,6 +3959,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+  -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25) 1px 2px #cccccc;
+  -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25) 1px 2px #cccccc;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25) 1px 2px #cccccc;
 }
 .btn-navbar .icon-bar + .icon-bar {
   margin-top: 3px;
@@ -4038,6 +4119,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.15);
   -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.15);
   box-shadow: inset 0 1px 2px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.15);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.15) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.15) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.15) 1px 2px #cccccc;
   -webkit-transition: none;
   -moz-transition: none;
   -o-transition: none;
@@ -4062,6 +4146,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
   -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
+  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
   outline: 0;
 }
 .navbar-inverse .btn-navbar {
@@ -4136,6 +4223,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) 1px 2px #cccccc;
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) 1px 2px #cccccc;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) 1px 2px #cccccc;
 }
 .pagination ul > li {
   display: inline;
@@ -4330,6 +4420,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3) 1px 2px #cccccc;
+  -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3) 1px 2px #cccccc;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3) 1px 2px #cccccc;
   -webkit-background-clip: padding-box;
   -moz-background-clip: padding-box;
   background-clip: padding-box;
@@ -4377,6 +4470,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: inset 0 1px 0 #ffffff;
   -moz-box-shadow: inset 0 1px 0 #ffffff;
   box-shadow: inset 0 1px 0 #ffffff;
+  -webkit-box-shadow: inset 0 1px 0 #ffffff 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 0 #ffffff 1px 2px #cccccc;
+  box-shadow: inset 0 1px 0 #ffffff 1px 2px #cccccc;
   *zoom: 1;
 }
 .modal-footer:before,
@@ -4491,6 +4587,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) 1px 2px #cccccc;
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) 1px 2px #cccccc;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) 1px 2px #cccccc;
   white-space: normal;
 }
 .popover.top {
@@ -4625,6 +4724,9 @@ input[type="submit"].btn.btn-mini {
   -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
   -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055) 1px 2px #cccccc;
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055) 1px 2px #cccccc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055) 1px 2px #cccccc;
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
@@ -4635,6 +4737,9 @@ a.thumbnail:hover {
   -webkit-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
   -moz-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
   box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
+  -webkit-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25) 1px 2px #cccccc;
+  -moz-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25) 1px 2px #cccccc;
+  box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25) 1px 2px #cccccc;
 }
 .thumbnail > img {
   display: block;
@@ -4814,6 +4919,9 @@ a.badge:hover {
   -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) 1px 2px #cccccc;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) 1px 2px #cccccc;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
@@ -4837,6 +4945,9 @@ a.badge:hover {
   -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   -moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
+  -moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -4849,6 +4960,9 @@ a.badge:hover {
   -webkit-box-shadow: inset 1px 0 0 rgba(0,0,0,.15), inset 0 -1px 0 rgba(0,0,0,.15);
   -moz-box-shadow: inset 1px 0 0 rgba(0,0,0,.15), inset 0 -1px 0 rgba(0,0,0,.15);
   box-shadow: inset 1px 0 0 rgba(0,0,0,.15), inset 0 -1px 0 rgba(0,0,0,.15);
+  -webkit-box-shadow: inset 1px 0 0 rgba(0,0,0,.15), inset 0 -1px 0 rgba(0,0,0,.15) 1px 2px #cccccc;
+  -moz-box-shadow: inset 1px 0 0 rgba(0,0,0,.15), inset 0 -1px 0 rgba(0,0,0,.15) 1px 2px #cccccc;
+  box-shadow: inset 1px 0 0 rgba(0,0,0,.15), inset 0 -1px 0 rgba(0,0,0,.15) 1px 2px #cccccc;
 }
 .progress-striped .bar {
   background-color: #149bdf;
@@ -5165,8 +5279,37 @@ body {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcccccc', endColorstr='#ffeeeeee', GradientType=0);
 }
+#map #task {
+  position: absolute;
+  left: 0;
+  top: 110px;
+  bottom: 0;
+  width: 100%;
+}
 #map #leaflet {
-  height: 240px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 400px;
+}
+#map #right-col {
+  position: absolute;
+  top: -5px;
+  bottom: 0;
+  right: -20px;
+  width: 400px;
+  background-color: white;
+  -webkit-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
+  -moz-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
+  padding: 10px;
+  -webkit-border-radius: 5px 0 0 0;
+  -moz-border-radius: 5px 0 0 0;
+  border-radius: 5px 0 0 0;
 }
 #map_new #leaflet {
   height: 240px;

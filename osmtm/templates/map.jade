@@ -1,32 +1,83 @@
-extends base
+!!!5
+html
+    head
+        title OSM Tasking Manager
+        link(rel='stylesheet', href="${request.static_url('osmtm:static/css/main.css')}")
+        link(rel='stylesheet', href='http://cdn.leafletjs.com/leaflet-0.5/leaflet.css')
+        script(src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}")
+        script(src="${request.static_url('osmtm:static/js/lib/showdown.js')}")
+        script(src="${request.static_url('osmtm:static/js/shared.js')}")
+        script(src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-tab.js')}")
+        <%
+        |from pyramid.security import authenticated_userid
+        |from osmtm.models import DBSession, User
+        |username = authenticated_userid(request)
+        |if username is not None:
+        |    user = DBSession.query(User).get(username)
+        |else:
+        |    user = None
+        %>
+    body(id="${title}")
+        .navbar.navbar-fixed-top
+            .navbar-inner
+                .container
+                    a.brand(href="${request.route_url('home')}")
+                        i.icon-home
+                    .brand ${map.title}
+                    ul.nav
+                    if user is not None
+                        ul.nav.pull-right
+                            li.dropdown
+                                a.dropdown-toggle(href="#", data-toggle="dropdown") ${user.username}
+                                    b.caret
+                    endif
+        if request.session.peek_flash()
+            div.container
+                div.row
+                    div#flash.alert
+                        <% flash = request.session.pop_flash() %>
+                        for message in flash
+                            ${message}
+                            br
+                        endfor
+        endif
 
-block content
-    <%
-    |import markdown
-    %>
-    .container
-        .page-header
-            h3
-              | ${map.title}
-          .row
-            .span6
-              #description.tab-pane.active
-                p ${markdown.markdown(map.description)|n}
-          .row
-            .span6
-              #leaflet
-            .span3
-              select#id_task
-                for task in map.tasks
-                    option(value='${task.id}') ${task.short_description}
-                endfor
-        script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
-        script
-          <%
-          from shapely.wkb import loads
-          from geojson import Feature, FeatureCollection, dumps
-          geometry = loads(str(map.geometry.data))
-          %>
-          var map_id = ${map.id};
-          var geometry = ${dumps(geometry)|n};
-        script(type='text/javascript', src="${request.static_url('osmtm:static/js/map.js')}")
+        <%
+        |import markdown
+        %>
+        .container
+            .row
+                .span12
+                    ul.nav.nav-pills
+                        li.active
+                            a(href='#main', data-toggle='tab') Main
+                        li
+                            a#task_tab(href='#task', data-toggle='tab') Task
+        .tab-content
+            #main.tab-pane.active.container
+                .span6
+                    .page-header
+                        h4 Description
+                    p ${markdown.markdown(map.description)|n}
+                .span5
+                    .page-header
+                        h4 Activity
+            #task.tab-pane
+                #leaflet
+                #right-col
+                    .row
+                        .span3
+                            select#id_task
+                                for task in map.tasks
+                                    option(value='${task.id}') ${task.short_description}
+                                endfor
+            script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
+            script
+              <%
+              from shapely.wkb import loads
+              from geojson import Feature, FeatureCollection, dumps
+              geometry = loads(str(map.geometry.data))
+              %>
+              var map_id = ${map.id};
+              var geometry = ${dumps(geometry)|n};
+            script(type='text/javascript', src="${request.static_url('osmtm:static/js/map.js')}")

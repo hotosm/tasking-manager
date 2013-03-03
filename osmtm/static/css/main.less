@@ -1,4 +1,12 @@
 @import "../bootstrap/less/bootstrap.less";
+@iconSpritePath: "../bootstrap/img/glyphicons-halflings.png";
+
+// Mixins
+.box-shadow(@horizontal: 0px, @vertical: 1px, @blur: 2px, @color: #CCC) {
+  -webkit-box-shadow: @horizontal @vertical @blur @color;
+  -moz-box-shadow: @horizontal @vertical @blur @color;
+  box-shadow: @horizontal @vertical @blur @color;
+}
 
 html, body {
     background-color: #FFF;
@@ -50,8 +58,31 @@ html, body {
 }
 
 #map {
+    #task {
+        position: absolute;
+        left: 0;
+        top: 110px;
+        bottom: 0;
+        width: 100%;
+    }
     #leaflet {
-        height: 240px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 400px;
+    }
+    #right-col {
+        position: absolute;
+        top: -5px;
+        bottom: 0;
+        right: -20px;
+        width: 400px;
+        background-color: white;
+        @shadow: 0 0 2px 2px rgba(0,0,0,.15);
+        .box-shadow(@shadow);
+        padding: 10px;
+        .border-radius(5px 0 0 0);
     }
 }
 
