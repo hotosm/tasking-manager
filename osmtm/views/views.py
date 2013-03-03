@@ -101,8 +101,9 @@ def oauth_callback(request):
             db_session.flush()
         headers = remember(request, username, max_age=20*7*24*60*60)
 
+    location = session.get('came_from') or '/'
     # and redirect to the main page
-    return HTTPFound(location=session.get('came_from'), headers=headers)
+    return HTTPFound(location=location, headers=headers)
 
 @view_config(route_name='logout')
 def logout(request):
