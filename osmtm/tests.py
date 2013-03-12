@@ -6,9 +6,8 @@ from pyramid import testing
 from .models import (
     DBSession,
     Base,
-    Map,
-    Task,
-    Tile
+    Area,
+    Project
     )
 
 from BeautifulSoup import BeautifulSoup
@@ -22,51 +21,23 @@ def _initTestingDB():
     Base.metadata.create_all(engine)
 
     with transaction.manager:
-        map = Map(
-            title=u'one',
-            geometry='{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
+        area = Area(
+            '{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
         )
-        task = Task(
-            map,
-            u'Short task description',
-            12
+        project = Project(
+            u'Short project description',
+            area
         )
-        DBSession.add(map)
+        DBSession.add(project)
+        project.auto_fill(12)
 
 def _registerRoutes(config):
     config.add_route('home', '/')
-    config.add_route('map_new', '/map/new')
-    config.add_route('map', '/map/{map}')
-    config.add_route('map_edit', '/map/{map}/edit')
-    config.add_route('task_new', '/map/{map}/task/new')
-    config.add_route('tasks_manage', '/map/{map}/tasks/manage')
-    config.add_route('task_mapnik', '/task/{task}/{z}/{x}/{y}.{format}')
+    config.add_route('project_new', '/project/new')
+    config.add_route('project', '/project/{project}')
+    config.add_route('project_edit', '/project/{project}/edit')
 
-class TileModelTests(unittest.TestCase):
-
-    def setUp(self):
-        _initTestingDB()
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
-
-    def _getTargetClass(self):
-        return Tile
-
-    def _makeOne(self, x, y, z):
-        return self._getTargetClass()(x, y, z)
-
-    def test_constructor(self):
-        x = 1
-        y = 2
-        z = 10
-        instance = self._makeOne(x, y, z)
-        self.assertEqual(instance.x, 1)
-        self.assertEqual(instance.y, 2)
-        self.assertEqual(instance.zoom, 10)
-
-class TestMap(unittest.TestCase):
+class TestProject(unittest.TestCase):
     def setUp(self):
         _initTestingDB()
         self.config = testing.setUp()
@@ -77,20 +48,20 @@ class TestMap(unittest.TestCase):
         testing.tearDown()
 
     def test_it(self):
-        from .views.map import map
+        from .views.project import project
         request = testing.DummyRequest()
 
-        request.matchdict = {'map': 1}
-        info = map(request)
-        from .models import Map
-        self.assertEqual(info['map'], DBSession.query(Map).get(1))
+        request.matchdict = {'project': 1}
+        info = project(request)
+        from .models import Project
+        self.assertEqual(info['project'], DBSession.query(Project).get(1))
 
         # doesn't exist
-        request.matchdict = {'map': 999}
-        response = map(request)
+        request.matchdict = {'project': 999}
+        response = project(request)
         self.assertEqual(response.location, 'http://example.com/')
 
-class TestMapNew(unittest.TestCase):
+class TestProjectNew(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -101,135 +72,135 @@ class TestMapNew(unittest.TestCase):
         testing.tearDown()
 
     def test_it(self):
-        from .views.map import map_new
+        from .views.project import project_new
 
         request = testing.DummyRequest()
-        response = map_new(request)
+        response = project_new(request)
 
         request = testing.DummyRequest()
         request.params = {
             'form.submitted': True,
-            'title':u'NewMap',
+            'name':u'NewProject',
             'geometry':'{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
         }
-        response = map_new(request)
-        self.assertEqual(response.location, 'http://example.com/map/2/edit')
+        response = project_new(request)
+        self.assertEqual(response.location, 'http://example.com/project/2/edit')
 
-class TestMapEdit(unittest.TestCase):
+#class TestProjectEdit(unittest.TestCase):
 
-    def setUp(self):
-        self.config = testing.setUp()
-        _registerRoutes(self.config)
+    #def setUp(self):
+        #self.config = testing.setUp()
+        #_registerRoutes(self.config)
 
-    def tearDown(self):
-        DBSession.remove()
-        testing.tearDown()
+    #def tearDown(self):
+        #DBSession.remove()
+        #testing.tearDown()
 
-    def test_it(self):
-        from .views.map import map_edit
+    #def test_it(self):
+        #from .views.project import project_edit
 
-        request = testing.DummyRequest()
-        request.matchdict = {'map': 1}
-        response = map_edit(request)
-        from .models import Map
-        self.assertEqual(response['map'], DBSession.query(Map).get(1))
+        #request = testing.DummyRequest()
+        #request.matchdict = {'project': 1}
+        #response = project_edit(request)
+        #from .models import Project
+        #self.assertEqual(response['project'], DBSession.query(Project).get(1))
 
-        request = testing.DummyRequest()
-        request.matchdict = {'map': 1}
-        request.params = {
-            'form.submitted': True,
-            'title':u'NewMap',
-            'short_description':u'SomeShortDescription',
-            'description':u'SomeDescription',
-        }
-        response = map_edit(request)
-        self.assertEqual(response.location, 'http://example.com/map/1')
+        #request = testing.DummyRequest()
+        #request.matchdict = {'project': 1}
+        #request.params = {
+            #'form.submitted': True,
+            #'title':u'NewProject',
+            #'short_description':u'SomeShortDescription',
+            #'description':u'SomeDescription',
+        #}
+        #response = project_edit(request)
+        #self.assertEqual(response.location, 'http://example.com/project/1')
 
-class TestTaskNew(unittest.TestCase):
+#class TestTaskNew(unittest.TestCase):
 
-    def setUp(self):
-        self.config = testing.setUp()
-        _registerRoutes(self.config)
+    #def setUp(self):
+        #self.config = testing.setUp()
+        #_registerRoutes(self.config)
 
-    def tearDown(self):
-        DBSession.remove()
-        testing.tearDown()
+    #def tearDown(self):
+        #DBSession.remove()
+        #testing.tearDown()
 
-    def test_it(self):
-        from .views.task import task_new
+    #def test_it(self):
+        #from .views.task import task_new
 
-        request = testing.DummyRequest()
-        response = task_new(request)
+        #request = testing.DummyRequest()
+        #response = task_new(request)
 
-        request = testing.DummyRequest()
-        request.matchdict = {'map': 1}
-        request.params = {
-            'form.submitted': True,
-            'short_description':u'NewTask',
-            'zoom': 13
-        }
-        response = task_new(request)
-        self.assertEqual(response.location, 'http://example.com/map/1/tasks/manage')
+        #request = testing.DummyRequest()
+        #request.matchdict = {'project': 1}
+        #request.params = {
+            #'form.submitted': True,
+            #'short_description':u'NewTask',
+            #'zoom': 13
+        #}
+        #response = task_new(request)
+        #self.assertEqual(response.location, 'http://example.com/project/1/tasks/manage')
 
-class TestTaskMapnik(unittest.TestCase):
+#class TestTaskProjectnik(unittest.TestCase):
 
-    def setUp(self):
-        self.config = testing.setUp()
-        _registerRoutes(self.config)
+    #def setUp(self):
+        #self.config = testing.setUp()
+        #_registerRoutes(self.config)
 
-    def tearDown(self):
-        DBSession.remove()
-        testing.tearDown()
+    #def tearDown(self):
+        #DBSession.remove()
+        #testing.tearDown()
 
-    def test_it(self):
-        from .views.task import task_mapnik
+    #def test_it(self):
+        #from .views.task import task_projectnik
 
-        request = testing.DummyRequest()
-        request.matchdict = {
-            'map': 1,
-            'task': 1,
-            'x': 532,
-            'y': 383,
-            'z': 10,
-            'format': 'png'
-        }
-        response = task_mapnik(request)
-        import mapnik
-        self.assertEqual(isinstance(response[0], mapnik.Layer), True)
+        #request = testing.DummyRequest()
+        #request.matchdict = {
+            #'project': 1,
+            #'task': 1,
+            #'x': 532,
+            #'y': 383,
+            #'z': 10,
+            #'format': 'png'
+        #}
+        #response = task_projectnik(request)
+        #import projectnik
+        #self.assertEqual(isinstance(response[0], projectnik.Layer), True)
 
-class FunctionalTests(unittest.TestCase):
+#class FunctionalTests(unittest.TestCase):
 
-    def setUp(self):
-        from osmtm import main
-        settings = {
-            'sqlalchemy.url': 'postgresql://www-data@localhost/osmtm_tests'
-        }
-        self.app = main({}, **settings)
+    #def setUp(self):
+        #from osmtm import main
+        #settings = {
+            #'sqlalchemy.url': 'postgresql://www-data@localhost/osmtm_tests'
+        #}
+        #self.app = main({}, **settings)
 
-        from webtest import TestApp
-        self.testapp = TestApp(self.app)
+        #from webtest import TestApp
+        #self.testapp = TestApp(self.app)
 
-    def tearDown(self):
-        DBSession.remove()
-        testing.tearDown()
+    #def tearDown(self):
+        #DBSession.remove()
+        #testing.tearDown()
 
-    def test_home(self):
-        res = self.testapp.get('', status=200)
-        self.failUnless('one' in res.body)
+    #def test_home(self):
+        #res = self.testapp.get('', status=200)
+        #self.failUnless('one' in res.body)
 
-    def test_tasks(self):
-        task = DBSession.query(Task).get(1)
-        self.assertEqual(len(task.tiles), 6)
+    #def test_tasks(self):
+        #task = DBSession.query(Task).get(1)
+        #self.assertEqual(len(task.tiles), 6)
 
-    def test_tasks_manage(self):
-        res = self.testapp.get('/map/1/tasks/manage')
-        self.assertEqual(len(res.html.findAll('li', {'class': 'task'})), 1)
+    #def test_tasks_manage(self):
+        #res = self.testapp.get('/project/1/tasks/manage')
+        #self.assertEqual(len(res.html.findAll('li', {'class': 'task'})), 1)
 
-    def test_task_mapnik(self):
-        res = self.testapp.get('/map/1/task/1/10/532/383.png')
-        self.assertTrue(res.content_type == 'image/png')
+    #def test_task_projectnik(self):
+        #res = self.testapp.get('/project/1/task/1/10/532/383.png')
+        #self.assertTrue(res.content_type == 'image/png')
 
-        res = self.testapp.get('/map/1/task/1/10/532/383.json')
-        self.assertTrue('grid' in res.body)
+        #res = self.testapp.get('/project/1/task/1/10/532/383.json')
+        #self.assertTrue('grid' in res.body)
 
-        res = self.testapp.get('/map/2/task/1/10/532/383.png', status=400)
+        #res = self.testapp.get('/project/2/task/1/10/532/383.png', status=400)

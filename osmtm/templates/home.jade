@@ -1,11 +1,14 @@
 extends base
 
+block header
+    .brand OSM Tasking Manager
+
 block content
     .container
         .row
-            for map in maps
-                .map.well
-                  ul.nav.map-stats
+            for project in projects
+                .project.well
+                  ul.nav.project-stats
                     li
                       i.icon-user
                       span
@@ -17,7 +20,7 @@ block content
                               .bar(style='width: 90%;')
                           td
                   h4
-                    a(href="${request.route_url('map', map=map.id)}") ${map.title}
+                    a(href="${request.route_url('project', project=project.id)}") ${project.name}
                   .clear
                   .created-by
                     | Created by

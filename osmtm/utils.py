@@ -13,7 +13,7 @@ max = MAXRESOLUTION*256/2
 class TileBuilder(object):
     def __init__(self, parameter):
         self.a = parameter
-    
+
     def create_square(self, i, j):
         xmin = i*self.a-max
         ymin = j*self.a-max

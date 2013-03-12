@@ -1,19 +1,23 @@
 extends base
 
+block header
+    a.brand(href="${request.route_url('home')}")
+        i.icon-home
+    .brand ${project.name} - Edit
+
 block content
     .container
         form.form-horizontal(method='post', action='', enctype='multipart/form-data')
-            legend Edit Map
             .control-group
-              label.control-label(for='id_title') Title
+              label.control-label(for='id_name') Name
               .controls
-                input#id_title.text.input-xxlarge(type='text', name='title', value='${map.title}')
+                input#id_name.text.input-xxlarge(type='text', name='name', value='${project.name}')
             .row
               .span7
                 .control-group
                   label.control-label(for='id_short_description') Short Description
                   .controls
-                    textarea#id_short_description.text.span5(name='short_description', rows='5') ${map.short_description}
+                    textarea#id_short_description.text.span5(name='short_description', rows='5') ${project.short_description}
               .span5
                 span#short_description_preview
             .row
@@ -21,10 +25,10 @@ block content
                 .control-group
                   label.control-label(for='id_description') Description
                   .controls
-                    textarea#id_description.text.span5(name='description', rows='10') ${map.description}
+                    textarea#id_description.text.span5(name='description', rows='10') ${project.description}
               .span5
                 span#description_preview
             .form-actions
-              a.btn(href='${request.route_url(\'map\', map=map.id)}') Cancel
+              a.btn(href='${request.route_url(\'project\', project=project.id)}') Cancel
               input#id_submit.btn.btn-primary(type='submit', value='Save the modifications', name='form.submitted')
-        script(type='text/javascript', src='${request.static_url(\'osmtm:static/js/map.edit.js\')}')
+        script(type='text/javascript', src='${request.static_url(\'osmtm:static/js/project.edit.js\')}')

@@ -10,13 +10,12 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     map.addLayer(osm);
 
     var layer = new L.geoJson(geometry);
-    map.addLayer(layer);
+    //map.addLayer(layer);
     map.fitBounds(layer.getBounds());
 
-    function getTaskTilesUrl(task_id) {
-        return '/map/' + map_id + '/task/' + task_id + '/{z}/{x}/{y}.png';
-    }
-    var tiles = new L.TileLayer(getTaskTilesUrl($('#id_task')[0].value));
+    var tiles = new L.TileLayer(
+        '/project/' + project_id + '/{z}/{x}/{y}.png'
+    );
     map.addLayer(tiles);
 
     $('#id_task').change(function() {

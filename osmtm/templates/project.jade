@@ -1,0 +1,45 @@
+extends base
+
+block header
+    a.brand(href="${request.route_url('home')}")
+        i.icon-home
+    .brand ${project.name}
+
+block content
+        script(src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-tab.js')}")
+        <%
+        |import markdown
+        %>
+        .container
+            .row
+                .span12
+                    ul.nav.nav-pills
+                        li.active
+                            a(href='#main', data-toggle='tab') Info
+                        li
+                            a#task_tab(href='#task', data-toggle='tab') Contribute
+        .tab-content
+            #main.tab-pane.active.container
+                .span6
+                    .page-header
+                        h4 Description
+                    p ${markdown.markdown(project.description)|n}
+                .span5
+                    .page-header
+                        h4 Activity
+            #task.tab-pane
+                #leaflet
+                #right-col
+                    .row
+                        .span3
+                            something
+            script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
+            script
+              <%
+              from shapely.wkb import loads
+              from geojson import Feature, FeatureCollection, dumps
+              geometry = loads(str(project.area.geometry.data))
+              %>
+              var project_id = ${project.id};
+              var geometry = ${dumps(geometry)|n};
+            script(type='text/javascript', src="${request.static_url('osmtm:static/js/project.js')}")

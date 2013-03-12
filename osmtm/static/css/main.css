@@ -5254,22 +5254,22 @@ body {
   color: #666;
   margin: 0;
 }
-#home ul.map-stats {
+#home ul.project-stats {
   float: right;
   font-size: 11px;
 }
-#home ul.map-stats li {
+#home ul.project-stats li {
   float: left;
   margin-left: 10px;
   color: #666;
 }
-#home ul.map-stats .progress {
+#home ul.project-stats .progress {
   height: 10px;
   width: 30px;
   border: 1px solid #ccc;
   margin-bottom: 0;
 }
-#home ul.map-stats .progress .bar {
+#home ul.project-stats .progress .bar {
   background-color: #dadada;
   background-image: -moz-linear-gradient(top, #cccccc, #eeeeee);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#cccccc), to(#eeeeee));
@@ -5279,21 +5279,21 @@ body {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcccccc', endColorstr='#ffeeeeee', GradientType=0);
 }
-#map #task {
+#project #task {
   position: absolute;
   left: 0;
   top: 110px;
   bottom: 0;
   width: 100%;
 }
-#map #leaflet {
+#project #leaflet {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 400px;
 }
-#map #right-col {
+#project #right-col {
   position: absolute;
   top: -5px;
   bottom: 0;
@@ -5311,11 +5311,8 @@ body {
   -moz-border-radius: 5px 0 0 0;
   border-radius: 5px 0 0 0;
 }
-#map_new #leaflet {
+#project_new #leaflet {
   height: 240px;
-}
-#map_new #zoom_level_info {
-  display: none;
 }
 .clear {
   clear: both;

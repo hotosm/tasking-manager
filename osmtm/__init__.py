@@ -39,12 +39,10 @@ def main(global_config, **settings):
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('oauth_callback', '/oauth_callback')
-    config.add_route('map_new', '/map/new')
-    config.add_route('map', '/map/{map}')
-    config.add_route('map_edit', '/map/{map}/edit')
-    config.add_route('task_new', '/map/{map}/task/new')
-    config.add_route('tasks_manage', '/map/{map}/tasks/manage')
-    config.add_route('task_mapnik', '/map/{map}/task/{task}/{z}/{x}/{y}.{format}')
+    config.add_route('project_new', '/project/new')
+    config.add_route('project', '/project/{project}')
+    config.add_route('project_edit', '/project/{project}/edit')
+    config.add_route('project_mapnik', '/project/{project}/{z}/{x}/{y}.{format}')
 
     config.add_renderer('mapnik', MapnikRendererFactory)
 

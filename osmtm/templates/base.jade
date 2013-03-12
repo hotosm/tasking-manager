@@ -20,7 +20,7 @@ html
         .navbar.navbar-fixed-top
             .navbar-inner
                 .container
-                    a.brand(href="${request.route_url('home')}") OSM Tasking Manager
+                    block header
                     ul.nav
                     if user is not None
                         ul.nav.pull-right

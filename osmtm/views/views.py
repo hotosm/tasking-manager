@@ -11,7 +11,7 @@ from sqlalchemy import (
 
 from ..models import (
     DBSession,
-    Map,
+    Project,
     User,
     )
 
@@ -27,11 +27,11 @@ import oauth2 as oauth
 @view_config(route_name='home', renderer='home.jade')
 def home(request):
 
-    maps = DBSession.query(Map).order_by(desc(Map.id))
+    projects = DBSession.query(Project).order_by(desc(Project.id))
 
     print authenticated_userid(request)
 
-    return dict(title="home", maps=maps,)
+    return dict(title="home", projects=projects,)
 
 # our oauth key and secret (we're the consumer in the oauth protocol)
 # consumer key and secret created by Kate Chapman
