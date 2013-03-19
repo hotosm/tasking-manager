@@ -31,4 +31,4 @@ block content
             .form-actions
               a.btn(href='${request.route_url(\'project\', project=project.id)}') Cancel
               input#id_submit.btn.btn-primary(type='submit', value='Save the modifications', name='form.submitted')
-        script(type='text/javascript', src='${request.static_url(\'osmtm:static/js/project.edit.js\')}')
+        script(type='text/javascript', src="${request.static_url('osmtm:static/js/project.edit.js')}")
