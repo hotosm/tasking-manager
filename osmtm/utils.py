@@ -1,6 +1,7 @@
 import sys, os, time
 from shapely.geometry import Polygon
 from shapely.geometry import MultiPolygon
+from shapely.prepared import prep
 from math import floor, ceil, pi, atan, exp
 
 
@@ -38,12 +39,11 @@ def get_tiles_in_geom(geom, z):
 
 
     tb = TileBuilder(step)
-    polygons = []
     tiles = []
+    prepared_geom = prep(geom)
     for i in range(xminstep,xmaxstep+1):
         for j in range(yminstep,ymaxstep+1):
-            polygon = tb.create_square(i, j)
-            if geom.intersects(polygon):
-                polygons.append(polygon)
+            tile = tb.create_square(i, j)
+            if prepared_geom.intersects(tile):
                 tiles.append((i, j))
     return tiles
