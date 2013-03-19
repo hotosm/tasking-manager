@@ -31,3 +31,12 @@ buttons.each(function(index, button) {
         return false;
     });
 });
+
+$('#loading').hide();
+$('form').submit(function() {
+    window.setTimeout(function() {
+        $('#id_submit')
+            .attr('disabled', 'disabled');
+        $('#loading').show();
+    }, 0);
+});
