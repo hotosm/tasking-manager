@@ -31,7 +31,7 @@ def home(request):
 
     print authenticated_userid(request)
 
-    return dict(title="home", projects=projects,)
+    return dict(page_id="home", projects=projects,)
 
 # our oauth key and secret (we're the consumer in the oauth protocol)
 # consumer key and secret created by Kate Chapman

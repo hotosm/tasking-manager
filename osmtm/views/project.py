@@ -18,7 +18,7 @@ def project(request):
         request.session.flash("Sorry, this project doesn't  exist")
         return HTTPFound(location = route_url('home', request))
 
-    return dict(title='project', project=project)
+    return dict(page_id='project', project=project)
 
 @view_config(route_name='project_new', renderer='project.new.jade',)
 def project_new(request):
@@ -37,8 +37,21 @@ def project_new(request):
 
         DBSession.add(project)
         DBSession.flush()
+        return HTTPFound(location = route_url('project_partition', request, project=project.id))
+    return dict(page_id='project_new')
+
+@view_config(route_name='project_partition', renderer='project.partition.jade', )
+def project_partition(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    if 'form.submitted' in request.params:
+        zoom = int(request.params['zoom'])
+        project.auto_fill(zoom)
+
         return HTTPFound(location = route_url('project_edit', request, project=project.id))
-    return dict(title='project_new')
+
+    return dict(page_id='project_partition', project=project)
 
 @view_config(route_name='project_edit', renderer='project.edit.jade', )
 def project_edit(request):
@@ -46,14 +59,14 @@ def project_edit(request):
     project = DBSession.query(Project).get(id)
 
     if 'form.submitted' in request.params:
-        project.title = request.params['title']
+        project.name = request.params['name']
         project.short_description = request.params['short_description']
         project.description = request.params['description']
 
         DBSession.add(project)
         return HTTPFound(location = route_url('project', request, project=project.id))
 
-    return dict(title='Edit Project', project=project)
+    return dict(page_id='project_edit', project=project)
 
 @view_config(route_name='project_mapnik', renderer='mapnik')
 def project_mapnik(request):

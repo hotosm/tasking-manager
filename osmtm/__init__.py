@@ -42,6 +42,7 @@ def main(global_config, **settings):
     config.add_route('project_new', '/project/new')
     config.add_route('project', '/project/{project}')
     config.add_route('project_edit', '/project/{project}/edit')
+    config.add_route('project_partition', '/project/{project}/partition')
     config.add_route('project_mapnik', '/project/{project}/{z}/{x}/{y}.{format}')
 
     config.add_renderer('mapnik', MapnikRendererFactory)

@@ -1,0 +1,34 @@
+extends base
+
+block header
+    a.brand(href="${request.route_url('home')}")
+        i.icon-home
+    .brand ${project.name} - Partition
+
+block content
+    .container
+        form(method='post')
+            .row
+                .span6
+                    #leaflet
+                .span6 Tile size
+                    #tile_size.btn-group()
+                        button.btn.btn-small XL
+                        button.btn.btn-small L
+                        button.btn.btn-small.active M
+                        button.btn.btn-small S
+                        button.btn.btn-small XS
+            input#zoom(type='hidden', name='zoom')
+            input#geometry(type='hidden', name='geometry')
+            .form-actions
+                input#id_submit.btn.btn-success(type='submit', value='Auto-fill project', name='form.submitted')
+    script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
+    script
+      <%
+      from shapely.wkb import loads
+      from geojson import Feature, FeatureCollection, dumps
+      geometry = loads(str(project.area.geometry.data))
+      %>
+      var project_id = ${project.id};
+      var geometry = ${dumps(geometry)|n};
+    script(src="${request.static_url('osmtm:static/js/project.partition.js')}")
