@@ -10,8 +10,8 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     map.addLayer(osm);
 
     var layer = new L.geoJson(geometry);
-    //map.addLayer(layer);
     map.fitBounds(layer.getBounds());
+    map.zoomOut();
 
     var tiles = new L.TileLayer(
         '/project/' + project_id + '/{z}/{x}/{y}.png'
