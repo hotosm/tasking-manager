@@ -46,11 +46,13 @@ class Task(Base):
     project_id = Column(Integer, ForeignKey('project.id'), primary_key=True, index=True)
     geometry = Column(Geometry('Polygon', srid=3857))
 
-    def __init__(self, x, y, zoom):
+    def __init__(self, x, y, zoom, geometry=None):
         self.x = x
         self.y = y
         self.zoom = zoom
-        self.geometry = elements.WKTElement(self.to_polygon().wkt, 3857)
+        if (geometry is None):
+            geometry = self.to_polygon()
+        self.geometry = elements.WKTElement(geometry.wkt, 3857)
 
     def to_polygon(self):
         # task size (in meters) at the required zoom level
@@ -105,7 +107,7 @@ class Project(Base):
 
         tasks = []
         for i in get_tiles_in_geom(geom_3857, zoom):
-            tasks.append(Task(i[0], i[1], zoom))
+            tasks.append(Task(i[0], i[1], zoom, i[2]))
         self.tasks = tasks
 
 class User(Base):

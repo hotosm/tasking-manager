@@ -45,5 +45,5 @@ def get_tiles_in_geom(geom, z):
         for j in range(yminstep,ymaxstep+1):
             tile = tb.create_square(i, j)
             if prepared_geom.intersects(tile):
-                tiles.append((i, j))
+                tiles.append((i, j, tile))
     return tiles
