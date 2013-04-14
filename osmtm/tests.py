@@ -36,6 +36,7 @@ def _registerRoutes(config):
     config.add_route('project_new', '/project/new')
     config.add_route('project', '/project/{project}')
     config.add_route('project_edit', '/project/{project}/edit')
+    config.add_route('project_partition', '/project/{project}/partition')
 
 class TestProject(unittest.TestCase):
     def setUp(self):
@@ -84,7 +85,7 @@ class TestProjectNew(unittest.TestCase):
             'geometry':'{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
         }
         response = project_new(request)
-        self.assertEqual(response.location, 'http://example.com/project/2/edit')
+        self.assertEqual(response.location, 'http://example.com/project/2/partition')
 
 #class TestProjectEdit(unittest.TestCase):
 
