@@ -23,6 +23,6 @@ block content
             .form-actions
                 input#id_submit.btn.btn-success(type='submit', value='OK', name='form.submitted', disabled='disabled')
     link(rel='stylesheet', href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}")
-    script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
+    script(src="${request.static_url('osmtm:static/js/lib/leaflet.js')}")
     script(src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}")
     script(src="${request.static_url('osmtm:static/js/project.new.js')}")

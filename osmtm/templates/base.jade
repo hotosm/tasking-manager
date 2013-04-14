@@ -3,7 +3,7 @@ html
     head
         title OSM Tasking Manager
         link(rel='stylesheet', href="${request.static_url('osmtm:static/css/main.css')}")
-        link(rel='stylesheet', href='http://cdn.leafletjs.com/leaflet-0.5/leaflet.css')
+        link(rel='stylesheet', href="${request.static_url('osmtm:static/js/lib/leaflet.css')}")
         script(src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}")
         script(src="${request.static_url('osmtm:static/js/lib/showdown.js')}")
         script(src="${request.static_url('osmtm:static/js/shared.js')}")

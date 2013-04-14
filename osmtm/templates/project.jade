@@ -33,7 +33,7 @@ block content
                     .row
                         .span3
                             something
-            script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
+            script(src="${request.static_url('osmtm:static/js/lib/leaflet.js')}")
             script
               <%
               from shapely.wkb import loads

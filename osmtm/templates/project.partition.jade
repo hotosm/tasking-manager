@@ -23,7 +23,7 @@ block content
             .form-actions
                 input#id_submit.btn.btn-success(type='submit', value='Auto-fill project', name='form.submitted')
                 span#loading.help-inline Creating tiles, please wait...
-    script(src='http://cdn.leafletjs.com/leaflet-0.5/leaflet.js')
+    script(src="${request.static_url('osmtm:static/js/lib/leaflet.js')}")
     script
       <%
       from shapely.wkb import loads
