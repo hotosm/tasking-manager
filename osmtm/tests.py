@@ -87,35 +87,35 @@ class TestProjectNew(unittest.TestCase):
         response = project_new(request)
         self.assertEqual(response.location, 'http://example.com/project/2/partition')
 
-#class TestProjectEdit(unittest.TestCase):
+class TestProjectEdit(unittest.TestCase):
 
-    #def setUp(self):
-        #self.config = testing.setUp()
-        #_registerRoutes(self.config)
+    def setUp(self):
+        self.config = testing.setUp()
+        _registerRoutes(self.config)
 
-    #def tearDown(self):
-        #DBSession.remove()
-        #testing.tearDown()
+    def tearDown(self):
+        DBSession.remove()
+        testing.tearDown()
 
-    #def test_it(self):
-        #from .views.project import project_edit
+    def test_it(self):
+        from .views.project import project_edit
 
-        #request = testing.DummyRequest()
-        #request.matchdict = {'project': 1}
-        #response = project_edit(request)
-        #from .models import Project
-        #self.assertEqual(response['project'], DBSession.query(Project).get(1))
+        request = testing.DummyRequest()
+        request.matchdict = {'project': 1}
+        response = project_edit(request)
+        from .models import Project
+        self.assertEqual(response['project'], DBSession.query(Project).get(1))
 
-        #request = testing.DummyRequest()
-        #request.matchdict = {'project': 1}
-        #request.params = {
-            #'form.submitted': True,
-            #'title':u'NewProject',
-            #'short_description':u'SomeShortDescription',
-            #'description':u'SomeDescription',
-        #}
-        #response = project_edit(request)
-        #self.assertEqual(response.location, 'http://example.com/project/1')
+        request = testing.DummyRequest()
+        request.matchdict = {'project': 1}
+        request.params = {
+            'form.submitted': True,
+            'name':u'NewProject',
+            'short_description':u'SomeShortDescription',
+            'description':u'SomeDescription',
+        }
+        response = project_edit(request)
+        self.assertEqual(response.location, 'http://example.com/project/1')
 
 #class TestTaskNew(unittest.TestCase):
 
