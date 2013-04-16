@@ -4,3 +4,6 @@
 [submodule "osmtm/static/js/lib/Leaflet.draw"]
 	path = osmtm/static/js/lib/Leaflet.draw
 	url = git://github.com/Leaflet/Leaflet.draw.git
+[submodule "osmtm/static/js/lib/Leaflet.utfgrid"]
+	path = osmtm/static/js/lib/Leaflet.utfgrid
+	url = git://github.com/danzel/Leaflet.utfgrid.git

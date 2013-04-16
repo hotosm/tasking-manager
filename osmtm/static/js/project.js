@@ -22,4 +22,13 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
         tiles._url = getTaskTilesUrl($(this)[0].value);
         tiles.redraw();
     });
+
+    var grid = new L.UtfGrid(
+        '/project/' + project_id + '/{z}/{x}/{y}.json', {
+        useJsonP: false
+    });
+    map.addLayer(grid);
+    grid.on('mouseover', function (e) {
+        console.log('hover: ' + e.data.x);
+    });
 });

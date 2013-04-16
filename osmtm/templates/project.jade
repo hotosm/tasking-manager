@@ -34,6 +34,7 @@ block content
                         .span3
                             something
             script(src="${request.static_url('osmtm:static/js/lib/leaflet.js')}")
+            script(src="${request.static_url('osmtm:static/js/lib/Leaflet.utfgrid/dist/leaflet.utfgrid.js')}")
             script
               <%
               from shapely.wkb import loads
