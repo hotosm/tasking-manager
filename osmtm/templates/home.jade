@@ -22,15 +22,17 @@ block content
                   h4
                     a(href="${request.route_url('project', project=project.id)}") ${project.name}
                   .clear
-                  .created-by
-                    | Created by
-                    span Pierre
                   .world_map
                     .marker(style='top: 15px; left: 43px;')
+                  ${project.short_description}
                   .clear
-                  .updated-at
+                  span.created-by
+                    | Created by
+                    span Pierre
+                  |  -
+                  span.updated-at
                     | Updated
                     span 10 min
-                    | ago
+                    |  ago
             endfor
 
