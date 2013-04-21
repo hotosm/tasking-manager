@@ -5,6 +5,7 @@ from sqlalchemy import (
     Unicode,
     ForeignKey,
     Boolean,
+    DateTime,
     )
 
 from geoalchemy2 import (
@@ -34,6 +35,8 @@ from .utils import (
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
+
+from datetime import datetime
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -89,6 +92,8 @@ class Project(Base):
     description = Column(Unicode)
     short_description = Column(Unicode)
     area_id = Column(Integer, ForeignKey('areas.id'))
+    created = Column(DateTime)
+    last_update = Column(DateTime)
     area = relationship(Area)
     tasks = relationship(Task, backref='task', cascade="all, delete, delete-orphan")
 
@@ -98,6 +103,8 @@ class Project(Base):
         self.status = 2
         self.short_description = u''
         self.description = u''
+        self.created = datetime.now()
+        self.last_update = datetime.now()
 
     # auto magically fills the area with tasks for the given zoom
     def auto_fill(self, zoom):
