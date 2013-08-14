@@ -29,6 +29,6 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     });
     map.addLayer(grid);
     grid.on('mouseover', function (e) {
-        console.log('hover: ' + e.data.x);
+        console.log('hover: ', e.data);
     });
 });
