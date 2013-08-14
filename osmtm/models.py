@@ -43,10 +43,11 @@ Base = declarative_base()
 
 class Task(Base):
     __tablename__ = "tasks"
-    x = Column(Integer, primary_key=True)
-    y = Column(Integer, primary_key=True)
-    zoom = Column(Integer, primary_key=True)
-    project_id = Column(Integer, ForeignKey('project.id'), primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
+    x = Column(Integer)
+    y = Column(Integer)
+    zoom = Column(Integer)
+    project_id = Column(Integer, ForeignKey('project.id'))
     geometry = Column(Geometry('Polygon', srid=3857))
 
     def __init__(self, x, y, zoom, geometry=None):

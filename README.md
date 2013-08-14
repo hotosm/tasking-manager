@@ -28,34 +28,41 @@ On OS X you can do::
 Installation
 ------------
 
-First clone the git repository::
+First clone the git repository:
 
-    git clone git://github.com/pgiraud/osm-tasking-manager2.git
-
-Update and load the submodules::
-
-    cd osm-tasking-manager2
-    git submodule update --init
+    git clone --recursive git://github.com/pgiraud/osm-tasking-manager2.git
 
 Installing OSMTM in a Virtual Python environment is recommended.
 
-To create a virtual Python environment::
+To create a virtual Python environment:
 
+    cd osm-tasking-manager2
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
-
-GeoAlchemy2 is required but not currently installable via pypi. 
-
-    source env/bin/activate
-    pip install -e git+https://github.com/geoalchemy/geoalchemy2#egg=geoalchemy2
+    python setup.py develop
 
 In order to see jobs and tiles on the maps, you'll need to have Mapnik as
 a Python module.
 First install mapnik (using homebrew if on Mac).
 Then, you'll probably need to add a symbolic link to the Mapnik package in your
-virtualenv site-packages::
+virtualenv site-packages:
 
     ln -s /Library/Python/2.7/site-packages/mapnik env/lib/python2.7/site-packages/
+
+or
+
+    ln -s /usr/lib/pymodules/python2.7/mapnik env/lib/python2.7/site-packages/
+
+Now you need to create the database. We're assuming that you have PostGIS
+installed. If it's not the case, see instructions below.
+We also assume that there's a `postgis_template` database already existing.
+
+    sudo -u postgres sh osmtm/scripts/create_db.sh
+
+Launch the application
+----------------------
+
+    pserve --reload development.ini
 
 POSTGIS Installation
 --------------------

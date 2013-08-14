@@ -5279,7 +5279,7 @@ body {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcccccc', endColorstr='#ffeeeeee', GradientType=0);
 }
-#project #task {
+#project #map {
   position: absolute;
   left: 0;
   top: 110px;

@@ -1,5 +1,5 @@
 $('a[data-toggle="tab"]').on('shown', function (e) {
-    if (e.target.id != 'task_tab') {
+    if (e.target.id != 'map_tab') {
         return;
     }
     var map = L.map('leaflet');
@@ -29,6 +29,6 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     });
     map.addLayer(grid);
     grid.on('mouseover', function (e) {
-        console.log('hover: ' + e.data.x);
+        console.log('hover: ', e.data);
     });
 });
