@@ -24,7 +24,8 @@ requires = [
     'BeautifulSoup',
     'pyjade',
     'oauth2',
-    'shapely'
+    'shapely',
+    'geoalchemy2'
     ]
 
 setup(name='osmtm',
