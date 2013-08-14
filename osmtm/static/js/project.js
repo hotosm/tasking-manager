@@ -1,5 +1,5 @@
 $('a[data-toggle="tab"]').on('shown', function (e) {
-    if (e.target.id != 'task_tab') {
+    if (e.target.id != 'map_tab') {
         return;
     }
     var map = L.map('leaflet');
