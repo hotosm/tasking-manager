@@ -39,6 +39,7 @@ To create a virtual Python environment:
     cd osm-tasking-manager2
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
+    python setup.py develop
 
 In order to see jobs and tiles on the maps, you'll need to have Mapnik as
 a Python module.
@@ -57,6 +58,11 @@ installed. If it's not the case, see instructions below.
 We also assume that there's a `postgis_template` database already existing.
 
     sudo -u postgres sh osmtm/scripts/create_db.sh
+
+Launch the application
+----------------------
+
+    pserve --reload development.ini
 
 POSTGIS Installation
 --------------------
