@@ -57,6 +57,10 @@ virtualenv site-packages::
 
     ln -s /Library/Python/2.7/site-packages/mapnik env/lib/python2.7/site-packages/
 
+or
+
+    ln -s /usr/lib/pymodules/python2.7/mapnik env/lib/python2.7/site-packages/
+
 POSTGIS Installation
 --------------------
 
