@@ -57,6 +57,12 @@ or
 
     ln -s /usr/lib/pymodules/python2.7/mapnik env/lib/python2.7/site-packages/
 
+Now you need to create the database. We're assuming that you have PostGIS
+installed. If it's not the case, see instructions below.
+We also assume that there's a `postgis_template` database already existing.
+
+    sudo -u postgres sh osmtm/scripts/create_db.sh
+
 POSTGIS Installation
 --------------------
 
