@@ -28,19 +28,15 @@ On OS X you can do::
 Installation
 ------------
 
-First clone the git repository::
+First clone the git repository:
 
-    git clone git://github.com/pgiraud/osm-tasking-manager2.git
-
-Update and load the submodules::
-
-    cd osm-tasking-manager2
-    git submodule update --init
+    git clone --recursive git://github.com/pgiraud/osm-tasking-manager2.git
 
 Installing OSMTM in a Virtual Python environment is recommended.
 
-To create a virtual Python environment::
+To create a virtual Python environment:
 
+    cd osm-tasking-manager2
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
 
