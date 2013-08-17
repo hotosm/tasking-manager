@@ -18,11 +18,6 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     );
     map.addLayer(tiles);
 
-    $('#id_task').change(function() {
-        tiles._url = getTaskTilesUrl($(this)[0].value);
-        tiles.redraw();
-    });
-
     var grid = new L.UtfGrid(
         '/project/' + project_id + '/{z}/{x}/{y}.json', {
         useJsonP: false
