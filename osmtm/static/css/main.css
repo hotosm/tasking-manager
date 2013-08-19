@@ -5437,13 +5437,13 @@ body {
   top: 0;
   bottom: 0;
   left: 0;
-  right: 400px;
+  right: 420px;
 }
 #project #right-col {
   position: absolute;
   top: -5px;
   bottom: 0;
-  right: -20px;
+  right: 0;
   width: 400px;
   background-color: white;
   -webkit-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
@@ -5456,6 +5456,7 @@ body {
   -webkit-border-radius: 5px 0 0 0;
   -moz-border-radius: 5px 0 0 0;
   border-radius: 5px 0 0 0;
+  z-index: 1000;
 }
 #project_new #leaflet,
 #project_partition #leaflet {
