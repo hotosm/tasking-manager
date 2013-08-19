@@ -120,10 +120,12 @@ class Project(Base):
 
 class User(Base):
     __tablename__ = "users"
-    username = Column(Unicode, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    username = Column(Unicode)
     admin = Column(Boolean)
 
-    def __init__(self, username, admin=False):
+    def __init__(self, id, username, admin=False):
+        self.id = id
         self.username = username
         self.admin = admin
 
