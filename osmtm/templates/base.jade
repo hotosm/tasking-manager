@@ -9,9 +9,11 @@ html
         script(src="${request.static_url('osmtm:static/js/jquery.timeago.js')}")
         script(src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}")
         script(src="${request.static_url('osmtm:static/js/shared.js')}")
+        script(src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-dropdown.js')}")
         <%
         |from pyramid.security import authenticated_userid
         |from osmtm.models import DBSession, User
+        |login_url= request.route_url('login', _query=[('came_from', request.url)])
         |username = authenticated_userid(request)
         |if username is not None:
         |    user = DBSession.query(User).get(username)
@@ -29,6 +31,11 @@ html
                             li.dropdown
                                 a.dropdown-toggle(href="#", data-toggle="dropdown") ${user.username}
                                     b.caret
+                                ul.dropdown-menu(role="menu")
+                                    li
+                                        a(href="${request.route_url('logout')}") logout
+                    else
+                        a.btn.btn-small.btn-link.pull-right(href="${login_url}") login to OpenStreetMap
                     endif
         if request.session.peek_flash()
             div.container
