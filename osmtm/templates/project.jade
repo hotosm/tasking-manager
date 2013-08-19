@@ -30,9 +30,8 @@ block content
             #map.tab-pane
                 #leaflet
                 #right-col
-                    .row
-                        .span3
-                            something
+                    .row-fluid
+                        #task
             script(src="${request.static_url('osmtm:static/js/lib/leaflet.js')}")
             script(src="${request.static_url('osmtm:static/js/lib/Leaflet.utfgrid/dist/leaflet.utfgrid.js')}")
             script
@@ -43,4 +42,5 @@ block content
               %>
               var project_id = ${project.id};
               var geometry = ${dumps(geometry)|n};
+              var base_url = "${request.route_url('home')}";
             script(type='text/javascript', src="${request.static_url('osmtm:static/js/project.js')}")

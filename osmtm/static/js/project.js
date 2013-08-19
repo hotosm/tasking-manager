@@ -23,7 +23,18 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
         useJsonP: false
     });
     map.addLayer(grid);
-    grid.on('mouseover', function (e) {
-        console.log('hover: ', e.data);
+    grid.on('click', function (e) {
+        location.hash = ["task", e.data.id].join('/');
     });
 });
+
+function loadTask(id, direction) {
+    $('#map_tab').tab('show');
+    $('#task').load(base_url + "task/" + id);
+}
+
+Sammy(function() {
+    this.get('#task/:id', function() {
+        loadTask(this.params.id);
+    });
+}).run();
