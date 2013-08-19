@@ -33,6 +33,7 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
 });
 
 function clearSelection() {
+    location.hash = "";
     $('#task').empty();
 }
 
