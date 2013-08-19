@@ -24,11 +24,19 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     });
     map.addLayer(grid);
     grid.on('click', function (e) {
-        location.hash = ["task", e.data.id].join('/');
+        if (e.data && e.data.id) {
+            location.hash = ["task", e.data.id].join('/');
+        } else {
+            clearSelection();
+        }
     });
 });
 
-function loadTask(id, direction) {
+function clearSelection() {
+    $('#task').empty();
+}
+
+function loadTask(id) {
     $('#map_tab').tab('show');
     $('#task').load(base_url + "task/" + id);
 }
