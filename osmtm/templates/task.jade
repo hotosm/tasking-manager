@@ -6,3 +6,9 @@ div
             button#potlatch2.btn.btn-small Potlatch 2
             button#wp.btn.btn-small Walking Papers
             button.btn.btn-small.btn-link .osm
+<%
+|from geoalchemy2 import shape
+|import geojson
+%>
+script
+    var task_geometry = ${geojson.dumps(shape.to_shape(task.geometry))|n};
