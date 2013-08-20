@@ -48,7 +48,7 @@ class Task(Base):
     y = Column(Integer)
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'))
-    geometry = Column(Geometry('Polygon', srid=3857))
+    geometry = Column(Geometry('Polygon', srid=4326))
 
     def __init__(self, x, y, zoom, geometry=None):
         self.x = x
@@ -56,7 +56,7 @@ class Task(Base):
         self.zoom = zoom
         if (geometry is None):
             geometry = self.to_polygon()
-        self.geometry = elements.WKTElement(geometry.wkt, 3857)
+        self.geometry = ST_Transform(elements.WKTElement(geometry.wkt, 3857), 4326)
 
     def to_polygon(self):
         # task size (in meters) at the required zoom level
