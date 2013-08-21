@@ -80,7 +80,7 @@ Styles
 The CSS stylesheet are compiled using less. Launch the following command as
 soon as you change the css::
 
-    lessc osmtm/static/css/main.less > osmtm/static/css/main.css
+    lessc -ru osmtm/static/css/main.less > osmtm/static/css/main.css
 
 Tests
 -----
