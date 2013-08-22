@@ -6,6 +6,7 @@ from sqlalchemy import (
     ForeignKey,
     Boolean,
     DateTime,
+    event
     )
 
 from geoalchemy2 import (
@@ -49,6 +50,14 @@ class Task(Base):
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'))
     geometry = Column(Geometry('Polygon', srid=4326))
+    # possible states are:
+    # 0 - ready
+    # 1 - working
+    # 2 - done
+    # 3 - reviewed
+    state = Column(Integer, default=0)
+    user = Column(Integer, ForeignKey('users.id'))
+    update = Column(DateTime)
 
     def __init__(self, x, y, zoom, geometry=None):
         self.x = x
@@ -63,6 +72,15 @@ class Task(Base):
         step = max/(2**(self.zoom - 1))
         tb = TileBuilder(step)
         return tb.create_square(self.x, self.y)
+
+def task_before_update(mapper, connection, target):
+    d = datetime.now()
+    target.update = d
+    target.project.last_update = d
+    print target.project.last_update
+    print "hey -------------------------"
+
+event.listen(Task, 'before_update', task_before_update)
 
 class Area(Base):
     __tablename__ = 'areas'
@@ -96,7 +114,7 @@ class Project(Base):
     created = Column(DateTime)
     last_update = Column(DateTime)
     area = relationship(Area)
-    tasks = relationship(Task, backref='task', cascade="all, delete, delete-orphan")
+    tasks = relationship(Task, backref='project', cascade="all, delete, delete-orphan")
 
     def __init__(self, name, area):
         self.name = name

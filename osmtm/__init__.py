@@ -45,6 +45,7 @@ def main(global_config, **settings):
     config.add_route('project_partition', '/project/{project}/partition')
     config.add_route('project_mapnik', '/project/{project}/{z}/{x}/{y}.{format}')
     config.add_route('task_xhr', '/task/{id}', xhr=True)
+    config.add_route('task_lock', '/task/{id}/lock', xhr=True)
 
     config.add_renderer('mapnik', MapnikRendererFactory)
 

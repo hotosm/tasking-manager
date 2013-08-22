@@ -6,6 +6,7 @@ div
             button#potlatch2.btn.btn-small Potlatch 2
             button#wp.btn.btn-small Walking Papers
             button.btn.btn-small.btn-link .osm
+        a#lock.btn.btn-small.btn-primary(href="${request.route_url('task_lock', id=task.id)}") Lock
 <%
 |from geoalchemy2 import shape
 |import geojson

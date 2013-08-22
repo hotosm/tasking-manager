@@ -43,11 +43,51 @@ function clearSelection() {
 
 function loadTask(id) {
     $('#map_tab').tab('show');
-    $('#task').load(base_url + "task/" + id, null, function() {
-        task_layer.clearLayers();
-        task_layer.addData(task_geometry);
+    $('#task').load(base_url + "task/" + id, null, function(response, status, request) {
+        if (status != 'error') {
+            task_layer.clearLayers();
+            task_layer.addData(task_geometry);
+        } else {
+            alert("an error occured");
+        }
     });
 }
+
+function startLoading() {
+    console.info("show loading");
+    //$('#task .loading').show();
+}
+function stopLoading() {
+    //$('#task .loading').hide();
+}
+
+function onTaskAction(e) {
+
+    var direction = e.data && e.data.direction;
+    startLoading();
+    $.getJSON(this.href, function(data) {
+        stopLoading();
+
+        console.info("update map");
+        //if (data.tile) {
+            //var tile = data.tile;
+            //loadTask(tile.x, tile.y, tile.z, direction);
+            //return;
+        //}
+        //if (data.error_msg) {
+            //$('#task_error_msg').html(data.error_msg).show()
+                //.delay(3000)
+                //.fadeOut();
+            //return;
+        //}
+        //if (data.split_id) {
+            //splitTask(data.split_id, data.new_tiles);
+        //}
+        //loadEmptyTask();
+    });
+    return false;
+}
+$(document).on('click', '#lock', {direction: 'next'}, onTaskAction);
 
 Sammy(function() {
     this.get('#task/:id', function() {
