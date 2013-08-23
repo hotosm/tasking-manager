@@ -73,14 +73,20 @@ class Task(Base):
         tb = TileBuilder(step)
         return tb.create_square(self.x, self.y)
 
-def task_before_update(mapper, connection, target):
+@event.listens_for(Task, "before_update")
+def after_update(mapper, connection, target):
     d = datetime.now()
     target.update = d
-    target.project.last_update = d
-    print target.project.last_update
-    print "hey -------------------------"
 
-event.listen(Task, 'before_update', task_before_update)
+@event.listens_for(Task, "after_update")
+def after_update(mapper, connection, target):
+    project_table = Project.__table__
+    project = target.project
+    connection.execute(
+            project_table.update().
+             where(project_table.c.id==project.id).
+             values(last_update=datetime.now())
+    )
 
 class Area(Base):
     __tablename__ = 'areas'
