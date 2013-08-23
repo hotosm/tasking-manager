@@ -82,6 +82,12 @@ def task_before_update(mapper, connection, target):
 
 event.listen(Task, 'before_update', task_before_update)
 
+@event.listens_for(DBSession, "before_flush")
+def before_flush(session, flush_context, instances):
+    for obj in session.dirty:
+        if isinstance(obj, Task):
+            obj.project.last_update = datetime.now()
+
 class Area(Base):
     __tablename__ = 'areas'
     id = Column(Integer, primary_key=True)
