@@ -9,7 +9,11 @@
       <LineSymbolizer stroke-width="0.5" stroke="#555" />
     </Rule>
     <Rule>
-      <PolygonSymbolizer fill-opacity="0.2" fill="#ccc" />
+        <PolygonSymbolizer fill-opacity="0.2" fill="#ccc" />
+    </Rule>
+    <Rule>
+        <Filter>([state] = 1)</Filter>
+        <PolygonSymbolizer fill-opacity="0.3" fill="#FF9900" />
     </Rule>
   </Style>
 </Map>

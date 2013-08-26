@@ -1,4 +1,4 @@
-var task_layer;
+var task_layer, tiles;
 $('a[data-toggle="tab"]').on('shown', function (e) {
     if (e.target.id != 'map_tab') {
         return;
@@ -14,7 +14,7 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     map.fitBounds(layer.getBounds());
     map.zoomOut();
 
-    var tiles = new L.TileLayer(
+    tiles = new L.TileLayer(
         '/project/' + project_id + '/{z}/{x}/{y}.png'
     );
     map.addLayer(tiles);
@@ -68,7 +68,7 @@ function onTaskAction(e) {
     $.getJSON(this.href, function(data) {
         stopLoading();
 
-        console.info("update map");
+        tiles.redraw();
         //if (data.tile) {
             //var tile = data.tile;
             //loadTask(tile.x, tile.y, tile.z, direction);
