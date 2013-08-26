@@ -6,14 +6,15 @@
   </Style>
   <Style name="tile">
     <Rule>
-      <LineSymbolizer stroke-width="0.5" stroke="#555" />
+      <LineSymbolizer stroke-width="0.5" stroke="#555" offset="0.2"/>
     </Rule>
     <Rule>
         <PolygonSymbolizer fill-opacity="0.2" fill="#ccc" />
     </Rule>
     <Rule>
+        <!-- working -->
         <Filter>([state] = 1)</Filter>
-        <PolygonSymbolizer fill-opacity="0.3" fill="#FF9900" />
+        <LineSymbolizer stroke-width="1.5" stroke-opacity="1" stroke="#FFCC00" offset="1"/>
     </Rule>
   </Style>
 </Map>
