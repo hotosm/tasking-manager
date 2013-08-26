@@ -6,7 +6,8 @@ from sqlalchemy import (
     ForeignKey,
     Boolean,
     DateTime,
-    event
+    event,
+    inspect,
     )
 
 from geoalchemy2 import (
@@ -73,14 +74,48 @@ class Task(Base):
         tb = TileBuilder(step)
         return tb.create_square(self.x, self.y)
 
-def task_before_update(mapper, connection, target):
+class TaskHistory(Base):
+    __tablename__ = "tasks_history"
+    id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey('tasks.id'))
+    old_state = Column(Integer)
+    state = Column(Integer, default=0)
+    prev_user = Column(Integer, ForeignKey('users.id'))
+    user = Column(Integer, ForeignKey('users.id'))
+    update = Column(DateTime)
+
+@event.listens_for(Task, "before_update")
+def before_update(mapper, connection, target):
     d = datetime.now()
     target.update = d
-    target.project.last_update = d
-    print target.project.last_update
-    print "hey -------------------------"
 
-event.listen(Task, 'before_update', task_before_update)
+@event.listens_for(Task, "after_update")
+def after_update(mapper, connection, target):
+    project_table = Project.__table__
+    project = target.project
+    connection.execute(
+            project_table.update().
+             where(project_table.c.id==project.id).
+             values(last_update=datetime.now())
+    )
+
+def get_old_value(attribute_state):
+    history = attribute_state.history
+    return history.deleted[0] if history.deleted else None
+
+@event.listens_for(DBSession, "after_flush")
+def after_flush(session, flush_context):
+    for obj in session.new.union(session.dirty):
+        if isinstance(obj, Task):
+            taskhistory = TaskHistory()
+            taskhistory.task_id = obj.id
+            taskhistory.state = obj.state
+            taskhistory.update = obj.update
+            taskhistory.user = obj.user
+            attr_state = inspect(obj).attrs
+            taskhistory.old_state = get_old_value(attr_state.get("state"))
+            taskhistory.prev_user = get_old_value(attr_state.get("user"))
+            session.add(taskhistory)
 
 @event.listens_for(DBSession, "before_flush")
 def before_flush(session, flush_context, instances):
