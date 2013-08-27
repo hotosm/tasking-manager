@@ -69,11 +69,11 @@ function onTaskAction(e) {
         stopLoading();
 
         tiles.redraw();
-        //if (data.tile) {
-            //var tile = data.tile;
-            //loadTask(tile.x, tile.y, tile.z, direction);
-            //return;
-        //}
+        if (data.task) {
+            var task = data.task;
+            loadTask(task.id);
+            return;
+        }
         //if (data.error_msg) {
             //$('#task_error_msg').html(data.error_msg).show()
                 //.delay(3000)

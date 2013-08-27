@@ -14,7 +14,26 @@ def task_xhr(request):
     id = request.matchdict['id']
     session = DBSession()
     task = session.query(Task).get(id)
-    return dict(task=task)
+
+    user_id = authenticated_userid(request)
+    user = session.query(User).get(user_id)
+
+    return dict(task=task,
+            user=user)
+
+@view_config(route_name='task_done', renderer='json')
+def done(request):
+    id = request.matchdict['id']
+    session = DBSession()
+    task = session.query(Task).get(id)
+
+    user_id = authenticated_userid(request)
+    user = session.query(User).get(user_id)
+
+    task.state = 2
+    task.user = None
+    session.add(task)
+    return dict(success=True, state=dict(id=task.id))
 
 @view_config(route_name='task_lock', renderer="json")
 def take_lock(request):
@@ -28,4 +47,4 @@ def take_lock(request):
     task.user = user_id
     task.state = 1 # working
     session.add(task)
-    return dict(success=True)
+    return dict(success=True, state=dict(state=task.state))
