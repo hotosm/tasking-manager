@@ -60,4 +60,4 @@ def unlock(request):
     task.user = None
     task.state = 0 # working
     session.add(task)
-    return dict(success=True)
+    return dict(success=True, task=dict(id=task.id))
