@@ -6,14 +6,14 @@ div
             button#potlatch2.btn.btn-small Potlatch 2
             button#wp.btn.btn-small Walking Papers
             button.btn.btn-small.btn-link .osm
-    div#task_ations
+    div#task_actions
         if task.state == 0
             a#lock.btn.btn-small.btn-primary(href="${request.route_url('task_lock', id=task.id)}") Lock
         endif
         if task.user == user.id and task.state == 1
             form.form-horizontal(action="${request.route_url('task_done', id=task.id)}",method="POST")
                 p
-                    a#unlock.btn.btn-small Unlock
+                    a#unlock.btn.btn-small(href="${request.route_url('task_unlock', id=task.id)}") Unlock
                 p
                     button.btn.btn-success.btn-small(type="submit") Mark task as done
         endif

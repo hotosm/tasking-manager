@@ -16,5 +16,10 @@
         <Filter>([state] = 1)</Filter>
         <LineSymbolizer stroke-width="1.5" stroke-opacity="1" stroke="#FFCC00" offset="1"/>
     </Rule>
+    <Rule>
+        <!-- working -->
+        <Filter>([state] = 2)</Filter>
+        <PolygonSymbolizer fill-opacity="0.4" fill="#FF9900" />
+    </Rule>
   </Style>
 </Map>

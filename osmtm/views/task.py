@@ -33,10 +33,11 @@ def done(request):
     task.state = 2
     task.user = None
     session.add(task)
-    return dict(success=True, state=dict(id=task.id))
+    return dict(success=True,
+            msg="Task marked as done. Thanks for your contribution")
 
 @view_config(route_name='task_lock', renderer="json")
-def take_lock(request):
+def lock(request):
     task_id = request.matchdict['id']
     session = DBSession()
     user_id = authenticated_userid(request)
@@ -47,4 +48,16 @@ def take_lock(request):
     task.user = user_id
     task.state = 1 # working
     session.add(task)
-    return dict(success=True, state=dict(state=task.state))
+    return dict(success=True, task=dict(id=task.id))
+
+@view_config(route_name='task_unlock', renderer="json")
+def unlock(request):
+    task_id = request.matchdict['id']
+    session = DBSession()
+
+    task = session.query(Task).get(task_id)
+
+    task.user = None
+    task.state = 0 # working
+    session.add(task)
+    return dict(success=True)

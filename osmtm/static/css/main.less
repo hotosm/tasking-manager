@@ -71,6 +71,10 @@ html, body {
         left: 0;
         right: 420px;
     }
+    #task_msg {
+        position: absolute;
+        top: -40px;
+    }
     #right-col {
         position: absolute;
         top: -5px;
@@ -83,6 +87,61 @@ html, body {
         padding: 10px;
         .border-radius(5px 0 0 0);
         z-index: 1000;
+    }
+    #task_actions {
+        position: relative;
+        overflow: hidden;
+        > .item {
+            display: none;
+            position: relative;
+          -webkit-transition: all 0.4s ease-in-out;
+             -moz-transition: all 0.4s ease-in-out;
+               -o-transition: all 0.4s ease-in-out;
+                  transition: all 0.4s ease-in-out;
+        }
+
+        > .active,
+        > .next,
+        > .prev { display: block; }
+        > .active {
+            left: 0;
+            .opacity(100);
+        }
+        > .next,
+        > .prev {
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+        > .next,
+        > .prev {
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        > .next {
+            left: 100%;
+        }
+        > .prev {
+            left: -100%;
+        }
+        > .next.left,
+        > .prev.right {
+            left: 0;
+        }
+
+        > .active.left {
+            left: -100%;
+            .opacity(0);
+        }
+        > .active.right {
+            left: 100%;
+        }
+        > .active.left,
+        > .active.right {
+            .opacity(0);
+        }
     }
 }
 
