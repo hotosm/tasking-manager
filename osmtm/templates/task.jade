@@ -1,21 +1,38 @@
 div
     div
-        p#export.well.well-small
-            i.icon-share-alt
-            button#josm.btn.btn-small JOSM
-            button#potlatch2.btn.btn-small Potlatch 2
-            button#wp.btn.btn-small Walking Papers
-            button.btn.btn-small.btn-link .osm
+        div.btn-group
+            button.btn <i class="icon-share-alt"></i> Edit with
+            button.btn.dropdown-toggle(data-toggle="dropdown")
+                span.caret
+            ul.dropdown-menu
+                li#josm
+                    a JOSM
+                li#iDeditor
+                    a iD editor
+                li#potlatch2
+                    a Potlatch 2
+                li#wp
+                    a Walking Papers
+        button.btn.btn-small.btn-link .osm
+        span.help-block Launching an editor will lock the task. Other users will know you're
+            currently working on it. It will be automatically unlocked in 2 hours.
     div#task_actions
         if task.state == 0
             a#lock.btn.btn-small.btn-primary(href="${request.route_url('task_lock', id=task.id)}") Lock
         endif
-        if task.user == user.id and task.state == 1
-            form.form-horizontal(action="${request.route_url('task_done', id=task.id)}",method="POST")
-                p
-                    a#unlock.btn.btn-small(href="${request.route_url('task_unlock', id=task.id)}") Unlock
-                p
-                    button.btn.btn-success.btn-small(type="submit") Mark task as done
+        if task.state == 1
+            <%
+            | username = 'you' if task.user == user.id else user.username
+            %>
+            p Task is locked by <strong>${username}</strong>.&nbsp;
+                if task.user == user.id
+                    a#unlock(href="${request.route_url('task_unlock', id=task.id)}") Unlock
+                endif
+            if task.user == user.id
+                form.form-horizontal(action="${request.route_url('task_done', id=task.id)}",method="POST")
+                    p
+                        button.btn.btn-success.btn-small(type="submit") Mark task as done
+            endif
         endif
         if task.state == 2
             button.btn.thumbdown.input.btn-danger Invalidate
