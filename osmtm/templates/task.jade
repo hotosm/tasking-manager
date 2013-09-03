@@ -1,8 +1,8 @@
 div
-    div
+    p
         div.btn-group
-            button.btn <i class="icon-share-alt"></i> Edit with
-            button.btn.dropdown-toggle(data-toggle="dropdown")
+            button.btn.btn-small <i class="icon-share-alt"></i> Edit with
+            button.btn.btn-small.dropdown-toggle(data-toggle="dropdown")
                 span.caret
             ul.dropdown-menu
                 li#josm
@@ -14,17 +14,25 @@ div
                 li#wp
                     a Walking Papers
         button.btn.btn-small.btn-link .osm
-        span.help-block Launching an editor will lock the task. Other users will know you're
-            currently working on it. It will be automatically unlocked in 2 hours.
-    div#task_actions
+    p#task_actions
         if task.state == 0
-            a#lock.btn.btn-small.btn-primary(href="${request.route_url('task_lock', id=task.id)}") Lock
-        endif
+            <%
+            |disabled = ""
+            |tooltip = ""
+            |if locked_task is not None:
+            |    disabled = "disabled"
+            |    tooltip = "You cannot lock more than one task at a time."
+            |else:
+            |    tooltip = "Lock this task to tell others that you are currently working on it."
+            %>
+            a#lock.btn.btn-small.btn-primary(href="${request.route_url('task_lock', id=task.id)}", class="${disabled}", rel="tooltip", data-original-title="${tooltip}") <i class="icon-lock icon-white"></i> Lock
+            if locked_task is not None
+                span &nbsp;You already have a <a href="#task/${locked_task.id}">task</a> locked.
         if task.state == 1
             <%
             | username = 'you' if task.user == user.id else user.username
             %>
-            p Task is locked by <strong>${username}</strong>.&nbsp;
+            p Task locked by <strong>${username}</strong>.&nbsp;
                 if task.user == user.id
                     a#unlock(href="${request.route_url('task_unlock', id=task.id)}") Unlock
                 endif
@@ -32,14 +40,12 @@ div
                 form.form-horizontal(action="${request.route_url('task_done', id=task.id)}",method="POST")
                     p
                         button.btn.btn-success.btn-small(type="submit") Mark task as done
-            endif
-        endif
         if task.state == 2
             button.btn.thumbdown.input.btn-danger Invalidate
-        endif
 <%
 |from geoalchemy2 import shape
 |import geojson
 %>
 script
     var task_geometry = ${geojson.dumps(shape.to_shape(task.geometry))|n};
+    $('[rel=tooltip]').tooltip();

@@ -84,6 +84,10 @@ function stopLoading() {
 
 function onTaskAction(e) {
 
+    if ($(this).hasClass('disabled')) {
+        return false;
+    }
+
     var direction = e.data && e.data.direction;
     startLoading();
     $.getJSON(this.href || e.action, e.formData, function(data) {
@@ -178,7 +182,7 @@ Sammy(function() {
 }).run();
 
 function hideTooltips() {
-    //$('[rel=tooltip]').tooltip('hide');
+    $('[rel=tooltip]').tooltip('hide');
 }
 $.fn.slide = function(type) {
     // we hide tooltips since they may interact with transitions

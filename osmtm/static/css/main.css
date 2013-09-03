@@ -5460,10 +5460,9 @@ body {
   -webkit-border-radius: 5px 0 0 0;
   -moz-border-radius: 5px 0 0 0;
   border-radius: 5px 0 0 0;
-  z-index: 1000;
+  z-index: 100;
 }
 #project #task_actions {
-  position: relative;
   overflow: hidden;
 }
 #project #task_actions > .item {
