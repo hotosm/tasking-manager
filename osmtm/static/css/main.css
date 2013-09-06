@@ -5462,6 +5462,10 @@ body {
   border-radius: 5px 0 0 0;
   z-index: 100;
 }
+#project #task {
+  overflow: auto;
+  height: 100%;
+}
 #project #task_actions {
   overflow: hidden;
 }
@@ -5517,6 +5521,31 @@ body {
 #project #task_actions > .active.right {
   opacity: 0;
   filter: alpha(opacity=0);
+}
+#project .history {
+  padding: 4px;
+  background-color: transparent;
+  border: solid #dfdfdf;
+  border-width: 0 1px 1px 1px;
+}
+#project .history p,
+#project .history blockquote {
+  margin: 0;
+}
+#project .history .icon-comment {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+#project .history.first {
+  border-top-width: 1px;
+  -webkit-border-radius: 5px 5px 0 0;
+  -moz-border-radius: 5px 5px 0 0;
+  border-radius: 5px 5px 0 0;
+}
+#project .history.last {
+  -webkit-border-radius: 0 0 5px 5px;
+  -moz-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
 }
 #project_new #leaflet,
 #project_partition #leaflet {

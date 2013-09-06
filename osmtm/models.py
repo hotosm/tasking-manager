@@ -43,6 +43,20 @@ from datetime import datetime
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    username = Column(Unicode)
+    admin = Column(Boolean)
+
+    def __init__(self, id, username, admin=False):
+        self.id = id
+        self.username = username
+        self.admin = admin
+
+    def is_admin(self):
+        return self.admin == True
+
 class Task(Base):
     __tablename__ = "tasks"
     id = Column(Integer, primary_key=True, index=True)
@@ -57,7 +71,8 @@ class Task(Base):
     # 2 - done
     # 3 - reviewed
     state = Column(Integer, default=0)
-    user = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship(User)
     update = Column(DateTime)
 
     def __init__(self, x, y, zoom, geometry=None):
@@ -80,8 +95,10 @@ class TaskHistory(Base):
     task_id = Column(Integer, ForeignKey('tasks.id'))
     old_state = Column(Integer)
     state = Column(Integer, default=0)
-    prev_user = Column(Integer, ForeignKey('users.id'))
-    user = Column(Integer, ForeignKey('users.id'))
+    prev_user_id = Column(Integer, ForeignKey('users.id'))
+    prev_user = relationship(User, foreign_keys=[prev_user_id])
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship(User, foreign_keys=[user_id])
     update = Column(DateTime)
 
 @event.listens_for(Task, "before_update")
@@ -176,17 +193,3 @@ class Project(Base):
         for i in get_tiles_in_geom(geom_3857, zoom):
             tasks.append(Task(i[0], i[1], zoom, i[2]))
         self.tasks = tasks
-
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
-    username = Column(Unicode)
-    admin = Column(Boolean)
-
-    def __init__(self, id, username, admin=False):
-        self.id = id
-        self.username = username
-        self.admin = admin
-
-    def is_admin(self):
-        return self.admin == True

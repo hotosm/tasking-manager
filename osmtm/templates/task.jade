@@ -30,18 +30,20 @@ div
                 span &nbsp;You already have a <a href="#task/${locked_task.id}">task</a> locked.
         if task.state == 1
             <%
-            | username = 'you' if task.user == user.id else user.username
+            | username = 'you' if task.user == user else user.username
             %>
             p Task locked by <strong>${username}</strong>.&nbsp;
-                if task.user == user.id
+                if task.user == user
                     a#unlock(href="${request.route_url('task_unlock', id=task.id)}") Unlock
                 endif
-            if task.user == user.id
+            if task.user == user
                 form.form-horizontal(action="${request.route_url('task_done', id=task.id)}",method="POST")
                     p
                         button.btn.btn-success.btn-small(type="submit") Mark task as done
         if task.state == 2
             button.btn.thumbdown.input.btn-danger Invalidate
+div
+    <%include file="task.history.jade" />
 <%
 |from geoalchemy2 import shape
 |import geojson

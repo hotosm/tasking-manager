@@ -3,6 +3,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPBadRequest
 from ..models import (
     DBSession,
     Task,
+    TaskHistory,
     User
     )
 
@@ -21,12 +22,15 @@ def task_xhr(request):
     user_id = authenticated_userid(request)
     user = session.query(User).get(user_id)
 
-    locked_task = get_locked_task(task.project_id, user_id)
-    print locked_task
+    locked_task = get_locked_task(task.project_id, user)
 
+    filter = and_(TaskHistory.task_id==id, TaskHistory.old_state!=None)
+    history = session.query(TaskHistory).filter(filter) \
+        .order_by(TaskHistory.id.desc()).all()
     return dict(task=task,
             user=user,
-            locked_task=locked_task)
+            locked_task=locked_task,
+            history=history)
 
 @view_config(route_name='task_done', renderer='json')
 def done(request):
@@ -52,7 +56,7 @@ def lock(request):
 
     task = session.query(Task).get(task_id)
 
-    task.user = user_id
+    task.user = user
     task.state = 1 # working
     session.add(task)
     return dict(success=True, task=dict(id=task.id))

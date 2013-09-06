@@ -88,6 +88,10 @@ html, body {
         .border-radius(5px 0 0 0);
         z-index: 100;
     }
+    #task {
+        overflow: auto;
+        height: 100%;
+    }
     #task_actions {
         overflow: hidden;
         > .item {
@@ -141,6 +145,25 @@ html, body {
         > .active.right {
             .opacity(0);
         }
+    }
+    .history {
+        padding: 4px;
+        background-color: transparent;
+        border: solid #dfdfdf;
+        border-width: 0 1px 1px 1px;
+        p, blockquote {
+            margin: 0;
+        }
+        .icon-comment {
+            .opacity(50)
+        }
+    }
+    .history.first {
+        border-top-width: 1px;
+        .border-radius(5px 5px 0 0);
+    }
+    .history.last {
+        .border-radius(0 0 5px 5px);
     }
 }
 
