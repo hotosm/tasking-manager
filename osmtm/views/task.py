@@ -73,6 +73,21 @@ def unlock(request):
     session.add(task)
     return dict(success=True, task=dict(id=task.id))
 
+@view_config(route_name='task_invalidate', renderer="json")
+def invalidate(request):
+    task_id = request.matchdict['id']
+    session = DBSession()
+    user_id = authenticated_userid(request)
+    user = session.query(User).get(user_id)
+
+    task = session.query(Task).get(task_id)
+
+    task.user = user
+    task.state = 0
+    session.add(task)
+    return dict(success=True,
+            msg="Task invalidated.")
+
 def get_locked_task(project_id, user):
     session = DBSession()
     print project_id

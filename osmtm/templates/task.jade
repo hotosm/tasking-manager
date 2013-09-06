@@ -40,9 +40,13 @@ div
             if task.user == user
                 form.form-horizontal(action="${request.route_url('task_done', id=task.id)}",method="POST")
                     p
-                        button.btn.btn-success.btn-small(type="submit") Mark task as done
+                        button.btn.btn-success.btn-small(type="submit") <i class="icon-ok icon-white"></i> Mark task as done
         if task.state == 2
-            button.btn.thumbdown.input.btn-danger Invalidate
+            <%
+            |tooltip = "Lock this task to tell others that you are currently working on it."
+            %>
+            form.form-horizontal(action="${request.route_url('task_invalidate', id=task.id)}",method="POST")
+                button.btn.btn-danger.btn-small(type="submit", rel="tooltip", data-original-title="${tooltip}") <i class="icon-thumbs-down icon-white"></i> Invalidate
         div
             <%include file="task.history.jade" />
 <%

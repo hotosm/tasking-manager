@@ -11,7 +11,7 @@ for step, index in history
         elif step.state == 2
             span <i class="icon-ok"></i> <b>Marked as done</b> by ${step.prev_user.username}
         elif step.state == 0 and step.old_state == 2
-            span <i class="icon-thumbs-down"></i> <b>Invalidated</b> by ${step.prev_user.username}
+            span <i class="icon-thumbs-down"></i> <b>Invalidated</b> by ${step.user.username}
         else
             span Unlocked
 
