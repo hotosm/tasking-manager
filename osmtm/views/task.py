@@ -20,7 +20,10 @@ def task_xhr(request):
     task = session.query(Task).get(id)
 
     user_id = authenticated_userid(request)
-    user = session.query(User).get(user_id)
+    if user_id:
+        user = session.query(User).get(user_id)
+    else:
+        user = None
 
     locked_task = get_locked_task(task.project_id, user)
 
