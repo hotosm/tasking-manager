@@ -56,3 +56,4 @@ div
 script
     var task_geometry = ${geojson.dumps(shape.to_shape(task.geometry))|n};
     $('[rel=tooltip]').tooltip();
+    var login_url = "${request.route_url('login')}";

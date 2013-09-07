@@ -117,6 +117,12 @@ function onTaskAction(e) {
             //.one('slid', clearSelection);
         clearSelection();
         //loadEmptyTask();
+    }).fail(function(error) {
+        if (error.status == 401) {
+            if (confirm('Please login first')) {
+                window.location = login_url + '?came_from=' + encodeURIComponent(window.location.href);
+            }
+        }
     });
     return false;
 }

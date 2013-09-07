@@ -1,5 +1,9 @@
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound, HTTPBadRequest
+from pyramid.httpexceptions import (
+    HTTPFound,
+    HTTPBadRequest,
+    HTTPUnauthorized
+    )
 from ..models import (
     DBSession,
     Task,
@@ -42,6 +46,10 @@ def done(request):
     task = session.query(Task).get(id)
 
     user_id = authenticated_userid(request)
+
+    if not user_id:
+        raise HTTPUnauthorized()
+
     user = session.query(User).get(user_id)
 
     task.state = 2
@@ -55,6 +63,10 @@ def lock(request):
     task_id = request.matchdict['id']
     session = DBSession()
     user_id = authenticated_userid(request)
+
+    if not user_id:
+        raise HTTPUnauthorized()
+
     user = session.query(User).get(user_id)
 
     task = session.query(Task).get(task_id)
