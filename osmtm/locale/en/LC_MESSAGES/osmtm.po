@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-09-09 11:20+0200\n"
+"POT-Creation-Date: 2013-09-09 14:50+0200\n"
 "PO-Revision-Date: 2013-09-09 11:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -20,4 +20,78 @@ msgstr ""
 #: osmtm/templates/base.mako:37
 msgid "logout"
 msgstr "Logout"
+
+#: osmtm/templates/base.mako:43
+msgid "login to OpenStreetMap"
+msgstr ""
+
+#: osmtm/templates/project.mako:18
+msgid "Info"
+msgstr ""
+
+#: osmtm/templates/project.mako:20
+msgid "Contribute"
+msgstr ""
+
+#: osmtm/templates/project.mako:30
+msgid "Description"
+msgstr ""
+
+#: osmtm/templates/project.mako:36
+msgid "Activity"
+msgstr ""
+
+#: osmtm/templates/task.mako:6
+msgid "Edit with"
+msgstr ""
+
+#: osmtm/templates/task.mako:30
+msgid "You cannot lock more than one task at a time."
+msgstr ""
+
+#: osmtm/templates/task.mako:32
+msgid "Lock this task to tell others that you are currently working on it."
+msgstr ""
+
+#: osmtm/templates/task.mako:37
+msgid "Lock"
+msgstr ""
+
+#: osmtm/templates/task.mako:42
+msgid "a task"
+msgstr ""
+
+#: osmtm/templates/task.mako:43
+msgid "You already have ${task_link} locked."
+msgstr ""
+
+#: osmtm/templates/task.mako:51
+msgid "you"
+msgstr ""
+
+#: osmtm/templates/task.mako:53
+msgid "Task locked by ${username}"
+msgstr ""
+
+#: osmtm/templates/task.mako:57
+msgid "Unlock"
+msgstr ""
+
+#: osmtm/templates/task.mako:63
+msgid "Mark task as done"
+msgstr ""
+
+#: osmtm/templates/task.mako:71
+msgid "Invalidate this task if you consider it needs more work."
+msgstr ""
+
+#: osmtm/templates/task.mako:74
+msgid "Invalidate"
+msgstr ""
+
+#~ msgid "You already have a ${link} locked."
+#~ msgstr ""
+
+#~ msgid "Task locked by <strong>${username}</strong>"
+#~ msgstr ""
 

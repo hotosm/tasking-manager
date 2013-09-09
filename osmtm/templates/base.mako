@@ -40,19 +40,18 @@ else:
             </li>
           </ul>
 % else:
-<a href="${login_url}" class="btn btn-small btn-link pull-right">login to OpenStreetMap</a>\
+<a href="${login_url}" class="btn btn-small btn-link pull-right">${_('login to OpenStreetMap')}</a>
 % endif
-
         </div>
       </div>
-    </div>\
+    </div>
 % if  request.session.peek_flash():
 
     <div class="container">
       <div class="row">
           <div id="flash" class="alert">
 <% flash = request.session.pop_flash() %>
-% for message in __pyjade_iter(flash,1):
+% for message in flash:
 ${message}
 %endfor
         </div>

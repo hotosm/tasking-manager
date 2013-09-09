@@ -3,7 +3,7 @@
   <a href="#task/${task.id}">#${task.id}</a>
   <p>
     <div class="btn-group">
-      <button class="btn btn-small"><i class="icon-share-alt"></i> Edit with</button>
+      <button class="btn btn-small"><i class="icon-share-alt"></i> ${_('Edit with')}</button>
       <button data-toggle="dropdown" class="btn btn-small dropdown-toggle"><span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
@@ -26,34 +26,41 @@
 disabled = ""
 tooltip = ""
 if locked_task is not None:
-   disabled = "disabled"
-   tooltip = "You cannot lock more than one task at a time."
+    disabled = "disabled"
+    tooltip = _("You cannot lock more than one task at a time.")
 else:
-   tooltip = "Lock this task to tell others that you are currently working on it."
+    tooltip = _("Lock this task to tell others that you are currently working on it.")
 %>
     <a id="lock" href="${request.route_url('task_lock', id=task.id)}"
        rel="tooltip" data-original-title="${tooltip}"
        class="btn btn-small btn-primary ${disabled}">
-        <i class="icon-lock icon-white"></i> Lock
+       <i class="icon-lock icon-white"></i> ${_('Lock')}
     </a>
     % if  locked_task is not None:
-    <span>&nbsp;You already have a <a href="#task/${locked_task.id}">task</a> locked.</span>
+
+<%
+link = '<a href="#task/%s">%s</a>' % (locked_task.id, _('a task'))
+text = _("You already have ${task_link} locked.", mapping={'task_link': link})
+%>
+    <span>&nbsp;${text|n}</span>
     % endif
 % endif
 
 % if  task.state == 1:
 <%
-username = 'you' if task.user == user else user.username
+username = _('you') if task.user == user else user.username
+username = '<strong>%s</strong>' % username
+text = _('Task locked by ${username}', mapping={'username': username})
 %>
-    <p>Task locked by <strong>${username}</strong>.&nbsp;
+    <p>${text|n}.&nbsp;
         % if  task.user == user:
-        <a id="unlock" href="${request.route_url('task_unlock', id=task.id)}">Unlock</a>
+        <a id="unlock" href="${request.route_url('task_unlock', id=task.id)}">${_('Unlock')}</a>
         % endif
     </p>
     % if  task.user == user:
         <form action="${request.route_url('task_done', id=task.id)}" method="POST" class="form-horizontal">
           <p>
-            <button type="submit" class="btn btn-success btn-small"><i class="icon-ok icon-white"></i> Mark task as done</button>
+          <button type="submit" class="btn btn-success btn-small"><i class="icon-ok icon-white"></i> ${_('Mark task as done')}</button>
           </p>
         </form>
     % endif
@@ -61,10 +68,10 @@ username = 'you' if task.user == user else user.username
 
 % if  task.state == 2:
 <%
-tooltip = "Lock this task to tell others that you are currently working on it."
+tooltip = _("Invalidate this task if you consider it needs more work.")
 %>
     <form action="${request.route_url('task_invalidate', id=task.id)}" method="POST" class="form-horizontal">
-      <button type="submit" rel="tooltip" data-original-title="${tooltip}" class="btn btn-danger btn-small"><i class="icon-thumbs-down icon-white"></i> Invalidate</button>
+        <button type="submit" rel="tooltip" data-original-title="${tooltip}" class="btn btn-danger btn-small"><i class="icon-thumbs-down icon-white"></i> ${_('Invalidate')}</button>
     </form>
 % endif
 

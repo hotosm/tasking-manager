@@ -15,9 +15,9 @@ import markdown
   <div class="row">
     <div class="span12">
       <ul class="nav nav-pills">
-        <li class="active"><a href="#main" data-toggle="tab">Info</a>
+          <li class="active"><a href="#main" data-toggle="tab">${_('Info')}</a>
         </li>
-        <li><a id="map_tab" href="#map" data-toggle="tab">Contribute</a>
+        <li><a id="map_tab" href="#map" data-toggle="tab">${_('Contribute')}</a>
         </li>
       </ul>
     </div>
@@ -27,13 +27,13 @@ import markdown
   <div id="main" class="tab-pane active container">
     <div class="span6">
       <div class="page-header">
-        <h4>Description</h4>
+        <h4>${_('Description')}</h4>
       </div>
       <p>${markdown.markdown(project.description)|n}</p>
     </div>
     <div class="span5">
       <div class="page-header">
-        <h4>Activity</h4>
+        <h4>${_('Activity')}</h4>
       </div>
     </div>
   </div>
