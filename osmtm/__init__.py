@@ -33,7 +33,6 @@ def main(global_config, **settings):
     session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
     config.set_session_factory(session_factory)
 
-    config.include('pyjade.ext.pyramid')
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
     config.add_route('login', '/login')
@@ -51,6 +50,9 @@ def main(global_config, **settings):
     config.add_route('task_invalidate', '/task/{id}/invalidate', xhr=True)
 
     config.add_renderer('mapnik', MapnikRendererFactory)
+
+    config.add_translation_dirs('osmtm:locale')
+    config.set_locale_negotiator('osmtm.i18n.custom_locale_negotiator')
 
     config.scan()
     return config.make_wsgi_app()

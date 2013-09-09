@@ -9,7 +9,7 @@ from ..models import (
 
 import mapnik
 
-@view_config(route_name='project', renderer='project.jade', http_cache=0)
+@view_config(route_name='project', renderer='project.mako', http_cache=0)
 def project(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
@@ -20,7 +20,7 @@ def project(request):
 
     return dict(page_id='project', project=project)
 
-@view_config(route_name='project_new', renderer='project.new.jade',)
+@view_config(route_name='project_new', renderer='project.new.mako',)
 def project_new(request):
     if 'form.submitted' in request.params:
         area = Area(
@@ -40,7 +40,7 @@ def project_new(request):
         return HTTPFound(location = route_url('project_partition', request, project=project.id))
     return dict(page_id='project_new')
 
-@view_config(route_name='project_partition', renderer='project.partition.jade', )
+@view_config(route_name='project_partition', renderer='project.partition.mako', )
 def project_partition(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
@@ -53,7 +53,7 @@ def project_partition(request):
 
     return dict(page_id='project_partition', project=project)
 
-@view_config(route_name='project_edit', renderer='project.edit.jade', )
+@view_config(route_name='project_edit', renderer='project.edit.mako', )
 def project_edit(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)

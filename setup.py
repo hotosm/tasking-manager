@@ -22,10 +22,10 @@ requires = [
     'geojson',
     'webtest',
     'BeautifulSoup',
-    'pyjade',
     'oauth2',
     'shapely',
-    'geoalchemy2'
+    'geoalchemy2',
+    'Babel',
     ]
 
 setup(name='osmtm',
@@ -53,4 +53,9 @@ setup(name='osmtm',
       [console_scripts]
       initialize_osmtm_db = osmtm.scripts.initializedb:main
       """,
+      message_extractors = {'osmtm': [
+            ('**.py', 'python', None),
+            ('templates/**.html', 'mako', None),
+            ('templates/**.mako', 'mako', None),
+            ('static/**', 'ignore', None)]},
       )

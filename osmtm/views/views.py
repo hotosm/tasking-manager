@@ -9,7 +9,7 @@ from ..models import (
     Project,
     )
 
-@view_config(route_name='home', renderer='home.jade')
+@view_config(route_name='home', renderer='home.mako')
 def home(request):
 
     projects = DBSession.query(Project).order_by(desc(Project.id))

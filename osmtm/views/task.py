@@ -16,7 +16,7 @@ from sqlalchemy.sql.expression import and_
 
 from pyramid.security import authenticated_userid
 
-@view_config(route_name='task_xhr', renderer='task.jade',
+@view_config(route_name='task_xhr', renderer='task.mako',
         http_cache=0)
 def task_xhr(request):
     id = request.matchdict['id']
