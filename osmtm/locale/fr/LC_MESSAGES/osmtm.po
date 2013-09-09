@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-09-09 14:50+0200\n"
+"POT-Creation-Date: 2013-09-09 15:19+0200\n"
 "PO-Revision-Date: 2013-09-09 10:08+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -40,6 +40,35 @@ msgstr ""
 #: osmtm/templates/project.mako:36
 msgid "Activity"
 msgstr "Activité"
+
+#: osmtm/templates/task.history.mako:3
+msgid "History"
+msgstr "Historique"
+
+#: osmtm/templates/task.history.mako:12
+msgid "Locked"
+msgstr "Bloqué"
+
+#: osmtm/templates/task.history.mako:12 osmtm/templates/task.history.mako:14
+#: osmtm/templates/task.history.mako:16
+msgid "by"
+msgstr "par"
+
+#: osmtm/templates/task.history.mako:14
+msgid "Marked as done"
+msgstr "Marqué comme réalisé"
+
+#: osmtm/templates/task.history.mako:16
+msgid "Invalidated"
+msgstr "Invalidé"
+
+#: osmtm/templates/task.history.mako:18
+msgid "Unlocked"
+msgstr "Débloqué"
+
+#: osmtm/templates/task.history.mako:27
+msgid "Nothing has happen yet."
+msgstr "Rien ne s'est encore passé."
 
 #: osmtm/templates/task.mako:6
 msgid "Edit with"

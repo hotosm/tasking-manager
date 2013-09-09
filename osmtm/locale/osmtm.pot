@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-09-09 14:50+0200\n"
+"POT-Creation-Date: 2013-09-09 15:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,6 +39,35 @@ msgstr ""
 
 #: osmtm/templates/project.mako:36
 msgid "Activity"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:3
+msgid "History"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:12
+msgid "Locked"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:12 osmtm/templates/task.history.mako:14
+#: osmtm/templates/task.history.mako:16
+msgid "by"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:14
+msgid "Marked as done"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:16
+msgid "Invalidated"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:18
+msgid "Unlocked"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:27
+msgid "Nothing has happen yet."
 msgstr ""
 
 #: osmtm/templates/task.mako:6
