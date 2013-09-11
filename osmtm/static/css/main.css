@@ -5547,6 +5547,26 @@ body {
   -moz-border-radius: 0 0 5px 5px;
   border-radius: 0 0 5px 5px;
 }
+#project_edit .nav-pills.small {
+  font-size: 0.9em;
+  margin-bottom: 3px;
+}
+#project_edit .nav-pills.small > li > a {
+  padding-bottom: 2px;
+  padding-top: 2px;
+  border-bottom: 1px solid transparent;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+#project_edit .nav-pills.small > li.active > a {
+  color: inherit;
+  background-color: transparent;
+  border-color: grey;
+}
+#project_edit .preview {
+  min-height: 100px;
+}
 #project_new #leaflet,
 #project_partition #leaflet {
   height: 240px;

@@ -26,7 +26,7 @@
 
           <!-- short_description -->
           <label for="id_short_description" class="control-label">Short Description</label>
-          <ul class="nav nav-tabs">
+          <ul class="nav nav-pills small">
             <li class="active">
               <a href="#short_description_${locale}_edit" data-toggle="tab">Edit</a>
             </li>
@@ -41,12 +41,12 @@
                         style="width: 80%;"
                         rows="5" class="text span4">${translation.short_description}</textarea>
             </div>
-            <div class="tab-pane" id="short_description_${locale}_preview"></div>
+            <div class="tab-pane preview" id="short_description_${locale}_preview"></div>
           </div>
 
           <!-- description -->
           <label for="id_description" class="control-label">Description</label>
-          <ul class="nav nav-tabs">
+          <ul class="nav nav-pills small">
             <li class="active">
               <a href="#description_${locale}_edit" data-toggle="tab">Edit</a>
             </li>
@@ -61,7 +61,7 @@
                         style="width: 80%;"
                         rows="5" class="text span4">${translation.description}</textarea>
             </div>
-            <div class="tab-pane" id="description_${locale}_preview"></div>
+            <div class="tab-pane preview" id="description_${locale}_preview"></div>
           </div>
         </div>
         <script>
