@@ -32,14 +32,7 @@ else:
         <div class="container"><%block name="header"></%block>
           <ul class="nav"></ul>\
 % if  user is not None:
-          <ul class="nav pull-right">
-            <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">${user.username}<b class="caret"></b></a>
-              <ul role="menu" class="dropdown-menu">
-                <li><a href="${request.route_url('logout')}">${_('logout')}</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
+          <%include file="user_menu.mako" args="user=user"/>
 % else:
 <a href="${login_url}" class="btn btn-small btn-link pull-right">${_('login to OpenStreetMap')}</a>
 % endif
