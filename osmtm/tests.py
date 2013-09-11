@@ -12,11 +12,13 @@ from .models import (
 
 from BeautifulSoup import BeautifulSoup
 
+from sqlalchemy.orm import configure_mappers
 
 def _initTestingDB():
     from sqlalchemy import create_engine
     engine = create_engine('postgresql://www-data@localhost/osmtm_tests')
     DBSession.configure(bind=engine)
+    configure_mappers()
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
@@ -110,9 +112,9 @@ class TestProjectEdit(unittest.TestCase):
         request.matchdict = {'project': 1}
         request.params = {
             'form.submitted': True,
-            'name':u'NewProject',
-            'short_description':u'SomeShortDescription',
-            'description':u'SomeDescription',
+            'name_en':u'NewProject',
+            'short_description_en':u'SomeShortDescription',
+            'description_en':u'SomeDescription',
         }
         response = project_edit(request)
         self.assertEqual(response.location, 'http://example.com/project/1')

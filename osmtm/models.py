@@ -174,9 +174,9 @@ class Project(Base, Translatable):
     # 3 - featured
     status = Column(Integer)
     __translated_columns__ = [
-        Column('name', Unicode, default=''),
-        Column('description', Unicode, default=''),
-        Column('short_description', Unicode, default=''),
+        Column('name', Unicode, default=u''),
+        Column('description', Unicode, default=u''),
+        Column('short_description', Unicode, default=u''),
     ]
     area_id = Column(Integer, ForeignKey('areas.id'))
     created = Column(DateTime)
