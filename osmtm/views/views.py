@@ -12,9 +12,8 @@ from ..models import (
 
 @view_config(route_name='home', renderer='home.mako')
 def home(request):
-    users = DBSession.query(User.username).count()
     # no user in the DB yet
-    if users == 0:
+    if DBSession.query(User.username).count() == 0:
         request.override_renderer = 'start.mako'
         return dict(page_id="start")
 

@@ -82,10 +82,13 @@ def oauth_callback(request):
     if 'id' in user_elt.attrib:
         id = user_elt.attrib['id']
         username = user_elt.attrib['display_name']
-        db_session = DBSession()
-        if db_session.query(User).get(id) is None:
-            db_session.add(User(id, username))
-            db_session.flush()
+
+        if DBSession.query(User).get(id) is None:
+            user = User(id, username)
+            if DBSession.query(User.username).count() == 0:
+                user.admin = True
+            DBSession.add(user)
+            DBSession.flush()
         headers = remember(request, id, max_age=20*7*24*60*60)
 
     location = session.get('came_from') or '/'
