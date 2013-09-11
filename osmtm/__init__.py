@@ -13,6 +13,8 @@ from .resources import (
     MapnikRendererFactory
     )
 
+from sqlalchemy_i18n.manager import translation_manager
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -53,6 +55,11 @@ def main(global_config, **settings):
 
     config.add_translation_dirs('osmtm:locale')
     config.set_locale_negotiator('osmtm.i18n.custom_locale_negotiator')
+
+    translation_manager.options.update({
+        'locales': settings['available_languages'].split(),
+        'get_locale_fallback': True
+    })
 
     config.scan()
     return config.make_wsgi_app()

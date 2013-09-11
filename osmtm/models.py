@@ -47,10 +47,7 @@ from sqlalchemy_i18n import (
     Translatable,
     make_translatable,
     )
-make_translatable(options={
-    'locales': ['en', 'fr'],
-    'get_locale_fallback': True
-})
+make_translatable()
 
 class User(Base):
     __tablename__ = "users"
