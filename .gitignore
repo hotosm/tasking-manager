@@ -36,3 +36,6 @@ nosetests.xml
 
 # virtual env
 env
+
+# mac specific files
+.DS_Store
