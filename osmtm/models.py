@@ -43,6 +43,15 @@ from datetime import datetime
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
+from sqlalchemy_i18n import (
+    Translatable,
+    make_translatable,
+    )
+make_translatable(options={
+    'locales': ['en', 'fr'],
+    'get_locale_fallback': True
+})
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -155,31 +164,33 @@ class Area(Base):
 # Example 1: trace the major roads
 # Example 2: trace the buildings
 # Each has its own grid with its own task size.
-class Project(Base):
+class Project(Base, Translatable):
     __tablename__ = 'project'
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode)
-    short_description = Column(Unicode)
     # statuses are:
     # 0 - archived
     # 1 - published
     # 2 - draft
     # 3 - featured
     status = Column(Integer)
-    description = Column(Unicode)
-    short_description = Column(Unicode)
+    __translated_columns__ = [
+        Column('name', Unicode, default=''),
+        Column('description', Unicode, default=''),
+        Column('short_description', Unicode, default=''),
+    ]
     area_id = Column(Integer, ForeignKey('areas.id'))
     created = Column(DateTime)
     last_update = Column(DateTime)
     area = relationship(Area)
     tasks = relationship(Task, backref='project', cascade="all, delete, delete-orphan")
 
+    def get_locale(self):
+        pass
+
     def __init__(self, name, area):
         self.name = name
         self.area = area
         self.status = 2
-        self.short_description = u''
-        self.description = u''
         self.created = datetime.now()
         self.last_update = datetime.now()
 

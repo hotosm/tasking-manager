@@ -7,6 +7,8 @@ from ..models import (
     Area
     )
 
+from pyramid.i18n import get_locale_name
+
 import mapnik
 
 @view_config(route_name='project', renderer='project.mako', http_cache=0)
@@ -18,7 +20,10 @@ def project(request):
         request.session.flash("Sorry, this project doesn't  exist")
         return HTTPFound(location = route_url('home', request))
 
+    locale = get_locale_name(request)
+    project.get_locale = lambda: locale
     return dict(page_id='project', project=project)
+
 
 @view_config(route_name='project_new', renderer='project.new.mako',)
 def project_new(request):
@@ -59,9 +64,13 @@ def project_edit(request):
     project = DBSession.query(Project).get(id)
 
     if 'form.submitted' in request.params:
-        project.name = request.params['name']
-        project.short_description = request.params['short_description']
-        project.description = request.params['description']
+
+        for locale, translation in project.translations.iteritems():
+            with project.force_locale(locale):
+                project.name = request.params['name_%s' % locale]
+                project.short_description = request.params['short_description_%s' % locale]
+                project.description = request.params['description_%s' % locale]
+                DBSession.add(project)
 
         DBSession.add(project)
         return HTTPFound(location = route_url('project', request, project=project.id))

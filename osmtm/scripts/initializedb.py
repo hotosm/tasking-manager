@@ -24,6 +24,8 @@ def usage(argv):
     sys.exit(1)
 
 
+from sqlalchemy.orm import configure_mappers
+
 def main(argv=sys.argv):
     if len(argv) != 2:
         usage(argv)
@@ -32,6 +34,7 @@ def main(argv=sys.argv):
     settings = get_appsettings(config_uri)
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
+    configure_mappers()
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     with transaction.manager:

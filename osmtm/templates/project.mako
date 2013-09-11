@@ -5,8 +5,6 @@
 <div class="brand">${project.name}</div>
 </%block>
 <%block name="content">
-<script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-tab.js')}">
-</script>
 <%
 import markdown
 %>

@@ -7,6 +7,10 @@
 <div class="container">
   <div class="row">
 % for project in projects:
+  <%
+    from pyramid import i18n
+    project.get_locale = lambda: i18n.get_locale_name(request)
+  %>
 
     <div class="project well">
       <ul class="nav project-stats">
