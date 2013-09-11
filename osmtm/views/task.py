@@ -52,6 +52,9 @@ def done(request):
 
     user = session.query(User).get(user_id)
 
+    if not user:
+        raise HTTPUnauthorized()
+
     task.state = 2
     task.user = None
     session.add(task)
@@ -68,6 +71,9 @@ def lock(request):
         raise HTTPUnauthorized()
 
     user = session.query(User).get(user_id)
+
+    if not user:
+        raise HTTPUnauthorized()
 
     task = session.query(Task).get(task_id)
 
