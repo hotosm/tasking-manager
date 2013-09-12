@@ -7,3 +7,6 @@
 [submodule "osmtm/static/js/lib/Leaflet.utfgrid"]
 	path = osmtm/static/js/lib/Leaflet.utfgrid
 	url = git://github.com/danzel/Leaflet.utfgrid.git
+[submodule "osmtm/static/js/lib/jquery-timeago"]
+	path = osmtm/static/js/lib/jquery-timeago
+	url = git@github.com:rmm5t/jquery-timeago.git

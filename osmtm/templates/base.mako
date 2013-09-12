@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css')}">
     <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/showdown.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/jquery.timeago.js')}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js')}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name)}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/shared.js')}"></script>
     <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-dropdown.js')}"></script>
