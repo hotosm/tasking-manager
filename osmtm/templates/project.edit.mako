@@ -26,22 +26,13 @@
 
           <!-- short_description -->
           <label for="id_short_description" class="control-label">Short Description</label>
-          <ul class="nav nav-pills small">
-            <li class="active">
-              <a href="#short_description_${locale}_edit" data-toggle="tab">Edit</a>
-            </li>
-            <li>
-              <a href="#short_description_${locale}_preview" data-toggle="tab">Preview</a>
-            </li>
-          </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="short_description_${locale}_edit">
               <textarea id="id_short_description_${locale}"
                         name="short_description_${locale}"
                         style="width: 80%;"
-                        rows="5" class="text span4">${translation.short_description}</textarea>
+                        rows="3" class="text span4">${translation.short_description}</textarea>
             </div>
-            <div class="tab-pane preview" id="short_description_${locale}_preview"></div>
           </div>
 
           <!-- description -->
@@ -66,13 +57,6 @@
         </div>
         <script>
           (function () {
-            var short_description = $('#id_short_description_${locale}'),
-            short_description_preview = $('#short_description_${locale}_preview');
-            short_description.keyup(function() {
-              var html = converter.makeHtml(short_description.val());
-              short_description_preview.html(html);
-            }).trigger('keyup');
-
             var description = $('#id_description_${locale}'),
             description_preview = $('#description_${locale}_preview');
             description.keyup(function() {
