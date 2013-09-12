@@ -17,6 +17,5 @@ def home(request):
         request.override_renderer = 'start.mako'
         return dict(page_id="start")
 
-
-    projects = DBSession.query(Project).order_by(desc(Project.id))
+    projects = DBSession.query(Project).order_by(desc(Project.id)).all()
     return dict(page_id="home", projects=projects,)

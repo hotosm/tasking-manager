@@ -5400,9 +5400,16 @@ body {
   color: #666;
   margin: 0;
 }
+#home .project {
+  padding: 10px 10px 5px 10px;
+}
+#home .project h4 {
+  margin: 0;
+}
 #home ul.project-stats {
   float: right;
   font-size: 11px;
+  margin-bottom: 0;
 }
 #home ul.project-stats li {
   float: left;

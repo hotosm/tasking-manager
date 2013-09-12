@@ -38,7 +38,7 @@ from .utils import (
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
-from datetime import datetime
+import datetime
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -109,7 +109,7 @@ class TaskHistory(Base):
 
 @event.listens_for(Task, "before_update")
 def before_update(mapper, connection, target):
-    d = datetime.now()
+    d = datetime.datetime.now()
     target.update = d
 
 @event.listens_for(Task, "after_update")
@@ -119,7 +119,7 @@ def after_update(mapper, connection, target):
     connection.execute(
             project_table.update().
              where(project_table.c.id==project.id).
-             values(last_update=datetime.now())
+             values(last_update=datetime.datetime.now())
     )
 
 def get_old_value(attribute_state):
@@ -144,7 +144,7 @@ def after_flush(session, flush_context):
 def before_flush(session, flush_context, instances):
     for obj in session.dirty:
         if isinstance(obj, Task):
-            obj.project.last_update = datetime.now()
+            obj.project.last_update = datetime.datetime.now()
 
 class Area(Base):
     __tablename__ = 'areas'
@@ -188,8 +188,8 @@ class Project(Base, Translatable):
         self.name = name
         self.area = area
         self.status = 2
-        self.created = datetime.now()
-        self.last_update = datetime.now()
+        self.created = datetime.datetime.now()
+        self.last_update = datetime.datetime.now()
 
     # auto magically fills the area with tasks for the given zoom
     def auto_fill(self, zoom):
@@ -201,3 +201,29 @@ class Project(Base, Translatable):
         for i in get_tiles_in_geom(geom_3857, zoom):
             tasks.append(Task(i[0], i[1], zoom, i[2]))
         self.tasks = tasks
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'short_description': self.short_description,
+            'created': self.created,
+            'last_update': self.last_update,
+            'status': self.status
+        }
+
+from json import (
+    JSONEncoder,
+    dumps as _dumps,
+)
+import functools
+
+class ExtendedJSONEncoder(JSONEncoder):
+    def default(self, obj):
+
+        if isinstance(obj, (datetime.date, datetime.datetime)):
+            return obj.isoformat(' ')
+
+        return JSONEncoder.default(self, obj)
+
+dumps = functools.partial(_dumps, cls=ExtendedJSONEncoder)

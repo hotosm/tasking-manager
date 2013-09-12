@@ -4,15 +4,11 @@
 <div class="brand">OSM Tasking Manager</div>
 </%block>
 <%block name="content">
-<div class="container">
-  <div class="row">
-% for project in projects:
-  <%
-    from pyramid import i18n
-    project.get_locale = lambda: i18n.get_locale_name(request)
-  %>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<div class="container" ng-app>
+  <div class="row" ng-controller="projectCrtl">
 
-    <div class="project well">
+    <div class="project well" ng-repeat="project in projects">
       <ul class="nav project-stats">
         <li><i class="icon-user"></i><span></span>
         </li>
@@ -24,22 +20,31 @@
                   <div style="width: 90%;" class="bar"></div>
                 </div>
               </td>
-              <td></td>
+              <td>90%</td>
             </tr>
           </table>
         </li>
       </ul>
-      <h4><a href="${request.route_url('project', project=project.id)}">${project.name}</a>
+      <h4><a href="project/{{project.id}}">{{project.name}}</a>
       </h4>
       <div class="clear"></div>
       <div class="world_map">
         <div style="top: 15px; left: 43px;" class="marker"></div>
-      </div>${project.short_description}
+      </div>{{project.short_description}}
 
       <div class="clear"></div>
       <span class="created-by">Created by Pierre</span> -
-      <span class="updated-at">Updated <span title="${project.last_update}" class="timeago"></span></span>
+      <span class="updated-at">Updated <span title="{{project.last_update}}" class="timeago"></span></span>
     </div>
-% endfor
   </div>
-</div></%block>
+</div>
+<%
+  from json import dumps
+  from osmtm.models import dumps
+%>
+
+<script>
+  projects = ${dumps([project.as_dict() for project in projects])|n};
+</script>
+<script type="text/javascript" src="${request.static_url('osmtm:static/js/home.js')}"></script>
+</%block>
