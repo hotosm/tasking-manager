@@ -5,7 +5,7 @@
 </%block>
 <%block name="content">
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
-<div class="container" ng-app>
+<div class="container" ng-app="projects">
   <div class="row" ng-controller="projectCrtl">
 
     <div class="project well" ng-repeat="project in projects">
@@ -34,7 +34,7 @@
 
       <div class="clear"></div>
       <span class="created-by">Created by Pierre</span> -
-      <span class="updated-at">Updated <span title="{{project.last_update}}" class="timeago"></span></span>
+      <span class="updated-at">Updated <span class="timeago">{{project.last_update | timeAgo}}</span></span>
     </div>
   </div>
 </div>
