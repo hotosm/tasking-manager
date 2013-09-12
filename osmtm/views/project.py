@@ -27,7 +27,8 @@ def project(request):
     return dict(page_id='project', project=project)
 
 
-@view_config(route_name='project_new', renderer='project.new.mako',)
+@view_config(route_name='project_new', renderer='project.new.mako',
+        permission="add")
 def project_new(request):
     if 'form.submitted' in request.params:
         user_id = authenticated_userid(request)
@@ -51,7 +52,8 @@ def project_new(request):
         return HTTPFound(location = route_url('project_partition', request, project=project.id))
     return dict(page_id='project_new')
 
-@view_config(route_name='project_partition', renderer='project.partition.mako', )
+@view_config(route_name='project_partition', renderer='project.partition.mako',
+        permission="edit")
 def project_partition(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
@@ -64,7 +66,8 @@ def project_partition(request):
 
     return dict(page_id='project_partition', project=project)
 
-@view_config(route_name='project_edit', renderer='project.edit.mako', )
+@view_config(route_name='project_edit', renderer='project.edit.mako',
+        permission="edit")
 def project_edit(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)

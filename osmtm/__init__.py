@@ -15,6 +15,10 @@ from .resources import (
 
 from sqlalchemy_i18n.manager import translation_manager
 
+from .security import (
+    RootFactory,
+    group_membership,
+    )
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -26,9 +30,11 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
 
     authn_policy = AuthTktAuthenticationPolicy(
-            secret='super_secret')
+            secret='super_secret',
+            callback=group_membership)
     authz_policy = ACLAuthorizationPolicy()
     config = Configurator(settings=settings,
+            root_factory=RootFactory,
             authentication_policy=authn_policy,
             authorization_policy=authz_policy)
 
