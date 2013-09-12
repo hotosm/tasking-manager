@@ -33,6 +33,7 @@ import markdown
       <div class="page-header">
         <h4>${_('Activity')}</h4>
       </div>
+      <%include file="task.history.mako" args="section='project'"/>
     </div>
   </div>
   <div id="map" class="tab-pane">

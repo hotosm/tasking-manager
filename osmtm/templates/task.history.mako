@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-<hr />
-<h4>${_('History')}</h4>
+<%page args="section='task'"/>
 % for index, step in enumerate(history):
     <%
     first = "first" if index == 0 else ""
@@ -8,6 +7,9 @@
     %>
 
     <div class="history ${first} ${last}">
+    % if section == 'project':
+      <a href="#task/${step.task_id}">#${step.task_id}</a>
+    % endif
     % if  step.state == 1:
     <span><i class="icon-lock"></i> <b>${_('Locked')}</b> ${_('by')} ${step.user.username}</span>
     % elif  step.state == 2:

@@ -5,11 +5,13 @@ from ..models import (
     DBSession,
     Project,
     Area,
-    User
+    User,
+    TaskHistory
     )
 from pyramid.security import authenticated_userid
 
 from pyramid.i18n import get_locale_name
+from sqlalchemy.sql.expression import and_
 
 import mapnik
 
@@ -24,7 +26,14 @@ def project(request):
 
     locale = get_locale_name(request)
     project.get_locale = lambda: locale
-    return dict(page_id='project', project=project)
+
+    filter = and_(TaskHistory.project_id==id, TaskHistory.update!=None)
+    history = DBSession.query(TaskHistory). \
+            filter(filter). \
+            order_by(TaskHistory.update.desc()). \
+            limit(10).all()
+    return dict(page_id='project', project=project,
+            history=history,)
 
 
 @view_config(route_name='project_new', renderer='project.new.mako',

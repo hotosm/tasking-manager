@@ -99,6 +99,7 @@ class TaskHistory(Base):
     __tablename__ = "tasks_history"
     id = Column(Integer, primary_key=True, index=True)
     task_id = Column(Integer, ForeignKey('tasks.id'))
+    project_id = Column(Integer, ForeignKey('project.id'))
     old_state = Column(Integer)
     state = Column(Integer, default=0)
     prev_user_id = Column(Integer, ForeignKey('users.id'))
@@ -132,6 +133,7 @@ def after_flush(session, flush_context):
         if isinstance(obj, Task):
             taskhistory = TaskHistory()
             taskhistory.task_id = obj.id
+            taskhistory.project_id = obj.project_id
             taskhistory.state = obj.state
             taskhistory.update = obj.update
             taskhistory.user = obj.user
