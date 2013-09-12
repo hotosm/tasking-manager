@@ -215,8 +215,24 @@ class Project(Base, Translatable):
             'created': self.created,
             'last_update': self.last_update,
             'status': self.status,
-            'author': self.author.username if self.author is not None else None
+            'author': self.author.username if self.author is not None else None,
+            'done': self.get_done()
         }
+
+    def get_done(self):
+        total = 0
+        done = 0
+        for task in self.tasks:
+            total += 1
+            if task.state >= 2:
+                done += 1
+            # FIXME it would be nice to get percent done based on area instead
+            # the following works but is slow
+            #area = DBSession.execute(ST_Area(task.geometry)).scalar()
+            #total = total + area
+            #if task.state >= 2:
+                #done = done + area
+        return round(done * 100 / total) / 100
 
 from json import (
     JSONEncoder,
