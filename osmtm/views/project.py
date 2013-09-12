@@ -4,8 +4,10 @@ from pyramid.url import route_url
 from ..models import (
     DBSession,
     Project,
-    Area
+    Area,
+    User
     )
+from pyramid.security import authenticated_userid
 
 from pyramid.i18n import get_locale_name
 
@@ -28,6 +30,9 @@ def project(request):
 @view_config(route_name='project_new', renderer='project.new.mako',)
 def project_new(request):
     if 'form.submitted' in request.params:
+        user_id = authenticated_userid(request)
+        user = DBSession.query(User).get(user_id)
+
         area = Area(
             request.params['geometry']
         )
@@ -37,7 +42,8 @@ def project_new(request):
 
         project = Project(
             request.params['name'],
-            area
+            area,
+            user
         )
 
         DBSession.add(project)

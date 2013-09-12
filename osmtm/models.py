@@ -177,6 +177,8 @@ class Project(Base, Translatable):
     ]
     area_id = Column(Integer, ForeignKey('areas.id'))
     created = Column(DateTime)
+    author_id = Column(Integer, ForeignKey('users.id'))
+    author = relationship(User)
     last_update = Column(DateTime)
     area = relationship(Area)
     tasks = relationship(Task, backref='project', cascade="all, delete, delete-orphan")
@@ -184,12 +186,13 @@ class Project(Base, Translatable):
     def get_locale(self):
         pass
 
-    def __init__(self, name, area):
+    def __init__(self, name, area, user=None):
         self.name = name
         self.area = area
         self.status = 2
         self.created = datetime.datetime.now()
         self.last_update = datetime.datetime.now()
+        self.author = user
 
     # auto magically fills the area with tasks for the given zoom
     def auto_fill(self, zoom):
@@ -202,14 +205,17 @@ class Project(Base, Translatable):
             tasks.append(Task(i[0], i[1], zoom, i[2]))
         self.tasks = tasks
 
-    def as_dict(self):
+    def as_dict(self, locale=None):
+        if locale:
+            self.get_locale = lambda: locale
         return {
             'id': self.id,
             'name': self.name,
             'short_description': self.short_description,
             'created': self.created,
             'last_update': self.last_update,
-            'status': self.status
+            'status': self.status,
+            'author': self.author.username if self.author is not None else None
         }
 
 from json import (

@@ -33,7 +33,7 @@
       </div>{{project.short_description}}
 
       <div class="clear"></div>
-      <span class="created-by">Created by Pierre</span> -
+      <span class="created-by">Created by {{project.author}}</span> -
       <span class="updated-at">Updated <span class="timeago">{{project.last_update | timeAgo}}</span></span>
     </div>
   </div>
@@ -44,7 +44,7 @@
 %>
 
 <script>
-  projects = ${dumps([project.as_dict() for project in projects])|n};
+  projects = ${dumps([project.as_dict(request.locale_name) for project in projects])|n};
 </script>
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/home.js')}"></script>
 </%block>
