@@ -6,7 +6,7 @@
       <button class="btn btn-small"><i class="icon-share-alt"></i> ${_('Edit with')}</button>
       <button data-toggle="dropdown" class="btn btn-small dropdown-toggle"><span class="caret"></span>
       </button>
-      <ul class="dropdown-menu">
+      <ul id="export" class="dropdown-menu">
         <li id="josm"><a>JOSM</a>
         </li>
         <li id="iDeditor"><a>iD editor</a>
@@ -83,10 +83,16 @@ tooltip = _("Invalidate this task if you consider it needs more work.")
 
 <%
 from geoalchemy2 import shape
+from geoalchemy2.functions import ST_Centroid
 import geojson
+geometry_as_shape = shape.to_shape(task.geometry)
+centroid = geometry_as_shape.centroid
+bounds = geometry_as_shape.bounds
 %>
 <script>
-var task_geometry = ${geojson.dumps(shape.to_shape(task.geometry))|n};
+var task_geometry = ${geojson.dumps(geometry_as_shape)|n};
+var task_centroid = [${centroid.x}, ${centroid.y}];
+var task_bounds = [${bounds[0]}, ${bounds[1]}, ${bounds[2]}, ${bounds[3]}];
 $('[rel=tooltip]').tooltip();
 var login_url = "${request.route_url('login')}";
 </script>

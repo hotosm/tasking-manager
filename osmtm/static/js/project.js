@@ -1,35 +1,35 @@
-var task_layer, tiles;
+var lmap, task_layer, tiles;
 $('a[data-toggle="tab"]').on('shown', function (e) {
     if (e.target.id != 'map_tab') {
         return;
     }
-    var map = L.map('leaflet');
+    lmap = L.map('leaflet');
     // create the tile layer with correct attribution
     var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     var osmAttrib='Map data © OpenStreetMap contributors';
     var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
-    map.addLayer(osm);
+    lmap.addLayer(osm);
 
     var layer = new L.geoJson(geometry);
-    map.fitBounds(layer.getBounds());
-    map.zoomOut();
+    lmap.fitBounds(layer.getBounds());
+    lmap.zoomOut();
 
     tiles = new L.TileLayer(
         '/project/' + project_id + '/{z}/{x}/{y}.png'
     );
-    map.addLayer(tiles);
+    lmap.addLayer(tiles);
 
     task_layer = L.geoJson(null, {
         style: {
             weight: 1
         }
-    }).addTo(map);
+    }).addTo(lmap);
 
     var grid = new L.UtfGrid(
         '/project/' + project_id + '/{z}/{x}/{y}.json', {
         useJsonP: false
     });
-    map.addLayer(grid);
+    lmap.addLayer(grid);
     grid.on('click', function (e) {
         if (e.data && e.data.id) {
             location.hash = ["task", e.data.id].join('/');
@@ -180,6 +180,82 @@ $.fn.serializeObject = function()
     });
     return o;
 };
+
+var exportOpen = function() {
+    // task_centroid and task_bounds are global variables (given for the
+    // currently selected task)
+
+    function roundd(input, decimals) {
+        var p = Math.pow(10, decimals);
+        return Math.round(input*p)/p;
+    }
+    function getLink(options) {
+        if (options.protocol === 'lbrt') {
+            var bounds = options.bounds;
+            return options.base + $.param({
+                left: roundd(bounds[0],5),
+                bottom: roundd(bounds[1],5),
+                right: roundd(bounds[2],5),
+                top: roundd(bounds[3],5)
+            });
+        } else if (options.protocol === 'llz') {
+            var c = options.centroid;
+            var so = new L.LatLng(task_bounds[0], task_bounds[1]),
+                ne = new L.LatLng(task_bounds[2], task_bounds[3]),
+                zoom = lmap.getBoundsZoom(new L.LatLngBounds(so, ne));
+            return options.base + $.param({
+                lon: roundd(c[0],5),
+                lat: roundd(c[1],5),
+                zoom: zoom
+            });
+        }
+    }
+
+    switch (this.id) {
+    case "josm":
+        url = getLink({
+            base: 'http://127.0.0.1:8111/load_and_zoom?',
+            bounds: task_bounds,
+            protocol: 'lbrt'
+        });
+        $.ajax({
+            url: url,
+            complete: function(t) {
+                if (t.status != 200) {
+                    alert("JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?");
+                }
+            }
+        });
+        break;
+    case "potlatch2":
+        url = getLink({
+            base: 'http://www.openstreetmap.org/edit?editor=potlatch2&',
+            centroid: task_centroid,
+            protocol: 'llz'
+        });
+        window.open(url);
+        break;
+    case "wp":
+        url = getLink({
+            base: 'http://walking-papers.org/?',
+            centroid: task_centroid,
+            protocol: 'llz'
+        });
+        window.open(url);
+        break;
+    case "iDeditor":
+        url = getLink({
+            base: 'http://www.openstreetmap.org/edit?editor=id&',
+            centroid: task_centroid,
+            protocol: 'llz'
+        });
+        window.open(url);
+        break;
+    default:
+        break;
+    }
+};
+$(document).on('click', '#export li', exportOpen);
 
 Sammy(function() {
     this.get('#task/:id', function() {
