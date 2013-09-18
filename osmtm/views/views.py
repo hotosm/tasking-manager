@@ -19,3 +19,10 @@ def home(request):
 
     projects = DBSession.query(Project).order_by(desc(Project.id)).all()
     return dict(page_id="home", projects=projects,)
+
+@view_config(route_name="user_prefered_editor", renderer='json')
+def user_prefered_editor(request):
+    editor = request.matchdict['editor']
+    request.response.set_cookie('prefered_editor', value=editor, max_age=20*7*24*60*60)
+
+    return dict()

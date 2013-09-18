@@ -1,4 +1,5 @@
 var lmap, task_layer, tiles;
+var prefered_editor;
 $('a[data-toggle="tab"]').on('shown', function (e) {
     if (e.target.id != 'map_tab') {
         return;
@@ -181,9 +182,27 @@ $.fn.serializeObject = function()
     return o;
 };
 
-var exportOpen = function() {
+var exportOpen = function(evt) {
     // task_centroid and task_bounds are global variables (given for the
     // currently selected task)
+    var editor;
+    if (this.id == 'edit') {
+        if (prefered_editor) {
+            editor = prefered_editor;
+        } else {
+            return false;
+        }
+    } else {
+        editor = this.id;
+    }
+
+    $.ajax({
+        url: '/user/prefered_editor/' + editor,
+        complete: function(t) {
+            prefered_editor = editor;
+            setPreferedEditor();
+        }
+    });
 
     function roundd(input, decimals) {
         var p = Math.pow(10, decimals);
@@ -211,7 +230,7 @@ var exportOpen = function() {
         }
     }
 
-    switch (this.id) {
+    switch (editor) {
     case "josm":
         url = getLink({
             base: 'http://127.0.0.1:8111/load_and_zoom?',
@@ -255,7 +274,14 @@ var exportOpen = function() {
         break;
     }
 };
-$(document).on('click', '#export li', exportOpen);
+$(document).on('click', '#edit', exportOpen);
+$(document).on('click', '#editDropdown li', exportOpen);
+
+function setPreferedEditor() {
+    if (prefered_editor !== '') {
+        $('#prefered_editor').text($('#' + prefered_editor + ' a').text());
+    }
+}
 
 Sammy(function() {
     this.get('#task/:id', function() {
