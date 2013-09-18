@@ -16,6 +16,16 @@ centroid = geometry_as_shape.centroid
 left = (centroid.x + 180) * 120 / 360 - 1
 top = (-centroid.y + 90) * 60 / 180 - 1
 %>
+<%
+# FIXME already done in base.mako
+from pyramid.security import authenticated_userid
+from osmtm.models import DBSession, User
+username = authenticated_userid(request)
+if username is not None:
+   user = DBSession.query(User).get(username)
+else:
+   user = None
+%>
 <div class="container">
   <div class="row">
     <div class="span12">
@@ -24,6 +34,11 @@ top = (-centroid.y + 90) * 60 / 180 - 1
         </li>
         <li><a id="map_tab" href="#map" data-toggle="tab">${_('Contribute')}</a>
         </li>
+        % if user.is_admin():
+        <a class="btn pull-right" href="${request.route_url('project_edit', project=project.id)}">
+          <i class="icon-edit"></i> Edit
+        </a>
+        % endif
       </ul>
     </div>
   </div>
