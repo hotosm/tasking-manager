@@ -1,7 +1,7 @@
 var lmap, task_layer, tiles;
 var prefered_editor;
 $('a[data-toggle="tab"]').on('shown', function (e) {
-    if (e.target.id != 'map_tab') {
+    if (e.target.id != 'map_tab' || lmap) {
         return;
     }
     lmap = L.map('leaflet');
@@ -67,9 +67,9 @@ function loadTask(id, direction) {
             }
         );
     }
+    $('#map_tab').tab('show');
     $('#task_empty').fadeOut(
         function() {
-            $('#map_tab').tab('show');
             if (direction) {
                 $('#task_actions').slide(direction)
                     .one('slid', load);
