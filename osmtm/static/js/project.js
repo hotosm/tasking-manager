@@ -45,6 +45,7 @@ function clearSelection() {
     task_layer.clearLayers();
     $('#task').fadeOut(function() {
         $('#task').empty();
+        $('#task_empty').fadeIn();
     });
 }
 
@@ -66,15 +67,19 @@ function loadTask(id, direction) {
             }
         );
     }
-    $('#map_tab').tab('show');
-    if (direction) {
-        $('#task_actions').slide(direction)
-            .one('slid', load);
-    } else {
-        $('#task').fadeOut(function() {
-            load();
-        });
-    }
+    $('#task_empty').fadeOut(
+        function() {
+            $('#map_tab').tab('show');
+            if (direction) {
+                $('#task_actions').slide(direction)
+                    .one('slid', load);
+            } else {
+                $('#task').fadeOut(function() {
+                    load();
+                });
+            }
+        }
+    );
 }
 
 function startLoading() {

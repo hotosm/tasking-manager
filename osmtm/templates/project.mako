@@ -53,7 +53,11 @@ top = (-centroid.y + 90) * 60 / 180 - 1
         ${_('Loading')}
       </p>
       <p id="task_msg" class="alert alert-success hide"></p>
-      <div id="task" class="row-fluid"></div>
+      <div id="task_empty">
+        <%include file="task.empty.mako" />
+      </div>
+      <div id="task" class="row-fluid">
+      </div>
     </div>
   </div>
   <script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
