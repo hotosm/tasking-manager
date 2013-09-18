@@ -57,6 +57,7 @@ function loadTask(id, direction) {
                 if (status != 'error') {
                     task_layer.clearLayers();
                     task_layer.addData(task_geometry);
+                    $('#task').fadeIn();
                 } else {
                     alert("an error occured");
                 }
@@ -70,7 +71,6 @@ function loadTask(id, direction) {
     } else {
         $('#task').fadeOut(function() {
             load();
-            $(this).css('display', '');
         });
     }
 }
