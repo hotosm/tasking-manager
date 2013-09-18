@@ -39,9 +39,11 @@ import markdown
   <div id="map" class="tab-pane">
     <div id="leaflet"></div>
     <div id="right-col">
-      <p id="task_msg" class="alert alert-success hide">
-        <div id="task" class="row-fluid"></div>
+      <p id="task_loading" class="alert alert-success hide">
+        ${_('Loading')}
       </p>
+      <p id="task_msg" class="alert alert-success hide"></p>
+      <div id="task" class="row-fluid"></div>
     </div>
   </div>
   <script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>

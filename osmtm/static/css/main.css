@@ -5446,7 +5446,8 @@ body {
   left: 0;
   right: 420px;
 }
-#project #task_msg {
+#project #task_msg,
+#project #task_loading {
   position: absolute;
   top: -40px;
 }

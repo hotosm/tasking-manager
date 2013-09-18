@@ -49,11 +49,13 @@ function clearSelection() {
 }
 
 function loadTask(id, direction) {
+    startLoading();
     function load() {
         $('#task').load(
             base_url + "task/" + id,
             null,
             function(response, status, request) {
+                stopLoading();
                 if (status != 'error') {
                     task_layer.clearLayers();
                     task_layer.addData(task_geometry);
@@ -76,11 +78,10 @@ function loadTask(id, direction) {
 }
 
 function startLoading() {
-    console.info("show loading");
-    //$('#task .loading').show();
+    $('#task_loading').show();
 }
 function stopLoading() {
-    //$('#task .loading').hide();
+    $('#task_loading').fadeOut();
 }
 
 function onTaskAction(e) {
@@ -90,9 +91,7 @@ function onTaskAction(e) {
     }
 
     var direction = e.data && e.data.direction;
-    startLoading();
     $.getJSON(this.href || e.action, e.formData, function(data) {
-        stopLoading();
 
         tiles.redraw();
         if (data.task) {
