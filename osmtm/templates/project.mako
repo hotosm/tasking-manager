@@ -8,7 +8,14 @@
 <%
 import markdown
 %>
-
+<%
+from geoalchemy2 import shape
+from geoalchemy2.functions import ST_Centroid
+geometry_as_shape = shape.to_shape(project.area.geometry)
+centroid = geometry_as_shape.centroid
+left = (centroid.x + 180) * 120 / 360 - 1
+top = (-centroid.y + 90) * 60 / 180 - 1
+%>
 <div class="container">
   <div class="row">
     <div class="span12">
@@ -30,6 +37,9 @@ import markdown
       <p>${markdown.markdown(project.description)|n}</p>
     </div>
     <div class="span5">
+      <div class="world_map">
+        <div class="marker" style="top:${top}px;left:${left}px"></div>
+      </div>
       <div class="page-header">
         <h4>${_('Activity')}</h4>
       </div>

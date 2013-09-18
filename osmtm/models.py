@@ -17,6 +17,7 @@ from geoalchemy2 import (
     )
 from geoalchemy2.functions import (
     ST_Transform,
+    ST_Centroid
     )
 
 import geojson
@@ -210,6 +211,10 @@ class Project(Base, Translatable):
     def as_dict(self, locale=None):
         if locale:
             self.get_locale = lambda: locale
+
+        geometry_as_shape = shape.to_shape(self.area.geometry)
+        centroid = geometry_as_shape.centroid
+
         return {
             'id': self.id,
             'name': self.name,
@@ -218,7 +223,8 @@ class Project(Base, Translatable):
             'last_update': self.last_update,
             'status': self.status,
             'author': self.author.username if self.author is not None else None,
-            'done': self.get_done()
+            'done': self.get_done(),
+            'centroid': [centroid.x, centroid.y]
         }
 
     def get_done(self):

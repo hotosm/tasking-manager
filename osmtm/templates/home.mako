@@ -29,9 +29,9 @@
       </h4>
       <div class="clear"></div>
       <div class="world_map">
-        <div style="top: 15px; left: 43px;" class="marker"></div>
-      </div>{{project.short_description}}
-
+        <div style="top: {{(-project.centroid[1] + 90) * 60 / 180 - 1}}px; left: {{(project.centroid[0] + 180) * 120 / 360 - 1}}px;" class="marker"></div>
+      </div>
+      {{project.short_description}}
       <div class="clear"></div>
       <span class="created-by">Created by {{project.author}}</span> -
       <span class="updated-at">Updated <span class="timeago">{{project.last_update | timeAgo}}</span></span>
