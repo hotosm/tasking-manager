@@ -33,8 +33,8 @@
       </div>
       {{project.short_description}}
       <div class="clear"></div>
-      <span class="created-by">Created by {{project.author}}</span> -
-      <span class="updated-at">Updated <span class="timeago">{{project.last_update | timeAgo}}</span></span>
+      <span class="created-by">${_('Created by')} {{project.author}}</span> -
+      <span class="updated-at">${_('Updated')} <span class="timeago">{{project.last_update | timeAgo}}</span></span>
     </div>
   </div>
 </div>
