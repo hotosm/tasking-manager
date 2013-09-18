@@ -67,6 +67,7 @@ function loadTask(id, direction) {
             }
         );
     }
+    $(document.body).scrollTop(0);
     $('#map_tab').tab('show');
     $('#task_empty').fadeOut(
         function() {
