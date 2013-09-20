@@ -34,7 +34,7 @@ else:
         </li>
         <li><a id="map_tab" href="#map" data-toggle="tab">${_('Contribute')}</a>
         </li>
-        % if user.is_admin():
+        % if user and user.is_admin():
         <a class="btn pull-right" href="${request.route_url('project_edit', project=project.id)}">
           <i class="icon-edit"></i> Edit
         </a>
