@@ -59,7 +59,7 @@ text = _("You already have ${task_link} locked.", mapping={'task_link': link})
 
 % if  task.state == 1:
 <%
-username = _('you') if task.user == user else user.username
+username = _('you') if task.user == user else task.user.username
 username = '<strong>%s</strong>' % username
 text = _('Task locked by ${username}', mapping={'username': username})
 %>
