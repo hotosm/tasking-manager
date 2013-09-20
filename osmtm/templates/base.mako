@@ -24,6 +24,7 @@ if username is not None:
    user = DBSession.query(User).get(username)
 else:
    user = None
+languages = request.registry.settings.available_languages.split()
 %>
 
   </head>
@@ -37,6 +38,7 @@ else:
 % else:
 <a href="${login_url}" class="btn btn-small btn-link pull-right">${_('login to OpenStreetMap')}</a>
 % endif
+          <%include file="languages_menu.mako" args="languages=languages"/>
         </div>
       </div>
     </div>

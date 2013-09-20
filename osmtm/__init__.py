@@ -57,6 +57,7 @@ def main(global_config, **settings):
     config.add_route('task_unlock', '/task/{id}/unlock', xhr=True)
     config.add_route('task_invalidate', '/task/{id}/invalidate', xhr=True)
     config.add_route('user_prefered_editor', '/user/prefered_editor/{editor}', xhr=True)
+    config.add_route('user_prefered_language', '/user/prefered_language/{language}', xhr=True)
 
     config.add_renderer('mapnik', MapnikRendererFactory)
 

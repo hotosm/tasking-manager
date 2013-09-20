@@ -26,3 +26,9 @@ def user_prefered_editor(request):
     request.response.set_cookie('prefered_editor', value=editor, max_age=20*7*24*60*60)
 
     return dict()
+
+@view_config(route_name="user_prefered_language", renderer='json')
+def user_prefered_language(request):
+    language = request.matchdict['language']
+    request.response.set_cookie('_LOCALE_', value=language, max_age=20*7*24*60*60)
+    return dict()
