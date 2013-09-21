@@ -114,7 +114,6 @@ def split(request):
     task_id = request.matchdict['id']
     session = DBSession()
     user_id = authenticated_userid(request)
-    user = session.query(User).get(user_id)
 
     if not user_id:
         raise HTTPUnauthorized()
@@ -125,6 +124,9 @@ def split(request):
         raise HTTPUnauthorized()
 
     task = session.query(Task).get(task_id)
+
+    if task.zoom is None or (task.zoom - task.project.zoom) > 0:
+        return HTTPBadRequest
 
     new_tasks = []
     for i in range(0, 2):

@@ -47,10 +47,21 @@ else:
        class="btn btn-small btn-primary ${disabled}">
        <i class="icon-lock icon-white"></i> ${_('Lock')}
     </a>
-    <a id="split" href="${request.route_url('task_split', id=task.id)}"
-       class="btn btn-small">
-       <i class="icon-split"></i> ${_('Split')}
-    </a>
+    % if task.zoom is not None:
+      <%
+        disabled = ""
+        tooltip = ""
+        if (task.zoom - task.project.zoom) > 0:
+          disabled = "disabled"
+          tooltip = "You cannot split this task more."
+      %>
+        <a id="split" href="${request.route_url('task_split', id=task.id)}"
+           rel="tooltip" data-original-title="${tooltip}"
+           data-confirm="${_('Are you sure you want to split this task?')}"
+           class="btn btn-small ${disabled}">
+           <i class="icon-split"></i> ${_('Split')}
+        </a>
+    % endif
     % if  locked_task is not None:
 
 <%

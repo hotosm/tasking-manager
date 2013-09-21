@@ -186,6 +186,7 @@ class Project(Base, Translatable):
     last_update = Column(DateTime)
     area = relationship(Area)
     tasks = relationship(Task, backref='project', cascade="all, delete, delete-orphan")
+    zoom = Column(Integer) # is not None when project is auto-filled (grid)
 
     def get_locale(self):
         pass
@@ -208,6 +209,7 @@ class Project(Base, Translatable):
         for i in get_tiles_in_geom(geom_3857, zoom):
             tasks.append(Task(i[0], i[1], zoom, i[2]))
         self.tasks = tasks
+        self.zoom = zoom
 
     def as_dict(self, locale=None):
         if locale:
