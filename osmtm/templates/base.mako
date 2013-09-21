@@ -15,6 +15,7 @@
     <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-tooltip.js')}"></script>
     <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-transition.js')}"></script>
     <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-tab.js')}"></script>
+    <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-modal.js')}"></script>
 <%
 from pyramid.security import authenticated_userid
 from osmtm.models import DBSession, User

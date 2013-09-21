@@ -168,7 +168,12 @@ $(document).on('submit', 'form', function(e) {
     }
     if ($(form).has($('#commentModal')).length > 0) {
         $('#commentModal').modal('show');
-        $('#task_comment').focus();
+        $('#task_comment').focus()
+            .on('keyup', function() {
+                $('#commentModalCloseBtn').toggleClass('disabled',
+                    $(this).val() === ''
+                );
+            });
         $('#commentModalCloseBtn').on('click', function() {
             if ($('#task_comment')[0].value !== '') {
                 $('#commentModal').modal('hide');
