@@ -109,6 +109,34 @@ def invalidate(request):
     return dict(success=True,
             msg="Task invalidated.")
 
+@view_config(route_name='task_split', renderer='json')
+def split(request):
+    task_id = request.matchdict['id']
+    session = DBSession()
+    user_id = authenticated_userid(request)
+    user = session.query(User).get(user_id)
+
+    if not user_id:
+        raise HTTPUnauthorized()
+
+    user = session.query(User).get(user_id)
+
+    if not user:
+        raise HTTPUnauthorized()
+
+    task = session.query(Task).get(task_id)
+
+    new_tasks = []
+    for i in range(0, 2):
+        for j in range(0, 2):
+            t = Task(int(task.x)*2 + i, int(task.y)*2 + j, int(task.zoom)+1)
+            t.project = task.project
+
+    session.delete(task)
+
+    return dict()
+
+
 def get_locked_task(project_id, user):
     session = DBSession()
     print project_id

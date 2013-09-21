@@ -5573,6 +5573,13 @@ body {
   -moz-border-radius: 0 0 5px 5px;
   border-radius: 0 0 5px 5px;
 }
+#project .icon-split {
+  background-image: url(../img/split.png);
+  background-position: 0 0;
+  width: 16px;
+  height: 16px;
+  padding-right: 4px;
+}
 #project_edit .nav-pills.small {
   font-size: 0.9em;
   margin-bottom: 3px;

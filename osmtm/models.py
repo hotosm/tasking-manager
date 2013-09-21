@@ -64,6 +64,19 @@ class User(Base):
     def is_admin(self):
         return self.admin == True
 
+class TaskHistory(Base):
+    __tablename__ = "tasks_history"
+    id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey('tasks.id'))
+    project_id = Column(Integer, ForeignKey('project.id'))
+    old_state = Column(Integer)
+    state = Column(Integer, default=0)
+    prev_user_id = Column(Integer, ForeignKey('users.id'))
+    prev_user = relationship(User, foreign_keys=[prev_user_id])
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship(User, foreign_keys=[user_id])
+    update = Column(DateTime)
+
 class Task(Base):
     __tablename__ = "tasks"
     id = Column(Integer, primary_key=True, index=True)
@@ -81,6 +94,7 @@ class Task(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
     update = Column(DateTime)
+    history = relationship(TaskHistory, cascade="all, delete, delete-orphan")
 
     def __init__(self, x, y, zoom, geometry=None):
         self.x = x
@@ -95,19 +109,6 @@ class Task(Base):
         step = max/(2**(self.zoom - 1))
         tb = TileBuilder(step)
         return tb.create_square(self.x, self.y)
-
-class TaskHistory(Base):
-    __tablename__ = "tasks_history"
-    id = Column(Integer, primary_key=True, index=True)
-    task_id = Column(Integer, ForeignKey('tasks.id'))
-    project_id = Column(Integer, ForeignKey('project.id'))
-    old_state = Column(Integer)
-    state = Column(Integer, default=0)
-    prev_user_id = Column(Integer, ForeignKey('users.id'))
-    prev_user = relationship(User, foreign_keys=[prev_user_id])
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User, foreign_keys=[user_id])
-    update = Column(DateTime)
 
 @event.listens_for(Task, "before_update")
 def before_update(mapper, connection, target):

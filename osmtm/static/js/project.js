@@ -1,4 +1,4 @@
-var lmap, task_layer, tiles;
+var lmap, task_layer, tiles, utf_layer;
 var prefered_editor;
 $('a[data-toggle="tab"]').on('shown', function (e) {
     if (e.target.id != 'map_tab' || lmap) {
@@ -26,12 +26,12 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
         }
     }).addTo(lmap);
 
-    var grid = new L.UtfGrid(
+    utf_layer = new L.UtfGrid(
         '/project/' + project_id + '/{z}/{x}/{y}.json', {
         useJsonP: false
     });
-    lmap.addLayer(grid);
-    grid.on('click', function (e) {
+    lmap.addLayer(utf_layer);
+    utf_layer.on('click', function (e) {
         if (e.data && e.data.id) {
             location.hash = ["task", e.data.id].join('/');
         } else {
@@ -100,6 +100,14 @@ function onTaskAction(e) {
     $.getJSON(this.href || e.action, e.formData, function(data) {
 
         tiles.redraw();
+
+        // clear UTF Grid cache and update
+        var i;
+        for (i in utf_layer._cache) {
+            delete utf_layer._cache[i];
+        }
+        utf_layer._update();
+
         if (data.task) {
             var task = data.task;
             loadTask(task.id, direction);
@@ -134,6 +142,7 @@ function onTaskAction(e) {
 }
 $(document).on('click', '#lock', {direction: 'next'}, onTaskAction);
 $(document).on('click', '#unlock', {direction: 'prev'}, onTaskAction);
+$(document).on('click', '#split', {direction: 'next'}, onTaskAction);
 
 $(document).on('submit', 'form', function(e) {
     var form = this;

@@ -47,6 +47,10 @@ else:
        class="btn btn-small btn-primary ${disabled}">
        <i class="icon-lock icon-white"></i> ${_('Lock')}
     </a>
+    <a id="split" href="${request.route_url('task_split', id=task.id)}"
+       class="btn btn-small">
+       <i class="icon-split"></i> ${_('Split')}
+    </a>
     % if  locked_task is not None:
 
 <%
