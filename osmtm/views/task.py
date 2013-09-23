@@ -106,6 +106,10 @@ def invalidate(request):
     task.user = user
     task.state = 0
     session.add(task)
+
+    comment = request.params['comment']
+    task.add_comment(comment)
+
     return dict(success=True,
             msg="Task invalidated.")
 

@@ -18,7 +18,7 @@
     <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-modal.js')}"></script>
 <%
 from pyramid.security import authenticated_userid
-from osmtm.models import DBSession, User
+from osmtm.models import DBSession, User, TaskComment
 login_url= request.route_url('login', _query=[('came_from', request.url)])
 username = authenticated_userid(request)
 if username is not None:
@@ -26,6 +26,10 @@ if username is not None:
 else:
    user = None
 languages = request.registry.settings.available_languages.split()
+
+comments = []
+if user is not None:
+    comments = DBSession.query(TaskComment).filter(TaskComment.task_history.has(prev_user_id=user.id)).all()
 %>
 
   </head>
@@ -33,9 +37,11 @@ languages = request.registry.settings.available_languages.split()
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container"><%block name="header"></%block>
-          <ul class="nav"></ul>\
 % if  user is not None:
           <%include file="user_menu.mako" args="user=user"/>
+          <a class="btn btn-link pull-right messages" href="${request.route_url('user_messages')}">
+            <i class="icon-envelope" style="opacity: 0.5;"></i><sup><span class="badge badge-important">${len(comments)}</span></sup>
+          </a>
 % else:
 <a href="${login_url}" class="btn btn-small btn-link pull-right">${_('login to OpenStreetMap')}</a>
 % endif

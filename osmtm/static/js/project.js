@@ -156,15 +156,15 @@ $(document).on('submit', 'form', function(e) {
         var formData = $(form).serializeObject();
         var submitName = $("button[type=submit][clicked=true]").attr("name");
         formData[submitName] = true;
-        onTaskAction({
-            action: form.action,
-            formData: formData,
-            data: null
-        });
-        //$.get(form.action, formData, function(response) {
-            //clearSelection();
-            //tiles.redraw();
+        //onTaskAction({
+            //action: form.action,
+            //formData: formData,
+            //data: null
         //});
+        $.post(form.action, formData, function(response) {
+            clearSelection();
+            tiles.redraw();
+        });
     }
     if ($(form).has($('#commentModal')).length > 0) {
         $('#commentModal').modal('show');

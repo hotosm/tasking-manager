@@ -76,6 +76,7 @@ class TaskHistory(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User, foreign_keys=[user_id])
     update = Column(DateTime)
+    comment = relationship("TaskComment", uselist=False, backref='task_history')
 
 class Task(Base):
     __tablename__ = "tasks"
@@ -110,6 +111,9 @@ class Task(Base):
         tb = TileBuilder(step)
         return tb.create_square(self.x, self.y)
 
+    def add_comment(self, comment):
+        self.history[-1].comment = TaskComment(comment)
+
 @event.listens_for(Task, "before_update")
 def before_update(mapper, connection, target):
     d = datetime.datetime.now()
@@ -124,6 +128,18 @@ def after_update(mapper, connection, target):
              where(project_table.c.id==project.id).
              values(last_update=datetime.datetime.now())
     )
+
+class TaskComment(Base):
+    __tablename__ = "tasks_comments"
+    id = Column(Integer, primary_key=True, index=True)
+    task_history_id = Column(Integer, ForeignKey('tasks_history.id'))
+    comment = Column(Unicode)
+    date = Column(DateTime)
+    read = Column(Boolean, default=False)
+
+    def __init__(self, comment):
+        self.comment = comment
+        self.date = datetime.datetime.now()
 
 def get_old_value(attribute_state):
     history = attribute_state.history
