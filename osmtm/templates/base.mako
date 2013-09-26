@@ -39,8 +39,13 @@ if user is not None:
         <div class="container"><%block name="header"></%block>
 % if  user is not None:
           <%include file="user_menu.mako" args="user=user"/>
+          <%
+              badge = ""
+              if len(comments) > 0:
+                  badge = '<sup><span class="badge badge-important">%s</span></sup>' % len(comments)
+          %>
           <a class="btn btn-link pull-right messages" href="${request.route_url('user_messages')}">
-            <i class="icon-envelope" style="opacity: 0.5;"></i><sup><span class="badge badge-important">${len(comments)}</span></sup>
+            <i class="icon-envelope" style="opacity: 0.5;"></i>${badge|n}
           </a>
 % else:
 <a href="${login_url}" class="btn btn-small btn-link pull-right">${_('login to OpenStreetMap')}</a>
