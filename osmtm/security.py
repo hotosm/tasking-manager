@@ -18,6 +18,7 @@ class RootFactory(object):
     __acl__ = [ (Allow, Everyone, 'view'),
             (Allow, 'group:admin', 'add'),
             (Allow, 'group:admin', 'edit'),
+            (Allow, 'group:admin', 'admin'),
         ]
     def __init__(self, request):
         pass
