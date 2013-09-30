@@ -64,6 +64,12 @@ class User(Base):
     def is_admin(self):
         return self.admin == True
 
+    def as_dict(self):
+        return {
+            "username": self.username,
+            "admin": self.admin
+        }
+
 class TaskHistory(Base):
     __tablename__ = "tasks_history"
     id = Column(Integer, primary_key=True, index=True)
