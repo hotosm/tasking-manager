@@ -39,7 +39,7 @@ To create a virtual Python environment:
     cd osm-tasking-manager2
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
-    python setup.py develop
+    env/bin/python setup.py develop
 
 In order to see jobs and tiles on the maps, you'll need to have Mapnik as
 a Python module.
