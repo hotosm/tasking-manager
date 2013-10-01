@@ -22,7 +22,7 @@ else:
     % endif
     <div class="span12">
       % if contributor.admin:
-      ${_("This user is an administrator.")}
+      ${_("This user is an administrator.")}<i class="icon-star"></i>
         % if user.admin:
         <a href="${request.route_url('user_admin', id=contributor.id)}">Remove privileges.</a>
         % endif
