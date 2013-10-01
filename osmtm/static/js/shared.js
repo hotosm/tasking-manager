@@ -3,7 +3,7 @@ $().ready(function() {
     $('.timeago').timeago();
 
 
-    $('#languages li a').on('click', function() {
+    $('.navbar .languages li a').on('click', function() {
         var language = $(this).text();
 
         $.ajax({
