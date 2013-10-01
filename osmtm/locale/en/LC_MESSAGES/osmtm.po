@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-09-18 14:36+0200\n"
+"POT-Creation-Date: 2013-10-01 08:05+0200\n"
 "PO-Revision-Date: 2013-09-09 11:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: osmtm/templates/base.mako:38
+#: osmtm/templates/base.mako:51
 msgid "login to OpenStreetMap"
 msgstr ""
 
@@ -29,23 +29,23 @@ msgstr ""
 msgid "Updated"
 msgstr ""
 
-#: osmtm/templates/project.mako:23
+#: osmtm/templates/project.mako:33
 msgid "Info"
 msgstr ""
 
-#: osmtm/templates/project.mako:25
+#: osmtm/templates/project.mako:35
 msgid "Contribute"
 msgstr ""
 
-#: osmtm/templates/project.mako:35
+#: osmtm/templates/project.mako:50
 msgid "Description"
 msgstr ""
 
-#: osmtm/templates/project.mako:44
+#: osmtm/templates/project.mako:59
 msgid "Activity"
 msgstr ""
 
-#: osmtm/templates/project.mako:53
+#: osmtm/templates/project.mako:68
 msgid "Loading"
 msgstr ""
 
@@ -94,45 +94,79 @@ msgstr ""
 msgid "Lock"
 msgstr ""
 
-#: osmtm/templates/task.mako:53
-msgid "a task"
-msgstr ""
-
-#: osmtm/templates/task.mako:54
-msgid "You already have ${task_link} locked."
+#: osmtm/templates/task.mako:60
+msgid "Are you sure you want to split this task?"
 msgstr ""
 
 #: osmtm/templates/task.mako:62
-msgid "you"
-msgstr ""
-
-#: osmtm/templates/task.mako:64
-msgid "Task locked by ${username}"
+msgid "Split"
 msgstr ""
 
 #: osmtm/templates/task.mako:68
+msgid "a task"
+msgstr ""
+
+#: osmtm/templates/task.mako:69
+msgid "You already have ${task_link} locked."
+msgstr ""
+
+#: osmtm/templates/task.mako:77
+msgid "you"
+msgstr ""
+
+#: osmtm/templates/task.mako:79
+msgid "Task locked by ${username}"
+msgstr ""
+
+#: osmtm/templates/task.mako:83
 msgid "Unlock"
 msgstr ""
 
-#: osmtm/templates/task.mako:74
+#: osmtm/templates/task.mako:89
 msgid "Mark task as done"
 msgstr ""
 
-#: osmtm/templates/task.mako:82
+#: osmtm/templates/task.mako:97
 msgid "Invalidate this task if you consider it needs more work."
 msgstr ""
 
-#: osmtm/templates/task.mako:85
+#: osmtm/templates/task.mako:100
 msgid "Invalidate"
 msgstr ""
 
-#: osmtm/templates/task.mako:90
+#: osmtm/templates/task.mako:105
+msgid ""
+"Please tell why you marked this task as invalid so that the user can "
+"eventually correct his mistakes if any."
+msgstr ""
+
+#: osmtm/templates/task.mako:108
+msgid "Your comment here"
+msgstr ""
+
+#: osmtm/templates/task.mako:111
+msgid "Cancel"
+msgstr ""
+
+#: osmtm/templates/task.mako:112
+msgid "OK"
+msgstr ""
+
+#: osmtm/templates/task.mako:119
 msgid "History"
+msgstr ""
+
+#: osmtm/templates/user.mako:25
+msgid "This user is an administrator."
 msgstr ""
 
 #: osmtm/templates/user_menu.mako:5
 msgid "logout"
 msgstr "Logout"
+
+#: osmtm/templates/users.mako:5
+msgid "Users"
+msgstr ""
 
 #~ msgid "You already have a ${link} locked."
 #~ msgstr ""
