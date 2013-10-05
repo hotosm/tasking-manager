@@ -6,7 +6,8 @@ from ..models import (
     Project,
     Area,
     User,
-    TaskHistory
+    TaskHistory,
+    License,
     )
 from pyramid.security import authenticated_userid
 
@@ -81,6 +82,7 @@ def project_edit(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
 
+    licenses = DBSession.query(License).all()
     if 'form.submitted' in request.params:
 
         for locale, translation in project.translations.iteritems():
@@ -91,10 +93,17 @@ def project_edit(request):
                         setattr(project, field, request.params[translated])
                 DBSession.add(project)
 
+        project.imagery = request.params['imagery']
+
+        if request.params['license_id'] != "":
+            license_id = int(request.params['license_id'])
+            license = DBSession.query(License).get(license_id)
+            project.license = license
+
         DBSession.add(project)
         return HTTPFound(location = route_url('project', request, project=project.id))
 
-    return dict(page_id='project_edit', project=project)
+    return dict(page_id='project_edit', project=project, licenses=licenses)
 
 @view_config(route_name='project_mapnik', renderer='mapnik')
 def project_mapnik(request):

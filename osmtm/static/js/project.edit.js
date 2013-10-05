@@ -8,5 +8,6 @@ $(document).ready(function() {
         workflow_preview.html(html);
     }).trigger('keyup');
 
+    $('.nav-tabs a:first').tab('show');
     $('#languages a:first').tab('show');
 });

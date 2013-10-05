@@ -10,6 +10,32 @@
 </script>
 <div class="container">
   <form method="post" action="" enctype="multipart/form-data" class="form">
+    <div class="tabbable tabs">
+      <ul class="nav nav-tabs">
+        <li><a href="#description" data-toggle="tab">Description</a></li>
+        <li><a href="#area" data-toggle="tab">Area</a></li>
+        <li><a href="#imagery" data-toggle="tab">Imagery</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane" id="description">
+          ${description()}
+        </div>
+        <div class="tab-pane" id="area">
+          Area modifications are not available yet.
+        </div>
+        <div class="tab-pane" id="imagery">
+          ${imagery()}
+        </div>
+      </div>
+    </div>
+    <div class="form-actions"><a href="${request.route_url('project', project=project.id)}" class="btn">Cancel</a>
+      <input id="id_submit" type="submit" value="Save the modifications" name="form.submitted" class="btn btn-primary"/>
+    </div>
+  </form>
+  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js')}"></script>
+</div>
+</%block>
+<%block name="description">
     <div class="tabbable tabs-left">
       <ul class="nav nav-tabs" id="languages">
         % for locale, translation in project.translations.iteritems():
@@ -68,10 +94,34 @@
         % endfor
       </div>
     </div>
-    <div class="form-actions"><a href="${request.route_url('project', project=project.id)}" class="btn">Cancel</a>
-      <input id="id_submit" type="submit" value="Save the modifications" name="form.submitted" class="btn btn-primary"/>
-    </div>
-  </form>
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js')}"></script>
+</%block>
+
+<%block name="imagery">
+<div class="form-horizontal">
+<div class="control-group">
+  <label class="control-label" for="id_imagery">URL to service</label>
+  <div class="controls">
+    <input type="text" class="span9" id="id_imagery" name="imagery" value="${project.imagery}"/>
+    <p class="help-block">
+    <strong>Note:</strong> Follow this format for TMS urls.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png
+    </p>
+  </div>
+</div>
+<div class="control-group">
+  <label class="control-label" for="id_license">Required License</label>
+  <div class="controls">
+    <select id="id_license" name="license_id">
+      <option value="" />
+      % for l in licenses:
+      <%
+      selected = ""
+      if project.license is not None and l.id == project.license.id:
+        selected = "selected"
+      %>
+      <option value="${l.id}" ${selected}>${l.name}</a>
+      % endfor
+    </select>
+  </div>
+</div>
 </div>
 </%block>

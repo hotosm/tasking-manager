@@ -219,6 +219,7 @@ class Project(Base, Translatable):
     license_id = Column(Integer, ForeignKey('licenses.id'))
 
     zoom = Column(Integer) # is not None when project is auto-filled (grid)
+    imagery = Column(Unicode)
 
     def get_locale(self):
         pass
