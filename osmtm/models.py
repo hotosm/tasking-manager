@@ -1,4 +1,5 @@
 from sqlalchemy import (
+    Table,
     Column,
     Integer,
     Text,
@@ -50,11 +51,18 @@ from sqlalchemy_i18n import (
     )
 make_translatable()
 
+users_licenses_table = Table('users_licenses', Base.metadata,
+    Column('user', Integer, ForeignKey('users.id')),
+    Column('license', Integer, ForeignKey('licenses.id'))
+)
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     username = Column(Unicode)
     admin = Column(Boolean)
+
+    accepted_licenses = relationship("License", secondary=users_licenses_table)
 
     def __init__(self, id, username, admin=False):
         self.id = id
@@ -208,6 +216,8 @@ class Project(Base, Translatable):
     last_update = Column(DateTime)
     area = relationship(Area)
     tasks = relationship(Task, backref='project', cascade="all, delete, delete-orphan")
+    license_id = Column(Integer, ForeignKey('licenses.id'))
+
     zoom = Column(Integer) # is not None when project is auto-filled (grid)
 
     def get_locale(self):
@@ -266,6 +276,17 @@ class Project(Base, Translatable):
             #if task.state >= 2:
                 #done = done + area
         return round(done * 100 / total) / 100
+
+class License(Base):
+    __tablename__ = "licenses"
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode)
+    description = Column(Unicode)
+    plain_text = Column(Unicode)
+    projects = relationship("Project", backref='license')
+
+    def __init__(self):
+        pass
 
 from json import (
     JSONEncoder,

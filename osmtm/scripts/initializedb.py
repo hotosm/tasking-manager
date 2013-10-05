@@ -13,6 +13,7 @@ from ..models import (
     DBSession,
     Area,
     Project,
+    License,
     Base,
     )
 
@@ -62,3 +63,15 @@ def main(argv=sys.argv):
             project.name = "Cartographier les routes"
 
         project.auto_fill(13)
+
+        license = License()
+        license.name = 'NextView'
+        license.description = "This data is licensed for use by the US Government (USG) under the NextView (NV) license and copyrighted by Digital Globe or GeoEye. The NV license allows the USG to share the imagery and Literal Imagery Derived Products (LIDP) with entities outside the USG when that entity is working directly with the USG, for the USG, or in a manner that is directly beneficial to the USG. The party receiving the data can only use the imagery or LIDP for the original purpose or only as otherwise agreed to by the USG. The party receiving the data cannot share the imagery or LIDP with a third party without express permission from the USG. At no time should this imagery or LIDP be used for other than USG-related purposes and must not be used for commercial gain. The copyright information should be maintained at all times. Your acceptance of these license terms is implied by your use."
+        license.plain_text = "In other words, you may only use NextView imagery linked from this site for digitizing OpenStreetMap data for humanitarian purposes."
+        DBSession.add(license)
+
+        license = License()
+        license.name = 'Astrium/UNOSAT'
+        license.description = "UNOSAT allow any INTERNET USER to use the IMAGE to develop DERIVATIVE WORKS provided that the INTERNET USER includes the DERIVATIVE WORKS he/she created in the OpenStreetMap database under CC-BY-SA licence (http://creativecommons.org/licenses/by-sa/2.0/) and/or Open Database licence (ODbL: http://www.opendatacommons.org/licenses/odbl/), with the credit of the corresponding PRODUCT conspicuously displayed and written in full, in order to allow any OpenStreetMap database user to have access to and to use the DERIVATIVE WORKS. Except for the foregoing, the END USER and/or the INTERNET USER shall not be entitled to sell, distribute, assign, dispose of, lease, sublicense or transfer, directly or indirectly, any DERIVATIVE WORKS to any third party."
+        license.plain_text = "Astrium GEO-Information Services and UNOSAT are allowing access to this imagery for creating information in OpenStreetMap. Other uses are not allowed."
+        DBSession.add(license)

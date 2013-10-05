@@ -63,6 +63,11 @@ def main(global_config, **settings):
     config.add_route('user_messages', '/user/messages')
     config.add_route('user_prefered_editor', '/user/prefered_editor/{editor}', xhr=True)
     config.add_route('user_prefered_language', '/user/prefered_language/{language}', xhr=True)
+    config.add_route('licenses', '/licenses')
+    config.add_route('license_new', '/license/new')
+    config.add_route('license', '/license/{license}')
+    config.add_route('license_edit', '/license/{license}/edit')
+    config.add_route('license_delete', '/license/{license}/delete')
 
     config.add_renderer('mapnik', MapnikRendererFactory)
 
