@@ -101,7 +101,7 @@
 <div class="control-group">
   <label class="control-label" for="id_imagery">URL to service</label>
   <div class="controls">
-    <input type="text" class="span9" id="id_imagery" name="imagery" value="${project.imagery}"/>
+    <input type="text" class="span9" id="id_imagery" name="imagery" value="${project.imagery if project.imagery is not None else ''}"/>
     <p class="help-block">
     <strong>Note:</strong> Follow this format for TMS urls.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png
     </p>

@@ -93,7 +93,8 @@ def project_edit(request):
                         setattr(project, field, request.params[translated])
                 DBSession.add(project)
 
-        project.imagery = request.params['imagery']
+        if request.params['imagery'] != "":
+            project.imagery = request.params['imagery']
 
         if request.params['license_id'] != "":
             license_id = int(request.params['license_id'])
