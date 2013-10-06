@@ -38,7 +38,7 @@ else:
         </li>
         % if user and user.is_admin():
         <a class="btn pull-right" href="${request.route_url('project_edit', project=project.id)}">
-          <i class="icon-edit"></i> Edit
+          <i class="icon-edit"></i> Edit project
         </a>
         % endif
       </ul>
