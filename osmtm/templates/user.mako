@@ -17,17 +17,18 @@ else:
 %>
 <div class="container">
   <div class="row">
+    <h3>${contributor.username}</h3>
     % if user == contributor:
     <h4>This is <b>You</b>!</h4>
     % endif
     <div class="span12">
       % if contributor.admin:
       ${_("This user is an administrator.")}<i class="icon-star"></i>
-        % if user.admin:
+        % if user is not None and user.admin:
         <a href="${request.route_url('user_admin', id=contributor.id)}">Remove privileges.</a>
         % endif
       % else:
-        % if user.admin:
+        % if user is not None and user.admin:
         <a href="${request.route_url('user_admin', id=contributor.id)}">Set as administrator.</a>
         % endif
       % endif

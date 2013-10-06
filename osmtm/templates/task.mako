@@ -92,7 +92,7 @@ text = _('Task locked by ${username}', mapping={'username': username})
     % endif
 % endif
 
-% if  task.state == 2:
+% if user is not None and task.state == 2:
 <%
 tooltip = _("Invalidate this task if you consider it needs more work.")
 %>

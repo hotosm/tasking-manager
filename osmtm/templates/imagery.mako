@@ -3,11 +3,13 @@
   from pyramid.security import authenticated_userid
   from osmtm.models import DBSession, User
   username = authenticated_userid(request)
+  license_accepted = None
   if username is not None:
-     user = DBSession.query(User).get(username)
+    user = DBSession.query(User).get(username)
+    if user is not None:
+      license_accepted = project.license in user.accepted_licenses
   else:
-     user = None
-  license_accepted = project.license in user.accepted_licenses
+    user = None
 %>
 % if project.imagery is not None and project.imagery != 'None':
 <p>
