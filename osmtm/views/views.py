@@ -1,4 +1,5 @@
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy import (
     desc,
@@ -32,3 +33,7 @@ def user_prefered_language(request):
     language = request.matchdict['language']
     request.response.set_cookie('_LOCALE_', value=language, max_age=20*7*24*60*60)
     return dict()
+
+@view_config(context='pyramid.httpexceptions.HTTPUnauthorized')
+def unauthorized(request):
+    return HTTPFound(request.route_url('login', _query=[('came_from', request.url)]))

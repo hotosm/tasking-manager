@@ -19,13 +19,20 @@ def licenses(request):
 
     return dict(page_id="licenses", licenses=licenses)
 
-@view_config(route_name='license', renderer='license.mako', permission='edit')
+@view_config(route_name='license', renderer='license.mako')
 def license(request):
     id = request.matchdict['license']
     license = DBSession.query(License).get(id)
+    user_id = authenticated_userid(request)
 
-    username = authenticated_userid(request)
-    user = DBSession.query(User).get(username)
+    if not user_id:
+        raise HTTPUnauthorized()
+
+    user = DBSession.query(User).get(user_id)
+
+    if not user:
+        raise HTTPUnauthorized()
+
     redirect = request.params.get("redirect", request.route_url("home"))
     if "accepted_terms" in request.params:
         if request.params["accepted_terms"] == "I AGREE":
