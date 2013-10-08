@@ -125,3 +125,17 @@ def project_mapnik(request):
     tasks.srs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
 
     return [tasks]
+
+import tempfile
+import geojson
+from ..utils import parse_osm
+@view_config(route_name='import_osm', renderer='json')
+def import_osm(request):
+    input_file = request.POST['file'].file
+
+    temp = tempfile.NamedTemporaryFile(suffix='.osm')
+    input_file.seek(0)
+    temp.write(input_file.read())
+    temp.flush()
+    collection = parse_osm(temp.name)
+    return dict(geometry=geojson.dumps(collection))

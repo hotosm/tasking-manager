@@ -70,3 +70,36 @@ var LatLngsToCoords = function (LatLngs, levelsDeep, reverse) { // (LatLngs, Num
 
     return coords;
 };
+
+$('input[name=osm]').change(function() {
+    var formData = new FormData();
+    formData.append('file', $('input[name=osm]')[0].files[0]);
+    $.ajax({
+        url: '/import_osm',  //Server script to process data
+        type: 'POST',
+        xhr: function() {  // Custom XMLHttpRequest
+            var myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){ // Check if upload property exists
+                myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+            }
+            return myXhr;
+        },
+        //Ajax events
+        //beforeSend: beforeSendHandler,
+        success: function() {
+            console.log("complete");
+        },
+        //error: errorHandler,
+        // Form data
+        data: formData,
+        //Options to tell jQuery not to process data or worry about content-type.
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+});
+function progressHandlingFunction(e){
+    if(e.lengthComputable){
+        console.log(e.loaded, e.total);
+    }
+}

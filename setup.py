@@ -26,7 +26,8 @@ requires = [
     'shapely',
     'geoalchemy2',
     'Babel',
-    'sqlalchemy-i18n'
+    'sqlalchemy-i18n',
+    'imposm.parser'
     ]
 
 setup(name='osmtm',

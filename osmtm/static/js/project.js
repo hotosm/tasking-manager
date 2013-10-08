@@ -189,22 +189,6 @@ $(document).on("click", "form button[type=submit]", function() {
     $("button[type=submit]", $(this).parents("form")).removeAttr("clicked");
     $(this).attr("clicked", "true");
 });
-$.fn.serializeObject = function()
-{
-    var o = {};
-    var a = this.serializeArray();
-    $.each(a, function() {
-        if (o[this.name] !== undefined) {
-            if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
-            }
-            o[this.name].push(this.value || '');
-        } else {
-            o[this.name] = this.value || '';
-        }
-    });
-    return o;
-};
 
 var exportOpen = function(evt) {
     // task_centroid and task_bounds are global variables (given for the

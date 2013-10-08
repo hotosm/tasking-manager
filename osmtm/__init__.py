@@ -68,6 +68,7 @@ def main(global_config, **settings):
     config.add_route('license', '/license/{license}')
     config.add_route('license_edit', '/license/{license}/edit')
     config.add_route('license_delete', '/license/{license}/delete')
+    config.add_route('import_osm', '/import_osm')
 
     config.add_renderer('mapnik', MapnikRendererFactory)
 
