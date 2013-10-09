@@ -138,4 +138,4 @@ def import_osm(request):
     temp.write(input_file.read())
     temp.flush()
     collection = parse_osm(temp.name)
-    return dict(geometry=geojson.dumps(collection))
+    return geojson.loads(geojson.dumps(collection))

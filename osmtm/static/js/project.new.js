@@ -86,9 +86,14 @@ $('input[name=osm]').change(function() {
         },
         //Ajax events
         //beforeSend: beforeSendHandler,
-        success: function() {
+        success: function(response) {
             console.log("complete");
+            var layer = new L.geoJson(response);
+            map.fitBounds(layer.getBounds());
+            map.zoomOut();
+            map.addLayer(layer);
         },
+        dataType: 'json',
         //error: errorHandler,
         // Form data
         data: formData,
