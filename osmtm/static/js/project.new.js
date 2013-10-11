@@ -71,6 +71,11 @@ var LatLngsToCoords = function (LatLngs, levelsDeep, reverse) { // (LatLngs, Num
     return coords;
 };
 
+$('#import_osm').click(function() {
+    $('input[name=osm]').click();
+    return false;
+});
+
 $('input[name=osm]').change(function() {
     var formData = new FormData();
     formData.append('file', $('input[name=osm]')[0].files[0]);

@@ -20,15 +20,13 @@
       </div>
       <div class="span6">You can also
         <div>
-          <span class="fileinput-button">
-            <input type="file" val="" name="osm">
-            <a id="import_osm"
+          <input type="file" val="" name="osm" style="visibility:hidden;height:0;position:absolute;">
+          <a id="import_osm"
                   data-role="button"
                   class="btn btn-small">Import OSM relation</a>
-            <p class="help-block">
-              Provide a .osm file. You can download it from the OSM API (ex. www.openstreetmap.org/api/0.6/relation/270485/full).
-            </p>
-          </span>
+          <p class="help-block">
+            Provide a .osm file. You can download it from the OSM API (ex. www.openstreetmap.org/api/0.6/relation/270485/full).
+          </p>
         </div>
       </div>
     </div>

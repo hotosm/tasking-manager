@@ -5608,20 +5608,6 @@ body {
 #project_edit .preview {
   min-height: 100px;
 }
-#project_new .fileinput-button {
-  position: relative;
-}
-#project_new .fileinput-button input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 0;
-  opacity: 0;
-  filter: alpha(opacity=0);
-  -moz-transform: translate(-300px, 0) scale(4);
-  direction: ltr;
-  cursor: pointer;
-}
 #project_new #leaflet,
 #project_partition #leaflet {
   height: 240px;
