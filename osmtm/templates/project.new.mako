@@ -25,6 +25,9 @@
             <a id="import_osm"
                   data-role="button"
                   class="btn btn-small">Import OSM relation</a>
+            <p class="help-block">
+              Provide a .osm file. You can download it from the OSM API (ex. www.openstreetmap.org/api/0.6/relation/270485/full).
+            </p>
           </span>
         </div>
       </div>
