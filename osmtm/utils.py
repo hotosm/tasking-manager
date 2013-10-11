@@ -50,7 +50,7 @@ def get_tiles_in_geom(geom, z):
 
 from imposm.parser import OSMParser
 from shapely.geometry import Polygon, MultiPolygon
-from geojson import Feature, FeatureCollection
+from geojson import Feature
 
 def parse_osm(filename):
     # instantiate parser and parser and start parsing
@@ -108,7 +108,7 @@ def parse_osm(filename):
             polygons.append(Polygon(nodes))
 
     multipolygon = MultiPolygon(polygons)
-    return FeatureCollection([Feature(geometry=multipolygon)])
+    return Feature(geometry=multipolygon)
 
 # simple class that handles the parsed OSM data.
 class RelationParser(object):

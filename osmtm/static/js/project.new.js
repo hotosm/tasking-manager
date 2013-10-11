@@ -26,7 +26,7 @@ var drawControl = new L.Control.Draw({
 });
 map.addControl(drawControl);
 
-var vector = new L.LayerGroup();
+var vector = new L.geoJson();
 map.on('draw:poly-created', function(e) {
     vector.addLayer(e.poly);
     $('#geometry').val(toGeoJSON(e.poly));
@@ -87,11 +87,13 @@ $('input[name=osm]').change(function() {
         //Ajax events
         //beforeSend: beforeSendHandler,
         success: function(response) {
-            console.log("complete");
-            var layer = new L.geoJson(response);
-            map.fitBounds(layer.getBounds());
+            vector.clearLayers();
+            vector.addData(response);
+            map.fitBounds(vector.getBounds());
             map.zoomOut();
-            map.addLayer(layer);
+
+            $('#geometry').val(JSON.stringify(response.geometry));
+            updateSubmitBtnStatus();
         },
         dataType: 'json',
         //error: errorHandler,

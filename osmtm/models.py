@@ -18,8 +18,13 @@ from geoalchemy2 import (
     )
 from geoalchemy2.functions import (
     ST_Transform,
-    ST_Centroid
+    ST_Centroid,
+    GenericFunction
     )
+
+class ST_Multi(GenericFunction):
+    name = 'ST_Multi'
+    type = Geometry
 
 import geojson
 import shapely
@@ -183,13 +188,13 @@ def before_flush(session, flush_context, instances):
 class Area(Base):
     __tablename__ = 'areas'
     id = Column(Integer, primary_key=True)
-    geometry = Column(Geometry('Polygon', srid=4326))
+    geometry = Column(Geometry('MultiPolygon', srid=4326))
 
     def __init__(self, geometry):
         geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
         geometry = shapely.geometry.asShape(geometry)
         geometry = shape.from_shape(geometry, 4326)
-        self.geometry = geometry
+        self.geometry = ST_Multi(geometry)
 
 # A project corresponds to a given mapping job to do on a given area
 # Example 1: trace the major roads
