@@ -20,9 +20,12 @@
       </div>
       <div class="span6">You can also
         <div>
-          <a id="import_osm" href="#importModal" data-toggle="modal"
-                data-role="button"
-                class="btn btn-small">Import OSM relation</a>
+          <span class="fileinput-button">
+            <input type="file" val="" name="osm">
+            <a id="import_osm"
+                  data-role="button"
+                  class="btn btn-small">Import OSM relation</a>
+          </span>
         </div>
       </div>
     </div>
@@ -31,18 +34,6 @@
       <input id="id_submit" type="submit" value="OK" name="form.submitted" disabled="disabled" class="btn btn-success"/>
     </div>
   </form>
-</div>
-<!-- Modal -->
-<div id="importModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-body">
-    <form id="import_form" enctype="multipart/form-data">
-      <input type="file" name="osm" />
-      <input type="button" value="upload"/>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-  </div>
 </div>
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
