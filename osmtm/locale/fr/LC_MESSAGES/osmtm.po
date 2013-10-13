@@ -154,7 +154,7 @@ msgstr "Annuler"
 
 #: osmtm/templates/task.mako:112
 msgid "OK"
-msgstr "Bloquer"
+msgstr "OK"
 
 #: osmtm/templates/task.mako:119
 msgid "History"
