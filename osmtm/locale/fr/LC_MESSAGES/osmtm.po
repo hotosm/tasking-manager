@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-10-01 08:05+0200\n"
+"POT-Creation-Date: 2013-10-13 18:11+0200\n"
 "PO-Revision-Date: 2013-09-09 10:08+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -29,23 +29,46 @@ msgstr "Créé par"
 msgid "Updated"
 msgstr "Mis à jour"
 
+#: osmtm/templates/imagery.mako:16
+msgid "Imagery is available to be used for tracing elements."
+msgstr "De l'imagerie satellite ou aérienne est disponible pour tracer les éléments."
+
+#: osmtm/templates/imagery.mako:17
+msgid "You should be able to load it in your favorite editor."
+msgstr "Vous devriez être en mesure de la charger dans votre éditeur préféré."
+
+#: osmtm/templates/imagery.mako:26
+msgid ""
+"If you have JOSM running and remote control activated, clicking this link"
+" should automatically load imagery."
+msgstr "Si JOSM est déjà lancé avec le contrôle à distance activé, cliquez"
+" sur ce lien et l'imagerie devrait être automatiquement chargée."
+
+#: osmtm/templates/license.mako:5 osmtm/templates/licenses.mako:5
+msgid "Licenses"
+msgstr "Licences"
+
 #: osmtm/templates/project.mako:33
 msgid "Info"
 msgstr ""
 
 #: osmtm/templates/project.mako:35
+msgid "Imagery"
+msgstr "Imagerie"
+
+#: osmtm/templates/project.mako:37
 msgid "Contribute"
 msgstr "Contribuer"
 
-#: osmtm/templates/project.mako:50
+#: osmtm/templates/project.mako:52
 msgid "Description"
 msgstr ""
 
-#: osmtm/templates/project.mako:59
+#: osmtm/templates/project.mako:61
 msgid "Activity"
 msgstr "Activité"
 
-#: osmtm/templates/project.mako:68
+#: osmtm/templates/project.mako:75
 msgid "Loading"
 msgstr "Chargement"
 
@@ -141,8 +164,8 @@ msgid ""
 "Please tell why you marked this task as invalid so that the user can "
 "eventually correct his mistakes if any."
 msgstr ""
-"Veuillez indiquer la raison pour laquelle vous avez marqué la tâche "
-"comme invalide afin que le contributeur puisse corriger ses erreurs."
+"Veuillez indiquer la raison pour laquelle vous avez marqué la tâche comme"
+" invalide afin que le contributeur puisse corriger ses erreurs."
 
 #: osmtm/templates/task.mako:108
 msgid "Your comment here"
@@ -160,7 +183,11 @@ msgstr "OK"
 msgid "History"
 msgstr "Historique"
 
-#: osmtm/templates/user.mako:25
+#: osmtm/templates/user.mako:5
+msgid "User profile"
+msgstr "Profil utilisateur"
+
+#: osmtm/templates/user.mako:26
 msgid "This user is an administrator."
 msgstr "Cet utilisateur est administrateur."
 

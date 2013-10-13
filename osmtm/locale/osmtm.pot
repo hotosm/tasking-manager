@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-10-01 08:05+0200\n"
+"POT-Creation-Date: 2013-10-13 18:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,23 +29,45 @@ msgstr ""
 msgid "Updated"
 msgstr ""
 
+#: osmtm/templates/imagery.mako:16
+msgid "Imagery is available to be used for tracing elements."
+msgstr ""
+
+#: osmtm/templates/imagery.mako:17
+msgid "You should be able to load it in your favorite editor."
+msgstr ""
+
+#: osmtm/templates/imagery.mako:26
+msgid ""
+"If you have JOSM running and remote control activated, clicking this link "
+"should automatically load imagery."
+msgstr ""
+
+#: osmtm/templates/license.mako:5 osmtm/templates/licenses.mako:5
+msgid "Licenses"
+msgstr ""
+
 #: osmtm/templates/project.mako:33
 msgid "Info"
 msgstr ""
 
 #: osmtm/templates/project.mako:35
+msgid "Imagery"
+msgstr ""
+
+#: osmtm/templates/project.mako:37
 msgid "Contribute"
 msgstr ""
 
-#: osmtm/templates/project.mako:50
+#: osmtm/templates/project.mako:52
 msgid "Description"
 msgstr ""
 
-#: osmtm/templates/project.mako:59
+#: osmtm/templates/project.mako:61
 msgid "Activity"
 msgstr ""
 
-#: osmtm/templates/project.mako:68
+#: osmtm/templates/project.mako:75
 msgid "Loading"
 msgstr ""
 
@@ -156,7 +178,11 @@ msgstr ""
 msgid "History"
 msgstr ""
 
-#: osmtm/templates/user.mako:25
+#: osmtm/templates/user.mako:5
+msgid "User profile"
+msgstr ""
+
+#: osmtm/templates/user.mako:26
 msgid "This user is an administrator."
 msgstr ""
 
