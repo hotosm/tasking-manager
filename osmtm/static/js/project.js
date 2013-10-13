@@ -338,3 +338,21 @@ $.fn.slide = function(type) {
     }
     return this;
 };
+
+(function check_for_updates(){
+    var interval = 5000;
+    setTimeout(function(){
+        $.ajax({
+            url: base_url + "project/" + project_id + "/check_for_updates",
+            data: {
+                interval: interval
+            },
+            success: function(data){
+                if (data.update) {
+                    tiles.redraw();
+                }
+                check_for_updates();
+            }, dataType: "json"}
+        );
+    }, interval);
+})();

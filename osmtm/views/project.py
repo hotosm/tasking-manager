@@ -6,6 +6,7 @@ from ..models import (
     Project,
     Area,
     User,
+    Task,
     TaskHistory,
     License,
     )
@@ -13,6 +14,8 @@ from pyramid.security import authenticated_userid
 
 from pyramid.i18n import get_locale_name
 from sqlalchemy.sql.expression import and_
+
+import datetime
 
 import mapnik
 
@@ -125,6 +128,16 @@ def project_mapnik(request):
     tasks.srs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
 
     return [tasks]
+
+@view_config(route_name="project_check_for_update", renderer='json')
+def check_for_updates(request):
+    interval = request.GET['interval']
+    date = datetime.datetime.now() - datetime.timedelta(0, 0, 0, int(interval))
+    tasks = DBSession.query(Task).filter(Task.update>date).all()
+    print len(tasks)
+    if len(tasks) > 0:
+        return dict(update=True)
+    return dict(update=False)
 
 import tempfile
 import geojson

@@ -133,6 +133,11 @@ class Task(Base):
     def add_comment(self, comment):
         self.history[-1].comment = TaskComment(comment)
 
+@event.listens_for(Task, "before_insert")
+def before_update(mapper, connection, target):
+    d = datetime.datetime.now()
+    target.update = d
+
 @event.listens_for(Task, "before_update")
 def before_update(mapper, connection, target):
     d = datetime.datetime.now()
