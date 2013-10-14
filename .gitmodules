@@ -1,12 +1,12 @@
 [submodule "osmtm/static/bootstrap"]
 	path = osmtm/static/bootstrap
-    url = git://github.com/twbs/bootstrap.git
+    url = https://github.com/twbs/bootstrap.git
 [submodule "osmtm/static/js/lib/Leaflet.draw"]
 	path = osmtm/static/js/lib/Leaflet.draw
-	url = git://github.com/Leaflet/Leaflet.draw.git
+	url = https://github.com/Leaflet/Leaflet.draw.git
 [submodule "osmtm/static/js/lib/Leaflet.utfgrid"]
 	path = osmtm/static/js/lib/Leaflet.utfgrid
-	url = git://github.com/danzel/Leaflet.utfgrid.git
+	url = https://github.com/danzel/Leaflet.utfgrid.git
 [submodule "osmtm/static/js/lib/jquery-timeago"]
 	path = osmtm/static/js/lib/jquery-timeago
-	url = git@github.com:rmm5t/jquery-timeago.git
+    url = https://github.com/rmm5t/jquery-timeago.git
