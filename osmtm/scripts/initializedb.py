@@ -2,7 +2,7 @@ import os
 import sys
 import transaction
 
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, func
 
 from pyramid.paster import (
     get_appsettings,
