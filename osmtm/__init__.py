@@ -37,6 +37,9 @@ def main(global_config, **settings):
             root_factory=RootFactory,
             authentication_policy=authn_policy,
             authorization_policy=authz_policy)
+    # fixes backwards incompatibilities when running Pyramid 1.5a
+    # https://pypi.python.org/pypi/pyramid#features
+    config.include('pyramid_mako')
 
     session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
     config.set_session_factory(session_factory)
