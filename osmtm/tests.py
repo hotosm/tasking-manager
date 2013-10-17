@@ -12,12 +12,17 @@ from .models import (
 
 from BeautifulSoup import BeautifulSoup
 
+from sqlalchemy_i18n.manager import translation_manager
 from sqlalchemy.orm import configure_mappers
 
 def _initTestingDB():
     from sqlalchemy import create_engine
     engine = create_engine('postgresql://www-data@localhost/osmtm_tests')
     DBSession.configure(bind=engine)
+    translation_manager.options.update({
+        'locales': ['en'],
+        'get_locale_fallback': True
+    })
     configure_mappers()
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -76,6 +81,7 @@ class TestProjectNew(unittest.TestCase):
 
     def test_it(self):
         from .views.project import project_new
+        self.config.testing_securitypolicy(userid=321)
 
         request = testing.DummyRequest()
         response = project_new(request)
@@ -115,6 +121,8 @@ class TestProjectEdit(unittest.TestCase):
             'name_en':u'NewProject',
             'short_description_en':u'SomeShortDescription',
             'description_en':u'SomeDescription',
+            'imagery': u'',
+            'license_id': u''
         }
         response = project_edit(request)
         self.assertEqual(response.location, 'http://example.com/project/1')
