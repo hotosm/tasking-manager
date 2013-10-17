@@ -69,7 +69,7 @@ POSTGIS Installation
 
 Installation for Mac users.
 
-The following should create an `osmtm` database::
+The following should create an `osmtm` database:
 
     brew install postgis
     sh osmtm/scripts/postgis_installation_mac.sh
@@ -85,10 +85,8 @@ soon as you change the css::
 Tests
 -----
 
-To run tests, create the tests database::
+The `create_db.sh` script should have created a test database as well.
 
-    sh osmtm/scripts/create_tests_dc.sh
-
-Then run the tests::
+To run the tests, use the following command:
 
     env/bin/nosetests
