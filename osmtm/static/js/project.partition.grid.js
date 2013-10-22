@@ -29,16 +29,22 @@ map.addControl(drawControl);
 var vector = new L.geoJson();
 map.on('draw:poly-created', function(e) {
     vector.addLayer(e.poly);
-    $('#geometry').val(toGeoJSON(e.poly));
+    map.fitBounds(vector.getBounds());
+    $('#geometry').val(toGeoJSON(e.poly))
+        .trigger('change');
     updateSubmitBtnStatus();
 });
 map.on('drawing', function(e) {
-    vector.clearLayers();
-    $('#geometry').val('');
-    updateSubmitBtnStatus();
+    cancel();
 });
 map.addLayer(vector);
 
+$('#geometry').change(function() {
+    $('#help-step1').hide();
+    $('#partition').show();
+    changeTileSize(2);
+    grid.show();
+});
 
 var toGeoJSON = function(polygon) {
     var json, type, latlng, latlngs = [], i;
@@ -95,10 +101,16 @@ $('input[name=osm]').change(function() {
             vector.clearLayers();
             vector.addData(response);
             map.fitBounds(vector.getBounds());
-            map.zoomOut();
 
-            $('#geometry').val(JSON.stringify(response.geometry));
-            updateSubmitBtnStatus();
+            // wait before animation is finished
+            window.setTimeout(
+                function() {
+                    $('#geometry').val(JSON.stringify(response.geometry))
+                        .trigger('change');
+                    updateSubmitBtnStatus();
+                },
+                500
+            );
         },
         dataType: 'json',
         //error: errorHandler,
@@ -115,3 +127,42 @@ function progressHandlingFunction(e){
         console.log(e.loaded, e.total);
     }
 }
+
+var buttons = $('#tile_size button');
+buttons.each(function(index, button) {
+    //$(button).val(map.getZoom() + index + 2);
+    $(button).click(function() {
+        buttons.removeClass('active');
+        $(this).addClass('active');
+        changeTileSize(index);
+        return false;
+    });
+});
+
+var grid = $('<div>');
+$('#leaflet .leaflet-control-container').append(grid);
+function changeTileSize(index) {
+    var sizes = [64, 32, 16, 8, 4];
+    grid.attr('class', 'grid' + sizes[index]);
+    $('#zoom').val(map.getZoom() + 2 + index);
+}
+
+function cancel() {
+    vector.clearLayers();
+    $('#geometry').val('');
+    updateSubmitBtnStatus();
+    $('#help-step1').show();
+    $('#partition').hide();
+    grid.hide();
+}
+$('#cancel').click(function() {
+    cancel();
+    return false;
+});
+$('form').submit(function() {
+    window.setTimeout(function() {
+        $('#id_submit')
+            .attr('disabled', 'disabled');
+        $('#loading').show();
+    }, 0);
+});

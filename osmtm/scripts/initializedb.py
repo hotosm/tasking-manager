@@ -29,6 +29,10 @@ def usage(argv):
 from sqlalchemy.orm import configure_mappers
 from sqlalchemy_i18n.manager import translation_manager
 
+from geoalchemy2 import shape
+import geojson
+import shapely
+
 def main(argv=sys.argv):
     if len(argv) != 2:
         usage(argv)
@@ -55,15 +59,20 @@ def main(argv=sys.argv):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
+        geometry='{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
+        geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
+        geometry = shapely.geometry.asShape(geometry)
+        geometry = shape.from_shape(geometry, 4326)
+
         area = Area(
-            geometry='{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
+            geometry
         )
         DBSession.add(area)
 
         project = Project(
-            'Map all primary roads',
-            area
+            'Map all primary roads'
         )
+        project.area = area
         project.short_description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
         project.description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         DBSession.add(project)

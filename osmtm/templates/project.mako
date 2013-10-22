@@ -92,7 +92,6 @@ geometry = loads(str(project.area.geometry.data))
 %>
 var project_id = ${project.id};
 var geometry = ${dumps(geometry)|n};
-var base_url = "${request.route_url('home')}";
 </script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js')}"></script>
 </div>

@@ -104,7 +104,7 @@ class Task(Base):
     y = Column(Integer)
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'))
-    geometry = Column(Geometry('Polygon', srid=4326))
+    geometry = Column(Geometry('MultiPolygon', srid=4326))
     # possible states are:
     # 0 - ready
     # 1 - working
@@ -120,9 +120,7 @@ class Task(Base):
         self.x = x
         self.y = y
         self.zoom = zoom
-        if (geometry is None):
-            geometry = self.to_polygon()
-        self.geometry = ST_Transform(elements.WKTElement(geometry.wkt, 3857), 4326)
+        self.geometry = ST_Multi(geometry)
 
     def to_polygon(self):
         # task size (in meters) at the required zoom level
@@ -196,9 +194,6 @@ class Area(Base):
     geometry = Column(Geometry('MultiPolygon', srid=4326))
 
     def __init__(self, geometry):
-        geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
-        geometry = shapely.geometry.asShape(geometry)
-        geometry = shape.from_shape(geometry, 4326)
         self.geometry = ST_Multi(geometry)
 
 # A project corresponds to a given mapping job to do on a given area
@@ -234,9 +229,8 @@ class Project(Base, Translatable):
     def get_locale(self):
         pass
 
-    def __init__(self, name, area, user=None):
+    def __init__(self, name, user=None):
         self.name = name
-        self.area = area
         self.status = 2
         self.created = datetime.datetime.now()
         self.last_update = datetime.datetime.now()
@@ -250,16 +244,34 @@ class Project(Base, Translatable):
 
         tasks = []
         for i in get_tiles_in_geom(geom_3857, zoom):
-            tasks.append(Task(i[0], i[1], zoom, i[2]))
+            geometry = ST_Transform(shape.from_shape(i[2], 3857), 4326)
+            tasks.append(Task(i[0], i[1], zoom, geometry))
         self.tasks = tasks
         self.zoom = zoom
+
+    def import_from_geojson(self, input):
+        collection = geojson.loads(input, object_hook=geojson.GeoJSON.to_instance)
+
+        tasks = []
+        for feature in collection.features:
+            geometry = shapely.geometry.asShape(feature.geometry)
+            geometry = shape.from_shape(geometry, 4326)
+            tasks.append(Task(None, None, None, geometry))
+        self.tasks = tasks
+
+        tasks = DBSession.query(Task.geometry).filter(Task.project_id==self.id).all()
+        self.area = Area(tasks[0].geometry)
 
     def as_dict(self, locale=None):
         if locale:
             self.get_locale = lambda: locale
 
-        geometry_as_shape = shape.to_shape(self.area.geometry)
-        centroid = geometry_as_shape.centroid
+        if self.area is not None:
+            geometry_as_shape = shape.to_shape(self.area.geometry)
+            centroid = geometry_as_shape.centroid
+        else:
+            from shapely.geometry import Point
+            centroid = Point(0, 0)
 
         return {
             'id': self.id,

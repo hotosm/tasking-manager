@@ -40,3 +40,26 @@ $('form').submit(function() {
         $('#loading').show();
     }, 0);
 });
+
+// check partition_type choice change
+$('input[name=partition_type]').change(function() {
+    // disable all input
+    $("input[name=partition_type]").parent().siblings()
+        .find('*').attr('disabled', true);
+    // enable the chozen ones
+    $(this).parent().siblings()
+        .find('*').attr('disabled', false);
+    if ($(this).val() == 'grid') {
+        grid.show();
+    } else {
+        grid.hide();
+    }
+});
+$('#import').click(function() {
+    $('input[name=import]').click();
+    return false;
+});
+
+$('input[name=import]').change(function() {
+    $('form').submit();
+});
