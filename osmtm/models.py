@@ -256,6 +256,8 @@ class Project(Base, Translatable):
             geometry = shapely.geometry.asShape(feature.geometry)
             if isinstance(geometry, shapely.geometry.Polygon):
                 geometry = shapely.geometry.MultiPolygon([geometry])
+            elif not isinstance(geometry, shapely.geometry.MultiPolygon):
+                continue
             tasks.append({
                 'geometry': elements.WKTElement(geometry.wkt, 4326),
                 'project_id': self.id
