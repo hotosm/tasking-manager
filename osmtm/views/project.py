@@ -15,6 +15,10 @@ from pyramid.security import authenticated_userid
 from pyramid.i18n import get_locale_name
 from sqlalchemy.sql.expression import and_
 
+from geoalchemy2 import (
+    shape,
+    )
+
 import datetime
 
 import mapnik
@@ -39,42 +43,59 @@ def project(request):
     return dict(page_id='project', project=project,
             history=history,)
 
-
 @view_config(route_name='project_new', renderer='project.new.mako',
         permission="add")
 def project_new(request):
     if 'form.submitted' in request.params:
         user_id = authenticated_userid(request)
         user = DBSession.query(User).get(user_id)
-
-        area = Area(
-            request.params['geometry']
-        )
-
-        DBSession.add(area)
-        DBSession.flush()
-
         project = Project(
-            request.params['name'],
-            area,
+            u'Untitled project',
             user
         )
 
         DBSession.add(project)
         DBSession.flush()
-        return HTTPFound(location = route_url('project_partition', request, project=project.id))
+        if request.params['type'] == 'grid':
+            return HTTPFound(location = route_url('project_partition_grid',
+                request, project=project.id))
+        else:
+            return HTTPFound(location = route_url('project_partition_import',
+                request, project=project.id))
+
     return dict(page_id='project_new')
 
-@view_config(route_name='project_partition', renderer='project.partition.mako',
+@view_config(route_name='project_partition_grid',
+        renderer='project.partition.grid.mako',
         permission="edit")
-def project_partition(request):
+def project_partition_grid(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
 
-    if 'form.submitted' in request.params:
+    if 'zoom' in request.params:
         zoom = int(request.params['zoom'])
-        project.auto_fill(zoom)
 
+        import shapely
+        geometry = request.params['geometry']
+        geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
+        geometry = shapely.geometry.asShape(geometry)
+        geometry = shape.from_shape(geometry, 4326)
+        project.area = Area(geometry)
+        project.auto_fill(zoom)
+        return HTTPFound(location = route_url('project_edit', request, project=project.id))
+
+    return dict(page_id='project_partition', project=project)
+
+@view_config(route_name='project_partition_import',
+        renderer='project.partition.import.mako',
+        permission="edit")
+def project_partition_import(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    if 'import' in request.params:
+        input_file = request.POST['import'].file
+        project.import_from_geojson(input_file.read())
         return HTTPFound(location = route_url('project_edit', request, project=project.id))
 
     return dict(page_id='project_partition', project=project)

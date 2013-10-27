@@ -31,6 +31,9 @@ comments = []
 if user is not None:
     comments = DBSession.query(TaskComment).filter(TaskComment.task_history.has(prev_user_id=user.id)).all()
 %>
+    <script> 
+        var base_url = "${request.route_url('home')}";
+    </script>
 
   </head>
   <body id="${page_id}">

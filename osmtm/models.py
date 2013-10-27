@@ -14,7 +14,7 @@ from sqlalchemy import (
 from geoalchemy2 import (
     Geometry,
     shape,
-    elements
+    elements,
     )
 from geoalchemy2.functions import (
     ST_Transform,
@@ -24,6 +24,18 @@ from geoalchemy2.functions import (
 
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
+    type = Geometry
+
+class ST_Collect(GenericFunction):
+    name = 'ST_Collect'
+    type = Geometry
+
+class ST_Convexhull(GenericFunction):
+    name = 'ST_Convexhull'
+    type = Geometry
+
+class ST_SetSRID(GenericFunction):
+    name = 'ST_SetSRID'
     type = Geometry
 
 import geojson
@@ -38,9 +50,7 @@ from sqlalchemy.orm import (
     )
 
 from .utils import (
-    TileBuilder,
     get_tiles_in_geom,
-    max
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -104,7 +114,7 @@ class Task(Base):
     y = Column(Integer)
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'))
-    geometry = Column(Geometry('Polygon', srid=4326))
+    geometry = Column(Geometry('MultiPolygon', srid=4326))
     # possible states are:
     # 0 - ready
     # 1 - working
@@ -116,27 +126,14 @@ class Task(Base):
     update = Column(DateTime)
     history = relationship(TaskHistory, cascade="all, delete, delete-orphan")
 
-    def __init__(self, x, y, zoom, geometry=None):
+    def __init__(self, x, y, zoom, geometry):
         self.x = x
         self.y = y
         self.zoom = zoom
-        if (geometry is None):
-            geometry = self.to_polygon()
-        self.geometry = ST_Transform(elements.WKTElement(geometry.wkt, 3857), 4326)
-
-    def to_polygon(self):
-        # task size (in meters) at the required zoom level
-        step = max/(2**(self.zoom - 1))
-        tb = TileBuilder(step)
-        return tb.create_square(self.x, self.y)
+        self.geometry = ST_Multi(geometry)
 
     def add_comment(self, comment):
         self.history[-1].comment = TaskComment(comment)
-
-@event.listens_for(Task, "before_insert")
-def before_update(mapper, connection, target):
-    d = datetime.datetime.now()
-    target.update = d
 
 @event.listens_for(Task, "before_update")
 def before_update(mapper, connection, target):
@@ -196,10 +193,7 @@ class Area(Base):
     geometry = Column(Geometry('MultiPolygon', srid=4326))
 
     def __init__(self, geometry):
-        geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
-        geometry = shapely.geometry.asShape(geometry)
-        geometry = shape.from_shape(geometry, 4326)
-        self.geometry = ST_Multi(geometry)
+        self.geometry = ST_SetSRID(ST_Multi(geometry), 4326)
 
 # A project corresponds to a given mapping job to do on a given area
 # Example 1: trace the major roads
@@ -234,9 +228,8 @@ class Project(Base, Translatable):
     def get_locale(self):
         pass
 
-    def __init__(self, name, area, user=None):
+    def __init__(self, name, user=None):
         self.name = name
-        self.area = area
         self.status = 2
         self.created = datetime.datetime.now()
         self.last_update = datetime.datetime.now()
@@ -250,16 +243,43 @@ class Project(Base, Translatable):
 
         tasks = []
         for i in get_tiles_in_geom(geom_3857, zoom):
-            tasks.append(Task(i[0], i[1], zoom, i[2]))
+            geometry = ST_Transform(shape.from_shape(i[2], 3857), 4326)
+            tasks.append(Task(i[0], i[1], zoom, geometry))
         self.tasks = tasks
         self.zoom = zoom
+
+    def import_from_geojson(self, input):
+        collection = geojson.loads(input, object_hook=geojson.GeoJSON.to_instance)
+
+        tasks = []
+        for feature in collection.features:
+            geometry = shapely.geometry.asShape(feature.geometry)
+            if isinstance(geometry, shapely.geometry.Polygon):
+                geometry = shapely.geometry.MultiPolygon([geometry])
+            elif not isinstance(geometry, shapely.geometry.MultiPolygon):
+                continue
+            tasks.append({
+                'geometry': elements.WKTElement(geometry.wkt, 4326),
+                'project_id': self.id
+            })
+        # bulk insert
+        insert = Task.__table__.insert()
+        DBSession.execute(insert, tasks)
+
+        bounds = DBSession.query(ST_Convexhull(ST_Collect(Task.geometry))) \
+            .filter(Task.project_id==self.id).one()
+        self.area = Area(bounds[0])
 
     def as_dict(self, locale=None):
         if locale:
             self.get_locale = lambda: locale
 
-        geometry_as_shape = shape.to_shape(self.area.geometry)
-        centroid = geometry_as_shape.centroid
+        if self.area is not None:
+            geometry_as_shape = shape.to_shape(self.area.geometry)
+            centroid = geometry_as_shape.centroid
+        else:
+            from shapely.geometry import Point
+            centroid = Point(0, 0)
 
         return {
             'id': self.id,
