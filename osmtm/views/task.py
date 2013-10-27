@@ -48,12 +48,12 @@ def done(request):
     user_id = authenticated_userid(request)
 
     if not user_id:
-        raise HTTPUnauthorized()
+        return HTTPUnauthorized()
 
     user = session.query(User).get(user_id)
 
     if not user:
-        raise HTTPUnauthorized()
+        return HTTPUnauthorized()
 
     task.state = 2
     task.user = None
@@ -68,12 +68,12 @@ def lock(request):
     user_id = authenticated_userid(request)
 
     if not user_id:
-        raise HTTPUnauthorized()
+        return HTTPUnauthorized()
 
     user = session.query(User).get(user_id)
 
     if not user:
-        raise HTTPUnauthorized()
+        return HTTPUnauthorized()
 
     task = session.query(Task).get(task_id)
 
@@ -101,12 +101,12 @@ def invalidate(request):
     user_id = authenticated_userid(request)
 
     if not user_id:
-        raise HTTPUnauthorized()
+        return HTTPUnauthorized()
 
     user = session.query(User).get(user_id)
 
     if not user:
-        raise HTTPUnauthorized()
+        return HTTPUnauthorized()
 
     task = session.query(Task).get(task_id)
 
@@ -127,12 +127,12 @@ def split(request):
     user_id = authenticated_userid(request)
 
     if not user_id:
-        raise HTTPUnauthorized()
+        return HTTPUnauthorized()
 
     user = session.query(User).get(user_id)
 
     if not user:
-        raise HTTPUnauthorized()
+        return HTTPUnauthorized()
 
     task = session.query(Task).get(task_id)
 
