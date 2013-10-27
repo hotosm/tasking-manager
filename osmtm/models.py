@@ -14,7 +14,7 @@ from sqlalchemy import (
 from geoalchemy2 import (
     Geometry,
     shape,
-    elements
+    elements,
     )
 from geoalchemy2.functions import (
     ST_Transform,
@@ -24,6 +24,18 @@ from geoalchemy2.functions import (
 
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
+    type = Geometry
+
+class ST_Collect(GenericFunction):
+    name = 'ST_Collect'
+    type = Geometry
+
+class ST_Convexhull(GenericFunction):
+    name = 'ST_Convexhull'
+    type = Geometry
+
+class ST_SetSRID(GenericFunction):
+    name = 'ST_SetSRID'
     type = Geometry
 
 import geojson
@@ -114,7 +126,7 @@ class Task(Base):
     update = Column(DateTime)
     history = relationship(TaskHistory, cascade="all, delete, delete-orphan")
 
-    def __init__(self, x, y, zoom, geometry=None):
+    def __init__(self, x, y, zoom, geometry):
         self.x = x
         self.y = y
         self.zoom = zoom
@@ -122,11 +134,6 @@ class Task(Base):
 
     def add_comment(self, comment):
         self.history[-1].comment = TaskComment(comment)
-
-@event.listens_for(Task, "before_insert")
-def before_update(mapper, connection, target):
-    d = datetime.datetime.now()
-    target.update = d
 
 @event.listens_for(Task, "before_update")
 def before_update(mapper, connection, target):
@@ -186,7 +193,7 @@ class Area(Base):
     geometry = Column(Geometry('MultiPolygon', srid=4326))
 
     def __init__(self, geometry):
-        self.geometry = ST_Multi(geometry)
+        self.geometry = ST_SetSRID(ST_Multi(geometry), 4326)
 
 # A project corresponds to a given mapping job to do on a given area
 # Example 1: trace the major roads
@@ -247,12 +254,19 @@ class Project(Base, Translatable):
         tasks = []
         for feature in collection.features:
             geometry = shapely.geometry.asShape(feature.geometry)
-            geometry = shape.from_shape(geometry, 4326)
-            tasks.append(Task(None, None, None, geometry))
-        self.tasks = tasks
+            if isinstance(geometry, shapely.geometry.Polygon):
+                geometry = shapely.geometry.MultiPolygon([geometry])
+            tasks.append({
+                'geometry': elements.WKTElement(geometry.wkt, 4326),
+                'project_id': self.id
+            })
+        # bulk insert
+        insert = Task.__table__.insert()
+        DBSession.execute(insert, tasks)
 
-        tasks = DBSession.query(Task.geometry).filter(Task.project_id==self.id).all()
-        self.area = Area(tasks[0].geometry)
+        bounds = DBSession.query(ST_Convexhull(ST_Collect(Task.geometry))) \
+            .filter(Task.project_id==self.id).one()
+        self.area = Area(bounds[0])
 
     def as_dict(self, locale=None):
         if locale:
