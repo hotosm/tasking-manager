@@ -4,7 +4,11 @@ $('#import').click(function() {
 });
 
 $('input[name=import]').change(function() {
-    $('form').submit();
+    if ($(this).val().substr(-8) != '.geojson') {
+        alert("Please provide a .geojson file");
+    } else {
+        $('form').submit();
+    }
 });
 $('form').submit(function() {
     window.setTimeout(function() {
