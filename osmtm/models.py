@@ -259,7 +259,7 @@ class Project(Base, Translatable):
             elif not isinstance(geometry, shapely.geometry.MultiPolygon):
                 continue
             tasks.append({
-                'geometry': elements.WKTElement(geometry.wkt, 4326),
+                'geometry': 'SRID=4326;%s' % geometry.wkt,
                 'project_id': self.id
             })
         # bulk insert
