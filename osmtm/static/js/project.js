@@ -340,7 +340,7 @@ $.fn.slide = function(type) {
 };
 
 (function check_for_updates(){
-    var interval = 5000;
+    var interval = 20000;
     setTimeout(function(){
         $.ajax({
             url: base_url + "project/" + project_id + "/check_for_updates",
