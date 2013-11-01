@@ -50,7 +50,9 @@ from sqlalchemy.orm import (
     )
 
 from .utils import (
+    TileBuilder,
     get_tiles_in_geom,
+    max
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -126,11 +128,21 @@ class Task(Base):
     update = Column(DateTime)
     history = relationship(TaskHistory, cascade="all, delete, delete-orphan")
 
-    def __init__(self, x, y, zoom, geometry):
+    def __init__(self, x, y, zoom, geometry=None):
         self.x = x
         self.y = y
         self.zoom = zoom
+        if geometry is None:
+            geometry = self.to_polygon()
+            geometry = ST_Transform(shape.from_shape(geometry, 3857), 4326)
+
         self.geometry = ST_Multi(geometry)
+
+    def to_polygon(self):
+        # task size (in meters) at the required zoom level
+        step = max/(2**(self.zoom - 1))
+        tb = TileBuilder(step)
+        return tb.create_square(self.x, self.y)
 
     def add_comment(self, comment):
         self.history[-1].comment = TaskComment(comment)
