@@ -9,6 +9,8 @@ from sqlalchemy import (
     DateTime,
     event,
     inspect,
+    func,
+    and_
     )
 
 from geoalchemy2 import (
@@ -306,12 +308,13 @@ class Project(Base, Translatable):
         }
 
     def get_done(self):
-        total = 0
-        done = 0
-        for task in self.tasks:
-            total += 1
-            if task.state >= 2:
-                done += 1
+        total = DBSession.query(Task) \
+            .filter(Task.project_id==self.id) \
+            .count()
+        done = DBSession.query(Task) \
+            .filter(and_(Task.project_id==self.id, Task.state >= 2)) \
+            .count()
+
             # FIXME it would be nice to get percent done based on area instead
             # the following works but is slow
             #area = DBSession.execute(ST_Area(task.geometry)).scalar()
