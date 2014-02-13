@@ -10,6 +10,12 @@ from .models import (
     Project
     )
 
+from geoalchemy2 import (
+    Geometry,
+    shape,
+    elements,
+    )
+
 from BeautifulSoup import BeautifulSoup
 
 from sqlalchemy_i18n.manager import translation_manager
@@ -28,13 +34,19 @@ def _initTestingDB():
     Base.metadata.create_all(engine)
 
     with transaction.manager:
-        area = Area(
-            '{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
-        )
+        import shapely
+        import geojson
+        geometry = '{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
+        geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
+        geometry = shapely.geometry.asShape(geometry)
+        geometry = shape.from_shape(geometry, 4326)
+
+        area = Area(geometry)
+
         project = Project(
             u'Short project description',
-            area
         )
+        project.area = area
         DBSession.add(project)
         project.auto_fill(12)
 
@@ -44,6 +56,7 @@ def _registerRoutes(config):
     config.add_route('project', '/project/{project}')
     config.add_route('project_edit', '/project/{project}/edit')
     config.add_route('project_partition', '/project/{project}/partition')
+    config.add_route('project_partition_grid', '/project/{project}/partition/grid')
 
 class TestProject(unittest.TestCase):
     def setUp(self):
@@ -69,7 +82,7 @@ class TestProject(unittest.TestCase):
         response = project(request)
         self.assertEqual(response.location, 'http://example.com/')
 
-class TestProjectNew(unittest.TestCase):
+class TestProjectNewGrid(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -90,10 +103,11 @@ class TestProjectNew(unittest.TestCase):
         request.params = {
             'form.submitted': True,
             'name':u'NewProject',
-            'geometry':'{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}'
+            'geometry':'{"type":"Polygon","coordinates":[[[7.237243652343749,41.25922682850892],[7.23175048828125,41.12074559016745],[7.415771484374999,41.20552261955812],[7.237243652343749,41.25922682850892]]]}',
+            'type': 'grid'
         }
         response = project_new(request)
-        self.assertEqual(response.location, 'http://example.com/project/2/partition')
+        self.assertEqual(response.location, 'http://example.com/project/2/partition/grid')
 
 class TestProjectEdit(unittest.TestCase):
 
