@@ -4,7 +4,7 @@ $('#import').click(function() {
 });
 
 $('input[name=import]').change(function() {
-    if ($(this).val().substr(-8) != '.geojson') {
+    if ($(this).val().substr(-4) != 'json') {
         alert("Please provide a .geojson file");
     } else {
         $('form').submit();
