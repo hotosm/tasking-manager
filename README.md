@@ -57,6 +57,12 @@ Now you need to create the database. We're assuming that you have PostGIS
 installed. If it's not the case, see instructions below.
 We also assume that there's a `postgis_template` database already existing.
 
+First create a `www-data` db user. Give it `www-data` as password when prompted:
+
+    sudo -u postgres createuser -SDRP www-data
+
+Then create the database:
+
     sudo -u postgres sh osmtm/scripts/create_db.sh
 
 Launch the application
