@@ -172,8 +172,8 @@ def random_task(request):
     taskgetter = session.query(Task) \
         .filter_by(project_id=project_id, state=0)
     count = taskgetter.count()
-    atask = taskgetter.offset(random.randint(0, count-1)).first()
-    if atask != None:
+    if count != 0:
+        atask = taskgetter.offset(random.randint(0, count-1)).first()
         return HTTPFound(location = route_url('project', request, project=project_id) + "#task/%i" % atask.id)
 
     request.session.flash("Random task... none available! Sorry.")
