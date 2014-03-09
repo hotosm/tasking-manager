@@ -78,7 +78,7 @@ Installation for Mac users.
 The following should create an `osmtm` database:
 
     brew install postgis
-    sh osmtm/scripts/postgis_installation_mac.sh
+    sh osmtm/scripts/install_postgis_mac.sh
 
 Styles
 ------
