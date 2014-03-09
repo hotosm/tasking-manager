@@ -1,4 +1,5 @@
 from pyramid.view import view_config
+from pyramid.url import route_url
 from pyramid.httpexceptions import (
     HTTPFound,
     HTTPBadRequest,
@@ -15,6 +16,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import and_
 
 from pyramid.security import authenticated_userid
+
+import random
 
 @view_config(route_name='task_xhr', renderer='task.mako',
         http_cache=0)
@@ -159,3 +162,20 @@ def get_locked_task(project_id, user):
         return session.query(Task).filter(filter).one()
     except NoResultFound, e:
         return None
+
+@view_config(route_name='task_random', http_cache=0)
+def random_task(request):
+    "Gets a random not-done task."
+    session = DBSession()
+    project_id = request.matchdict['project']
+
+    taskgetter = session.query(Task) \
+        .filter_by(project_id=project_id, state=0)
+    count = taskgetter.count()
+    atask = taskgetter.offset(random.randint(0, count-1)).first()
+    if atask != None:
+        return HTTPFound(location = route_url('project', request, project=project_id) + "#task/%i" % atask.id)
+
+    request.session.flash("Random task... none available! Sorry.")
+    return HTTPFound(location = route_url('project', request, project=project_id))
+
