@@ -98,7 +98,7 @@ msgid "Unlocked"
 msgstr "Débloqué"
 
 #: osmtm/templates/task.history.mako:29
-msgid "Nothing has happen yet."
+msgid "Nothing has happened yet."
 msgstr "Rien ne s'est encore passé."
 
 #: osmtm/templates/task.mako:11

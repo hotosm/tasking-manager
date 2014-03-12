@@ -26,7 +26,7 @@
 % endfor
 
 % if len(history) == 0:
-<div>${_('Nothing has happen yet.')}</div>
+<div>${_('Nothing has happened yet.')}</div>
 % endif
 
 <script>$('.timeago').timeago()
