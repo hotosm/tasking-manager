@@ -31,7 +31,7 @@ comments = []
 if user is not None:
     comments = DBSession.query(TaskComment).filter(TaskComment.task_history.has(prev_user_id=user.id)).all()
 %>
-    <script> 
+    <script>
         var base_url = "${request.route_url('home')}";
     </script>
 
@@ -74,10 +74,10 @@ ${message}
     <%block name="content"></%block>
     <footer class="footer">
       <div class="container">
-        <p class="span6">Designed and built for the<a>Humanitarian OpenStreetMap Team</a>
-          <with>initial sponsorship from the Australia-Indonesia Facility for Disaster Reduction.</with>
+        <p class="span6">Designed and built for the <a>Humanitarian OpenStreetMap Team</a> with
+		 initial sponsorship from the Australia-Indonesia Facility for Disaster Reduction.
         </p>
-        <p class="pull-right">Fork the code on<a href="http://github.com/hotosm/osm-tasking-manager">github</a>.
+        <p class="pull-right">Fork the code on <a href="http://github.com/hotosm/osm-tasking-manager">github</a>.
 
         </p>
       </div>
