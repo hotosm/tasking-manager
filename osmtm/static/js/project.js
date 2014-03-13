@@ -149,6 +149,42 @@ $(document).on('click', '#split', {direction: 'next'}, function(e) {
     return false;
 });
 
+$(document).on('click', '#random', function(e) {
+    $.getJSON($('#random').attr('href'), e.formData, function(data) {
+
+        tiles.redraw();
+
+        // clear UTF Grid cache and update
+        var i;
+        for (i in utf_layer._cache) {
+            delete utf_layer._cache[i];
+        }
+        utf_layer._update();
+
+        if (data.task) {
+            var task = data.task;
+            loadTask(task.id);
+            location.hash = ["task", task.id].join('/');
+            return false;
+        }else{
+            $('#task_msg').html("Error: random task should have returned a task ID but did not").show()
+        }
+        if (data.msg) {
+            $('#task_msg').html(data.msg).show()
+                .delay(3000)
+                .fadeOut();
+        }
+        clearSelection();
+    }).fail(function(error) {
+        if (error.status == 401) {
+            if (confirm('Please login first')) {
+                window.location = login_url + '?came_from=' + encodeURIComponent(window.location.href);
+            }
+        }
+    });
+    return false;
+});
+
 $(document).on('submit', 'form', function(e) {
     var form = this;
     function load() {

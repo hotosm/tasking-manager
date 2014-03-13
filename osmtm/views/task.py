@@ -163,7 +163,7 @@ def get_locked_task(project_id, user):
     except NoResultFound, e:
         return None
 
-@view_config(route_name='task_random', http_cache=0)
+@view_config(route_name='task_random', http_cache=0, renderer='json')
 def random_task(request):
     "Gets a random not-done task."
     session = DBSession()
@@ -174,8 +174,7 @@ def random_task(request):
     count = taskgetter.count()
     if count != 0:
         atask = taskgetter.offset(random.randint(0, count-1)).first()
-        return HTTPFound(location = route_url('project', request, project=project_id) + "#task/%i" % atask.id)
+        return dict(success=True, task=dict(id=atask.id))
 
-    request.session.flash("Random task... none available! Sorry.")
-    return HTTPFound(location = route_url('project', request, project=project_id))
+    return dict(success=False, msg="Random task... none available! Sorry.")
 
