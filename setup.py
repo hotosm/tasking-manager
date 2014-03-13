@@ -7,7 +7,7 @@ README = open(os.path.join(here, 'README.md')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
-    'pyramid',
+    'pyramid==1.4',
     #'SQLAlchemy', # should be installed along with GeoAlchemy2
     'transaction',
     'pyramid_tm',

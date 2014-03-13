@@ -94,9 +94,15 @@ def project_partition_import(request):
     project = DBSession.query(Project).get(id)
 
     if 'import' in request.params:
-        input_file = request.POST['import'].file
-        project.import_from_geojson(input_file.read())
-        return HTTPFound(location = route_url('project_edit', request, project=project.id))
+        try:
+            input_file = request.POST['import'].file
+            count = project.import_from_geojson(input_file.read())
+            request.session.flash("Successfully imported %d geometries" % count,
+                'success')
+            return HTTPFound(location = route_url('project_edit', request, project=project.id))
+        except Exception, e:
+            request.session.flash("Sorry, this is not a JSON valid file. <br />%s"
+                % e.message, 'alert')
 
     return dict(page_id='project_partition', project=project)
 
