@@ -182,7 +182,7 @@ def random_task(request):
     count = taskgetter.count()
     if count != 0:
         atask = taskgetter.offset(random.randint(0, count-1)).first()
-        return HTTPFound(location = route_url('project', request, project=project_id) + "#task/%i" % atask.id)
+        return dict(success=True, task=dict(id=atask.id))
 
     # second search attempt - if the non-bordering constraint gave us no hits, we discard that constraint
     taskgetter = session.query(Task) \
