@@ -1,5 +1,5 @@
 $().ready(function() {
-    $('#flash').fadeIn().delay(2000).fadeOut(400);
+    $('.flash').fadeIn().delay(2000).fadeOut(800);
     $('.timeago').timeago();
 
 

@@ -57,14 +57,37 @@ if user is not None:
         </div>
       </div>
     </div>
-% if  request.session.peek_flash():
-
+% if  request.session.peek_flash('alert'):
     <div class="container">
       <div class="row">
-          <div id="flash" class="alert">
+        <div class="flash alert alert-error">
+<% flash = request.session.pop_flash('alert') %>
+% for message in flash:
+${message | n}
+%endfor
+        </div>
+      </div>
+    </div>
+% endif
+% if  request.session.peek_flash('success'):
+    <div class="container">
+      <div class="row">
+        <div class="flash alert alert-success">
+<% flash = request.session.pop_flash('success') %>
+% for message in flash:
+${message | n}
+%endfor
+        </div>
+      </div>
+    </div>
+% endif
+% if  request.session.peek_flash():
+    <div class="container">
+      <div class="row">
+        <div class="flash alert">
 <% flash = request.session.pop_flash() %>
 % for message in flash:
-${message}
+${message | n}
 %endfor
         </div>
       </div>
