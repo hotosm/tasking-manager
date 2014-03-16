@@ -42,7 +42,7 @@ if locked_task is not None:
 else:
     tooltip = _("Lock this task to tell others that you are currently working on it.")
 %>
-    <a id="lock" href="${request.route_url('task_lock', id=task.id)}"
+    <a id="lock" href="${request.route_url('task_lock', task=task.id, project=task.project_id)}"
        rel="tooltip" data-original-title="${tooltip}"
        class="btn btn-small btn-primary ${disabled}">
        <i class="icon-lock icon-white"></i> ${_('Lock')}
@@ -55,7 +55,7 @@ else:
           disabled = "disabled"
           tooltip = "You cannot split this task more."
       %>
-        <a id="split" href="${request.route_url('task_split', id=task.id)}"
+        <a id="split" href="${request.route_url('task_split', task=task.id, project=task.project_id)}"
            rel="tooltip" data-original-title="${tooltip}"
            data-confirm="${_('Are you sure you want to split this task?')}"
            class="btn btn-small ${disabled}">
@@ -80,11 +80,11 @@ text = _('Task locked by ${username}', mapping={'username': username})
 %>
     <p>${text|n}.&nbsp;
         % if  task.user == user:
-        <a id="unlock" href="${request.route_url('task_unlock', id=task.id)}">${_('Unlock')}</a>
+        <a id="unlock" href="${request.route_url('task_unlock', task=task.id, project=task.project_id)}">${_('Unlock')}</a>
         % endif
     </p>
     % if  task.user == user:
-        <form action="${request.route_url('task_done', id=task.id)}" method="POST" class="form-horizontal">
+        <form action="${request.route_url('task_done', task=task.id, project=task.project_id)}" method="POST" class="form-horizontal">
           <p>
           <button type="submit" class="btn btn-success btn-small"><i class="icon-ok icon-white"></i> ${_('Mark task as done')}</button>
           </p>
@@ -96,7 +96,7 @@ text = _('Task locked by ${username}', mapping={'username': username})
 <%
 tooltip = _("Invalidate this task if you consider it needs more work.")
 %>
-    <form action="${request.route_url('task_invalidate', id=task.id)}" method="POST" class="form-horizontal">
+    <form action="${request.route_url('task_invalidate', task=task.id, project=task.project_id)}" method="POST" class="form-horizontal">
         <button type="submit" rel="tooltip" data-original-title="${tooltip}" class="btn btn-danger btn-small"><i class="icon-thumbs-down icon-white"></i> ${_('Invalidate')}</button>
         <div id="commentModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
           <div class="modal-header">

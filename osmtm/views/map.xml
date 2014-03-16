@@ -6,9 +6,11 @@
   </Style>
   <Style name="tile">
     <Rule>
+      <Filter>([state] != 4)</Filter>
       <LineSymbolizer stroke-width="0.5" stroke="#555" offset="0.2"/>
     </Rule>
     <Rule>
+        <Filter>([state] != 4)</Filter>
         <PolygonSymbolizer fill-opacity="0.2" fill="#ccc" />
     </Rule>
     <Rule>

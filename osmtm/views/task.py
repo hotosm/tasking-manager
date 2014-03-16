@@ -20,13 +20,20 @@ from pyramid.security import authenticated_userid
 
 import random
 
+def get_task(request):
+    task_id = request.matchdict['task']
+    project_id = request.matchdict['project']
+    session = DBSession()
+
+    return session.query(Task).get((project_id, task_id))
+
+
 @view_config(route_name='task_xhr', renderer='task.mako',
         http_cache=0)
 def task_xhr(request):
-    id = request.matchdict['id']
-    session = DBSession()
-    task = session.query(Task).get(id)
+    task = get_task(request)
 
+    session = DBSession()
     user_id = authenticated_userid(request)
     if user_id:
         user = session.query(User).get(user_id)
@@ -35,7 +42,11 @@ def task_xhr(request):
 
     locked_task = get_locked_task(task.project_id, user)
 
-    filter = and_(TaskHistory.task_id==id, TaskHistory.old_state!=None)
+    task_id = request.matchdict['task']
+    project_id = request.matchdict['project']
+    filter = and_(TaskHistory.task_id==task_id,
+        TaskHistory.project_id==project_id,
+        TaskHistory.old_state!=None)
     history = session.query(TaskHistory).filter(filter) \
         .order_by(TaskHistory.id.desc()).all()
     return dict(task=task,
@@ -45,15 +56,14 @@ def task_xhr(request):
 
 @view_config(route_name='task_done', renderer='json')
 def done(request):
-    id = request.matchdict['id']
-    session = DBSession()
-    task = session.query(Task).get(id)
+    task = get_task(request)
 
     user_id = authenticated_userid(request)
 
     if not user_id:
         return HTTPUnauthorized()
 
+    session = DBSession()
     user = session.query(User).get(user_id)
 
     if not user:
@@ -67,19 +77,18 @@ def done(request):
 
 @view_config(route_name='task_lock', renderer="json")
 def lock(request):
-    task_id = request.matchdict['id']
-    session = DBSession()
     user_id = authenticated_userid(request)
 
     if not user_id:
         return HTTPUnauthorized()
 
+    session = DBSession()
     user = session.query(User).get(user_id)
 
     if not user:
         return HTTPUnauthorized()
 
-    task = session.query(Task).get(task_id)
+    task = get_task(request)
 
     task.user = user
     task.state = 1 # working
@@ -88,31 +97,29 @@ def lock(request):
 
 @view_config(route_name='task_unlock', renderer="json")
 def unlock(request):
-    task_id = request.matchdict['id']
-    session = DBSession()
-
-    task = session.query(Task).get(task_id)
+    task = get_task(request)
 
     task.user = None
     task.state = 0 # working
+
+    session = DBSession()
     session.add(task)
     return dict(success=True, task=dict(id=task.id))
 
 @view_config(route_name='task_invalidate', renderer="json")
 def invalidate(request):
-    task_id = request.matchdict['id']
-    session = DBSession()
     user_id = authenticated_userid(request)
 
     if not user_id:
         return HTTPUnauthorized()
 
+    session = DBSession()
     user = session.query(User).get(user_id)
 
     if not user:
         return HTTPUnauthorized()
 
-    task = session.query(Task).get(task_id)
+    task = get_task(request)
 
     task.user = user
     task.state = 0
@@ -126,19 +133,18 @@ def invalidate(request):
 
 @view_config(route_name='task_split', renderer='json')
 def split(request):
-    task_id = request.matchdict['id']
-    session = DBSession()
     user_id = authenticated_userid(request)
 
     if not user_id:
         return HTTPUnauthorized()
 
+    session = DBSession()
     user = session.query(User).get(user_id)
 
     if not user:
         return HTTPUnauthorized()
 
-    task = session.query(Task).get(task_id)
+    task = get_task(request)
 
     if task.zoom is None or (task.zoom - task.project.zoom) > 0:
         return HTTPBadRequest
@@ -149,7 +155,8 @@ def split(request):
             t = Task(int(task.x)*2 + i, int(task.y)*2 + j, int(task.zoom)+1)
             t.project = task.project
 
-    session.delete(task)
+    task.state = 4
+    session.add(task)
 
     return dict()
 

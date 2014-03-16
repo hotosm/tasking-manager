@@ -53,7 +53,7 @@ function loadTask(id, direction) {
     startLoading();
     function load() {
         $('#task').load(
-            base_url + "task/" + id,
+            base_url + "project/" + project_id + "/task/" + id,
             null,
             function(response, status, request) {
                 stopLoading();

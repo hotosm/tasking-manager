@@ -5,11 +5,12 @@ from sqlalchemy import (
     Text,
     Unicode,
     ForeignKey,
+    ForeignKeyConstraint,
+    PrimaryKeyConstraint,
     Boolean,
     DateTime,
     event,
     inspect,
-    func,
     and_
     )
 
@@ -99,9 +100,9 @@ class User(Base):
 
 class TaskHistory(Base):
     __tablename__ = "tasks_history"
-    id = Column(Integer, primary_key=True, index=True)
-    task_id = Column(Integer, ForeignKey('tasks.id'))
-    project_id = Column(Integer, ForeignKey('project.id'))
+    id = Column(Integer, primary_key=True)
+    task_id = Column(Integer)
+    project_id = Column(Integer)
     old_state = Column(Integer)
     state = Column(Integer, default=0)
     prev_user_id = Column(Integer, ForeignKey('users.id'))
@@ -111,24 +112,45 @@ class TaskHistory(Base):
     update = Column(DateTime)
     comment = relationship("TaskComment", uselist=False, backref='task_history')
 
+    __table_args__ = (ForeignKeyConstraint([task_id, project_id],
+                                           ['tasks.id', 'tasks.project_id']),
+                      {})
+
+def task_id_factory(context):
+    project_id=context.compiled_parameters[0]['project_id']
+
+    sql = """
+        SELECT MAX(id)
+        FROM tasks
+        WHERE project_id='%d'""" % (project_id, )
+
+    result = context.connection.execute(sql).fetchone()[0]
+    if result > 0:
+         return result + 1
+    else:
+        return 1
+
 class Task(Base):
     __tablename__ = "tasks"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, default=task_id_factory)
     x = Column(Integer)
     y = Column(Integer)
     zoom = Column(Integer)
-    project_id = Column(Integer, ForeignKey('project.id'))
+    project_id = Column(Integer, ForeignKey('project.id'), index=True)
     geometry = Column(Geometry('MultiPolygon', srid=4326))
     # possible states are:
     # 0 - ready
     # 1 - working
     # 2 - done
     # 3 - reviewed
+    # 4 - removed
     state = Column(Integer, default=0)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
     update = Column(DateTime)
     history = relationship(TaskHistory, cascade="all, delete, delete-orphan")
+
+    __table_args__ = (PrimaryKeyConstraint('project_id', 'id'), {})
 
     def __init__(self, x, y, zoom, geometry=None):
         self.x = x
@@ -166,7 +188,7 @@ def after_update(mapper, connection, target):
 
 class TaskComment(Base):
     __tablename__ = "tasks_comments"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     task_history_id = Column(Integer, ForeignKey('tasks_history.id'))
     comment = Column(Unicode)
     date = Column(DateTime)
