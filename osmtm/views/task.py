@@ -14,6 +14,7 @@ from ..models import (
 
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import and_
+from geoalchemy2.functions import ST_Union, ST_Disjoint
 
 from pyramid.security import authenticated_userid
 
@@ -165,10 +166,25 @@ def get_locked_task(project_id, user):
 
 @view_config(route_name='task_random', http_cache=0, renderer='json')
 def random_task(request):
-    "Gets a random not-done task."
+    "Gets a random not-done task. First it tries to get one that does not border any in-progress tasks."
     session = DBSession()
     project_id = request.matchdict['project']
 
+    # we will ask about the area occupied by tasks locked by others, so we can steer clear of them
+    state1 = session.query(
+        Task.geometry.ST_Union().label('taskunion')
+        ).filter_by(project_id=project_id, state=1).subquery()
+
+    # first search attempt - all available tasks that do not border busy tasks
+    taskgetter = session.query(Task) \
+        .filter_by(project_id=project_id, state=0) \
+        .filter(Task.geometry.ST_Disjoint(state1.c.taskunion))
+    count = taskgetter.count()
+    if count != 0:
+        atask = taskgetter.offset(random.randint(0, count-1)).first()
+        return dict(success=True, task=dict(id=atask.id))
+
+    # second search attempt - if the non-bordering constraint gave us no hits, we discard that constraint
     taskgetter = session.query(Task) \
         .filter_by(project_id=project_id, state=0)
     count = taskgetter.count()
