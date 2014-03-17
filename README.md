@@ -1,6 +1,8 @@
 OpenStreetMap Tasking Manager
 =============================
 
+[![Build Status](https://travis-ci.org/pgiraud/osm-tasking-manager2.png)](https://travis-ci.org/pgiraud/osm-tasking-manager2)
+
 About
 -----
 
@@ -47,11 +49,7 @@ First install mapnik (using homebrew if on Mac).
 Then, you'll probably need to add a symbolic link to the Mapnik package in your
 virtualenv site-packages:
 
-    ln -s /Library/Python/2.7/site-packages/mapnik env/lib/python2.7/site-packages/
-
-or
-
-    ln -s /usr/lib/pymodules/python2.7/mapnik env/lib/python2.7/site-packages/
+    ln -s $(python -c 'import mapnik, os.path; print(os.path.dirname(mapnik.__file__))') ./env/lib/python2.7/site-packages
 
 Now you need to create the database. We're assuming that you have PostGIS
 installed. If it's not the case, see instructions below.
@@ -68,7 +66,7 @@ Then create the database:
 Launch the application
 ----------------------
 
-    pserve --reload development.ini
+    env/bin/pserve --reload development.ini
 
 POSTGIS Installation
 --------------------
