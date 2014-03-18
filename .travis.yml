@@ -30,3 +30,7 @@ install:
 script:
 - source env/bin/activate
 - env/bin/nosetests
+
+after_success:
+- pip install coveralls
+- coveralls
