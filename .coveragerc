@@ -1,3 +1,4 @@
 [run]
+source = osmtm
 omit = 
     */tests/*
