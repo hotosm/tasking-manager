@@ -16,8 +16,6 @@ from geoalchemy2 import (
     elements,
     )
 
-from BeautifulSoup import BeautifulSoup
-
 from sqlalchemy_i18n.manager import translation_manager
 from sqlalchemy.orm import configure_mappers
 
