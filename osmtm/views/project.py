@@ -165,22 +165,3 @@ def check_for_updates(request):
     if len(tasks) > 0:
         return dict(update=True)
     return dict(update=False)
-
-import tempfile
-import geojson
-from ..utils import parse_osm
-@view_config(route_name='import_osm', renderer='json')
-def import_osm(request):
-    input_file = request.POST['file'].file
-
-    temp = tempfile.NamedTemporaryFile(suffix='.osm')
-    input_file.seek(0)
-    temp.write(input_file.read())
-    temp.flush()
-    collection = parse_osm(temp.name)
-
-    if not collection.geometry:
-        request.session.flash("Sorry, this .osm file doesn't contain a valid relation.")
-        return HTTPBadRequest()
-
-    return geojson.loads(geojson.dumps(collection))

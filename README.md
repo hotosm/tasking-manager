@@ -13,20 +13,6 @@ The application is written in Python using the Pyramid framework.
 
 This is the 2.0 version of the Tasking Manager.
 
-Dependencies
-------------
-
-OSMTM has a set of dependencies that you need to install first.
-
-On debian systems you can do::
-
-    sudo apt-get install build-essential protobuf-compiler libprotobuf-dev libgeos-dev python-dev
-
-On OS X you can do::
-
-    brew install protobuf geos
-
-
 Installation
 ------------
 

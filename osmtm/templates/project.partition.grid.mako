@@ -23,9 +23,9 @@
             <input type="file" val="" name="osm" style="visibility:hidden;height:0;position:absolute;">
             <a id="import_osm"
               data-role="button"
-              class="btn btn-small"
+              class="btn btn-small disabled"
               rel="tooltip"
-              title="Provide a .osm file. You can download it from the OSM API (ex. www.openstreetmap.org/api/0.6/ relation/270485/full)."
+              title="Provide a .osm file. You can download it from the OSM API (ex. www.openstreetmap.org/api/0.6/ relation/270485/full). (not available yet)"
               >Import OSM relation</a>
           </p>
         </div>

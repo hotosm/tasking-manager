@@ -9,7 +9,6 @@ before_install:
 - sudo apt-get update -qq
 - sudo apt-get install postgresql-9.1-postgis
 - sudo apt-get install postgis
-- sudo apt-get install build-essential protobuf-compiler libprotobuf-dev
 - sudo apt-get install -y libmapnik mapnik-utils python-mapnik
 
 install:

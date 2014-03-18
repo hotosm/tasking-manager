@@ -77,61 +77,6 @@ var LatLngsToCoords = function (LatLngs, levelsDeep, reverse) { // (LatLngs, Num
     return coords;
 };
 
-$('#import_osm').click(function() {
-    $('input[name=osm]').click();
-    return false;
-});
-
-$('input[name=osm]').change(function() {
-    var formData = new FormData();
-    formData.append('file', $('input[name=osm]')[0].files[0]);
-    $.ajax({
-        url: '/import_osm',  //Server script to process data
-        type: 'POST',
-        xhr: function() {  // Custom XMLHttpRequest
-            var myXhr = $.ajaxSettings.xhr();
-            if(myXhr.upload){ // Check if upload property exists
-                myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
-            }
-            return myXhr;
-        },
-        //Ajax events
-        //beforeSend: beforeSendHandler,
-        success: function(response) {
-            vector.clearLayers();
-            vector.addData(response);
-            map.fitBounds(vector.getBounds());
-
-            // wait before animation is finished
-            window.setTimeout(
-                function() {
-                    $('#geometry').val(JSON.stringify(response.geometry))
-                        .trigger('change');
-                    updateSubmitBtnStatus();
-                },
-                500
-            );
-        },
-        error: function(response) {
-            // reload page
-            window.location = window.location;
-        },
-        dataType: 'json',
-        //error: errorHandler,
-        // Form data
-        data: formData,
-        //Options to tell jQuery not to process data or worry about content-type.
-        cache: false,
-        contentType: false,
-        processData: false
-    });
-});
-function progressHandlingFunction(e){
-    if(e.lengthComputable){
-        console.log(e.loaded, e.total);
-    }
-}
-
 var buttons = $('#tile_size button');
 buttons.each(function(index, button) {
     //$(button).val(map.getZoom() + index + 2);
