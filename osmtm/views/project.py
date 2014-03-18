@@ -178,4 +178,9 @@ def import_osm(request):
     temp.write(input_file.read())
     temp.flush()
     collection = parse_osm(temp.name)
+
+    if not collection.geometry:
+        request.session.flash("Sorry, this .osm file doesn't contain a valid relation.")
+        return HTTPBadRequest()
+
     return geojson.loads(geojson.dumps(collection))
