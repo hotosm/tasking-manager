@@ -112,6 +112,10 @@ $('input[name=osm]').change(function() {
                 500
             );
         },
+        error: function(response) {
+            // reload page
+            window.location = window.location;
+        },
         dataType: 'json',
         //error: errorHandler,
         // Form data
