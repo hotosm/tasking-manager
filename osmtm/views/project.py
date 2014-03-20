@@ -32,8 +32,7 @@ def project(request):
         request.session.flash("Sorry, this project doesn't  exist")
         return HTTPFound(location = route_url('home', request))
 
-    locale = get_locale_name(request)
-    project.get_locale = lambda: locale
+    project.locale = get_locale_name(request)
 
     filter = and_(TaskHistory.project_id==id, TaskHistory.update!=None)
     history = DBSession.query(TaskHistory). \

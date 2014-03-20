@@ -23,7 +23,7 @@ requires = [
     'shapely',
     'geoalchemy2',
     'Babel',
-    'sqlalchemy-i18n==0.6.13'
+    'sqlalchemy-i18n==0.8.2'
     ]
 
 setup(name='osmtm',
