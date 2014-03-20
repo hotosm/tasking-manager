@@ -68,6 +68,7 @@ Base = declarative_base()
 from sqlalchemy_i18n import (
     Translatable,
     make_translatable,
+    translation_base,
     )
 make_translatable()
 
@@ -244,11 +245,9 @@ class Project(Base, Translatable):
     # 2 - draft
     # 3 - featured
     status = Column(Integer)
-    __translated_columns__ = [
-        Column('name', Unicode, default=u''),
-        Column('description', Unicode, default=u''),
-        Column('short_description', Unicode, default=u''),
-    ]
+
+    locale = 'en'
+
     area_id = Column(Integer, ForeignKey('areas.id'))
     created = Column(DateTime)
     author_id = Column(Integer, ForeignKey('users.id'))
@@ -260,9 +259,6 @@ class Project(Base, Translatable):
 
     zoom = Column(Integer) # is not None when project is auto-filled (grid)
     imagery = Column(Unicode)
-
-    def get_locale(self):
-        pass
 
     def __init__(self, name, user=None):
         self.name = name
@@ -319,7 +315,7 @@ class Project(Base, Translatable):
 
     def as_dict(self, locale=None):
         if locale:
-            self.get_locale = lambda: locale
+            self.locale = locale
 
         if self.area is not None:
             geometry_as_shape = shape.to_shape(self.area.geometry)
@@ -355,6 +351,13 @@ class Project(Base, Translatable):
             #if task.state >= 2:
                 #done = done + area
         return round(done * 100 / total) / 100 if total != 0 else 0
+
+class ProjectTranslation(translation_base(Project)):
+    __tablename__ = 'project_translation'
+
+    name = Column(Unicode(255), default=u'')
+    description = Column(Unicode, default=u'')
+    short_description = Column(Unicode, default=u'')
 
 class License(Base):
     __tablename__ = "licenses"
