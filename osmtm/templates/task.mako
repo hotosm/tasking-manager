@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 <div>
-  <a href="#task/${task.id}">Task #${task.id}</a> in <a href="/project/${task.project_id}">Project #${task.project_id}</a>
+  <a href="#task/${task.id}">Task #${task.id}</a> in <a class="clear" href="#">Project #${task.project_id}</a>
+  <a class="btn btn-small btn-link clear" title="${_('Clear selection')}"><i class="icon-remove"></i></a>
   <p>
     <div class="btn-group">
       <%
