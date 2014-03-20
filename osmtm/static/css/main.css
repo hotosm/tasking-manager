@@ -5588,6 +5588,9 @@ body {
   height: 16px;
   padding-right: 4px;
 }
+#project .linethrough {
+  text-decoration: line-through;
+}
 #project_edit .nav-pills.small {
   font-size: 0.9em;
   margin-bottom: 3px;

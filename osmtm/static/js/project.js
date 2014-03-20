@@ -143,6 +143,9 @@ function onTaskAction(e) {
 $(document).on('click', '#lock', {direction: 'next'}, onTaskAction);
 $(document).on('click', '#unlock', {direction: 'prev'}, onTaskAction);
 $(document).on('click', '#split', {direction: 'next'}, function(e) {
+    if ($(this).hasClass('disabled')) {
+        return false;
+    }
     if (confirm($(this).attr('data-confirm'))) {
         onTaskAction.call(this, e);
     }

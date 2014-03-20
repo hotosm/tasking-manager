@@ -141,7 +141,7 @@ class Task(Base):
     geometry = Column(Geometry('MultiPolygon', srid=4326))
     # possible states are:
     # 0 - ready
-    # 1 - working
+    # 1 - locked
     # 2 - done
     # 3 - reviewed
     # 4 - removed
