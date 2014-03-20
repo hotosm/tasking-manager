@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-10-13 18:11+0200\n"
+"POT-Creation-Date: 2014-03-20 15:36+0100\n"
 "PO-Revision-Date: 2013-09-09 10:08+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: osmtm/templates/base.mako:51
+#: osmtm/templates/base.mako:54
 msgid "login to OpenStreetMap"
 msgstr "S'authentifier"
 
@@ -31,7 +31,9 @@ msgstr "Mis à jour"
 
 #: osmtm/templates/imagery.mako:16
 msgid "Imagery is available to be used for tracing elements."
-msgstr "De l'imagerie satellite ou aérienne est disponible pour tracer les éléments."
+msgstr ""
+"De l'imagerie satellite ou aérienne est disponible pour tracer les "
+"éléments."
 
 #: osmtm/templates/imagery.mako:17
 msgid "You should be able to load it in your favorite editor."
@@ -41,8 +43,9 @@ msgstr "Vous devriez être en mesure de la charger dans votre éditeur préfér�
 msgid ""
 "If you have JOSM running and remote control activated, clicking this link"
 " should automatically load imagery."
-msgstr "Si JOSM est déjà lancé avec le contrôle à distance activé, cliquez"
-" sur ce lien et l'imagerie devrait être automatiquement chargée."
+msgstr ""
+"Si JOSM est déjà lancé avec le contrôle à distance activé, cliquez sur ce"
+" lien et l'imagerie devrait être automatiquement chargée."
 
 #: osmtm/templates/license.mako:5 osmtm/templates/licenses.mako:5
 msgid "Licenses"
@@ -72,9 +75,17 @@ msgstr "Activité"
 msgid "Loading"
 msgstr "Chargement"
 
-#: osmtm/templates/task.empty.mako:2
+#: osmtm/templates/task.empty.mako:3
 msgid "Select a task on the map"
 msgstr "Sélectionnez une tâche sur la carte"
+
+#: osmtm/templates/task.empty.mako:9
+msgid "or"
+msgstr "ou"
+
+#: osmtm/templates/task.empty.mako:15
+msgid "take a task at random"
+msgstr "prendre une tâche au hasard"
 
 #: osmtm/templates/task.history.mako:14
 msgid "Locked"
@@ -101,65 +112,69 @@ msgstr "Débloqué"
 msgid "Nothing has happened yet."
 msgstr "Rien ne s'est encore passé."
 
-#: osmtm/templates/task.mako:11
+#: osmtm/templates/task.mako:4
+msgid "Clear selection"
+msgstr "Effacer la sélection"
+
+#: osmtm/templates/task.mako:12
 msgid "Edit with"
 msgstr "Editer avec"
 
-#: osmtm/templates/task.mako:41
+#: osmtm/templates/task.mako:42
 msgid "You cannot lock more than one task at a time."
 msgstr "Vous ne pouvez pas bloquer plusieurs tâches en même temps."
 
-#: osmtm/templates/task.mako:43
+#: osmtm/templates/task.mako:44
 msgid "Lock this task to tell others that you are currently working on it."
 msgstr ""
 "Bloquer cette tâche pour avertir les autres que vous êtres en train de "
 "travailler dessus."
 
-#: osmtm/templates/task.mako:48
+#: osmtm/templates/task.mako:49
 msgid "Lock"
 msgstr "Bloquer"
 
-#: osmtm/templates/task.mako:60
+#: osmtm/templates/task.mako:61
 msgid "Are you sure you want to split this task?"
 msgstr "Voulez-vous vraiment diviser cette tâche ?"
 
-#: osmtm/templates/task.mako:62
+#: osmtm/templates/task.mako:63
 msgid "Split"
 msgstr "Diviser"
 
-#: osmtm/templates/task.mako:68
+#: osmtm/templates/task.mako:69
 msgid "a task"
 msgstr "une tâche"
 
-#: osmtm/templates/task.mako:69
+#: osmtm/templates/task.mako:70
 msgid "You already have ${task_link} locked."
 msgstr "Vous avez déjà ${task_link} bloquée."
 
-#: osmtm/templates/task.mako:77
+#: osmtm/templates/task.mako:78
 msgid "you"
 msgstr "vous"
 
-#: osmtm/templates/task.mako:79
+#: osmtm/templates/task.mako:80
 msgid "Task locked by ${username}"
 msgstr "Tâche bloquée par ${username}"
 
-#: osmtm/templates/task.mako:83
+#: osmtm/templates/task.mako:84
 msgid "Unlock"
 msgstr "Débloquer"
 
-#: osmtm/templates/task.mako:89
+#: osmtm/templates/task.mako:90
 msgid "Mark task as done"
 msgstr "Marquer comme réalisé"
 
-#: osmtm/templates/task.mako:97
+#: osmtm/templates/task.mako:98
 msgid "Invalidate this task if you consider it needs more work."
 msgstr "Invalidez la tâche si vous considérez que le travail n'est pas complet."
 
-#: osmtm/templates/task.mako:100
+#: osmtm/templates/task.mako:101
 msgid "Invalidate"
 msgstr "Invalider"
 
-#: osmtm/templates/task.mako:105
+#: osmtm/templates/task.mako:106
 msgid ""
 "Please tell why you marked this task as invalid so that the user can "
 "eventually correct his mistakes if any."
@@ -167,19 +182,19 @@ msgstr ""
 "Veuillez indiquer la raison pour laquelle vous avez marqué la tâche comme"
 " invalide afin que le contributeur puisse corriger ses erreurs."
 
-#: osmtm/templates/task.mako:108
+#: osmtm/templates/task.mako:109
 msgid "Your comment here"
 msgstr "Votre commentaire ici"
 
-#: osmtm/templates/task.mako:111
+#: osmtm/templates/task.mako:112
 msgid "Cancel"
 msgstr "Annuler"
 
-#: osmtm/templates/task.mako:112
+#: osmtm/templates/task.mako:113
 msgid "OK"
 msgstr "OK"
 
-#: osmtm/templates/task.mako:119
+#: osmtm/templates/task.mako:120
 msgid "History"
 msgstr "Historique"
 

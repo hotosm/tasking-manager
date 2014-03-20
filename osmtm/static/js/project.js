@@ -148,6 +148,7 @@ $(document).on('click', '#split', {direction: 'next'}, function(e) {
     }
     return false;
 });
+$(document).on('click', '.clear', clearSelection);
 
 $(document).on('click', '#random', function(e) {
     $.getJSON($('#random').attr('href'), e.formData, function(data) {
