@@ -28,19 +28,15 @@ class TestProjectFunctional(unittest.TestCase):
         app = main({}, **settings)
         self.testapp = TestApp(app)
 
-    def tearDown(self):
-        import transaction
-        # we rollback the transaction to prevent actual insertions
-        # in the database
-        transaction.abort()
-
     def _test_project__not_found(self):
         self.testapp.get('/project/1', status=302)
 
     def test_project(self):
+        import transaction
         from osmtm.models import DBSession
         project = self.__create_project()
         DBSession.add(project)
         DBSession.flush()
         project_id = project.id
+        transaction.commit()
         self.testapp.get('/project/%d' % project_id, status=200)
