@@ -30,40 +30,45 @@ To create a virtual Python environment:
     virtualenv --no-site-packages env
     env/bin/python setup.py develop
 
-In order to see jobs and tiles on the maps, you'll need to have Mapnik as
-a Python module.
-First install mapnik (using homebrew if on Mac).
-Then, you'll probably need to add a symbolic link to the Mapnik package in your
-virtualenv site-packages:
+In order to see jobs and tiles on the maps you need to install Mapnik and the
+Mapnik Python extensions (python-mapnik). Version 2.2 of Mapnik is required. On
+Mac use homebrew. On Ubuntu look at
+[https://github.com/mapnik/mapnik/wiki/UbuntuInstallation](https://github.com/mapnik/mapnik/wiki/UbuntuInstallation).
+
+Then, you'll need to add a symbolic link to the Mapnik package in your
+virtualenv site-packages. It can be done with:
 
     ln -s $(python -c 'import mapnik, os.path; print(os.path.dirname(mapnik.__file__))') ./env/lib/python2.7/site-packages
 
-Now you need to create the database. We're assuming that you have PostGIS
-installed. If it's not the case, see instructions below.
-We also assume that there's a `postgis_template` database already existing.
+Database
+~~~~~~~~
 
-First create a `www-data` db user. Give it `www-data` as password when prompted:
+OSMTM requires a PostgreSQL/PostGIS database. Version 2.x of PostGIS is
+required.
+
+First create a database user/role named `www-data`:
 
     sudo -u postgres createuser -SDRP www-data
 
-Then create the database:
+Then create a database named `osmtm`:
 
-    sudo -u postgres sh osmtm/scripts/create_db.sh
+    sudo -u postgres createdb -O www-data osmtm
+    sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
+
+Now edit the `development.ini` file and set the value of `sqlalchemy.url` as
+appropriate. For example:
+
+    sqlalchemy.url = postgresql://your_db_user:your_db_password@localhost/osmtm
+
+You're now ready to do the initial population of the database. An
+`initialize_osmtm_db` script is available in the virtual env for that:
+
+    env/bin/initialize_osmtm_db development.ini
 
 Launch the application
 ----------------------
 
     env/bin/pserve --reload development.ini
-
-POSTGIS Installation
---------------------
-
-Installation for Mac users.
-
-The following should create an `osmtm` database:
-
-    brew install postgis
-    sh osmtm/scripts/install_postgis_mac.sh
 
 Styles
 ------
@@ -76,7 +81,13 @@ soon as you change the css::
 Tests
 -----
 
-The `create_db.sh` script should have created a test database as well.
+The tests use a separate database. Create that database first:
+
+    sudo -u postgres createdb -O www-data osmtm_tests
+    sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
+
+Edit `osmtm/tests/test_project.py` and change the database connection
+string passed to the `create_engine` function as appropriate.
 
 To run the tests, use the following command:
 
