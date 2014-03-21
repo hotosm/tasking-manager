@@ -24,7 +24,8 @@ requires = [
     'shapely',
     'geoalchemy2',
     'Babel',
-    'sqlalchemy-i18n==0.8.2'
+    'sqlalchemy-i18n==0.8.2',
+    'WebTest==2.0.14',
     ]
 
 setup(name='osmtm',
