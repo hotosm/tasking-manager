@@ -90,6 +90,35 @@ function stopLoading() {
     $('#task_loading').fadeOut();
 }
 
+function handleTaskResponse(data, direction) {
+    tiles.redraw();
+
+    // clear UTF Grid cache and update
+    var i;
+    for (i in utf_layer._cache) {
+        delete utf_layer._cache[i];
+    }
+    utf_layer._update();
+
+    if (data.task) {
+        var task = data.task;
+        loadTask(task.id, direction);
+    }
+    if (data.msg) {
+        $('#task_msg').html(data.msg).show()
+            .delay(3000)
+            .fadeOut();
+    }
+    if (data.error_msg) {
+        $('#task_error_msg').html(data.error_msg).show()
+            .delay(3000)
+            .fadeOut();
+    }
+    if (!data.task) {
+        clearSelection();
+    }
+}
+
 function onTaskAction(e) {
 
     if ($(this).hasClass('disabled')) {
@@ -98,39 +127,7 @@ function onTaskAction(e) {
 
     var direction = e.data && e.data.direction;
     $.getJSON(this.href || e.action, e.formData, function(data) {
-
-        tiles.redraw();
-
-        // clear UTF Grid cache and update
-        var i;
-        for (i in utf_layer._cache) {
-            delete utf_layer._cache[i];
-        }
-        utf_layer._update();
-
-        if (data.task) {
-            var task = data.task;
-            loadTask(task.id, direction);
-            return;
-        }
-        if (data.msg) {
-            $('#task_msg').html(data.msg).show()
-                .delay(3000)
-                .fadeOut();
-        }
-        //if (data.error_msg) {
-            //$('#task_error_msg').html(data.error_msg).show()
-                //.delay(3000)
-                //.fadeOut();
-            //return;
-        //}
-        //if (data.split_id) {
-            //splitTask(data.split_id, data.new_tiles);
-        //}
-        //$('#task_actions').slide(direction)
-            //.one('slid', clearSelection);
-        clearSelection();
-        //loadEmptyTask();
+        handleTaskResponse(data, direction);
     }).fail(function(error) {
         if (error.status == 401) {
             if (confirm('Please login first')) {
@@ -202,8 +199,7 @@ $(document).on('submit', 'form', function(e) {
             //data: null
         //});
         $.post(form.action, formData, function(response) {
-            clearSelection();
-            tiles.redraw();
+            handleTaskResponse(response);
         });
     }
     if ($(form).has($('#commentModal')).length > 0) {

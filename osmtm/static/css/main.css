@@ -5474,9 +5474,11 @@ body {
   right: 420px;
 }
 #project #task_msg,
-#project #task_loading {
+#project #task_loading,
+#project #task_error_msg {
   position: absolute;
   top: -40px;
+  right: 4px;
 }
 #project #right-col {
   position: absolute;

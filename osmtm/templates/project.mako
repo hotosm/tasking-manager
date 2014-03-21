@@ -75,6 +75,7 @@ else:
         ${_('Loading')}
       </p>
       <p id="task_msg" class="alert alert-success hide"></p>
+      <p id="task_error_msg" class="alert alert-danger hide"></p>
       <div id="task_empty">
         <%include file="task.empty.mako" />
       </div>

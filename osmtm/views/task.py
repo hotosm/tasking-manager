@@ -12,6 +12,9 @@ from ..models import (
     User
     )
 
+from pyramid.i18n import TranslationStringFactory
+_ = TranslationStringFactory('osmtm')
+
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import and_
 from geoalchemy2.functions import ST_Union, ST_Disjoint
@@ -72,7 +75,7 @@ def done(request):
     task.user = None
     session.add(task)
     return dict(success=True,
-            msg="Task marked as done. Thanks for your contribution")
+            msg=_("Task marked as done. Thanks for your contribution"))
 
 @view_config(route_name='task_lock', renderer="json")
 def lock(request):
@@ -88,6 +91,11 @@ def lock(request):
         return HTTPUnauthorized()
 
     task = get_task(request)
+
+    if task.locked:
+        return dict(success=False,
+                task=dict(id=task.id),
+                error_msg=_("Task already locked."))
 
     task.user = user
     task.locked = True
@@ -129,7 +137,7 @@ def invalidate(request):
     task.add_comment(comment)
 
     return dict(success=True,
-            msg="Task invalidated.")
+            msg=_("Task invalidated."))
 
 @view_config(route_name='task_split', renderer='json')
 def split(request):
@@ -198,5 +206,5 @@ def random_task(request):
         atask = taskgetter.offset(random.randint(0, count-1)).first()
         return dict(success=True, task=dict(id=atask.id))
 
-    return dict(success=False, msg="Random task... none available! Sorry.")
+    return dict(success=False, error_msg=_("Random task... none available! Sorry."))
 

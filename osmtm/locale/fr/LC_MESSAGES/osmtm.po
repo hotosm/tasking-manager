@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-21 16:23+0100\n"
+"POT-Creation-Date: 2014-03-21 17:37+0100\n"
 "PO-Revision-Date: 2013-09-09 10:08+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -221,4 +221,28 @@ msgstr "Se déconnecter"
 #: osmtm/templates/users.mako:5
 msgid "Users"
 msgstr "Utilisateurs"
+
+#: osmtm/views/project.py:32
+msgid "Sorry, this project doesn't  exist"
+msgstr ""
+
+#: osmtm/views/project.py:99
+msgid "Successfully imported ${n} geometries"
+msgstr ""
+
+#: osmtm/views/task.py:75
+msgid "Task marked as done. Thanks for your contribution"
+msgstr "Tâche marquée comme réalisée. Merci pour votre participation."
+
+#: osmtm/views/task.py:95
+msgid "Task already locked."
+msgstr "Tâche déjà bloquée."
+
+#: osmtm/views/task.py:137
+msgid "Task invalidated."
+msgstr "Invalidé"
+
+#: osmtm/views/task.py:206
+msgid "Random task... none available! Sorry."
+msgstr ""
 
