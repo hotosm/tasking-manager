@@ -1,11 +1,9 @@
-OpenStreetMap Tasking Manager
-=============================
+# OpenStreetMap Tasking Manager
 
 [![Build Status](https://travis-ci.org/pgiraud/osm-tasking-manager2.png)](https://travis-ci.org/pgiraud/osm-tasking-manager2)
 [![Coverage Status](https://coveralls.io/repos/pgiraud/osm-tasking-manager2/badge.png)](https://coveralls.io/r/pgiraud/osm-tasking-manager2)
 
-About
------
+## About
 
 OSMTM enables collaborative work on specific areas in OpenStreetMap by defining
 clear workflows to be achieved and by breaking tasks down into pieces.
@@ -14,8 +12,7 @@ The application is written in Python using the Pyramid framework.
 
 This is the 2.0 version of the Tasking Manager.
 
-Installation
-------------
+## Installation
 
 First clone the git repository:
 
@@ -40,8 +37,7 @@ virtualenv site-packages. It can be done with:
 
     ln -s $(python -c 'import mapnik, os.path; print(os.path.dirname(mapnik.__file__))') ./env/lib/python2.7/site-packages
 
-Database
-~~~~~~~~
+### Database
 
 OSMTM requires a PostgreSQL/PostGIS database. Version 2.x of PostGIS is
 required.
@@ -65,21 +61,18 @@ You're now ready to do the initial population of the database. An
 
     env/bin/initialize_osmtm_db development.ini
 
-Launch the application
-----------------------
+## Launch the application
 
     env/bin/pserve --reload development.ini
 
-Styles
-------
+## Styles
 
 The CSS stylesheet are compiled using less. Launch the following command as
 soon as you change the css::
 
     lessc -ru osmtm/static/css/main.less > osmtm/static/css/main.css
 
-Tests
------
+## Tests
 
 The tests use a separate database. Create that database first:
 
