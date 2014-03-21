@@ -1,25 +1,9 @@
-<%
-disabled = ""
-tooltip = ""
-if locked_task is not None:
-  disabled = "disabled"
-  tooltip = _("You cannot lock more than one task at a time.")
-else:
-  tooltip = _("Lock this task to tell others that you are currently working on it.")
-%>
-<p>
-  % if  locked_task is not None:
-<%
-link = '<a href="#task/%s">%s</a>' % (locked_task.id, _('a task'))
-text = _("You already have ${task_link} locked.", mapping={'task_link': link})
-%>
-  <span>&nbsp;${text|n}</span>
-  % endif
-</p>
-<p>
-  <a id="lock" href="${request.route_url('task_lock', task=task.id, project=task.project_id)}"
-     rel="tooltip" data-original-title="${tooltip}"
-     class="btn btn-success ${disabled}">
-     <i class="icon-ok icon-white"></i> ${_('Yes, I want to work on this task')}
-  </a>
-</p>
+## works for ready or invalidated tasks
+% if user and task.user == user:
+  <form action="${request.route_url('task_done', task=task.id, project=task.project_id)}" method="POST" class="form-horizontal">
+    <p>
+    <button type="submit" class="btn btn-success btn-small"><i class="icon-ok icon-white"></i> ${_('Mark task as done')}</button>
+    </p>
+  </form>
+  <%include file="task.split.mako" />
+% endif

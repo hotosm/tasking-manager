@@ -28,8 +28,7 @@ def get_task(request):
     return session.query(Task).get((project_id, task_id))
 
 
-@view_config(route_name='task_xhr', renderer='task.mako',
-        http_cache=0)
+@view_config(route_name='task_xhr', renderer='task.mako')
 def task_xhr(request):
     task = get_task(request)
 
@@ -45,8 +44,7 @@ def task_xhr(request):
     task_id = request.matchdict['task']
     project_id = request.matchdict['project']
     filter = and_(TaskHistory.task_id==task_id,
-        TaskHistory.project_id==project_id,
-        TaskHistory.old_state!=None)
+        TaskHistory.project_id==project_id)
     history = session.query(TaskHistory).filter(filter) \
         .order_by(TaskHistory.id.desc()).all()
     return dict(task=task,
@@ -69,7 +67,8 @@ def done(request):
     if not user:
         return HTTPUnauthorized()
 
-    task.state = 2
+    task.state = task.state_done
+    task.locked = False
     task.user = None
     session.add(task)
     return dict(success=True,
@@ -91,7 +90,7 @@ def lock(request):
     task = get_task(request)
 
     task.user = user
-    task.state = 1 # working
+    task.locked = True
     session.add(task)
     return dict(success=True, task=dict(id=task.id))
 
@@ -100,7 +99,7 @@ def unlock(request):
     task = get_task(request)
 
     task.user = None
-    task.state = 0 # working
+    task.locked = False
 
     session = DBSession()
     session.add(task)
@@ -121,8 +120,9 @@ def invalidate(request):
 
     task = get_task(request)
 
-    task.user = user
-    task.state = 0
+    task.user = None
+    task.state = task.state_invalidated
+    task.locked = False
     session.add(task)
 
     comment = request.params['comment']
@@ -155,7 +155,8 @@ def split(request):
             t = Task(int(task.x)*2 + i, int(task.y)*2 + j, int(task.zoom)+1)
             t.project = task.project
 
-    task.state = 4
+    task.state = task.state_removed
+    task.locked = False
     session.add(task)
 
     return dict()
@@ -163,10 +164,8 @@ def split(request):
 
 def get_locked_task(project_id, user):
     session = DBSession()
-    print project_id
-    print user
     try:
-        filter = and_(Task.user==user, Task.state==1, Task.project_id==project_id)
+        filter = and_(Task.user==user, Task.locked==True, Task.project_id==project_id)
         return session.query(Task).filter(filter).one()
     except NoResultFound, e:
         return None
@@ -178,14 +177,14 @@ def random_task(request):
     project_id = request.matchdict['project']
 
     # we will ask about the area occupied by tasks locked by others, so we can steer clear of them
-    state1 = session.query(
+    locked = session.query(
         Task.geometry.ST_Union().label('taskunion')
-        ).filter_by(project_id=project_id, state=1).subquery()
+        ).filter_by(project_id=project_id, locked=True).subquery()
 
     # first search attempt - all available tasks that do not border busy tasks
     taskgetter = session.query(Task) \
-        .filter_by(project_id=project_id, state=0) \
-        .filter(Task.geometry.ST_Disjoint(state1.c.taskunion))
+        .filter_by(project_id=project_id, state=Task.state_ready) \
+        .filter(Task.geometry.ST_Disjoint(locked.c.taskunion))
     count = taskgetter.count()
     if count != 0:
         atask = taskgetter.offset(random.randint(0, count-1)).first()
@@ -193,7 +192,7 @@ def random_task(request):
 
     # second search attempt - if the non-bordering constraint gave us no hits, we discard that constraint
     taskgetter = session.query(Task) \
-        .filter_by(project_id=project_id, state=0)
+        .filter_by(project_id=project_id, state=Task.state_ready)
     count = taskgetter.count()
     if count != 0:
         atask = taskgetter.offset(random.randint(0, count-1)).first()

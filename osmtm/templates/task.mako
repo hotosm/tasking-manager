@@ -4,15 +4,17 @@
   <a class="btn btn-small btn-link clear" title="${_('Clear selection')}"><i class="icon-remove"></i></a>
   <%include file="task.status.mako" />
   <div id="task_actions">
-% if  task.state == 0:
+% if task.locked:
+  <%include file="task.locked.mako" />
+% else:
+  <%include file="task.unlocked.mako" />
+% endif
+
+% if task.state in [task.state_ready, task.state_invalidated]:
     <%include file="task.state.ready.mako" />
 % endif
 
-% if  task.state == 1:
-  <%include file="task.state.locked.mako" />
-% endif
-
-% if user is not None and task.state == 2:
+% if task.state == task.state_done:
     <%include file="task.state.done.mako" />
 % endif
 
