@@ -26,6 +26,8 @@ To create a virtual Python environment:
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
     env/bin/python setup.py develop
+    
+*Tip: if you encounter problems installing `psycopg2` especially on Mac, it is recommended to follow advice proposed [here](http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa).*
 
 In order to see jobs and tiles on the maps you need to install Mapnik and the
 Mapnik Python extensions (python-mapnik). Version 2.2 of Mapnik is required. On
