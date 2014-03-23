@@ -1,7 +1,5 @@
 import unittest
-
-db_url = 'postgresql://www-data:@localhost/osmtm_tests'
-
+from . import db_url
 
 class TestProjectFunctional(unittest.TestCase):
 
