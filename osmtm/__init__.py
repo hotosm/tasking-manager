@@ -41,6 +41,10 @@ def main(global_config, **settings):
     # https://pypi.python.org/pypi/pyramid#features
     config.include('pyramid_mako')
 
+    # pyramid_tm uses the transaction module to begin/commit/rollback
+    # transaction when requests begin/end.
+    config.include('pyramid_tm')
+
     session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
     config.set_session_factory(session_factory)
 

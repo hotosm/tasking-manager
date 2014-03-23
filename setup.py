@@ -8,6 +8,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'pyramid==1.4',
+    'pyramid_mako==1.0a2',
     #'SQLAlchemy', # should be installed along with GeoAlchemy2
     'transaction',
     'pyramid_tm',
@@ -23,7 +24,8 @@ requires = [
     'shapely',
     'geoalchemy2',
     'Babel',
-    'sqlalchemy-i18n==0.8.2'
+    'sqlalchemy-i18n==0.8.2',
+    'WebTest==2.0.14',
     ]
 
 setup(name='osmtm',
