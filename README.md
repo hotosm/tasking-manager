@@ -79,10 +79,10 @@ soon as you change the css::
 The tests use a separate database. Create that database first:
 
     sudo -u postgres createdb -O www-data osmtm_tests
-    sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
+    sudo -u postgres psql -d osmtm_tests -c "CREATE EXTENSION postgis;"
 
 Edit `osmtm/tests/test_project.py` and change the database connection
-string passed to the `create_engine` function as appropriate.
+string set in the `db_url` variable as appropriate.
 
 To run the tests, use the following command:
 
