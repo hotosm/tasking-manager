@@ -33,7 +33,7 @@ class TestProjectFunctional(unittest.TestCase):
         app = main({}, **settings)
         self.testapp = TestApp(app)
 
-    def _test_project__not_found(self):
+    def test_project__not_found(self):
         self.testapp.get('/project/1', status=302)
 
     def test_project(self):
