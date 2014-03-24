@@ -1,14 +1,37 @@
 import unittest
+import transaction
 from sqlalchemy import create_engine
-from osmtm.models import Base
+from osmtm.models import Base, User, DBSession
+from osmtm.models import User, DBSession
 
 db_url = 'postgresql://www-data:@localhost/osmtm_tests'
 
-engine = create_engine(db_url)
-Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+FOO_USER_ID = 1
+ADMIN_USER_ID = 2
+
+def populate_db():
+    engine = create_engine(db_url)
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+
+    DBSession.configure(bind=engine)
+
+    user = User(FOO_USER_ID, u'foo_user', True)
+    DBSession.add(user)
+    DBSession.flush()
+
+    user = User(ADMIN_USER_ID, u'admin_user', True)
+    DBSession.add(user)
+    DBSession.flush()
+    transaction.commit()
+    DBSession.remove()
+
+populate_db()
 
 class BaseTestCase(unittest.TestCase):
+
+    foo_user_id = FOO_USER_ID
+    admin_user_id = ADMIN_USER_ID
 
     def setUp(self):
         from osmtm import main
@@ -17,8 +40,8 @@ class BaseTestCase(unittest.TestCase):
             'available_languages': 'en',
             'sqlalchemy.url': db_url,
         }
-        app = main({}, **settings)
-        self.testapp = TestApp(app)
+        self.app = main({}, **settings)
+        self.testapp = TestApp(self.app)
 
     def tearDown(self):
         del self.testapp
@@ -38,3 +61,17 @@ class BaseTestCase(unittest.TestCase):
         project.auto_fill(12)
         return project
 
+    def remember(self, username):
+        from pyramid.security import remember
+        from pyramid import testing
+        request = testing.DummyRequest(environ={'SERVER_NAME': 'servername'})
+        request.registry = self.app.registry
+        headers = remember(request, username, max_age=2*7*24*60*60)
+        return {'Cookie': headers[0][1].split(';')[0]}
+
+    def forget(self):
+        from pyramid.security import forget
+        from pyramid import testing
+        request = testing.DummyRequest(environ={'SERVER_NAME': 'servername'})
+        request.registry = self.app.registry
+        forget(request)
