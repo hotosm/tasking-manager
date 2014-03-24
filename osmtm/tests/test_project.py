@@ -32,7 +32,7 @@ class TestProjectFunctional(unittest.TestCase):
         self.testapp = TestApp(app)
 
     def test_project__not_found(self):
-        self.testapp.get('/project/1', status=302)
+        self.testapp.get('/project/999', status=302)
 
     def test_project(self):
         import transaction
