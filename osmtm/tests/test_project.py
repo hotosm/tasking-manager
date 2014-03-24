@@ -18,6 +18,11 @@ class TestProjectFunctional(unittest.TestCase):
         project.auto_fill(12)
         return project
 
+    def tearDown(self):
+        del self.testapp
+        from osmtm.models import DBSession
+        DBSession.remove()
+
     def setUp(self):
         from osmtm import main
         from webtest import TestApp
