@@ -81,8 +81,8 @@ The tests use a separate database. Create that database first:
     sudo -u postgres createdb -O www-data osmtm_tests
     sudo -u postgres psql -d osmtm_tests -c "CREATE EXTENSION postgis;"
 
-Edit `osmtm/tests/test_project.py` and change the database connection
-string set in the `db_url` variable as appropriate.
+Edit `osmtm/tests/__init__.py` and change the database connection string set
+in the `db_url` variable as appropriate.
 
 To run the tests, use the following command:
 
