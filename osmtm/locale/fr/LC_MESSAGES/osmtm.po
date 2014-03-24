@@ -224,7 +224,7 @@ msgstr "Utilisateurs"
 
 #: osmtm/views/project.py:32
 msgid "Sorry, this project doesn't  exist"
-msgstr ""
+msgstr "Désolé, ce projet n'existe pas"
 
 #: osmtm/views/project.py:99
 msgid "Successfully imported ${n} geometries"
@@ -244,5 +244,5 @@ msgstr "Invalidé"
 
 #: osmtm/views/task.py:206
 msgid "Random task... none available! Sorry."
-msgstr ""
+msgstr "Tâche au hasard... aucune disponible ! Désolé."
 

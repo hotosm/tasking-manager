@@ -12,9 +12,6 @@ from ..models import (
     User
     )
 
-from pyramid.i18n import TranslationStringFactory
-_ = TranslationStringFactory('osmtm')
-
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import and_
 from geoalchemy2.functions import ST_Union, ST_Disjoint
@@ -74,6 +71,7 @@ def done(request):
     task.locked = False
     task.user = None
     session.add(task)
+    _ = request.translate
     return dict(success=True,
             msg=_("Task marked as done. Thanks for your contribution"))
 
@@ -93,6 +91,7 @@ def lock(request):
     task = get_task(request)
 
     if task.locked:
+        _ = request.translate
         return dict(success=False,
                 task=dict(id=task.id),
                 error_msg=_("Task already locked."))
@@ -136,6 +135,7 @@ def invalidate(request):
     comment = request.params['comment']
     task.add_comment(comment)
 
+    _ = request.translate
     return dict(success=True,
             msg=_("Task invalidated."))
 
@@ -206,5 +206,6 @@ def random_task(request):
         atask = taskgetter.offset(random.randint(0, count-1)).first()
         return dict(success=True, task=dict(id=atask.id))
 
+    _ = request.translate
     return dict(success=False, error_msg=_("Random task... none available! Sorry."))
 

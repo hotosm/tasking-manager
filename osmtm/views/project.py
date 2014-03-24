@@ -14,9 +14,7 @@ from pyramid.security import authenticated_userid
 
 from pyramid.i18n import (
     get_locale_name,
-    TranslationStringFactory,
     )
-_ = TranslationStringFactory('osmtm')
 from sqlalchemy.sql.expression import and_
 
 from geoalchemy2 import (
@@ -33,6 +31,7 @@ def project(request):
     project = DBSession.query(Project).get(id)
 
     if project is None:
+        _ = request.translate
         request.session.flash(_("Sorry, this project doesn't  exist"))
         return HTTPFound(location = route_url('home', request))
 
@@ -100,6 +99,7 @@ def project_partition_import(request):
         try:
             input_file = request.POST['import'].file
             count = project.import_from_geojson(input_file.read())
+            _ = request.translate
             request.session.flash(_("Successfully imported ${n} geometries",
                 mapping={n: count}),
                 'success')

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-21 17:37+0100\n"
+"POT-Creation-Date: 2014-03-24 12:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -214,27 +214,27 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: osmtm/views/project.py:32
+#: osmtm/views/project.py:35
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:99
+#: osmtm/views/project.py:103
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
-#: osmtm/views/task.py:75
+#: osmtm/views/task.py:76
 msgid "Task marked as done. Thanks for your contribution"
 msgstr ""
 
-#: osmtm/views/task.py:95
+#: osmtm/views/task.py:97
 msgid "Task already locked."
 msgstr ""
 
-#: osmtm/views/task.py:137
+#: osmtm/views/task.py:140
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:206
+#: osmtm/views/task.py:210
 msgid "Random task... none available! Sorry."
 msgstr ""
 
