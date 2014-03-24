@@ -227,8 +227,6 @@ $(document).on("click", "form button[type=submit]", function() {
 });
 
 var exportOpen = function(evt) {
-    // task_centroid and task_bounds are global variables (given for the
-    // currently selected task)
     var editor;
     if (this.id == 'edit') {
         if (prefered_editor) {
@@ -253,27 +251,34 @@ var exportOpen = function(evt) {
         return Math.round(input*p)/p;
     }
     function getLink(options) {
-        if (options.protocol === 'lbrt') {
-            var bounds = options.bounds;
-            return options.base + $.param({
-                left: roundd(bounds[0],5),
-                bottom: roundd(bounds[1],5),
-                right: roundd(bounds[2],5),
-                top: roundd(bounds[3],5)
-            });
-        } else if (options.protocol === 'llz') {
-            var c = options.centroid;
-            var so = new L.LatLng(task_bounds[0], task_bounds[1]),
-                ne = new L.LatLng(task_bounds[2], task_bounds[3]),
-                zoom = lmap.getBoundsZoom(new L.LatLngBounds(so, ne));
-            return options.base + $.param({
-                lon: roundd(c[0],5),
-                lat: roundd(c[1],5),
-                zoom: zoom
-            });
+        var bounds = options.bounds;
+        var so = new L.LatLng(bounds[0], bounds[1]),
+            ne = new L.LatLng(bounds[2], bounds[3]),
+            zoom = lmap.getBoundsZoom(new L.LatLngBounds(so, ne));
+        var c = options.centroid;
+        switch (options.protocol) {
+            case 'lbrt':
+                return options.base + $.param({
+                    left: roundd(bounds[0],5),
+                    bottom: roundd(bounds[1],5),
+                    right: roundd(bounds[2],5),
+                    top: roundd(bounds[3],5)
+                });
+            case 'llz':
+                return options.base + $.param({
+                    lon: roundd(c[0],5),
+                    lat: roundd(c[1],5),
+                    zoom: zoom
+                });
+            case 'id':
+                return options.base + '#map=' +
+                    [zoom, c[1], c[0]].join('/');
+
         }
     }
 
+    // task_centroid and task_bounds are global variables (given for the
+    // currently selected task)
     switch (editor) {
     case "josm":
         url = getLink({
@@ -309,8 +314,9 @@ var exportOpen = function(evt) {
     case "iDeditor":
         url = getLink({
             base: 'http://www.openstreetmap.org/edit?editor=id&',
+            bounds: task_bounds,
             centroid: task_centroid,
-            protocol: 'llz'
+            protocol: 'id'
         });
         window.open(url);
         break;
