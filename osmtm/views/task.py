@@ -163,8 +163,6 @@ def split(request):
 
 def get_locked_task(project_id, user):
     session = DBSession()
-    print project_id
-    print user
     try:
         filter = and_(Task.user==user, Task.state==1, Task.project_id==project_id)
         return session.query(Task).filter(filter).one()

@@ -1,11 +1,8 @@
 from . import BaseTestCase
 
-class TestProjectFunctional(BaseTestCase):
+class TestTaskFunctional(BaseTestCase):
 
-    def test_project__not_found(self):
-        self.testapp.get('/project/999', status=302)
-
-    def test_project(self):
+    def test_task(self):
         import transaction
         from osmtm.models import DBSession
         project = self.create_project()
@@ -13,4 +10,5 @@ class TestProjectFunctional(BaseTestCase):
         DBSession.flush()
         project_id = project.id
         transaction.commit()
-        self.testapp.get('/project/%d' % project_id, status=200)
+        self.testapp.get('/project/%d/task/1' % project_id, status=200,
+                xhr=True)
