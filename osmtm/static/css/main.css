@@ -5502,6 +5502,10 @@ body {
   overflow: auto;
   height: 100%;
 }
+#project #task .status {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
 #project #task_actions {
   overflow: hidden;
 }
