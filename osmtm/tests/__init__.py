@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from ..models import Base
+from osmtm.models import Base
 
 db_url = 'postgresql://www-data:@localhost/osmtm_tests'
 
