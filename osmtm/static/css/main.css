@@ -5503,6 +5503,7 @@ body {
   height: 100%;
 }
 #project #task .status {
+  display: inline-block;
   opacity: 0.5;
   filter: alpha(opacity=50);
 }
