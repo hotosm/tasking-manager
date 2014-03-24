@@ -18,6 +18,11 @@ class TestProjectFunctional(unittest.TestCase):
         project.auto_fill(12)
         return project
 
+    def tearDown(self):
+        del self.testapp
+        from osmtm.models import DBSession
+        DBSession.remove()
+
     def setUp(self):
         from osmtm import main
         from webtest import TestApp
@@ -28,7 +33,7 @@ class TestProjectFunctional(unittest.TestCase):
         app = main({}, **settings)
         self.testapp = TestApp(app)
 
-    def _test_project__not_found(self):
+    def test_project__not_found(self):
         self.testapp.get('/project/1', status=302)
 
     def test_project(self):
