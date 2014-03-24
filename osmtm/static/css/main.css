@@ -5474,9 +5474,11 @@ body {
   right: 420px;
 }
 #project #task_msg,
-#project #task_loading {
+#project #task_loading,
+#project #task_error_msg {
   position: absolute;
   top: -40px;
+  right: 4px;
 }
 #project #right-col {
   position: absolute;
@@ -5499,6 +5501,11 @@ body {
 #project #task {
   overflow: auto;
   height: 100%;
+}
+#project #task .status {
+  display: inline-block;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
 }
 #project #task_actions {
   overflow: hidden;
@@ -5587,6 +5594,9 @@ body {
   width: 16px;
   height: 16px;
   padding-right: 4px;
+}
+#project .linethrough {
+  text-decoration: line-through;
 }
 #project_edit .nav-pills.small {
   font-size: 0.9em;

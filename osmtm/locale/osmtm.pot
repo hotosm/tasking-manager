@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-20 15:36+0100\n"
+"POT-Creation-Date: 2014-03-24 12:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: osmtm/templates/base.mako:54
+#: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
 msgstr ""
 
@@ -71,6 +71,10 @@ msgstr ""
 msgid "Loading"
 msgstr ""
 
+#: osmtm/templates/task.editors.mako:8
+msgid "Edit with"
+msgstr ""
+
 #: osmtm/templates/task.empty.mako:3
 msgid "Select a task on the map"
 msgstr ""
@@ -80,114 +84,118 @@ msgid "or"
 msgstr ""
 
 #: osmtm/templates/task.empty.mako:15
-msgid "take a task at random"
+msgid "Take a task at random"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:14
+#: osmtm/templates/task.history.mako:19 osmtm/templates/task.status.mako:3
 msgid "Locked"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:14 osmtm/templates/task.history.mako:16
-#: osmtm/templates/task.history.mako:18
+#: osmtm/templates/task.history.mako:19 osmtm/templates/task.history.mako:21
+#: osmtm/templates/task.history.mako:23
 msgid "by"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:16
+#: osmtm/templates/task.history.mako:21
 msgid "Marked as done"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:18
+#: osmtm/templates/task.history.mako:23 osmtm/templates/task.status.mako:8
 msgid "Invalidated"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:20
+#: osmtm/templates/task.history.mako:25
 msgid "Unlocked"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:29
+#: osmtm/templates/task.history.mako:34
 msgid "Nothing has happened yet."
+msgstr ""
+
+#: osmtm/templates/task.locked.mako:3
+msgid "you"
+msgstr ""
+
+#: osmtm/templates/task.locked.mako:5
+msgid "Task locked by ${username}"
+msgstr ""
+
+#: osmtm/templates/task.locked.mako:11
+msgid "Unlock"
 msgstr ""
 
 #: osmtm/templates/task.mako:4
 msgid "Clear selection"
 msgstr ""
 
-#: osmtm/templates/task.mako:12
-msgid "Edit with"
+#: osmtm/templates/task.mako:22
+msgid "History"
 msgstr ""
 
-#: osmtm/templates/task.mako:42
-msgid "You cannot lock more than one task at a time."
+#: osmtm/templates/task.split.mako:2
+msgid "Task is too big?"
 msgstr ""
 
-#: osmtm/templates/task.mako:44
-msgid "Lock this task to tell others that you are currently working on it."
-msgstr ""
-
-#: osmtm/templates/task.mako:49
-msgid "Lock"
-msgstr ""
-
-#: osmtm/templates/task.mako:61
+#: osmtm/templates/task.split.mako:13
 msgid "Are you sure you want to split this task?"
 msgstr ""
 
-#: osmtm/templates/task.mako:63
+#: osmtm/templates/task.split.mako:15
 msgid "Split"
 msgstr ""
 
-#: osmtm/templates/task.mako:69
-msgid "a task"
-msgstr ""
-
-#: osmtm/templates/task.mako:70
-msgid "You already have ${task_link} locked."
-msgstr ""
-
-#: osmtm/templates/task.mako:78
-msgid "you"
-msgstr ""
-
-#: osmtm/templates/task.mako:80
-msgid "Task locked by ${username}"
-msgstr ""
-
-#: osmtm/templates/task.mako:84
-msgid "Unlock"
-msgstr ""
-
-#: osmtm/templates/task.mako:90
-msgid "Mark task as done"
-msgstr ""
-
-#: osmtm/templates/task.mako:98
+#: osmtm/templates/task.state.done.mako:3
 msgid "Invalidate this task if you consider it needs more work."
 msgstr ""
 
-#: osmtm/templates/task.mako:101
+#: osmtm/templates/task.state.done.mako:6
 msgid "Invalidate"
 msgstr ""
 
-#: osmtm/templates/task.mako:106
+#: osmtm/templates/task.state.done.mako:11
 msgid ""
 "Please tell why you marked this task as invalid so that the user can "
 "eventually correct his mistakes if any."
 msgstr ""
 
-#: osmtm/templates/task.mako:109
+#: osmtm/templates/task.state.done.mako:14
 msgid "Your comment here"
 msgstr ""
 
-#: osmtm/templates/task.mako:112
+#: osmtm/templates/task.state.done.mako:17
 msgid "Cancel"
 msgstr ""
 
-#: osmtm/templates/task.mako:113
+#: osmtm/templates/task.state.done.mako:18
 msgid "OK"
 msgstr ""
 
-#: osmtm/templates/task.mako:120
-msgid "History"
+#: osmtm/templates/task.state.ready.mako:5
+msgid "Mark task as done"
+msgstr ""
+
+#: osmtm/templates/task.status.mako:6
+msgid "Done"
+msgstr ""
+
+#: osmtm/templates/task.unlocked.mako:6
+msgid "You cannot lock more than one task at a time."
+msgstr ""
+
+#: osmtm/templates/task.unlocked.mako:8
+msgid "Lock this task to tell others that you are currently working on it."
+msgstr ""
+
+#: osmtm/templates/task.unlocked.mako:14
+msgid "a task"
+msgstr ""
+
+#: osmtm/templates/task.unlocked.mako:15
+msgid "You already have ${task_link} locked."
+msgstr ""
+
+#: osmtm/templates/task.unlocked.mako:24
+msgid "Yes, I want to work on this task"
 msgstr ""
 
 #: osmtm/templates/user.mako:5
@@ -204,5 +212,29 @@ msgstr ""
 
 #: osmtm/templates/users.mako:5
 msgid "Users"
+msgstr ""
+
+#: osmtm/views/project.py:35
+msgid "Sorry, this project doesn't  exist"
+msgstr ""
+
+#: osmtm/views/project.py:103
+msgid "Successfully imported ${n} geometries"
+msgstr ""
+
+#: osmtm/views/task.py:76
+msgid "Task marked as done. Thanks for your contribution"
+msgstr ""
+
+#: osmtm/views/task.py:97
+msgid "Task already locked."
+msgstr ""
+
+#: osmtm/views/task.py:140
+msgid "Task invalidated."
+msgstr ""
+
+#: osmtm/views/task.py:210
+msgid "Random task... none available! Sorry."
 msgstr ""
 

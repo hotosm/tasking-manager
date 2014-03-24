@@ -29,7 +29,8 @@ def user_messages(request):
         raise HTTPUnauthorized()
     user = DBSession.query(User).get(user_id)
 
-    comments = DBSession.query(TaskComment).filter(TaskComment.task_history.has(prev_user_id=user.id))
+    comments = []
+    #comments = DBSession.query(TaskComment).filter(TaskComment.task_history.has(prev_user_id=user.id))
     return dict(page_id="messages", comments=comments)
 
 @view_config(route_name='user_admin', permission="admin")

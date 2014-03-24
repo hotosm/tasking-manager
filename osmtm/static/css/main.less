@@ -105,9 +105,10 @@ html, body {
         left: 0;
         right: 420px;
     }
-    #task_msg, #task_loading {
+    #task_msg, #task_loading, #task_error_msg {
         position: absolute;
         top: -40px;
+        right: 4px;
     }
     #right-col {
         position: absolute;
@@ -124,6 +125,11 @@ html, body {
     #task {
         overflow: auto;
         height: 100%;
+
+        .status {
+          display: inline-block;
+          .opacity(50);
+        }
     }
     #task_actions {
         overflow: hidden;
@@ -204,6 +210,10 @@ html, body {
         width: 16px;
         height: 16px;
         padding-right: 4px;
+    }
+
+    .linethrough {
+        text-decoration: line-through;
     }
 }
 

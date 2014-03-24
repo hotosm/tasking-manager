@@ -6,20 +6,17 @@
   </Style>
   <Style name="tile">
     <Rule>
-      <Filter>([state] != 4)</Filter>
-      <LineSymbolizer stroke-width="0.5" stroke="#555" offset="0.2"/>
-    </Rule>
-    <Rule>
-        <Filter>([state] != 4)</Filter>
+        <Filter>([state] >= 0)</Filter>
+        <LineSymbolizer stroke-width="0.5" stroke="#555" offset="0.2"/>
         <PolygonSymbolizer fill-opacity="0.2" fill="#ccc" />
     </Rule>
     <Rule>
-        <!-- working -->
-        <Filter>([state] = 1)</Filter>
+        <!-- locked -->
+        <Filter>([locked] = 1)</Filter>
         <LineSymbolizer stroke-width="1.5" stroke-opacity="1" stroke="#FFCC00" offset="1"/>
     </Rule>
     <Rule>
-        <!-- working -->
+        <!-- done -->
         <Filter>([state] = 2)</Filter>
         <PolygonSymbolizer fill-opacity="0.4" fill="#FF9900" />
     </Rule>

@@ -99,15 +99,26 @@ class User(Base):
             "admin": self.admin
         }
 
+# task states
+READY = 0
+INVALIDATED = 1
+DONE = 2
+VALIDATED = 3
+REMOVED = -1
+
 class TaskHistory(Base):
     __tablename__ = "tasks_history"
     id = Column(Integer, primary_key=True)
     task_id = Column(Integer)
     project_id = Column(Integer)
-    old_state = Column(Integer)
-    state = Column(Integer, default=0)
-    prev_user_id = Column(Integer, ForeignKey('users.id'))
-    prev_user = relationship(User, foreign_keys=[prev_user_id])
+    state_ready = READY
+    state_done = DONE
+    state_validated = VALIDATED
+    state_invalidated = INVALIDATED
+    state_removed = REMOVED
+    state = Column(Integer, default=READY)
+    state_changed = Column(Boolean, default=False)
+    locked = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User, foreign_keys=[user_id])
     update = Column(DateTime)
@@ -139,13 +150,14 @@ class Task(Base):
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'), index=True)
     geometry = Column(Geometry('MultiPolygon', srid=4326))
-    # possible states are:
-    # 0 - ready
-    # 1 - working
-    # 2 - done
-    # 3 - reviewed
-    # 4 - removed
-    state = Column(Integer, default=0)
+
+    state_ready = READY
+    state_done = DONE
+    state_validated = VALIDATED
+    state_invalidated = INVALIDATED
+    state_removed = REMOVED
+    state = Column(Integer, default=READY)
+    locked = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
     update = Column(DateTime)
@@ -212,10 +224,14 @@ def after_flush(session, flush_context):
             taskhistory.project_id = obj.project_id
             taskhistory.state = obj.state
             taskhistory.update = obj.update
-            taskhistory.user = obj.user
-            attr_state = inspect(obj).attrs
-            taskhistory.old_state = get_old_value(attr_state.get("state"))
-            taskhistory.prev_user = get_old_value(attr_state.get("user"))
+            taskhistory.locked = obj.locked
+            attrs = inspect(obj).attrs
+            old_state = get_old_value(attrs.get("state"))
+            if old_state is not None and obj.state != old_state:
+                taskhistory.user = get_old_value(attrs.get("user"))
+                taskhistory.state_changed = True
+            else:
+                taskhistory.user = obj.user
             session.add(taskhistory)
 
 @event.listens_for(DBSession, "before_flush")
