@@ -50,7 +50,7 @@ class BaseTestCase(unittest.TestCase):
         DBSession.remove()
 
         # forget any remembered authentication
-        self.forget()
+        self.__forget()
 
     def create_project(self):
         import geoalchemy2
@@ -75,12 +75,12 @@ class BaseTestCase(unittest.TestCase):
         return project_id
 
     def login_as_admin(self):
-        return self.__login(self.admin_user_id)
+        return self.__remember(self.admin_user_id)
 
     def login_as_foo(self):
-        return self.__login(self.foo_user_id)
+        return self.__remember(self.foo_user_id)
 
-    def __login(self, userid):
+    def __remember(self, userid):
         from pyramid.security import remember
         from pyramid import testing
         request = testing.DummyRequest(environ={'SERVER_NAME': 'servername'})
@@ -88,7 +88,7 @@ class BaseTestCase(unittest.TestCase):
         headers = remember(request, userid, max_age=2*7*24*60*60)
         return {'Cookie': headers[0][1].split(';')[0]}
 
-    def forget(self):
+    def __forget(self):
         from pyramid.security import forget
         from pyramid import testing
         request = testing.DummyRequest(environ={'SERVER_NAME': 'servername'})
