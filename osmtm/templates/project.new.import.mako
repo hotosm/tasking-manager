@@ -2,7 +2,7 @@
 <%inherit file="base.mako"/>
 <%block name="header">
 <a href="${request.route_url('home')}" class="brand"><i class="icon-home"></i></a>
-<div class="brand">${project.name} - Partition</div>
+<div class="brand">Project New</div>
 </%block>
 <%block name="content">
 <div class="container">

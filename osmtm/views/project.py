@@ -49,6 +49,21 @@ def project(request):
         permission="add")
 def project_new(request):
     if 'form.submitted' in request.params:
+        if request.params['type'] == 'grid':
+            return HTTPFound(location = route_url('project_new_grid',
+                request))
+        else:
+            return HTTPFound(location = route_url('project_new_import',
+                request))
+
+    return dict(page_id='project_new')
+
+@view_config(route_name='project_new_grid',
+        renderer='project.new.grid.mako',
+        permission="edit")
+def project_new_grid(request):
+    if 'zoom' in request.params:
+
         user_id = authenticated_userid(request)
         user = DBSession.query(User).get(user_id)
         project = Project(
@@ -58,26 +73,11 @@ def project_new(request):
 
         DBSession.add(project)
         DBSession.flush()
-        if request.params['type'] == 'grid':
-            return HTTPFound(location = route_url('project_partition_grid',
-                request, project=project.id))
-        else:
-            return HTTPFound(location = route_url('project_partition_import',
-                request, project=project.id))
 
-    return dict(page_id='project_new')
-
-@view_config(route_name='project_partition_grid',
-        renderer='project.partition.grid.mako',
-        permission="edit")
-def project_partition_grid(request):
-    id = request.matchdict['project']
-    project = DBSession.query(Project).get(id)
-
-    if 'zoom' in request.params:
         zoom = int(request.params['zoom'])
 
         import shapely
+        import geojson
         geometry = request.params['geometry']
         geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
         geometry = shapely.geometry.asShape(geometry)
@@ -86,16 +86,24 @@ def project_partition_grid(request):
         project.auto_fill(zoom)
         return HTTPFound(location = route_url('project_edit', request, project=project.id))
 
-    return dict(page_id='project_partition', project=project)
+    return dict(page_id='project_new_grid')
 
-@view_config(route_name='project_partition_import',
-        renderer='project.partition.import.mako',
+@view_config(route_name='project_new_import',
+        renderer='project.new.import.mako',
         permission="edit")
-def project_partition_import(request):
-    id = request.matchdict['project']
-    project = DBSession.query(Project).get(id)
-
+def project_new_import(request):
     if 'import' in request.params:
+
+        user_id = authenticated_userid(request)
+        user = DBSession.query(User).get(user_id)
+        project = Project(
+            u'Untitled project',
+            user
+        )
+
+        DBSession.add(project)
+        DBSession.flush()
+
         try:
             input_file = request.POST['import'].file
             count = project.import_from_geojson(input_file.read())
@@ -108,7 +116,7 @@ def project_partition_import(request):
             request.session.flash("Sorry, this is not a JSON valid file. <br />%s"
                 % e.message, 'alert')
 
-    return dict(page_id='project_partition', project=project)
+    return dict(page_id='project_new_import')
 
 @view_config(route_name='project_edit', renderer='project.edit.mako',
         permission="edit")
