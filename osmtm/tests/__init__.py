@@ -1,8 +1,12 @@
 import unittest
 import transaction
 from sqlalchemy import create_engine
-from osmtm.models import Base, User, DBSession
-from osmtm.models import User, DBSession
+from osmtm.models import (
+        Base,
+        User,
+        License,
+        DBSession,
+    )
 
 db_url = 'postgresql://www-data:@localhost/osmtm_tests'
 
@@ -19,11 +23,16 @@ def populate_db():
     # those users are immutables ie. they're not suppose to change during tests
     user = User(FOO_USER_ID, u'foo_user', False)
     DBSession.add(user)
-    DBSession.flush()
 
     user = User(ADMIN_USER_ID, u'admin_user', True)
     DBSession.add(user)
-    DBSession.flush()
+
+    license = License()
+    license.name = u'LicenseBar'
+    license.description = u'the_description_for_license_bar'
+    license.plain_text = u'the_plain_text_for_license_bar'
+    DBSession.add(license)
+
     transaction.commit()
     DBSession.remove()
 
@@ -38,7 +47,7 @@ class BaseTestCase(unittest.TestCase):
         from osmtm import main
         from webtest import TestApp
         settings = {
-            'available_languages': 'en',
+            'available_languages': 'en fr',
             'sqlalchemy.url': db_url,
         }
         self.app = main({}, **settings)
