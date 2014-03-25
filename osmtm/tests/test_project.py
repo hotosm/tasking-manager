@@ -2,6 +2,27 @@ from . import BaseTestCase
 
 class TestProjectFunctional(BaseTestCase):
 
+    def create_project(self):
+        import geoalchemy2
+        import shapely
+        import transaction
+        from osmtm.models import Area, Project, DBSession
+
+        shape = shapely.geometry.Polygon(
+            [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
+        geometry = geoalchemy2.shape.from_shape(shape, 4326)
+        area = Area(geometry)
+        project = Project(u'test project')
+        project.area = area
+        project.auto_fill(12)
+
+        DBSession.add(project)
+        DBSession.flush()
+        project_id = project.id
+        transaction.commit()
+
+        return project_id
+
     def test_project__not_found(self):
         self.testapp.get('/project/999', status=302)
 
@@ -12,7 +33,7 @@ class TestProjectFunctional(BaseTestCase):
     def test_project_new_forbidden(self):
         self.testapp.get('/project/new', status=403)
 
-        headers = self.login_as_foo()
+        headers = self.login_as_user1()
         self.testapp.get('/project/new', headers=headers, status=403)
 
     def test_project_new_not_submitted(self):
@@ -46,7 +67,7 @@ class TestProjectFunctional(BaseTestCase):
         self.assertTrue('import' in form.fields)
 
     def test_project_edit_forbidden(self):
-        headers = self.login_as_foo()
+        headers = self.login_as_user1()
         res = self.testapp.get('/project/999/edit', headers=headers, status=403)
 
     def test_project_edit_not_submitted(self):

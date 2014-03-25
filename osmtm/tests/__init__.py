@@ -5,15 +5,27 @@ from osmtm.models import (
         Base,
         User,
         License,
+        Area,
+        Project,
         DBSession,
     )
+from sqlalchemy_i18n.manager import translation_manager
 
 db_url = 'postgresql://www-data:@localhost/osmtm_tests'
 
-FOO_USER_ID = 1
-ADMIN_USER_ID = 2
+USER1_ID = 1
+USER2_ID = 2
+ADMIN_USER_ID = 3
+
+translation_manager.options.update({
+    'locales': 'en fr',
+    'get_locale_fallback': True
+})
 
 def populate_db():
+    import geoalchemy2
+    import shapely
+
     engine = create_engine(db_url)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -21,7 +33,10 @@ def populate_db():
     DBSession.configure(bind=engine)
 
     # those users are immutables ie. they're not suppose to change during tests
-    user = User(FOO_USER_ID, u'foo_user', False)
+    user = User(USER1_ID, u'user1', False)
+    DBSession.add(user)
+
+    user = User(USER2_ID, u'user2', False)
     DBSession.add(user)
 
     user = User(ADMIN_USER_ID, u'admin_user', True)
@@ -33,6 +48,15 @@ def populate_db():
     license.plain_text = u'the_plain_text_for_license_bar'
     DBSession.add(license)
 
+    shape = shapely.geometry.Polygon(
+        [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
+    geometry = geoalchemy2.shape.from_shape(shape, 4326)
+    area = Area(geometry)
+    project = Project(u'test project')
+    project.area = area
+    project.auto_fill(12)
+    DBSession.add(project)
+
     transaction.commit()
     DBSession.remove()
 
@@ -40,7 +64,8 @@ populate_db()
 
 class BaseTestCase(unittest.TestCase):
 
-    foo_user_id = FOO_USER_ID
+    user1_id = USER1_ID
+    user2_id = USER2_ID
     admin_user_id = ADMIN_USER_ID
 
     def setUp(self):
@@ -61,33 +86,14 @@ class BaseTestCase(unittest.TestCase):
         # forget any remembered authentication
         self.__forget()
 
-    def create_project(self):
-        import geoalchemy2
-        import shapely
-        import transaction
-
-        from osmtm.models import Area, Project, DBSession
-
-        shape = shapely.geometry.Polygon(
-            [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
-        geometry = geoalchemy2.shape.from_shape(shape, 4326)
-        area = Area(geometry)
-        project = Project(u'test project')
-        project.area = area
-        project.auto_fill(12)
-
-        DBSession.add(project)
-        DBSession.flush()
-        project_id = project.id
-        transaction.commit()
-
-        return project_id
-
     def login_as_admin(self):
         return self.__remember(self.admin_user_id)
 
-    def login_as_foo(self):
-        return self.__remember(self.foo_user_id)
+    def login_as_user1(self):
+        return self.__remember(self.user1_id)
+
+    def login_as_user2(self):
+        return self.__remember(self.user2_id)
 
     def __remember(self, userid):
         from pyramid.security import remember
