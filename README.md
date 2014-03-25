@@ -1,6 +1,6 @@
 # OpenStreetMap Tasking Manager
 
-[![Build Status](https://travis-ci.org/pgiraud/osm-tasking-manager2.png)](https://travis-ci.org/pgiraud/osm-tasking-manager2)
+[![Build Status](https://travis-ci.org/pgiraud/osm-tasking-manager2.svg?branch=master)](https://travis-ci.org/pgiraud/osm-tasking-manager2)
 [![Coverage Status](https://coveralls.io/repos/pgiraud/osm-tasking-manager2/badge.png)](https://coveralls.io/r/pgiraud/osm-tasking-manager2)
 
 ## About
