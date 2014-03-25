@@ -49,10 +49,16 @@ class BaseTestCase(unittest.TestCase):
         from osmtm.models import DBSession
         DBSession.remove()
 
+        # forget any remembered authentication
+        self.forget()
+
     def create_project(self):
         import geoalchemy2
         import shapely
-        from osmtm.models import Area, Project
+        import transaction
+
+        from osmtm.models import Area, Project, DBSession
+
         shape = shapely.geometry.Polygon(
             [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
         geometry = geoalchemy2.shape.from_shape(shape, 4326)
@@ -60,9 +66,21 @@ class BaseTestCase(unittest.TestCase):
         project = Project(u'test project')
         project.area = area
         project.auto_fill(12)
-        return project
 
-    def remember(self, userid):
+        DBSession.add(project)
+        DBSession.flush()
+        project_id = project.id
+        transaction.commit()
+
+        return project_id
+
+    def login_as_admin(self):
+        return self.__login(self.admin_user_id)
+
+    def login_as_foo(self):
+        return self.__login(self.foo_user_id)
+
+    def __login(self, userid):
         from pyramid.security import remember
         from pyramid import testing
         request = testing.DummyRequest(environ={'SERVER_NAME': 'servername'})
