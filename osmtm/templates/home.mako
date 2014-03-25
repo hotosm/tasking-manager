@@ -39,7 +39,6 @@
   </div>
 </div>
 <%
-  from json import dumps
   from osmtm.models import dumps
 %>
 
