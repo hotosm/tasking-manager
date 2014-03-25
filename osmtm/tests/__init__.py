@@ -16,7 +16,8 @@ def populate_db():
 
     DBSession.configure(bind=engine)
 
-    user = User(FOO_USER_ID, u'foo_user', True)
+    # those users are immutables ie. they're not suppose to change during tests
+    user = User(FOO_USER_ID, u'foo_user', False)
     DBSession.add(user)
     DBSession.flush()
 
@@ -61,12 +62,12 @@ class BaseTestCase(unittest.TestCase):
         project.auto_fill(12)
         return project
 
-    def remember(self, username):
+    def remember(self, userid):
         from pyramid.security import remember
         from pyramid import testing
         request = testing.DummyRequest(environ={'SERVER_NAME': 'servername'})
         request.registry = self.app.registry
-        headers = remember(request, username, max_age=2*7*24*60*60)
+        headers = remember(request, userid, max_age=2*7*24*60*60)
         return {'Cookie': headers[0][1].split(';')[0]}
 
     def forget(self):

@@ -13,7 +13,6 @@ from ..models import (
 from pyramid.security import (
     remember,
     forget,
-    authenticated_userid
     )
 
 import urlparse
