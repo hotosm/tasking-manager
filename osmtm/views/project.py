@@ -48,14 +48,6 @@ def project(request):
 @view_config(route_name='project_new', renderer='project.new.mako',
         permission="add")
 def project_new(request):
-    if 'form.submitted' in request.params:
-        if request.params['type'] == 'grid':
-            return HTTPFound(location = route_url('project_new_grid',
-                request))
-        else:
-            return HTTPFound(location = route_url('project_new_import',
-                request))
-
     return dict(page_id='project_new')
 
 @view_config(route_name='project_new_grid',

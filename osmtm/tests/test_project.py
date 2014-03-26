@@ -36,35 +36,9 @@ class TestProjectFunctional(BaseTestCase):
         headers = self.login_as_user1()
         self.testapp.get('/project/new', headers=headers, status=403)
 
-    def test_project_new_not_submitted(self):
+    def test_project_new(self):
         headers = self.login_as_admin()
         self.testapp.get('/project/new', headers=headers, status=200)
-
-    def test_project_new_grid_submitted(self):
-        headers = self.login_as_admin()
-        res = self.testapp.get('/project/new', headers=headers,
-                params={
-                    'form.submitted': True,
-                    'type': 'grid'
-                },
-                status=302)
-        res = res.follow(headers=headers, status=200)
-
-        form = res.forms[0]
-        self.assertTrue('zoom' in form.fields and 'geometry' in form.fields)
-
-    def test_project_new_imported_submitted(self):
-        headers = self.login_as_admin()
-        res = self.testapp.get('/project/new', headers=headers,
-                params={
-                    'form.submitted': True,
-                    'type': 'imported'
-                },
-                status=302)
-        res = res.follow(headers=headers, status=200)
-
-        form = res.forms[0]
-        self.assertTrue('import' in form.fields)
 
     def test_project_edit_forbidden(self):
         headers = self.login_as_user1()
