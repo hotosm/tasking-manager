@@ -398,6 +398,6 @@ class ExtendedJSONEncoder(JSONEncoder):
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat(' ')
 
-        return JSONEncoder.default(self, obj)
+        return JSONEncoder.default(self, obj) # pragma: no cover
 
 dumps = functools.partial(_dumps, cls=ExtendedJSONEncoder)

@@ -89,5 +89,5 @@ def main(global_config, **settings):
         'get_locale_fallback': True
     })
 
-    config.scan()
+    config.scan(ignore=['osmtm.tests', 'osmtm.scripts'])
     return config.make_wsgi_app()
