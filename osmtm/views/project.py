@@ -84,6 +84,11 @@ def project_new_grid(request):
         geometry = shape.from_shape(geometry, 4326)
         project.area = Area(geometry)
         project.auto_fill(zoom)
+
+        _ = request.translate
+        request.session.flash(_("Project #${project_id} created successfully",
+            mapping={'project_id': project.id}),
+            'success')
         return HTTPFound(location = route_url('project_edit', request, project=project.id))
 
     return dict(page_id='project_new_grid')
