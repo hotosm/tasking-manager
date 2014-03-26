@@ -106,7 +106,7 @@ def project_new_import(request):
             count = project.import_from_geojson(input_file.read())
             _ = request.translate
             request.session.flash(_("Successfully imported ${n} geometries",
-                mapping={n: count}),
+                mapping={'n': count}),
                 'success')
             return HTTPFound(location = route_url('project_edit', request, project=project.id))
         except Exception, e:
