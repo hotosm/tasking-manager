@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-24 12:08+0100\n"
+"POT-Creation-Date: 2014-03-26 12:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,7 +124,7 @@ msgstr ""
 msgid "Unlock"
 msgstr ""
 
-#: osmtm/templates/task.mako:4
+#: osmtm/templates/task.mako:5
 msgid "Clear selection"
 msgstr ""
 
@@ -218,23 +218,27 @@ msgstr ""
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:103
+#: osmtm/views/project.py:89
+msgid "Project #${project_id} created successfully"
+msgstr ""
+
+#: osmtm/views/project.py:116
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
-#: osmtm/views/task.py:76
+#: osmtm/views/task.py:82
 msgid "Task marked as done. Thanks for your contribution"
 msgstr ""
 
-#: osmtm/views/task.py:97
+#: osmtm/views/task.py:100
 msgid "Task already locked."
 msgstr ""
 
-#: osmtm/views/task.py:140
+#: osmtm/views/task.py:135
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:210
+#: osmtm/views/task.py:194
 msgid "Random task... none available! Sorry."
 msgstr ""
 

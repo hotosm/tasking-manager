@@ -302,7 +302,8 @@ class Project(Base, Translatable):
         tasks = []
         hasPolygon = False
 
-        if not hasattr(collection, "features"):
+        if not hasattr(collection, "features") or \
+                len(collection.features) < 1:
             raise ValueError("GeoJSON file doesn't contain any feature.")
         for feature in collection.features:
             geometry = shapely.geometry.asShape(feature.geometry)
@@ -311,17 +312,12 @@ class Project(Base, Translatable):
                 hasPolygon = True
             elif not isinstance(geometry, shapely.geometry.MultiPolygon):
                 continue
-            tasks.append({
-                'geometry': 'SRID=4326;%s' % geometry.wkt,
-                'project_id': self.id
-            })
+            tasks.append(Task(None, None, None, 'SRID=4326;%s' % geometry.wkt))
 
         if not hasPolygon:
             raise ValueError("GeoJSON file doesn't contain any polygon.")
 
-        # bulk insert
-        insert = Task.__table__.insert()
-        DBSession.execute(insert, tasks)
+        self.tasks = tasks
 
         bounds = DBSession.query(ST_Convexhull(ST_Collect(Task.geometry))) \
             .filter(Task.project_id==self.id).one()

@@ -6,13 +6,11 @@
 </%block>
 <%block name="content">
 <div class="container">
-  <form method="post">
     <h3>What kind of project are you about to create?</h3>
     <div class="row">
       <div class="span6">
         <label class="radio">
-          <input type="radio" id="grid" name="type"
-          value="grid" checked/>
+          <input type="radio" id="grid" name="type" value="grid"/>
           Square Grid
           <p class="help-block">
             Area of interest is split into square grids.
@@ -21,8 +19,7 @@
       </div>
       <div class="span6">
         <label class="radio">
-          <input type="radio" id="imported" name="type"
-          value="imported" />
+          <input type="radio" id="import" name="type" value="import" />
           Imported Geometries
           <p class="help-block">
             You already have polygons you want people to work on.
@@ -30,9 +27,18 @@
         </label>
       </div>
     </div>
-    <div class="form-actions">
-      <input id="id_submit" type="submit" value="OK" name="form.submitted" class="btn btn-success"/>
-    </div>
-  </form>
 </div>
+<script>
+  $('input[type=radio]').attr('checked', false);
+  $('input[type=radio]').on('change', function() {
+    switch ($(this)[0].id) {
+      case "grid":
+        window.location = "${request.route_url('project_new_grid')}";
+        break;
+      case "import":
+        window.location = "${request.route_url('project_new_import')}";
+        break;
+    }
+  });
+</script>
 </%block>

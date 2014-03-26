@@ -36,35 +36,84 @@ class TestProjectFunctional(BaseTestCase):
         headers = self.login_as_user1()
         self.testapp.get('/project/new', headers=headers, status=403)
 
-    def test_project_new_not_submitted(self):
+    def test_project_new(self):
         headers = self.login_as_admin()
         self.testapp.get('/project/new', headers=headers, status=200)
 
+    def test_project_new_grid_not_submitted(self):
+        headers = self.login_as_admin()
+        res = self.testapp.get('/project/new/grid', headers=headers,
+                status=200)
+
     def test_project_new_grid_submitted(self):
+        from osmtm.models import DBSession, Project
         headers = self.login_as_admin()
-        res = self.testapp.get('/project/new', headers=headers,
+        res = self.testapp.get('/project/new/grid', headers=headers,
                 params={
                     'form.submitted': True,
-                    'type': 'grid'
+                    'geometry': '{"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}',
+                    'zoom': 10
                 },
                 status=302)
-        res = res.follow(headers=headers, status=200)
 
-        form = res.forms[0]
-        self.assertTrue('zoom' in form.fields and 'geometry' in form.fields)
+        project = DBSession.query(Project).order_by(Project.id.desc()).first()
+        self.assertEqual(len(project.tasks), 11)
 
-    def test_project_new_imported_submitted(self):
+    def test_project_new_import_not_submitted(self):
         headers = self.login_as_admin()
-        res = self.testapp.get('/project/new', headers=headers,
+        res = self.testapp.get('/project/new/import', headers=headers,
+                status=200)
+
+    def test_project_new_import_invalid_json(self):
+        import collections
+        from osmtm.models import DBSession, Project
+        headers = self.login_as_admin()
+        res = self.testapp.post('/project/new/import',
+                upload_files=[('import', 'map.geojson', 'blah')],
+                headers=headers,
                 params={
-                    'form.submitted': True,
-                    'type': 'imported'
+                    'form.submitted': True
+                },
+                status=200)
+
+    def test_project_new_import_invalid_json_bis(self):
+        import collections
+        from osmtm.models import DBSession, Project
+        headers = self.login_as_admin()
+        res = self.testapp.post('/project/new/import',
+                upload_files=[('import', 'map.geojson', '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[-5.625,39.232253141714885],[-2.63671875,40.78054143186031]]}}]}')],
+                headers=headers,
+                params={
+                    'form.submitted': True
+                },
+                status=200)
+
+    def test_project_new_import_no_feature(self):
+        import collections
+        from osmtm.models import DBSession, Project
+        headers = self.login_as_admin()
+        res = self.testapp.post('/project/new/import',
+                upload_files=[('import', 'map.geojson', '{"type":"FeatureCollection","features":[]}')],
+                headers=headers,
+                params={
+                    'form.submitted': True
+                },
+                status=200)
+
+    def test_project_new_import_submitted(self):
+        import collections
+        from osmtm.models import DBSession, Project
+        headers = self.login_as_admin()
+        res = self.testapp.post('/project/new/import',
+                upload_files=[('import', 'map.geojson', '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[4.39453125,19.559790136497398],[4.04296875,21.37124437061832],[7.6025390625,22.917922936146045],[8.96484375,20.05593126519445],[5.625,18.93746442964186],[4.39453125,19.559790136497398]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.3623046875,17.09879223767869],[3.0322265625,18.687878686034196],[6.0205078125,18.271086109608877],[6.2841796875,16.972741019999035],[5.3173828125,16.509832826905846],[4.482421875,17.056784609942554],[2.900390625,16.088042220148807],[1.3623046875,17.09879223767869]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.0986328125,19.849393958422805],[1.7578125,21.53484700204879],[3.7353515625,20.46818922264095],[3.33984375,18.979025953255267],[0.439453125,19.394067895396628],[1.0986328125,19.849393958422805]]]}}]}')],
+                headers=headers,
+                params={
+                    'form.submitted': True
                 },
                 status=302)
-        res = res.follow(headers=headers, status=200)
 
-        form = res.forms[0]
-        self.assertTrue('import' in form.fields)
+        project = DBSession.query(Project).order_by(Project.id.desc()).first()
+        self.assertEqual(len(project.tasks), 3)
 
     def test_project_edit_forbidden(self):
         headers = self.login_as_user1()
