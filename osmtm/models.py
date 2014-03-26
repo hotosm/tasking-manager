@@ -302,7 +302,8 @@ class Project(Base, Translatable):
         tasks = []
         hasPolygon = False
 
-        if not hasattr(collection, "features"):
+        if not hasattr(collection, "features") or \
+                len(collection.features) < 1:
             raise ValueError("GeoJSON file doesn't contain any feature.")
         for feature in collection.features:
             geometry = shapely.geometry.asShape(feature.geometry)
