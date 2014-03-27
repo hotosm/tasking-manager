@@ -13,12 +13,16 @@
     <div class="tabbable tabs">
       <ul class="nav nav-tabs">
         <li><a href="#description" data-toggle="tab">Description</a></li>
+        <li><a href="#instructions" data-toggle="tab">Instructions</a></li>
         <li><a href="#area" data-toggle="tab">Area</a></li>
         <li><a href="#imagery" data-toggle="tab">Imagery</a></li>
       </ul>
       <div class="tab-content">
         <div class="tab-pane" id="description">
           ${description()}
+        </div>
+        <div class="tab-pane" id="instructions">
+          ${instructions()}
         </div>
         <div class="tab-pane" id="area">
           Area modifications are not available yet.
@@ -37,7 +41,7 @@
 </%block>
 <%block name="description">
     <div class="tabbable tabs-left">
-      <ul class="nav nav-tabs" id="languages">
+      <ul class="nav nav-tabs languages">
         % for locale, translation in project.translations.iteritems():
         <li><a href="#${locale}" data-toggle="tab">${locale}</a></li>
         % endfor
@@ -88,6 +92,76 @@
             description.keyup(function() {
               var html = converter.makeHtml(description.val());
               description_preview.html(html);
+            }).trigger('keyup');
+          })();
+        </script>
+        % endfor
+      </div>
+    </div>
+</%block>
+
+<%block name="instructions">
+    <div class="control-group">
+        <label class="control-label" for="id_entities_to_map">Entities to Map</label>
+        <div class="controls">
+          <input type="text" class="span5" id="id_entities_to_map"
+                 name="entities_to_map"
+                 placeholder="primary roads, secondary roads, buildings"
+                 value="${project.entities_to_map if project.entities_to_map is not None else ''}"/>
+          <span class="help-inline">
+            The list of entities to map.<br />
+          </span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="id_changeset_comment">Changeset Comment</label>
+        <div class="controls">
+          <input type="text" class="span5" id="id_changeset_comment"
+                 name="changeset_comment"
+                 value="${project.changeset_comment if project.changeset_comment is not None else ''}"/>
+          <span class="help-inline">
+            Comments users are recommended to add to upload commits.<br />
+            <em>For example: <code>Guinea, #hotosm-guinea-task-470, source=Pleiades, CNES, Astrium</code></em>
+          </span>
+        </div>
+    </div>
+    <hr />
+    <div class="tabbable tabs-left">
+      <ul class="nav nav-tabs languages">
+        % for locale, translation in project.translations.iteritems():
+        <li><a href="#instructions_${locale}" data-toggle="tab">${locale}</a></li>
+        % endfor
+      </ul>
+      <div class="tab-content">
+        % for locale, translation in project.translations.iteritems():
+        <div class="tab-pane active" id="instructions_${locale}">
+          <!-- instructions -->
+          <label for="id_instructions" class="control-label">Detailed Instructions</label>
+          <ul class="nav nav-pills small">
+            <li class="active">
+              <a href="#instructions_${locale}_edit" data-toggle="tab">Edit</a>
+            </li>
+            <li>
+              <a href="#instructions_${locale}_preview" data-toggle="tab">Preview</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="instructions_${locale}_edit">
+              <textarea id="id_instructions_${locale}"
+                        name="instructions_${locale}"
+                        style="width: 80%;"
+                        rows="4" class="text span4">${translation.instructions}</textarea>
+            </div>
+            <div class="tab-pane preview" id="instructions_${locale}_preview"></div>
+          </div>
+        </div>
+        <script>
+          (function () {
+            var instructions = $('#id_instructions_${locale}'),
+            instructions_preview = $('#instructions_${locale}_preview');
+            instructions.keyup(function() {
+              var html = converter.makeHtml(instructions.val());
+              instructions_preview.html(html);
             }).trigger('keyup');
           })();
         </script>

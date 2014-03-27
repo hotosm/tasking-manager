@@ -134,15 +134,16 @@ def project_edit(request):
 
         for locale, translation in project.translations.iteritems():
             with project.force_locale(locale):
-                for field in ['name', 'short_description', 'description']:
+                for field in ['name', 'short_description', 'description',
+                              'instructions']:
                     translated = '_'.join([field, locale])
                     if translated in request.params:
                         setattr(project, field, request.params[translated])
                 DBSession.add(project)
 
-        if 'imagery' in request.params and \
-                request.params['imagery'] != "":
-            project.imagery = request.params['imagery']
+        for p in ['changeset_comment', 'entities_to_map', 'imagery']:
+            if p in request.params and request.params[p] != '':
+                setattr(project, p, request.params[p])
 
         if 'license_id' in request.params and \
                 request.params['license_id'] != "":

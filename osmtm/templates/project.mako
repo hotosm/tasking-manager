@@ -31,9 +31,7 @@ else:
     <div class="span12">
       <ul class="nav nav-pills">
         <li class="active"><a href="#main" data-toggle="tab">${_('Info')}</a></li>
-        % if project.imagery:
-        <li><a href="#imagery" data-toggle="tab">${_('Imagery')}</a></li>
-        % endif
+        <li><a href="#instructions" data-toggle="tab">${_('Instructions')}</a></li>
         <li><a id="map_tab" href="#map" data-toggle="tab">${_('Contribute')}</a>
         </li>
         % if user and user.is_admin():
@@ -63,11 +61,9 @@ else:
       <%include file="task.history.mako" args="section='project'"/>
     </div>
   </div>
-  % if project.imagery:
-  <div id="imagery" class="tab-pane container">
-    <%include file="imagery.mako" />
+  <div id="instructions" class="tab-pane container">
+    <%include file="project.instructions.mako" />
   </div>
-  % endif
   <div id="map" class="tab-pane">
     <div id="leaflet"></div>
     <div id="right-col">

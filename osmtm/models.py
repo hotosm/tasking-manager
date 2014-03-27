@@ -291,6 +291,9 @@ class Project(Base, Translatable):
     zoom = Column(Integer)  # is not None when project is auto-filled (grid)
     imagery = Column(Unicode)
 
+    entities_to_map = Column(Unicode)
+    changeset_comment = Column(Unicode)
+
     def __init__(self, name, user=None):
         self.name = name
         self.status = 2
@@ -382,12 +385,23 @@ class Project(Base, Translatable):
         return round(done * 100 / total) / 100 if total != 0 else 0
 
 
+@event.listens_for(Project, "after_insert")
+def project_after_insert(mapper, connection, target):
+    project_table = Project.__table__
+    connection.execute(
+        project_table.update().
+        where(project_table.c.id == target.id).
+        values(changeset_comment='#hotosm-task-%d' % target.id)
+    )
+
+
 class ProjectTranslation(translation_base(Project)):
     __tablename__ = 'project_translation'
 
     name = Column(Unicode(255), default=u'')
     description = Column(Unicode, default=u'')
     short_description = Column(Unicode, default=u'')
+    instructions = Column(Unicode, default=u'')
 
 
 class License(Base):
