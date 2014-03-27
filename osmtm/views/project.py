@@ -1,5 +1,5 @@
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound, HTTPBadRequest
+from pyramid.httpexceptions import HTTPFound
 from pyramid.url import route_url
 from ..models import (
     DBSession,
@@ -9,21 +9,22 @@ from ..models import (
     Task,
     TaskHistory,
     License,
-    )
+)
 from pyramid.security import authenticated_userid
 
 from pyramid.i18n import (
     get_locale_name,
-    )
+)
 from sqlalchemy.sql.expression import and_
 
 from geoalchemy2 import (
     shape,
-    )
+)
 
 import datetime
 
 import mapnik
+
 
 @view_config(route_name='project', renderer='project.mako', http_cache=0)
 def project(request):
@@ -33,26 +34,28 @@ def project(request):
     if project is None:
         _ = request.translate
         request.session.flash(_("Sorry, this project doesn't  exist"))
-        return HTTPFound(location = route_url('home', request))
+        return HTTPFound(location=route_url('home', request))
 
     project.locale = get_locale_name(request)
 
-    filter = and_(TaskHistory.project_id==id, TaskHistory.update!=None)
-    history = DBSession.query(TaskHistory). \
-            filter(filter). \
-            order_by(TaskHistory.update.desc()). \
-            limit(10).all()
+    filter = and_(TaskHistory.project_id == id, TaskHistory.update is not None)
+    history = DBSession.query(TaskHistory) \
+                       .filter(filter) \
+                       .order_by(TaskHistory.update.desc()) \
+                       .limit(10).all()
     return dict(page_id='project', project=project,
-            history=history,)
+                history=history,)
+
 
 @view_config(route_name='project_new', renderer='project.new.mako',
-        permission="add")
+             permission="add")
 def project_new(request):
     return dict(page_id='project_new')
 
+
 @view_config(route_name='project_new_grid',
-        renderer='project.new.grid.mako',
-        permission="edit")
+             renderer='project.new.grid.mako',
+             permission="edit")
 def project_new_grid(request):
     if 'zoom' in request.params:
 
@@ -71,7 +74,8 @@ def project_new_grid(request):
         import shapely
         import geojson
         geometry = request.params['geometry']
-        geometry = geojson.loads(geometry, object_hook=geojson.GeoJSON.to_instance)
+        geometry = geojson.loads(geometry,
+                                 object_hook=geojson.GeoJSON.to_instance)
         geometry = shapely.geometry.asShape(geometry)
         geometry = shape.from_shape(geometry, 4326)
         project.area = Area(geometry)
@@ -79,15 +83,17 @@ def project_new_grid(request):
 
         _ = request.translate
         request.session.flash(_("Project #${project_id} created successfully",
-            mapping={'project_id': project.id}),
-            'success')
-        return HTTPFound(location = route_url('project_edit', request, project=project.id))
+                              mapping={'project_id': project.id}),
+                              'success')
+        return HTTPFound(location=route_url('project_edit', request,
+                                            project=project.id))
 
     return dict(page_id='project_new_grid')
 
+
 @view_config(route_name='project_new_import',
-        renderer='project.new.import.mako',
-        permission="edit")
+             renderer='project.new.import.mako',
+             permission="edit")
 def project_new_import(request):
     if 'import' in request.params:
 
@@ -106,17 +112,19 @@ def project_new_import(request):
             count = project.import_from_geojson(input_file.read())
             _ = request.translate
             request.session.flash(_("Successfully imported ${n} geometries",
-                mapping={'n': count}),
-                'success')
-            return HTTPFound(location = route_url('project_edit', request, project=project.id))
+                                  mapping={'n': count}),
+                                  'success')
+            return HTTPFound(location=route_url('project_edit', request,
+                             project=project.id))
         except Exception, e:
-            request.session.flash("Sorry, this is not a JSON valid file. <br />%s"
-                % e.message, 'alert')
+            msg = "Sorry, this is not a JSON valid file. <br />%s" % e.message
+            request.session.flash(msg, 'alert')
 
     return dict(page_id='project_new_import')
 
+
 @view_config(route_name='project_edit', renderer='project.edit.mako',
-        permission="edit")
+             permission="edit")
 def project_edit(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
@@ -143,18 +151,18 @@ def project_edit(request):
             project.license = license
 
         DBSession.add(project)
-        return HTTPFound(location = route_url('project', request, project=project.id))
+        return HTTPFound(location=route_url('project', request,
+                         project=project.id))
 
     return dict(page_id='project_edit', project=project, licenses=licenses)
 
+
 @view_config(route_name='project_mapnik', renderer='mapnik')
 def project_mapnik(request):
-    x = request.matchdict['x']
-    y = request.matchdict['y']
-    z = request.matchdict['z']
     project_id = request.matchdict['project']
 
-    query = '(SELECT * FROM tasks WHERE project_id = %s) as tasks' % (str(project_id))
+    query = '(SELECT * FROM tasks WHERE project_id = %s) as tasks' % \
+            (str(project_id))
     tasks = mapnik.Layer('Map tasks from PostGIS')
     tasks.datasource = mapnik.PostGIS(
         host='localhost',
@@ -167,11 +175,12 @@ def project_mapnik(request):
 
     return [tasks]
 
+
 @view_config(route_name="project_check_for_update", renderer='json')
 def check_for_updates(request):
     interval = request.GET['interval']
     date = datetime.datetime.now() - datetime.timedelta(0, 0, 0, int(interval))
-    tasks = DBSession.query(Task).filter(Task.update>date).all()
+    tasks = DBSession.query(Task).filter(Task.update > date).all()
     print len(tasks)
     if len(tasks) > 0:
         return dict(update=True)

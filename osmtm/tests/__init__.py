@@ -2,13 +2,13 @@ import unittest
 import transaction
 from sqlalchemy import create_engine
 from osmtm.models import (
-        Base,
-        User,
-        License,
-        Area,
-        Project,
-        DBSession,
-    )
+    Base,
+    User,
+    License,
+    Area,
+    Project,
+    DBSession,
+)
 from sqlalchemy_i18n.manager import translation_manager
 
 db_url = 'postgresql://www-data:@localhost/osmtm_tests'
@@ -21,6 +21,7 @@ translation_manager.options.update({
     'locales': 'en fr',
     'get_locale_fallback': True
 })
+
 
 def populate_db():
     import geoalchemy2
@@ -62,6 +63,7 @@ def populate_db():
 
 populate_db()
 
+
 class BaseTestCase(unittest.TestCase):
 
     user1_id = USER1_ID
@@ -100,7 +102,7 @@ class BaseTestCase(unittest.TestCase):
         from pyramid import testing
         request = testing.DummyRequest(environ={'SERVER_NAME': 'servername'})
         request.registry = self.app.registry
-        headers = remember(request, userid, max_age=2*7*24*60*60)
+        headers = remember(request, userid, max_age=2 * 7 * 24 * 60 * 60)
         return {'Cookie': headers[0][1].split(';')[0]}
 
     def __forget(self):

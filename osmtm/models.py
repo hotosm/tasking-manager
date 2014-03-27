@@ -2,7 +2,6 @@ from sqlalchemy import (
     Table,
     Column,
     Integer,
-    Text,
     Unicode,
     ForeignKey,
     ForeignKeyConstraint,
@@ -12,30 +11,32 @@ from sqlalchemy import (
     event,
     inspect,
     and_
-    )
+)
 
 from geoalchemy2 import (
     Geometry,
     shape,
-    elements,
-    )
+)
 from geoalchemy2.functions import (
     ST_Transform,
-    ST_Centroid,
     GenericFunction
-    )
+)
+
 
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
     type = Geometry
 
+
 class ST_Collect(GenericFunction):
     name = 'ST_Collect'
     type = Geometry
 
+
 class ST_Convexhull(GenericFunction):
     name = 'ST_Convexhull'
     type = Geometry
+
 
 class ST_SetSRID(GenericFunction):
     name = 'ST_SetSRID'
@@ -50,13 +51,13 @@ from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
     relationship
-    )
+)
 
 from .utils import (
     TileBuilder,
     get_tiles_in_geom,
     max
-    )
+)
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
@@ -69,13 +70,14 @@ from sqlalchemy_i18n import (
     Translatable,
     make_translatable,
     translation_base,
-    )
+)
 make_translatable()
 
 users_licenses_table = Table('users_licenses', Base.metadata,
-    Column('user', Integer, ForeignKey('users.id')),
-    Column('license', Integer, ForeignKey('licenses.id'))
-)
+                             Column('user', Integer, ForeignKey('users.id')),
+                             Column('license', Integer,
+                                    ForeignKey('licenses.id')))
+
 
 class User(Base):
     __tablename__ = "users"
@@ -91,7 +93,7 @@ class User(Base):
         self.admin = admin
 
     def is_admin(self):
-        return self.admin == True
+        return self.admin is True
 
     def as_dict(self):
         return {
@@ -105,6 +107,7 @@ INVALIDATED = 1
 DONE = 2
 VALIDATED = 3
 REMOVED = -1
+
 
 class TaskHistory(Base):
     __tablename__ = "tasks_history"
@@ -122,14 +125,16 @@ class TaskHistory(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User, foreign_keys=[user_id])
     update = Column(DateTime)
-    comment = relationship("TaskComment", uselist=False, backref='task_history')
+    comment = relationship("TaskComment", uselist=False,
+                           backref='task_history')
 
     __table_args__ = (ForeignKeyConstraint([task_id, project_id],
                                            ['tasks.id', 'tasks.project_id']),
                       {})
 
+
 def task_id_factory(context):
-    project_id=context.compiled_parameters[0]['project_id']
+    project_id = context.compiled_parameters[0]['project_id']
 
     sql = """
         SELECT MAX(id)
@@ -138,9 +143,10 @@ def task_id_factory(context):
 
     result = context.connection.execute(sql).fetchone()[0]
     if result > 0:
-         return result + 1
+        return result + 1
     else:
         return 1
+
 
 class Task(Base):
     __tablename__ = "tasks"
@@ -177,27 +183,30 @@ class Task(Base):
 
     def to_polygon(self):
         # task size (in meters) at the required zoom level
-        step = max/(2**(self.zoom - 1))
+        step = max / (2 ** (self.zoom - 1))
         tb = TileBuilder(step)
         return tb.create_square(self.x, self.y)
 
     def add_comment(self, comment):
         self.history[-1].comment = TaskComment(comment)
 
+
 @event.listens_for(Task, "before_update")
 def before_update(mapper, connection, target):
     d = datetime.datetime.now()
     target.update = d
+
 
 @event.listens_for(Task, "after_update")
 def after_update(mapper, connection, target):
     project_table = Project.__table__
     project = target.project
     connection.execute(
-            project_table.update().
-             where(project_table.c.id==project.id).
-             values(last_update=datetime.datetime.now())
+        project_table.update().
+        where(project_table.c.id == project.id).
+        values(last_update=datetime.datetime.now())
     )
+
 
 class TaskComment(Base):
     __tablename__ = "tasks_comments"
@@ -211,9 +220,11 @@ class TaskComment(Base):
         self.comment = comment
         self.date = datetime.datetime.now()
 
+
 def get_old_value(attribute_state):
     history = attribute_state.history
     return history.deleted[0] if history.deleted else None
+
 
 @event.listens_for(DBSession, "after_flush")
 def after_flush(session, flush_context):
@@ -234,11 +245,13 @@ def after_flush(session, flush_context):
                 taskhistory.user = obj.user
             session.add(taskhistory)
 
+
 @event.listens_for(DBSession, "before_flush")
 def before_flush(session, flush_context, instances):
     for obj in session.dirty:
         if isinstance(obj, Task):
             obj.project.last_update = datetime.datetime.now()
+
 
 class Area(Base):
     __tablename__ = 'areas'
@@ -247,6 +260,7 @@ class Area(Base):
 
     def __init__(self, geometry):
         self.geometry = ST_SetSRID(ST_Multi(geometry), 4326)
+
 
 # A project corresponds to a given mapping job to do on a given area
 # Example 1: trace the major roads
@@ -270,10 +284,11 @@ class Project(Base, Translatable):
     author = relationship(User)
     last_update = Column(DateTime)
     area = relationship(Area)
-    tasks = relationship(Task, backref='project', cascade="all, delete, delete-orphan")
+    tasks = relationship(Task, backref='project',
+                         cascade="all, delete, delete-orphan")
     license_id = Column(Integer, ForeignKey('licenses.id'))
 
-    zoom = Column(Integer) # is not None when project is auto-filled (grid)
+    zoom = Column(Integer)  # is not None when project is auto-filled (grid)
     imagery = Column(Unicode)
 
     def __init__(self, name, user=None):
@@ -286,7 +301,8 @@ class Project(Base, Translatable):
     # auto magically fills the area with tasks for the given zoom
     def auto_fill(self, zoom):
         self.zoom = zoom
-        geom_3857 = DBSession.execute(ST_Transform(self.area.geometry, 3857)).scalar()
+        geom_3857 = DBSession.execute(ST_Transform(self.area.geometry, 3857)) \
+                             .scalar()
         geom_3857 = shape.to_shape(geom_3857)
 
         tasks = []
@@ -297,7 +313,8 @@ class Project(Base, Translatable):
         self.zoom = zoom
 
     def import_from_geojson(self, input):
-        collection = geojson.loads(input, object_hook=geojson.GeoJSON.to_instance)
+        collection = geojson.loads(input,
+                                   object_hook=geojson.GeoJSON.to_instance)
 
         tasks = []
         hasPolygon = False
@@ -320,7 +337,7 @@ class Project(Base, Translatable):
         self.tasks = tasks
 
         bounds = DBSession.query(ST_Convexhull(ST_Collect(Task.geometry))) \
-            .filter(Task.project_id==self.id).one()
+            .filter(Task.project_id == self.id).one()
         self.area = Area(bounds[0])
 
         return len(tasks)
@@ -343,26 +360,27 @@ class Project(Base, Translatable):
             'created': self.created,
             'last_update': self.last_update,
             'status': self.status,
-            'author': self.author.username if self.author is not None else None,
+            'author': self.author.username if self.author is not None else '',
             'done': self.get_done(),
             'centroid': [centroid.x, centroid.y]
         }
 
     def get_done(self):
         total = DBSession.query(Task) \
-            .filter(Task.project_id==self.id) \
+            .filter(Task.project_id == self.id) \
             .count()
         done = DBSession.query(Task) \
-            .filter(and_(Task.project_id==self.id, Task.state >= 2)) \
+            .filter(and_(Task.project_id == self.id, Task.state >= 2)) \
             .count()
 
-            # FIXME it would be nice to get percent done based on area instead
-            # the following works but is slow
-            #area = DBSession.execute(ST_Area(task.geometry)).scalar()
-            #total = total + area
-            #if task.state >= 2:
-                #done = done + area
+        # FIXME it would be nice to get percent done based on area instead
+        # the following works but is slow
+        # area = DBSession.execute(ST_Area(task.geometry)).scalar()
+        # total = total + area
+        # if task.state >= 2:
+        # done = done + area
         return round(done * 100 / total) / 100 if total != 0 else 0
+
 
 class ProjectTranslation(translation_base(Project)):
     __tablename__ = 'project_translation'
@@ -371,6 +389,7 @@ class ProjectTranslation(translation_base(Project)):
     description = Column(Unicode, default=u'')
     short_description = Column(Unicode, default=u'')
 
+
 class License(Base):
     __tablename__ = "licenses"
     id = Column(Integer, primary_key=True)
@@ -378,6 +397,7 @@ class License(Base):
     description = Column(Unicode)
     plain_text = Column(Unicode)
     projects = relationship("Project", backref='license')
+    users = relationship("License", secondary=users_licenses_table)
 
     def __init__(self):
         pass
@@ -388,12 +408,14 @@ from json import (
 )
 import functools
 
+
 class ExtendedJSONEncoder(JSONEncoder):
+
     def default(self, obj):
 
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat(' ')
 
-        return JSONEncoder.default(self, obj) # pragma: no cover
+        return JSONEncoder.default(self, obj)  # pragma: no cover
 
 dumps = functools.partial(_dumps, cls=ExtendedJSONEncoder)

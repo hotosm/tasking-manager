@@ -23,10 +23,12 @@ install:
 - sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
 - sudo -u postgres createdb -O www-data osmtm_tests
 - sudo -u postgres psql -d osmtm_tests -c "CREATE EXTENSION postgis;"
+- easy_install flake8
 
 script:
 - source env/bin/activate
-- env/bin/nosetests
+- nosetests
+- flake8 osmtm
 
 after_success:
 - pip install coveralls

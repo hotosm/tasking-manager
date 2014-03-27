@@ -1,15 +1,15 @@
 # subscribers.py
 
 from pyramid.i18n import (
-        get_localizer,
-        TranslationStringFactory,
-        )
+    get_localizer,
+    TranslationStringFactory,
+)
 from pyramid.events import (
-        NewRequest,
-        BeforeRender,
-        subscriber,
-        )
-from webob.acceptparse import Accept
+    NewRequest,
+    BeforeRender,
+    subscriber,
+)
+
 
 @subscriber(BeforeRender)
 def add_renderer_globals(event):
@@ -19,14 +19,17 @@ def add_renderer_globals(event):
 
 tsf = TranslationStringFactory('osmtm')
 
+
 @subscriber(NewRequest)
 def add_localizer(event):
     request = event.request
     localizer = get_localizer(request)
+
     def auto_translate(*args, **kwargs):
         return localizer.translate(tsf(*args, **kwargs))
     request.localizer = localizer
     request.translate = auto_translate
+
 
 @subscriber(NewRequest)
 def setAcceptedLanguagesLocale(event):
@@ -34,8 +37,9 @@ def setAcceptedLanguagesLocale(event):
         return
     accepted = event.request.accept_language
     event.request._LOCALE_ = accepted.best_match(
-            event.request.registry.settings.available_languages.split(),
-            event.request.registry.settings.default_locale_name)
+        event.request.registry.settings.available_languages.split(),
+        event.request.registry.settings.default_locale_name)
+
 
 def custom_locale_negotiator(request):
     """ The :term:`custom locale negotiator`. Returns a locale name.
@@ -57,7 +61,6 @@ def custom_locale_negotiator(request):
     """
 
     name = '_LOCALE_'
-    locale_name = getattr(request, name, None)
     if request.params.get(name) is not None:
         return request.params.get(name)
     if request.cookies.get(name) is not None:
