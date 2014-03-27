@@ -36,7 +36,7 @@ USER_DETAILS_URL = 'http://api.openstreetmap.org/api/0.6/user/details'
 consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
 
 @view_config(route_name='login')
-def login(request):
+def login(request): # pragma: no cover
     # get the request token
     client = oauth.Client(consumer)
     oauth_callback_url = request.route_url('oauth_callback')
@@ -55,7 +55,7 @@ def login(request):
     return HTTPFound(location=redirect_url)
 
 @view_config(route_name='oauth_callback')
-def oauth_callback(request):
+def oauth_callback(request): # pragma: no cover
     # the request token we have in the user session should be the same
     # as the one passed to the callback
     session = request.session
@@ -95,6 +95,6 @@ def oauth_callback(request):
     return HTTPFound(location=location, headers=headers)
 
 @view_config(route_name='logout')
-def logout(request):
+def logout(request): # pragma: no cover
     headers = forget(request)
     return HTTPFound(location=request.route_url('home'), headers=headers)
