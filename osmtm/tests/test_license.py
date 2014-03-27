@@ -1,5 +1,6 @@
 from . import BaseTestCase
 
+
 class TestLicenseFunctional(BaseTestCase):
 
     def test_licenses(self):
@@ -17,20 +18,20 @@ class TestLicenseFunctional(BaseTestCase):
         from . import USER1_ID
         headers = self.login_as_user1()
         self.testapp.post('/license/%d' % 1, headers=headers,
-                params={
-                    'accepted_terms': 'I AGREE'
-                },
-                status=302)
+                          params={
+                              'accepted_terms': 'I AGREE'
+                          },
+                          status=302)
 
         user = DBSession.query(User).get(USER1_ID)
         license = DBSession.query(License).get(1)
         self.assertTrue(license in user.accepted_licenses)
 
         self.testapp.post('/license/1', headers=headers,
-                params={
-                    'accepted_terms': 'blah'
-                },
-                status=302)
+                          params={
+                              'accepted_terms': 'blah'
+                          },
+                          status=302)
         user = DBSession.query(User).get(USER1_ID)
         self.assertFalse(license in user.accepted_licenses)
 
@@ -48,13 +49,13 @@ class TestLicenseFunctional(BaseTestCase):
         from osmtm.models import DBSession, License
         headers = self.login_as_admin()
         self.testapp.post('/license/new', headers=headers,
-                params={
-                    'form.submitted': True,
-                    'name': 'New License',
-                    'description': 'description',
-                    'plain_text': 'plain_text'
-                },
-                status=302)
+                          params={
+                              'form.submitted': True,
+                              'name': 'New License',
+                              'description': 'description',
+                              'plain_text': 'plain_text'
+                          },
+                          status=302)
 
         self.assertEqual(DBSession.query(License).count(), 2)
 
@@ -72,13 +73,13 @@ class TestLicenseFunctional(BaseTestCase):
         from osmtm.models import DBSession, License
         headers = self.login_as_admin()
         self.testapp.post('/license/1/edit', headers=headers,
-                params={
-                    'form.submitted': True,
-                    'name': 'changed_name',
-                    'description': 'changed_description',
-                    'plain_text': 'changed_plain_text'
-                },
-                status=302)
+                          params={
+                              'form.submitted': True,
+                              'name': 'changed_name',
+                              'description': 'changed_description',
+                              'plain_text': 'changed_plain_text'
+                          },
+                          status=302)
 
         self.assertEqual(DBSession.query(License).get(1).name, u'changed_name')
 
@@ -99,7 +100,7 @@ class TestLicenseFunctional(BaseTestCase):
 
         headers = self.login_as_admin()
         self.testapp.get('/license/%d/delete' % license_id,
-                headers=headers, status=302)
+                         headers=headers, status=302)
 
         self.assertEqual(DBSession.query(License).count(), 1)
 

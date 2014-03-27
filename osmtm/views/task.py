@@ -1,40 +1,40 @@
 from pyramid.view import view_config
-from pyramid.url import route_url
 from pyramid.httpexceptions import (
     HTTPNotFound,
     HTTPBadRequest,
     HTTPUnauthorized,
     HTTPForbidden,
-    )
+)
 from ..models import (
     DBSession,
     Task,
     TaskHistory,
     User
-    )
+)
 
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import and_
-from geoalchemy2.functions import ST_Union, ST_Disjoint
 
 from pyramid.security import authenticated_userid
 
 import random
 
+
 def __get_user(request, allow_none=False):
     user_id = authenticated_userid(request)
 
     if not user_id:
-        if allow_none == True:
+        if allow_none:
             return None
         raise HTTPUnauthorized()
 
     user = DBSession.query(User).get(user_id)
 
-    if allow_none != True and not user: # pragma: no cover
+    if not allow_none and not user:  # pragma: no cover
         raise HTTPUnauthorized()
 
     return user
+
 
 def __get_task(request):
     task_id = request.matchdict['task']
@@ -44,10 +44,12 @@ def __get_task(request):
         raise HTTPNotFound("This task doesn't exist.")
     return task
 
+
 def __ensure_task_locked(task, user):
     locked_task = get_locked_task(task.project_id, user)
     if locked_task != task:
         raise HTTPForbidden("You need to lock the tile first.")
+
 
 @view_config(route_name='task_xhr', renderer='task.mako')
 def task_xhr(request):
@@ -58,14 +60,15 @@ def task_xhr(request):
 
     task_id = request.matchdict['task']
     project_id = request.matchdict['project']
-    filter = and_(TaskHistory.task_id==task_id,
-        TaskHistory.project_id==project_id)
+    filter = and_(TaskHistory.task_id == task_id,
+                  TaskHistory.project_id == project_id)
     history = DBSession.query(TaskHistory).filter(filter) \
         .order_by(TaskHistory.id.desc()).all()
     return dict(task=task,
-            user=user,
-            locked_task=locked_task,
-            history=history)
+                user=user,
+                locked_task=locked_task,
+                history=history)
+
 
 @view_config(route_name='task_done', renderer='json')
 def done(request):
@@ -79,7 +82,8 @@ def done(request):
     DBSession.add(task)
     _ = request.translate
     return dict(success=True,
-            msg=_("Task marked as done. Thanks for your contribution"))
+                msg=_("Task marked as done. Thanks for your contribution"))
+
 
 @view_config(route_name='task_lock', renderer="json")
 def lock(request):
@@ -96,13 +100,14 @@ def lock(request):
     if task.locked:
         # FIXME use http errors
         return dict(success=False,
-                task=dict(id=task.id),
-                error_msg=_("Task already locked."))
+                    task=dict(id=task.id),
+                    error_msg=_("Task already locked."))
 
     task.user = user
     task.locked = True
     DBSession.add(task)
     return dict(success=True, task=dict(id=task.id))
+
 
 @view_config(route_name='task_unlock', renderer="json")
 def unlock(request):
@@ -115,6 +120,7 @@ def unlock(request):
 
     DBSession.add(task)
     return dict(success=True, task=dict(id=task.id))
+
 
 @view_config(route_name='task_invalidate', renderer="json")
 def invalidate(request):
@@ -132,7 +138,8 @@ def invalidate(request):
 
     _ = request.translate
     return dict(success=True,
-            msg=_("Task invalidated."))
+                msg=_("Task invalidated."))
+
 
 @view_config(route_name='task_split', renderer='json')
 def split(request):
@@ -143,10 +150,11 @@ def split(request):
     if task.zoom is None or (task.zoom - task.project.zoom) > 0:
         raise HTTPBadRequest()
 
-    new_tasks = []
     for i in range(0, 2):
         for j in range(0, 2):
-            t = Task(int(task.x)*2 + i, int(task.y)*2 + j, int(task.zoom)+1)
+            t = Task(int(task.x) * 2 + i,
+                     int(task.y) * 2 + j,
+                     int(task.zoom) + 1)
             t.project = task.project
 
     task.state = task.state_removed
@@ -158,20 +166,24 @@ def split(request):
 
 def get_locked_task(project_id, user):
     try:
-        filter = and_(Task.user==user, Task.locked==True, Task.project_id==project_id)
+        filter = and_(Task.user == user,
+                      Task.locked == True,  # noqa
+                      Task.project_id == project_id)
         return DBSession.query(Task).filter(filter).one()
-    except NoResultFound, e:
+    except NoResultFound:
         return None
+
 
 @view_config(route_name='task_random', http_cache=0, renderer='json')
 def random_task(request):
-    "Gets a random not-done task. First it tries to get one that does not border any in-progress tasks."
+    """Gets a random not-done task. First it tries to get one that does not
+       border any in-progress tasks."""
     project_id = request.matchdict['project']
 
-    # we will ask about the area occupied by tasks locked by others, so we can steer clear of them
-    locked = DBSession.query(
-        Task.geometry.ST_Union().label('taskunion')
-        ).filter_by(project_id=project_id, locked=True).subquery()
+    # we will ask about the area occupied by tasks locked by others, so we can
+    # steer clear of them
+    locked = DBSession.query(Task.geometry.ST_Union().label('taskunion')) \
+        .filter_by(project_id=project_id, locked=True).subquery()
 
     # first search attempt - all available tasks that do not border busy tasks
     taskgetter = DBSession.query(Task) \
@@ -179,17 +191,18 @@ def random_task(request):
         .filter(Task.geometry.ST_Disjoint(locked.c.taskunion))
     count = taskgetter.count()
     if count != 0:
-        atask = taskgetter.offset(random.randint(0, count-1)).first()
+        atask = taskgetter.offset(random.randint(0, count - 1)).first()
         return dict(success=True, task=dict(id=atask.id))
 
-    # second search attempt - if the non-bordering constraint gave us no hits, we discard that constraint
+    # second search attempt - if the non-bordering constraint gave us no hits,
+    # we discard that constraint
     taskgetter = DBSession.query(Task) \
         .filter_by(project_id=project_id, state=Task.state_ready)
     count = taskgetter.count()
     if count != 0:
-        atask = taskgetter.offset(random.randint(0, count-1)).first()
+        atask = taskgetter.offset(random.randint(0, count - 1)).first()
         return dict(success=True, task=dict(id=atask.id))
 
     _ = request.translate
-    return dict(success=False, error_msg=_("Random task... none available! Sorry."))
-
+    return dict(success=False,
+                error_msg=_("Random task... none available! Sorry."))

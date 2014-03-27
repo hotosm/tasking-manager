@@ -1,22 +1,23 @@
 from pyramid.asset import abspath_from_asset_spec
 from mapnik import (
-        Projection,
-        Map,
-        Image,
-        Grid,
-        Box2d,
-        load_map,
-        render,
-        render_layer
-    )
+    Map,
+    Image,
+    Grid,
+    Box2d,
+    load_map,
+    render,
+    render_layer
+)
 import json
 
 # Maximum resolution
 MAXRESOLUTION = 156543.0339
 # X/Y axis limit
-max = MAXRESOLUTION*256/2
+limit = MAXRESOLUTION * 256 / 2
 
-class MapnikRendererFactory:
+
+class MapnikRendererFactory:  # pragma: no cover
+
     def __init__(self, info):
         self.mapfile = abspath_from_asset_spec(info.name)
 
@@ -31,12 +32,12 @@ class MapnikRendererFactory:
         z = int(request.matchdict['z'])
         x = int(request.matchdict['x'])
         y = int(request.matchdict['y'])
-        step = max/(2**(int(z) - 1))
+        step = limit / (2 ** (int(z) - 1))
 
-        xmin = x*step-max
-        ymin = max-y*step
-        xmax = (x+1)*step-max
-        ymax = max-(y+1)*step
+        xmin = x * step - limit
+        ymin = limit - y * step
+        xmax = (x + 1) * step - limit
+        ymax = limit - (y + 1) * step
 
         bbox = Box2d(xmin, ymax, xmax, ymin)
 

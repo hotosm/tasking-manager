@@ -2,22 +2,23 @@ from pyramid.view import view_config
 from pyramid.url import route_url
 from pyramid.httpexceptions import (
     HTTPFound,
-    HTTPBadRequest,
     HTTPUnauthorized
-    )
+)
 from ..models import (
     DBSession,
     License,
     User,
-    )
+)
 
 from pyramid.security import authenticated_userid
+
 
 @view_config(route_name='licenses', renderer='licenses.mako')
 def licenses(request):
     licenses = DBSession.query(License).all()
 
     return dict(page_id="licenses", licenses=licenses)
+
 
 @view_config(route_name='license', renderer='license.mako')
 def license(request):
@@ -30,7 +31,7 @@ def license(request):
 
     user = DBSession.query(User).get(user_id)
 
-    if not user: # pragma: no cover
+    if not user:  # pragma: no cover
         raise HTTPUnauthorized()
 
     redirect = request.params.get("redirect", request.route_url("home"))
@@ -41,7 +42,9 @@ def license(request):
             user.accepted_licenses.remove(license)
         return HTTPFound(location=redirect)
 
-    return dict(page_id="license", user=user, license=license, redirect=redirect)
+    return dict(page_id="license", user=user, license=license,
+                redirect=redirect)
+
 
 @view_config(route_name='license_delete', permission='admin')
 def license_delete(request):
@@ -55,12 +58,13 @@ def license_delete(request):
         DBSession.flush()
         request.session.flash('License removed!')
 
-    return HTTPFound(location = route_url('licenses', request))
+    return HTTPFound(location=route_url('licenses', request))
+
 
 @view_config(route_name='license_new', renderer='license.edit.mako',
-        permission='admin')
+             permission='admin')
 @view_config(route_name='license_edit', renderer='license.edit.mako',
-        permission='admin')
+             permission='admin')
 def license_edit(request):
     if 'license' in request.matchdict:
         id = request.matchdict['license']
@@ -82,5 +86,5 @@ def license_edit(request):
         license.plain_text = request.params['plain_text']
 
         DBSession.add(license)
-        return HTTPFound(location = route_url('licenses', request))
+        return HTTPFound(location=route_url('licenses', request))
     return dict(page_id="licenses", license=license)

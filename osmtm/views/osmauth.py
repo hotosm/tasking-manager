@@ -1,19 +1,16 @@
-from pyramid.response import Response
 from pyramid.view import view_config
 from xml.etree import ElementTree
-from pyramid.httpexceptions import HTTPFound
-
-from sqlalchemy.exc import DBAPIError
+from pyramid.httpexceptions import HTTPFound, HTTPBadGateway, HTTPBadRequest
 
 from ..models import (
     DBSession,
     User,
-    )
+)
 
 from pyramid.security import (
     remember,
     forget,
-    )
+)
 
 import urlparse
 import oauth2 as oauth
@@ -35,27 +32,29 @@ USER_DETAILS_URL = 'http://api.openstreetmap.org/api/0.6/user/details'
 # an oauth consumer instance using our key and secret
 consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
 
+
 @view_config(route_name='login')
-def login(request): # pragma: no cover
+def login(request):  # pragma: no cover
     # get the request token
     client = oauth.Client(consumer)
     oauth_callback_url = request.route_url('oauth_callback')
     url = "%s?oauth_callback=%s" % (REQUEST_TOKEN_URL, oauth_callback_url)
     resp, content = client.request(url, "GET")
     if resp['status'] != '200':
-        return HTTPBadGateway('The OSM authentication server didn\'t respond correctly')
+        return HTTPBadGateway('The OSM authentication server didn\'t\
+                respond correctly')
     request_token = dict(urlparse.parse_qsl(content))
     # store the request token in the session, we'll need in the callback
     session = request.session
     session['request_token'] = request_token
     session['came_from'] = request.params.get('came_from')
-    #session.save()
     redirect_url = "%s?oauth_token=%s" % \
-            (AUTHORIZE_URL, request_token['oauth_token'])
+                   (AUTHORIZE_URL, request_token['oauth_token'])
     return HTTPFound(location=redirect_url)
 
+
 @view_config(route_name='oauth_callback')
-def oauth_callback(request): # pragma: no cover
+def oauth_callback(request):  # pragma: no cover
     # the request token we have in the user session should be the same
     # as the one passed to the callback
     session = request.session
@@ -88,13 +87,14 @@ def oauth_callback(request): # pragma: no cover
                 user.admin = True
             DBSession.add(user)
             DBSession.flush()
-        headers = remember(request, id, max_age=20*7*24*60*60)
+        headers = remember(request, id, max_age=20 * 7 * 24 * 60 * 60)
 
     location = session.get('came_from') or '/'
     # and redirect to the main page
     return HTTPFound(location=location, headers=headers)
 
+
 @view_config(route_name='logout')
-def logout(request): # pragma: no cover
+def logout(request):  # pragma: no cover
     headers = forget(request)
     return HTTPFound(location=request.route_url('home'), headers=headers)
