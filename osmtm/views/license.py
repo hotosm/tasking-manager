@@ -30,7 +30,7 @@ def license(request):
 
     user = DBSession.query(User).get(user_id)
 
-    if not user:
+    if not user: # pragma: no cover
         raise HTTPUnauthorized()
 
     redirect = request.params.get("redirect", request.route_url("home"))
@@ -40,42 +40,47 @@ def license(request):
         elif license in user.accepted_licenses:
             user.accepted_licenses.remove(license)
         return HTTPFound(location=redirect)
-    else:
-        return dict(page_id="license", user=user, license=license, redirect=redirect)
 
-@view_config(route_name='license_new', permission='admin')
-def license_new(request):
-    license = License()
-    license.name = ''
-    license.description = ''
-    license.plain_text = ''
-
-    DBSession.add(license)
-    DBSession.flush()
-    return HTTPFound(location = route_url('license_edit', request, license=license.id))
+    return dict(page_id="license", user=user, license=license, redirect=redirect)
 
 @view_config(route_name='license_delete', permission='admin')
 def license_delete(request):
     id = request.matchdict['license']
     license = DBSession.query(License).get(id)
 
-    DBSession.delete(license)
-    DBSession.flush()
-    request.session.flash('License removed!')
+    if not license:
+        request.session.flash('License doesn\'t exist!')
+    else:
+        DBSession.delete(license)
+        DBSession.flush()
+        request.session.flash('License removed!')
+
     return HTTPFound(location = route_url('licenses', request))
 
+@view_config(route_name='license_new', renderer='license.edit.mako',
+        permission='admin')
 @view_config(route_name='license_edit', renderer='license.edit.mako',
         permission='admin')
 def license_edit(request):
-    id = request.matchdict['license']
-    license = DBSession.query(License).get(id)
+    if 'license' in request.matchdict:
+        id = request.matchdict['license']
+        license = DBSession.query(License).get(id)
+    else:
+        license = None
 
     if 'form.submitted' in request.params:
+        if not license:
+            license = License()
+            DBSession.add(license)
+            DBSession.flush()
+            request.session.flash('License created!', 'success')
+        else:
+            request.session.flash('License updated!', 'success')
+
         license.name = request.params['name']
         license.description = request.params['description']
         license.plain_text = request.params['plain_text']
 
         DBSession.add(license)
-        request.session.flash('License updated!')
         return HTTPFound(location = route_url('licenses', request))
     return dict(page_id="licenses", license=license)

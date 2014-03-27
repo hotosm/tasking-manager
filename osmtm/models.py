@@ -378,6 +378,7 @@ class License(Base):
     description = Column(Unicode)
     plain_text = Column(Unicode)
     projects = relationship("Project", backref='license')
+    users = relationship("License", secondary=users_licenses_table)
 
     def __init__(self):
         pass

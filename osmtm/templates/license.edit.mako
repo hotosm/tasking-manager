@@ -10,7 +10,7 @@
         <div class="control-group">
             <label class="control-label" for="id_name">Name</label>
             <div class="controls">
-                <input type="text" class="text input-xxlarge" id="id_name" name="name" value="${license.name}"
+                <input type="text" class="text input-xxlarge" id="id_name" name="name" value="${license.name if license else ''}"
                     placeholder="A name for the license (provider, for example)" />
             </div>
         </div>
@@ -20,7 +20,7 @@
                     <label class="control-label" for="id_description">Description</label>
                     <div class="controls">
                         <textarea class="text span7" id="id_description" name="description" rows="10"
-                            placeholder="The license terms">${license.description}</textarea>
+                            placeholder="The license terms">${license.description if license else ''}</textarea>
                     </div>
                 </div>
             </div>
@@ -32,14 +32,20 @@
                     <div class="controls">
                         <textarea class="text span7" id="id_plain_text" name="plain_text" rows="5"
                             placeholder="A short vesion of the terms"
-                            >${license.plain_text}</textarea>
+                            >${license.plain_text if license else ''}</textarea>
                     </div>
                 </div>
             </div>
         </div>
         <div class="form-actions">
+            % if license:
             <input type="submit" class="btn btn-success" value="Save the modifications" id="id_submit" name="form.submitted"/>
+            % else:
+            <input type="submit" class="btn btn-success" value="Create the new license" id="id_submit" name="form.submitted"/>
+            % endif
+            % if license:
             <a class="btn btn-danger" id="delete" href="${request.route_url('license_delete', license=license.id)}">Delete</a>
+            % endif
             <a class="btn pull-right" href="${request.route_url('licenses')}">Cancel</a>
         </div>
     </form>
