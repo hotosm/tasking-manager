@@ -137,7 +137,7 @@ def project_edit(request):
         for locale, translation in project.translations.iteritems():
             with project.force_locale(locale):
                 for field in ['name', 'short_description', 'description',
-                              'instructions']:
+                              'instructions', 'per_task_instructions']:
                     translated = '_'.join([field, locale])
                     if translated in request.params:
                         setattr(project, field, request.params[translated])

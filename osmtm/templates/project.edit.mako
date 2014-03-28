@@ -129,7 +129,7 @@
       <input type="text" id="id_entities_to_map"
              name="entities_to_map"
              placeholder="primary roads, secondary roads, buildings"
-             class="form-control col-md-5"
+             class="form-control"
              value="${project.entities_to_map if project.entities_to_map is not None else ''}"/>
       <span class="help-block">
         The list of entities to map.<br />
@@ -143,7 +143,7 @@
              value="${project.changeset_comment if project.changeset_comment is not None else ''}"/>
       <span class="help-block">
         Comments users are recommended to add to upload commits.<br />
-        <em>For example: <code class="text-muted">Guinea, #hotosm-guinea-task-470, source=Pleiades, CNES, Astrium</code></em>
+        For example: <em>" Guinea, #hotosm-guinea-task-470, source=Pleiades, CNES, Astrium "</code></em>
       </span>
     </div>
     <hr />
@@ -171,10 +171,36 @@
               <textarea id="id_instructions_${locale}"
                         name="instructions_${locale}"
                         class="form-control"
-                        rows="4">${translation.instructions}</textarea>
+                        rows="5">${translation.instructions}</textarea>
             </div>
             <div class="tab-pane preview" id="instructions_${locale}_preview"></div>
           </div>
+          ${markdown_link()}
+          <br/>
+          <br/>
+          <!-- per task instructions -->
+          <label for="id_per_task_instructions" class="control-label">Per Task Instructions (optional)</label>
+          <ul class="nav nav-pills small">
+            <li class="active">
+              <a href="#per_task_instructions_${locale}_edit" data-toggle="tab">Edit</a>
+            </li>
+            <li>
+              <a href="#per_task_instructions_${locale}_preview" data-toggle="tab">Preview</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="per_task_instructions_${locale}_edit">
+              <textarea id="id_per_task_instructions_${locale}"
+                        name="per_task_instructions_${locale}"
+                        class="form-control"
+                        rows="2" class="text span4">${translation.per_task_instructions}</textarea>
+            </div>
+            <div class="tab-pane preview" id="per_task_instructions_${locale}_preview"></div>
+          </div>
+          <span class="help-block">
+            Put here anything that can be usefull to users while taking a task. {x}, {y} and {z} will be replaced by the correponding parameters for each task.<br />
+            For example: <em>" This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM "</em>
+          </span>
           ${markdown_link()}
         </div>
         <script>
@@ -183,6 +209,13 @@
             instructions_preview = $('#instructions_${locale}_preview');
             instructions.keyup(function() {
               var html = converter.makeHtml(instructions.val());
+              instructions_preview.html(html);
+            }).trigger('keyup');
+
+            var per_task_instructions = $('#id_per_task_instructions_${locale}'),
+            instructions_preview = $('#per_task_instructions_${locale}_preview');
+            per_task_instructions.keyup(function() {
+              var html = converter.makeHtml(per_task_instructions.val());
               instructions_preview.html(html);
             }).trigger('keyup');
           })();
