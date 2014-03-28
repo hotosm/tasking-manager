@@ -37,9 +37,9 @@ import markdown
     </dd>
   </dl>
 </div>
+<hr />
 <div class="row">
   <div class="span12">
-    <h4>${_('Detailed Instructions')}</h4>
     <p>${markdown.markdown(project.instructions)|n}</p>
   </div>
 </div>
