@@ -382,7 +382,7 @@ class Project(Base, Translatable):
         # total = total + area
         # if task.state >= 2:
         # done = done + area
-        return round(done * 100 / total) / 100 if total != 0 else 0
+        return round(done * 100 / total) if total != 0 else 0
 
 
 @event.listens_for(Project, "after_insert")

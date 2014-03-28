@@ -17,10 +17,10 @@
             <tr>
               <td>
                 <div style="border: 1px solid #ccc;" class="progress">
-                  <div style="width: {{project.done * 100}}%;" class="bar"></div>
+                  <div style="width: {{project.done}}%;" class="bar"></div>
                 </div>
               </td>
-              <td>{{project.done * 100}}%</td>
+              <td>{{project.done}}%</td>
             </tr>
           </table>
         </li>
