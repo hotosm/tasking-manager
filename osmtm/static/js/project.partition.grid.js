@@ -9,7 +9,7 @@ function updateSubmitBtnStatus() {
 
 var map = L.map('leaflet').setView([0, 0], 0);
 // create the tile layer with correct attribution
-var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+var osmUrl='http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
 var osmAttrib='Map data © OpenStreetMap contributors';
 var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib, drawControl: true});
 map.addLayer(osm);
