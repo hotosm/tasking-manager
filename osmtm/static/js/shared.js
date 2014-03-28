@@ -15,6 +15,14 @@ $().ready(function() {
         return false;
     });
     $('[rel=tooltip]').tooltip();
+
+    $('.markdown').on('click', function(event) {
+      event.preventDefault();
+      $.get("/static/markdown_quick_ref.html", function(data) {
+        $('#markdown_cheat_sheet .modal-body').html(data);
+        $('#markdown_cheat_sheet').modal();
+      });
+    });
 });
 $.fn.serializeObject = function()
 {
