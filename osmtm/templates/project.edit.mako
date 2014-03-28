@@ -5,6 +5,17 @@
 <div class="brand">${project.name} - Edit</div>
 </%block>
 <%block name="content">
+<div id="markdown_cheat_sheet" class="modal hide fade">
+  <div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4 class="modal-title">Markdown Quick Reference</h4>
+    </div>
+    <div class="modal-body"></div>
+  </div>
+  </div>
+</div>
 <script>
   var converter = new Showdown.converter();
 </script>
@@ -84,6 +95,7 @@
             </div>
             <div class="tab-pane preview" id="description_${locale}_preview"></div>
           </div>
+          ${markdown_link()}
         </div>
         <script>
           (function () {
@@ -154,6 +166,7 @@
             </div>
             <div class="tab-pane preview" id="instructions_${locale}_preview"></div>
           </div>
+          ${markdown_link()}
         </div>
         <script>
           (function () {
@@ -198,4 +211,11 @@
   </div>
 </div>
 </div>
+</%block>
+
+<%block name="markdown_link">
+<small><em>
+  <span class="icon icon-bullhorn"></span><b>Tip:</b>
+  You can use <a href class="markdown">Markdown</a>
+</em></small>
 </%block>
