@@ -16,5 +16,5 @@
     </p>
   </form>
 </div>
-<script src="${request.static_url('osmtm:static/js/project.partition.import.js')}"></script>
+<script src="${request.static_url('osmtm:static/js/project.new.import.js')}"></script>
 </%block>

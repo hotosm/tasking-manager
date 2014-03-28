@@ -54,6 +54,6 @@
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
-<script src="${request.static_url('osmtm:static/js/project.partition.grid.js')}"></script>
+<script src="${request.static_url('osmtm:static/js/project.new.grid.js')}"></script>
 
 </%block>
