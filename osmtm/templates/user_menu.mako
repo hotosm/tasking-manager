@@ -6,6 +6,12 @@
       % if user.is_admin():
       <li class="divider"></li>
       <li>
+        <a href="${request.route_url('users')}">Users list</a>
+      </li>
+      <li>
+        <a href="${request.route_url('licenses')}">Manage licenses</a>
+      </li>
+      <li>
         <a href="${request.route_url('project_new')}">Create a new project</a>
       </li>
       % endif
