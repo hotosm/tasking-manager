@@ -12,39 +12,48 @@
     user = None
 %>
 % if project.imagery is not None and project.imagery != 'None':
-<p>
-  ${_('Imagery is available to be used for tracing elements.')}
-  ${_('You should be able to load it in your favorite editor.')}
-</p>
 % if license_accepted or not project.license:
 <%
     type = project.imagery.lower()[:3]
 %>
 <p>
-<a href='http://127.0.0.1:8111/imagery?title=${project.name}&type=${type}&url=${project.imagery}'
-   target="_blank" rel="tooltip"
-   data-original-title="${_('If you have JOSM running and remote control activated, clicking this link should automatically load imagery.')}">
-   ${project.imagery}
-</a>
+  ${project.imagery}
+  <a href='http://127.0.0.1:8111/imagery?title=${project.name}&type=${type}&url=${project.imagery}'
+    class="btn btn-small"
+    target="_blank" rel="tooltip"
+    data-original-title="${_('If you have JOSM running and remote control activated, clicking this link should automatically load imagery.')}">
+    <span class="icon icon-share-alt"></span>
+    JOSM
+  </a>
+  <a
+    class="btn btn-small"
+    rel="tooltip"
+    data-original-title="${_('Imagery should load automatically when you will open a task using the iD Editor')}">
+    <span class="icon icon-share-alt"></span>
+    iD Editor
+  </a>
+</p>
+% elif not license_accepted:
+<p>
+  tms[22]:http://xxx.xxxx.com/hot/1.0.0/xxxxxx/{zoom}/{x}/{y}.png
 </p>
 % endif
 % if project.license:
-<p>
-<span class="alert">
+<p class="text-warning">
   Access to this imagery is limited by the
   <a href="${request.route_url('license', license=project.license.id)}?redirect=${request.route_url('project', project=project.id)}">
     ${project.license.name} license agreement
-  </a>.</span>
-&nbsp;
-<span class="alert ${'alert-error' if not license_accepted else 'alert-success'}">
+  </a>.
+</p>
+<p class="${'text-error' if not license_accepted else 'text-success'}">
 % if license_accepted:
-You have already acknowledged these terms.</span>
+You have already acknowledged the terms of this license.</span>
 % else:
   You need to
   <a href="${request.route_url('license', license=project.license.id)}?redirect=${request.route_url('project', project=project.id)}">
     review and acknowledge
   </a>
-  the agreement.</span>
+  the agreement.
 % endif
 </p>
 % endif

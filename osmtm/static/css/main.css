@@ -5379,7 +5379,6 @@ html,
 body {
   background-color: #FFF;
   padding-top: 30px;
-  font-size: 13px;
   line-height: 18px;
 }
 .footer {
@@ -5597,6 +5596,10 @@ body {
 }
 #project .linethrough {
   text-decoration: line-through;
+}
+#project #instructions .icon-question-sign {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
 }
 #project_edit .nav-pills.small {
   font-size: 0.9em;
