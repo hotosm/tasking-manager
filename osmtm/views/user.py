@@ -7,9 +7,15 @@ from pyramid.httpexceptions import (
 from ..models import (
     DBSession,
     User,
+    Project,
+    TaskHistory,
+    Task,
 )
 
 from pyramid.security import authenticated_userid
+from sqlalchemy import func, desc
+from sqlalchemy.sql.expression import and_
+from sqlalchemy.orm.exc import NoResultFound
 
 
 @view_config(route_name='users', renderer='users.mako')
@@ -50,5 +56,26 @@ def user(request):
 
     username = request.matchdict['username']
 
-    user = DBSession.query(User).filter(User.username == username).one()
-    return dict(page_id="user", contributor=user)
+    try:
+        user = DBSession.query(User).filter(User.username == username).one()
+    except NoResultFound:
+        _ = request.translate
+        request.session.flash(_("Sorry, this user doesn't  exist"))
+        return HTTPFound(location=route_url('users', request))
+
+    projects = __get_projects(user.id)
+    return dict(page_id="user", contributor=user, projects=projects)
+
+
+def __get_projects(user_id):
+    """ get the tiles that changed """
+    filter = and_(TaskHistory.state_changed == True,  # noqa
+                  TaskHistory.state == Task.state_done,
+                  TaskHistory.user_id == user_id,
+                  TaskHistory.project_id == Project.id)
+    projects = DBSession.query(Project, func.count(TaskHistory.user_id)) \
+                        .filter(filter) \
+                        .group_by(Project.id) \
+                        .order_by(desc(Project.id)) \
+                        .all()
+    return [{"project": p[0], "count": int(p[1])} for p in projects]

@@ -6,7 +6,7 @@ class TestViewsFunctional(BaseTestCase):
     def test_users(self):
         self.testapp.get('/users', status=200)
 
-    def test_user_messages_not_authenticated(self):
+    def test_user_messages__not_authenticated(self):
         self.testapp.get('/user/messages', status=302)
 
     def test_user_messages(self):
@@ -14,7 +14,7 @@ class TestViewsFunctional(BaseTestCase):
         headers = self.login_as_user1()
         self.testapp.get('/user/messages', headers=headers, status=200)
 
-    def test_user_admin_logged_in_as_admin(self):
+    def test_user_admin__logged_in_as_admin(self):
 
         from osmtm.models import User, DBSession
         import transaction
@@ -40,3 +40,7 @@ class TestViewsFunctional(BaseTestCase):
 
         res = self.testapp.get('/user/user1', status=200)
         self.failUnless('user1' in res.body)
+
+    def test_user__doesnt_exists(self):
+
+        self.testapp.get('/user/unknown_user', status=302)

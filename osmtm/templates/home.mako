@@ -25,7 +25,7 @@
           </table>
         </li>
       </ul>
-      <h4><a href="project/{{project.id}}">{{project.name}}</a>
+      <h4><a href="project/{{project.id}}">#{{project.id}} {{project.name}}</a>
       </h4>
       <div class="clear"></div>
       <div class="world_map">
