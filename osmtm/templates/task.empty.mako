@@ -11,7 +11,7 @@
   <br/>
   <p>
     <a id="random" href="${request.route_url('task_random', project=project.id)}"
-       class="btn btn-small">
+       class="btn btn-default">
        ${_('Take a task at random')}
     </a>
   </p>

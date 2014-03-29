@@ -1,4 +1,4 @@
-<p class="muted">
+<p class="text-muted">
 <span>${_('Task is too big?')}</span>
   % if task.zoom is not None:
     <%
@@ -12,7 +12,7 @@
          rel="tooltip" data-original-title="${tooltip}"
          data-confirm="${_('Are you sure you want to split this task?')}"
          class="${disabled}">
-         ${_('Split')} <i class="icon-split"></i>
+         ${_('Split')} <i class="glyphicon icon-split"></i>
       </a>
   % endif
 </p>

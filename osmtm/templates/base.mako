@@ -3,6 +3,7 @@
 <html>
   <head>
     <title>OSM Tasking Manager</title>
+    <link rel="stylesheet" href="${request.static_url('osmtm:static/bootstrap/dist/css/bootstrap.min.css')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css')}">
     <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}"></script>
@@ -11,11 +12,7 @@
     <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name)}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/shared.js')}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-dropdown.js')}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-tooltip.js')}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-transition.js')}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-tab.js')}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/js/bootstrap-modal.js')}"></script>
+    <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js')}"></script>
 <%
 from pyramid.security import authenticated_userid
 from osmtm.models import DBSession, User, TaskComment
@@ -35,24 +32,31 @@ comments = []
 
   </head>
   <body id="${page_id}">
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container"><%block name="header"></%block>
-% if  user is not None:
-          <%include file="user_menu.mako" args="user=user"/>
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <%block name="header"></%block>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <%include file="languages_menu.mako" args="languages=languages"/>
+          % if  user is not None:
           <%
               badge = ""
               if len(comments) > 0:
                   badge = '<sup><span class="badge badge-important">%s</span></sup>' % len(comments)
           %>
-          <a class="btn btn-link pull-right messages" href="${request.route_url('user_messages')}">
-            <i class="icon-envelope" style="opacity: 0.5;"></i>${badge|n}
-          </a>
-% else:
-<a href="${login_url}" class="btn btn-small btn-link pull-right">${_('login to OpenStreetMap')}</a>
-% endif
-          <%include file="languages_menu.mako" args="languages=languages"/>
-        </div>
+          <li>
+            <a class="messages" href="${request.route_url('user_messages')}">
+              <i class="glyphicon glyphicon-envelope" style="opacity: 0.5;"></i>${badge|n}
+            </a>
+          </li>
+          <%include file="user_menu.mako" args="user=user"/>
+          % else:
+          <li>
+          <a href="${login_url}" class="btn btn-link pull-right">${_('login to OpenStreetMap')}</a>
+          </li>
+          % endif
+        </ul>
       </div>
     </div>
 % if  request.session.peek_flash('alert'):
@@ -95,7 +99,7 @@ ${message | n}
     <%block name="content"></%block>
     <footer class="footer">
       <div class="container">
-        <p class="span6">Designed and built for the <a>Humanitarian OpenStreetMap Team</a> with
+        <p class="col-md-6">Designed and built for the <a>Humanitarian OpenStreetMap Team</a> with
 		 initial sponsorship from the Australia-Indonesia Facility for Disaster Reduction.
         </p>
         <p class="pull-right">Fork the code on <a href="http://github.com/hotosm/osm-tasking-manager">github</a>.

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<div class="brand">OSM Tasking Manager</div>
+<a href="${request.route_url('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
+<a class="navbar-brand">OSM Tasking Manager - Messages</a>
 </%block>
 <%block name="content">
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_url('home')}" class="brand"><i class="icon-home"></i></a>
-<div class="brand">${project.name}</div>
+<a href="${request.route_url('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
+<a class="navbar-brand">${project.name}</a>
 </%block>
 <%block name="content">
 <%
@@ -28,15 +28,15 @@ else:
 %>
 <div class="container">
   <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
       <ul class="nav nav-pills">
         <li class="active"><a href="#main" data-toggle="tab">${_('Info')}</a></li>
         <li><a href="#instructions" data-toggle="tab">${_('Instructions')}</a></li>
         <li><a id="map_tab" href="#map" data-toggle="tab">${_('Contribute')}</a>
         </li>
         % if user and user.is_admin():
-        <a class="btn pull-right" href="${request.route_url('project_edit', project=project.id)}">
-          <i class="icon-edit"></i> Edit project
+        <a class="btn btn-default pull-right" href="${request.route_url('project_edit', project=project.id)}">
+          Edit project
         </a>
         % endif
       </ul>
@@ -45,13 +45,13 @@ else:
 </div>
 <div class="tab-content">
   <div id="main" class="tab-pane active container">
-    <div class="span6">
+    <div class="col-md-6">
       <div class="page-header">
         <h4>${_('Description')}</h4>
       </div>
       <p>${markdown.markdown(project.description)|n}</p>
     </div>
-    <div class="span5">
+    <div class="col-md-5">
       <div class="world_map">
         <div class="marker" style="top:${top}px;left:${left}px"></div>
       </div>

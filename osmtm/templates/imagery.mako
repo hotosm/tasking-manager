@@ -19,17 +19,17 @@
 <p>
   ${project.imagery}
   <a href='http://127.0.0.1:8111/imagery?title=${project.name}&type=${type}&url=${project.imagery}'
-    class="btn btn-small"
+    class="btn btn-default btn-xs"
     target="_blank" rel="tooltip"
     data-original-title="${_('If you have JOSM running and remote control activated, clicking this link should automatically load imagery.')}">
-    <span class="icon icon-share-alt"></span>
+    <span class="glyphicon glyphicon-share-alt"></span>
     JOSM
   </a>
   <a
-    class="btn btn-small"
+    class="btn btn-default btn-xs"
     rel="tooltip"
     data-original-title="${_('Imagery should load automatically when you will open a task using the iD Editor')}">
-    <span class="icon icon-share-alt"></span>
+    <span class="glyphicon glyphicon-share-alt"></span>
     iD Editor
   </a>
 </p>
@@ -40,6 +40,7 @@
 % endif
 % if project.license:
 <p class="text-warning">
+  <span class="glyphicon glyphicon-warning-sign"></span>
   Access to this imagery is limited by the
   <a href="${request.route_url('license', license=project.license.id)}?redirect=${request.route_url('project', project=project.id)}">
     ${project.license.name} license agreement
@@ -47,6 +48,7 @@
 </p>
 <p class="${'text-error' if not license_accepted else 'text-success'}">
 % if license_accepted:
+  <span class="glyphicon glyphicon-ok"></span>
 You have already acknowledged the terms of this license.</span>
 % else:
   You need to

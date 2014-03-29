@@ -40,8 +40,8 @@ map.on('drawing', function(e) {
 map.addLayer(vector);
 
 $('#geometry').change(function() {
-    $('#help-step1').hide();
-    $('#partition').show();
+    $('#help-step1').addClass("hidden");
+    $('#partition').removeClass("hidden");
     changeTileSize(2);
     grid.show();
 });
@@ -100,8 +100,8 @@ function cancel() {
     vector.clearLayers();
     $('#geometry').val('');
     updateSubmitBtnStatus();
-    $('#help-step1').show();
-    $('#partition').hide();
+    $('#help-step1').removeClass("hidden");
+    $('#partition').addClass("hidden");
     grid.hide();
 }
 $('#cancel').click(function() {

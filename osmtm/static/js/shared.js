@@ -15,6 +15,7 @@ $().ready(function() {
         return false;
     });
     $('[rel=tooltip]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip();
 
     $('.markdown').on('click', function(event) {
       event.preventDefault();

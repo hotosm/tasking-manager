@@ -4,20 +4,20 @@
       cookies = request.cookies
       prefered_editor = cookies['prefered_editor'] if 'prefered_editor' in cookies else ''
     %>
-    <button id="edit" class="btn btn-small">
-      <i class="icon-share-alt"></i> ${_('Edit with')}
+    <button id="edit" class="btn btn-default btn-sm">
+      <i class="glyphicon glyphicon-share-alt"></i> ${_('Edit with')}
       <span id="prefered_editor"></span>
     </button>
-    <button data-toggle="dropdown" class="btn btn-small dropdown-toggle"><span class="caret"></span>
+    <button data-toggle="dropdown" class="btn btn-default btn-sm dropdown-toggle"><span class="caret"></span>
     </button>
     <ul id="editDropdown" class="dropdown-menu">
-      <li id="josm"><a>JOSM</a>
+      <li id="josm"><a role="menuitem" href="javascript:return false;">JOSM</a>
       </li>
-      <li id="iDeditor"><a>iD editor</a>
+      <li id="iDeditor"><a role="menuitem" href="javascript:return false;">iD editor</a>
       </li>
-      <li id="potlatch2"><a>Potlatch 2</a>
+      <li id="potlatch2"><a role="menuitem" href="javascript:return false;">Potlatch 2</a>
       </li>
-      <li id="wp"><a>Walking Papers</a>
+      <li id="wp"><a role="menuitem" href="javascript:return false;">Walking Papers</a>
       </li>
     </ul>
     <script>
@@ -25,5 +25,5 @@
       setPreferedEditor();
     </script>
   </div>
-  <button class="btn btn-small btn-link">.osm</button>
+  <button class="btn btn-sm btn-link">.osm</button>
 </p>

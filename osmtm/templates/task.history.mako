@@ -16,16 +16,18 @@
       <a href="#task/${step.task_id}">#${step.task_id}</a>
     % endif
     % if  step.locked:
-    <span><i class="icon-lock"></i> <b>${_('Locked')}</b> ${_('by')} ${step.user.username}</span>
+    <span><i class="glyphicon glyphicon-lock"></i> <b>${_('Locked')}</b> ${_('by')} ${step.user.username}</span>
     % elif  step.state == step.state_done and step.state_changed:
-    <span><i class="icon-ok"></i> <b>${_('Marked as done')}</b> ${_('by')} ${step.user.username}</span>
+    <span><i class="glyphicon glyphicon-ok"></i> <b>${_('Marked as done')}</b> ${_('by')} ${step.user.username}</span>
     % elif  step.state == step.state_invalidated and step.state_changed:
-    <span><i class="icon-thumbs-down"></i> <b>${_('Invalidated')}</b> ${_('by')} ${step.user.username}</span>
+    <span><i class="glyphicon glyphicon-thumbs-down"></i> <b>${_('Invalidated')}</b> ${_('by')} ${step.user.username}</span>
     % else:
     <span>${_('Unlocked')}</span>
     % endif
 
-      <p class="muted"><em title="${step.update}" class="timeago"></em>
+      <p class="text-muted">
+        <i class="glyphicon glyphicon-time"></i>
+        <em title="${step.update}" class="timeago"></em>
       </p>
     </div>
 % endfor
