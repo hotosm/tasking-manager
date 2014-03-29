@@ -83,6 +83,7 @@ class BaseTestCase(unittest.TestCase):
     def tearDown(self):
         del self.testapp
         from osmtm.models import DBSession
+        DBSession.bind.dispose()  # dispose engine
         DBSession.remove()
 
         # forget any remembered authentication
