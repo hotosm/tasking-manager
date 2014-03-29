@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<div class="brand">OSM Tasking Manager</div>
+<div class="navbar-brand">OSM Tasking Manager</div>
 </%block>
 <%block name="content">
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
@@ -10,8 +10,8 @@
 
     <div class="project well" ng-repeat="project in projects">
       <ul class="nav project-stats">
-        <li><i class="icon-user"></i><span></span>
-        </li>
+        <li><i class="glyphicon glyphicon-user"></i><span></span></li>
+        <!--FIXME wrong aligment-->
         <li class="row">
           <table>
             <tr>

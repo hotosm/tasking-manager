@@ -1,4 +1,4 @@
-@import "../bootstrap/less/bootstrap.less";
+/*@import "../bootstrap/less/bootstrap.less";*/
 
 // Mixins
 .box-shadow(@horizontal: 0px, @vertical: 1px, @blur: 2px, @color: #CCC) {
@@ -6,6 +6,21 @@
   -moz-box-shadow: @horizontal @vertical @blur @color;
   box-shadow: @horizontal @vertical @blur @color;
 }
+.border-radius (@radius: 5px) {
+    -webkit-border-radius: @radius;
+    -moz-border-radius:    @radius;
+    border-radius:         @radius;
+
+    -moz-background-clip:    padding;
+    -webkit-background-clip: padding-box;
+    background-clip:         padding-box;
+}
+.opacity (@opacity: 0.5) {
+    -webkit-opacity:    @opacity;
+    -moz-opacity:       @opacity;
+    opacity:        @opacity;
+}
+
 
 html, body {
     background-color: #FFF;
@@ -82,9 +97,9 @@ html, body {
             border: 1px solid #ccc;
             margin-bottom: 0;
 
-            .bar {
-                #gradient > .vertical(#ccc, #eee);
-            }
+            /*.bar {*/
+                /*#gradient > .vertical(#ccc, #eee);*/
+            /*}*/
         }
     }
 }
