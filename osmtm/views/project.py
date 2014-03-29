@@ -38,7 +38,8 @@ def project(request):
 
     project.locale = get_locale_name(request)
 
-    filter = and_(TaskHistory.project_id == id, TaskHistory.update is not None)
+    filter = and_(TaskHistory.project_id == id,
+                  TaskHistory.update != None)  # noqa
     history = DBSession.query(TaskHistory) \
                        .filter(filter) \
                        .order_by(TaskHistory.update.desc()) \
