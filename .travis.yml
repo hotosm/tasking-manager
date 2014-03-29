@@ -28,7 +28,7 @@ install:
 script:
 - source env/bin/activate
 - nosetests
-- flake8 osmtm
+- flake8 osmtm --exclude=osmtm/static
 
 after_success:
 - pip install coveralls
