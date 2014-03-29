@@ -193,28 +193,32 @@
 </%block>
 
 <%block name="imagery">
-<div class="form-horizontal">
-<div class="form-group">
-  <label class="control-label" for="id_imagery">URL to service</label>
-  <input type="text" class="col-md-9 form-control" id="id_imagery" name="imagery" value="${project.imagery if project.imagery is not None else ''}"/>
-  <p class="help-block">
-    <strong>Note:</strong> Follow this format for TMS urls.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png
-  </p>
-</div>
-<div class="form-group">
-  <label class="control-label" for="id_license">Required License</label>
-  <select id="id_license" name="license_id" class="form-control">
-    <option value="" />
-    % for l in licenses:
-    <%
-    selected = ""
-    if project.license is not None and l.id == project.license.id:
-      selected = "selected"
-    %>
-    <option value="${l.id}" ${selected}>${l.name}</a>
-    % endfor
-  </select>
-</div>
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="control-label" for="id_imagery">URL to service</label>
+      <input type="text" class="col-md-9 form-control" id="id_imagery" name="imagery" value="${project.imagery if project.imagery is not None else ''}"/>
+      <p class="help-block">
+        <strong>Note:</strong> Follow this format for TMS urls.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png
+      </p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="control-label" for="id_license">Required License</label>
+      <select id="id_license" name="license_id" class="form-control col-md-6">
+        <option value="" />
+        % for l in licenses:
+        <%
+        selected = ""
+        if project.license is not None and l.id == project.license.id:
+          selected = "selected"
+        %>
+        <option value="${l.id}" ${selected}>${l.name}</a>
+        % endfor
+      </select>
+    </div>
+  </div>
 </div>
 </%block>
 
