@@ -5,7 +5,7 @@
 <a class="navbar-brand">${project.name} - Edit</a>
 </%block>
 <%block name="content">
-<div id="markdown_cheat_sheet" class="modal hide fade">
+<div id="markdown_cheat_sheet" class="modal fade">
   <div class="modal-dialog">
   <div class="modal-content">
     <div class="modal-header">
