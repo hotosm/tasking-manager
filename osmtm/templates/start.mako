@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<div class="brand">OSM Tasking Manager</div>
+<a class="navbar-brand">OSM Tasking Manager</a>
 </%block>
 <%block name="content">
 <div class="container">
