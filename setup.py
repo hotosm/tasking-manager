@@ -9,7 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 requires = [
     'pyramid==1.4',
     'pyramid_mako==1.0a2',
-    #'SQLAlchemy', # should be installed along with GeoAlchemy2
+    'SQLAlchemy==0.9.3',
     'transaction',
     'pyramid_tm',
     'pyramid_debugtoolbar',
