@@ -34,7 +34,7 @@ else:
     <div class="span12">
       % if contributor.admin:
       ${_("This user is an administrator.")}<i class="icon-star"></i>
-        % if user is not None and user.admin:
+        % if user is not None and user.admin and user != contributor:
         <a href="${request.route_url('user_admin', id=contributor.id)}">Remove privileges.</a>
         % endif
       % else:
