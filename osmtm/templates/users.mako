@@ -8,19 +8,19 @@
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
 <div class="container" ng-app="users">
   <div class="row" ng-controller="usersCrtl">
-    <div class="span8">
+    <div class="col-md-8">
       <ul ng-repeat="user in users">
         <li>
           <a href="user/{{user.username}}">{{user.username}}</a>
-          <i class="icon-star" ng-show="user.admin"></i>
+          <i class="glyphicon glyphicon-star" ng-show="user.admin"></i>
         </li>
       </ul>
     </div>
-    <div class="span4">
+    <div class="col-md-4">
       <small>
         Keys:
         <ul>
-          <li><i class="icon-star"></i> Administrator</li>
+          <li><i class="glyphicon glyphicon-star"></i> Administrator</li>
         </ul>
       </small>
     </div>

@@ -21,7 +21,7 @@ text = _("You already have ${task_link} locked.", mapping={'task_link': link})
   <a id="lock" href="${request.route_url('task_lock', task=task.id, project=task.project_id)}"
      rel="tooltip" data-original-title="${tooltip}"
      class="btn btn-success ${disabled}">
-     <i class="icon-lock icon-white"></i> ${_('Yes, I want to work on this task')}
+     <i class="glyphicon glyphicon-lock icon-white"></i> ${_('Yes, I want to work on this task')}
   </a>
 </p>
 % endif

@@ -1,6 +1,12 @@
 var lmap, task_layer, tiles, utf_layer;
 var prefered_editor;
-$('a[data-toggle="tab"]').on('shown', function (e) {
+$(document).ready(function() {
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    if (e.target.id != 'map_tab') {
+        $('footer').removeClass("hidden");
+    } else {
+        $('footer').addClass("hidden");
+    }
     if (e.target.id != 'map_tab' || lmap) {
         return;
     }
@@ -327,12 +333,6 @@ var exportOpen = function(evt) {
 $(document).on('click', '#edit', exportOpen);
 $(document).on('click', '#editDropdown li', exportOpen);
 
-function setPreferedEditor() {
-    if (prefered_editor !== '') {
-        $('#prefered_editor').text($('#' + prefered_editor + ' a').text());
-    }
-}
-
 Sammy(function() {
     this.get('#task/:id', function() {
         loadTask(this.params.id);
@@ -398,3 +398,10 @@ $.fn.slide = function(type) {
         );
     }, interval);
 })();
+});
+
+function setPreferedEditor() {
+    if (prefered_editor !== '') {
+        $('#prefered_editor').text($('#' + prefered_editor + ' a').text());
+    }
+}

@@ -11,7 +11,7 @@
     <input type="file" val="" name="import" style="visibility:hidden;height:0;position:absolute;">
     <a id="import"
       data-role="button"
-      class="btn btn-small">Import polygons from GeoJSON file</a>
+      class="btn btn-default">Import polygons from GeoJSON file</a>
     <span id="loading" class="help-inline hide">Importing file, please wait...</span>
     </p>
   </form>

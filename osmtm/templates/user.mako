@@ -18,7 +18,7 @@ else:
 <div class="container">
   <div class="row">
     <h3>User: ${contributor.username}</h3>
-    <div class="span12">
+    <div class="col-md-12">
       % if user == contributor:
       <p>
         This is <b>You</b>!
@@ -31,22 +31,22 @@ else:
     </div>
   </div>
   <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
       % if contributor.admin:
-      ${_("This user is an administrator.")}<i class="icon-star"></i>
+      ${_("This user is an administrator.")}<i class="glyphicon glyphicon-star"></i>
         % if user is not None and user.admin and user != contributor:
         <a href="${request.route_url('user_admin', id=contributor.id)}">Remove privileges.</a>
         % endif
       % else:
       % if user is not None and user.admin:
-        <i class="icon-star"></i>
+        <i class="glyphicon glyphicon-star"></i>
         <a href="${request.route_url('user_admin', id=contributor.id)}">Set as administrator.</a>
         % endif
       % endif
     </div>
   </div>
   <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
       <h3>Projects</h3>
         % if projects:
         This user contributed to the following projects:

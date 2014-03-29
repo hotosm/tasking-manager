@@ -53,7 +53,7 @@ comments = []
           <%include file="user_menu.mako" args="user=user"/>
           % else:
           <li>
-          <a href="${login_url}" class="btn btn-small btn-link pull-right">${_('login to OpenStreetMap')}</a>
+          <a href="${login_url}" class="btn btn-link pull-right">${_('login to OpenStreetMap')}</a>
           </li>
           % endif
         </ul>
@@ -99,7 +99,7 @@ ${message | n}
     <%block name="content"></%block>
     <footer class="footer">
       <div class="container">
-        <p class="span6">Designed and built for the <a>Humanitarian OpenStreetMap Team</a> with
+        <p class="col-md-6">Designed and built for the <a>Humanitarian OpenStreetMap Team</a> with
 		 initial sponsorship from the Australia-Indonesia Facility for Disaster Reduction.
         </p>
         <p class="pull-right">Fork the code on <a href="http://github.com/hotosm/osm-tasking-manager">github</a>.

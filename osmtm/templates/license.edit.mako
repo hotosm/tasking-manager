@@ -7,37 +7,23 @@
 <%block name="content">
 <div class="container">
     <form method="post" action="" class="form-horizontal">
-        <div class="control-group">
-            <label class="control-label" for="id_name">Name</label>
-            <div class="controls">
-                <input type="text" class="text input-xxlarge" id="id_name" name="name" value="${license.name if license else ''}"
-                    placeholder="A name for the license (provider, for example)" />
-            </div>
+        <div class="form-group">
+          <label class="control-label" for="id_name">Name</label>
+          <input type="text" class="form-control" id="id_name" name="name" value="${license.name if license else ''}"
+                 placeholder="A name for the license (provider, for example)" />
         </div>
-        <div class="row">
-            <div class="span7">
-                <div class="control-group">
-                    <label class="control-label" for="id_description">Description</label>
-                    <div class="controls">
-                        <textarea class="text span7" id="id_description" name="description" rows="10"
-                            placeholder="The license terms">${license.description if license else ''}</textarea>
-                    </div>
-                </div>
-            </div>
+        <div class="form-group">
+          <label class="control-label" for="id_description">Description</label>
+          <textarea class="form-control" id="id_description" name="description" rows="6"
+              placeholder="The license terms">${license.description if license else ''}</textarea>
         </div>
-        <div class="row">
-            <div class="span7">
-                <div class="control-group">
-                    <label class="control-label" for="id_plain_text">Plain Text</label>
-                    <div class="controls">
-                        <textarea class="text span7" id="id_plain_text" name="plain_text" rows="5"
-                            placeholder="A short vesion of the terms"
-                            >${license.plain_text if license else ''}</textarea>
-                    </div>
-                </div>
-            </div>
+        <div class="form-group">
+          <label class="control-label" for="id_plain_text">Plain Text</label>
+          <textarea class="form-control" id="id_plain_text" name="plain_text" rows="2"
+              placeholder="A short vesion of the terms"
+              >${license.plain_text if license else ''}</textarea>
         </div>
-        <div class="form-actions">
+        <div class="form-group">
             % if license:
             <input type="submit" class="btn btn-success" value="Save the modifications" id="id_submit" name="form.submitted"/>
             % else:
@@ -46,7 +32,7 @@
             % if license:
             <a class="btn btn-danger" id="delete" href="${request.route_url('license_delete', license=license.id)}">Delete</a>
             % endif
-            <a class="btn pull-right" href="${request.route_url('licenses')}">Cancel</a>
+            <a class="btn btn-default pull-right" href="${request.route_url('licenses')}">Cancel</a>
         </div>
     </form>
 </div>

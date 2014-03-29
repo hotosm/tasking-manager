@@ -8,11 +8,11 @@
 <div class="container">
   <form method="post">
     <div class="row">
-      <div class="span6">
+      <div class="col-md-6">
         <div id="leaflet"></div>
       </div>
-      <div class="span6">
-        <div id="help-step1" class="span6">
+      <div class="col-md-6">
+        <div id="help-step1" class="col-md-6">
           <p>
             Draw the area of interest on the map yourself.
           </p>
@@ -23,29 +23,31 @@
             <input type="file" val="" name="osm" style="visibility:hidden;height:0;position:absolute;">
             <a id="import_osm"
               data-role="button"
-              class="btn btn-small disabled"
+              class="btn btn-default disabled"
               rel="tooltip"
               title="Provide a .osm file. You can download it from the OSM API (ex. www.openstreetmap.org/api/0.6/ relation/270485/full). (not available yet)"
               >Import OSM relation</a>
           </p>
         </div>
-        <div id="partition" class="hide">
+        <div id="partition" class="hidden">
+          <div class="form-group">
             Tile size
             <div id="tile_size" class="btn-group" >
-              <button class="btn btn-small">XL</button>
-              <button class="btn btn-small">L</button>
-              <button class="btn btn-small active">M</button>
-              <button class="btn btn-small">S</button>
-              <button class="btn btn-small">XS</button>
+              <button class="btn btn-default">XL</button>
+              <button class="btn btn-default">L</button>
+              <button class="btn btn-default active">M</button>
+              <button class="btn btn-default">S</button>
+              <button class="btn btn-default">XS</button>
             </div>
-            <div class="form-actions">
-              <button id="cancel" class="btn">Cancel</button>
-              <input id="id_submit" type="submit" value="OK"
-                  name="form.submitted" class="btn btn-success"/>
-              <span id="loading" class="help-inline hide">Creating tiles, please wait...</span>
-            </div>
-            <input id="zoom" type="hidden" name="zoom"/>
-            <input id="geometry" type="hidden" name="geometry"/>
+          </div>
+          <div class="form-actions">
+            <button id="cancel" class="btn btn-default">Cancel</button>
+            <input id="id_submit" type="submit" value="OK"
+                name="form.submitted" class="btn btn-success"/>
+            <span id="loading" class="help-inline hide">Creating tiles, please wait...</span>
+          </div>
+          <input id="zoom" type="hidden" name="zoom"/>
+          <input id="geometry" type="hidden" name="geometry"/>
         </div>
       </div>
     </div>

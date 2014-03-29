@@ -1,4 +1,3 @@
-/*@import "../bootstrap/less/bootstrap.less";*/
 html,
 body {
   background-color: #FFF;
@@ -31,9 +30,9 @@ body {
   position: absolute;
 }
 .world_map {
-  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
 }
 .messages sup .badge {
   font-size: 0.9em;
@@ -107,11 +106,11 @@ body {
   top: -5px;
   bottom: 0;
   right: 0;
-  width: 400px;
+  width: 420px;
   background-color: white;
-  -webkit-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
-  -moz-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
-  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15) 1px 2px #cccccc;
+  -webkit-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.15);
   padding: 10px;
   -webkit-border-radius: 5px 0 0 0;
   -moz-border-radius: 5px 0 0 0;
@@ -285,4 +284,95 @@ body {
 }
 .clear {
   clear: both;
+}
+.nav-tabs,
+.nav-pills {
+  margin-bottom: 15px;
+}
+.tabs-below .nav-tabs,
+.tabs-right .nav-tabs,
+.tabs-left .nav-tabs {
+  border-bottom: 0;
+}
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+  display: none;
+}
+.tab-content > .active,
+.pill-content > .active {
+  display: block;
+}
+.tabs-below > .nav-tabs {
+  border-top: 1px solid #ddd;
+}
+.tabs-below > .nav-tabs > li {
+  margin-top: -1px;
+  margin-bottom: 0;
+}
+.tabs-below > .nav-tabs > li > a {
+  -webkit-border-radius: 0 0 4px 4px;
+  -moz-border-radius: 0 0 4px 4px;
+  border-radius: 0 0 4px 4px;
+}
+.tabs-below > .nav-tabs > li > a:hover,
+.tabs-below > .nav-tabs > li > a:focus {
+  border-top-color: #ddd;
+  border-bottom-color: transparent;
+}
+.tabs-below > .nav-tabs > .active a,
+.tabs-below > .nav-tabs > .active a:hover,
+.tabs-below > .nav-tabs > .active a:focus {
+  border-color: transparent #ddd #ddd #ddd;
+}
+.tabs-left > .nav-tabs > li,
+.tabs-right > .nav-tabs > li {
+  float: none;
+}
+.tabs-left > .nav-tabs > li > a,
+.tabs-right > .nav-tabs > li > a {
+  min-width: 74px;
+  margin-right: 0;
+  margin-bottom: 3px;
+}
+.tabs-left > .nav-tabs {
+  float: left;
+  margin-right: 19px;
+  border-right: 1px solid #ddd;
+}
+.tabs-left > .nav-tabs > li > a {
+  margin-right: -1px;
+  -webkit-border-radius: 4px 0 0 4px;
+  -moz-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+}
+.tabs-left > .nav-tabs > li > a:hover,
+.tabs-left > .nav-tabs > li > a:focus {
+  border-color: #eee #ddd #eee #eee;
+}
+.tabs-left > .nav-tabs > .active a,
+.tabs-left > .nav-tabs > .active a:hover,
+.tabs-left > .nav-tabs > .active a:focus {
+  border-color: #ddd transparent #ddd #ddd;
+  *border-right-color: #fff;
+}
+.tabs-right > .nav-tabs {
+  float: right;
+  margin-left: 19px;
+  border-left: 1px solid #ddd;
+}
+.tabs-right > .nav-tabs > li > a {
+  margin-left: -1px;
+  -webkit-border-radius: 0 4px 4px 0;
+  -moz-border-radius: 0 4px 4px 0;
+  border-radius: 0 4px 4px 0;
+}
+.tabs-right > .nav-tabs > li > a:hover,
+.tabs-right > .nav-tabs > li > a:focus {
+  border-color: #eee #eee #eee #ddd;
+}
+.tabs-right > .nav-tabs > .active a,
+.tabs-right > .nav-tabs > .active a:hover,
+.tabs-right > .nav-tabs > .active a:focus {
+  border-color: #ddd #ddd #ddd transparent;
+  *border-left-color: #fff;
 }
