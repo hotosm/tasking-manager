@@ -22,7 +22,7 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     lmap.zoomOut();
 
     tiles = new L.TileLayer(
-        '/project/' + project_id + '/{z}/{x}/{y}.png'
+        base_url + 'project/' + project_id + '/{z}/{x}/{y}.png'
     );
     lmap.addLayer(tiles);
 
@@ -33,7 +33,7 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     }).addTo(lmap);
 
     utf_layer = new L.UtfGrid(
-        '/project/' + project_id + '/{z}/{x}/{y}.json', {
+        base_url + 'project/' + project_id + '/{z}/{x}/{y}.json', {
         useJsonP: false
     });
     lmap.addLayer(utf_layer);
@@ -250,7 +250,7 @@ var exportOpen = function(evt) {
     }
 
     $.ajax({
-        url: '/user/prefered_editor/' + editor,
+        url: base_url + 'user/prefered_editor/' + editor,
         complete: function(t) {
             prefered_editor = editor;
             setPreferedEditor();
