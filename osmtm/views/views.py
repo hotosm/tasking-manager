@@ -1,5 +1,5 @@
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPUnauthorized
 
 from sqlalchemy import (
     desc,
@@ -42,5 +42,7 @@ def user_prefered_language(request):
 
 @view_config(context='pyramid.httpexceptions.HTTPUnauthorized')
 def unauthorized(request):
+    if request.is_xhr:
+        return HTTPUnauthorized()
     return HTTPFound(request.route_url('login',
                                        _query=[('came_from', request.url)]))
