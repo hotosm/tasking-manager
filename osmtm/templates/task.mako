@@ -32,6 +32,7 @@ import geojson
 geometry_as_shape = shape.to_shape(task.geometry)
 centroid = geometry_as_shape.centroid
 bounds = geometry_as_shape.bounds
+project = task.project
 %>
 <script>
 var task_geometry = ${geojson.dumps(geometry_as_shape)|n};
@@ -39,4 +40,9 @@ var task_centroid = [${centroid.x}, ${centroid.y}];
 var task_bounds = [${bounds[0]}, ${bounds[1]}, ${bounds[2]}, ${bounds[3]}];
 $('[rel=tooltip]').tooltip();
 var login_url = "${request.route_url('login')}";
+var gpx_url = "${request.route_url('task_gpx', project=task.project_id, task=task.id)}";
+% if project.imagery is not None and project.imagery != 'None' and \
+    (project.license in user.accepted_licenses or not project.license):
+var imagery_url = "${project.imagery}";
+% endif
 </script>

@@ -155,7 +155,7 @@ class Task(Base):
     y = Column(Integer)
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'), index=True)
-    geometry = Column(Geometry('MultiPolygon', srid=4326))
+    geometry = Column(Geometry('Polygon', srid=4326))
 
     state_ready = READY
     state_done = DONE
@@ -179,7 +179,7 @@ class Task(Base):
             geometry = self.to_polygon()
             geometry = ST_Transform(shape.from_shape(geometry, 3857), 4326)
 
-        self.geometry = ST_Multi(geometry)
+        self.geometry = geometry
 
     def to_polygon(self):
         # task size (in meters) at the required zoom level
@@ -328,9 +328,8 @@ class Project(Base, Translatable):
         for feature in collection.features:
             geometry = shapely.geometry.asShape(feature.geometry)
             if isinstance(geometry, shapely.geometry.Polygon):
-                geometry = shapely.geometry.MultiPolygon([geometry])
                 hasPolygon = True
-            elif not isinstance(geometry, shapely.geometry.MultiPolygon):
+            elif not isinstance(geometry, shapely.geometry.Polygon):
                 continue
             tasks.append(Task(None, None, None, 'SRID=4326;%s' % geometry.wkt))
 
