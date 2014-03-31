@@ -228,7 +228,7 @@ def get_old_value(attribute_state):
 
 @event.listens_for(DBSession, "after_flush")
 def after_flush(session, flush_context):
-    for obj in session.new.union(session.dirty):
+    for obj in session.dirty:
         if isinstance(obj, Task):
             taskhistory = TaskHistory()
             taskhistory.task_id = obj.id
