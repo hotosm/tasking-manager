@@ -12,7 +12,7 @@
     <a id="import"
       data-role="button"
       class="btn btn-default">Import polygons from GeoJSON file</a>
-    <span id="loading" class="help-inline hide">Importing file, please wait...</span>
+    <span id="loading" class="help-inline" style="display: none;">Importing file, please wait...</span>
     </p>
   </form>
 </div>

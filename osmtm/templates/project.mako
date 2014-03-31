@@ -67,11 +67,11 @@ else:
   <div id="map" class="tab-pane">
     <div id="leaflet"></div>
     <div id="right-col">
-      <p id="task_loading" class="alert alert-success hide">
+      <p id="task_loading" class="alert alert-success" style="display: none;">
         ${_('Loading')}
       </p>
-      <p id="task_msg" class="alert alert-success hide"></p>
-      <p id="task_error_msg" class="alert alert-danger hide"></p>
+      <p id="task_msg" class="alert alert-success" style="display: none;"></p>
+      <p id="task_error_msg" class="alert alert-danger" style="display: none;"></p>
       <div id="task_empty">
         <%include file="task.empty.mako" />
       </div>

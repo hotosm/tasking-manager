@@ -44,7 +44,7 @@
             <button id="cancel" class="btn btn-default">Cancel</button>
             <input id="id_submit" type="submit" value="OK"
                 name="form.submitted" class="btn btn-success"/>
-            <span id="loading" class="help-inline hide">Creating tiles, please wait...</span>
+            <span id="loading" class="help-inline" style="display: none;">Creating tiles, please wait...</span>
           </div>
           <input id="zoom" type="hidden" name="zoom"/>
           <input id="geometry" type="hidden" name="geometry"/>
