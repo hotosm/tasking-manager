@@ -41,6 +41,7 @@ def __get_task(request):
     project_id = request.matchdict['project']
     task = DBSession.query(Task).get((project_id, task_id))
     if not task or task.state == Task.state_removed:
+        # FIXME return translated text via JSON
         raise HTTPNotFound("This task doesn't exist.")
     return task
 

@@ -67,6 +67,11 @@ function loadTask(id, direction) {
                     task_layer.clearLayers();
                     task_layer.addData(task_geometry);
                     $('#task').fadeIn();
+                } else if (request.status == '404'){
+                  $('#task_error_msg').html("Task doesn't exist.").show()
+                      .delay(3000)
+                      .fadeOut();
+                  clearSelection();
                 } else {
                     alert("an error occured");
                 }
