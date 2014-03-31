@@ -1,13 +1,9 @@
 from pyramid.asset import abspath_from_asset_spec
-from mapnik import (
-    Map,
-    Image,
-    Grid,
-    Box2d,
-    load_map,
-    render,
-    render_layer
-)
+try:
+    import mapnik
+except:
+    # package name is mapnik2 for versions lower than 2.2
+    import mapnik2 as mapnik
 import json
 
 # Maximum resolution
@@ -39,10 +35,10 @@ class MapnikRendererFactory:  # pragma: no cover
         xmax = (x + 1) * step - limit
         ymax = limit - (y + 1) * step
 
-        bbox = Box2d(xmin, ymax, xmax, ymin)
+        bbox = mapnik.Box2d(xmin, ymax, xmax, ymin)
 
-        m = Map(width, height)
-        load_map(m, abspath_from_asset_spec('osmtm:views/map.xml'))
+        m = mapnik.Map(width, height)
+        mapnik.load_map(m, abspath_from_asset_spec('osmtm:views/map.xml'))
 
         for l in layers:
             m.layers.append(l)
@@ -51,14 +47,14 @@ class MapnikRendererFactory:  # pragma: no cover
 
         format = request.matchdict['format']
         if format == 'png':
-            im = Image(width, height)
-            render(m, im, 1, 1)
+            im = mapnik.Image(width, height)
+            mapnik.render(m, im, 1, 1)
 
             request.response_content_type = 'image/png'
             return im.tostring('png')
 
         elif format == 'json':
-            grid = Grid(width, height)
-            render_layer(m, grid, layer=0, fields=['id'])
+            grid = mapnik.Grid(width, height)
+            mapnik.render_layer(m, grid, layer=0, fields=['id'])
             utfgrid = grid.encode('utf', resolution=4)
             return json.dumps(utfgrid)
