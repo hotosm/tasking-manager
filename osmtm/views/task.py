@@ -40,7 +40,7 @@ def __get_task(request):
     task_id = request.matchdict['task']
     project_id = request.matchdict['project']
     task = DBSession.query(Task).get((project_id, task_id))
-    if not task:
+    if not task or task.state == Task.state_removed:
         raise HTTPNotFound("This task doesn't exist.")
     return task
 

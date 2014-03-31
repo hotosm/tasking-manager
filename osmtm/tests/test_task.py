@@ -110,10 +110,6 @@ class TestTaskFunctional(BaseTestCase):
                          headers=headers,
                          xhr=True)
 
-        self.testapp.get('/project/1/task/6', status=200,
-                         headers=headers,
-                         xhr=True)
-
         self.testapp.get('/project/1/task/10/lock',
                          headers=headers,
                          xhr=True)
@@ -127,6 +123,9 @@ class TestTaskFunctional(BaseTestCase):
         self.testapp.get('/project/1/task/10/unlock',
                          headers=headers,
                          xhr=True)
+
+        # task has been removed
+        self.testapp.get('/project/1/task/6', status=404, xhr=True)
 
     def test_task_random(self):
         headers = self.login_as_user1()
