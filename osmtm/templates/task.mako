@@ -18,6 +18,7 @@
     <%include file="task.state.done.mako" />
 % endif
 
+    <%include file="task.instructions.mako" />
     <hr />
     <h4>${_('History')}</h4>
     <div><%include file="task.history.mako" /></div>

@@ -24,6 +24,16 @@ $().ready(function() {
         $('#markdown_cheat_sheet').modal();
       });
     });
+
+    // ensure that any link on a different domain opens in a _blank target
+    $(document).on('click', 'a', function(event) {
+        var a = new RegExp('/' + window.location.host + '/');
+        if(!a.test(this.href)) {
+            event.preventDefault();
+            event.stopPropagation();
+            window.open(this.href, '_blank');
+        }
+    });
 });
 $.fn.serializeObject = function()
 {

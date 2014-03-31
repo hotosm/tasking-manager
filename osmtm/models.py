@@ -402,6 +402,7 @@ class ProjectTranslation(translation_base(Project)):
     description = Column(Unicode, default=u'')
     short_description = Column(Unicode, default=u'')
     instructions = Column(Unicode, default=u'')
+    per_task_instructions = Column(Unicode, default=u'')
 
 
 class License(Base):
