@@ -69,7 +69,7 @@ def user(request):
 
 def __get_projects(user_id):
     """ get the tiles that changed """
-    filter = and_(TaskHistory.state_changed == True,  # noqa
+    filter = and_(TaskHistory.state_changed.is_(True),
                   TaskHistory.state == Task.state_done,
                   TaskHistory.user_id == user_id,
                   TaskHistory.project_id == Project.id)
