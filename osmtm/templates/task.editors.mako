@@ -11,14 +11,10 @@
     <button data-toggle="dropdown" class="btn btn-default btn-sm dropdown-toggle"><span class="caret"></span>
     </button>
     <ul id="editDropdown" class="dropdown-menu">
-      <li id="josm"><a role="menuitem" href="javascript:return false;">JOSM</a>
-      </li>
-      <li id="iDeditor"><a role="menuitem" href="javascript:return false;">iD editor</a>
-      </li>
-      <li id="potlatch2"><a role="menuitem" href="javascript:return false;">Potlatch 2</a>
-      </li>
-      <li id="wp"><a role="menuitem" href="javascript:return false;">Walking Papers</a>
-      </li>
+      <li id="josm"><a role="menuitem">JOSM</a></li>
+      <li id="iDeditor"><a role="menuitem">iD editor</a></li>
+      <li id="potlatch2"><a role="menuitem">Potlatch 2</a></li>
+      <li id="wp"><a role="menuitem">Walking Papers</a></li>
     </ul>
     <script>
       var prefered_editor = "${prefered_editor}";
