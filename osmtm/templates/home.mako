@@ -6,8 +6,8 @@
 <%block name="content">
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
 <div class="container" ng-app="projects">
-  <div class="row" ng-controller="projectCrtl">
-
+  <div class="col-md-6" ng-controller="projectCrtl">
+    <h3>Projects</h3>
     <div class="project well" ng-repeat="project in projects">
       <ul class="nav project-stats">
         <li><i class="glyphicon glyphicon-user"></i><span></span></li>
@@ -36,6 +36,10 @@
       <span class="created-by">${_('Created by')} {{project.author}}</span> -
       <span class="updated-at">${_('Updated')} <span class="timeago">{{project.last_update | timeAgo}}</span></span>
     </div>
+  </div>
+  <div class="col-md-6">
+    <h3>New to the Tasking Manager?</h3>
+    <p>What is this Tasking Manager all about?</p>
   </div>
 </div>
 <%
