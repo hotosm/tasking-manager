@@ -329,6 +329,13 @@ var exportOpen = function(evt) {
             centroid: task_centroid,
             protocol: 'id'
         });
+        url += "&gpx=" + gpx_url;
+        if (typeof imagery_url != "undefined") {
+            // url is supposed to look like tms[22]:http://hiu...
+            u = imagery_url.substring(imagery_url.indexOf('http'));
+            u = u.replace('zoom', 'z');
+            url += "&background=custom:" + u;
+        }
         window.open(url);
         break;
     default:

@@ -11,6 +11,9 @@ from ..models import (
     TaskHistory,
     User
 )
+from geoalchemy2 import (
+    shape,
+)
 
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import and_
@@ -207,3 +210,12 @@ def random_task(request):
     _ = request.translate
     return dict(success=False,
                 error_msg=_("Random task... none available! Sorry."))
+
+
+@view_config(route_name='task_gpx', renderer='task.gpx.mako')
+def task_gpx(request):
+    task = __get_task(request)
+    request.response.headerlist.append(('Access-Control-Allow-Origin',
+                                        'http://www.openstreetmap.org'))
+    return dict(polygon=shape.to_shape(task.geometry),
+                project_id=task.project_id)
