@@ -12,7 +12,7 @@
     </Rule>
     <Rule>
         <!-- locked -->
-        <Filter>([locked] = 1)</Filter>
+        <Filter>([locked] = true)</Filter>
         <LineSymbolizer stroke-width="1.5" stroke-opacity="1" stroke="#FFCC00" offset="1"/>
     </Rule>
     <Rule>
