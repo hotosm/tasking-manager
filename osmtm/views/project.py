@@ -23,7 +23,11 @@ from geoalchemy2 import (
 
 import datetime
 
-import mapnik
+try:
+    import mapnik
+except:
+    # package name is mapnik2 for versions lower than 2.2
+    import mapnik2 as mapnik
 
 
 @view_config(route_name='project', renderer='project.mako', http_cache=0)
