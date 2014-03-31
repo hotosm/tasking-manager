@@ -236,6 +236,9 @@ body {
   -moz-opacity: 50;
   opacity: 50;
 }
+#project #editDropdown li a {
+  cursor: pointer;
+}
 #project_edit .nav-pills.small {
   font-size: 0.9em;
   margin-bottom: 3px;
