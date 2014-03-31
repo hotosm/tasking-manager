@@ -40,7 +40,7 @@ def project(request):
 
     filter = and_(TaskHistory.project_id == id,
                   TaskHistory.state != TaskHistory.state_removed,
-                  TaskHistory.update != None)  # noqa
+                  TaskHistory.update.isnot(None))
     history = DBSession.query(TaskHistory) \
                        .filter(filter) \
                        .order_by(TaskHistory.update.desc()) \

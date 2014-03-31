@@ -168,7 +168,7 @@ def split(request):
 def get_locked_task(project_id, user):
     try:
         filter = and_(Task.user == user,
-                      Task.locked == True,  # noqa
+                      Task.locked.is_(True),
                       Task.project_id == project_id)
         return DBSession.query(Task).filter(filter).one()
     except NoResultFound:
