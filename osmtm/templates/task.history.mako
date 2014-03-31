@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 <%page args="section='task'"/>
 % for index, step in enumerate(history):
-    ## the last index in history is actually the first state of the task,
-    ## we don't want to display it
-    % if index == len(history) - 1:
-      <% continue %>
-    % endif
     <%
     first = "first" if index == 0 else ""
-    last = "last" if index == len(history) - 2 else ""
+    last = "last" if index == len(history) - 1 else ""
     %>
 
     <div class="history ${first} ${last}">
@@ -32,7 +27,7 @@
     </div>
 % endfor
 
-% if len(history) == 1:
+% if len(history) == 0:
 <div>${_('Nothing has happened yet.')}</div>
 % endif
 
