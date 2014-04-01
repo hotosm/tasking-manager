@@ -1,15 +1,13 @@
 var lmap, task_layer, tiles, utf_layer;
 var prefered_editor;
 $(document).ready(function() {
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    if (e.target.id != 'map_tab') {
-        $('footer').removeClass("hidden");
-    } else {
-        $('footer').addClass("hidden");
-    }
-    if (e.target.id != 'map_tab' || lmap) {
-        return;
-    }
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        if (e.target.id == 'instructions_tab') {
+            $('#main_content').addClass('large');
+        } else {
+            $('#main_content').removeClass('large');
+        }
+    });
     lmap = L.map('leaflet');
     // create the tile layer with correct attribution
     var osmUrl='http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
@@ -44,7 +42,6 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             clearSelection();
         }
     });
-});
 
 function clearSelection() {
     location.hash = "";
@@ -79,7 +76,7 @@ function loadTask(id, direction) {
         );
     }
     $(document.body).scrollTop(0);
-    $('#map_tab').tab('show');
+    $('#contribute_tab').tab('show');
     $('#task_empty').fadeOut(
         function() {
             if (direction) {

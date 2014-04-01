@@ -18,6 +18,8 @@
 %>
 <p>
   ${project.imagery}
+</p>
+<p>
   <a href='http://127.0.0.1:8111/imagery?title=${project.name}&type=${type}&url=${project.imagery}'
     class="btn btn-default btn-xs"
     target="_blank" rel="tooltip"
