@@ -1,3 +1,7 @@
+@import "bootstrap.less";
+@icon-font-path: "../bootstrap/fonts/";
+
+
 // Mixins
 .box-shadow(@horizontal: 0px, @vertical: 1px, @blur: 2px, @spread: 2px, @color: #CCC) {
   -webkit-box-shadow: @horizontal @vertical @blur @spread @color;
@@ -13,17 +17,16 @@
     -webkit-background-clip: padding-box;
     background-clip:         padding-box;
 }
-.opacity (@opacity: 0.5) {
-    -webkit-opacity:    @opacity;
-    -moz-opacity:       @opacity;
-    opacity:        @opacity;
-}
 
 
 html, body {
     background-color: #FFF;
     padding-top: 30px;
     line-height: 18px;
+}
+
+.navbar-default {
+  #gradient > .vertical(#9B0D0B, #B4242E);
 }
 
 .footer {
