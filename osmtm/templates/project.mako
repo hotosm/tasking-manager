@@ -66,7 +66,7 @@ else:
   </div>
   <div id="map" class="tab-pane">
     <div id="leaflet"></div>
-    <div id="right-col">
+    <div id="side-col">
       <p id="task_loading" class="alert alert-success" style="display: none;">
         ${_('Loading')}
       </p>

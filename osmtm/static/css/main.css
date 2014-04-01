@@ -738,9 +738,9 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 #home ul.project-stats{float:right;font-size:11px;margin-bottom:0}#home ul.project-stats li{float:left;margin-left:10px;color:#666}
 #home ul.project-stats .progress{height:10px;width:30px;border:1px solid #ccc;margin-bottom:0;}
 #project #map{position:absolute;left:0;top:110px;bottom:0;width:100%}
-#project #leaflet{position:absolute;top:0;bottom:0;left:0;right:420px}
-#project #task_msg,#project #task_loading,#project #task_error_msg{position:absolute;top:-40px;right:4px;padding:5px}
-#project #right-col{position:absolute;top:-5px;bottom:0;right:0;width:420px;background-color:#fff;-webkit-box-shadow:0 0 2px 2px rgba(0,0,0,0.15);-moz-box-shadow:0 0 2px 2px rgba(0,0,0,0.15);box-shadow:0 0 2px 2px rgba(0,0,0,0.15);padding:10px;-webkit-border-radius:5px 0 0 0;-moz-border-radius:5px 0 0 0;border-radius:5px 0 0 0;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box}
+#project #leaflet{position:absolute;top:0;bottom:0;right:0;left:420px}
+#project #task_msg,#project #task_loading,#project #task_error_msg{position:absolute;top:-40px;left:4px;padding:5px}
+#project #side-col{position:absolute;top:-5px;bottom:0;width:420px;background-color:#fff;-webkit-box-shadow:0 0 2px 2px rgba(0,0,0,0.15);-moz-box-shadow:0 0 2px 2px rgba(0,0,0,0.15);box-shadow:0 0 2px 2px rgba(0,0,0,0.15);padding:10px;-webkit-border-radius:0 5px 0 0;-moz-border-radius:0 5px 0 0;border-radius:0 5px 0 0;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box}
 #project #task{overflow:auto;height:100%}#project #task .status{display:inline-block;opacity:50;filter:alpha(opacity=5000)}
 #project #task_actions{overflow:hidden}#project #task_actions>.item{display:none;position:relative;-webkit-transition:all .4s ease-in-out;-moz-transition:all .4s ease-in-out;-o-transition:all .4s ease-in-out;transition:all .4s ease-in-out}
 #project #task_actions>.active,#project #task_actions>.next,#project #task_actions>.prev{display:block}
