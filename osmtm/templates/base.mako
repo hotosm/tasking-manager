@@ -3,7 +3,6 @@
 <html>
   <head>
     <title>OSM Tasking Manager</title>
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/bootstrap/dist/css/bootstrap.min.css')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css')}">
     <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}"></script>
