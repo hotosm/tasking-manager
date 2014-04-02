@@ -44,7 +44,7 @@
 <p class="text-warning">
   <span class="glyphicon glyphicon-warning-sign"></span>
   Access to this imagery is limited by the
-  <a href="${request.route_url('license', license=project.license.id)}?redirect=${request.route_url('project', project=project.id)}">
+  <a href="${request.route_path('license', license=project.license.id)}?redirect=${request.route_path('project', project=project.id)}">
     ${project.license.name} license agreement
   </a>.
 </p>
@@ -54,7 +54,7 @@
 You have already acknowledged the terms of this license.</span>
 % else:
   You need to
-  <a href="${request.route_url('license', license=project.license.id)}?redirect=${request.route_url('project', project=project.id)}">
+  <a href="${request.route_path('license', license=project.license.id)}?redirect=${request.route_path('project', project=project.id)}">
     review and acknowledge
   </a>
   the agreement.

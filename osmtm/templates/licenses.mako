@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_url('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
+<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
 <a class="navbar-brand">OSM Tasking Manager - ${_('Licenses')}</a>
 </%block>
 <%block name="content">
@@ -14,14 +14,14 @@
                 <div class="help-inline">
                   ${license.plain_text}
                 </div>
-                <a href="${request.route_url('license_edit', license=license.id)}" class="btn pull-right">edit</a><br />
+                <a href="${request.route_path('license_edit', license=license.id)}" class="btn pull-right">edit</a><br />
                 </li>
             % endfor
             </ul>
             </ul>
         </div>
         <div class="col-md-6">
-            <a href="${request.route_url('license_new')}" class="btn btn-default">+ Create new license</a>
+            <a href="${request.route_path('license_new')}" class="btn btn-default">+ Create new license</a>
         </div>
     </div>
 </div>

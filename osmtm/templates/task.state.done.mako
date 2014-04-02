@@ -2,7 +2,7 @@
 <%
 tooltip = _("Invalidate this task if you consider it needs more work.")
 %>
-<form action="${request.route_url('task_invalidate', task=task.id, project=task.project_id)}" method="POST" class="form-horizontal" role="form">
+<form action="${request.route_path('task_invalidate', task=task.id, project=task.project_id)}" method="POST" class="form-horizontal" role="form">
   <button type="submit" rel="tooltip" data-original-title="${tooltip}" class="btn btn-danger btn-sm"><i class="glyphicon glyphicon-thumbs-down icon-white"></i> ${_('Invalidate')}</button>
   <div id="commentModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
     <div class="modal-dialog">

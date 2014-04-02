@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_url('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
+<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
 <a class="navbar-brand">${_('User profile')}</a>
 </%block>
 <%block name="content">
@@ -35,12 +35,12 @@ else:
       % if contributor.admin:
       ${_("This user is an administrator.")}<i class="glyphicon glyphicon-star"></i>
         % if user is not None and user.admin and user != contributor:
-        <a href="${request.route_url('user_admin', id=contributor.id)}">Remove privileges.</a>
+        <a href="${request.route_path('user_admin', id=contributor.id)}">Remove privileges.</a>
         % endif
       % else:
       % if user is not None and user.admin:
         <i class="glyphicon glyphicon-star"></i>
-        <a href="${request.route_url('user_admin', id=contributor.id)}">Set as administrator.</a>
+        <a href="${request.route_path('user_admin', id=contributor.id)}">Set as administrator.</a>
         % endif
       % endif
     </div>
@@ -53,7 +53,7 @@ else:
         <ul>
         % for p in projects:
           <li>
-            <a href="${request.route_url('project', project=p["project"].id)}"
+            <a href="${request.route_path('project', project=p["project"].id)}"
               title="Project Details">
               #${p['project'].id} ${p["project"].name}
             </a>

@@ -4,6 +4,9 @@
 <div class="navbar-brand">OSM Tasking Manager</div>
 </%block>
 <%block name="content">
+<%
+base_url = request.route_path('home')
+%>
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
 <div class="container" ng-app="projects">
   <div class="col-md-6" ng-controller="projectCrtl">
@@ -24,7 +27,7 @@
           </table>
         </li>
       </ul>
-      <h4><a href="project/{{project.id}}">#{{project.id}} {{project.name}}</a>
+      <h4><a href="${base_url}project/{{project.id}}">#{{project.id}} {{project.name}}</a>
       </h4>
       <div class="clear"></div>
       <div class="world_map">
