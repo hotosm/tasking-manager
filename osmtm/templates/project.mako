@@ -48,6 +48,11 @@ else:
 </div>
 <div id="main_content">
   <div id="leaflet"></div>
+  <p id="task_loading" class="alert alert-success" style="display: none;">
+    ${_('Loading')}
+  </p>
+  <p id="task_msg" class="alert alert-success" style="display: none;"></p>
+  <p id="task_error_msg" class="alert alert-danger" style="display: none;"></p>
   <div id="side-col">
     <div class="tab-content">
       <div id="main" class="row-fluid tab-pane active">
@@ -66,11 +71,6 @@ else:
         <%include file="project.instructions.mako" />
       </div>
       <div id="contribute" class="tab-pane">
-        <p id="task_loading" class="alert alert-success" style="display: none;">
-          ${_('Loading')}
-        </p>
-        <p id="task_msg" class="alert alert-success" style="display: none;"></p>
-        <p id="task_error_msg" class="alert alert-danger" style="display: none;"></p>
         <div id="task_empty">
           <%include file="task.empty.mako" />
         </div>
