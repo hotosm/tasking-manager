@@ -1,7 +1,7 @@
 from pyramid.asset import abspath_from_asset_spec
 try:
     import mapnik
-except:
+except:  # pragma: no cover
     # package name is mapnik2 for versions lower than 2.2
     import mapnik2 as mapnik
 import json

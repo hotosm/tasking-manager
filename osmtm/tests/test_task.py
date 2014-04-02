@@ -192,3 +192,6 @@ class TestTaskFunctional(BaseTestCase):
                                headers=headers,
                                xhr=True)
         self.assertFalse(res.json['success'])
+
+    def test_task_gpx(self):
+        self.testapp.get('/project/1/task/1.gpx', status=200)
