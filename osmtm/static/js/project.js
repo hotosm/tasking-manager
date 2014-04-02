@@ -43,6 +43,10 @@ $(document).ready(function() {
         }
     });
 
+    $('#start').on('click', function() {
+        $('#contribute_tab').tab('show');
+    });
+
 function clearSelection() {
     location.hash = "";
     task_layer.clearLayers();

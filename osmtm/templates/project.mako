@@ -58,7 +58,7 @@ else:
       <div id="main" class="row-fluid tab-pane active">
         <p>${markdown.markdown(project.description)|n}</p>
         <p class="text-center">
-          <a href="#contribute" data-toggle="tab"
+          <a id="start"
              class="btn btn-success btn-lg">
             <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
             ${_('Start contributing')}</a>
