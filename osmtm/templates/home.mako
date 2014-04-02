@@ -11,8 +11,7 @@
     <div class="project well" ng-repeat="project in projects">
       <ul class="nav project-stats">
         <li><i class="glyphicon glyphicon-user"></i><span></span></li>
-        <!--FIXME wrong aligment-->
-        <li class="row">
+        <li>
           <table>
             <tr>
               <td>
