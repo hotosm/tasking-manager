@@ -1,5 +1,5 @@
 from pyramid.view import view_config
-from pyramid.url import route_url
+from pyramid.url import route_path
 from pyramid.httpexceptions import (
     HTTPFound,
     HTTPUnauthorized
@@ -34,7 +34,7 @@ def license(request):
     if not user:  # pragma: no cover
         raise HTTPUnauthorized()
 
-    redirect = request.params.get("redirect", request.route_url("home"))
+    redirect = request.params.get("redirect", request.route_path("home"))
     if "accepted_terms" in request.params:
         if request.params["accepted_terms"] == "I AGREE":
             user.accepted_licenses.append(license)
@@ -58,7 +58,7 @@ def license_delete(request):
         DBSession.flush()
         request.session.flash('License removed!')
 
-    return HTTPFound(location=route_url('licenses', request))
+    return HTTPFound(location=route_path('licenses', request))
 
 
 @view_config(route_name='license_new', renderer='license.edit.mako',
@@ -86,5 +86,5 @@ def license_edit(request):
         license.plain_text = request.params['plain_text']
 
         DBSession.add(license)
-        return HTTPFound(location=route_url('licenses', request))
+        return HTTPFound(location=route_path('licenses', request))
     return dict(page_id="licenses", license=license)

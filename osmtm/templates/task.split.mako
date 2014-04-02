@@ -8,7 +8,7 @@
         disabled = "disabled linethrough"
         tooltip = "You cannot split this task more."
     %>
-      <a id="split" href="${request.route_url('task_split', task=task.id, project=task.project_id)}"
+      <a id="split" href="${request.route_path('task_split', task=task.id, project=task.project_id)}"
          rel="tooltip" data-original-title="${tooltip}"
          data-confirm="${_('Are you sure you want to split this task?')}"
          class="${disabled}">

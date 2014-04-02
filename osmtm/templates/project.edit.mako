@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_url('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
+<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
 <a class="navbar-brand">${project.name} - Edit</a>
 </%block>
 <%block name="content">
@@ -47,7 +47,7 @@
     </div>
     <div class="row pull-right">
       <div class="form-group">
-        <a href="${request.route_url('project', project=project.id)}" class="btn btn-default">Cancel</a>
+        <a href="${request.route_path('project', project=project.id)}" class="btn btn-default">Cancel</a>
         <input id="id_submit" type="submit" value="Save the modifications" name="form.submitted" class="btn btn-primary"/>
       </div>
     </div>

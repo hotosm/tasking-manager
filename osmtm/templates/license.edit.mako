@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_url('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
+<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
 <a class="navbar-brand">OSM Tasking Manager - Edit License</a>
 </%block>
 <%block name="content">
@@ -30,9 +30,9 @@
             <input type="submit" class="btn btn-success" value="Create the new license" id="id_submit" name="form.submitted"/>
             % endif
             % if license:
-            <a class="btn btn-danger" id="delete" href="${request.route_url('license_delete', license=license.id)}">Delete</a>
+            <a class="btn btn-danger" id="delete" href="${request.route_path('license_delete', license=license.id)}">Delete</a>
             % endif
-            <a class="btn btn-default pull-right" href="${request.route_url('licenses')}">Cancel</a>
+            <a class="btn btn-default pull-right" href="${request.route_path('licenses')}">Cancel</a>
         </div>
     </form>
 </div>

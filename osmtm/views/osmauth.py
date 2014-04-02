@@ -97,4 +97,4 @@ def oauth_callback(request):  # pragma: no cover
 @view_config(route_name='logout')
 def logout(request):  # pragma: no cover
     headers = forget(request)
-    return HTTPFound(location=request.route_url('home'), headers=headers)
+    return HTTPFound(location=request.route_path('home'), headers=headers)
