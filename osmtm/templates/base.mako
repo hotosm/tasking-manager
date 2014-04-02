@@ -96,6 +96,7 @@ ${message | n}
 % endif
 
     <%block name="content"></%block>
+% if page_id is not 'project':
     <footer class="footer">
       <div class="container">
         <p class="col-md-6">Designed and built for the <a>Humanitarian OpenStreetMap Team</a> with
@@ -106,5 +107,6 @@ ${message | n}
         </p>
       </div>
     </footer>
+% endif
   </body>
 </html>

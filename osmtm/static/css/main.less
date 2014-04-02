@@ -106,7 +106,7 @@ html, body {
 }
 
 #project {
-    #map {
+    #main_content {
         position: absolute;
         left: 0;
         top: 110px;
@@ -119,6 +119,16 @@ html, body {
         bottom: 0;
         right: 0;
         left: 420px;
+    }
+    .leaflet-left {
+          -webkit-transition: all 0.2s;
+             -moz-transition: all 0.2s;
+               -o-transition: all 0.2s;
+                  transition: all 0.2s;
+    }
+    .large #leaflet .leaflet-left {
+        /* side-col (large width - small width) */
+        left: 150px;
     }
     #task_msg, #task_loading, #task_error_msg {
         position: absolute;
@@ -135,6 +145,14 @@ html, body {
         .box-shadow(0, 0, 2px, 2px, rgba(0, 0, 0, 0.15));
         padding: 10px;
         .border-radius(0 5px 0 0);
+          -webkit-transition: all 0.2s;
+             -moz-transition: all 0.2s;
+               -o-transition: all 0.2s;
+                  transition: all 0.2s;
+        overflow: auto;
+    }
+    .large #side-col {
+        width: 570px
     }
     #task {
         overflow: auto;
@@ -233,6 +251,16 @@ html, body {
     #instructions {
         .icon-question-sign {
             .opacity(50);
+        }
+        dt {
+            color: lighten(#000, 60%);
+            font-weight: normal;
+        }
+        dd {
+            margin-left: 10px;
+            border: 1px solid #dfdfdf;
+            padding: 5px;
+            .border-radius(5px);
         }
     }
 
