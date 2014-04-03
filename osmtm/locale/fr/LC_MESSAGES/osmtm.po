@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-26 12:11+0100\n"
+"POT-Creation-Date: 2014-04-03 11:38+0200\n"
 "PO-Revision-Date: 2013-09-09 10:08+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -17,27 +17,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: osmtm/templates/base.mako:52
+#: osmtm/templates/base.mako:55
 msgid "login to OpenStreetMap"
 msgstr "S'authentifier"
 
-#: osmtm/templates/home.mako:36
+#: osmtm/templates/home.mako:38
 msgid "Created by"
 msgstr "Créé par"
 
-#: osmtm/templates/home.mako:37
+#: osmtm/templates/home.mako:39
 msgid "Updated"
 msgstr "Mis à jour"
-
-#: osmtm/templates/imagery.mako:16
-msgid "Imagery is available to be used for tracing elements."
-msgstr ""
-"De l'imagerie satellite ou aérienne est disponible pour tracer les "
-"éléments."
-
-#: osmtm/templates/imagery.mako:17
-msgid "You should be able to load it in your favorite editor."
-msgstr "Vous devriez être en mesure de la charger dans votre éditeur préféré."
 
 #: osmtm/templates/imagery.mako:26
 msgid ""
@@ -47,74 +37,109 @@ msgstr ""
 "Si JOSM est déjà lancé avec le contrôle à distance activé, cliquez sur ce"
 " lien et l'imagerie devrait être automatiquement chargée."
 
+#: osmtm/templates/imagery.mako:33
+msgid ""
+"Imagery should load automatically when you will open a task using the iD "
+"Editor"
+msgstr "L'imagerie devrait se charger automatiquement quand vous chargerez la "
+"tâche dans iD"
+
 #: osmtm/templates/license.mako:5 osmtm/templates/licenses.mako:5
 msgid "Licenses"
 msgstr "Licences"
+
+#: osmtm/templates/project.instructions.mako:7
+msgid "Entities to Map"
+msgstr "Éléments à cartographier"
+
+#: osmtm/templates/project.instructions.mako:19
+msgid "Changeset Comment"
+msgstr "Commentaire de changement"
+
+#: osmtm/templates/project.instructions.mako:32
+msgid "Imagery"
+msgstr "Imagerie"
 
 #: osmtm/templates/project.mako:33
 msgid "Info"
 msgstr ""
 
-#: osmtm/templates/project.mako:35
-msgid "Imagery"
-msgstr "Imagerie"
+#: osmtm/templates/project.mako:34
+msgid "Instructions"
+msgstr ""
 
-#: osmtm/templates/project.mako:37
+#: osmtm/templates/project.mako:35
 msgid "Contribute"
 msgstr "Contribuer"
 
 #: osmtm/templates/project.mako:52
-msgid "Description"
-msgstr ""
+msgid "Loading"
+msgstr "Chargement"
 
-#: osmtm/templates/project.mako:61
+#: osmtm/templates/project.mako:64
+msgid "Start contributing"
+msgstr "Commencer à contribuer"
+
+#: osmtm/templates/project.mako:67
 msgid "Activity"
 msgstr "Activité"
 
-#: osmtm/templates/project.mako:75
-msgid "Loading"
-msgstr "Chargement"
+#: osmtm/templates/task.current_locked.mako:2
+msgid "a task"
+msgstr "une tâche"
+
+#: osmtm/templates/task.current_locked.mako:3
+msgid "You already have ${task_link} locked."
+msgstr "Vous avez déjà ${task_link} bloquée."
+
+#: osmtm/templates/task.current_locked.mako:10
+msgid "Select it again"
+msgstr "Séletionner à nouveau"
 
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
 msgstr "Editer avec"
 
-#: osmtm/templates/task.empty.mako:3
+#: osmtm/templates/task.empty.mako:6
 msgid "Select a task on the map"
 msgstr "Sélectionner une tâche sur la carte"
 
-#: osmtm/templates/task.empty.mako:9
+#: osmtm/templates/task.empty.mako:12
 msgid "or"
 msgstr "ou"
 
-#: osmtm/templates/task.empty.mako:15
+#: osmtm/templates/task.empty.mako:18
 msgid "Take a task at random"
 msgstr "Prendre une tâche au hasard"
 
-#: osmtm/templates/task.history.mako:19 osmtm/templates/task.status.mako:3
+#: osmtm/templates/task.history.mako:14 osmtm/templates/task.status.mako:3
 msgid "Locked"
 msgstr "Bloqué"
 
-#: osmtm/templates/task.history.mako:19 osmtm/templates/task.history.mako:21
-#: osmtm/templates/task.history.mako:23
+#: osmtm/templates/task.history.mako:14 osmtm/templates/task.history.mako:16
+#: osmtm/templates/task.history.mako:18
 msgid "by"
 msgstr "par"
 
-#: osmtm/templates/task.history.mako:21
+#: osmtm/templates/task.history.mako:16
 msgid "Marked as done"
 msgstr "Marqué comme réalisé"
 
-#: osmtm/templates/task.history.mako:23 osmtm/templates/task.status.mako:8
+#: osmtm/templates/task.history.mako:18 osmtm/templates/task.status.mako:8
 msgid "Invalidated"
 msgstr "Invalidé"
 
-#: osmtm/templates/task.history.mako:25
+#: osmtm/templates/task.history.mako:20
 msgid "Unlocked"
 msgstr "Débloqué"
 
-#: osmtm/templates/task.history.mako:34
+#: osmtm/templates/task.history.mako:31
 msgid "Nothing has happened yet."
 msgstr "Rien ne s'est encore passé."
+
+#: osmtm/templates/task.instructions.mako:3
+msgid "Extra Instructions"
+msgstr "Instructions additionnelles"
 
 #: osmtm/templates/task.locked.mako:3
 msgid "you"
@@ -132,11 +157,11 @@ msgstr "Débloquer"
 msgid "Clear selection"
 msgstr "Effacer la sélection"
 
-#: osmtm/templates/task.mako:22
+#: osmtm/templates/task.mako:26
 msgid "History"
 msgstr "Historique"
 
-#: osmtm/templates/task.split.mako:2
+#: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
 msgstr "Tâche trop vaste ?"
 
@@ -156,7 +181,7 @@ msgstr "Invalidez la tâche si vous considérez que le travail n'est pas complet
 msgid "Invalidate"
 msgstr "Invalider"
 
-#: osmtm/templates/task.state.done.mako:11
+#: osmtm/templates/task.state.done.mako:15
 msgid ""
 "Please tell why you marked this task as invalid so that the user can "
 "eventually correct his mistakes if any."
@@ -164,15 +189,15 @@ msgstr ""
 "Veuillez indiquer la raison pour laquelle vous avez marqué la tâche comme"
 " invalide afin que le contributeur puisse corriger ses erreurs."
 
-#: osmtm/templates/task.state.done.mako:14
+#: osmtm/templates/task.state.done.mako:18
 msgid "Your comment here"
 msgstr "Votre commentaire ici"
 
-#: osmtm/templates/task.state.done.mako:17
+#: osmtm/templates/task.state.done.mako:22
 msgid "Cancel"
 msgstr "Annuler"
 
-#: osmtm/templates/task.state.done.mako:18
+#: osmtm/templates/task.state.done.mako:23
 msgid "OK"
 msgstr "OK"
 
@@ -184,37 +209,29 @@ msgstr "Marquer comme réalisé"
 msgid "Done"
 msgstr "Fait"
 
-#: osmtm/templates/task.unlocked.mako:6
-msgid "You cannot lock more than one task at a time."
-msgstr "Vous ne pouvez pas bloquer plusieurs tâches en même temps."
-
-#: osmtm/templates/task.unlocked.mako:8
+#: osmtm/templates/task.unlocked.mako:9
 msgid "Lock this task to tell others that you are currently working on it."
 msgstr ""
 "Bloquer cette tâche pour avertir les autres que vous êtres en train de "
 "travailler dessus."
 
 #: osmtm/templates/task.unlocked.mako:14
-msgid "a task"
-msgstr "une tâche"
+msgid "Start mapping"
+msgstr "Commencer à cartographier"
 
-#: osmtm/templates/task.unlocked.mako:15
-msgid "You already have ${task_link} locked."
-msgstr "Vous avez déjà ${task_link} bloquée."
-
-#: osmtm/templates/task.unlocked.mako:24
-msgid "Yes, I want to work on this task"
-msgstr "Oui, je veux travailler sur cette tâche"
+#: osmtm/templates/task.unlocked.mako:18
+msgid "Review the work"
+msgstr "Valider le travail"
 
 #: osmtm/templates/user.mako:5
 msgid "User profile"
 msgstr "Profil utilisateur"
 
-#: osmtm/templates/user.mako:26
+#: osmtm/templates/user.mako:36
 msgid "This user is an administrator."
 msgstr "Cet utilisateur est administrateur."
 
-#: osmtm/templates/user_menu.mako:5
+#: osmtm/templates/user_menu.mako:4
 msgid "logout"
 msgstr "Se déconnecter"
 
@@ -222,31 +239,42 @@ msgstr "Se déconnecter"
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: osmtm/views/project.py:35
+#: osmtm/views/project.py:42
 msgid "Sorry, this project doesn't  exist"
 msgstr "Désolé, ce projet n'existe pas"
 
-#: osmtm/views/project.py:89
+#: osmtm/views/project.py:100
 msgid "Project #${project_id} created successfully"
 msgstr "Projet #${project_id} créé avec succès"
 
-#: osmtm/views/project.py:116
+#: osmtm/views/project.py:129
 msgid "Successfully imported ${n} geometries"
-msgstr ""
+msgstr "${n} géométries importées"
 
-#: osmtm/views/task.py:82
+#: osmtm/views/task.py:98
 msgid "Task marked as done. Thanks for your contribution"
 msgstr "Tâche marquée comme réalisée. Merci pour votre participation."
 
-#: osmtm/views/task.py:100
+#: osmtm/views/task.py:117
 msgid "Task already locked."
 msgstr "Tâche déjà bloquée."
 
-#: osmtm/views/task.py:135
-msgid "Task invalidated."
-msgstr "Invalidé"
+#: osmtm/views/task.py:123
+msgid "Task locked. You can start mapping."
+msgstr "Tâche bloquée. Vous pouvez commencer à cartographier."
 
-#: osmtm/views/task.py:194
+#: osmtm/views/task.py:138
+msgid "Task unlocked."
+msgstr "Tâche débloquée."
+
+#: osmtm/views/task.py:157
+msgid "Task invalidated."
+msgstr "Tâche invalidé"
+
+#: osmtm/views/task.py:224
 msgid "Random task... none available! Sorry."
 msgstr "Tâche au hasard... aucune disponible ! Désolé."
 
+#: osmtm/views/user.py:63
+msgid "Sorry, this user doesn't  exist"
+msgstr "Désolé, ce projet n'existe pas"
