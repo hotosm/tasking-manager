@@ -14,7 +14,7 @@
         You're ready to use the Tasking Manager.
       </p>
       <p>
-        Please <a href="${request.route_url('login')}">login</a>.
+        Please <a href="${request.route_path('login')}">login</a>.
       </p>
       <p>
         Since you are the first user you'll be given admin rights.

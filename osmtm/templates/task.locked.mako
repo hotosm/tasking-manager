@@ -7,7 +7,7 @@ locked_text = _('Task locked by ${username}', mapping={'username': username})
 <p>${locked_text|n}.&nbsp;
   % if user and task.user == user:
   <a id="unlock"
-     href="${request.route_url('task_unlock', task=task.id, project=task.project_id)}">
+     href="${request.route_path('task_unlock', task=task.id, project=task.project_id)}">
       ${_('Unlock')}
   </a>
   % endif

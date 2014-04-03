@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_url('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
+<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
 <a class="navbar-brand">Project New</a>
 </%block>
 <%block name="content">
@@ -33,10 +33,10 @@
   $('input[type=radio]').on('change', function() {
     switch ($(this)[0].id) {
       case "grid":
-        window.location = "${request.route_url('project_new_grid')}";
+        window.location = "${request.route_path('project_new_grid')}";
         break;
       case "import":
-        window.location = "${request.route_url('project_new_import')}";
+        window.location = "${request.route_path('project_new_import')}";
         break;
     }
   });

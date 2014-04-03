@@ -44,5 +44,5 @@ def user_prefered_language(request):
 def unauthorized(request):
     if request.is_xhr:
         return HTTPUnauthorized()
-    return HTTPFound(request.route_url('login',
-                                       _query=[('came_from', request.url)]))
+    return HTTPFound(request.route_path('login',
+                                        _query=[('came_from', request.url)]))

@@ -1,6 +1,6 @@
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
-from pyramid.url import route_url
+from pyramid.url import route_path
 from ..models import (
     DBSession,
     Project,
@@ -38,7 +38,7 @@ def project(request):
     if project is None:
         _ = request.translate
         request.session.flash(_("Sorry, this project doesn't  exist"))
-        return HTTPFound(location=route_url('home', request))
+        return HTTPFound(location=route_path('home', request))
 
     project.locale = get_locale_name(request)
 
@@ -91,8 +91,8 @@ def project_new_grid(request):
         request.session.flash(_("Project #${project_id} created successfully",
                               mapping={'project_id': project.id}),
                               'success')
-        return HTTPFound(location=route_url('project_edit', request,
-                                            project=project.id))
+        return HTTPFound(location=route_path('project_edit', request,
+                                             project=project.id))
 
     return dict(page_id='project_new_grid')
 
@@ -120,7 +120,7 @@ def project_new_import(request):
             request.session.flash(_("Successfully imported ${n} geometries",
                                   mapping={'n': count}),
                                   'success')
-            return HTTPFound(location=route_url('project_edit', request,
+            return HTTPFound(location=route_path('project_edit', request,
                              project=project.id))
         except Exception, e:
             msg = "Sorry, this is not a JSON valid file. <br />%s" % e.message
@@ -158,7 +158,7 @@ def project_edit(request):
             project.license = license
 
         DBSession.add(project)
-        return HTTPFound(location=route_url('project', request,
+        return HTTPFound(location=route_path('project', request,
                          project=project.id))
 
     return dict(page_id='project_edit', project=project, licenses=licenses)

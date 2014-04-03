@@ -1,5 +1,5 @@
 from pyramid.view import view_config
-from pyramid.url import route_url
+from pyramid.url import route_path
 from pyramid.httpexceptions import (
     HTTPFound,
     HTTPUnauthorized
@@ -47,8 +47,8 @@ def user_admin(request):
     user.admin = not user.admin
     DBSession.flush()
 
-    return HTTPFound(location=route_url("user", request,
-                                        username=user.username))
+    return HTTPFound(location=route_path("user", request,
+                                         username=user.username))
 
 
 @view_config(route_name='user', renderer='user.mako')
@@ -61,7 +61,7 @@ def user(request):
     except NoResultFound:
         _ = request.translate
         request.session.flash(_("Sorry, this user doesn't  exist"))
-        return HTTPFound(location=route_url('users', request))
+        return HTTPFound(location=route_path('users', request))
 
     projects = __get_projects(user.id)
     return dict(page_id="user", contributor=user, projects=projects)

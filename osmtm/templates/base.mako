@@ -15,7 +15,7 @@
 <%
 from pyramid.security import authenticated_userid
 from osmtm.models import DBSession, User, TaskComment
-login_url= request.route_url('login', _query=[('came_from', request.url)])
+login_url= request.route_path('login', _query=[('came_from', request.url)])
 username = authenticated_userid(request)
 if username is not None:
    user = DBSession.query(User).get(username)
@@ -26,7 +26,7 @@ languages = request.registry.settings.available_languages.split()
 comments = []
 %>
     <script>
-        var base_url = "${request.route_url('home')}";
+        var base_url = "${request.route_path('home')}";
     </script>
 
   </head>
@@ -45,7 +45,7 @@ comments = []
                   badge = '<sup><span class="badge badge-important">%s</span></sup>' % len(comments)
           %>
           <li>
-            <a class="messages" href="${request.route_url('user_messages')}">
+            <a class="messages" href="${request.route_path('user_messages')}">
               <i class="glyphicon glyphicon-envelope" style="opacity: 0.5;"></i>${badge|n}
             </a>
           </li>

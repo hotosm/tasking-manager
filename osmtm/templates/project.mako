@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_url('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
+<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
 <a class="navbar-brand">${project.name}</a>
 </%block>
 <%block name="content">
@@ -38,7 +38,7 @@ else:
           <div class="marker" style="top:${top}px;left:${left}px"></div>
         </div>
         % if user and user.is_admin():
-          <a class="btn btn-default btn-sm pull-right" href="${request.route_url('project_edit', project=project.id)}">
+          <a class="btn btn-default btn-sm pull-right" href="${request.route_path('project_edit', project=project.id)}">
             Edit project
           </a>
         % endif
