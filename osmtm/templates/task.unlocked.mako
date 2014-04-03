@@ -18,7 +18,14 @@ else:
      rel="tooltip" data-original-title="${tooltip}"
      data-container="body"
      class="btn btn-success ${disabled}">
-     <i class="glyphicon glyphicon-lock icon-white"></i> ${_('Yes, I want to work on this task')}
+     % if task.state == task.state_ready:
+       <i class="glyphicon glyphicon-share-alt"></i>&nbsp;
+       ${_('Start mapping')}
+     % elif task.state == task.state_done:
+       <i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;
+       <i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;
+       ${_('Review the work')}
+     % endif
   </a>
 </p>
 % endif

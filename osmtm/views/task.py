@@ -110,7 +110,8 @@ def lock(request):
     task.user = user
     task.locked = True
     DBSession.add(task)
-    return dict(success=True, task=dict(id=task.id))
+    return dict(success=True, task=dict(id=task.id),
+                msg=_("Task locked. You can start mapping."))
 
 
 @view_config(route_name='task_unlock', renderer="json")
@@ -123,7 +124,9 @@ def unlock(request):
     task.locked = False
 
     DBSession.add(task)
-    return dict(success=True, task=dict(id=task.id))
+    _ = request.translate
+    return dict(success=True, task=dict(id=task.id),
+                msg=_("Task unlocked."))
 
 
 @view_config(route_name='task_invalidate', renderer="json")
