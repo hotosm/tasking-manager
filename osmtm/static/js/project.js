@@ -50,6 +50,104 @@ $(document).ready(function() {
     // load an empty task
     loadEmptyTask();
 
+  $(document).on('click', '#lock', {direction: 'next'}, onTaskAction);
+  $(document).on('click', '#unlock', {direction: 'prev'}, onTaskAction);
+  $(document).on('click', '#split', {direction: 'next'}, function(e) {
+      if ($(this).hasClass('disabled')) {
+          return false;
+      }
+      if (confirm($(this).attr('data-confirm'))) {
+          onTaskAction.call(this, e);
+      }
+      return false;
+  });
+  $(document).on('click', '.clear', clearSelection);
+
+  $(document).on('click', '#random', function(e) {
+      $.getJSON($('#random').attr('href'), e.formData, function(data) {
+
+          tiles.redraw();
+
+          // clear UTF Grid cache and update
+          var i;
+          for (i in utf_layer._cache) {
+              delete utf_layer._cache[i];
+          }
+          utf_layer._update();
+
+          if (data.task) {
+              var task = data.task;
+              loadTask(task.id);
+              location.hash = ["task", task.id].join('/');
+              return false;
+          }else{
+              $('#task_msg').html("Error: random task should have returned a task ID but did not").show()
+          }
+          if (data.msg) {
+              $('#task_msg').html(data.msg).show()
+                  .delay(3000)
+                  .fadeOut();
+          }
+          clearSelection();
+      }).fail(function(error) {
+          if (error.status == 401) {
+              if (confirm('Please login first')) {
+                  window.location = login_url + '?came_from=' + encodeURIComponent(window.location.href);
+              }
+          }
+      });
+      return false;
+  });
+
+  $(document).on('submit', 'form', function(e) {
+      var form = this;
+      function load() {
+          hideTooltips();
+          var formData = $(form).serializeObject();
+          var submitName = $("button[type=submit][clicked=true]").attr("name");
+          formData[submitName] = true;
+          //onTaskAction({
+              //action: form.action,
+              //formData: formData,
+              //data: null
+          //});
+          $.post(form.action, formData, function(response) {
+              handleTaskResponse(response);
+          });
+      }
+      if ($(form).has($('#commentModal')).length > 0) {
+          $('#commentModal').modal('show');
+          $('#task_comment').focus()
+              .on('keyup', function() {
+                  $('#commentModalCloseBtn').toggleClass('disabled',
+                      $(this).val() === ''
+                  );
+              });
+          $('#commentModalCloseBtn').on('click', function() {
+              if ($('#task_comment')[0].value !== '') {
+                  $('#commentModal').modal('hide');
+                  load();
+              }
+          });
+      } else {
+          load();
+      }
+      return false;
+  });
+  $(document).on("click", "form button[type=submit]", function() {
+      $("button[type=submit]", $(this).parents("form")).removeAttr("clicked");
+      $(this).attr("clicked", "true");
+  });
+  $(document).on('click', '#edit', exportOpen);
+  $(document).on('click', '#editDropdown li', exportOpen);
+
+  Sammy(function() {
+      this.get('#task/:id', function() {
+          loadTask(this.params.id);
+      });
+  }).run();
+});
+
 function clearSelection() {
     location.hash = "";
     task_layer.clearLayers();
@@ -157,94 +255,6 @@ function onTaskAction(e) {
     });
     return false;
 }
-$(document).on('click', '#lock', {direction: 'next'}, onTaskAction);
-$(document).on('click', '#unlock', {direction: 'prev'}, onTaskAction);
-$(document).on('click', '#split', {direction: 'next'}, function(e) {
-    if ($(this).hasClass('disabled')) {
-        return false;
-    }
-    if (confirm($(this).attr('data-confirm'))) {
-        onTaskAction.call(this, e);
-    }
-    return false;
-});
-$(document).on('click', '.clear', clearSelection);
-
-$(document).on('click', '#random', function(e) {
-    $.getJSON($('#random').attr('href'), e.formData, function(data) {
-
-        tiles.redraw();
-
-        // clear UTF Grid cache and update
-        var i;
-        for (i in utf_layer._cache) {
-            delete utf_layer._cache[i];
-        }
-        utf_layer._update();
-
-        if (data.task) {
-            var task = data.task;
-            loadTask(task.id);
-            location.hash = ["task", task.id].join('/');
-            return false;
-        }else{
-            $('#task_msg').html("Error: random task should have returned a task ID but did not").show()
-        }
-        if (data.msg) {
-            $('#task_msg').html(data.msg).show()
-                .delay(3000)
-                .fadeOut();
-        }
-        clearSelection();
-    }).fail(function(error) {
-        if (error.status == 401) {
-            if (confirm('Please login first')) {
-                window.location = login_url + '?came_from=' + encodeURIComponent(window.location.href);
-            }
-        }
-    });
-    return false;
-});
-
-$(document).on('submit', 'form', function(e) {
-    var form = this;
-    function load() {
-        hideTooltips();
-        var formData = $(form).serializeObject();
-        var submitName = $("button[type=submit][clicked=true]").attr("name");
-        formData[submitName] = true;
-        //onTaskAction({
-            //action: form.action,
-            //formData: formData,
-            //data: null
-        //});
-        $.post(form.action, formData, function(response) {
-            handleTaskResponse(response);
-        });
-    }
-    if ($(form).has($('#commentModal')).length > 0) {
-        $('#commentModal').modal('show');
-        $('#task_comment').focus()
-            .on('keyup', function() {
-                $('#commentModalCloseBtn').toggleClass('disabled',
-                    $(this).val() === ''
-                );
-            });
-        $('#commentModalCloseBtn').on('click', function() {
-            if ($('#task_comment')[0].value !== '') {
-                $('#commentModal').modal('hide');
-                load();
-            }
-        });
-    } else {
-        load();
-    }
-    return false;
-});
-$(document).on("click", "form button[type=submit]", function() {
-    $("button[type=submit]", $(this).parents("form")).removeAttr("clicked");
-    $(this).attr("clicked", "true");
-});
 
 var exportOpen = function(evt) {
     var editor;
@@ -351,14 +361,6 @@ var exportOpen = function(evt) {
         break;
     }
 };
-$(document).on('click', '#edit', exportOpen);
-$(document).on('click', '#editDropdown li', exportOpen);
-
-Sammy(function() {
-    this.get('#task/:id', function() {
-        loadTask(this.params.id);
-    });
-}).run();
 
 function hideTooltips() {
     $('[rel=tooltip]').tooltip('hide');
@@ -419,7 +421,6 @@ $.fn.slide = function(type) {
         );
     }, interval);
 })();
-});
 
 function setPreferedEditor() {
     if (prefered_editor !== '') {

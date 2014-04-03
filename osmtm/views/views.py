@@ -11,9 +11,13 @@ from ..models import (
     User,
 )
 
+from .task import check_task_expiration
+
 
 @view_config(route_name='home', renderer='home.mako')
 def home(request):
+    check_task_expiration()
+
     # no user in the DB yet
     if DBSession.query(User.username).count() == 0:   # pragma: no cover
         request.override_renderer = 'start.mako'

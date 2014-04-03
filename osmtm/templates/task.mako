@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+<script>
+if (typeof countdownInterval != 'undefined') {
+  clearInterval(countdownInterval);
+}
+</script>
 <div>
   <%include file="task.status.mako" />
   Task #${task.id}

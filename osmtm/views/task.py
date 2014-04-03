@@ -21,6 +21,10 @@ from sqlalchemy.sql.expression import and_
 from pyramid.security import authenticated_userid
 
 import random
+import datetime
+import transaction
+
+from ..models import EXPIRATION_DELTA
 
 
 def __get_user(request, allow_none=False):
@@ -40,6 +44,7 @@ def __get_user(request, allow_none=False):
 
 
 def __get_task(request):
+    check_task_expiration()
     task_id = request.matchdict['task']
     project_id = request.matchdict['project']
     task = DBSession.query(Task).get((project_id, task_id))
@@ -52,7 +57,7 @@ def __get_task(request):
 def __ensure_task_locked(task, user):
     locked_task = get_locked_task(task.project_id, user)
     if locked_task != task:
-        raise HTTPForbidden("You need to lock the tile first.")
+        raise HTTPForbidden("You need to lock the task first.")
 
 
 @view_config(route_name='task_xhr', renderer='task.mako')
@@ -231,3 +236,15 @@ def task_gpx(request):
                                         'http://www.openstreetmap.org'))
     return dict(polygon=shape.to_shape(task.geometry),
                 project_id=task.project_id)
+
+
+# unlock any expired task
+def check_task_expiration():
+    tasks = DBSession.query(Task).filter(Task.locked == True).all()  # noqa
+    for task in tasks:
+        if datetime.datetime.now() > task.update + EXPIRATION_DELTA:
+            with transaction.manager:
+                task.user_id = None
+                task.locked = False
+                task.update = datetime.datetime.now()
+                DBSession.add(task)

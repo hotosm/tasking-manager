@@ -29,11 +29,12 @@ except:  # pragma: no cover
     # package name is mapnik2 for versions lower than 2.2
     import mapnik2 as mapnik
 
-from .task import get_locked_task
+from .task import get_locked_task, check_task_expiration
 
 
 @view_config(route_name='project', renderer='project.mako', http_cache=0)
 def project(request):
+    check_task_expiration()
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
 
