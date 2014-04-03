@@ -94,7 +94,7 @@ msgstr "Vous avez déjà ${task_link} bloquée."
 
 #: osmtm/templates/task.current_locked.mako:10
 msgid "Select it again"
-msgstr "Séletionner à nouveau"
+msgstr "Sélectionner à nouveau"
 
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
@@ -221,7 +221,7 @@ msgstr "Commencer à cartographier"
 
 #: osmtm/templates/task.unlocked.mako:18
 msgid "Review the work"
-msgstr "Valider le travail"
+msgstr "Vérifier le travail"
 
 #: osmtm/templates/user.mako:5
 msgid "User profile"
