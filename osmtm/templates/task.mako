@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <div>
   <%include file="task.status.mako" />
-  <a href="#task/${task.id}">Task #${task.id}</a> in <a class="clear" href="#">Project #${task.project_id}</a>
+  Task #${task.id}
   <a class="btn btn-sm btn-link clear pull-right" title="${_('Clear selection')}"><i class="glyphicon glyphicon-remove"></i></a>
   <div id="task_actions">
 % if task.locked:
