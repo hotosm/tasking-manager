@@ -9,7 +9,7 @@
        data-original-title="${_('Lock this task to tell others that you are currently working on it.')}"
        data-container="body"
        class="btn btn-success">
-       % if task.state == task.state_ready:
+       % if task.state == task.state_ready or task.state == task.state_invalidated:
          <i class="glyphicon glyphicon-share-alt"></i>&nbsp;
          ${_('Start mapping')}
        % elif task.state == task.state_done:
