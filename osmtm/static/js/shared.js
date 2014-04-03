@@ -7,7 +7,7 @@ $().ready(function() {
         var language = $(this).text();
 
         $.ajax({
-            url: '/user/prefered_language/' + language,
+            url: base_url + 'user/prefered_language/' + language,
             complete: function(t) {
                 location.reload();
             }
