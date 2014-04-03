@@ -9,7 +9,9 @@
 % else:
   <%include file="task.unlocked.mako" />
 % endif
+  <%include file="task.split.mako" />
 
+    <div class="text-center">
 % if task.state in [task.state_ready, task.state_invalidated]:
     <%include file="task.state.ready.mako" />
 % endif
@@ -17,6 +19,7 @@
 % if task.state == task.state_done:
     <%include file="task.state.done.mako" />
 % endif
+    </div>
 
     <%include file="task.instructions.mako" />
     <hr />
@@ -42,7 +45,8 @@ $('[rel=tooltip]').tooltip();
 var login_url = "${request.route_path('login')}";
 var gpx_url = window.location.origin +
     "${request.route_path('task_gpx', project=task.project_id, task=task.id)}";
-% if project.imagery is not None and project.imagery != 'None' and \
+% if user is not None and \
+    project.imagery is not None and project.imagery != 'None' and \
     (project.license in user.accepted_licenses or not project.license):
 var imagery_url = "${project.imagery}";
 % endif
