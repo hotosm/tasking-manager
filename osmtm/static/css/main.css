@@ -767,7 +767,7 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 #home .updated-at,#home .created-by{font-size:11px;color:#666;margin:0}
 #home .project{padding:10px 10px 5px 10px}#home .project h4{margin:0}
 #home ul.project-stats{float:right;font-size:11px;margin-bottom:0}#home ul.project-stats li{float:left;margin-left:10px;color:#666}
-#home ul.project-stats .progress{height:10px;width:30px;border:1px solid #ccc;margin-bottom:0;}
+#home ul.project-stats .progress{height:10px;width:30px;border:1px solid #ccc;margin-bottom:0}#home ul.project-stats .progress .progress-bar{background-image:-webkit-linear-gradient(top, #ccc 0, #eee 100%);background-image:linear-gradient(to bottom, #ccc 0, #eee 100%);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcccccc', endColorstr='#ffeeeeee', GradientType=0)}
 #project #main_content{position:absolute;left:0;top:110px;bottom:0;width:100%}
 #project #leaflet{position:absolute;top:0;bottom:0;right:0;left:420px}
 #project .leaflet-left{-webkit-transition:all .2s;-moz-transition:all .2s;-o-transition:all .2s;transition:all .2s}

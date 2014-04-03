@@ -19,10 +19,10 @@ base_url = request.route_path('home')
             <tr>
               <td>
                 <div style="border: 1px solid #ccc;" class="progress">
-                  <div style="width: {{project.done}}%;" class="bar"></div>
+                  <div style="width: {{project.done}}%;" class="progress-bar"></div>
                 </div>
               </td>
-              <td>{{project.done}}%</td>
+              <td>&nbsp;{{project.done}}%</td>
             </tr>
           </table>
         </li>
