@@ -64,6 +64,7 @@ def main(global_config, **settings):
     config.add_route('project_check_for_update',
                      '/project/{project}/check_for_updates')
     config.add_route('task_random', '/project/{project}/random', xhr=True)
+    config.add_route('task_empty', '/project/{project}/task/empty', xhr=True)
     config.add_route('task_xhr', '/project/{project}/task/{task}', xhr=True)
     config.add_route('task_done',
                      '/project/{project}/task/{task}/done', xhr=True)

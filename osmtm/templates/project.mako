@@ -72,7 +72,6 @@ else:
       </div>
       <div id="contribute" class="tab-pane">
         <div id="task_empty">
-          <%include file="task.empty.mako" />
         </div>
         <div id="task"></div>
       </div>

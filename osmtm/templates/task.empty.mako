@@ -13,7 +13,7 @@
   </p>
   <br/>
   <p>
-    <a id="random" href="${request.route_path('task_random', project=project.id)}"
+    <a id="random" href="${request.route_path('task_random', project=project_id)}"
        class="btn btn-default">
        ${_('Take a task at random')}
     </a>

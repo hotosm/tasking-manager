@@ -74,6 +74,15 @@ def task_xhr(request):
                 history=history)
 
 
+@view_config(route_name='task_empty', renderer='task.empty.mako')
+def task_empty(request):
+    user = __get_user(request, allow_none=True)
+    project_id = request.matchdict['project']
+    locked_task = get_locked_task(project_id, user)
+
+    return dict(locked_task=locked_task, project_id=project_id)
+
+
 @view_config(route_name='task_done', renderer='json')
 def done(request):
     user = __get_user(request)

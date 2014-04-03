@@ -47,13 +47,21 @@ $(document).ready(function() {
         $('#contribute_tab').tab('show');
     });
 
+    // load an empty task
+    loadEmptyTask();
+
 function clearSelection() {
     location.hash = "";
     task_layer.clearLayers();
     $('#task').fadeOut(function() {
         $('#task').empty();
-        $('#task_empty').fadeIn();
+        loadEmptyTask();
     });
+}
+
+function loadEmptyTask() {
+    $('#task_empty').fadeIn();
+    $('#task_empty').load(base_url + "project/" + project_id + "/task/empty");
 }
 
 function loadTask(id, direction) {
