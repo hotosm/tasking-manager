@@ -20,5 +20,10 @@
         <Filter>([state] = 2)</Filter>
         <PolygonSymbolizer fill-opacity="0.4" fill="#FF9900" />
     </Rule>
+    <Rule>
+        <!-- invalidated -->
+        <Filter>([state] = 1)</Filter>
+        <PolygonPatternSymbolizer file="../static/img/invalidated.png" />
+    </Rule>
   </Style>
 </Map>
