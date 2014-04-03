@@ -163,7 +163,7 @@ class Task(Base):
     state_invalidated = INVALIDATED
     state_removed = REMOVED
     state = Column(Integer, default=READY)
-    locked = Column(Boolean, default=False)
+    locked = Column(Boolean, default=False, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
     update = Column(DateTime)
@@ -382,6 +382,9 @@ class Project(Base, Translatable):
         # if task.state >= 2:
         # done = done + area
         return round(done * 100 / total) if total != 0 else 0
+
+# the time delta after which the task is unlocked (in seconds)
+EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
 
 
 @event.listens_for(Project, "after_insert")

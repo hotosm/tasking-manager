@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-03 11:38+0200\n"
+"POT-Creation-Date: 2014-04-03 16:04+0200\n"
 "PO-Revision-Date: 2013-09-09 11:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -97,15 +97,15 @@ msgstr ""
 msgid "Edit with"
 msgstr ""
 
-#: osmtm/templates/task.empty.mako:6
+#: osmtm/templates/task.empty.mako:11
 msgid "Select a task on the map"
 msgstr ""
 
-#: osmtm/templates/task.empty.mako:12
+#: osmtm/templates/task.empty.mako:17
 msgid "or"
 msgstr ""
 
-#: osmtm/templates/task.empty.mako:18
+#: osmtm/templates/task.empty.mako:23
 msgid "Take a task at random"
 msgstr ""
 
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Unlocked"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:31
+#: osmtm/templates/task.history.mako:30
 msgid "Nothing has happened yet."
 msgstr ""
 
@@ -146,15 +146,25 @@ msgstr ""
 msgid "Task locked by ${username}"
 msgstr ""
 
-#: osmtm/templates/task.locked.mako:11
+#: osmtm/templates/task.locked.mako:14
 msgid "Unlock"
 msgstr ""
 
-#: osmtm/templates/task.mako:5
+#: osmtm/templates/task.locked.mako:17
+msgid ""
+"If you do not complete or release this task in time, it will be "
+"automatically unlocked"
+msgstr ""
+
+#: osmtm/templates/task.locked.mako:19
+msgid "min. left"
+msgstr ""
+
+#: osmtm/templates/task.mako:10
 msgid "Clear selection"
 msgstr ""
 
-#: osmtm/templates/task.mako:26
+#: osmtm/templates/task.mako:31
 msgid "History"
 msgstr ""
 
@@ -232,39 +242,39 @@ msgstr "Logout"
 msgid "Users"
 msgstr ""
 
-#: osmtm/views/project.py:42
+#: osmtm/views/project.py:43
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:100
+#: osmtm/views/project.py:101
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:129
+#: osmtm/views/project.py:130
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
-#: osmtm/views/task.py:98
+#: osmtm/views/task.py:103
 msgid "Task marked as done. Thanks for your contribution"
 msgstr ""
 
-#: osmtm/views/task.py:117
+#: osmtm/views/task.py:122
 msgid "Task already locked."
 msgstr ""
 
-#: osmtm/views/task.py:123
+#: osmtm/views/task.py:128
 msgid "Task locked. You can start mapping."
 msgstr ""
 
-#: osmtm/views/task.py:138
+#: osmtm/views/task.py:143
 msgid "Task unlocked."
 msgstr ""
 
-#: osmtm/views/task.py:157
+#: osmtm/views/task.py:162
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:224
+#: osmtm/views/task.py:229
 msgid "Random task... none available! Sorry."
 msgstr ""
 

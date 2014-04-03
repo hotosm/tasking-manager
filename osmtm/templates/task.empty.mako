@@ -1,3 +1,8 @@
+<script>
+  if (typeof countdownInterval != 'undefined') {
+    clearInterval(countdownInterval);
+  }
+</script>
 <div class="text-center">
 % if  locked_task is not None:
   <%include file="task.current_locked.mako" />
