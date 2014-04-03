@@ -787,7 +787,7 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 #project #task_actions>.active.left{left:-100%;opacity:0;filter:alpha(opacity=0)}
 #project #task_actions>.active.right{left:100%}
 #project #task_actions>.active.left,#project #task_actions>.active.right{opacity:0;filter:alpha(opacity=0)}
-#project .history{padding:4px;background-color:transparent;border:solid #dfdfdf;border-width:0 1px 1px 1px}#project .history p,#project .history blockquote{margin:0}
+#project .history{padding:4px;background-color:transparent;border:solid #dfdfdf;border-width:0 1px 1px 1px;font-size:.9em;line-height:16px}#project .history p,#project .history blockquote{margin:0}
 #project .history .icon-comment{opacity:50;filter:alpha(opacity=5000)}
 #project .history.first{border-top-width:1px;-webkit-border-radius:5px 5px 0 0;-moz-border-radius:5px 5px 0 0;border-radius:5px 5px 0 0;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box}
 #project .history.last{-webkit-border-radius:0 0 5px 5px;-moz-border-radius:0 0 5px 5px;border-radius:0 0 5px 5px;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box}
