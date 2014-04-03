@@ -21,7 +21,6 @@
     % endif
 
       <p class="text-muted">
-        <i class="glyphicon glyphicon-time"></i>
         <em title="${step.update}" class="timeago"></em>
       </p>
     </div>
