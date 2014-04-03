@@ -89,6 +89,9 @@ geometry = loads(str(project.area.geometry.data))
 %>
 var project_id = ${project.id};
 var geometry = ${dumps(geometry)|n};
+% if locked_task is not None:
+window.location.hash = "task/${locked_task.id}";
+% endif
 </script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js')}"></script>
 </%block>

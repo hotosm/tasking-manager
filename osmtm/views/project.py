@@ -29,6 +29,8 @@ except:  # pragma: no cover
     # package name is mapnik2 for versions lower than 2.2
     import mapnik2 as mapnik
 
+from .task import get_locked_task
+
 
 @view_config(route_name='project', renderer='project.mako', http_cache=0)
 def project(request):
@@ -49,7 +51,14 @@ def project(request):
                        .filter(filter) \
                        .order_by(TaskHistory.update.desc()) \
                        .limit(10).all()
+
+    user_id = authenticated_userid(request)
+    locked_task = None
+    if user_id:
+        user = DBSession.query(User).get(user_id)
+        locked_task = get_locked_task(project.id, user)
     return dict(page_id='project', project=project,
+                locked_task=locked_task,
                 history=history,)
 
 

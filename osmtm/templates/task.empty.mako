@@ -1,4 +1,7 @@
 <div class="text-center">
+% if  locked_task is not None:
+  <%include file="task.current_locked.mako" />
+% else:
   <p>
     ${_("Select a task on the map")}
   </p>
@@ -15,4 +18,5 @@
        ${_('Take a task at random')}
     </a>
   </p>
+% endif
 </div>

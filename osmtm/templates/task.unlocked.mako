@@ -10,11 +10,7 @@ else:
 % if locked_task != task:
 <p>
   % if  locked_task is not None:
-<%
-link = '<a href="#task/%s">%s</a>' % (locked_task.id, _('a task'))
-text = _("You already have ${task_link} locked.", mapping={'task_link': link})
-%>
-  <span>&nbsp;${text|n}</span>
+  <%include file="task.current_locked.mako" />
   % endif
 </p>
 <p>
