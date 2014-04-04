@@ -22,6 +22,7 @@ from geoalchemy2 import (
 )
 
 import datetime
+import itertools
 
 try:
     import mapnik
@@ -174,6 +175,14 @@ def project_edit(request):
     return dict(page_id='project_edit', project=project, licenses=licenses)
 
 
+@view_config(route_name='project_contributors', renderer='json')
+def project_contributors(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    return get_contributors(project)
+
+
 @view_config(route_name='project_mapnik', renderer='mapnik')
 def project_mapnik(request):
     project_id = request.matchdict['project']
@@ -202,3 +211,25 @@ def check_for_updates(request):
     if len(tasks) > 0:
         return dict(update=True)
     return dict(update=False)
+
+
+def get_contributors(project):
+    """ get the list of contributors and the tasks they worked on """
+
+    # filter on tasks with state DONE
+    filter = and_(
+        TaskHistory.project_id == project.id,
+        TaskHistory.state == TaskHistory.state_done
+    )
+
+    tasks = DBSession.query(TaskHistory.id, User.username) \
+                     .join(TaskHistory.user) \
+                     .filter(filter) \
+                     .order_by(TaskHistory.user_id) \
+                     .all()
+
+    contributors = {}
+    for username, tasks in itertools.groupby(tasks, key=lambda t: t.username):
+        contributors[username] = [task[0] for task in tasks]
+
+    return contributors

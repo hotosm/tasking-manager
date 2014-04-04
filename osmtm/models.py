@@ -113,7 +113,7 @@ class TaskHistory(Base):
     __tablename__ = "tasks_history"
     id = Column(Integer, primary_key=True)
     task_id = Column(Integer)
-    project_id = Column(Integer)
+    project_id = Column(Integer, index=True)
     state_ready = READY
     state_done = DONE
     state_validated = VALIDATED

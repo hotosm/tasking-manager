@@ -33,6 +33,7 @@ else:
         <li class="active"><a href="#main" data-toggle="tab">${_('Info')}</a></li>
         <li><a id="instructions_tab" href="#instructions" data-toggle="tab">${_('Instructions')}</a></li>
         <li><a id="contribute_tab" href="#contribute" data-toggle="tab">${_('Contribute')}</a>
+        <li><a id="stats_tab" href="#stats" data-toggle="tab">${_('Stats')}</a>
         </li>
         <div class="world_map pull-right">
           <div class="marker" style="top:${top}px;left:${left}px"></div>
@@ -74,6 +75,9 @@ else:
         <div id="task_empty">
         </div>
         <div id="task"></div>
+      </div>
+      <div id="stats" class="tab-pane">
+        <%include file="project.stats.mako" />
       </div>
     </div>
   </div>

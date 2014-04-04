@@ -7,6 +7,10 @@ $(document).ready(function() {
         } else {
             $('#main_content').removeClass('large');
         }
+
+        if (e.target.id == 'stats_tab') {
+            loadStats();
+        }
     });
     lmap = L.map('leaflet');
     // create the tile layer with correct attribution
@@ -426,4 +430,24 @@ function setPreferedEditor() {
     if (prefered_editor !== '') {
         $('#prefered_editor').text($('#' + prefered_editor + ' a').text());
     }
+}
+
+function loadStats() {
+    $.getJSON(
+      base_url + 'project/' + project_id + '/contributors',
+      function(data) {
+        var el = $('#contributors').empty();
+        for (var i in data) {
+          var tiles = data[i];
+          var user = $('<a>', {
+            "class": "user",
+            href: base_url +  "user/" + i,
+            html: i
+          })
+          el.append($('<li>', {
+            html: " <sup>" + tiles.length + "</sup>"
+          }).prepend(user));
+        }
+      }
+    );
 }
