@@ -432,6 +432,45 @@ function setPreferedEditor() {
     }
 }
 
+// D3JS chart
+var margin = {top: 20, right: 20, bottom: 30, left: 20},
+    width = 400 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .ticks(5)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .tickFormat(d3.format("d"))
+    .orient("left");
+
+var line = d3.svg.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.done); });
+
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(0," + height + ")");
+svg.append("g")
+  .attr("class", "y axis");
+svg.append("path")
+  .attr("class", "line");
+
 function loadStats() {
     $.getJSON(
       base_url + 'project/' + project_id + '/contributors',
@@ -450,4 +489,24 @@ function loadStats() {
         }
       }
     );
+
+
+    var url = base_url + 'project/' + project_id + '/stats';
+    d3.json(url, function(error, data) {
+      data.forEach(function(d) {
+        d.date = new Date(d[0]);
+        d.done = d[1];
+      });
+
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain(d3.extent(data, function(d) { return d.done; }));
+
+      svg.selectAll(".x.axis").call(xAxis);
+
+      svg.selectAll(".y.axis").call(yAxis);
+
+      svg.selectAll('.line')
+          .datum(data)
+          .attr("d", line);
+    });
 }

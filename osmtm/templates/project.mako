@@ -96,5 +96,6 @@ var geometry = ${dumps(geometry)|n};
 window.location.hash = "task/${locked_task.id}";
 % endif
 </script>
+  <script src="http://d3js.org/d3.v3.js"></script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js')}"></script>
 </%block>
