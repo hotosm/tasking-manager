@@ -17,8 +17,7 @@
       <li id="wp"><a role="menuitem">Walking Papers</a></li>
     </ul>
     <script>
-      var prefered_editor = "${prefered_editor}";
-      setPreferedEditor();
+      osmtm.prefered_editor = "${prefered_editor}";
     </script>
   </div>
   <button class="btn btn-sm btn-link">.osm</button>

@@ -35,6 +35,11 @@ $().ready(function() {
         }
     });
 });
+
+function hideTooltips() {
+    $('[rel=tooltip]').tooltip('hide');
+}
+
 $.fn.serializeObject = function()
 {
     var o = {};
@@ -50,4 +55,43 @@ $.fn.serializeObject = function()
         }
     });
     return o;
+};
+
+$.fn.slide = function(type) {
+  // we hide tooltips since they may interact with transitions
+  hideTooltips();
+  var $container = $(this);
+  var $active = $('<div class="item active">');
+  $active.html($container.html());
+  $container.html('').append($active);
+  var direction = type == 'next' ? 'left' : 'right';
+  var $next = $('<div>');
+  if ($.support.transition) {
+    $next.addClass(type);
+    $next.offsetWidth; // force reflow
+    $container.append($next);
+    setTimeout(function() {
+      $active.addClass(direction);
+      $active.one($.support.transition.end, function (e) {
+        $next.removeClass([type, direction].join(' ')).addClass('active');
+        $active.remove();
+        setTimeout(
+          function () {
+            $next.addClass('item');
+            $container.trigger('slid');
+          },
+          0
+        );
+      });
+    }, 200); // time to hide tooltips
+  } else {
+    setTimeout(
+      function () {
+        $next.addClass('item');
+        $container.trigger('slid');
+      },
+      0
+    );
+  }
+  return this;
 };
