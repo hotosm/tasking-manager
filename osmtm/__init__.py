@@ -63,6 +63,9 @@ def main(global_config, **settings):
                      '/project/{project}/{z}/{x}/{y}.{format}')
     config.add_route('project_check_for_update',
                      '/project/{project}/check_for_updates')
+    config.add_route('project_contributors', '/project/{project}/contributors',
+                     xhr=True)
+    config.add_route('project_stats', '/project/{project}/stats')
     config.add_route('task_random', '/project/{project}/random', xhr=True)
     config.add_route('task_empty', '/project/{project}/task/empty', xhr=True)
     config.add_route('task_xhr', '/project/{project}/task/{task}', xhr=True)
