@@ -28,6 +28,7 @@
           <li><a href="#instructions" data-toggle="tab">Instructions</a></li>
           <li><a href="#area" data-toggle="tab">Area</a></li>
           <li><a href="#imagery" data-toggle="tab">Imagery</a></li>
+          <li><a href="#allowed_users" data-toggle="tab">Allowed Users</a></li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane" id="description">
@@ -41,6 +42,9 @@
           </div>
           <div class="tab-pane" id="imagery">
             ${imagery()}
+          </div>
+          <div class="tab-pane" id="allowed_users">
+            ${allowed_users()}
           </div>
         </div>
       </div>
@@ -252,6 +256,13 @@
       </select>
     </div>
   </div>
+</div>
+</%block>
+
+<%block name="allowed_users">
+<div class="row">
+  This project is private ie. has access limited to a given list of users.
+  <a href class="btn btn-default">Manage allowed users list</a>
 </div>
 </%block>
 
