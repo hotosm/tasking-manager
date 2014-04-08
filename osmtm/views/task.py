@@ -177,6 +177,7 @@ def split(request):
                      int(task.y) * 2 + j,
                      int(task.zoom) + 1)
             t.project = task.project
+            t.update = datetime.datetime.now()
 
     task.state = task.state_removed
     task.locked = False

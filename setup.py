@@ -19,25 +19,26 @@ requires = [
     'markdown',
     'nose',
     'coverage',
-    'geojson',
     'oauth2',
     'shapely',
     'geoalchemy2',
     'Babel',
     'sqlalchemy-i18n==0.8.2',
     'WebTest==2.0.14',
-    ]
+    'simplejson',
+    'geojson==1.0.6'
+]
 
 setup(name='osmtm',
       version='2.0',
       description='osmtm',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
-        "Programming Language :: Python",
-        "Framework :: Pyramid",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-        ],
+          "Programming Language :: Python",
+          "Framework :: Pyramid",
+          "Topic :: Internet :: WWW/HTTP",
+          "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+      ],
       author='',
       author_email='',
       url='',
@@ -53,9 +54,9 @@ setup(name='osmtm',
       [console_scripts]
       initialize_osmtm_db = osmtm.scripts.initializedb:main
       """,
-      message_extractors = {'osmtm': [
-            ('**.py', 'python', None),
-            ('templates/**.html', 'mako', None),
-            ('templates/**.mako', 'mako', None),
-            ('static/**', 'ignore', None)]},
+      message_extractors={'osmtm': [
+          ('**.py', 'python', None),
+          ('templates/**.html', 'mako', None),
+          ('templates/**.mako', 'mako', None),
+          ('static/**', 'ignore', None)]},
       )

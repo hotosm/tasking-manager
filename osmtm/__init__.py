@@ -9,10 +9,6 @@ from .models import (
     Base,
 )
 
-from .resources import (
-    MapnikRendererFactory
-)
-
 from sqlalchemy_i18n.manager import translation_manager
 
 from .security import (
@@ -59,13 +55,13 @@ def main(global_config, **settings):
     config.add_route('project_new_import', '/project/new/import')
     config.add_route('project', '/project/{project}')
     config.add_route('project_edit', '/project/{project}/edit')
-    config.add_route('project_mapnik',
-                     '/project/{project}/{z}/{x}/{y}.{format}')
     config.add_route('project_check_for_update',
                      '/project/{project}/check_for_updates')
     config.add_route('project_contributors', '/project/{project}/contributors',
                      xhr=True)
     config.add_route('project_stats', '/project/{project}/stats')
+    config.add_route('project_tasks_json', '/project/{project}/tasks.json')
+
     config.add_route('task_random', '/project/{project}/random', xhr=True)
     config.add_route('task_empty', '/project/{project}/task/empty', xhr=True)
     config.add_route('task_xhr', '/project/{project}/task/{task}', xhr=True)
@@ -80,6 +76,7 @@ def main(global_config, **settings):
     config.add_route('task_invalidate',
                      '/project/{project}/task/{task}/invalidate', xhr=True)
     config.add_route('task_gpx', '/project/{project}/task/{task}.gpx')
+
     config.add_route('users', '/users')
     config.add_route('user_messages', '/user/messages')
     config.add_route('user', '/user/{username}')
@@ -94,8 +91,6 @@ def main(global_config, **settings):
     config.add_route('license_edit', '/license/{license}/edit')
     config.add_route('license_delete', '/license/{license}/delete')
 
-    config.add_renderer('mapnik', MapnikRendererFactory)
-
     config.add_translation_dirs('osmtm:locale')
     config.set_locale_negotiator('osmtm.i18n.custom_locale_negotiator')
 
@@ -105,4 +100,5 @@ def main(global_config, **settings):
     })
 
     config.scan(ignore=['osmtm.tests', 'osmtm.scripts'])
+
     return config.make_wsgi_app()

@@ -2,15 +2,15 @@ osmtm = {};
 osmtm.project = (function() {
 
   var lmap;
-  var task_layer;
-  var tiles;
-  var utf_layer;
+  var tasksLayer;
+  var selectedTaskLayer;
   var x;
   var y;
   var xAxis;
   var yAxis;
   var line;
   var chart;
+  var lastUpdateCheck = (new Date()).getTime();
 
   // creates the Leaflet map
   function createMap() {
@@ -25,29 +25,66 @@ osmtm.project = (function() {
     lmap.fitBounds(layer.getBounds());
     lmap.zoomOut();
 
-    tiles = new L.TileLayer(
-        base_url + 'project/' + project_id + '/{z}/{x}/{y}.png'
-    );
-    lmap.addLayer(tiles);
+    // tells whether the mouse is over a feature or not
+    var hoverFeature = false;
 
-    task_layer = L.geoJson(null, {
+    tasksLayer = L.geoJson(null, {
+      style: function(feature) {
+        var color;
+        switch (feature.properties.state) {
+          case 0:
+            color = "#dfdfdf";
+            break;
+          case 1:
+            color = "gray";
+            break;
+          case 2:
+            color = "orange";
+            break;
+          case 3:
+            color = "green";
+            break;
+        }
+        return {
+          fillColor: color,
+          color: feature.properties.locked ? "orange" : "gray",
+          fillOpacity: feature.state === 0 ? 0.1 : 0.4,
+          weight: feature.properties.locked ? 2 : 1,
+          opacity: feature.properties.locked ? 1 : 0.7
+        };
+      },
+      filter: function(feature, layer) {
+        return feature.properties.state != -1;
+      },
+      onEachFeature: function(feature, layer) {
+        layer.on({
+          'mouseover': function(e) { hoverFeature = true; },
+          'mouseout': function(e) { hoverFeature = false; },
+          'click': function (e) {
+            location.hash = ["task", e.target.feature.id].join('/');
+          }
+        });
+      }
+    }).addTo(lmap);
+    lmap.on('click', function() {
+      if (!hoverFeature) {
+        clearSelection();
+      }
+    });
+
+    $.get(
+      base_url + 'project/' + project_id + '/tasks.json',
+      function(data) {
+        tasksLayer.addData(data);
+      }
+    );
+
+    selectedTaskLayer = L.geoJson(null, {
         style: {
-            weight: 1
+            weight: 1,
+            opacity: 0
         }
     }).addTo(lmap);
-
-    utf_layer = new L.UtfGrid(
-        base_url + 'project/' + project_id + '/{z}/{x}/{y}.json', {
-        useJsonP: false
-    });
-    lmap.addLayer(utf_layer);
-    utf_layer.on('click', function (e) {
-        if (e.data && e.data.id) {
-            location.hash = ["task", e.data.id].join('/');
-        } else {
-            clearSelection();
-        }
-    });
   }
 
   /**
@@ -55,7 +92,7 @@ osmtm.project = (function() {
    */
   function clearSelection() {
     location.hash = "";
-    task_layer.clearLayers();
+    selectedTaskLayer.clearLayers();
     $('#task').fadeOut(function() {
       $('#task').empty();
       loadEmptyTask();
@@ -86,8 +123,8 @@ osmtm.project = (function() {
         function(response, status, request) {
           stopLoading();
           if (status != 'error') {
-            task_layer.clearLayers();
-            task_layer.addData(task_geometry);
+            selectedTaskLayer.clearLayers();
+            selectedTaskLayer.addData(task_geometry);
             $('#task').fadeIn();
             setPreferedEditor();
           } else if (request.status == '404'){
@@ -139,14 +176,7 @@ osmtm.project = (function() {
    * direction {String} - The slide direction
    */
   function handleTaskResponse(data, direction) {
-    tiles.redraw();
-
-    // clear UTF Grid cache and update
-    var i;
-    for (i in utf_layer._cache) {
-      delete utf_layer._cache[i];
-    }
-    utf_layer._update();
+    checkForUpdates();
 
     if (data.task) {
       var task = data.task;
@@ -312,15 +342,6 @@ osmtm.project = (function() {
    */
   function loadRandom(e) {
     $.getJSON($('#random').attr('href'), e.formData, function(data) {
-
-      tiles.redraw();
-
-      // clear UTF Grid cache and update
-      var i;
-      for (i in utf_layer._cache) {
-        delete utf_layer._cache[i];
-      }
-      utf_layer._update();
 
       if (data.task) {
         var task = data.task;
@@ -488,6 +509,31 @@ osmtm.project = (function() {
     });
   }
 
+  function checkForUpdates() {
+    var now = (new Date()).getTime();
+    var interval = now - lastUpdateCheck;
+    $.ajax({
+      url: base_url + "project/" + project_id + "/check_for_updates",
+      data: {
+        interval: interval
+      },
+      success: function(data){
+        if (data.updated) {
+          $.each(data.updated, function(index, task) {
+            tasksLayer.eachLayer(function(layer) {
+              var id = layer.feature.id;
+              if (id == task.id) {
+                tasksLayer.removeLayer(layer);
+              }
+            });
+            tasksLayer.addData(task);
+          });
+        }
+      }, dataType: "json"}
+    );
+    lastUpdateCheck = now;
+  }
+
   return function() {
     createMap();
     initChart();
@@ -526,23 +572,7 @@ osmtm.project = (function() {
     }).run();
 
     // automaticaly checks for tile state updates
-    (function check_for_updates(){
-      var interval = 20000;
-      setTimeout(function(){
-        $.ajax({
-          url: base_url + "project/" + project_id + "/check_for_updates",
-          data: {
-            interval: interval
-          },
-          success: function(data){
-            if (data.update) {
-              tiles.redraw();
-            }
-            check_for_updates();
-          }, dataType: "json"}
-        );
-      }, interval);
-    })();
+    window.setInterval(checkForUpdates, 20000);
 
 
     $(document).on('submit', 'form', onFormSubmit);
