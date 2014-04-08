@@ -215,7 +215,8 @@ def project_tasks_json(request):
             geometry=shape.to_shape(task.geometry),
             id=task.id,
             properties={
-                'state': task.state
+                'state': task.state,
+                'locked': task.locked
             }
         ))
 

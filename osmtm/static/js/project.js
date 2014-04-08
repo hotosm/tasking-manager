@@ -29,12 +29,27 @@ osmtm.project = (function() {
 
     tasksLayer = L.geoJson(null, {
       style: function(feature) {
+        var color;
+        switch (feature.properties.state) {
+          case 0:
+            color = "#dfdfdf";
+            break;
+          case 1:
+            color = "gray";
+            break;
+          case 2:
+            color = "orange";
+            break;
+          case 3:
+            color = "green";
+            break;
+        }
         return {
-          fillColor: "#dfdfdf",
-          color: "gray",
-          fillOpacity: 0.1,
-          weight: 1,
-          opacity: 0.7
+          fillColor: color,
+          color: feature.properties.locked ? "orange" : "gray",
+          fillOpacity: feature.state === 0 ? 0.1 : 0.4,
+          weight: feature.properties.locked ? 2 : 1,
+          opacity: feature.properties.locked ? 1 : 0.7
         };
       },
       filter: function(feature, layer) {
