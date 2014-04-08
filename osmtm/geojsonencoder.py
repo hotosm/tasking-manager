@@ -53,9 +53,11 @@ class GeoJSONRenderer(object):
 
         @view_config(renderer='geojson')
         def myview(request):
-            return Feature(id=1, geometry=Point(1, 2), properties=dict(foo='bar'))
+            return Feature(id=1, geometry=Point(1, 2),
+                           properties=dict(foo='bar'))
 
-    The GeoJSON renderer supports `JSONP <http://en.wikipedia.org/wiki/JSONP>`_:
+    The GeoJSON renderer supports
+    `JSONP <http://en.wikipedia.org/wiki/JSONP>`_:
 
     - If there is a parameter in the request's HTTP query string that matches
       the ``jsonp_param_name`` of the registered JSONP renderer (by default,
@@ -70,7 +72,8 @@ class GeoJSONRenderer(object):
 
     .. code-block:: python
 
-        config.add_renderer('geojson', GeoJSON(collection_type='GeometryCollection')
+        config.add_renderer('geojson',
+                            GeoJSON(collection_type='GeometryCollection')
 
     """
 
@@ -96,7 +99,7 @@ class GeoJSONRenderer(object):
                         response.content_type = 'application/json'
                     else:
                         response.content_type = 'text/javascript'
-                        ret = '%(callback)s(%(json)s);' % {'callback': callback,
-                                                           'json': ret}
+                    ret = '%(callback)s(%(json)s);' %  \
+                        {'callback': callback, 'json': ret}
             return ret
         return _render
