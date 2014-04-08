@@ -3,7 +3,6 @@ from sqlalchemy import engine_from_config
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
-from .geojsonencoder import GeoJSONRenderer
 
 from .models import (
     DBSession,
@@ -102,5 +101,4 @@ def main(global_config, **settings):
 
     config.scan(ignore=['osmtm.tests', 'osmtm.scripts'])
 
-    config.add_renderer('geojson', GeoJSONRenderer())
     return config.make_wsgi_app()

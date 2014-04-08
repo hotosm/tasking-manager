@@ -135,3 +135,31 @@ class TestProjectFunctional(BaseTestCase):
 
         res2 = res.follow(headers=headers, status=200)
         self.assertTrue('the_name_in_french' in res2.body)
+
+    def test_project_tasks_json(self):
+        project_id = 1
+        res = self.testapp.get('/project/%d/tasks.json' % project_id,
+                               status=200)
+        self.assertEqual(len(res.json['features']), 6)
+
+    def test_project_check_for_updates(self):
+        project_id = self.create_project()
+        res = self.testapp.get('/project/%d/check_for_updates' % project_id,
+                               params={
+                                   'interval': 1000
+                               },
+                               status=200)
+        self.assertFalse(res.json['update'])
+
+        headers_user1 = self.login_as_user1()
+        res = self.testapp.get('/project/%d/task/3/lock' % project_id,
+                               status=200,
+                               headers=headers_user1,
+                               xhr=True)
+        res = self.testapp.get('/project/%d/check_for_updates' % project_id,
+                               params={
+                                   'interval': 1000
+                               },
+                               status=200)
+        self.assertTrue(res.json['update'])
+        self.assertEqual(len(res.json['updated']), 1)

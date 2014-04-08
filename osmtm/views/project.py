@@ -192,12 +192,11 @@ def project_stats(request):
     return get_stats(project)
 
 
-@view_config(route_name="project_check_for_update", renderer='geojson')
+@view_config(route_name="project_check_for_update", renderer='json')
 def check_for_updates(request):
     interval = request.GET['interval']
     date = datetime.datetime.now() - datetime.timedelta(0, 0, 0, int(interval))
     tasks = DBSession.query(Task).filter(Task.update > date).all()
-    print len(tasks)
     updated = []
     for task in tasks:
         updated.append(task.to_feature())
@@ -207,7 +206,7 @@ def check_for_updates(request):
     return dict(update=False)
 
 
-@view_config(route_name="project_tasks_json", renderer='geojson')
+@view_config(route_name="project_tasks_json", renderer='json')
 def project_tasks_json(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
