@@ -21,14 +21,13 @@ from geoalchemy2 import (
     shape,
 )
 
+from geojson import (
+    Feature,
+    FeatureCollection,
+)
+
 import datetime
 import itertools
-
-try:
-    import mapnik
-except:  # pragma: no cover
-    # package name is mapnik2 for versions lower than 2.2
-    import mapnik2 as mapnik
 
 from .task import get_locked_task, check_task_expiration
 
@@ -194,25 +193,6 @@ def project_stats(request):
     return get_stats(project)
 
 
-@view_config(route_name='project_mapnik', renderer='mapnik')
-def project_mapnik(request):
-    project_id = request.matchdict['project']
-
-    query = '(SELECT * FROM tasks WHERE project_id = %s) as tasks' % \
-            (str(project_id))
-    tasks = mapnik.Layer('Map tasks from PostGIS')
-    tasks.datasource = mapnik.PostGIS(
-        host='localhost',
-        user='www-data',
-        dbname='osmtm',
-        table=query
-    )
-    tasks.styles.append('tile')
-    tasks.srs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-
-    return [tasks]
-
-
 @view_config(route_name="project_check_for_update", renderer='json')
 def check_for_updates(request):
     interval = request.GET['interval']
@@ -222,6 +202,24 @@ def check_for_updates(request):
     if len(tasks) > 0:
         return dict(update=True)
     return dict(update=False)
+
+
+@view_config(route_name="project_tasks_json", renderer='geojson')
+def project_tasks_json(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    tasks = []
+    for task in project.tasks:
+        tasks.append(Feature(
+            geometry=shape.to_shape(task.geometry),
+            id=task.id,
+            properties={
+                'state': task.state
+            }
+        ))
+
+    return FeatureCollection(tasks)
 
 
 def get_contributors(project):
