@@ -10,6 +10,7 @@ osmtm.project = (function() {
   var yAxis;
   var line;
   var chart;
+  var lastUpdateCheck = (new Date()).getTime();
 
   // creates the Leaflet map
   function createMap() {
@@ -174,6 +175,8 @@ osmtm.project = (function() {
    * direction {String} - The slide direction
    */
   function handleTaskResponse(data, direction) {
+    checkForUpdates();
+
     if (data.task) {
       var task = data.task;
       loadTask(task.id, direction);
@@ -505,6 +508,29 @@ osmtm.project = (function() {
     });
   }
 
+  function checkForUpdates() {
+    var now = (new Date()).getTime();
+    var interval = now - lastUpdateCheck;
+    $.ajax({
+      url: base_url + "project/" + project_id + "/check_for_updates",
+      data: {
+        interval: interval
+      },
+      success: function(data){
+        $.each(data.updated, function(index, task) {
+          tasksLayer.eachLayer(function(layer) {
+            var id = layer.feature.id;
+            if (id == task.id) {
+              tasksLayer.removeLayer(layer);
+            }
+          });
+          tasksLayer.addData(task);
+        });
+      }, dataType: "json"}
+    );
+    lastUpdateCheck = now;
+  }
+
   return function() {
     createMap();
     initChart();
@@ -543,23 +569,7 @@ osmtm.project = (function() {
     }).run();
 
     // automaticaly checks for tile state updates
-    (function check_for_updates(){
-      var interval = 20000;
-      setTimeout(function(){
-        $.ajax({
-          url: base_url + "project/" + project_id + "/check_for_updates",
-          data: {
-            interval: interval
-          },
-          success: function(data){
-            //if (data.update) {
-              //tiles.redraw();
-            //}
-            check_for_updates();
-          }, dataType: "json"}
-        );
-      }, interval);
-    })();
+    window.setInterval(checkForUpdates, 20000);
 
 
     $(document).on('submit', 'form', onFormSubmit);

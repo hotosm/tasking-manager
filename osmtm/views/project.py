@@ -22,7 +22,6 @@ from geoalchemy2 import (
 )
 
 from geojson import (
-    Feature,
     FeatureCollection,
 )
 
@@ -193,14 +192,18 @@ def project_stats(request):
     return get_stats(project)
 
 
-@view_config(route_name="project_check_for_update", renderer='json')
+@view_config(route_name="project_check_for_update", renderer='geojson')
 def check_for_updates(request):
     interval = request.GET['interval']
     date = datetime.datetime.now() - datetime.timedelta(0, 0, 0, int(interval))
     tasks = DBSession.query(Task).filter(Task.update > date).all()
     print len(tasks)
+    updated = []
+    for task in tasks:
+        updated.append(task.to_feature())
+
     if len(tasks) > 0:
-        return dict(update=True)
+        return dict(update=True, updated=updated)
     return dict(update=False)
 
 
@@ -211,14 +214,7 @@ def project_tasks_json(request):
 
     tasks = []
     for task in project.tasks:
-        tasks.append(Feature(
-            geometry=shape.to_shape(task.geometry),
-            id=task.id,
-            properties={
-                'state': task.state,
-                'locked': task.locked
-            }
-        ))
+        tasks.append(task.to_feature())
 
     return FeatureCollection(tasks)
 

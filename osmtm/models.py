@@ -22,6 +22,10 @@ from geoalchemy2.functions import (
     GenericFunction
 )
 
+from geojson import (
+    Feature
+)
+
 
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
@@ -186,6 +190,16 @@ class Task(Base):
         step = max / (2 ** (self.zoom - 1))
         tb = TileBuilder(step)
         return tb.create_square(self.x, self.y)
+
+    def to_feature(self):
+        return Feature(
+            geometry=shape.to_shape(self.geometry),
+            id=self.id,
+            properties={
+                'state': self.state,
+                'locked': self.locked
+            }
+        )
 
     def add_comment(self, comment):
         self.history[-1].comment = TaskComment(comment)
