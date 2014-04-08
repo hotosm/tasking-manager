@@ -517,15 +517,17 @@ osmtm.project = (function() {
         interval: interval
       },
       success: function(data){
-        $.each(data.updated, function(index, task) {
-          tasksLayer.eachLayer(function(layer) {
-            var id = layer.feature.id;
-            if (id == task.id) {
-              tasksLayer.removeLayer(layer);
-            }
+        if (data.updated) {
+          $.each(data.updated, function(index, task) {
+            tasksLayer.eachLayer(function(layer) {
+              var id = layer.feature.id;
+              if (id == task.id) {
+                tasksLayer.removeLayer(layer);
+              }
+            });
+            tasksLayer.addData(task);
           });
-          tasksLayer.addData(task);
-        });
+        }
       }, dataType: "json"}
     );
     lastUpdateCheck = now;
