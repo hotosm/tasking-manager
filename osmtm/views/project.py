@@ -34,7 +34,8 @@ import logging
 log = logging.getLogger(__name__)
 
 
-@view_config(route_name='project', renderer='project.mako', http_cache=0)
+@view_config(route_name='project', renderer='project.mako', http_cache=0,
+             permission='project')
 def project(request):
     check_task_expiration()
     id = request.matchdict['project']

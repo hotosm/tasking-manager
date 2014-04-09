@@ -318,6 +318,7 @@ class Project(Base, Translatable):
     entities_to_map = Column(Unicode)
     changeset_comment = Column(Unicode)
 
+    private = Column(Boolean, default=False)
     allowed_users = relationship(User,
                                  secondary=project_allowed_users)
 
