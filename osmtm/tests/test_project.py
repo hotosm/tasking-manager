@@ -163,3 +163,47 @@ class TestProjectFunctional(BaseTestCase):
                                status=200)
         self.assertTrue(res.json['update'])
         self.assertEqual(len(res.json['updated']), 1)
+
+    def test_project_user_add__not_allowed(self):
+        project_id = self.create_project()
+
+        headers = self.login_as_user1()
+        self.testapp.put('/project/%d/user/foo' % project_id,
+                         headers=headers, status=403)
+
+    def test_project_user_add(self):
+        from osmtm.models import Project, DBSession
+        project_id = self.create_project()
+
+        headers = self.login_as_admin()
+        self.testapp.put('/project/%d/user/user1' % project_id,
+                         headers=headers, status=200)
+        project = DBSession.query(Project).get(project_id)
+        self.assertEqual(len(project.allowed_users), 1)
+
+    def test_project_user_delete__not_allowed(self):
+        project_id = self.create_project()
+
+        headers = self.login_as_user1()
+        self.testapp.delete('/project/%d/user/foo' % project_id,
+                            headers=headers, status=403)
+
+    def test_project_user_delete(self):
+        import transaction
+        from . import USER1_ID
+        from osmtm.models import User, Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+        user1 = DBSession.query(User).get(USER1_ID)
+        project.allowed_users.append(user1)
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        headers = self.login_as_admin()
+        self.testapp.delete('/project/%d/user/%d' % (project_id, USER1_ID),
+                            headers=headers, status=200)
+
+        project = DBSession.query(Project).get(project_id)
+        self.assertEqual(len(project.allowed_users), 0)

@@ -25,6 +25,17 @@ def users(request):
     return dict(page_id="users", users=users)
 
 
+@view_config(route_name='users_json', renderer='json')
+def users_json(request):
+    users = DBSession.query(User).all()
+
+    r = []
+    for user in users:
+        r.append(user.username)
+
+    return r
+
+
 @view_config(route_name='user_messages', renderer='user.messages.mako')
 def user_messages(request):
 

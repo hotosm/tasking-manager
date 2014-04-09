@@ -90,6 +90,8 @@ class User(Base):
     admin = Column(Boolean)
 
     accepted_licenses = relationship("License", secondary=users_licenses_table)
+    private_projects = relationship("Project",
+                                    secondary="project_allowed_users")
 
     def __init__(self, id, username, admin=False):
         self.id = id
@@ -101,6 +103,7 @@ class User(Base):
 
     def as_dict(self):
         return {
+            "id": self.id,
             "username": self.username,
             "admin": self.admin
         }
@@ -275,6 +278,13 @@ class Area(Base):
     def __init__(self, geometry):
         self.geometry = ST_SetSRID(ST_Multi(geometry), 4326)
 
+project_allowed_users = Table(
+    'project_allowed_users',
+    Base.metadata,
+    Column('project_id', Integer, ForeignKey('project.id')),
+    Column('user_id', Integer, ForeignKey('users.id'))
+)
+
 
 # A project corresponds to a given mapping job to do on a given area
 # Example 1: trace the major roads
@@ -307,6 +317,9 @@ class Project(Base, Translatable):
 
     entities_to_map = Column(Unicode)
     changeset_comment = Column(Unicode)
+
+    allowed_users = relationship(User,
+                                 secondary=project_allowed_users)
 
     def __init__(self, name, user=None):
         self.name = name

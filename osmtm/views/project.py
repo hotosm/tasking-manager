@@ -218,6 +218,36 @@ def project_tasks_json(request):
     return FeatureCollection(tasks)
 
 
+@view_config(route_name="project_user_add", renderer='json',
+             permission="edit")
+def project_user_add(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    username = request.matchdict['user']
+    user = DBSession.query(User).filter(User.username == username).one()
+
+    project.allowed_users.append(user)
+    DBSession.add(project)
+
+    return dict(user=user.as_dict())
+
+
+@view_config(route_name="project_user_delete", renderer='json',
+             permission="edit")
+def project_user_delete(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    user_id = request.matchdict['user']
+    user = DBSession.query(User).get(user_id)
+
+    project.allowed_users.remove(user)
+    DBSession.add(project)
+
+    return dict()
+
+
 def get_contributors(project):
     """ get the list of contributors and the tasks they worked on """
 
