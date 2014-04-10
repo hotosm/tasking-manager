@@ -29,7 +29,7 @@
     % endif
 
       <p class="text-muted">
-        <em title="${step.update}" class="timeago"></em>
+        <em title="${step.update}Z" class="timeago"></em>
       </p>
     </div>
 % endfor

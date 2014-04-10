@@ -36,7 +36,7 @@ base_url = request.route_path('home')
       {{project.short_description}}
       <div class="clear"></div>
       <span class="created-by">${_('Created by')} {{project.author}}</span> -
-      <span class="updated-at">${_('Updated')} <span class="timeago">{{project.last_update | timeAgo}}</span></span>
+      <span class="updated-at">${_('Updated')} <span class="timeago">{{project.last_update + 'Z' | timeAgo}}</span></span>
     </div>
   </div>
   <div class="col-md-6">

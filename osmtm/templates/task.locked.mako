@@ -5,7 +5,7 @@ username = '<strong>%s</strong>' % username
 locked_text = _('Task locked by ${username}', mapping={'username': username})
 import datetime
 from osmtm.models import EXPIRATION_DELTA
-time_left = (task.update - (datetime.datetime.now() - EXPIRATION_DELTA)).seconds
+time_left = (task.update - (datetime.datetime.utcnow() - EXPIRATION_DELTA)).seconds
 %>
 <p>${locked_text|n}.&nbsp;
   % if user and task.user == user:
