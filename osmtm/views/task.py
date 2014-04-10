@@ -153,6 +153,7 @@ def invalidate(request):
     task.state = task.state_invalidated
     task.locked = False
     DBSession.add(task)
+    DBSession.flush()
 
     comment = request.params['comment']
     task.add_comment(comment)

@@ -22,6 +22,13 @@
     <span>${_('Unlocked')}</span>
     % endif
 
+    % if step.comment:
+    <blockquote>
+      <span class="glyphicon glyphicon-comment"></span> ${step.comment.comment}
+    </blockquote>
+    there's a comment
+    % endif
+
       <p class="text-muted">
         <em title="${step.update}" class="timeago"></em>
       </p>
