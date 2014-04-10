@@ -170,6 +170,12 @@ def project_edit(request):
             license = DBSession.query(License).get(license_id)
             project.license = license
 
+        if 'private' in request.params and \
+                request.params['private'] == 'on':
+            project.private = True
+        else:
+            project.private = False
+
         DBSession.add(project)
         return HTTPFound(location=route_path('project', request,
                          project=project.id))

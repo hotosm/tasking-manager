@@ -232,7 +232,7 @@ class TestProjectFunctional(BaseTestCase):
         project_id = self.create_project()
 
         project = DBSession.query(Project).get(project_id)
-        project.name = "private_project"
+        project.name = u"private_project"
         project.private = True
         DBSession.add(project)
         DBSession.flush()

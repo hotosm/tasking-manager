@@ -264,6 +264,20 @@
 
 <%block name="allowed_users">
 <div class="row">
+  <div class="input-group">
+    <div class="checkbox">
+      <label>
+        <%
+          checked = 'checked' if project.private else ''
+        %>
+        <input type="checkbox" name="private" checked="{checked}">
+        <span class="glyphicon glyphicon-lock"></span> Private
+      </label>
+      <div class="help-block">
+        Private means that only a given list of users can access this project.
+      </div>
+    </div>
+  </div>
   <h4>
     ${_('Allowed users')}
   </h4>
