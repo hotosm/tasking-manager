@@ -100,6 +100,23 @@ class TestTaskFunctional(BaseTestCase):
                          headers=headers,
                          xhr=True)
 
+    def test_task_validate(self):
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/7/lock',
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/1/task/7/done', status=200,
+                         headers=headers,
+                         xhr=True)
+
+        headers = self.login_as_user2()
+        self.testapp.get('/project/1/task/7/lock',
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/1/task/7/validate', status=200,
+                         headers=headers,
+                         xhr=True)
+
     def test_task_split(self):
         headers = self.login_as_user1()
         self.testapp.get('/project/1/task/6/lock',

@@ -16,6 +16,8 @@
     <span><i class="glyphicon glyphicon-ok text-success"></i> <b>${_('Marked as done')}</b> ${_('by')} ${step.user.username}</span>
     % elif  step.state == step.state_invalidated and step.state_changed:
     <span><i class="glyphicon glyphicon-thumbs-down text-danger"></i> <b>${_('Invalidated')}</b> ${_('by')} ${step.user.username}</span>
+    % elif  step.state == step.state_validated and step.state_changed:
+    <span><i class="glyphicon glyphicon-thumbs-up text-success"></i> <b>${_('Validated')}</b> ${_('by')} ${step.user.username}</span>
     % else:
     <span>${_('Unlocked')}</span>
     % endif

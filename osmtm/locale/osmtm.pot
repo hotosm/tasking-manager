@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-03 16:04+0200\n"
+"POT-Creation-Date: 2014-04-10 16:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,6 +45,10 @@ msgstr ""
 msgid "Licenses"
 msgstr ""
 
+#: osmtm/templates/project.edit.mako:282
+msgid "Allowed users"
+msgstr ""
+
 #: osmtm/templates/project.instructions.mako:7
 msgid "Entities to Map"
 msgstr ""
@@ -69,16 +73,32 @@ msgstr ""
 msgid "Contribute"
 msgstr ""
 
-#: osmtm/templates/project.mako:52
+#: osmtm/templates/project.mako:36
+msgid "Stats"
+msgstr ""
+
+#: osmtm/templates/project.mako:53
 msgid "Loading"
 msgstr ""
 
-#: osmtm/templates/project.mako:64
+#: osmtm/templates/project.mako:63
+msgid "Access to this project is limited"
+msgstr ""
+
+#: osmtm/templates/project.mako:71
 msgid "Start contributing"
 msgstr ""
 
-#: osmtm/templates/project.mako:67
+#: osmtm/templates/project.mako:74
 msgid "Activity"
+msgstr ""
+
+#: osmtm/templates/project.stats.mako:1
+msgid "Contributors"
+msgstr ""
+
+#: osmtm/templates/project.stats.mako:4
+msgid "Chart"
 msgstr ""
 
 #: osmtm/templates/task.current_locked.mako:2
@@ -114,7 +134,7 @@ msgid "Locked"
 msgstr ""
 
 #: osmtm/templates/task.history.mako:14 osmtm/templates/task.history.mako:16
-#: osmtm/templates/task.history.mako:18
+#: osmtm/templates/task.history.mako:18 osmtm/templates/task.history.mako:20
 msgid "by"
 msgstr ""
 
@@ -126,11 +146,15 @@ msgstr ""
 msgid "Invalidated"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:20
+#: osmtm/templates/task.history.mako:20 osmtm/templates/task.status.mako:10
+msgid "Validated"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:22
 msgid "Unlocked"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:30
+#: osmtm/templates/task.history.mako:32
 msgid "Nothing has happened yet."
 msgstr ""
 
@@ -160,12 +184,16 @@ msgstr ""
 msgid "min. left"
 msgstr ""
 
-#: osmtm/templates/task.mako:10
+#: osmtm/templates/task.mako:19
 msgid "Clear selection"
 msgstr ""
 
-#: osmtm/templates/task.mako:31
+#: osmtm/templates/task.mako:40
 msgid "History"
+msgstr ""
+
+#: osmtm/templates/task.mako:45
+msgid "See the changesets in the OSM database for this area."
 msgstr ""
 
 #: osmtm/templates/task.split.mako:3
@@ -184,26 +212,34 @@ msgstr ""
 msgid "Invalidate this task if you consider it needs more work."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:6
+#: osmtm/templates/task.state.done.mako:12
 msgid "Invalidate"
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:15
+#: osmtm/templates/task.state.done.mako:22
 msgid ""
 "Please tell why you marked this task as invalid so that the user can "
 "eventually correct his mistakes if any."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:18
+#: osmtm/templates/task.state.done.mako:25
 msgid "Your comment here"
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:22
+#: osmtm/templates/task.state.done.mako:29
 msgid "Cancel"
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:23
+#: osmtm/templates/task.state.done.mako:30
 msgid "OK"
+msgstr ""
+
+#: osmtm/templates/task.state.done.mako:39
+msgid "Validate this task if you consider that the work is complete."
+msgstr ""
+
+#: osmtm/templates/task.state.done.mako:48
+msgid "Validate"
 msgstr ""
 
 #: osmtm/templates/task.state.ready.mako:5
@@ -242,15 +278,15 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: osmtm/views/project.py:43
+#: osmtm/views/project.py:46
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:101
+#: osmtm/views/project.py:104
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:130
+#: osmtm/views/project.py:133
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
@@ -274,11 +310,15 @@ msgstr ""
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:229
+#: osmtm/views/task.py:178
+msgid "Task validated."
+msgstr ""
+
+#: osmtm/views/task.py:246
 msgid "Random task... none available! Sorry."
 msgstr ""
 
-#: osmtm/views/user.py:63
+#: osmtm/views/user.py:74
 msgid "Sorry, this user doesn't  exist"
 msgstr ""
 

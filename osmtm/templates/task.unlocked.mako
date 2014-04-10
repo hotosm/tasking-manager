@@ -12,7 +12,7 @@
        % if task.state == task.state_ready or task.state == task.state_invalidated:
          <i class="glyphicon glyphicon-share-alt"></i>&nbsp;
          ${_('Start mapping')}
-       % elif task.state == task.state_done:
+       % elif task.state == task.state_done or task.state == task.state_validated:
          <i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;
          <i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;
          ${_('Review the work')}
