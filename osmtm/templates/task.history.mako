@@ -26,7 +26,6 @@
     <blockquote>
       <span class="glyphicon glyphicon-comment"></span> ${step.comment.comment}
     </blockquote>
-    there's a comment
     % endif
 
       <p class="text-muted">
