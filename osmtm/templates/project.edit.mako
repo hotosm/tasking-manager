@@ -270,7 +270,7 @@
         <%
           checked = 'checked' if project.private else ''
         %>
-        <input type="checkbox" name="private" checked="{checked}">
+        <input type="checkbox" name="private" ${checked}>
         <span class="glyphicon glyphicon-lock"></span> Private
       </label>
       <div class="help-block">
