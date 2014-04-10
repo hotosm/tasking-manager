@@ -30,7 +30,7 @@ if (typeof countdownInterval != 'undefined') {
     <%include file="task.state.ready.mako" />
 % endif
 
-% if task.state == task.state_done:
+% if task.state in [task.state_done, task.state_validated]:
     <%include file="task.state.done.mako" />
 % endif
     </div>

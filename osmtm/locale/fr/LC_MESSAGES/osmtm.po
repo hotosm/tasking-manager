@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-03 16:04+0200\n"
+"POT-Creation-Date: 2014-04-10 16:16+0200\n"
 "PO-Revision-Date: 2013-09-09 10:08+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -49,6 +49,10 @@ msgstr ""
 msgid "Licenses"
 msgstr "Licences"
 
+#: osmtm/templates/project.edit.mako:282
+msgid "Allowed users"
+msgstr "Utilisateurs autorisés"
+
 #: osmtm/templates/project.instructions.mako:7
 msgid "Entities to Map"
 msgstr "Éléments à cartographier"
@@ -73,17 +77,33 @@ msgstr ""
 msgid "Contribute"
 msgstr "Contribuer"
 
-#: osmtm/templates/project.mako:52
+#: osmtm/templates/project.mako:36
+msgid "Stats"
+msgstr ""
+
+#: osmtm/templates/project.mako:53
 msgid "Loading"
 msgstr "Chargement"
 
-#: osmtm/templates/project.mako:64
+#: osmtm/templates/project.mako:63
+msgid "Access to this project is limited"
+msgstr "L'accès à ce projet est limité"
+
+#: osmtm/templates/project.mako:71
 msgid "Start contributing"
 msgstr "Commencer à contribuer"
 
-#: osmtm/templates/project.mako:67
+#: osmtm/templates/project.mako:74
 msgid "Activity"
 msgstr "Activité"
+
+#: osmtm/templates/project.stats.mako:1
+msgid "Contributors"
+msgstr "Contributeurs"
+
+#: osmtm/templates/project.stats.mako:4
+msgid "Chart"
+msgstr "Graphique"
 
 #: osmtm/templates/task.current_locked.mako:2
 msgid "a task"
@@ -118,7 +138,7 @@ msgid "Locked"
 msgstr "Bloqué"
 
 #: osmtm/templates/task.history.mako:14 osmtm/templates/task.history.mako:16
-#: osmtm/templates/task.history.mako:18
+#: osmtm/templates/task.history.mako:18 osmtm/templates/task.history.mako:20
 msgid "by"
 msgstr "par"
 
@@ -130,11 +150,15 @@ msgstr "Marqué comme réalisé"
 msgid "Invalidated"
 msgstr "Invalidé"
 
-#: osmtm/templates/task.history.mako:20
+#: osmtm/templates/task.history.mako:20 osmtm/templates/task.status.mako:10
+msgid "Validated"
+msgstr "Validé"
+
+#: osmtm/templates/task.history.mako:22
 msgid "Unlocked"
 msgstr "Débloqué"
 
-#: osmtm/templates/task.history.mako:30
+#: osmtm/templates/task.history.mako:32
 msgid "Nothing has happened yet."
 msgstr "Rien ne s'est encore passé."
 
@@ -158,20 +182,25 @@ msgstr "Débloquer"
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
-msgstr "Si vous ne terminez pas le travail dans le temps imparti, la tâche "
-"sera débloquée automatiquement"
+msgstr ""
+"Si vous ne terminez pas le travail dans le temps imparti, la tâche sera "
+"débloquée automatiquement"
 
 #: osmtm/templates/task.locked.mako:19
 msgid "min. left"
 msgstr "min. restantes"
 
-#: osmtm/templates/task.mako:10
+#: osmtm/templates/task.mako:19
 msgid "Clear selection"
 msgstr "Effacer la sélection"
 
-#: osmtm/templates/task.mako:31
+#: osmtm/templates/task.mako:40
 msgid "History"
 msgstr "Historique"
+
+#: osmtm/templates/task.mako:45
+msgid "See the changesets in the OSM database for this area."
+msgstr "Voir les modifications pour cette zone dans la base de données OSM"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -189,11 +218,11 @@ msgstr "Diviser"
 msgid "Invalidate this task if you consider it needs more work."
 msgstr "Invalidez la tâche si vous considérez que le travail n'est pas complet."
 
-#: osmtm/templates/task.state.done.mako:6
+#: osmtm/templates/task.state.done.mako:12
 msgid "Invalidate"
 msgstr "Invalider"
 
-#: osmtm/templates/task.state.done.mako:15
+#: osmtm/templates/task.state.done.mako:22
 msgid ""
 "Please tell why you marked this task as invalid so that the user can "
 "eventually correct his mistakes if any."
@@ -201,17 +230,25 @@ msgstr ""
 "Veuillez indiquer la raison pour laquelle vous avez marqué la tâche comme"
 " invalide afin que le contributeur puisse corriger ses erreurs."
 
-#: osmtm/templates/task.state.done.mako:18
+#: osmtm/templates/task.state.done.mako:25
 msgid "Your comment here"
 msgstr "Votre commentaire ici"
 
-#: osmtm/templates/task.state.done.mako:22
+#: osmtm/templates/task.state.done.mako:29
 msgid "Cancel"
 msgstr "Annuler"
 
-#: osmtm/templates/task.state.done.mako:23
+#: osmtm/templates/task.state.done.mako:30
 msgid "OK"
 msgstr "OK"
+
+#: osmtm/templates/task.state.done.mako:39
+msgid "Validate this task if you consider that the work is complete."
+msgstr "Validez cette tâche si vous considérez que le travail est complet."
+
+#: osmtm/templates/task.state.done.mako:48
+msgid "Validate"
+msgstr "Valider"
 
 #: osmtm/templates/task.state.ready.mako:5
 msgid "Mark task as done"
@@ -251,15 +288,15 @@ msgstr "Se déconnecter"
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: osmtm/views/project.py:43
+#: osmtm/views/project.py:46
 msgid "Sorry, this project doesn't  exist"
 msgstr "Désolé, ce projet n'existe pas"
 
-#: osmtm/views/project.py:101
+#: osmtm/views/project.py:104
 msgid "Project #${project_id} created successfully"
 msgstr "Projet #${project_id} créé avec succès"
 
-#: osmtm/views/project.py:130
+#: osmtm/views/project.py:133
 msgid "Successfully imported ${n} geometries"
 msgstr "${n} géométries importées"
 
@@ -281,13 +318,17 @@ msgstr "Tâche débloquée."
 
 #: osmtm/views/task.py:162
 msgid "Task invalidated."
-msgstr "Tâche invalidé"
+msgstr "Tâche invalidée"
 
-#: osmtm/views/task.py:229
+#: osmtm/views/task.py:178
+msgid "Task validated."
+msgstr "Tâche validée"
+
+#: osmtm/views/task.py:246
 msgid "Random task... none available! Sorry."
 msgstr "Tâche au hasard... aucune disponible ! Désolé."
 
-#: osmtm/views/user.py:63
+#: osmtm/views/user.py:74
 msgid "Sorry, this user doesn't  exist"
 msgstr "Désolé, ce projet n'existe pas"
 

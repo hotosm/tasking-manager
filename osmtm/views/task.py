@@ -162,6 +162,22 @@ def invalidate(request):
                 msg=_("Task invalidated."))
 
 
+@view_config(route_name='task_validate', renderer="json")
+def validate(request):
+    user = __get_user(request)
+    task = __get_task(request)
+    __ensure_task_locked(task, user)
+
+    task.user = None
+    task.state = task.state_validated
+    task.locked = False
+    DBSession.add(task)
+
+    _ = request.translate
+    return dict(success=True,
+                msg=_("Task validated."))
+
+
 @view_config(route_name='task_split', renderer='json')
 def split(request):
     user = __get_user(request)
