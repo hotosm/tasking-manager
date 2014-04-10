@@ -207,3 +207,50 @@ class TestProjectFunctional(BaseTestCase):
 
         project = DBSession.query(Project).get(project_id)
         self.assertEqual(len(project.allowed_users), 0)
+
+    def test_project__private_not_allowed(self):
+        import transaction
+        from osmtm.models import Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+        project.private = True
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+        self.testapp.get('/project/%d' % project_id, status=403)
+
+        headers_user1 = self.login_as_user1()
+        self.testapp.get('/project/%d' % project_id,
+                         status=403,
+                         headers=headers_user1)
+
+    def test_home__private_not_allowed(self):
+        import transaction
+        from . import USER1_ID
+        from osmtm.models import User, Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+        project.name = "private_project"
+        project.private = True
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        res = self.testapp.get('/', status=200)
+        self.assertFalse("private_project" in res.body)
+
+        headers_user1 = self.login_as_user1()
+        res = self.testapp.get('/', status=200, headers=headers_user1)
+        self.assertFalse("private_project" in res.body)
+
+        user1 = DBSession.query(User).get(USER1_ID)
+        project = DBSession.query(Project).get(project_id)
+        project.allowed_users.append(user1)
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        res = self.testapp.get('/', status=200, headers=headers_user1)
+        self.assertTrue("private_project" in res.body)

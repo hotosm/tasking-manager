@@ -33,7 +33,9 @@ def home(request):
     if user_id is not None:
         user = DBSession.query(User).get(user_id)
 
-    if not user or not user.admin:
+    if not user:
+        query = query.filter(Project.private == False)  # noqa
+    elif not user.admin:
         query = query.outerjoin(Project.allowed_users)
         filter = or_(Project.private == False,  # noqa
                      User.id == user_id)
