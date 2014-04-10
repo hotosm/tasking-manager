@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <%
 import datetime
-timestamp = datetime.datetime.now()
+timestamp = datetime.datetime.utcnow()
 timestamp = timestamp.isoformat()
 %>
 <gpx xmlns="http://www.topografix.com/GPX/1/1">

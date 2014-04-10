@@ -210,7 +210,7 @@ class Task(Base):
 
 @event.listens_for(Task, "before_update")
 def before_update(mapper, connection, target):
-    d = datetime.datetime.now()
+    d = datetime.datetime.utcnow()
     target.update = d
 
 
@@ -221,7 +221,7 @@ def after_update(mapper, connection, target):
     connection.execute(
         project_table.update().
         where(project_table.c.id == project.id).
-        values(last_update=datetime.datetime.now())
+        values(last_update=datetime.datetime.utcnow())
     )
 
 
@@ -235,7 +235,7 @@ class TaskComment(Base):
 
     def __init__(self, comment):
         self.comment = comment
-        self.date = datetime.datetime.now()
+        self.date = datetime.datetime.utcnow()
 
 
 def get_old_value(attribute_state):
@@ -267,7 +267,7 @@ def after_flush(session, flush_context):
 def before_flush(session, flush_context, instances):
     for obj in session.dirty:
         if isinstance(obj, Task):
-            obj.project.last_update = datetime.datetime.now()
+            obj.project.last_update = datetime.datetime.utcnow()
 
 
 class Area(Base):
@@ -303,10 +303,10 @@ class Project(Base, Translatable):
     locale = 'en'
 
     area_id = Column(Integer, ForeignKey('areas.id'))
-    created = Column(DateTime)
+    created = Column(DateTime, default=datetime.datetime.utcnow)
     author_id = Column(Integer, ForeignKey('users.id'))
     author = relationship(User)
-    last_update = Column(DateTime)
+    last_update = Column(DateTime, default=datetime.datetime.utcnow)
     area = relationship(Area)
     tasks = relationship(Task, backref='project',
                          cascade="all, delete, delete-orphan")
@@ -325,8 +325,6 @@ class Project(Base, Translatable):
     def __init__(self, name, user=None):
         self.name = name
         self.status = 2
-        self.created = datetime.datetime.now()
-        self.last_update = datetime.datetime.now()
         self.author = user
 
     # auto magically fills the area with tasks for the given zoom

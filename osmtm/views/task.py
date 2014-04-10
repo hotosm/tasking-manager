@@ -194,7 +194,7 @@ def split(request):
                      int(task.y) * 2 + j,
                      int(task.zoom) + 1)
             t.project = task.project
-            t.update = datetime.datetime.now()
+            t.update = datetime.datetime.utcnow()
 
     task.state = task.state_removed
     task.locked = False
@@ -260,9 +260,9 @@ def task_gpx(request):
 def check_task_expiration():
     tasks = DBSession.query(Task).filter(Task.locked == True).all()  # noqa
     for task in tasks:
-        if datetime.datetime.now() > task.update + EXPIRATION_DELTA:
+        if datetime.datetime.utcnow() > task.update + EXPIRATION_DELTA:
             with transaction.manager:
                 task.user_id = None
                 task.locked = False
-                task.update = datetime.datetime.now()
+                task.update = datetime.datetime.utcnow()
                 DBSession.add(task)
