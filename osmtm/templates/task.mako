@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+<%
+from geoalchemy2 import shape
+from geoalchemy2.functions import ST_Centroid
+import geojson
+geometry_as_shape = shape.to_shape(task.geometry)
+centroid = geometry_as_shape.centroid
+bounds = geometry_as_shape.bounds
+project = task.project
+%>
 <script>
 if (typeof countdownInterval != 'undefined') {
   clearInterval(countdownInterval);
@@ -30,18 +39,14 @@ if (typeof countdownInterval != 'undefined') {
     <hr />
     <h4>${_('History')}</h4>
     <div><%include file="task.history.mako" /></div>
+    <hr>
+    <p><a href="http://www.openstreetmap.org/history?bbox=${bounds[0]},${bounds[1]},${bounds[2]},${bounds[3]}"
+          rel="tooltip"
+          data-original-title="${_('See the changesets in the OSM database for this area.')}"
+          target="_blank">OSM changesets</a></p>
   </div>
 </div>
 
-<%
-from geoalchemy2 import shape
-from geoalchemy2.functions import ST_Centroid
-import geojson
-geometry_as_shape = shape.to_shape(task.geometry)
-centroid = geometry_as_shape.centroid
-bounds = geometry_as_shape.bounds
-project = task.project
-%>
 <script>
 var task_geometry = ${geojson.dumps(geometry_as_shape)|n};
 var task_centroid = [${centroid.x}, ${centroid.y}];
