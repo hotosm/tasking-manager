@@ -61,6 +61,10 @@ def main(global_config, **settings):
                      xhr=True)
     config.add_route('project_stats', '/project/{project}/stats')
     config.add_route('project_tasks_json', '/project/{project}/tasks.json')
+    config.add_route('project_user_add', '/project/{project}/user/{user}',
+                     request_method="PUT")
+    config.add_route('project_user_delete', '/project/{project}/user/{user}',
+                     request_method="DELETE")
 
     config.add_route('task_random', '/project/{project}/random', xhr=True)
     config.add_route('task_empty', '/project/{project}/task/empty', xhr=True)
@@ -78,6 +82,7 @@ def main(global_config, **settings):
     config.add_route('task_gpx', '/project/{project}/task/{task}.gpx')
 
     config.add_route('users', '/users')
+    config.add_route('users_json', '/users.json')
     config.add_route('user_messages', '/user/messages')
     config.add_route('user', '/user/{username}')
     config.add_route('user_admin', '/user/{id}/admin')

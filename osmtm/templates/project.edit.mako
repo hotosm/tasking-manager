@@ -5,6 +5,7 @@
 <a class="navbar-brand">${project.name} - Edit</a>
 </%block>
 <%block name="content">
+<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
 <div id="markdown_cheat_sheet" class="modal fade">
   <div class="modal-dialog">
   <div class="modal-content">
@@ -18,6 +19,7 @@
 </div>
 <script>
   var converter = new Showdown.converter();
+  var project_id = ${project.id};
 </script>
 <div class="container">
   <form method="post" action="" enctype="multipart/form-data" class="form">
@@ -28,6 +30,7 @@
           <li><a href="#instructions" data-toggle="tab">Instructions</a></li>
           <li><a href="#area" data-toggle="tab">Area</a></li>
           <li><a href="#imagery" data-toggle="tab">Imagery</a></li>
+          <li><a href="#allowed_users" data-toggle="tab">Allowed Users</a></li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane" id="description">
@@ -42,6 +45,9 @@
           <div class="tab-pane" id="imagery">
             ${imagery()}
           </div>
+          <div class="tab-pane" id="allowed_users">
+            ${allowed_users()}
+          </div>
         </div>
       </div>
     </div>
@@ -53,6 +59,7 @@
     </div>
   </form>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js')}"></script>
+  <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 </div>
 </%block>
 <%block name="description">
@@ -253,6 +260,62 @@
     </div>
   </div>
 </div>
+</%block>
+
+<%block name="allowed_users">
+<div class="row">
+  <div class="input-group">
+    <div class="checkbox">
+      <label>
+        <%
+          checked = 'checked' if project.private else ''
+        %>
+        <input type="checkbox" name="private" checked="{checked}">
+        <span class="glyphicon glyphicon-lock"></span> Private
+      </label>
+      <div class="help-block">
+        Private means that only a given list of users can access this project.
+      </div>
+    </div>
+  </div>
+  <h4>
+    ${_('Allowed users')}
+  </h4>
+  <div class="row" ng-app="allowed_users">
+    <div class="col-md-4 panel panel-default" ng-controller="allowedUsersCrtl">
+      <ul class="list-group">
+        <li class="list-group-item"
+            ng-repeat="user in allowed_users"
+            data-user="{{user.id}}">
+          {{user.username}}
+          <button class="btn btn-default btn-xs pull-right user-remove"
+                  type="button">
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="input-group">
+        <input type="text" class="form-control"
+               id="adduser"
+               placeholder="Type a username">
+        <span class="input-group-btn">
+        <button class="btn btn-default disabled" type="button"
+                id="do_add_user">Add user</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<%
+  from osmtm.models import dumps
+%>
+<script>
+  var allowed_users = ${dumps({user.id: user.as_dict() for user in project.allowed_users})|n};
+</script>
 </%block>
 
 <%block name="markdown_link">

@@ -3,6 +3,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPUnauthorized
 
 from sqlalchemy import (
     desc,
+    or_,
 )
 
 from ..models import (
@@ -12,6 +13,8 @@ from ..models import (
 )
 
 from .task import check_task_expiration
+
+from pyramid.security import authenticated_userid
 
 
 @view_config(route_name='home', renderer='home.mako')
@@ -23,7 +26,22 @@ def home(request):
         request.override_renderer = 'start.mako'
         return dict(page_id="start")
 
-    projects = DBSession.query(Project).order_by(desc(Project.id)).all()
+    query = DBSession.query(Project)
+
+    user_id = authenticated_userid(request)
+    user = None
+    if user_id is not None:
+        user = DBSession.query(User).get(user_id)
+
+    if not user:
+        query = query.filter(Project.private == False)  # noqa
+    elif not user.admin:
+        query = query.outerjoin(Project.allowed_users)
+        filter = or_(Project.private == False,  # noqa
+                     User.id == user_id)
+        query = query.filter(filter)
+
+    projects = query.order_by(desc(Project.id)).all()
     return dict(page_id="home", projects=projects,)
 
 

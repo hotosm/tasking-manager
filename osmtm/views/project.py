@@ -34,7 +34,8 @@ import logging
 log = logging.getLogger(__name__)
 
 
-@view_config(route_name='project', renderer='project.mako', http_cache=0)
+@view_config(route_name='project', renderer='project.mako', http_cache=0,
+             permission='project')
 def project(request):
     check_task_expiration()
     id = request.matchdict['project']
@@ -169,6 +170,12 @@ def project_edit(request):
             license = DBSession.query(License).get(license_id)
             project.license = license
 
+        if 'private' in request.params and \
+                request.params['private'] == 'on':
+            project.private = True
+        else:
+            project.private = False
+
         DBSession.add(project)
         return HTTPFound(location=route_path('project', request,
                          project=project.id))
@@ -216,6 +223,36 @@ def project_tasks_json(request):
         tasks.append(task.to_feature())
 
     return FeatureCollection(tasks)
+
+
+@view_config(route_name="project_user_add", renderer='json',
+             permission="edit")
+def project_user_add(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    username = request.matchdict['user']
+    user = DBSession.query(User).filter(User.username == username).one()
+
+    project.allowed_users.append(user)
+    DBSession.add(project)
+
+    return dict(user=user.as_dict())
+
+
+@view_config(route_name="project_user_delete", renderer='json',
+             permission="edit")
+def project_user_delete(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    user_id = request.matchdict['user']
+    user = DBSession.query(User).get(user_id)
+
+    project.allowed_users.remove(user)
+    DBSession.add(project)
+
+    return dict()
 
 
 def get_contributors(project):

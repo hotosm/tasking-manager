@@ -57,6 +57,12 @@ else:
   <div id="side-col">
     <div class="tab-content">
       <div id="main" class="row-fluid tab-pane active">
+        % if project.private:
+        <p class="text-muted">
+          <span class="glyphicon glyphicon-lock"></span>
+          ${_('Access to this project is limited')}
+        </p>
+        % endif
         <p>${markdown.markdown(project.description)|n}</p>
         <p class="text-center">
           <a id="start"
