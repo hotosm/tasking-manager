@@ -11,7 +11,18 @@ base_url = request.route_path('home')
 <div class="container" ng-app="projects">
   <div class="col-md-6" ng-controller="projectCrtl">
     <h3>Projects</h3>
-    <div class="project well" ng-repeat="project in projects">
+    <form class="form-inline" role="form">
+      <div class="form-group">
+        <label for="id_sort" class="control-label">Sort by</label>
+        <select id="id_sort" class="form-control input-sm" ng-model="sortExpression">
+          <option value="priority">High priority first</option>
+          <option value="-created">Creation date</option>
+          <option value="-last_update">Last update</option>
+        </select>
+      </div>
+    </form>
+    <hr>
+    <div class="project well" ng-repeat="project in projects | orderBy:sortExpression">
       <ul class="nav project-stats">
         <li><i class="glyphicon glyphicon-user"></i><span></span></li>
         <li>
@@ -35,8 +46,11 @@ base_url = request.route_path('home')
       </div>
       {{project.short_description}}
       <div class="clear"></div>
-      <span class="created-by">${_('Created by')} {{project.author}}</span> -
-      <span class="updated-at">${_('Updated')} <span class="timeago">{{project.last_update + 'Z' | timeAgo}}</span></span>
+      <small class="text-muted">
+        <span>${_('Created by')} {{project.author}}</span> -
+        <span>${_('Updated')} <span class="timeago">{{project.last_update + 'Z' | timeAgo}}</span></span> -
+        <span>${_('Priority:')} {{project.priority | priority}}</span>
+      </small>
     </div>
   </div>
   <div class="col-md-6">
@@ -49,7 +63,8 @@ base_url = request.route_path('home')
 %>
 
 <script>
-  projects = ${dumps([project.as_dict(request.locale_name) for project in projects])|n};
+  var projects = ${dumps([project.as_dict(request.locale_name) for project in projects])|n};
+  var priorities = ["${_('urgent')}", "${_('high')}", "${_('medium')}", "${_('low')}"];
 </script>
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/home.js')}"></script>
 </%block>

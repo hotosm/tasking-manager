@@ -63,6 +63,19 @@
 </div>
 </%block>
 <%block name="description">
+    <div class="row">
+      <div class="form-group col-md-2">
+        <label for="id_priority" class="control-label">Priority</label>
+        <select id="id_priority" name="priority" class="form-control">
+          % for idx, val in enumerate(['urgent', 'high', 'medium', 'low']):
+            <%
+            selected = 'selected' if project.priority == idx else ''
+            %>
+            <option value="${idx}" ${selected}>${_(val)}</option>
+          % endfor
+        </select>
+      </div>
+    </div>
     <div class="tabbable tabs-left">
       <ul class="nav nav-tabs languages">
         % for locale, translation in project.translations.iteritems():

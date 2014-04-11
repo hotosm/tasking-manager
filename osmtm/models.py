@@ -8,6 +8,7 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     Boolean,
     DateTime,
+    CheckConstraint,
     event,
     inspect,
     and_
@@ -315,6 +316,15 @@ class Project(Base, Translatable):
     zoom = Column(Integer)  # is not None when project is auto-filled (grid)
     imagery = Column(Unicode)
 
+    # priorities are:
+    # 0 - Urgent
+    # 1 - High
+    # 2 - Medium
+    # 3 - Low
+    priority = Column(Integer, default=2)
+
+    __table_args__ = (CheckConstraint(priority.in_(range(0, 4))), )
+
     entities_to_map = Column(Unicode)
     changeset_comment = Column(Unicode)
 
@@ -390,7 +400,8 @@ class Project(Base, Translatable):
             'status': self.status,
             'author': self.author.username if self.author is not None else '',
             'done': self.get_done(),
-            'centroid': [centroid.x, centroid.y]
+            'centroid': [centroid.x, centroid.y],
+            'priority': self.priority
         }
 
     def get_done(self):
