@@ -202,7 +202,8 @@ def project_stats(request):
 @view_config(route_name="project_check_for_update", renderer='json')
 def check_for_updates(request):
     interval = request.GET['interval']
-    date = datetime.datetime.utcnow() - datetime.timedelta(0, 0, 0, int(interval))
+    date = datetime.datetime.utcnow() \
+        - datetime.timedelta(0, 0, 0, int(interval))
     tasks = DBSession.query(Task).filter(Task.update > date).all()
     updated = []
     for task in tasks:
