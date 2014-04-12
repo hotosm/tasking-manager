@@ -176,6 +176,8 @@ def project_edit(request):
         else:
             project.private = False
 
+        project.priority = request.params['priority']
+
         DBSession.add(project)
         return HTTPFound(location=route_path('project', request,
                          project=project.id))

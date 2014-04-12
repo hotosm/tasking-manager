@@ -129,7 +129,8 @@ class TestProjectFunctional(BaseTestCase):
                                    'form.submitted': True,
                                    'imagery': 'imagery_bar',
                                    'license_id': 1,
-                                   'name_fr': 'the_name_in_french'
+                                   'name_fr': 'the_name_in_french',
+                                   'priority': 2
                                },
                                status=302)
 
