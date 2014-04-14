@@ -22,6 +22,12 @@ base_url = request.route_path('home')
       </div>
     </form>
     <hr>
+    % if paginator.items:
+        % for project in paginator.items:
+            ${project_block(project=project, base_url=base_url)}
+        % endfor
+        ${paginator.pager()}
+    % endif
     <div class="project well" ng-repeat="project in projects | orderBy:sortExpression">
       <ul class="nav project-stats">
         <li><i class="glyphicon glyphicon-user"></i><span></span></li>
@@ -68,3 +74,36 @@ base_url = request.route_path('home')
 </script>
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/home.js')}"></script>
 </%block>
+
+<%def name="project_block(project, base_url)">
+<div class="project well">
+  <ul class="nav project-stats">
+    <li><i class="glyphicon glyphicon-user"></i><span></span></li>
+    <li>
+      <table>
+        <tr>
+          <td>
+            <div style="border: 1px solid #ccc;" class="progress">
+              <div style="width: ${project.get_done()}%;" class="progress-bar"></div>
+            </div>
+          </td>
+          <td>&nbsp;${project.get_done()}%</td>
+        </tr>
+      </table>
+    </li>
+  </ul>
+  <h4><a href="${base_url}project/${project.id}">#${project.id} ${project.name}</a>
+  </h4>
+  <div class="clear"></div>
+  <div class="world_map">
+    <div style="top: ${(-project.centroid().y + 90) * 60 / 180 - 1}px; left: ${(project.centroid().x + 180) * 120 / 360 - 1}px;" class="marker"></div>
+  </div>
+  ${project.short_description}
+  <div class="clear"></div>
+  <small class="text-muted">
+    <span>${_('Created by')} ${project.author.username if project.author else ''}</span> -
+    <span>${_('Updated')} <span class="timeago" title="${project.last_update}Z"></span></span> -
+    <span>${_('Priority:')} ${project.priority}</span>
+  </small>
+</div>
+</%def>

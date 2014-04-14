@@ -380,6 +380,10 @@ class Project(Base, Translatable):
 
         return len(tasks)
 
+    def centroid(self):
+        geometry_as_shape = shape.to_shape(self.area.geometry)
+        return geometry_as_shape.centroid
+
     def as_dict(self, locale=None):
         if locale:
             self.locale = locale

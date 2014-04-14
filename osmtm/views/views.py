@@ -12,6 +12,11 @@ from ..models import (
     User,
 )
 
+from webhelpers.paginate import (
+    PageURL_WebOb,
+    Page
+)
+
 from .task import check_task_expiration
 
 from pyramid.security import authenticated_userid
@@ -42,7 +47,14 @@ def home(request):
         query = query.filter(filter)
 
     projects = query.order_by(desc(Project.id)).all()
-    return dict(page_id="home", projects=projects,)
+
+    page = int(request.params.get('page', 1))
+    page_url = PageURL_WebOb(request)
+    paginator = Page(projects, page, url=page_url, items_per_page=2)
+
+    print paginator
+
+    return dict(page_id="home", projects=projects, paginator=paginator)
 
 
 @view_config(route_name="user_prefered_editor", renderer='json')
