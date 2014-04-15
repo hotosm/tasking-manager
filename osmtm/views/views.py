@@ -3,6 +3,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPUnauthorized
 
 from sqlalchemy import (
     desc,
+    asc,
     or_,
 )
 
@@ -46,13 +47,19 @@ def home(request):
                      User.id == user_id)
         query = query.filter(filter)
 
-    projects = query.order_by(desc(Project.id)).all()
+    sort_by = 'project.%s' % request.params.get('sort_by', 'id')
+    direction = request.params.get('direction', 'asc')
+    if direction == 'desc':
+        sort_by = desc(sort_by)
+    else:
+        sort_by = asc(sort_by)
+
+    query = query.order_by(sort_by)
+    projects = query.all()
 
     page = int(request.params.get('page', 1))
     page_url = PageURL_WebOb(request)
     paginator = Page(projects, page, url=page_url, items_per_page=2)
-
-    print paginator
 
     return dict(page_id="home", projects=projects, paginator=paginator)
 
