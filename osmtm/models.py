@@ -20,6 +20,7 @@ from geoalchemy2 import (
 )
 from geoalchemy2.functions import (
     ST_Transform,
+    ST_Centroid,
     GenericFunction
 )
 
@@ -86,7 +87,7 @@ users_licenses_table = Table('users_licenses', Base.metadata,
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     username = Column(Unicode)
     admin = Column(Boolean)
 
@@ -275,9 +276,20 @@ class Area(Base):
     __tablename__ = 'areas'
     id = Column(Integer, primary_key=True)
     geometry = Column(Geometry('MultiPolygon', srid=4326))
+    centroid = Column(Geometry('Point', srid=4326))
 
     def __init__(self, geometry):
         self.geometry = ST_SetSRID(ST_Multi(geometry), 4326)
+
+
+@event.listens_for(Area, "after_insert")
+def area_after_insert(mapper, connection, target):
+    area_table = Area.__table__
+    connection.execute(
+        area_table.update().
+        where(area_table.c.id == target.id).
+        values(centroid=ST_Centroid(target.geometry))
+    )
 
 project_allowed_users = Table(
     'project_allowed_users',
@@ -380,20 +392,11 @@ class Project(Base, Translatable):
 
         return len(tasks)
 
-    def centroid(self):
-        geometry_as_shape = shape.to_shape(self.area.geometry)
-        return geometry_as_shape.centroid
-
     def as_dict(self, locale=None):
         if locale:
             self.locale = locale
 
-        if self.area is not None:
-            geometry_as_shape = shape.to_shape(self.area.geometry)
-            centroid = geometry_as_shape.centroid
-        else:
-            from shapely.geometry import Point
-            centroid = Point(0, 0)
+        centroid = self.area.centroid
 
         return {
             'id': self.id,

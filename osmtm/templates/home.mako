@@ -64,6 +64,8 @@ sorts = [('priority', 'asc', _('High priority first')),
 
 <%def name="project_block(project, base_url, priorities)">
 <%
+    if request.locale_name:
+        project.locale = request.locale_name
     priority = priorities[project.priority]
 %>
 <div class="project well">
@@ -86,7 +88,13 @@ sorts = [('priority', 'asc', _('High priority first')),
   </h4>
   <div class="clear"></div>
   <div class="world_map">
-    <div style="top: ${(-project.centroid().y + 90) * 60 / 180 - 1}px; left: ${(project.centroid().x + 180) * 120 / 360 - 1}px;" class="marker"></div>
+    % if project.area:
+    <%
+        from geoalchemy2 import shape
+        centroid = shape.to_shape(project.area.centroid)
+    %>
+    <div style="top: ${(-centroid.y + 90) * 60 / 180 - 1}px; left: ${(centroid.x + 180) * 120 / 360 - 1}px;" class="marker"></div>
+    % endif
   </div>
   ${project.short_description}
   <div class="clear"></div>

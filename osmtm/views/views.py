@@ -50,21 +50,21 @@ def home(request):
                      User.id == user_id)
         query = query.filter(filter)
 
-    sort_by = 'project.%s' % request.params.get('sort_by', 'id')
+    sort_by = 'project.%s' % request.params.get('sort_by', 'priority')
     direction = request.params.get('direction', 'asc')
     if direction == 'desc':
         sort_by = desc(sort_by)
     else:
         sort_by = asc(sort_by)
 
-    Project.locale = request.locale_name
     query = query.order_by(sort_by)
-    query = query.options(joinedload(Project.translations))
+    query = query.options(joinedload(Project.translations)) \
+                 .options(joinedload(Project.area))
     projects = query.all()
 
     page = int(request.params.get('page', 1))
     page_url = PageURL_WebOb(request)
-    paginator = Page(projects, page, url=page_url, items_per_page=2)
+    paginator = Page(projects, page, url=page_url, items_per_page=10)
 
     return dict(page_id="home", paginator=paginator)
 
