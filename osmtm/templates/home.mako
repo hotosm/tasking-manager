@@ -12,8 +12,8 @@ sorts = [('priority', 'asc', _('High priority first')),
          ('created', 'desc', _('Creation date')),
          ('last_update', 'desc', _('Last update'))]
 %>
-<div class="container" ng-app="projects">
-  <div class="col-md-6" ng-controller="projectCrtl">
+<div class="container">
+  <div class="col-md-6">
     <h3>Projects</h3>
     <%
         qs = dict(request.GET)
