@@ -3,6 +3,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPUnauthorized
 
 from sqlalchemy import (
     desc,
+    asc,
     or_,
 )
 
@@ -10,6 +11,14 @@ from ..models import (
     DBSession,
     Project,
     User,
+)
+from sqlalchemy.orm import (
+    joinedload
+)
+
+from webhelpers.paginate import (
+    PageURL_WebOb,
+    Page
 )
 
 from .task import check_task_expiration
@@ -41,8 +50,23 @@ def home(request):
                      User.id == user_id)
         query = query.filter(filter)
 
-    projects = query.order_by(desc(Project.id)).all()
-    return dict(page_id="home", projects=projects,)
+    sort_by = 'project.%s' % request.params.get('sort_by', 'priority')
+    direction = request.params.get('direction', 'asc')
+    if direction == 'desc':
+        sort_by = desc(sort_by)
+    else:
+        sort_by = asc(sort_by)
+
+    query = query.order_by(sort_by)
+    query = query.options(joinedload(Project.translations)) \
+                 .options(joinedload(Project.area))
+    projects = query.all()
+
+    page = int(request.params.get('page', 1))
+    page_url = PageURL_WebOb(request)
+    paginator = Page(projects, page, url=page_url, items_per_page=10)
+
+    return dict(page_id="home", paginator=paginator)
 
 
 @view_config(route_name="user_prefered_editor", renderer='json')

@@ -26,7 +26,8 @@ requires = [
     'sqlalchemy-i18n==0.8.2',
     'WebTest==2.0.14',
     'simplejson',
-    'geojson==1.0.6'
+    'geojson==1.0.6',
+    'webhelpers==1.3',
 ]
 
 setup(name='osmtm',
