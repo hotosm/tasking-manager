@@ -26,26 +26,42 @@ sorts = [('priority', 'asc', _('High priority first')),
                 button_text = sort[2]
         endfor
     %>
-    <div class="btn-group">
-      <button type="button" class="btn btn-default btn-xs dropdown-toggle"
-              data-toggle="dropdown">
-        Sort by: <strong>${button_text}</strong>
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        % for sort in sorts:
-          <%
-            qs['sort_by'] = sort[0]
-            qs['direction'] = sort[1]
-          %>
-          <li>
-            <a href="${request.current_route_url(_query=qs.items())}">
-              ${sort[2]}
-            </a>
-          </li>
-        % endfor
-      </ul>
-    </div>
+    <form class="form-inline" role="form"
+          action="${request.current_route_url()}"
+          method="GET">
+
+      <input type="hidden" name="sort_by"
+             value="${request.params.get('sort_by', 'priority')}">
+      <input type="hidden" name="direction"
+             value="${request.params.get('direction', 'asc')}">
+
+      <div class="form-group left-inner-addon">
+        <i class="glyphicon glyphicon-search text-muted"></i>
+        <input type="search" class="form-control input-sm"
+               name="search" placeholder="Search"
+               value="${request.params.get('search', '')}">
+      </div>
+      <div class="btn-group pull-right">
+        <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                data-toggle="dropdown">
+          Sort by: <strong>${button_text}</strong>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          % for sort in sorts:
+            <%
+              qs['sort_by'] = sort[0]
+              qs['direction'] = sort[1]
+            %>
+            <li>
+              <a href="${request.current_route_url(_query=qs.items())}">
+                ${sort[2]}
+              </a>
+            </li>
+          % endfor
+        </ul>
+      </div>
+    </form>
     <hr>
     % if paginator.items:
         % for project in paginator.items:

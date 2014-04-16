@@ -5,11 +5,13 @@ from sqlalchemy import (
     desc,
     asc,
     or_,
+    and_,
 )
 
 from ..models import (
     DBSession,
     Project,
+    ProjectTranslation,
     User,
 )
 from sqlalchemy.orm import (
@@ -43,12 +45,24 @@ def home(request):
         user = DBSession.query(User).get(user_id)
 
     if not user:
-        query = query.filter(Project.private == False)  # noqa
+        filter = Project.private == False  # noqa
     elif not user.admin:
         query = query.outerjoin(Project.allowed_users)
         filter = or_(Project.private == False,  # noqa
                      User.id == user_id)
-        query = query.filter(filter)
+    else:
+        filter = True  # make it work with an and_ filter
+
+    if 'search' in request.params:
+        s = request.params.get('search')
+        PT = ProjectTranslation
+        search_filter = or_(PT.name.like('%%%s%%' % s),
+                            PT.short_description.like('%%%s%%' % s),
+                            PT.description.like('%%%s%%' % s),)
+        ids = DBSession.query(ProjectTranslation.id) \
+                       .filter(search_filter) \
+                       .all()
+        filter = Project.id.in_(ids)
 
     sort_by = 'project.%s' % request.params.get('sort_by', 'priority')
     direction = request.params.get('direction', 'asc')
@@ -58,6 +72,10 @@ def home(request):
         sort_by = asc(sort_by)
 
     query = query.order_by(sort_by)
+
+    query = query.filter(filter)
+
+    # join tables so that new queries are not done when parsing template
     query = query.options(joinedload(Project.translations)) \
                  .options(joinedload(Project.area))
     projects = query.all()
