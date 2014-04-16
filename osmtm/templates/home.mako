@@ -64,9 +64,6 @@ sorts = [('priority', 'asc', _('High priority first')),
 
 <%def name="project_block(project, base_url, priorities)">
 <%
-    if request.locale_name:
-        project.locale = request.locale_name
-
     priority = priorities[project.priority]
 %>
 <div class="project well">
