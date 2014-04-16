@@ -1,11 +1,10 @@
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound, HTTPUnauthorized
 
+import sqlalchemy
 from sqlalchemy import (
     desc,
-    asc,
     or_,
-    and_,
 )
 
 from ..models import (
@@ -66,12 +65,10 @@ def home(request):
 
     sort_by = 'project.%s' % request.params.get('sort_by', 'priority')
     direction = request.params.get('direction', 'asc')
-    if direction == 'desc':
-        sort_by = desc(sort_by)
-    else:
-        sort_by = asc(sort_by)
+    direction_func = getattr(sqlalchemy, direction, None)
+    sort_by = direction_func(sort_by)
 
-    query = query.order_by(sort_by)
+    query = query.order_by(sort_by, desc(Project.created))
 
     query = query.filter(filter)
 
