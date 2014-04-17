@@ -814,7 +814,7 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 #project .linethrough{text-decoration:line-through}
 #project #instructions .icon-question-sign{opacity:50;filter:alpha(opacity=5000)}
 #project #instructions dt{color:#999;font-weight:normal}
-#project #instructions dd{margin-left:10px;border:1px solid #dfdfdf;padding:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box}
+#project #instructions dd{margin-left:10px;border:1px solid #dfdfdf;padding:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box;background-color:#efefef}
 #project #editDropdown li a{cursor:pointer}
 #project_edit .nav-pills.small{font-size:.9em;margin-bottom:3px}
 #project_edit .nav-pills.small>li>a{padding-bottom:2px;padding-top:2px;border-bottom:1px solid transparent;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}
