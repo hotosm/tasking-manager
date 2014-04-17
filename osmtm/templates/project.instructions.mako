@@ -39,5 +39,11 @@ import markdown
     % endif
   </dd>
 </dl>
+% if project.josm_preset:
+<p >
+  Using JOSM? Please use the dedicated
+  <a href="${request.route_url('project_preset', project=project.id)}">preset</a>.
+</p>
+% endif
 <hr />
 <p>${markdown.markdown(project.instructions)|n}</p>
