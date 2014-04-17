@@ -55,9 +55,9 @@ def home(request):
     if 'search' in request.params:
         s = request.params.get('search')
         PT = ProjectTranslation
-        search_filter = or_(PT.name.like('%%%s%%' % s),
-                            PT.short_description.like('%%%s%%' % s),
-                            PT.description.like('%%%s%%' % s),)
+        search_filter = or_(PT.name.ilike('%%%s%%' % s),
+                            PT.short_description.ilike('%%%s%%' % s),
+                            PT.description.ilike('%%%s%%' % s),)
         ids = DBSession.query(ProjectTranslation.id) \
                        .filter(search_filter) \
                        .all()
