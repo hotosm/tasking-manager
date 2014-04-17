@@ -841,3 +841,6 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 .tabs-right>.nav-tabs>.active a,.tabs-right>.nav-tabs>.active a:hover,.tabs-right>.nav-tabs>.active a:focus{border-color:#ddd #ddd #ddd transparent;*border-left-color:#fff}
 #chart{font:10px sans-serif}#chart .axis path,#chart .axis line{fill:none;stroke:#000;shape-rendering:crispedges}
 #chart .line{fill:none;stroke:#4682b4;stroke-width:1.5px}
+.left-inner-addon{position:relative}
+.left-inner-addon input{padding-left:30px}
+.left-inner-addon i{position:absolute;padding:8px 10px;pointer-events:none}
