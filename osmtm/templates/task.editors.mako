@@ -20,5 +20,4 @@
       osmtm.prefered_editor = "${prefered_editor}";
     </script>
   </div>
-  <button class="btn btn-sm btn-link">.osm</button>
 </p>
