@@ -181,7 +181,8 @@ def project_edit(request):
 
         if 'josm_preset' in request.params:
             josm_preset = request.params.get('josm_preset')
-            project.josm_preset = josm_preset.value.decode('UTF-8')
+            if hasattr(josm_preset, 'value'):
+                project.josm_preset = josm_preset.value.decode('UTF-8')
 
         DBSession.add(project)
         return HTTPFound(location=route_path('project', request,
