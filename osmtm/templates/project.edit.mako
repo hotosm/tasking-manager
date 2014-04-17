@@ -22,7 +22,8 @@
   var project_id = ${project.id};
 </script>
 <div class="container">
-  <form method="post" action="" enctype="multipart/form-data" class="form">
+  <form method="post" action="" enctype="multipart/form-data" class="form"
+        enctype="multipart/form-data">
     <div class="row">
       <div class="tabbable tabs row">
         <ul class="nav nav-tabs">
@@ -31,6 +32,7 @@
           <li><a href="#area" data-toggle="tab">Area</a></li>
           <li><a href="#imagery" data-toggle="tab">Imagery</a></li>
           <li><a href="#allowed_users" data-toggle="tab">Allowed Users</a></li>
+          <li><a href="#misc" data-toggle="tab">Misc</a></li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane" id="description">
@@ -47,6 +49,9 @@
           </div>
           <div class="tab-pane" id="allowed_users">
             ${allowed_users()}
+          </div>
+          <div class="tab-pane" id="misc">
+            ${misc()}
           </div>
         </div>
       </div>
@@ -329,6 +334,20 @@
 <script>
   var allowed_users = ${dumps({user.id: user.as_dict() for user in project.allowed_users})|n};
 </script>
+</%block>
+
+<%block name="misc">
+<div class="form-group">
+
+  <label for="id_josm_preset" class="control-label">JOSM Preset</label>
+  <input id="id_josm_preset" type="file" name="josm_preset"
+         accept="application/x-josm-preset">
+  % if project.josm_preset:
+  <span class="help-block">
+    A JOSM Preset has already been added to this project.
+  </span>
+  % endif
+</div>
 </%block>
 
 <%block name="markdown_link">

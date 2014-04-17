@@ -344,6 +344,8 @@ class Project(Base, Translatable):
     allowed_users = relationship(User,
                                  secondary=project_allowed_users)
 
+    josm_preset = Column(Unicode)
+
     def __init__(self, name, user=None):
         self.name = name
         self.status = 2

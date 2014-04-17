@@ -1,6 +1,7 @@
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.url import route_path
+from pyramid.response import Response
 from ..models import (
     DBSession,
     Project,
@@ -178,6 +179,10 @@ def project_edit(request):
 
         project.priority = request.params['priority']
 
+        if 'josm_preset' in request.params:
+            josm_preset = request.params.get('josm_preset')
+            project.josm_preset = josm_preset.value.decode('UTF-8')
+
         DBSession.add(project)
         return HTTPFound(location=route_path('project', request,
                          project=project.id))
@@ -256,6 +261,20 @@ def project_user_delete(request):
     DBSession.add(project)
 
     return dict()
+
+
+@view_config(route_name='project_preset')
+def project_preset(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    response = Response()
+    response.text = project.josm_preset
+    response.content_disposition = \
+        'attachment; filename=hotosm_tasking_manager_project_%s.xml' \
+        % project.id
+    response.content_type = 'application/x-josm-preset'
+    return response
 
 
 def get_contributors(project):
