@@ -28,6 +28,7 @@ requires = [
     'simplejson',
     'geojson==1.0.6',
     'webhelpers==1.3',
+    'alembic==0.6.4'
 ]
 
 setup(name='osmtm',

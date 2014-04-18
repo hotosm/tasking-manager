@@ -223,7 +223,10 @@ def after_update(mapper, connection, target):
     connection.execute(
         project_table.update().
         where(project_table.c.id == project.id).
-        values(last_update=datetime.datetime.utcnow())
+        values(last_update=datetime.datetime.utcnow(),
+               done=project.get_done(),
+               validated=project.get_validated()
+               )
     )
 
 
@@ -335,6 +338,11 @@ class Project(Base, Translatable):
     # 3 - Low
     priority = Column(Integer, default=2)
 
+    # percentage of done tasks
+    done = Column(Integer, default=0)
+    # percentage of validated tasks
+    validated = Column(Integer, default=0)
+
     __table_args__ = (CheckConstraint(priority.in_(range(0, 4))), )
 
     entities_to_map = Column(Unicode)
@@ -417,8 +425,9 @@ class Project(Base, Translatable):
         total = DBSession.query(Task) \
             .filter(Task.project_id == self.id) \
             .count()
-        done = DBSession.query(Task) \
-            .filter(and_(Task.project_id == self.id, Task.state >= 2)) \
+        count = DBSession.query(Task) \
+            .filter(and_(Task.project_id == self.id,
+                         Task.state == Task.state_done)) \
             .count()
 
         # FIXME it would be nice to get percent done based on area instead
@@ -427,7 +436,18 @@ class Project(Base, Translatable):
         # total = total + area
         # if task.state >= 2:
         # done = done + area
-        return round(done * 100 / total) if total != 0 else 0
+        return round(count * 100 / total) if total != 0 else 0
+
+    def get_validated(self):
+        total = DBSession.query(Task) \
+            .filter(Task.project_id == self.id) \
+            .count()
+        count = DBSession.query(Task) \
+            .filter(and_(Task.project_id == self.id,
+                         Task.state == Task.state_validated)) \
+            .count()
+
+        return round(count * 100 / total) if total != 0 else 0
 
 # the time delta after which the task is unlocked (in seconds)
 EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
