@@ -83,7 +83,6 @@ sorts = [('priority', 'asc', _('High priority first')),
     if request.locale_name:
         project.locale = request.locale_name
     priority = priorities[project.priority]
-    done = int(project.get_done())
 %>
 <div class="project well">
   <ul class="nav project-stats">
@@ -92,10 +91,11 @@ sorts = [('priority', 'asc', _('High priority first')),
         <tr>
           <td>
             <div style="border: 1px solid #ccc;" class="progress">
-              <div style="width: ${done}%;" class="progress-bar"></div>
+              <div style="width: ${project.done}%;" class="progress-bar progress-bar-warning"></div>
+              <div style="width: ${project.validated}%;" class="progress-bar progress-bar-success"></div>
             </div>
           </td>
-          <td>&nbsp;${done}%</td>
+          <td>&nbsp;${project.done + project.validated}%</td>
         </tr>
       </table>
     </li>

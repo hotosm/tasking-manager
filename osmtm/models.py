@@ -14,11 +14,16 @@ from sqlalchemy import (
     and_
 )
 
+from sqlalchemy.sql.expression import (
+    func
+)
+
 from geoalchemy2 import (
     Geometry,
     shape,
 )
 from geoalchemy2.functions import (
+    ST_Area,
     ST_Transform,
     ST_Centroid,
     GenericFunction
@@ -223,7 +228,10 @@ def after_update(mapper, connection, target):
     connection.execute(
         project_table.update().
         where(project_table.c.id == project.id).
-        values(last_update=datetime.datetime.utcnow())
+        values(last_update=datetime.datetime.utcnow(),
+               done=project.get_done(),
+               validated=project.get_validated()
+               )
     )
 
 
@@ -335,6 +343,11 @@ class Project(Base, Translatable):
     # 3 - Low
     priority = Column(Integer, default=2)
 
+    # percentage of done tasks
+    done = Column(Integer, default=0)
+    # percentage of validated tasks
+    validated = Column(Integer, default=0)
+
     __table_args__ = (CheckConstraint(priority.in_(range(0, 4))), )
 
     entities_to_map = Column(Unicode)
@@ -414,20 +427,34 @@ class Project(Base, Translatable):
         }
 
     def get_done(self):
-        total = DBSession.query(Task) \
+        total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(Task.project_id == self.id) \
-            .count()
-        done = DBSession.query(Task) \
-            .filter(and_(Task.project_id == self.id, Task.state >= 2)) \
-            .count()
+            .scalar()
 
-        # FIXME it would be nice to get percent done based on area instead
-        # the following works but is slow
-        # area = DBSession.execute(ST_Area(task.geometry)).scalar()
-        # total = total + area
-        # if task.state >= 2:
-        # done = done + area
+        done = DBSession.query(func.sum(ST_Area(Task.geometry))) \
+            .filter(and_(Task.project_id == self.id,
+                         Task.state == Task.state_done)) \
+            .scalar()
+
+        if not done:
+            done = 0
+
         return round(done * 100 / total) if total != 0 else 0
+
+    def get_validated(self):
+        total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
+            .filter(Task.project_id == self.id) \
+            .scalar()
+
+        validated = DBSession.query(func.sum(ST_Area(Task.geometry))) \
+            .filter(and_(Task.project_id == self.id,
+                         Task.state == Task.state_validated)) \
+            .scalar()
+
+        if not validated:
+            validated = 0
+
+        return round(validated * 100 / total) if total != 0 else 0
 
 # the time delta after which the task is unlocked (in seconds)
 EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
