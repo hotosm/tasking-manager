@@ -101,6 +101,8 @@ var geometry = ${dumps(geometry)|n};
 % if locked_task is not None:
 window.location.hash = "task/${locked_task.id}";
 % endif
+
+var statesI18n = ["${_('Ready')}", "${_('Invalidated')}", "${_('Done')}", "${_('Validated')}"];
 </script>
   <script src="http://d3js.org/d3.v3.js"></script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js')}"></script>

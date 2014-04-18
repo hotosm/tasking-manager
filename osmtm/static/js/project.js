@@ -12,6 +12,35 @@ osmtm.project = (function() {
   var chart;
   var lastUpdateCheck = (new Date()).getTime();
 
+  var states = [
+    ['#dfdfdf'],
+    ['gray'],
+    ['orange'],
+    ['green']
+  ];
+
+  var Legend = L.Control.extend({
+    options: {
+      position: 'bottomleft'
+    },
+
+    onAdd: function(map) {
+      var container = L.DomUtil.create('div', 'legend-control');
+
+      var ul = L.DomUtil.create('ul', null, container);
+
+      var i;
+      for (i = 1; i < states.length; i++) {
+        var key = L.DomUtil.create('li', null, ul);
+        var color = L.DomUtil.create('div', 'key-color', key);
+        color.style.backgroundColor = states[i];
+        key.innerHTML += statesI18n[i];
+      }
+
+      return container;
+    }
+  });
+
   // creates the Leaflet map
   function createMap() {
     lmap = L.map('leaflet');
@@ -30,21 +59,7 @@ osmtm.project = (function() {
 
     tasksLayer = L.geoJson(null, {
       style: function(feature) {
-        var color;
-        switch (feature.properties.state) {
-          case 0:
-            color = "#dfdfdf";
-            break;
-          case 1:
-            color = "gray";
-            break;
-          case 2:
-            color = "orange";
-            break;
-          case 3:
-            color = "green";
-            break;
-        }
+        var color = states[feature.properties.state];
         return {
           fillColor: color,
           color: feature.properties.locked ? "orange" : "gray",
@@ -85,6 +100,8 @@ osmtm.project = (function() {
             opacity: 0
         }
     }).addTo(lmap);
+
+    lmap.addControl(new Legend());
   }
 
   /**
