@@ -87,7 +87,6 @@ sorts = [('priority', 'asc', _('High priority first')),
 %>
 <div class="project well">
   <ul class="nav project-stats">
-    <li><i class="glyphicon glyphicon-user"></i><span></span></li>
     <li>
       <table>
         <tr>
