@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-10 16:16+0200\n"
+"POT-Creation-Date: 2014-04-18 09:59+0200\n"
 "PO-Revision-Date: 2013-09-09 10:08+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -21,13 +21,53 @@ msgstr ""
 msgid "login to OpenStreetMap"
 msgstr "S'authentifier"
 
-#: osmtm/templates/home.mako:38
+#: osmtm/templates/home.mako:9
+msgid "urgent"
+msgstr "Urgente"
+
+#: osmtm/templates/home.mako:9
+msgid "high"
+msgstr "Haute"
+
+#: osmtm/templates/home.mako:9
+msgid "medium"
+msgstr "Moyenne"
+
+#: osmtm/templates/home.mako:9
+msgid "low"
+msgstr "Basse"
+
+#: osmtm/templates/home.mako:11
+msgid "High priority first"
+msgstr "Priorité"
+
+#: osmtm/templates/home.mako:12
+msgid "Creation date"
+msgstr "Date de création"
+
+#: osmtm/templates/home.mako:13
+msgid "Last update"
+msgstr "Date de mise à jour"
+
+#: osmtm/templates/home.mako:41
+msgid "Search"
+msgstr "Rechercher"
+
+#: osmtm/templates/home.mako:47
+msgid "Sort by:"
+msgstr "Tri par :"
+
+#: osmtm/templates/home.mako:119
 msgid "Created by"
 msgstr "Créé par"
 
-#: osmtm/templates/home.mako:39
+#: osmtm/templates/home.mako:120
 msgid "Updated"
 msgstr "Mis à jour"
+
+#: osmtm/templates/home.mako:121
+msgid "Priority:"
+msgstr "Priorité :"
 
 #: osmtm/templates/imagery.mako:26
 msgid ""
@@ -49,7 +89,7 @@ msgstr ""
 msgid "Licenses"
 msgstr "Licences"
 
-#: osmtm/templates/project.edit.mako:282
+#: osmtm/templates/project.edit.mako:300
 msgid "Allowed users"
 msgstr "Utilisateurs autorisés"
 
@@ -96,6 +136,24 @@ msgstr "Commencer à contribuer"
 #: osmtm/templates/project.mako:74
 msgid "Activity"
 msgstr "Activité"
+
+#: osmtm/templates/project.mako:105
+msgid "Ready"
+msgstr "Prêt"
+
+#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:18
+#: osmtm/templates/task.status.mako:8
+msgid "Invalidated"
+msgstr "Invalidé"
+
+#: osmtm/templates/project.mako:105 osmtm/templates/task.status.mako:6
+msgid "Done"
+msgstr "Fait"
+
+#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:20
+#: osmtm/templates/task.status.mako:10
+msgid "Validated"
+msgstr "Validé"
 
 #: osmtm/templates/project.stats.mako:1
 msgid "Contributors"
@@ -146,19 +204,11 @@ msgstr "par"
 msgid "Marked as done"
 msgstr "Marqué comme réalisé"
 
-#: osmtm/templates/task.history.mako:18 osmtm/templates/task.status.mako:8
-msgid "Invalidated"
-msgstr "Invalidé"
-
-#: osmtm/templates/task.history.mako:20 osmtm/templates/task.status.mako:10
-msgid "Validated"
-msgstr "Validé"
-
 #: osmtm/templates/task.history.mako:22
 msgid "Unlocked"
 msgstr "Débloqué"
 
-#: osmtm/templates/task.history.mako:32
+#: osmtm/templates/task.history.mako:38
 msgid "Nothing has happened yet."
 msgstr "Rien ne s'est encore passé."
 
@@ -254,10 +304,6 @@ msgstr "Valider"
 msgid "Mark task as done"
 msgstr "Marquer comme réalisé"
 
-#: osmtm/templates/task.status.mako:6
-msgid "Done"
-msgstr "Fait"
-
 #: osmtm/templates/task.unlocked.mako:9
 msgid "Lock this task to tell others that you are currently working on it."
 msgstr ""
@@ -288,15 +334,15 @@ msgstr "Se déconnecter"
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: osmtm/views/project.py:46
+#: osmtm/views/project.py:47
 msgid "Sorry, this project doesn't  exist"
 msgstr "Désolé, ce projet n'existe pas"
 
-#: osmtm/views/project.py:104
+#: osmtm/views/project.py:105
 msgid "Project #${project_id} created successfully"
 msgstr "Projet #${project_id} créé avec succès"
 
-#: osmtm/views/project.py:133
+#: osmtm/views/project.py:134
 msgid "Successfully imported ${n} geometries"
 msgstr "${n} géométries importées"
 
@@ -316,15 +362,15 @@ msgstr "Tâche bloquée. Vous pouvez commencer à cartographier."
 msgid "Task unlocked."
 msgstr "Tâche débloquée."
 
-#: osmtm/views/task.py:162
+#: osmtm/views/task.py:163
 msgid "Task invalidated."
 msgstr "Tâche invalidée"
 
-#: osmtm/views/task.py:178
+#: osmtm/views/task.py:179
 msgid "Task validated."
 msgstr "Tâche validée"
 
-#: osmtm/views/task.py:246
+#: osmtm/views/task.py:247
 msgid "Random task... none available! Sorry."
 msgstr "Tâche au hasard... aucune disponible ! Désolé."
 

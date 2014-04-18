@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-10 16:16+0200\n"
+"POT-Creation-Date: 2014-04-18 09:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,12 +21,52 @@ msgstr ""
 msgid "login to OpenStreetMap"
 msgstr ""
 
-#: osmtm/templates/home.mako:38
+#: osmtm/templates/home.mako:9
+msgid "urgent"
+msgstr ""
+
+#: osmtm/templates/home.mako:9
+msgid "high"
+msgstr ""
+
+#: osmtm/templates/home.mako:9
+msgid "medium"
+msgstr ""
+
+#: osmtm/templates/home.mako:9
+msgid "low"
+msgstr ""
+
+#: osmtm/templates/home.mako:11
+msgid "High priority first"
+msgstr ""
+
+#: osmtm/templates/home.mako:12
+msgid "Creation date"
+msgstr ""
+
+#: osmtm/templates/home.mako:13
+msgid "Last update"
+msgstr ""
+
+#: osmtm/templates/home.mako:41
+msgid "Search"
+msgstr ""
+
+#: osmtm/templates/home.mako:47
+msgid "Sort by:"
+msgstr ""
+
+#: osmtm/templates/home.mako:119
 msgid "Created by"
 msgstr ""
 
-#: osmtm/templates/home.mako:39
+#: osmtm/templates/home.mako:120
 msgid "Updated"
+msgstr ""
+
+#: osmtm/templates/home.mako:121
+msgid "Priority:"
 msgstr ""
 
 #: osmtm/templates/imagery.mako:26
@@ -45,7 +85,7 @@ msgstr ""
 msgid "Licenses"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:282
+#: osmtm/templates/project.edit.mako:300
 msgid "Allowed users"
 msgstr ""
 
@@ -91,6 +131,24 @@ msgstr ""
 
 #: osmtm/templates/project.mako:74
 msgid "Activity"
+msgstr ""
+
+#: osmtm/templates/project.mako:105
+msgid "Ready"
+msgstr ""
+
+#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:18
+#: osmtm/templates/task.status.mako:8
+msgid "Invalidated"
+msgstr ""
+
+#: osmtm/templates/project.mako:105 osmtm/templates/task.status.mako:6
+msgid "Done"
+msgstr ""
+
+#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:20
+#: osmtm/templates/task.status.mako:10
+msgid "Validated"
 msgstr ""
 
 #: osmtm/templates/project.stats.mako:1
@@ -142,19 +200,11 @@ msgstr ""
 msgid "Marked as done"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:18 osmtm/templates/task.status.mako:8
-msgid "Invalidated"
-msgstr ""
-
-#: osmtm/templates/task.history.mako:20 osmtm/templates/task.status.mako:10
-msgid "Validated"
-msgstr ""
-
 #: osmtm/templates/task.history.mako:22
 msgid "Unlocked"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:32
+#: osmtm/templates/task.history.mako:38
 msgid "Nothing has happened yet."
 msgstr ""
 
@@ -246,10 +296,6 @@ msgstr ""
 msgid "Mark task as done"
 msgstr ""
 
-#: osmtm/templates/task.status.mako:6
-msgid "Done"
-msgstr ""
-
 #: osmtm/templates/task.unlocked.mako:9
 msgid "Lock this task to tell others that you are currently working on it."
 msgstr ""
@@ -278,15 +324,15 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: osmtm/views/project.py:46
+#: osmtm/views/project.py:47
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:104
+#: osmtm/views/project.py:105
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:133
+#: osmtm/views/project.py:134
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
@@ -306,15 +352,15 @@ msgstr ""
 msgid "Task unlocked."
 msgstr ""
 
-#: osmtm/views/task.py:162
+#: osmtm/views/task.py:163
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:178
+#: osmtm/views/task.py:179
 msgid "Task validated."
 msgstr ""
 
-#: osmtm/views/task.py:246
+#: osmtm/views/task.py:247
 msgid "Random task... none available! Sorry."
 msgstr ""
 

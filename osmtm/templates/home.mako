@@ -38,13 +38,13 @@ sorts = [('priority', 'asc', _('High priority first')),
       <div class="form-group left-inner-addon">
         <i class="glyphicon glyphicon-search text-muted"></i>
         <input type="search" class="form-control input-sm"
-               name="search" placeholder="Search"
+               name="search" placeholder="${_('Search')}"
                value="${request.params.get('search', '')}">
       </div>
       <div class="btn-group pull-right">
         <button type="button" class="btn btn-default btn-sm dropdown-toggle"
                 data-toggle="dropdown">
-          Sort by: <strong>${button_text}</strong>
+          ${_('Sort by:')} <strong>${button_text}</strong>
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
