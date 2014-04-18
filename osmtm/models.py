@@ -14,11 +14,16 @@ from sqlalchemy import (
     and_
 )
 
+from sqlalchemy.sql.expression import (
+    func
+)
+
 from geoalchemy2 import (
     Geometry,
     shape,
 )
 from geoalchemy2.functions import (
+    ST_Area,
     ST_Transform,
     ST_Centroid,
     GenericFunction
@@ -422,32 +427,34 @@ class Project(Base, Translatable):
         }
 
     def get_done(self):
-        total = DBSession.query(Task) \
+        total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(Task.project_id == self.id) \
-            .count()
-        count = DBSession.query(Task) \
+            .scalar()
+
+        done = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(and_(Task.project_id == self.id,
                          Task.state == Task.state_done)) \
-            .count()
+            .scalar()
 
-        # FIXME it would be nice to get percent done based on area instead
-        # the following works but is slow
-        # area = DBSession.execute(ST_Area(task.geometry)).scalar()
-        # total = total + area
-        # if task.state >= 2:
-        # done = done + area
-        return round(count * 100 / total) if total != 0 else 0
+        if not done:
+            done = 0
+
+        return round(done * 100 / total) if total != 0 else 0
 
     def get_validated(self):
-        total = DBSession.query(Task) \
+        total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(Task.project_id == self.id) \
-            .count()
-        count = DBSession.query(Task) \
+            .scalar()
+
+        validated = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(and_(Task.project_id == self.id,
                          Task.state == Task.state_validated)) \
-            .count()
+            .scalar()
 
-        return round(count * 100 / total) if total != 0 else 0
+        if not validated:
+            validated = 0
+
+        return round(validated * 100 / total) if total != 0 else 0
 
 # the time delta after which the task is unlocked (in seconds)
 EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
