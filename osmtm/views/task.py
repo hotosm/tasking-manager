@@ -185,7 +185,7 @@ def split(request):
     task = __get_task(request)
     __ensure_task_locked(task, user)
 
-    if task.zoom is None or (task.zoom - task.project.zoom) > 0:
+    if task.zoom is None or (task.zoom - task.project.zoom) > 1:
         raise HTTPBadRequest()
 
     for i in range(0, 2):
