@@ -131,13 +131,21 @@ class TestTaskFunctional(BaseTestCase):
                          headers=headers,
                          xhr=True)
 
-        # can't split more than once
-        self.testapp.get('/project/1/task/10/split', status=400,
+        self.testapp.get('/project/1/task/10/split', status=200,
+                         headers=headers,
+                         xhr=True)
+
+        self.testapp.get('/project/1/task/14/lock',
+                         headers=headers,
+                         xhr=True)
+
+        # can't split more than twice
+        self.testapp.get('/project/1/task/14/split', status=400,
                          headers=headers,
                          xhr=True)
 
         # unlock the tile for later tests
-        self.testapp.get('/project/1/task/10/unlock',
+        self.testapp.get('/project/1/task/14/unlock',
                          headers=headers,
                          xhr=True)
 
