@@ -115,6 +115,10 @@ sorts = [('priority', 'asc', _('High priority first')),
   ${project.short_description}
   <div class="clear"></div>
   <small class="text-muted">
+    % if project.private:
+    <span class="glyphicon glyphicon-lock"
+          title="${_('Access to this project is limited')}"></span> -
+    % endif
     <span>${_('Created by')} ${project.author.username if project.author else ''}</span> -
     <span>${_('Updated')} <span class="timeago" title="${project.last_update}Z"></span></span> -
     <span>${_('Priority:')} ${priority}</span>
