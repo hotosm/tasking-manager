@@ -1,6 +1,14 @@
 <%
 import markdown
 %>
+% if project.private:
+<p class="text-muted">
+  <span class="glyphicon glyphicon-lock"></span>
+  ${_('Access to this project is limited')}
+</p>
+% endif
+<p>${markdown.markdown(project.description)|n}</p>
+<hr />
 <dl>
   % if project.entities_to_map:
   <dt>
@@ -47,3 +55,9 @@ import markdown
 % endif
 <hr />
 <p>${markdown.markdown(project.instructions)|n}</p>
+<p class="text-center">
+  <a id="start"
+     class="btn btn-success btn-lg">
+    <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
+    ${_('Start contributing')}</a>
+</p>

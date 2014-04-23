@@ -6,9 +6,6 @@
 </%block>
 <%block name="content">
 <%
-import markdown
-%>
-<%
 from geoalchemy2 import shape
 from geoalchemy2.functions import ST_Centroid
 geometry_as_shape = shape.to_shape(project.area.geometry)
@@ -30,9 +27,9 @@ else:
   <div class="row">
     <div class="col-md-12">
       <ul class="nav nav-pills">
-        <li class="active"><a href="#main" data-toggle="tab">${_('Info')}</a></li>
-        <li><a id="instructions_tab" href="#instructions" data-toggle="tab">${_('Instructions')}</a></li>
+        <li class="active"><a id="instructions_tab" href="#instructions" data-toggle="tab">${_('Instructions')}</a></li>
         <li><a id="contribute_tab" href="#contribute" data-toggle="tab">${_('Contribute')}</a>
+        <li><a href="#activity" data-toggle="tab">${_('Activity')}</a></li>
         <li><a id="stats_tab" href="#stats" data-toggle="tab">${_('Stats')}</a>
         </li>
         <div class="world_map pull-right">
@@ -47,7 +44,7 @@ else:
     </div>
   </div>
 </div>
-<div id="main_content">
+<div id="main_content" class="large">
   <div id="leaflet"></div>
   <p id="task_loading" class="alert alert-success" style="display: none;">
     ${_('Loading')}
@@ -56,25 +53,10 @@ else:
   <p id="task_error_msg" class="alert alert-danger" style="display: none;"></p>
   <div id="side-col">
     <div class="tab-content">
-      <div id="main" class="row-fluid tab-pane active">
-        % if project.private:
-        <p class="text-muted">
-          <span class="glyphicon glyphicon-lock"></span>
-          ${_('Access to this project is limited')}
-        </p>
-        % endif
-        <p>${markdown.markdown(project.description)|n}</p>
-        <p class="text-center">
-          <a id="start"
-             class="btn btn-success btn-lg">
-            <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
-            ${_('Start contributing')}</a>
-        </p>
-        <hr />
-        <h4>${_('Activity')}</h4>
+      <div id="activity" class="row-fluid tab-pane">
         <%include file="task.history.mako" args="section='project'"/>
       </div>
-      <div id="instructions" class="tab-pane">
+      <div id="instructions" class="tab-pane active">
         <%include file="project.instructions.mako" />
       </div>
       <div id="contribute" class="tab-pane">
