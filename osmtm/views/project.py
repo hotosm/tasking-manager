@@ -16,10 +16,16 @@ from pyramid.security import authenticated_userid
 from pyramid.i18n import (
     get_locale_name,
 )
-from sqlalchemy.sql.expression import and_
+from sqlalchemy.sql.expression import (
+    and_,
+    func,
+)
 
 from geoalchemy2 import (
     shape,
+)
+from geoalchemy2.functions import (
+    ST_Area,
 )
 
 from geojson import (
@@ -305,6 +311,11 @@ def get_stats(project):
     the changes to create a chart with
     """
 
+    total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
+        .filter(Task.project_id == project.id) \
+        .filter(Task.state != Task.state_removed) \
+        .scalar()
+
     filter = and_(
         TaskHistory.state_changed == True,  # noqa
         TaskHistory.project_id == project.id
@@ -313,26 +324,32 @@ def get_stats(project):
         DBSession.query(
             TaskHistory.id,
             TaskHistory.state,
-            TaskHistory.update
+            TaskHistory.update,
+            ST_Area(Task.geometry).label('area')
         )
         .filter(filter)
+        .join(Task)
         .order_by(TaskHistory.update)
         .all()
     )
 
     log.debug('Number of tiles: %s', len(tasks))
-    stats = []
+    stats = [[project.created.isoformat(), 0, 0]]
     done = 0
+    validated = 0
 
     # for every day count number of changes and aggregate changed tiles
     for task in tasks:
         if task.state == TaskHistory.state_done:
-            done += 1
+            done += task.area
         if task.state == TaskHistory.state_invalidated:
-            done -= 1
+            done -= task.area
+        if task.state == TaskHistory.state_validated:
+            validated += task.area
+            done -= task.area
 
         # append a day to the stats and add total number of 'done' tiles and a
         # copy of a current tile_changes list
-        stats.append([task.update.isoformat(), done])
+        stats.append([task.update.isoformat(), done, validated])
 
-    return stats
+    return {"total": total, "stats": stats}
