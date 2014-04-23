@@ -44,11 +44,6 @@ comments = []
               if len(comments) > 0:
                   badge = '<sup><span class="badge badge-important">%s</span></sup>' % len(comments)
           %>
-          <li>
-            <a class="messages" href="${request.route_path('user_messages')}">
-              <i class="glyphicon glyphicon-envelope" style="opacity: 0.5;"></i>${badge|n}
-            </a>
-          </li>
           <%include file="user_menu.mako" args="user=user"/>
           % else:
           <li>
