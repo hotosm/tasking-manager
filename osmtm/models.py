@@ -429,6 +429,7 @@ class Project(Base, Translatable):
     def get_done(self):
         total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(Task.project_id == self.id) \
+            .filter(Task.state != Task.state_removed) \
             .scalar()
 
         done = DBSession.query(func.sum(ST_Area(Task.geometry))) \
@@ -444,6 +445,7 @@ class Project(Base, Translatable):
     def get_validated(self):
         total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(Task.project_id == self.id) \
+            .filter(Task.state != Task.state_removed) \
             .scalar()
 
         validated = DBSession.query(func.sum(ST_Area(Task.geometry))) \

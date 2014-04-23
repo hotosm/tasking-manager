@@ -99,7 +99,6 @@ html, body {
         .progress {
             height: 10px;
             width: 30px;
-            border: 1px solid #ccc;
             margin-bottom: 0;
         }
     }
@@ -470,11 +469,20 @@ html, body {
       stroke: #000;
       shape-rendering: crispedges;
     }
+    .tick line {
+      stroke: #ccc;
+      stroke-opacity: 0.5;
+    }
 
-    .line {
-      fill: none;
-      stroke: steelblue;
-      stroke-width: 1.5px;
+    .area.done {
+      fill: orange;
+      fill-opacity: 0.5;
+      stroke-width: 0;
+    }
+    .area.validated {
+      fill: green;
+      fill-opacity: 0.5;
+      stroke-width: 0;
     }
 }
 

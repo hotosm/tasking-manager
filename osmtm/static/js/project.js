@@ -445,7 +445,7 @@ osmtm.project = (function() {
    * Inits the d3js line chart
    */
   function initChart() {
-    var margin = {top: 20, right: 20, bottom: 30, left: 20},
+    var margin = {top: 20, right: 20, bottom: 30, left: 34},
         width = 400 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
 
@@ -462,12 +462,20 @@ osmtm.project = (function() {
 
     yAxis = d3.svg.axis()
         .scale(y)
-        .tickFormat(d3.format("d"))
-        .orient("left");
+        .orient("left")
+        .tickFormat(d3.format(".0%"));
 
-    line = d3.svg.line()
+    areaDone = d3.svg.area()
         .x(function(d) { return x(d.date); })
-        .y(function(d) { return y(d.done); });
+        .y0(function(d) { return y(d.y0); })
+        .y1(function(d) { return y(d.y + d.y0); });
+
+    areaValidated = d3.svg.area()
+        .x(function(d) { return x(d.date); })
+        .y0(function(d) { return y(d.y0); })
+        .y1(function(d) { return y(d.y + d.y0); });
+
+    stack = d3.layout.stack();
 
     chart = d3.select("#chart").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -481,7 +489,14 @@ osmtm.project = (function() {
     chart.append("g")
          .attr("class", "y axis");
     chart.append("path")
-         .attr("class", "line");
+         .attr("class", "area done");
+    chart.append("path")
+         .attr("class", "area validated");
+    chart.insert('g', ":first-child")
+         .attr('class', 'grid-y')
+         .call(yAxis
+              .tickSize(-width, 0, 0)
+         );
   }
 
   /**
@@ -501,28 +516,41 @@ osmtm.project = (function() {
           })
           el.append($('<li>', {
             html: " <sup>" + tiles.length + "</sup>"
-            }).prepend(user));
-          }
+          }).prepend(user));
         }
-      );
+      }
+    );
 
-      var url = base_url + 'project/' + project_id + '/stats';
-      d3.json(url, function(error, data) {
-        data.forEach(function(d) {
+    var url = base_url + 'project/' + project_id + '/stats';
+    d3.json(url, function(error, data) {
+      var total = data.total;
+      data = data.stats;
+      data.forEach(function(d) {
         d.date = new Date(d[0]);
-        d.done = d[1];
+        d.done = d[1] / total;
+        d.validated = d[2] / total;
       });
 
+      var layers = stack(['validated', 'done'].map(function(state) {
+        return data.map(function(d) {
+          return {date: d.date, y: d[state]}
+        })
+      }));
+
       x.domain(d3.extent(data, function(d) { return d.date; }));
-      y.domain(d3.extent(data, function(d) { return d.done; }));
+      y.domain([0, 1]);
 
       chart.selectAll(".x.axis").call(xAxis);
 
       chart.selectAll(".y.axis").call(yAxis);
 
-      chart.selectAll('.line')
-           .datum(data)
-           .attr("d", line);
+      chart.selectAll('.area.validated')
+           .datum(layers[0])
+           .attr("d", areaValidated);
+
+      chart.selectAll('.area.done')
+           .datum(layers[1])
+           .attr("d", areaDone);
     });
   }
 

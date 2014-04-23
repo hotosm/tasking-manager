@@ -90,7 +90,7 @@ sorts = [('priority', 'asc', _('High priority first')),
       <table>
         <tr>
           <td>
-            <div style="border: 1px solid #ccc;" class="progress">
+            <div class="progress">
               <div style="width: ${project.done}%;" class="progress-bar progress-bar-warning"></div>
               <div style="width: ${project.validated}%;" class="progress-bar progress-bar-success"></div>
             </div>
