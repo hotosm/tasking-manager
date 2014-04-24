@@ -324,6 +324,7 @@ def get_stats(project):
         DBSession.query(
             TaskHistory.id,
             TaskHistory.state,
+            TaskHistory.prev_state,
             TaskHistory.update,
             ST_Area(Task.geometry).label('area')
         )
@@ -343,7 +344,10 @@ def get_stats(project):
         if task.state == TaskHistory.state_done:
             done += task.area
         if task.state == TaskHistory.state_invalidated:
-            done -= task.area
+            if task.prev_state == TaskHistory.state_done:
+                done -= task.area
+            elif task.prev_state == TaskHistory.state_validated:
+                validated -= task.area
         if task.state == TaskHistory.state_validated:
             validated += task.area
             done -= task.area
