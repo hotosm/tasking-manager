@@ -156,11 +156,24 @@ def invalidate(request):
     DBSession.flush()
 
     comment = request.params['comment']
-    task.add_comment(comment)
+    task.add_comment(comment, user)
 
     _ = request.translate
     return dict(success=True,
                 msg=_("Task invalidated."))
+
+
+@view_config(route_name='task_comment', renderer="json")
+def comment(request):
+    user = __get_user(request)
+    task = __get_task(request)
+
+    comment = request.params['comment']
+    task.add_free_comment(comment, user)
+
+    _ = request.translate
+    return dict(success=True, task=dict(id=task.id),
+                msg=_("Comment added."))
 
 
 @view_config(route_name='task_validate', renderer="json")

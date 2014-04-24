@@ -212,8 +212,19 @@ class Task(Base):
             }
         )
 
-    def add_comment(self, comment):
-        self.history[-1].comment = TaskComment(comment)
+    def add_comment(self, comment, user):
+        # used for example when a task is invalidated
+        self.history[-1].comment = TaskComment(comment, user)
+
+    def add_free_comment(self, comment, user):
+        task_history = TaskHistory()
+        task_history.comment = TaskComment(comment, user)
+        task_history.update = datetime.datetime.utcnow()
+        task_history.task_id = self.id
+        task_history.project_id = self.project_id
+        # we add the task history manually since we don't want "after_update"
+        # event to be triggered
+        DBSession.add(task_history)
 
 
 @event.listens_for(Task, "before_update")
@@ -243,9 +254,12 @@ class TaskComment(Base):
     comment = Column(Unicode)
     date = Column(DateTime)
     read = Column(Boolean, default=False)
+    author_id = Column(Integer, ForeignKey('users.id'))
+    author = relationship(User)
 
-    def __init__(self, comment):
+    def __init__(self, comment, author):
         self.comment = comment
+        self.author = author
         self.date = datetime.datetime.utcnow()
 
 
