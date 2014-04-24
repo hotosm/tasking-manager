@@ -134,6 +134,7 @@ class TaskHistory(Base):
     state_invalidated = INVALIDATED
     state_removed = REMOVED
     state = Column(Integer, default=READY)
+    prev_state = Column(Integer)
     state_changed = Column(Boolean, default=False)
     locked = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('users.id'))
@@ -268,6 +269,7 @@ def after_flush(session, flush_context):
             if old_state is not None and obj.state != old_state:
                 taskhistory.user = get_old_value(attrs.get("user"))
                 taskhistory.state_changed = True
+                taskhistory.prev_state = get_old_value(attrs.get("state"))
             else:
                 taskhistory.user = obj.user
             session.add(taskhistory)
