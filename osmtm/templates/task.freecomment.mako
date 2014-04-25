@@ -1,4 +1,4 @@
-% if user:
+% if user and not task.locked:
 <hr />
 <form action="${request.route_path('task_comment', task=task.id, project=task.project_id)}" method="POST" role="form">
   <div class="form-group">

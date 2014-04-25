@@ -80,8 +80,6 @@ def main(global_config, **settings):
                      '/project/{project}/task/{task}/split', xhr=True)
     config.add_route('task_validate',
                      '/project/{project}/task/{task}/validate', xhr=True)
-    config.add_route('task_invalidate',
-                     '/project/{project}/task/{task}/invalidate', xhr=True)
     config.add_route('task_comment',
                      '/project/{project}/task/{task}/comment', xhr=True)
     config.add_route('task_gpx', '/project/{project}/task/{task}.gpx')

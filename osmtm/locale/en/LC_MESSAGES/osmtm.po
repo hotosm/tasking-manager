@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-18 09:59+0200\n"
+"POT-Creation-Date: 2014-04-25 14:15+0200\n"
 "PO-Revision-Date: 2013-09-09 11:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: osmtm/templates/base.mako:55
+#: osmtm/templates/base.mako:50
 msgid "login to OpenStreetMap"
 msgstr ""
 
@@ -57,15 +57,19 @@ msgstr ""
 msgid "Sort by:"
 msgstr ""
 
-#: osmtm/templates/home.mako:119
+#: osmtm/templates/home.mako:120 osmtm/templates/project.instructions.mako:7
+msgid "Access to this project is limited"
+msgstr ""
+
+#: osmtm/templates/home.mako:122
 msgid "Created by"
 msgstr ""
 
-#: osmtm/templates/home.mako:120
+#: osmtm/templates/home.mako:123
 msgid "Updated"
 msgstr ""
 
-#: osmtm/templates/home.mako:121
+#: osmtm/templates/home.mako:124
 msgid "Priority:"
 msgstr ""
 
@@ -89,66 +93,62 @@ msgstr ""
 msgid "Allowed users"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:7
+#: osmtm/templates/project.instructions.mako:15
 msgid "Entities to Map"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:19
+#: osmtm/templates/project.instructions.mako:27
 msgid "Changeset Comment"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:32
+#: osmtm/templates/project.instructions.mako:40
 msgid "Imagery"
 msgstr ""
 
-#: osmtm/templates/project.mako:33
-msgid "Info"
-msgstr ""
-
-#: osmtm/templates/project.mako:34
-msgid "Instructions"
-msgstr ""
-
-#: osmtm/templates/project.mako:35
-msgid "Contribute"
-msgstr ""
-
-#: osmtm/templates/project.mako:36
-msgid "Stats"
-msgstr ""
-
-#: osmtm/templates/project.mako:53
-msgid "Loading"
-msgstr ""
-
-#: osmtm/templates/project.mako:63
-msgid "Access to this project is limited"
-msgstr ""
-
-#: osmtm/templates/project.mako:71
+#: osmtm/templates/project.instructions.mako:62
 msgid "Start contributing"
 msgstr ""
 
-#: osmtm/templates/project.mako:74
+#: osmtm/templates/project.mako:30
+msgid "Instructions"
+msgstr ""
+
+#: osmtm/templates/project.mako:31
+msgid "Contribute"
+msgstr ""
+
+#: osmtm/templates/project.mako:32
 msgid "Activity"
 msgstr ""
 
-#: osmtm/templates/project.mako:105
+#: osmtm/templates/project.mako:33
+msgid "Stats"
+msgstr ""
+
+#: osmtm/templates/project.mako:50
+msgid "Loading"
+msgstr ""
+
+#: osmtm/templates/project.mako:87
 msgid "Ready"
 msgstr ""
 
-#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:18
+#: osmtm/templates/project.mako:87 osmtm/templates/task.history.mako:18
 #: osmtm/templates/task.status.mako:8
 msgid "Invalidated"
 msgstr ""
 
-#: osmtm/templates/project.mako:105 osmtm/templates/task.status.mako:6
+#: osmtm/templates/project.mako:87 osmtm/templates/task.status.mako:6
 msgid "Done"
 msgstr ""
 
-#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:20
+#: osmtm/templates/project.mako:87 osmtm/templates/task.history.mako:20
 #: osmtm/templates/task.status.mako:10
 msgid "Validated"
+msgstr ""
+
+#: osmtm/templates/project.mako:88
+msgid "You must provide a comment."
 msgstr ""
 
 #: osmtm/templates/project.stats.mako:1
@@ -157,6 +157,10 @@ msgstr ""
 
 #: osmtm/templates/project.stats.mako:4
 msgid "Chart"
+msgstr ""
+
+#: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:5
+msgid "Leave a comment"
 msgstr ""
 
 #: osmtm/templates/task.current_locked.mako:2
@@ -187,12 +191,17 @@ msgstr ""
 msgid "Take a task at random"
 msgstr ""
 
+#: osmtm/templates/task.freecomment.mako:7
+msgid "Comment"
+msgstr ""
+
 #: osmtm/templates/task.history.mako:14 osmtm/templates/task.status.mako:3
 msgid "Locked"
 msgstr ""
 
 #: osmtm/templates/task.history.mako:14 osmtm/templates/task.history.mako:16
 #: osmtm/templates/task.history.mako:18 osmtm/templates/task.history.mako:20
+#: osmtm/templates/task.history.mako:22
 msgid "by"
 msgstr ""
 
@@ -201,10 +210,14 @@ msgid "Marked as done"
 msgstr ""
 
 #: osmtm/templates/task.history.mako:22
+msgid "Comment left"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:24
 msgid "Unlocked"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:38
+#: osmtm/templates/task.history.mako:40
 msgid "Nothing has happened yet."
 msgstr ""
 
@@ -262,33 +275,15 @@ msgstr ""
 msgid "Invalidate this task if you consider it needs more work."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:12
+#: osmtm/templates/task.state.done.mako:14
 msgid "Invalidate"
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:22
-msgid ""
-"Please tell why you marked this task as invalid so that the user can "
-"eventually correct his mistakes if any."
-msgstr ""
-
-#: osmtm/templates/task.state.done.mako:25
-msgid "Your comment here"
-msgstr ""
-
-#: osmtm/templates/task.state.done.mako:29
-msgid "Cancel"
-msgstr ""
-
-#: osmtm/templates/task.state.done.mako:30
-msgid "OK"
-msgstr ""
-
-#: osmtm/templates/task.state.done.mako:39
+#: osmtm/templates/task.state.done.mako:19
 msgid "Validate this task if you consider that the work is complete."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:48
+#: osmtm/templates/task.state.done.mako:27
 msgid "Validate"
 msgstr ""
 
@@ -324,43 +319,47 @@ msgstr "Logout"
 msgid "Users"
 msgstr ""
 
-#: osmtm/views/project.py:47
+#: osmtm/views/project.py:53
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:105
+#: osmtm/views/project.py:111
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:134
+#: osmtm/views/project.py:140
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
-#: osmtm/views/task.py:103
+#: osmtm/views/task.py:109
 msgid "Task marked as done. Thanks for your contribution"
 msgstr ""
 
-#: osmtm/views/task.py:122
+#: osmtm/views/task.py:128
 msgid "Task already locked."
 msgstr ""
 
-#: osmtm/views/task.py:128
+#: osmtm/views/task.py:134
 msgid "Task locked. You can start mapping."
 msgstr ""
 
-#: osmtm/views/task.py:143
+#: osmtm/views/task.py:149
 msgid "Task unlocked."
 msgstr ""
 
-#: osmtm/views/task.py:163
-msgid "Task invalidated."
+#: osmtm/views/task.py:162
+msgid "Comment added."
 msgstr ""
 
-#: osmtm/views/task.py:179
+#: osmtm/views/task.py:176
 msgid "Task validated."
 msgstr ""
 
-#: osmtm/views/task.py:247
+#: osmtm/views/task.py:179
+msgid "Task invalidated."
+msgstr ""
+
+#: osmtm/views/task.py:257
 msgid "Random task... none available! Sorry."
 msgstr ""
 
@@ -387,5 +386,20 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Yes, I want to work on this task"
+#~ msgstr ""
+
+#~ msgid "Info"
+#~ msgstr ""
+
+#~ msgid ""
+#~ msgstr ""
+
+#~ msgid "Your comment here"
+#~ msgstr ""
+
+#~ msgid "Cancel"
+#~ msgstr ""
+
+#~ msgid "OK"
 #~ msgstr ""
 

@@ -36,7 +36,7 @@ if (typeof countdownInterval != 'undefined') {
     </div>
 
     <%include file="task.instructions.mako" />
-    <%include file="task.addcomment.mako" />
+    <%include file="task.freecomment.mako" />
     <h4>${_('History')}</h4>
     <div><%include file="task.history.mako" /></div>
     <hr>

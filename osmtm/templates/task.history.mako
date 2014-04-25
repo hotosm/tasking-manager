@@ -19,7 +19,7 @@
     % elif  step.state == step.state_validated and step.state_changed:
     <span><i class="glyphicon glyphicon-thumbs-up text-success"></i> <b>${_('Validated')}</b> ${_('by')} ${step.user.username}</span>
     % elif step.comment:
-    <span><i class="glyphicon glyphicon-comment text-muted"></i> ${step.comment.author.username} ${_('left a comment')}</span>
+    <span><i class="glyphicon glyphicon-comment text-muted"></i> ${_('Comment left')} ${_('by')} ${step.comment.author.username}</span>
     % else:
     <span>${_('Unlocked')}</span>
     % endif

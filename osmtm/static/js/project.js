@@ -412,32 +412,21 @@ osmtm.project = (function() {
 
   function onFormSubmit(e) {
     var form = this;
-    function load() {
-      hideTooltips();
-      var formData = $(form).serializeObject();
-      var submitName = $("button[type=submit][clicked=true]").attr("name");
+
+    hideTooltips();
+    var formData = $(form).serializeObject();
+    var submitName = $("button[type=submit][clicked=true]").attr("name");
+
+    // require a comment for invalidation
+    if (submitName == 'invalidate' && !formData.comment) {
+      alert(commentRequiredMsg);
+    } else {
       formData[submitName] = true;
       $.post(form.action, formData, function(response) {
         handleTaskResponse(response);
       });
     }
-    if ($(form).has($('#commentModal')).length > 0) {
-      $('#commentModal').modal('show');
-      $('#task_comment').focus().on('keyup', function() {
-        $('#commentModalCloseBtn').toggleClass(
-          'disabled',
-          $(this).val() === ''
-        );
-      });
-      $('#commentModalCloseBtn').on('click', function() {
-        if ($('#task_comment')[0].value !== '') {
-          $('#commentModal').modal('hide');
-          load();
-        }
-      });
-    } else {
-      load();
-    }
+
     return false;
   }
 
