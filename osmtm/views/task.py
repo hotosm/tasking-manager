@@ -144,6 +144,12 @@ def unlock(request):
     task.locked = False
 
     DBSession.add(task)
+    DBSession.flush()
+
+    if 'comment' in request.params and request.params.get('comment') != '':
+        comment = request.params['comment']
+        task.add_comment(comment, user)
+
     _ = request.translate
     return dict(success=True, task=dict(id=task.id),
                 msg=_("Task unlocked."))

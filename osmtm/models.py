@@ -133,7 +133,7 @@ class TaskHistory(Base):
     state_validated = VALIDATED
     state_invalidated = INVALIDATED
     state_removed = REMOVED
-    state = Column(Integer, default=READY)
+    state = Column(Integer)
     prev_state = Column(Integer)
     state_changed = Column(Boolean, default=False)
     locked = Column(Boolean, default=False)
@@ -222,6 +222,7 @@ class Task(Base):
         task_history.update = datetime.datetime.utcnow()
         task_history.task_id = self.id
         task_history.project_id = self.project_id
+        task_history.state = None
         # we add the task history manually since we don't want "after_update"
         # event to be triggered
         DBSession.add(task_history)

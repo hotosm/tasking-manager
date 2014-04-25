@@ -226,8 +226,12 @@ osmtm.project = (function() {
       return false;
     }
 
+    var params = {};
+    if (this.id == 'unlock' && $('#task_comment').val()) {
+        params.comment = $('#task_comment').val();
+    }
     var direction = e.data && e.data.direction;
-    $.getJSON(this.href || e.action, e.formData, function(data) {
+    $.getJSON(this.href || e.action, params, function(data) {
       handleTaskResponse(data, direction);
     }).fail(function(error) {
       if (error.status == 401) {
