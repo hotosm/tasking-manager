@@ -23,7 +23,9 @@ if (typeof countdownInterval != 'undefined') {
 % else:
   <%include file="task.unlocked.mako" />
 % endif
+% if task.state in [task.state_ready, task.state_invalidated]:
   <%include file="task.split.mako" />
+% endif
 
     <div class="text-center">
 % if task.state in [task.state_ready, task.state_invalidated]:
