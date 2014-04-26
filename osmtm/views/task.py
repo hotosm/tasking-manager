@@ -98,6 +98,12 @@ def done(request):
     task.locked = False
     task.user = None
     DBSession.add(task)
+    DBSession.flush()
+
+    if 'comment' in request.params and request.params.get('comment') != '':
+        comment = request.params['comment']
+        task.add_comment(comment, user)
+
     _ = request.translate
     return dict(success=True,
                 msg=_("Task marked as done. Thanks for your contribution"))
@@ -138,29 +144,28 @@ def unlock(request):
     task.locked = False
 
     DBSession.add(task)
+    DBSession.flush()
+
+    if 'comment' in request.params and request.params.get('comment') != '':
+        comment = request.params['comment']
+        task.add_comment(comment, user)
+
     _ = request.translate
     return dict(success=True, task=dict(id=task.id),
                 msg=_("Task unlocked."))
 
 
-@view_config(route_name='task_invalidate', renderer="json")
-def invalidate(request):
+@view_config(route_name='task_comment', renderer="json")
+def comment(request):
     user = __get_user(request)
     task = __get_task(request)
-    __ensure_task_locked(task, user)
-
-    task.user = None
-    task.state = task.state_invalidated
-    task.locked = False
-    DBSession.add(task)
-    DBSession.flush()
 
     comment = request.params['comment']
-    task.add_comment(comment)
+    task.add_free_comment(comment, user)
 
     _ = request.translate
-    return dict(success=True,
-                msg=_("Task invalidated."))
+    return dict(success=True, task=dict(id=task.id),
+                msg=_("Comment added."))
 
 
 @view_config(route_name='task_validate', renderer="json")
@@ -170,13 +175,24 @@ def validate(request):
     __ensure_task_locked(task, user)
 
     task.user = None
-    task.state = task.state_validated
-    task.locked = False
-    DBSession.add(task)
 
     _ = request.translate
-    return dict(success=True,
-                msg=_("Task validated."))
+    if 'validate' in request.params:
+        task.state = task.state_validated
+        msg = _("Task validated.")
+    else:
+        task.state = task.state_invalidated
+        msg = _("Task invalidated.")
+
+    task.locked = False
+    DBSession.add(task)
+    DBSession.flush()
+
+    if 'comment' in request.params and request.params.get('comment') != '':
+        comment = request.params['comment']
+        task.add_comment(comment, user)
+
+    return dict(success=True, msg=msg)
 
 
 @view_config(route_name='task_split', renderer='json')

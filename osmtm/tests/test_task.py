@@ -93,9 +93,10 @@ class TestTaskFunctional(BaseTestCase):
         self.testapp.get('/project/1/task/5/lock',
                          headers=headers,
                          xhr=True)
-        self.testapp.get('/project/1/task/5/invalidate', status=200,
+        self.testapp.get('/project/1/task/5/validate', status=200,
                          params={
-                             'comment': 'a comment'
+                             'comment': 'a comment',
+                             'invalidate': True
                          },
                          headers=headers,
                          xhr=True)
@@ -114,6 +115,7 @@ class TestTaskFunctional(BaseTestCase):
                          headers=headers,
                          xhr=True)
         self.testapp.get('/project/1/task/7/validate', status=200,
+                         params={'validate': True},
                          headers=headers,
                          xhr=True)
 
