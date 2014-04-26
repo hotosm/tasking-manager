@@ -4,7 +4,15 @@
   <div class="form-group">
     <textarea id="task_freecomment" name="comment" class="form-control" placeholder="${_('Leave a comment')}" rows="2"></textarea>
   </div>
-  <button class="btn btn-default btn-sm pull-right">${_('Comment')}</button>
+  <button id="task_freecomment_submit" class="btn btn-default btn-sm pull-right disabled">${_('Comment')}</button>
+  <script>
+    $('#task_freecomment').focus().on('keyup', function() {
+      $('#task_freecomment_submit').toggleClass(
+        'disabled',
+        $(this).val() === ''
+      );
+    });
+  </script>
 </form>
 <div class="clear">
 % endif
