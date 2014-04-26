@@ -290,6 +290,7 @@ def get_contributors(project):
     # filter on tasks with state DONE
     filter = and_(
         TaskHistory.project_id == project.id,
+        TaskHistory.state_changed.is_(True),
         TaskHistory.state == TaskHistory.state_done
     )
 
