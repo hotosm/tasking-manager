@@ -18,7 +18,7 @@ time_left = (task.update - (datetime.datetime.utcnow() - EXPIRATION_DELTA)).seco
       var countdownInterval = setInterval(function(){
         $("#countdown").html(Math.floor(task_time_left / 60));
         if (task_time_left < 0) {
-          loadTask(${task.id});
+          osmtm.project.loadTask(${task.id});
           clearInterval(countdownInterval);
         }
         task_time_left--;

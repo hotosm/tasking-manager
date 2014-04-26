@@ -152,6 +152,7 @@ osmtm.project = (function() {
           } else {
             alert("an error occured");
           }
+          checkForUpdates();
         }
       );
     }
@@ -572,55 +573,58 @@ osmtm.project = (function() {
     lastUpdateCheck = now;
   }
 
-  return function() {
-    createMap();
-    initChart();
+  return {
+    init: function() {
+      createMap();
+      initChart();
 
-    // load an empty task
-    loadEmptyTask();
+      // load an empty task
+      loadEmptyTask();
 
-    $('#start').on('click', function() {$('#contribute_tab').tab('show');});
-    $('a[data-toggle="tab"]').on('shown.bs.tab', onTabShow);
+      $('#start').on('click', function() {$('#contribute_tab').tab('show');});
+      $('a[data-toggle="tab"]').on('shown.bs.tab', onTabShow);
 
-    // actions button handlers
-    $(document).on('click', '#lock', {direction: 'next'}, onTaskAction);
-    $(document).on('click', '#unlock', {direction: 'prev'}, onTaskAction);
-    $(document).on('click', '#split', {direction: 'next'}, function(e) {
-      if ($(this).hasClass('disabled')) {
+      // actions button handlers
+      $(document).on('click', '#lock', {direction: 'next'}, onTaskAction);
+      $(document).on('click', '#unlock', {direction: 'prev'}, onTaskAction);
+      $(document).on('click', '#split', {direction: 'next'}, function(e) {
+        if ($(this).hasClass('disabled')) {
+          return false;
+        }
+        if (confirm($(this).attr('data-confirm'))) {
+          onTaskAction.call(this, e);
+        }
         return false;
-      }
-      if (confirm($(this).attr('data-confirm'))) {
-        onTaskAction.call(this, e);
-      }
-      return false;
-    });
-    $(document).on('click', '.clear', clearSelection);
-    $(document).on('click', '#edit', exportOpen);
-    $(document).on('click', '#editDropdown li', exportOpen);
-    $(document).on('click', '#random', function(e) {
-      loadRandom(e);
-      return false;
-    });
-
-    // routes
-    Sammy(function() {
-      this.get('#task/:id', function() {
-        loadTask(this.params.id);
       });
-    }).run();
+      $(document).on('click', '.clear', clearSelection);
+      $(document).on('click', '#edit', exportOpen);
+      $(document).on('click', '#editDropdown li', exportOpen);
+      $(document).on('click', '#random', function(e) {
+        loadRandom(e);
+        return false;
+      });
 
-    // automaticaly checks for tile state updates
-    window.setInterval(checkForUpdates, 20000);
+      // routes
+      Sammy(function() {
+        this.get('#task/:id', function() {
+          loadTask(this.params.id);
+        });
+      }).run();
 
+      // automaticaly checks for tile state updates
+      window.setInterval(checkForUpdates, 20000);
 
-    $(document).on('submit', 'form', onFormSubmit);
-    $(document).on("click", "form button[type=submit]", function() {
-      $("button[type=submit]", $(this).parents("form")).removeAttr("clicked");
-      $(this).attr("clicked", "true");
-    });
+      $(document).on('submit', 'form', onFormSubmit);
+      $(document).on("click", "form button[type=submit]", function() {
+        $("button[type=submit]", $(this).parents("form")).removeAttr("clicked");
+        $(this).attr("clicked", "true");
+      });
+    },
+
+    loadTask: loadTask
   }
 })();
 
 $(document).ready(function() {
-  osmtm.project();
+  osmtm.project.init();
 });
