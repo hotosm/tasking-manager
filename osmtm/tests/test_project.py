@@ -242,6 +242,12 @@ class TestProjectFunctional(BaseTestCase):
         res = self.testapp.get('/', status=200)
         self.assertFalse("private_project" in res.body)
 
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'search': 'private'
+                               })
+        self.assertFalse("private_project" in res.body)
+
         headers_user1 = self.login_as_user1()
         res = self.testapp.get('/', status=200, headers=headers_user1)
         self.assertFalse("private_project" in res.body)

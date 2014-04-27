@@ -5,6 +5,7 @@ import sqlalchemy
 from sqlalchemy import (
     desc,
     or_,
+    and_,
 )
 
 from ..models import (
@@ -61,7 +62,7 @@ def home(request):
         ids = DBSession.query(ProjectTranslation.id) \
                        .filter(search_filter) \
                        .all()
-        filter = Project.id.in_(ids)
+        filter = and_(Project.id.in_(ids), filter)
 
     sort_by = 'project.%s' % request.params.get('sort_by', 'priority')
     direction = request.params.get('direction', 'asc')
