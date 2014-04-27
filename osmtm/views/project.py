@@ -228,7 +228,8 @@ def check_for_updates(request):
     return dict(update=False)
 
 
-@view_config(route_name="project_tasks_json", renderer='json')
+@view_config(route_name="project_tasks_json", renderer='json',
+             http_cache=0)
 def project_tasks_json(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
