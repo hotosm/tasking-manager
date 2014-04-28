@@ -137,6 +137,40 @@ class TestProjectFunctional(BaseTestCase):
         res2 = res.follow(headers=headers, status=200)
         self.assertTrue('the_name_in_french' in res2.body)
 
+    def test_project_edit__submitted_private(self):
+        headers = self.login_as_admin()
+        project_id = self.create_project()
+        self.testapp.get('/project/%d/edit' % project_id,
+                         headers=headers,
+                         params={
+                             'form.submitted': True,
+                             'license_id': 1,
+                             'priority': 2,
+                             'private': 'on',
+                         },
+                         status=302)
+
+        from osmtm.models import Project, DBSession
+        project = DBSession.query(Project).get(project_id)
+        self.assertTrue(project.private)
+
+    def test_project_edit__submitted_josm_preset(self):
+        headers = self.login_as_admin()
+        project_id = self.create_project()
+        self.testapp.post('/project/%d/edit' % project_id,
+                          headers=headers,
+                          upload_files=[('josm_preset', 'preset.xml', 'blah')],
+                          params={
+                              'form.submitted': True,
+                              'license_id': 1,
+                              'priority': 2,
+                          },
+                          status=302)
+
+        from osmtm.models import Project, DBSession
+        project = DBSession.query(Project).get(project_id)
+        self.assertEqual(project.josm_preset, 'blah')
+
     def test_project_tasks_json(self):
         project_id = 1
         res = self.testapp.get('/project/%d/tasks.json' % project_id,
@@ -208,6 +242,85 @@ class TestProjectFunctional(BaseTestCase):
 
         project = DBSession.query(Project).get(project_id)
         self.assertEqual(len(project.allowed_users), 0)
+
+    def test_project_preset(self):
+        import transaction
+        from osmtm.models import Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+        project.josm_preset = u'blah'
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        res = self.testapp.get('/project/%d/preset' % project_id, status=200)
+        self.assertTrue('blah' in res)
+
+    def test_project_contributors(self):
+        project_id = self.create_project()
+
+        headers = self.login_as_user1()
+        self.testapp.get('/project/%d/task/1/lock' % project_id,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/%d/task/1/done' % project_id,
+                         headers=headers,
+                         xhr=True)
+
+        res = self.testapp.get('/project/%d/contributors' % project_id,
+                               status=200, xhr=True)
+        self.assertTrue('user1' in res)
+
+    def test_project_stats(self):
+        project_id = self.create_project()
+
+        headers = self.login_as_user1()
+        self.testapp.get('/project/%d/task/1/lock' % project_id,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/%d/task/1/done' % project_id,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/%d/task/1/lock' % project_id,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/%d/task/1/validate' % project_id,
+                         headers=headers,
+                         params={
+                             'comment': u'a comment',
+                             'invalidate': True
+                         },
+                         xhr=True)
+
+        self.testapp.get('/project/%d/task/2/lock' % project_id,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/%d/task/2/done' % project_id,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/%d/task/2/lock' % project_id,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/%d/task/2/validate' % project_id,
+                         headers=headers,
+                         params={
+                             'validate': True
+                         },
+                         xhr=True)
+        self.testapp.get('/project/%d/task/2/lock' % project_id,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/%d/task/2/validate' % project_id,
+                         headers=headers,
+                         params={
+                             'comment': u'a comment',
+                             'invalidate': True
+                         },
+                         xhr=True)
+
+        self.testapp.get('/project/%d/stats' % project_id,
+                         status=200, xhr=True)
 
     def test_project__private_not_allowed(self):
         import transaction
