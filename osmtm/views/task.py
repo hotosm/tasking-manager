@@ -273,7 +273,7 @@ def task_gpx(request):
 
 
 # unlock any expired task
-def check_task_expiration():
+def check_task_expiration():  # pragma: no cover
     tasks = DBSession.query(Task).filter(Task.locked == True).all()  # noqa
     for task in tasks:
         if datetime.datetime.utcnow() > task.update + EXPIRATION_DELTA:
