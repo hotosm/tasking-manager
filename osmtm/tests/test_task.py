@@ -15,6 +15,9 @@ class TestTaskFunctional(BaseTestCase):
                          headers=headers,
                          xhr=True)
 
+    def test_task_empty(self):
+        self.testapp.get('/project/1/task/empty', status=200, xhr=True)
+
     def test_task_done__not_loggedin(self):
         self.testapp.get('/project/1/task/1/done', status=401, xhr=True)
 
@@ -35,6 +38,18 @@ class TestTaskFunctional(BaseTestCase):
 
     def test_task_lock__not_loggedin(self):
         self.testapp.get('/project/1/task/3/lock', status=401, xhr=True)
+
+    def test_task_done__comment(self):
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/4/lock', status=200,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/1/task/4/done', status=200,
+                         headers=headers,
+                         params={
+                             'comment': 'some_comment'
+                         },
+                         xhr=True)
 
     def test_task_lock(self):
         headers_user1 = self.login_as_user1()
@@ -77,6 +92,29 @@ class TestTaskFunctional(BaseTestCase):
                          xhr=True)
         res = self.testapp.get('/project/1/task/3/unlock', status=200,
                                headers=headers,
+                               xhr=True)
+        self.assertTrue(res.json['success'])
+
+    def test_task_unlock__comment(self):
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/3/lock', status=200,
+                         headers=headers,
+                         xhr=True)
+        res = self.testapp.get('/project/1/task/3/unlock', status=200,
+                               headers=headers,
+                               params={
+                                   'comment': 'some_comment'
+                               },
+                               xhr=True)
+        self.assertTrue(res.json['success'])
+
+    def test_task_comment(self):
+        headers = self.login_as_user1()
+        res = self.testapp.get('/project/1/task/3/comment', status=200,
+                               headers=headers,
+                               params={
+                                   'comment': 'some_comment'
+                               },
                                xhr=True)
         self.assertTrue(res.json['success'])
 
