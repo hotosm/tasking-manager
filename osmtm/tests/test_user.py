@@ -6,6 +6,10 @@ class TestViewsFunctional(BaseTestCase):
     def test_users(self):
         self.testapp.get('/users', status=200)
 
+    def test_users_json(self):
+        res = self.testapp.get('/users.json', status=200)
+        self.assertEqual(len(res.json), 3)
+
     def test_user_messages__not_authenticated(self):
         self.testapp.get('/user/messages', status=302)
 
