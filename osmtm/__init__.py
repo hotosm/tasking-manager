@@ -1,13 +1,16 @@
 from pyramid.config import Configurator
-from sqlalchemy import engine_from_config
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
+
+from sqlalchemy import engine_from_config
 
 from .models import (
     DBSession,
     Base,
 )
+
+from .utils import load_local_settings
 
 from sqlalchemy_i18n.manager import translation_manager
 
@@ -21,6 +24,7 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     settings['mako.directories'] = 'osmtm:templates'
+    load_local_settings(settings)
 
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)

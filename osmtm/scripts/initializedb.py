@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import os
-import sys
 import transaction
 
 from sqlalchemy import engine_from_config, func
+
 
 from pyramid.paster import (
     get_appsettings,
@@ -20,12 +19,7 @@ from ..models import (
     Base,
 )
 
-
-def usage(argv):
-    cmd = os.path.basename(argv[0])
-    print('usage: %s <config_uri>\n'
-          '(example: "%s development.ini")' % (cmd, cmd))
-    sys.exit(1)
+from ..utils import load_local_settings
 
 
 from sqlalchemy.orm import configure_mappers
@@ -36,12 +30,12 @@ import geojson
 import shapely
 
 
-def main(argv=sys.argv):
-    if len(argv) != 2:
-        usage(argv)
-    config_uri = argv[1]
-    setup_logging(config_uri)
-    settings = get_appsettings(config_uri)
+def main():
+    setup_logging('development.ini')
+    settings = get_appsettings('development.ini')
+
+    load_local_settings(settings)
+
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
 

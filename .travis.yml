@@ -23,6 +23,8 @@ install:
 
 script:
 - source env/bin/activate
+- echo [app:main] >> local.test.ini
+- echo sqlalchemy.url = postgresql://www-data:www-data@localhost/osmtm_tests >> local.test.ini
 - nosetests
 - flake8 osmtm --exclude=osmtm/static
 
