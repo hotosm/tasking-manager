@@ -170,7 +170,7 @@ class Task(Base):
     y = Column(Integer)
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'), index=True)
-    geometry = Column(Geometry('Polygon', srid=4326))
+    geometry = Column(Geometry('MultiPolygon', srid=4326))
 
     state_ready = READY
     state_done = DONE
@@ -408,15 +408,22 @@ class Project(Base, Translatable):
         for feature in collection.features:
             geometry = shapely.geometry.asShape(feature.geometry)
             if isinstance(geometry, shapely.geometry.Polygon):
-                hasPolygon = True
-            elif not isinstance(geometry, shapely.geometry.Polygon):
+                geometry = shapely.geometry.MultiPolygon([geometry])
+
+            if not isinstance(geometry, shapely.geometry.MultiPolygon):
                 continue
+
+            hasPolygon = True
             tasks.append(Task(None, None, None, 'SRID=4326;%s' % geometry.wkt))
 
         if not hasPolygon:
-            raise ValueError("GeoJSON file doesn't contain any polygon.")
+            raise ValueError("GeoJSON file doesn't contain any polygon \
+                    nor multipolygon.")
 
         self.tasks = tasks
+
+        DBSession.add(self)
+        DBSession.flush()
 
         bounds = DBSession.query(ST_Convexhull(ST_Collect(Task.geometry))) \
             .filter(Task.project_id == self.id).one()
