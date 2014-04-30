@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
 import transaction
-import ConfigParser
 
 from sqlalchemy import engine_from_config, func
 
@@ -21,6 +19,8 @@ from ..models import (
     Base,
 )
 
+from ..utils import load_local_settings
+
 
 from sqlalchemy.orm import configure_mappers
 from sqlalchemy_i18n.manager import translation_manager
@@ -34,12 +34,7 @@ def main():
     setup_logging('development.ini')
     settings = get_appsettings('development.ini')
 
-    local_settings_path = os.environ.get('LOCAL_SETTINGS_PATH',
-                                         settings['local_settings_path'])
-    if os.path.exists(local_settings_path):
-        config = ConfigParser.ConfigParser()
-        config.read(local_settings_path)
-        settings.update(config.items('app:main'))
+    load_local_settings(settings)
 
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
