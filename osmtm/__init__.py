@@ -1,8 +1,12 @@
+import os
+import ConfigParser
+
 from pyramid.config import Configurator
-from sqlalchemy import engine_from_config
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
+
+from sqlalchemy import engine_from_config
 
 from .models import (
     DBSession,
@@ -21,6 +25,12 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     settings['mako.directories'] = 'osmtm:templates'
+    local_settings_path = os.environ.get('LOCAL_SETTINGS_PATH',
+                                         settings['local_settings_path'])
+    if os.path.exists(local_settings_path):
+        config = ConfigParser.ConfigParser()
+        config.read(local_settings_path)
+        settings.update(config.items('app:main'))
 
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)

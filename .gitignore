@@ -39,3 +39,10 @@ env
 
 # mac specific files
 .DS_Store
+
+# local settings
+local.ini
+local.test.ini
+
+# node modules
+node_modules

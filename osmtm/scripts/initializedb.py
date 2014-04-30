@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import transaction
+import ConfigParser
 
 from sqlalchemy import engine_from_config, func
+
 
 from pyramid.paster import (
     get_appsettings,
@@ -21,13 +22,6 @@ from ..models import (
 )
 
 
-def usage(argv):
-    cmd = os.path.basename(argv[0])
-    print('usage: %s <config_uri>\n'
-          '(example: "%s development.ini")' % (cmd, cmd))
-    sys.exit(1)
-
-
 from sqlalchemy.orm import configure_mappers
 from sqlalchemy_i18n.manager import translation_manager
 
@@ -36,12 +30,17 @@ import geojson
 import shapely
 
 
-def main(argv=sys.argv):
-    if len(argv) != 2:
-        usage(argv)
-    config_uri = argv[1]
-    setup_logging(config_uri)
-    settings = get_appsettings(config_uri)
+def main():
+    setup_logging('development.ini')
+    settings = get_appsettings('development.ini')
+
+    local_settings_path = os.environ.get('LOCAL_SETTINGS_PATH',
+                                         settings['local_settings_path'])
+    if os.path.exists(local_settings_path):
+        config = ConfigParser.ConfigParser()
+        config.read(local_settings_path)
+        settings.update(config.items('app:main'))
+
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
 

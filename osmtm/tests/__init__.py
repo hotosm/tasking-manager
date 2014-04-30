@@ -1,3 +1,4 @@
+import ConfigParser
 import unittest
 import transaction
 from sqlalchemy import create_engine
@@ -11,7 +12,11 @@ from osmtm.models import (
 )
 from sqlalchemy_i18n.manager import translation_manager
 
-db_url = 'postgresql://www-data:@localhost/osmtm_tests'
+local_settings_path = 'local.test.ini'
+
+# raise an error if the file doesn't exist
+with open(local_settings_path):
+    pass
 
 USER1_ID = 1
 USER2_ID = 2
@@ -27,6 +32,9 @@ def populate_db():
     import geoalchemy2
     import shapely
 
+    config = ConfigParser.ConfigParser()
+    config.read(local_settings_path)
+    db_url = config.get('app:main', 'sqlalchemy.url')
     engine = create_engine(db_url)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -75,7 +83,7 @@ class BaseTestCase(unittest.TestCase):
         from webtest import TestApp
         settings = {
             'available_languages': 'en fr',
-            'sqlalchemy.url': db_url,
+            'local_settings_path': local_settings_path
         }
         self.app = main({}, **settings)
         self.testapp = TestApp(self.app)

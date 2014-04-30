@@ -26,7 +26,7 @@ To create a virtual Python environment:
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
     env/bin/python setup.py develop
-    
+
 *Tip: if you encounter problems installing `psycopg2` especially on Mac, it is recommended to follow advice proposed [here](http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa).*
 
 ### Database
@@ -43,15 +43,24 @@ Then create a database named `osmtm`:
     sudo -u postgres createdb -O www-data osmtm
     sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
 
-Now edit the `development.ini` file and set the value of `sqlalchemy.url` as
-appropriate. For example:
-
-    sqlalchemy.url = postgresql://your_db_user:your_db_password@localhost/osmtm
-
 You're now ready to do the initial population of the database. An
 `initialize_osmtm_db` script is available in the virtual env for that:
 
-    env/bin/initialize_osmtm_db development.ini
+    env/bin/initialize_osmtm_db
+
+### Local settings
+
+You certainly will need some local specific settings, like the db user or
+password. For this, you can create a `local.ini` file in the project root,
+where you can then override every needed setting.
+For example:
+
+    [app:main]
+    sqlalchemy.url = postgresql://www-data:www-data@localhost/osmtm
+
+Note: you can also put your local settings file anywhere else on your
+file system, and then create a `LOCAL_SETTINGS_PATH` environment variable
+to make the project aware of this.
 
 ## Launch the application
 
@@ -71,8 +80,12 @@ The tests use a separate database. Create that database first:
     sudo -u postgres createdb -O www-data osmtm_tests
     sudo -u postgres psql -d osmtm_tests -c "CREATE EXTENSION postgis;"
 
-Edit `osmtm/tests/__init__.py` and change the database connection string set
-in the `db_url` variable as appropriate.
+Create a `local.test.ini`file in the project root, where you will add the
+settings for the database connection.
+For example:
+
+    [app:main]
+    sqlalchemy.url = postgresql://www-data:www-data@localhost/osmtm_tests
 
 To run the tests, use the following command:
 
