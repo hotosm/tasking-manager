@@ -90,3 +90,16 @@ For example:
 To run the tests, use the following command:
 
     env/bin/nosetests
+
+## Upgrating code
+
+When upgrading the application code, you may need to upgrade the database
+as well in case the schema has changed.
+
+In order to do you this, you first need to ensure that you'll be able to
+re-create the database in case something wents wrong. Creating a copy of the
+current data is a good idea.
+
+Then you can run the following command:
+
+    env/bin/alembic upgrade head
