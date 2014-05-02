@@ -91,7 +91,7 @@ To run the tests, use the following command:
 
     env/bin/nosetests
 
-## Upgrating code
+## Upgrading
 
 When upgrading the application code, you may need to upgrade the database
 as well in case the schema has changed.
