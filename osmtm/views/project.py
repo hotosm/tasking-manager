@@ -130,9 +130,6 @@ def project_new_import(request):
             user
         )
 
-        DBSession.add(project)
-        DBSession.flush()
-
         try:
             input_file = request.POST['import'].file
             count = project.import_from_geojson(input_file.read())

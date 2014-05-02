@@ -1,6 +1,6 @@
 import os
 import ConfigParser
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, MultiPolygon
 from shapely.prepared import prep
 from math import floor, ceil
 
@@ -22,8 +22,8 @@ class TileBuilder(object):
         ymin = j * self.a - max
         xmax = (i + 1) * self.a - max
         ymax = (j + 1) * self.a - max
-        return Polygon([(xmin, ymin), (xmax, ymin),
-                        (xmax, ymax), (xmin, ymax)])
+        return MultiPolygon([Polygon([(xmin, ymin), (xmax, ymin),
+                                      (xmax, ymax), (xmin, ymax)])])
 
 
 # This method finds the tiles that intersect the given geometry for the given

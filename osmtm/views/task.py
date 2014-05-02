@@ -268,7 +268,7 @@ def task_gpx(request):
     task = __get_task(request)
     request.response.headerlist.append(('Access-Control-Allow-Origin',
                                         'http://www.openstreetmap.org'))
-    return dict(polygon=shape.to_shape(task.geometry),
+    return dict(multipolygon=shape.to_shape(task.geometry),
                 project_id=task.project_id)
 
 

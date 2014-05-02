@@ -13,10 +13,12 @@ timestamp = timestamp.isoformat()
 </metadata>
 <trk>
   <name>Task for project ${project_id}</name>
+  % for polygon in multipolygon:
   <trkseg>
     % for point in polygon.exterior.coords:
       <trkpt lon="${point[0]}" lat="${point[1]}"></trkpt>
     % endfor
   </trkseg>
+  % endfor
 </trk>
 </gpx>
