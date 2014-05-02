@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.md')).read()
-CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
+CHANGES = open(os.path.join(here, 'CHANGELOG.md')).read()
 
 requires = [
     'pyramid==1.4',
@@ -32,7 +32,7 @@ requires = [
 ]
 
 setup(name='osmtm',
-      version='2.0',
+      version='2.1',
       description='osmtm',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
