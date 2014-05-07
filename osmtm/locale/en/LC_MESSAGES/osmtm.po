@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-25 14:15+0200\n"
+"POT-Creation-Date: 2014-05-07 19:49+0200\n"
 "PO-Revision-Date: 2013-09-09 11:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -85,6 +85,10 @@ msgid ""
 "Editor"
 msgstr ""
 
+#: osmtm/templates/imagery.mako:67
+msgid "You need to accept the license first"
+msgstr ""
+
 #: osmtm/templates/license.mako:5 osmtm/templates/licenses.mako:5
 msgid "Licenses"
 msgstr ""
@@ -148,7 +152,7 @@ msgid "Validated"
 msgstr ""
 
 #: osmtm/templates/project.mako:88
-msgid "You must provide a comment."
+msgid "You must leave a comment."
 msgstr ""
 
 #: osmtm/templates/project.stats.mako:1
@@ -233,17 +237,13 @@ msgstr ""
 msgid "Task locked by ${username}"
 msgstr ""
 
-#: osmtm/templates/task.locked.mako:14
-msgid "Unlock"
-msgstr ""
-
-#: osmtm/templates/task.locked.mako:17
+#: osmtm/templates/task.locked.mako:13
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
 msgstr ""
 
-#: osmtm/templates/task.locked.mako:19
+#: osmtm/templates/task.locked.mako:15
 msgid "min. left"
 msgstr ""
 
@@ -251,11 +251,11 @@ msgstr ""
 msgid "Clear selection"
 msgstr ""
 
-#: osmtm/templates/task.mako:40
+#: osmtm/templates/task.mako:42
 msgid "History"
 msgstr ""
 
-#: osmtm/templates/task.mako:45
+#: osmtm/templates/task.mako:47
 msgid "See the changesets in the OSM database for this area."
 msgstr ""
 
@@ -275,19 +275,24 @@ msgstr ""
 msgid "Invalidate this task if you consider it needs more work."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:14
+#: osmtm/templates/task.state.done.mako:11
+#: osmtm/templates/task.state.ready.mako:8
+msgid "Unlock"
+msgstr ""
+
+#: osmtm/templates/task.state.done.mako:17
 msgid "Invalidate"
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:19
+#: osmtm/templates/task.state.done.mako:21
 msgid "Validate this task if you consider that the work is complete."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:27
+#: osmtm/templates/task.state.done.mako:28
 msgid "Validate"
 msgstr ""
 
-#: osmtm/templates/task.state.ready.mako:5
+#: osmtm/templates/task.state.ready.mako:10
 msgid "Mark task as done"
 msgstr ""
 
@@ -327,7 +332,7 @@ msgstr ""
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:140
+#: osmtm/views/project.py:137
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
@@ -343,23 +348,23 @@ msgstr ""
 msgid "Task locked. You can start mapping."
 msgstr ""
 
-#: osmtm/views/task.py:149
+#: osmtm/views/task.py:155
 msgid "Task unlocked."
 msgstr ""
 
-#: osmtm/views/task.py:162
+#: osmtm/views/task.py:168
 msgid "Comment added."
 msgstr ""
 
-#: osmtm/views/task.py:176
+#: osmtm/views/task.py:182
 msgid "Task validated."
 msgstr ""
 
-#: osmtm/views/task.py:179
+#: osmtm/views/task.py:185
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:257
+#: osmtm/views/task.py:263
 msgid "Random task... none available! Sorry."
 msgstr ""
 
@@ -401,5 +406,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "OK"
+#~ msgstr ""
+
+#~ msgid "You must provide a comment."
 #~ msgstr ""
 
