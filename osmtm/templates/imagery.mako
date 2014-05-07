@@ -41,10 +41,14 @@
 </p>
 % endif
 % if project.license:
+<%
+  license_agreement_url = request.route_path('license', license=project.license.id, \
+      _query={'redirect': request.route_path('project', project=project.id)})
+%>
 <p class="text-warning">
   <span class="glyphicon glyphicon-warning-sign"></span>
   Access to this imagery is limited by the
-  <a href="${request.route_path('license', license=project.license.id)}?redirect=${request.route_path('project', project=project.id)}">
+  <a href="${license_agreement_url}">
     ${project.license.name} license agreement
   </a>.
 </p>
@@ -54,10 +58,14 @@
 You have already acknowledged the terms of this license.</span>
 % else:
   You need to
-  <a href="${request.route_path('license', license=project.license.id)}?redirect=${request.route_path('project', project=project.id)}">
+  <a href="${license_agreement_url}">
     review and acknowledge
   </a>
   the agreement.
+  <script>
+    var licenseAgreementUrl = "${license_agreement_url}";
+    var requiresLicenseAgreementMsg = "${_('You need to accept the license first') |n}"
+  </script>
 % endif
 </p>
 % endif

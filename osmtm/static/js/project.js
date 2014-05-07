@@ -337,21 +337,26 @@ osmtm.project = (function() {
       window.open(url);
       break;
       case "iDeditor":
-      url = getLink({
-        base: 'http://www.openstreetmap.org/edit?editor=id&',
-        bounds: task_bounds,
-        centroid: task_centroid,
-        protocol: 'id'
-      });
-      url += "&gpx=" + gpx_url;
-      if (typeof imagery_url != "undefined") {
-        // url is supposed to look like tms[22]:http://hiu...
-        u = imagery_url.substring(imagery_url.indexOf('http'));
-        u = u.replace('zoom', 'z');
-        url += "&background=custom:" + u;
-      }
-      window.open(url);
-      break;
+        if (typeof licenseAgreementUrl != 'undefined') {
+          alert(requiresLicenseAgreementMsg);
+          window.location = licenseAgreementUrl;
+          break;
+        }
+        url = getLink({
+          base: 'http://www.openstreetmap.org/edit?editor=id&',
+          bounds: task_bounds,
+          centroid: task_centroid,
+          protocol: 'id'
+        });
+        url += "&gpx=" + gpx_url;
+        if (typeof imagery_url != "undefined") {
+          // url is supposed to look like tms[22]:http://hiu...
+          u = imagery_url.substring(imagery_url.indexOf('http'));
+          u = u.replace('zoom', 'z');
+          url += "&background=custom:" + u;
+        }
+        window.open(url);
+        break;
       default:
       break;
     }
