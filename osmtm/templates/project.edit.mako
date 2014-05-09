@@ -81,69 +81,64 @@
         </select>
       </div>
     </div>
-    <div class="tabbable tabs-left">
-      <ul class="nav nav-tabs languages">
-        % for locale, translation in project.translations.iteritems():
-        <li><a href="#${locale}" data-toggle="tab">${locale}</a></li>
-        % endfor
-      </ul>
-      <div class="tab-content col-md-8">
-        % for locale, translation in project.translations.iteritems():
-        <div class="tab-pane active" id="${locale}">
-          <div class="form-group">
-            <input id="id_name" type="text" name="name_${locale}"
-                   value="${translation.name}"
-                   placeholder="Name"
-                   class="form-control"/>
-          </div>
 
-          <!-- short_description -->
-          <div class="form-group">
-            <label for="id_short_description" class="control-label">Short Description</label>
-            <div class="tab-content">
-              <div class="tab-pane active" id="short_description_${locale}_edit">
+    <!-- name -->
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="id_name" class="control-label">Name of the project
+          </label>
+          ${locale_chooser(inputname='name')}
+          <div class="tab-content">
+            % for locale, translation in project.translations.iteritems():
+            <div id="tab_name_${locale}"
+                 data-locale="${locale}"
+                 class="tab-pane ${'active' if locale == 'en' else ''}">
+              <input id="id_name_${locale}" type="text" name="name_${locale}"
+                     value="${translation.name}"
+                     placeholder="${project.translations.en.name}"
+                     class="form-control"/>
+            </div>
+            % endfor
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- short_description -->
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="id_short_description" class="control-label">
+            Short Description
+          </label>
+          ${locale_chooser(inputname='short_description')}
+          <div class="tab-content">
+            % for locale, translation in project.translations.iteritems():
+              <div id="short_description_${locale}"
+                   data-locale="${locale}"
+                   class="tab-pane ${'active' if locale == 'en' else ''}">
                 <textarea id="id_short_description_${locale}"
                           name="short_description_${locale}"
                           class="form-control"
+                          placeholder="${project.translations.en.short_description}"
                           rows="3">${translation.short_description}</textarea>
               </div>
-            </div>
+            % endfor
           </div>
-
-          <!-- description -->
-          <div class="form-group">
-            <label for="id_description" class="control-label">Description</label>
-            <ul class="nav nav-pills small">
-              <li class="active">
-                <a href="#description_${locale}_edit" data-toggle="tab">Edit</a>
-              </li>
-              <li>
-                <a href="#description_${locale}_preview" data-toggle="tab">Preview</a>
-              </li>
-            </ul>
-            <div class="tab-content">
-              <div class="tab-pane active" id="description_${locale}_edit">
-                <textarea id="id_description_${locale}"
-                          name="description_${locale}"
-                          class="form-control"
-                          rows="5">${translation.description}</textarea>
-              </div>
-              <div class="tab-pane preview" id="description_${locale}_preview"></div>
-            </div>
-          </div>
-          ${markdown_link()}
         </div>
-        <script>
-          (function () {
-            var description = $('#id_description_${locale}'),
-            description_preview = $('#description_${locale}_preview');
-            description.keyup(function() {
-              var html = converter.makeHtml(description.val());
-              description_preview.html(html);
-            }).trigger('keyup');
-          })();
-        </script>
-        % endfor
+      </div>
+    </div>
+
+    <!-- description -->
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="id_description" class="control-label">
+            Description
+          </label>
+          ${textarea_with_preview(inputname='description')}
+        </div>
       </div>
     </div>
 </%block>
@@ -171,83 +166,37 @@
         For example: <em>" Guinea, #hotosm-guinea-task-470, source=Pleiades, CNES, Astrium "</code></em>
       </span>
     </div>
-    <hr />
-    <div class="tabbable tabs-left">
-      <ul class="nav nav-tabs languages">
-        % for locale, translation in project.translations.iteritems():
-        <li><a href="#instructions_${locale}" data-toggle="tab">${locale}</a></li>
-        % endfor
-      </ul>
-      <div class="tab-content col-md-8">
-        % for locale, translation in project.translations.iteritems():
-        <div class="tab-pane active" id="instructions_${locale}">
-          <!-- instructions -->
-          <label for="id_instructions" class="control-label">Detailed Instructions</label>
-          <ul class="nav nav-pills small">
-            <li class="active">
-              <a href="#instructions_${locale}_edit" data-toggle="tab">Edit</a>
-            </li>
-            <li>
-              <a href="#instructions_${locale}_preview" data-toggle="tab">Preview</a>
-            </li>
-          </ul>
-          <div class="tab-content">
-            <div class="tab-pane active" id="instructions_${locale}_edit">
-              <textarea id="id_instructions_${locale}"
-                        name="instructions_${locale}"
-                        class="form-control"
-                        rows="5">${translation.instructions}</textarea>
-            </div>
-            <div class="tab-pane preview" id="instructions_${locale}_preview"></div>
-          </div>
-          ${markdown_link()}
-          <br/>
-          <br/>
-          <!-- per task instructions -->
-          <label for="id_per_task_instructions" class="control-label">Per Task Instructions (optional)</label>
-          <ul class="nav nav-pills small">
-            <li class="active">
-              <a href="#per_task_instructions_${locale}_edit" data-toggle="tab">Edit</a>
-            </li>
-            <li>
-              <a href="#per_task_instructions_${locale}_preview" data-toggle="tab">Preview</a>
-            </li>
-          </ul>
-          <div class="tab-content">
-            <div class="tab-pane active" id="per_task_instructions_${locale}_edit">
-              <textarea id="id_per_task_instructions_${locale}"
-                        name="per_task_instructions_${locale}"
-                        class="form-control"
-                        rows="2" class="text span4">${translation.per_task_instructions}</textarea>
-            </div>
-            <div class="tab-pane preview" id="per_task_instructions_${locale}_preview"></div>
-          </div>
-          <span class="help-block">
+
+    <!-- instructions -->
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="id_instructions" class="control-label">
+            Detailed Instructions
+          </label>
+          ${textarea_with_preview(inputname='instructions')}
+        </div>
+      </div>
+    </div>
+
+
+    <!-- per task instructions -->
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="id_per_task_instructions" class="control-label">
+            Per Task Instructions (optional)
+          </label>
+          ${textarea_with_preview(inputname='per_task_instructions')}
+
+          <span class="help-block col-md-9">
             Put here anything that can be usefull to users while taking a task. {x}, {y} and {z} will be replaced by the correponding parameters for each task.<br />
             For example: <em>" This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM "</em>
           </span>
-          ${markdown_link()}
         </div>
-        <script>
-          (function () {
-            var instructions = $('#id_instructions_${locale}'),
-            instructions_preview = $('#instructions_${locale}_preview');
-            instructions.keyup(function() {
-              var html = converter.makeHtml(instructions.val());
-              instructions_preview.html(html);
-            }).trigger('keyup');
-
-            var per_task_instructions = $('#id_per_task_instructions_${locale}'),
-            instructions_preview = $('#per_task_instructions_${locale}_preview');
-            per_task_instructions.keyup(function() {
-              var html = converter.makeHtml(per_task_instructions.val());
-              instructions_preview.html(html);
-            }).trigger('keyup');
-          })();
-        </script>
-        % endfor
       </div>
     </div>
+
 </%block>
 
 <%block name="imagery">
@@ -351,8 +300,80 @@
 </%block>
 
 <%block name="markdown_link">
-<div class="help-block"><em>
-  <span class="glyphicon glyphicon-bullhorn"></span><b>Tip:</b>
+<div class="help-block pull-right"><small><em>
+  <b>Tip:</b>
   You can use <a href class="markdown">Markdown</a>
-</em></div>
+</em></small></div>
 </%block>
+
+<%def name="textarea_with_preview(inputname)">
+  <div class="tab-content">
+    ${locale_chooser(inputname=inputname)}
+    % for locale, translation in project.translations.iteritems():
+    <div id="tab_${inputname}_${locale}"
+         data-locale="${locale}"
+         class="tab-pane ${'active' if locale == 'en' else ''}">
+      <ul class="nav nav-pills small">
+        <li class="active">
+          <a href="#${inputname}_${locale}_edit" data-toggle="tab">Edit</a>
+        </li>
+        <li>
+          <a href="#${inputname}_${locale}_preview" data-toggle="tab">Preview</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div id="${inputname}_${locale}_edit"
+             data-locale="${locale}"
+             class="tab-pane ${'active' if locale == 'en' else ''}">
+          <textarea id="id_${inputname}_${locale}"
+                    name="${inputname}_${locale}"
+                    class="form-control"
+                    placeholder="${getattr(project.translations.en, inputname)}"
+                    rows="5">${getattr(translation, inputname)}</textarea>
+        </div>
+        <div class="tab-pane preview" id="${inputname}_${locale}_preview"></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var ${inputname} = $('#id_${inputname}_${locale}'),
+        ${inputname}_preview = $('#${inputname}_${locale}_preview');
+        ${inputname}.keyup(function() {
+          var html = converter.makeHtml(${inputname}.val());
+          ${inputname}_preview.html(html);
+        }).trigger('keyup');
+      })();
+    </script>
+    % endfor
+  </div>
+  ${markdown_link()}
+</%def>
+
+<%def name="locale_chooser(inputname)">
+  <div class="btn-group pull-right" id="locale_chooser_${inputname}">
+    % for locale, translation in project.translations.iteritems():
+    <a href
+      class="btn btn-default btn-xs ${'active' if locale == 'en' else ''}"
+      data-locale="${locale}">
+      <span class="${'text-muted' if getattr(translation, inputname) == '' else ''}">
+        ${locale}
+      </span>
+    </a>
+    % endfor
+  </div>
+  <script>
+    $('#locale_chooser_${inputname} a').on('click', function() {
+      $(this).addClass('active');
+      $(this).siblings().removeClass('active');
+      var locale = $(this).attr('data-locale');
+      $(this).parents('.form-group').find('.tab-pane').each(function(index, item) {
+        if ($(item).attr('data-locale') == locale) {
+          $(item).addClass('active');
+        } else {
+          $(item).removeClass('active');
+        }
+      });
+      return false;
+    });
+  </script>
+</%def>
