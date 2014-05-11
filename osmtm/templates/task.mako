@@ -39,6 +39,7 @@ if (typeof countdownInterval != 'undefined') {
 
     <%include file="task.instructions.mako" />
     <%include file="task.freecomment.mako" />
+% if len(task.history) != 0:
     <h4>${_('History')}</h4>
     <div><%include file="task.history.mako" /></div>
     <hr>
@@ -46,6 +47,7 @@ if (typeof countdownInterval != 'undefined') {
           rel="tooltip"
           data-original-title="${_('See the changesets in the OSM database for this area.')}"
           target="_blank">OSM changesets</a></p>
+% endif
   </div>
 </div>
 
