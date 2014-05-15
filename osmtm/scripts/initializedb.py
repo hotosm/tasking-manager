@@ -50,6 +50,7 @@ def main():
         # With PostGIS 1.x the AddGeometryColumn and DropGeometryColumn
         # management functions should be used.
         Area.__table__.c.geometry.type.management = True
+        Area.__table__.c.centroid.type.management = True
         Task.__table__.c.geometry.type.management = True
 
     Base.metadata.drop_all(engine)
