@@ -37,6 +37,8 @@ import itertools
 
 from .task import get_locked_task, check_task_expiration
 
+from ..utils import parse_geojson
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -97,13 +99,13 @@ def project_new_grid(request):
 
         zoom = int(request.params['zoom'])
 
-        import shapely
-        import geojson
         geometry = request.params['geometry']
-        geometry = geojson.loads(geometry,
-                                 object_hook=geojson.GeoJSON.to_instance)
-        geometry = shapely.geometry.asShape(geometry)
-        geometry = shape.from_shape(geometry, 4326)
+
+        polygons = parse_geojson(geometry)
+        from shapely.geometry import MultiPolygon
+        multipolygon = MultiPolygon([polygon for polygon in polygons])
+
+        geometry = shape.from_shape(multipolygon, 4326)
         project.area = Area(geometry)
         project.auto_fill(zoom)
 
