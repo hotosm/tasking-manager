@@ -9,5 +9,5 @@
                      .replace('{y}', str(task.y)) \
                      .replace('{z}', str(task.zoom))
 %>
-  <p>${markdown.markdown(content)|n}</p>
+  <p>${markdown.markdown(content, safe_mode="replace")|n}</p>
 % endif
