@@ -50,7 +50,13 @@ osmtm.project = (function() {
     var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
     lmap.addLayer(osm);
 
-    var layer = new L.geoJson(geometry);
+    var layer = new L.geoJson(geometry, {
+      style: {
+        fillOpacity: 0,
+        weight: 1.5
+      }
+    });
+    lmap.addLayer(layer);
     lmap.fitBounds(layer.getBounds());
     lmap.zoomOut();
 

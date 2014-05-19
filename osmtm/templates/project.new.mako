@@ -13,16 +13,18 @@
           <input type="radio" id="grid" name="type" value="grid"/>
           Square Grid
           <p class="help-block">
-            Area of interest is split into square grids.
+          Area of interest is automatically split into grid cells for you.<br>
+            <img src="${request.static_url('osmtm:static/img/project_creation_grid.png')}" width="300">
           </p>
         </label>
       </div>
       <div class="col-md-6">
         <label class="radio">
           <input type="radio" id="import" name="type" value="import" />
-          Imported Geometries
+          Arbitrary Geometries
           <p class="help-block">
-            You already have polygons you want people to work on.
+          You already have polygons which partition the area of interest.<br>
+            <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png')}" width="300">
           </p>
         </label>
       </div>

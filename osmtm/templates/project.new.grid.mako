@@ -8,11 +8,11 @@
 <div class="container">
   <form method="post">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-8">
         <div id="leaflet"></div>
       </div>
-      <div class="col-md-6">
-        <div id="help-step1" class="col-md-6">
+      <div class="col-md-4">
+        <div id="help-step1" class="">
           <p>
             Draw the area of interest on the map yourself.
           </p>
