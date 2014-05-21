@@ -1,7 +1,7 @@
 # OpenStreetMap Tasking Manager
 
-[![Build Status](https://travis-ci.org/pgiraud/osm-tasking-manager2.svg?branch=master)](https://travis-ci.org/pgiraud/osm-tasking-manager2)
-[![Coverage Status](https://coveralls.io/repos/pgiraud/osm-tasking-manager2/badge.png?branch=master)](https://coveralls.io/r/pgiraud/osm-tasking-manager2?branch=master)
+[![Build Status](https://travis-ci.org/hotosm/osm-tasking-manager2.svg?branch=master)](https://travis-ci.org/hotosm/osm-tasking-manager2)
+[![Coverage Status](https://coveralls.io/repos/hotosm/osm-tasking-manager2/badge.png?branch=master)](https://coveralls.io/r/hotosm/osm-tasking-manager2?branch=master)
 
 ## About
 
@@ -16,7 +16,7 @@ This is the 2.0 version of the Tasking Manager.
 
 First clone the git repository:
 
-    git clone --recursive git://github.com/pgiraud/osm-tasking-manager2.git
+    git clone --recursive git://github.com/hotosm/osm-tasking-manager2.git
 
 Installing OSMTM in a Virtual Python environment is recommended.
 
