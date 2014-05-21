@@ -13,7 +13,7 @@
           <input type="radio" id="grid" name="type" value="grid"/>
           Square Grid
           <p class="help-block">
-          Area of interest is automatically split into grid cells for you.<br>
+            You want the area of interest to be automatically split into grid cells for you.<br>
             <img src="${request.static_url('osmtm:static/img/project_creation_grid.png')}" width="300">
           </p>
         </label>
@@ -23,7 +23,7 @@
           <input type="radio" id="import" name="type" value="import" />
           Arbitrary Geometries
           <p class="help-block">
-          You already have polygons which partition the area of interest.<br>
+            You have a file with polygons. One for each task.<br>
             <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png')}" width="300">
           </p>
         </label>

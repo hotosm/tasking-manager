@@ -33,6 +33,10 @@ from geojson import (
     Feature
 )
 
+from shapely.geometry import (
+    MultiPolygon
+)
+
 
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
@@ -44,17 +48,19 @@ class ST_Collect(GenericFunction):
     type = Geometry
 
 
-class ST_Convexhull(GenericFunction):
-    name = 'ST_Convexhull'
+class ST_Union(GenericFunction):
+    name = 'ST_Union'
+    type = Geometry
+
+
+class ST_Buffer(GenericFunction):
+    name = 'ST_Buffer'
     type = Geometry
 
 
 class ST_SetSRID(GenericFunction):
     name = 'ST_SetSRID'
     type = Geometry
-
-import geojson
-import shapely
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -67,7 +73,8 @@ from sqlalchemy.orm import (
 from .utils import (
     TileBuilder,
     get_tiles_in_geom,
-    max
+    max,
+    parse_geojson,
 )
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -396,36 +403,20 @@ class Project(Base, Translatable):
         self.zoom = zoom
 
     def import_from_geojson(self, input):
-        collection = geojson.loads(input,
-                                   object_hook=geojson.GeoJSON.to_instance)
+
+        polygons = parse_geojson(input)
 
         tasks = []
-        hasPolygon = False
-
-        if not hasattr(collection, "features") or \
-                len(collection.features) < 1:
-            raise ValueError("GeoJSON file doesn't contain any feature.")
-        for feature in collection.features:
-            geometry = shapely.geometry.asShape(feature.geometry)
-            if isinstance(geometry, shapely.geometry.Polygon):
-                geometry = shapely.geometry.MultiPolygon([geometry])
-
-            if not isinstance(geometry, shapely.geometry.MultiPolygon):
-                continue
-
-            hasPolygon = True
-            tasks.append(Task(None, None, None, 'SRID=4326;%s' % geometry.wkt))
-
-        if not hasPolygon:
-            raise ValueError("GeoJSON file doesn't contain any polygon \
-                    nor multipolygon.")
+        for polygon in polygons:
+            multi = MultiPolygon([polygon])
+            tasks.append(Task(None, None, None, 'SRID=4326;%s' % multi.wkt))
 
         self.tasks = tasks
 
         DBSession.add(self)
         DBSession.flush()
 
-        bounds = DBSession.query(ST_Convexhull(ST_Collect(Task.geometry))) \
+        bounds = DBSession.query(ST_Union(ST_Buffer(Task.geometry, 0.01))) \
             .filter(Task.project_id == self.id).one()
         self.area = Area(bounds[0])
 

@@ -1,5 +1,7 @@
 import os
 import ConfigParser
+import geojson
+import shapely
 from shapely.geometry import Polygon, MultiPolygon
 from shapely.prepared import prep
 from math import floor, ceil
@@ -60,3 +62,31 @@ def load_local_settings(settings):
         config = ConfigParser.ConfigParser()
         config.read(local_settings_path)
         settings.update(config.items('app:main'))
+
+
+def parse_geojson(input):
+    collection = geojson.loads(input,
+                               object_hook=geojson.GeoJSON.to_instance)
+
+    polygons = []
+
+    if isinstance(collection, geojson.feature.Feature) and \
+       isinstance(collection.geometry, geojson.geometry.Polygon):
+        polygons.append(shapely.geometry.asShape(collection.geometry))
+    else:
+        if not hasattr(collection, "features") or \
+                len(collection.features) < 1:
+            raise ValueError("GeoJSON file doesn't contain any feature.")
+
+        for feature in collection.features:
+            geometry = shapely.geometry.asShape(feature.geometry)
+
+            if not isinstance(geometry, shapely.geometry.Polygon):
+                continue
+
+            polygons.append(geometry)
+
+    if len(polygons) == 0:
+        raise ValueError("GeoJSON file doesn't contain any polygon.")
+
+    return polygons
