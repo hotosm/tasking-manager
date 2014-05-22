@@ -109,20 +109,24 @@ def project_new_grid(request):
 
         geometry = request.params['geometry']
 
-        polygons = parse_geojson(geometry)
-        from shapely.geometry import MultiPolygon
-        multipolygon = MultiPolygon([polygon for polygon in polygons])
+        try:
+            polygons = parse_geojson(geometry)
+            from shapely.geometry import MultiPolygon
+            multipolygon = MultiPolygon([polygon for polygon in polygons])
 
-        geometry = shape.from_shape(multipolygon, 4326)
-        project.area = Area(geometry)
-        project.auto_fill(zoom)
+            geometry = shape.from_shape(multipolygon, 4326)
+            project.area = Area(geometry)
+            project.auto_fill(zoom)
 
-        _ = request.translate
-        request.session.flash(_("Project #${project_id} created successfully",
-                              mapping={'project_id': project.id}),
-                              'success')
-        return HTTPFound(location=route_path('project_edit', request,
-                                             project=project.id))
+            _ = request.translate
+            request.session.flash(_("Project #${project_id} created successfully",
+                                  mapping={'project_id': project.id}),
+                                  'success')
+            return HTTPFound(location=route_path('project_edit', request,
+                                                 project=project.id))
+        except Exception, e:
+            msg = "Sorry, this is not a JSON valid file. <br />%s" % e.message
+            request.session.flash(msg, 'alert')
 
     return dict(page_id='project_new_grid')
 
