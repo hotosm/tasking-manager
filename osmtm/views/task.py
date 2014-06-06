@@ -16,6 +16,7 @@ from geoalchemy2 import (
 )
 
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.expression import and_
 
 from pyramid.security import authenticated_userid
@@ -43,11 +44,23 @@ def __get_user(request, allow_none=False):
     return user
 
 
-def __get_task(request):
+def __get_task(request, lock_for_update=False):
     check_task_expiration()
     task_id = request.matchdict['task']
     project_id = request.matchdict['project']
-    task = DBSession.query(Task).get((project_id, task_id))
+    filter = and_(Task.project_id == project_id, Task.id == task_id)
+    query = DBSession.query(Task).filter(filter)
+
+    if lock_for_update:
+        query = query.with_for_update(nowait=True, of=Task)
+
+    try:
+        task = query.one()
+    except NoResultFound:
+        task = None
+    except OperationalError:  # pragma: no cover
+        raise HTTPBadRequest("Cannot update task. Record lock for update.")
+
     if not task or task.state == Task.state_removed:
         # FIXME return translated text via JSON
         raise HTTPNotFound("This task doesn't exist.")
@@ -91,7 +104,7 @@ def task_empty(request):
 @view_config(route_name='task_done', renderer='json')
 def done(request):
     user = __get_user(request)
-    task = __get_task(request)
+    task = __get_task(request, lock_for_update=True)
     __ensure_task_locked(task, user)
 
     task.state = task.state_done
@@ -114,7 +127,7 @@ def lock(request):
     _ = request.translate
 
     user = __get_user(request)
-    task = __get_task(request)
+    task = __get_task(request, lock_for_update=True)
 
     locked_task = get_locked_task(task.project_id, user)
 
@@ -137,7 +150,7 @@ def lock(request):
 @view_config(route_name='task_unlock', renderer="json")
 def unlock(request):
     user = __get_user(request)
-    task = __get_task(request)
+    task = __get_task(request, lock_for_update=True)
     __ensure_task_locked(task, user)
 
     task.user = None
@@ -171,7 +184,7 @@ def comment(request):
 @view_config(route_name='task_validate', renderer="json")
 def validate(request):
     user = __get_user(request)
-    task = __get_task(request)
+    task = __get_task(request, lock_for_update=True)
     __ensure_task_locked(task, user)
 
     task.user = None
@@ -198,7 +211,7 @@ def validate(request):
 @view_config(route_name='task_split', renderer='json')
 def split(request):
     user = __get_user(request)
-    task = __get_task(request)
+    task = __get_task(request, lock_for_update=True)
     __ensure_task_locked(task, user)
 
     if task.zoom is None or (task.zoom - task.project.zoom) > 1:
