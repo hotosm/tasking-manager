@@ -167,7 +167,7 @@ def project_edit(request):
                 DBSession.add(project)
 
         for p in ['changeset_comment', 'entities_to_map', 'imagery']:
-            if p in request.params and request.params[p] != '':
+            if p in request.params:
                 setattr(project, p, request.params[p])
 
         if 'license_id' in request.params and \
