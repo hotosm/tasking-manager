@@ -440,6 +440,8 @@ osmtm.project = (function() {
       formData[submitName] = true;
       $.post(form.action, formData, function(response) {
         handleTaskResponse(response);
+      }).fail(function(error) {
+        console.error("Something wrong happened");
       });
     }
 
