@@ -518,11 +518,11 @@ import functools
 
 class ExtendedJSONEncoder(JSONEncoder):
 
-    def default(self, obj):
+    def default(self, obj):  # pragma: no cover
 
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat(' ')
 
-        return JSONEncoder.default(self, obj)  # pragma: no cover
+        return JSONEncoder.default(self, obj)
 
 dumps = functools.partial(_dumps, cls=ExtendedJSONEncoder)
