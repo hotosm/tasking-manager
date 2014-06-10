@@ -1,3 +1,6 @@
+<%
+from osmtm.models import TaskState
+%>
 <div class="text-center">
 % if  locked_task is not None:
   % if locked_task != task:
@@ -9,10 +12,10 @@
        data-original-title="${_('Lock this task to tell others that you are currently working on it.')}"
        data-container="body"
        class="btn btn-success">
-       % if task.state == task.state_ready or task.state == task.state_invalidated:
+       % if not task.state or task.state.state == TaskState.state_invalidated:
          <i class="glyphicon glyphicon-share-alt"></i>&nbsp;
          ${_('Start mapping')}
-       % elif task.state == task.state_done or task.state == task.state_validated:
+       % elif task.state.state == TaskState.state_done or task.state.state == TaskState.state_validated:
          <i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;
          <i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;
          ${_('Review the work')}

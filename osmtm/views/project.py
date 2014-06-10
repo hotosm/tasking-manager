@@ -8,7 +8,8 @@ from ..models import (
     Area,
     User,
     Task,
-    TaskHistory,
+    TaskState,
+    TaskLock,
     License,
 )
 from pyramid.security import authenticated_userid
@@ -57,12 +58,11 @@ def project(request):
 
     project.locale = get_locale_name(request)
 
-    filter = and_(TaskHistory.project_id == id,
-                  TaskHistory.state != TaskHistory.state_removed,
-                  TaskHistory.update.isnot(None))
-    history = DBSession.query(TaskHistory) \
+    filter = and_(TaskState.project_id == id,
+                  TaskState.state != TaskState.state_removed)
+    history = DBSession.query(TaskState) \
                        .filter(filter) \
-                       .order_by(TaskHistory.update.desc()) \
+                       .order_by(TaskState.date.desc()) \
                        .limit(10).all()
 
     user_id = authenticated_userid(request)
@@ -214,15 +214,31 @@ def project_stats(request):
 
 @view_config(route_name="project_check_for_update", renderer='json')
 def check_for_updates(request):
+    id = request.matchdict['project']
     interval = request.GET['interval']
     date = datetime.datetime.utcnow() \
         - datetime.timedelta(0, 0, 0, int(interval))
-    tasks = DBSession.query(Task).filter(Task.update > date).all()
     updated = []
+
+    tasks = DBSession.query(Task) \
+                     .filter(Task.project_id == id, Task.date > date) \
+                     .all()
     for task in tasks:
         updated.append(task.to_feature())
 
-    if len(tasks) > 0:
+    tasks_lock = DBSession.query(TaskLock) \
+        .filter(TaskLock.project_id == id, TaskLock.date > date) \
+        .all()
+    for lock in tasks_lock:
+        updated.append(lock.task.to_feature())
+
+    states = DBSession.query(TaskState) \
+        .filter(TaskState.project_id == id, TaskState.date > date) \
+        .all()
+    for state in states:
+        updated.append(state.task.to_feature())
+
+    if len(updated) > 0:
         return dict(update=True, updated=updated)
     return dict(update=False)
 
@@ -289,15 +305,15 @@ def get_contributors(project):
 
     # filter on tasks with state DONE
     filter = and_(
-        TaskHistory.project_id == project.id,
-        TaskHistory.state_changed.is_(True),
-        TaskHistory.state == TaskHistory.state_done
+        TaskState.project_id == project.id,
+        TaskState.state_changed.is_(True),
+        TaskState.state == TaskState.state_done
     )
 
-    tasks = DBSession.query(TaskHistory.id, User.username) \
-                     .join(TaskHistory.user) \
+    tasks = DBSession.query(TaskState.id, User.username) \
+                     .join(TaskState.user) \
                      .filter(filter) \
-                     .order_by(TaskHistory.user_id) \
+                     .order_by(TaskState.user_id) \
                      .all()
 
     contributors = {}
@@ -314,24 +330,24 @@ def get_stats(project):
 
     total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
         .filter(Task.project_id == project.id) \
-        .filter(Task.state != Task.state_removed) \
+        .filter(Task.states.last() != Task.state_removed) \
         .scalar()
 
     filter = and_(
-        TaskHistory.state_changed == True,  # noqa
-        TaskHistory.project_id == project.id
+        TaskState.state_changed == True,  # noqa
+        TaskState.project_id == project.id
     )
     tasks = (
         DBSession.query(
-            TaskHistory.id,
-            TaskHistory.state,
-            TaskHistory.prev_state,
-            TaskHistory.update,
+            TaskState.id,
+            TaskState.state,
+            TaskState.prev_state,
+            TaskState.update,
             ST_Area(Task.geometry).label('area')
         )
         .filter(filter)
         .join(Task)
-        .order_by(TaskHistory.update)
+        .order_by(TaskState.update)
         .all()
     )
 
@@ -342,14 +358,14 @@ def get_stats(project):
 
     # for every day count number of changes and aggregate changed tiles
     for task in tasks:
-        if task.state == TaskHistory.state_done:
+        if task.states.last() == TaskState.state_done:
             done += task.area
-        if task.state == TaskHistory.state_invalidated:
-            if task.prev_state == TaskHistory.state_done:
+        if task.states.last() == TaskState.state_invalidated:
+            if task.prev_state == TaskState.state_done:
                 done -= task.area
-            elif task.prev_state == TaskHistory.state_validated:
+            elif task.prev_state == TaskState.state_validated:
                 validated -= task.area
-        if task.state == TaskHistory.state_validated:
+        if task.states.last() == TaskState.state_validated:
             validated += task.area
             done -= task.area
 

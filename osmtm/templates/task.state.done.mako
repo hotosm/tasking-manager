@@ -1,7 +1,8 @@
-% if user and task.user == user:
+% if user and task.lock.user == user:
 <%
+from osmtm.models import TaskState
 tooltip = _("Invalidate this task if you consider it needs more work.")
-done = task.state == task.state_done
+done = task.state.state == TaskState.state_done
 %>
   <form action="${request.route_path('task_validate', task=task.id, project=task.project_id)}" method="POST" role="form">
     <%include file="task.comment.mako" />

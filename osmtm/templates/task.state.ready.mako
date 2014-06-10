@@ -1,5 +1,5 @@
 ## works for ready or invalidated tasks
-% if user and task.user == user:
+% if user and task.lock and task.lock.user == user:
   <form action="${request.route_path('task_done', task=task.id, project=task.project_id)}" method="POST">
     <%include file="task.comment.mako" />
     <a id="unlock"
