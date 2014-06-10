@@ -42,13 +42,14 @@ def populate_db():
     DBSession.configure(bind=engine)
 
     # those users are immutables ie. they're not suppose to change during tests
-    user = User(USER1_ID, u'user1', False)
+    user = User(USER1_ID, u'user1')
     DBSession.add(user)
 
-    user = User(USER2_ID, u'user2', False)
+    user = User(USER2_ID, u'user2')
     DBSession.add(user)
 
-    user = User(ADMIN_USER_ID, u'admin_user', True)
+    user = User(ADMIN_USER_ID, u'admin_user')
+    user.role = User.role_admin
     DBSession.add(user)
 
     license = License()

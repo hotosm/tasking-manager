@@ -25,7 +25,7 @@ class TestViewsFunctional(BaseTestCase):
 
         userid = 5463
         username = u'dude_user'
-        user = User(userid, username, False)
+        user = User(userid, username)
         DBSession.add(user)
         DBSession.flush()
         transaction.commit()

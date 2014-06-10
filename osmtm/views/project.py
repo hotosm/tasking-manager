@@ -48,7 +48,7 @@ log = logging.getLogger(__name__)
 
 
 @view_config(route_name='project', renderer='project.mako', http_cache=0,
-             permission='project')
+             permission='project_show')
 def project(request):
     check_task_expiration()
     id = request.matchdict['project']
@@ -80,14 +80,14 @@ def project(request):
 
 
 @view_config(route_name='project_new', renderer='project.new.mako',
-             permission="add")
+             permission="project_edit")
 def project_new(request):
     return dict(page_id='project_new')
 
 
 @view_config(route_name='project_new_grid',
              renderer='project.new.grid.mako',
-             permission="edit")
+             permission="project_edit")
 def project_new_grid(request):
     if 'zoom' in request.params:
 
@@ -125,7 +125,7 @@ def project_new_grid(request):
 
 @view_config(route_name='project_new_import',
              renderer='project.new.import.mako',
-             permission="edit")
+             permission="project_edit")
 def project_new_import(request):
     if 'import' in request.params:
 
@@ -153,7 +153,7 @@ def project_new_import(request):
 
 
 @view_config(route_name='project_edit', renderer='project.edit.mako',
-             permission="edit")
+             permission="project_edit")
 def project_edit(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
@@ -262,7 +262,7 @@ def project_tasks_json(request):
 
 
 @view_config(route_name="project_user_add", renderer='json',
-             permission="edit")
+             permission="project_edit")
 def project_user_add(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
@@ -277,7 +277,7 @@ def project_user_add(request):
 
 
 @view_config(route_name="project_user_delete", renderer='json',
-             permission="edit")
+             permission="project_edit")
 def project_user_delete(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)

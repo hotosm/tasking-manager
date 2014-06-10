@@ -12,7 +12,8 @@
       <ul ng-repeat="user in users">
         <li>
           <a href="user/{{user.username}}">{{user.username}}</a>
-          <i class="glyphicon glyphicon-star" ng-show="user.admin"></i>
+          <i class="glyphicon glyphicon-star user-admin" ng-show="user.is_admin"></i>
+          <i class="glyphicon glyphicon-star user-project-manager" ng-show="user.is_project_manager"></i>
         </li>
       </ul>
     </div>

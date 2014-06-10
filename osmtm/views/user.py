@@ -48,13 +48,25 @@ def user_messages(request):
     return dict(page_id="messages", comments=comments)
 
 
-@view_config(route_name='user_admin', permission="admin")
+@view_config(route_name='user_admin', permission="user_edit")
 def user_admin(request):
-
     id = request.matchdict['id']
-
     user = DBSession.query(User).get(id)
-    user.admin = not user.admin
+
+    user.role = User.role_admin if not user.is_admin else None
+    DBSession.flush()
+
+    return HTTPFound(location=route_path("user", request,
+                                         username=user.username))
+
+
+@view_config(route_name='user_project_manager', permission="user_edit")
+def user_project_manager(request):
+    id = request.matchdict['id']
+    user = DBSession.query(User).get(id)
+
+    user.role = User.role_project_manager if not user.is_project_manager  \
+        else None
     DBSession.flush()
 
     return HTTPFound(location=route_path("user", request,

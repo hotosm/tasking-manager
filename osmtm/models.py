@@ -19,6 +19,10 @@ from sqlalchemy.sql.expression import (
     select,
 )
 
+from sqlalchemy.ext.hybrid import (
+    hybrid_property
+)
+
 from geoalchemy2 import (
     Geometry,
     shape,
@@ -97,30 +101,41 @@ users_licenses_table = Table('users_licenses', Base.metadata,
                              Column('license', Integer,
                                     ForeignKey('licenses.id')))
 
+# user roles
+ADMIN = 1
+PROJECT_MANAGER = 2
+
 
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(Unicode)
-    admin = Column(Boolean)
+    role_admin = ADMIN
+    role_project_manager = PROJECT_MANAGER
+    role = Column(Integer)
 
     accepted_licenses = relationship("License", secondary=users_licenses_table)
     private_projects = relationship("Project",
                                     secondary="project_allowed_users")
 
-    def __init__(self, id, username, admin=False):
+    def __init__(self, id, username):
         self.id = id
         self.username = username
-        self.admin = admin
 
+    @hybrid_property
     def is_admin(self):
-        return self.admin is True
+        return self.role is self.role_admin
+
+    @hybrid_property
+    def is_project_manager(self):
+        return self.role is self.role_project_manager
 
     def as_dict(self):
         return {
             "id": self.id,
             "username": self.username,
-            "admin": self.admin
+            "is_admin": self.is_admin,
+            "is_project_manager": self.is_project_manager
         }
 
 # task states
