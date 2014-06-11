@@ -178,7 +178,9 @@ class TestProjectFunctional(BaseTestCase):
         self.assertEqual(len(res.json['features']), 6)
 
     def test_project_check_for_updates(self):
+        import time
         project_id = self.create_project()
+        time.sleep(1)
         res = self.testapp.get('/project/%d/check_for_updates' % project_id,
                                params={
                                    'interval': 1000

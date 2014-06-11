@@ -16,6 +16,10 @@ from geoalchemy2 import (
     shape,
 )
 
+from sqlalchemy.orm import (
+    joinedload,
+)
+
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.expression import (
@@ -25,9 +29,9 @@ from sqlalchemy.sql.expression import (
 
 from pyramid.security import authenticated_userid
 
-import random
 import datetime
 import transaction
+import random
 
 from ..models import EXPIRATION_DELTA
 
@@ -53,7 +57,9 @@ def __get_task(request, lock_for_update=False):
     task_id = request.matchdict['task']
     project_id = request.matchdict['project']
     filter = and_(Task.project_id == project_id, Task.id == task_id)
-    query = DBSession.query(Task).filter(filter)
+    query = DBSession.query(Task) \
+                     .options(joinedload(Task.cur_lock)) \
+                     .filter(filter)
 
     if lock_for_update:
         query = query.with_for_update(nowait=True, of=Task)
@@ -65,7 +71,8 @@ def __get_task(request, lock_for_update=False):
     except OperationalError:  # pragma: no cover
         raise HTTPBadRequest("Cannot update task. Record lock for update.")
 
-    if not task or task.state and task.state.state == TaskState.state_removed:
+    if not task or \
+       task.cur_state and task.cur_state.state == TaskState.state_removed:
         # FIXME return translated text via JSON
         raise HTTPNotFound("This task doesn't exist.")
     return task
@@ -111,11 +118,9 @@ def done(request):
     task = __get_task(request, lock_for_update=True)
     __ensure_task_locked(task, user)
 
-    task_state = TaskState(task, user, TaskState.state_done)
-    DBSession.add(task_state)
-
-    task_lock = TaskLock(task, None, False)
-    DBSession.add(task_lock)
+    task.states.append(TaskState(user=user, state=TaskState.state_done))
+    task.locks.append(TaskLock(user=None, lock=False))
+    DBSession.add(task)
     DBSession.flush()
 
     if 'comment' in request.params and request.params.get('comment') != '':
@@ -139,14 +144,14 @@ def lock(request):
     if locked_task is not None:
         raise HTTPBadRequest
 
-    if task.lock and task.lock.lock:
+    if task.cur_lock and task.cur_lock.lock:
         # FIXME use http errors
         return dict(success=False,
                     task=dict(id=task.id),
                     error_msg=_("Task already locked."))
 
-    task_locked = TaskLock(task, user, True)
-    DBSession.add(task_locked)
+    task.locks.append(TaskLock(user=user, lock=True))
+    DBSession.add(task)
     return dict(success=True, task=dict(id=task.id),
                 msg=_("Task locked. You can start mapping."))
 
@@ -157,8 +162,8 @@ def unlock(request):
     task = __get_task(request, lock_for_update=True)
     __ensure_task_locked(task, user)
 
-    task_locked = TaskLock(task, None, False)
-    DBSession.add(task_locked)
+    task.locks.append(TaskLock(user=None, lock=False))
+    DBSession.add(task)
 
     DBSession.add(task)
     DBSession.flush()
@@ -195,16 +200,15 @@ def validate(request):
 
     _ = request.translate
     if 'validate' in request.params:
-        task_state = TaskState(task, user, TaskState.state_validated)
+        state = TaskState.state_validated
         msg = _("Task validated.")
     else:
-        task_state = TaskState(task, user, TaskState.state_invalidated)
+        state = TaskState.state_invalidated
         msg = _("Task invalidated.")
 
-    DBSession.add(task_state)
-
-    task_locked = TaskLock(task, None, False)
-    DBSession.add(task_locked)
+    task.states.append(TaskState(user=user, state=state))
+    task.locks.append(TaskLock(user=None, lock=False))
+    DBSession.add(task)
     DBSession.flush()
 
     if 'comment' in request.params and request.params.get('comment') != '':
@@ -231,11 +235,9 @@ def split(request):
             t.project = task.project
             t.update = datetime.datetime.utcnow()
 
-    task_state = TaskState(task, user, TaskState.state_removed)
-    DBSession.add(task_state)
-
-    task_locked = TaskLock(task, None, False)
-    DBSession.add(task_locked)
+    task.states.append(TaskState(user=user, state=TaskState.state_removed))
+    task.locks.append(TaskLock(user=None, lock=False))
+    DBSession.add(task)
 
     return dict()
 
@@ -244,25 +246,12 @@ def get_locked_task(project_id, user):
     if user is None:
         return None
     try:
-        subquery = DBSession.query(
-            TaskLock,
-            func.rank().over(
-                partition_by=(TaskLock.task_id, TaskLock.project_id),
-                order_by=TaskLock.date.desc()
-            ).label("rank")
-        ).subquery()
+        query = DBSession.query(Task).options(joinedload(Task.cur_lock)) \
+            .filter(and_(Task.cur_lock.has(lock=True),
+                         Task.project_id == project_id,
+                         Task.cur_lock.has(user_id=user.id)))
 
-        query = DBSession.query(
-            TaskLock
-        ).select_entity_from(subquery).filter(
-            and_(subquery.c.rank == 1,
-                 subquery.c.lock.is_(True),
-                 subquery.c.project_id == project_id,
-                 subquery.c.user_id == user.id)
-        )
-
-        task_lock = query.one()
-        return task_lock.task
+        return query.one()
     except NoResultFound:
         return None
 
@@ -276,11 +265,13 @@ def random_task(request):
     # we will ask about the area occupied by tasks locked by others, so we can
     # steer clear of them
     locked = DBSession.query(Task.geometry.ST_Union().label('taskunion')) \
-        .filter_by(project_id=project_id, lock=True).subquery()
+        .filter_by(project_id=project_id) \
+        .filter(Task.cur_lock.has(lock=True)).subquery()
 
     # first search attempt - all available tasks that do not border busy tasks
     taskgetter = DBSession.query(Task) \
-        .filter_by(project_id=project_id, state=TaskState.state_ready) \
+        .filter_by(project_id=project_id) \
+        .filter(Task.cur_state.has(state=TaskState.state_ready)) \
         .filter(Task.geometry.ST_Disjoint(locked.c.taskunion))
     count = taskgetter.count()
     if count != 0:
@@ -290,7 +281,8 @@ def random_task(request):
     # second search attempt - if the non-bordering constraint gave us no hits,
     # we discard that constraint
     taskgetter = DBSession.query(Task) \
-        .filter_by(project_id=project_id, state=TaskState.state_ready)
+        .filter_by(project_id=project_id) \
+        .filter(Task.cur_state.has(state=TaskState.state_ready))
     count = taskgetter.count()
     if count != 0:
         atask = taskgetter.offset(random.randint(0, count - 1)).first()

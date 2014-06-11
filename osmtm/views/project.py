@@ -306,7 +306,6 @@ def get_contributors(project):
     # filter on tasks with state DONE
     filter = and_(
         TaskState.project_id == project.id,
-        TaskState.state_changed.is_(True),
         TaskState.state == TaskState.state_done
     )
 
@@ -329,28 +328,26 @@ def get_stats(project):
     """
 
     total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
-        .filter(Task.project_id == project.id) \
-        .filter(Task.states.last() != Task.state_removed) \
+        .filter(
+            Task.cur_state.has(TaskState.state != TaskState.state_removed)
+        ) \
         .scalar()
 
-    filter = and_(
-        TaskState.state_changed == True,  # noqa
-        TaskState.project_id == project.id
-    )
-    tasks = (
-        DBSession.query(
-            TaskState.id,
-            TaskState.state,
-            TaskState.prev_state,
-            TaskState.update,
-            ST_Area(Task.geometry).label('area')
-        )
-        .filter(filter)
-        .join(Task)
-        .order_by(TaskState.update)
-        .all()
-    )
+    subquery = DBSession.query(
+        TaskState.state,
+        TaskState.date,
+        ST_Area(Task.geometry).label('area'),
+        func.lag(TaskState.state).over(
+            partition_by=(
+                TaskState.task_id,
+                TaskState.project_id
+            ),
+            order_by=TaskState.date
+        ).label('prev_state')
+    ).join(Task).filter(TaskState.project_id == project.id) \
+     .order_by(TaskState.date)
 
+    tasks = subquery.all()
     log.debug('Number of tiles: %s', len(tasks))
     stats = [[project.created.isoformat(), 0, 0]]
     done = 0
@@ -358,19 +355,19 @@ def get_stats(project):
 
     # for every day count number of changes and aggregate changed tiles
     for task in tasks:
-        if task.states.last() == TaskState.state_done:
+        if task.state == TaskState.state_done:
             done += task.area
-        if task.states.last() == TaskState.state_invalidated:
+        if task.state == TaskState.state_invalidated:
             if task.prev_state == TaskState.state_done:
                 done -= task.area
             elif task.prev_state == TaskState.state_validated:
                 validated -= task.area
-        if task.states.last() == TaskState.state_validated:
+        if task.state == TaskState.state_validated:
             validated += task.area
             done -= task.area
 
         # append a day to the stats and add total number of 'done' tiles and a
         # copy of a current tile_changes list
-        stats.append([task.update.isoformat(), done, validated])
+        stats.append([task.date.isoformat(), done, validated])
 
     return {"total": total, "stats": stats}

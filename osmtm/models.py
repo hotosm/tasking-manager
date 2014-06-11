@@ -15,7 +15,8 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.sql.expression import (
-    func
+    func,
+    select,
 )
 
 from geoalchemy2 import (
@@ -153,11 +154,9 @@ class TaskState(Base):
                       Index('task_state_date', date.desc()),
                       {})
 
-    def __init__(self, task, user, state):
-        self.task_id = task.id
-        self.project_id = task.project_id
+    def __init__(self, user=None, state=None):
         self.user = user
-        self.state = state
+        self.state = state if state is not None else TaskState.state_ready
         self.date = datetime.datetime.utcnow()
 
 
@@ -179,9 +178,7 @@ class TaskLock(Base):
                       Index('task_lock_date', date.desc()),
                       {})
 
-    def __init__(self, task, user, lock):
-        self.task_id = task.id
-        self.project_id = task.project_id
+    def __init__(self, user=None, lock=False):
         self.user = user
         self.lock = lock
         self.date = datetime.datetime.utcnow()
@@ -212,19 +209,41 @@ class Task(Base):
     geometry = Column(Geometry('MultiPolygon', srid=4326))
     date = Column(DateTime)
 
-    lock = relationship(
+    cur_lock = relationship(
         TaskLock,
-        uselist=False,
-        order_by="desc(TaskLock.date)",
-        lazy="joined",
-        backref="task"
+        primaryjoin=lambda: and_(
+            Task.id == TaskLock.task_id,
+            Task.project_id == TaskLock.project_id,
+            TaskLock.date == select(
+                [func.max(TaskLock.date)]
+            )
+            .where(and_(TaskLock.task_id == Task.id,
+                        TaskLock.project_id == Task.project_id))
+            .correlate(Task.__table__)
+        ),
+        uselist=False
     )
 
-    state = relationship(
+    cur_state = relationship(
         TaskState,
-        uselist=False,
-        lazy="joined",
-        order_by="desc(TaskState.date)")
+        primaryjoin=lambda: and_(
+            Task.id == TaskState.task_id,
+            Task.project_id == TaskState.project_id,
+            TaskState.date == select(
+                [func.max(TaskState.date)]
+            )
+            .where(and_(TaskState.task_id == Task.id,
+                        TaskState.project_id == Task.project_id))
+            .correlate(Task.__table__)
+        ),
+        uselist=False
+    )
+
+    locks = relationship(
+        TaskLock,
+        order_by="desc(TaskLock.date)",
+        cascade="all, delete, delete-orphan",
+        backref="task")
 
     states = relationship(
         TaskState,
@@ -245,6 +264,9 @@ class Task(Base):
         self.geometry = geometry
         self.date = datetime.datetime.utcnow()
 
+        self.states.append(TaskState())
+        self.locks.append(TaskLock())
+
     def to_polygon(self):
         # task size (in meters) at the required zoom level
         step = max / (2 ** (self.zoom - 1))
@@ -256,8 +278,8 @@ class Task(Base):
             geometry=shape.to_shape(self.geometry),
             id=self.id,
             properties={
-                'state': self.state.state if self.state else 0,
-                'locked': self.lock and self.lock.lock
+                'state': self.cur_state.state if self.cur_state else 0,
+                'locked': self.cur_lock and self.cur_lock.lock
             }
         )
 
@@ -272,20 +294,6 @@ class Task(Base):
 def before_update(mapper, connection, target):
     d = datetime.datetime.utcnow()
     target.update = d
-
-
-#@event.listens_for(Task, "after_update")
-#def after_update(mapper, connection, target):
-    #project_table = Project.__table__
-    #project = target.project
-    #connection.execute(
-        #project_table.update().
-        #where(project_table.c.id == project.id).
-        #values(last_update=datetime.datetime.utcnow(),
-               #done=project.get_done(),
-               #validated=project.get_validated()
-               #)
-    #)
 
 
 class TaskComment(Base):

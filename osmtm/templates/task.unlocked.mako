@@ -12,10 +12,10 @@ from osmtm.models import TaskState
        data-original-title="${_('Lock this task to tell others that you are currently working on it.')}"
        data-container="body"
        class="btn btn-success">
-       % if not task.state or task.state.state == TaskState.state_invalidated:
+       % if task.cur_state.state == TaskState.state_ready or task.cur_state.state == TaskState.state_invalidated:
          <i class="glyphicon glyphicon-share-alt"></i>&nbsp;
          ${_('Start mapping')}
-       % elif task.state.state == TaskState.state_done or task.state.state == TaskState.state_validated:
+       % elif task.cur_state.state == TaskState.state_done or task.cur_state.state == TaskState.state_validated:
          <i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;
          <i class="glyphicon glyphicon-thumbs-down"></i>&nbsp;
          ${_('Review the work')}

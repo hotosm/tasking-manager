@@ -232,7 +232,7 @@ class TestTaskFunctional(BaseTestCase):
         import geoalchemy2
         import shapely
         import transaction
-        from osmtm.models import Area, Project, DBSession
+        from osmtm.models import Area, Project, TaskState, DBSession
 
         shape = shapely.geometry.Polygon(
             [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
@@ -247,7 +247,7 @@ class TestTaskFunctional(BaseTestCase):
         project_id = project.id
 
         for task in project.tasks:
-            task.state = task.state_done
+            task.states.append(TaskState(state=TaskState.state_done))
             DBSession.add(task)
 
         transaction.commit()

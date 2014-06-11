@@ -19,22 +19,22 @@ if (typeof countdownInterval != 'undefined') {
   Task #${task.id}
   <a class="btn btn-sm btn-link clear pull-right" title="${_('Clear selection')}"><i class="glyphicon glyphicon-remove"></i></a>
   <div id="task_actions">
-% if task.lock and task.lock.lock:
+% if task.cur_lock and task.cur_lock.lock:
   <%include file="task.locked.mako" />
 % else:
   <%include file="task.unlocked.mako" />
 % endif
 
-% if not task.state or task.state == TaskState.state_invalidated:
+% if task.cur_state.state == TaskState.state_ready or task.cur_state.state == TaskState.state_invalidated:
   <%include file="task.split.mako" />
 % endif
 
     <div class="text-center">
-% if not task.state or task.state.state == TaskState.state_invalidated:
+% if task.cur_state.state == TaskState.state_ready or task.cur_state.state == TaskState.state_invalidated:
     <%include file="task.state.ready.mako" />
 % endif
 
-% if task.lock and task.state and task.state.state in [TaskState.state_done, TaskState.state_validated]:
+% if task.cur_lock and task.cur_lock.lock and task.cur_state and task.cur_state.state in [TaskState.state_done, TaskState.state_validated]:
     <%include file="task.state.done.mako" />
 % endif
     </div>
