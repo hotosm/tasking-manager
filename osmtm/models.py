@@ -144,7 +144,7 @@ class TaskState(Base):
     state = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
-    date = Column(DateTime)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
 
     __table_args__ = (ForeignKeyConstraint([task_id, project_id],
                                            ['task.id', 'task.project_id']),
@@ -157,7 +157,6 @@ class TaskState(Base):
     def __init__(self, user=None, state=None):
         self.user = user
         self.state = state if state is not None else TaskState.state_ready
-        self.date = datetime.datetime.utcnow()
 
 
 class TaskLock(Base):
@@ -168,7 +167,7 @@ class TaskLock(Base):
     lock = Column(Boolean)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
-    date = Column(DateTime)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
 
     __table_args__ = (ForeignKeyConstraint([task_id, project_id],
                                            ['task.id', 'task.project_id']),
@@ -181,7 +180,6 @@ class TaskLock(Base):
     def __init__(self, user=None, lock=False):
         self.user = user
         self.lock = lock
-        self.date = datetime.datetime.utcnow()
 
 
 def task_id_factory(context):
@@ -207,7 +205,7 @@ class Task(Base):
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'), index=True)
     geometry = Column(Geometry('MultiPolygon', srid=4326))
-    date = Column(DateTime)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
 
     cur_lock = relationship(
         TaskLock,
@@ -262,7 +260,6 @@ class Task(Base):
             geometry = ST_Transform(shape.from_shape(geometry, 3857), 4326)
 
         self.geometry = geometry
-        self.date = datetime.datetime.utcnow()
 
         self.states.append(TaskState())
         self.locks.append(TaskLock())
@@ -290,12 +287,6 @@ class Task(Base):
         print "################ TODO"
 
 
-@event.listens_for(Task, "before_update")
-def before_update(mapper, connection, target):
-    d = datetime.datetime.utcnow()
-    target.update = d
-
-
 class TaskComment(Base):
     __tablename__ = "task_comment"
     id = Column(Integer, primary_key=True)
@@ -303,7 +294,7 @@ class TaskComment(Base):
     project_id = Column(Integer)
 
     comment = Column(Unicode)
-    date = Column(DateTime)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
     author_id = Column(Integer, ForeignKey('users.id'))
     author = relationship(User)
 
@@ -314,7 +305,6 @@ class TaskComment(Base):
     def __init__(self, comment, author):
         self.comment = comment
         self.author = author
-        self.date = datetime.datetime.utcnow()
 
 
 @event.listens_for(DBSession, "before_flush")
