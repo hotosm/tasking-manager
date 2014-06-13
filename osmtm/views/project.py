@@ -59,11 +59,12 @@ def project(request):
     project.locale = get_locale_name(request)
 
     filter = and_(TaskState.project_id == id,
-                  TaskState.state != TaskState.state_removed)
+                  TaskState.state != TaskState.state_removed,
+                  TaskState.state != TaskState.state_ready)
     history = DBSession.query(TaskState) \
                        .filter(filter) \
                        .order_by(TaskState.date.desc()) \
-                       .limit(10).all()
+                       .limit(20).all()
 
     user_id = authenticated_userid(request)
     locked_task = None

@@ -182,6 +182,30 @@ class TaskLock(Base):
         self.lock = lock
 
 
+class TaskComment(Base):
+    __tablename__ = "task_comment"
+    id = Column(Integer, primary_key=True)
+    task_id = Column(Integer)
+    project_id = Column(Integer)
+
+    comment = Column(Unicode)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
+    author_id = Column(Integer, ForeignKey('users.id'))
+    author = relationship(User)
+
+    __table_args__ = (ForeignKeyConstraint([task_id, project_id],
+                                           ['task.id', 'task.project_id']),
+                      Index('task_comment_task_project_index',
+                            'task_id',
+                            'project_id'),
+                      Index('task_comment_date', date.desc()),
+                      {})
+
+    def __init__(self, comment, author):
+        self.comment = comment
+        self.author = author
+
+
 def task_id_factory(context):
     project_id = context.compiled_parameters[0]['project_id']
 
@@ -249,6 +273,12 @@ class Task(Base):
         cascade="all, delete, delete-orphan",
         backref="task")
 
+    comments = relationship(
+        TaskComment,
+        order_by="desc(TaskComment.date)",
+        cascade="all, delete, delete-orphan",
+        backref="task")
+
     __table_args__ = (PrimaryKeyConstraint('project_id', 'id'), {})
 
     def __init__(self, x, y, zoom, geometry=None):
@@ -279,32 +309,6 @@ class Task(Base):
                 'locked': self.cur_lock and self.cur_lock.lock
             }
         )
-
-    def add_comment(self, comment, user):
-        print "############## TODO"
-
-    def add_free_comment(self, comment, user):
-        print "################ TODO"
-
-
-class TaskComment(Base):
-    __tablename__ = "task_comment"
-    id = Column(Integer, primary_key=True)
-    task_id = Column(Integer)
-    project_id = Column(Integer)
-
-    comment = Column(Unicode)
-    date = Column(DateTime, default=datetime.datetime.utcnow)
-    author_id = Column(Integer, ForeignKey('users.id'))
-    author = relationship(User)
-
-    __table_args__ = (ForeignKeyConstraint([task_id, project_id],
-                                           ['task.id', 'task.project_id']),
-                      {})
-
-    def __init__(self, comment, author):
-        self.comment = comment
-        self.author = author
 
 
 @event.listens_for(DBSession, "before_flush")

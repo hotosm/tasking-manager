@@ -10,6 +10,7 @@ from ..models import (
     Task,
     TaskState,
     TaskLock,
+    TaskComment,
     User
 )
 from geoalchemy2 import (
@@ -93,10 +94,30 @@ def task_xhr(request):
 
     task_id = request.matchdict['task']
     project_id = request.matchdict['project']
+
     filter = and_(TaskState.task_id == task_id,
                   TaskState.project_id == project_id)
-    history = DBSession.query(TaskState).filter(filter) \
-        .order_by(TaskState.id.desc()).all()
+    states = DBSession.query(TaskState).filter(filter) \
+        .order_by(TaskState.date).all()
+    # remove the first state (task creation with state==ready)
+    states.pop(0)
+
+    filter = and_(TaskLock.task_id == task_id,
+                  TaskLock.project_id == project_id)
+    locks = DBSession.query(TaskLock).filter(filter) \
+        .order_by(TaskLock.date).all()
+    # remove the first lock (task creation)
+    locks.pop(0)
+
+    filter = and_(TaskComment.task_id == task_id,
+                  TaskComment.project_id == project_id)
+    comments = DBSession.query(TaskComment).filter(filter) \
+        .order_by(TaskComment.date).all()
+
+    history = states + locks + comments
+
+    history = sorted(history, key=lambda step: step.date, reverse=True)
+
     return dict(task=task,
                 user=user,
                 locked_task=locked_task,
@@ -118,14 +139,12 @@ def done(request):
     task = __get_task(request, lock_for_update=True)
     __ensure_task_locked(task, user)
 
+    add_comment(request, task, user)
+
     task.states.append(TaskState(user=user, state=TaskState.state_done))
     task.locks.append(TaskLock(user=None, lock=False))
     DBSession.add(task)
     DBSession.flush()
-
-    if 'comment' in request.params and request.params.get('comment') != '':
-        comment = request.params['comment']
-        task.add_comment(comment, user)
 
     _ = request.translate
     return dict(success=True,
@@ -162,15 +181,11 @@ def unlock(request):
     task = __get_task(request, lock_for_update=True)
     __ensure_task_locked(task, user)
 
+    add_comment(request, task, user)
+
     task.locks.append(TaskLock(user=None, lock=False))
     DBSession.add(task)
-
-    DBSession.add(task)
     DBSession.flush()
-
-    if 'comment' in request.params and request.params.get('comment') != '':
-        comment = request.params['comment']
-        task.add_comment(comment, user)
 
     _ = request.translate
     return dict(success=True, task=dict(id=task.id),
@@ -182,12 +197,19 @@ def comment(request):
     user = __get_user(request)
     task = __get_task(request)
 
-    comment = request.params['comment']
-    task.add_free_comment(comment, user)
+    add_comment(request, task, user)
 
     _ = request.translate
     return dict(success=True, task=dict(id=task.id),
                 msg=_("Comment added."))
+
+
+def add_comment(request, task, user):
+    if 'comment' in request.params and request.params.get('comment') != '':
+        comment = request.params['comment']
+        task.comments.append(TaskComment(comment, user))
+        DBSession.add(task)
+        DBSession.flush()
 
 
 @view_config(route_name='task_validate', renderer="json")
@@ -206,14 +228,12 @@ def validate(request):
         state = TaskState.state_invalidated
         msg = _("Task invalidated.")
 
+    add_comment(request, task, user)
+
     task.states.append(TaskState(user=user, state=state))
     task.locks.append(TaskLock(user=None, lock=False))
     DBSession.add(task)
     DBSession.flush()
-
-    if 'comment' in request.params and request.params.get('comment') != '':
-        comment = request.params['comment']
-        task.add_comment(comment, user)
 
     return dict(success=True, msg=msg)
 

@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+<%
+from osmtm.models import (
+    TaskState,
+    TaskLock,
+    TaskComment,
+)
+%>
 <%page args="section='task'"/>
 % for index, step in enumerate(history):
     <%
@@ -12,14 +19,28 @@
     % if section == 'project':
       <a href="#task/${step.task_id}">#${step.task_id}</a>
     % endif
-    % if step.state == step.state_done:
-    <span><i class="glyphicon glyphicon-ok text-success"></i> <b>${_('Marked as done')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
-    % elif step.state == step.state_invalidated:
-    <span><i class="glyphicon glyphicon-thumbs-down text-danger"></i> <b>${_('Invalidated')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
-    % elif step.state == step.state_validated:
-    <span><i class="glyphicon glyphicon-thumbs-up text-success"></i> <b>${_('Validated')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
+    % if isinstance(step, TaskState):
+      % if step.state == step.state_done:
+      <span><i class="glyphicon glyphicon-ok text-success"></i> <b>${_('Marked as done')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
+      % elif step.state == step.state_invalidated:
+      <span><i class="glyphicon glyphicon-thumbs-down text-danger"></i> <b>${_('Invalidated')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
+      % elif step.state == step.state_validated:
+      <span><i class="glyphicon glyphicon-thumbs-up text-success"></i> <b>${_('Validated')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
+      % endif
     % endif
-
+    % if isinstance(step, TaskLock):
+      % if step.lock:
+        Locked
+      % else:
+        Unlocked
+      % endif
+    % endif
+    % if isinstance(step, TaskComment):
+      <span><i class="glyphicon glyphicon-comment text-muted"></i> ${_('Comment left')} ${_('by')} ${step.author.username | n}</span>
+      <blockquote>
+        ${step.comment}
+      </blockquote>
+    % endif
       <p class="text-muted">
         <em title="${step.date}Z" class="timeago"></em>
       </p>
