@@ -334,7 +334,8 @@ def get_stats(project):
 
     total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
         .filter(
-            Task.cur_state.has(TaskState.state != TaskState.state_removed)
+            Task.cur_state.has(TaskState.state != TaskState.state_removed),
+            Task.project_id == project.id
         ) \
         .scalar()
 
@@ -349,7 +350,9 @@ def get_stats(project):
             ),
             order_by=TaskState.date
         ).label('prev_state')
-    ).join(Task).filter(TaskState.project_id == project.id) \
+    ).join(Task).filter(
+        TaskState.project_id == project.id,
+        TaskState.state != TaskState.state_ready) \
      .order_by(TaskState.date)
 
     tasks = subquery.all()
