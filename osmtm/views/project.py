@@ -17,6 +17,9 @@ from pyramid.security import authenticated_userid
 from pyramid.i18n import (
     get_locale_name,
 )
+from sqlalchemy.orm import (
+    joinedload,
+)
 from sqlalchemy.sql.expression import (
     and_,
     func,
@@ -250,11 +253,12 @@ def project_tasks_json(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
 
-    tasks = []
-    for task in project.tasks:
-        tasks.append(task.to_feature())
+    tasks = DBSession.query(Task) \
+                     .filter(Task.project_id == project.id) \
+                     .options(joinedload(Task.cur_state)) \
+                     .options(joinedload(Task.cur_lock)) \
 
-    return FeatureCollection(tasks)
+    return FeatureCollection([task.to_feature() for task in tasks])
 
 
 @view_config(route_name="project_user_add", renderer='json',
