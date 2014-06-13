@@ -9,13 +9,14 @@ from sqlalchemy import (
     Boolean,
     DateTime,
     CheckConstraint,
+    Index,
     event,
-    inspect,
     and_
 )
 
 from sqlalchemy.sql.expression import (
-    func
+    func,
+    select,
 )
 
 from geoalchemy2 import (
@@ -130,29 +131,79 @@ VALIDATED = 3
 REMOVED = -1
 
 
-class TaskHistory(Base):
-    __tablename__ = "tasks_history"
+class TaskState(Base):
+    __tablename__ = "task_state"
     id = Column(Integer, primary_key=True)
     task_id = Column(Integer)
-    project_id = Column(Integer, index=True)
+    project_id = Column(Integer)
     state_ready = READY
     state_done = DONE
     state_validated = VALIDATED
     state_invalidated = INVALIDATED
     state_removed = REMOVED
     state = Column(Integer)
-    prev_state = Column(Integer)
-    state_changed = Column(Boolean, default=False)
-    locked = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User, foreign_keys=[user_id])
-    update = Column(DateTime)
-    comment = relationship("TaskComment", uselist=False,
-                           backref='task_history')
+    user = relationship(User)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
 
     __table_args__ = (ForeignKeyConstraint([task_id, project_id],
-                                           ['tasks.id', 'tasks.project_id']),
+                                           ['task.id', 'task.project_id']),
+                      Index('task_state_task_project_index',
+                            'task_id',
+                            'project_id'),
+                      Index('task_state_date', date.desc()),
                       {})
+
+    def __init__(self, user=None, state=None):
+        self.user = user
+        self.state = state if state is not None else TaskState.state_ready
+
+
+class TaskLock(Base):
+    __tablename__ = "task_lock"
+    id = Column(Integer, primary_key=True)
+    task_id = Column(Integer)
+    project_id = Column(Integer)
+    lock = Column(Boolean)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship(User)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
+
+    __table_args__ = (ForeignKeyConstraint([task_id, project_id],
+                                           ['task.id', 'task.project_id']),
+                      Index('task_lock_task_project_index',
+                            'task_id',
+                            'project_id'),
+                      Index('task_lock_date', date.desc()),
+                      {})
+
+    def __init__(self, user=None, lock=False):
+        self.user = user
+        self.lock = lock
+
+
+class TaskComment(Base):
+    __tablename__ = "task_comment"
+    id = Column(Integer, primary_key=True)
+    task_id = Column(Integer)
+    project_id = Column(Integer)
+
+    comment = Column(Unicode)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
+    author_id = Column(Integer, ForeignKey('users.id'))
+    author = relationship(User)
+
+    __table_args__ = (ForeignKeyConstraint([task_id, project_id],
+                                           ['task.id', 'task.project_id']),
+                      Index('task_comment_task_project_index',
+                            'task_id',
+                            'project_id'),
+                      Index('task_comment_date', date.desc()),
+                      {})
+
+    def __init__(self, comment, author):
+        self.comment = comment
+        self.author = author
 
 
 def task_id_factory(context):
@@ -160,7 +211,7 @@ def task_id_factory(context):
 
     sql = """
         SELECT MAX(id)
-        FROM tasks
+        FROM task
         WHERE project_id='%d'""" % (project_id, )
 
     result = context.connection.execute(sql).fetchone()[0]
@@ -171,25 +222,62 @@ def task_id_factory(context):
 
 
 class Task(Base):
-    __tablename__ = "tasks"
+    __tablename__ = "task"
     id = Column(Integer, default=task_id_factory)
     x = Column(Integer)
     y = Column(Integer)
     zoom = Column(Integer)
     project_id = Column(Integer, ForeignKey('project.id'), index=True)
     geometry = Column(Geometry('MultiPolygon', srid=4326))
+    date = Column(DateTime, default=datetime.datetime.utcnow)
 
-    state_ready = READY
-    state_done = DONE
-    state_validated = VALIDATED
-    state_invalidated = INVALIDATED
-    state_removed = REMOVED
-    state = Column(Integer, default=READY)
-    locked = Column(Boolean, default=False, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User)
-    update = Column(DateTime)
-    history = relationship(TaskHistory, cascade="all, delete, delete-orphan")
+    cur_lock = relationship(
+        TaskLock,
+        primaryjoin=lambda: and_(
+            Task.id == TaskLock.task_id,
+            Task.project_id == TaskLock.project_id,
+            TaskLock.date == select(
+                [func.max(TaskLock.date)]
+            )
+            .where(and_(TaskLock.task_id == Task.id,
+                        TaskLock.project_id == Task.project_id))
+            .correlate(Task.__table__)
+        ),
+        uselist=False
+    )
+
+    cur_state = relationship(
+        TaskState,
+        primaryjoin=lambda: and_(
+            Task.id == TaskState.task_id,
+            Task.project_id == TaskState.project_id,
+            TaskState.date == select(
+                [func.max(TaskState.date)]
+            )
+            .where(and_(TaskState.task_id == Task.id,
+                        TaskState.project_id == Task.project_id))
+            .correlate(Task.__table__)
+        ),
+        uselist=False
+    )
+
+    locks = relationship(
+        TaskLock,
+        order_by="desc(TaskLock.date)",
+        cascade="all, delete, delete-orphan",
+        backref="task")
+
+    states = relationship(
+        TaskState,
+        order_by="desc(TaskState.date)",
+        cascade="all, delete, delete-orphan",
+        backref="task")
+
+    comments = relationship(
+        TaskComment,
+        order_by="desc(TaskComment.date)",
+        cascade="all, delete, delete-orphan",
+        backref="task")
 
     __table_args__ = (PrimaryKeyConstraint('project_id', 'id'), {})
 
@@ -203,6 +291,9 @@ class Task(Base):
 
         self.geometry = geometry
 
+        self.states.append(TaskState())
+        self.locks.append(TaskLock())
+
     def to_polygon(self):
         # task size (in meters) at the required zoom level
         step = max / (2 ** (self.zoom - 1))
@@ -214,87 +305,10 @@ class Task(Base):
             geometry=shape.to_shape(self.geometry),
             id=self.id,
             properties={
-                'state': self.state,
-                'locked': self.locked
+                'state': self.cur_state.state if self.cur_state else 0,
+                'locked': self.cur_lock and self.cur_lock.lock
             }
         )
-
-    def add_comment(self, comment, user):
-        # used for example when a task is invalidated
-        self.history[-1].comment = TaskComment(comment, user)
-
-    def add_free_comment(self, comment, user):
-        task_history = TaskHistory()
-        task_history.comment = TaskComment(comment, user)
-        task_history.update = datetime.datetime.utcnow()
-        task_history.task_id = self.id
-        task_history.project_id = self.project_id
-        task_history.state = None
-        # we add the task history manually since we don't want "after_update"
-        # event to be triggered
-        DBSession.add(task_history)
-
-
-@event.listens_for(Task, "before_update")
-def before_update(mapper, connection, target):
-    d = datetime.datetime.utcnow()
-    target.update = d
-
-
-@event.listens_for(Task, "after_update")
-def after_update(mapper, connection, target):
-    project_table = Project.__table__
-    project = target.project
-    connection.execute(
-        project_table.update().
-        where(project_table.c.id == project.id).
-        values(last_update=datetime.datetime.utcnow(),
-               done=project.get_done(),
-               validated=project.get_validated()
-               )
-    )
-
-
-class TaskComment(Base):
-    __tablename__ = "tasks_comments"
-    id = Column(Integer, primary_key=True)
-    task_history_id = Column(Integer, ForeignKey('tasks_history.id'))
-    comment = Column(Unicode)
-    date = Column(DateTime)
-    read = Column(Boolean, default=False)
-    author_id = Column(Integer, ForeignKey('users.id'))
-    author = relationship(User)
-
-    def __init__(self, comment, author):
-        self.comment = comment
-        self.author = author
-        self.date = datetime.datetime.utcnow()
-
-
-def get_old_value(attribute_state):
-    history = attribute_state.history
-    return history.deleted[0] if history.deleted else None
-
-
-@event.listens_for(DBSession, "after_flush")
-def after_flush(session, flush_context):
-    for obj in session.dirty:
-        if isinstance(obj, Task):
-            taskhistory = TaskHistory()
-            taskhistory.task_id = obj.id
-            taskhistory.project_id = obj.project_id
-            taskhistory.state = obj.state
-            taskhistory.update = obj.update
-            taskhistory.locked = obj.locked
-            attrs = inspect(obj).attrs
-            old_state = get_old_value(attrs.get("state"))
-            if old_state is not None and obj.state != old_state:
-                taskhistory.user = get_old_value(attrs.get("user"))
-                taskhistory.state_changed = True
-                taskhistory.prev_state = get_old_value(attrs.get("state"))
-            else:
-                taskhistory.user = obj.user
-            session.add(taskhistory)
 
 
 @event.listens_for(DBSession, "before_flush")
@@ -444,12 +458,12 @@ class Project(Base, Translatable):
     def get_done(self):
         total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(Task.project_id == self.id) \
-            .filter(Task.state != Task.state_removed) \
+            .filter(Task.state != TaskState.state_removed) \
             .scalar()
 
         done = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(and_(Task.project_id == self.id,
-                         Task.state == Task.state_done)) \
+                         Task.state == TaskState.state_done)) \
             .scalar()
 
         if not done:
@@ -460,12 +474,12 @@ class Project(Base, Translatable):
     def get_validated(self):
         total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(Task.project_id == self.id) \
-            .filter(Task.state != Task.state_removed) \
+            .filter(Task.state != TaskState.state_removed) \
             .scalar()
 
         validated = DBSession.query(func.sum(ST_Area(Task.geometry))) \
             .filter(and_(Task.project_id == self.id,
-                         Task.state == Task.state_validated)) \
+                         Task.state == TaskState.state_validated)) \
             .scalar()
 
         if not validated:

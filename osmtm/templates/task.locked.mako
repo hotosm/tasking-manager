@@ -1,14 +1,14 @@
-% if task.locked:
+% if task.cur_lock and task.cur_lock.lock:
 <%
-username = _('you') if task.user == user else task.user.username
+username = _('you') if task.cur_lock.user == user else task.cur_lock.user.username
 username = '<strong>%s</strong>' % username
 locked_text = _('Task locked by ${username}', mapping={'username': username})
 import datetime
 from osmtm.models import EXPIRATION_DELTA
-time_left = (task.update - (datetime.datetime.utcnow() - EXPIRATION_DELTA)).seconds
+time_left = (task.cur_lock.date - (datetime.datetime.utcnow() - EXPIRATION_DELTA)).seconds
 %>
 <p>${locked_text|n}.&nbsp;
-  % if user and task.user == user:
+  % if user and task.cur_lock.user== user:
   <small><em id="task_countdown_text" rel="tooltip"
       data-original-title="${_('If you do not complete or release this task in time, it will be automatically unlocked')}"
       data-container="body"
@@ -31,7 +31,7 @@ time_left = (task.update - (datetime.datetime.utcnow() - EXPIRATION_DELTA)).seco
 </p>
 % endif
 
-% if user and task.user == user:
+% if user and task.cur_lock.user == user:
 <p>
   <%include file="task.editors.mako" />
 </p>

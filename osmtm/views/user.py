@@ -8,8 +8,7 @@ from ..models import (
     DBSession,
     User,
     Project,
-    TaskHistory,
-    Task,
+    TaskState,
 )
 
 from pyramid.security import authenticated_userid
@@ -80,11 +79,10 @@ def user(request):
 
 def __get_projects(user_id):
     """ get the tiles that changed """
-    filter = and_(TaskHistory.state_changed.is_(True),
-                  TaskHistory.state == Task.state_done,
-                  TaskHistory.user_id == user_id,
-                  TaskHistory.project_id == Project.id)
-    projects = DBSession.query(Project, func.count(TaskHistory.user_id)) \
+    filter = and_(TaskState.state == TaskState.state_done,
+                  TaskState.user_id == user_id,
+                  TaskState.project_id == Project.id)
+    projects = DBSession.query(Project, func.count(TaskState.user_id)) \
                         .filter(filter) \
                         .group_by(Project.id) \
                         .order_by(desc(Project.id)) \

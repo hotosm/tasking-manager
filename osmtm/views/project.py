@@ -8,13 +8,17 @@ from ..models import (
     Area,
     User,
     Task,
-    TaskHistory,
+    TaskState,
+    TaskLock,
     License,
 )
 from pyramid.security import authenticated_userid
 
 from pyramid.i18n import (
     get_locale_name,
+)
+from sqlalchemy.orm import (
+    joinedload,
 )
 from sqlalchemy.sql.expression import (
     and_,
@@ -57,13 +61,13 @@ def project(request):
 
     project.locale = get_locale_name(request)
 
-    filter = and_(TaskHistory.project_id == id,
-                  TaskHistory.state != TaskHistory.state_removed,
-                  TaskHistory.update.isnot(None))
-    history = DBSession.query(TaskHistory) \
+    filter = and_(TaskState.project_id == id,
+                  TaskState.state != TaskState.state_removed,
+                  TaskState.state != TaskState.state_ready)
+    history = DBSession.query(TaskState) \
                        .filter(filter) \
-                       .order_by(TaskHistory.update.desc()) \
-                       .limit(10).all()
+                       .order_by(TaskState.date.desc()) \
+                       .limit(20).all()
 
     user_id = authenticated_userid(request)
     locked_task = None
@@ -214,15 +218,31 @@ def project_stats(request):
 
 @view_config(route_name="project_check_for_update", renderer='json')
 def check_for_updates(request):
+    id = request.matchdict['project']
     interval = request.GET['interval']
     date = datetime.datetime.utcnow() \
         - datetime.timedelta(0, 0, 0, int(interval))
-    tasks = DBSession.query(Task).filter(Task.update > date).all()
     updated = []
+
+    tasks = DBSession.query(Task) \
+                     .filter(Task.project_id == id, Task.date > date) \
+                     .all()
     for task in tasks:
         updated.append(task.to_feature())
 
-    if len(tasks) > 0:
+    tasks_lock = DBSession.query(TaskLock) \
+        .filter(TaskLock.project_id == id, TaskLock.date > date) \
+        .all()
+    for lock in tasks_lock:
+        updated.append(lock.task.to_feature())
+
+    states = DBSession.query(TaskState) \
+        .filter(TaskState.project_id == id, TaskState.date > date) \
+        .all()
+    for state in states:
+        updated.append(state.task.to_feature())
+
+    if len(updated) > 0:
         return dict(update=True, updated=updated)
     return dict(update=False)
 
@@ -233,11 +253,12 @@ def project_tasks_json(request):
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
 
-    tasks = []
-    for task in project.tasks:
-        tasks.append(task.to_feature())
+    tasks = DBSession.query(Task) \
+                     .filter(Task.project_id == project.id) \
+                     .options(joinedload(Task.cur_state)) \
+                     .options(joinedload(Task.cur_lock)) \
 
-    return FeatureCollection(tasks)
+    return FeatureCollection([task.to_feature() for task in tasks])
 
 
 @view_config(route_name="project_user_add", renderer='json',
@@ -289,15 +310,14 @@ def get_contributors(project):
 
     # filter on tasks with state DONE
     filter = and_(
-        TaskHistory.project_id == project.id,
-        TaskHistory.state_changed.is_(True),
-        TaskHistory.state == TaskHistory.state_done
+        TaskState.project_id == project.id,
+        TaskState.state == TaskState.state_done
     )
 
-    tasks = DBSession.query(TaskHistory.id, User.username) \
-                     .join(TaskHistory.user) \
+    tasks = DBSession.query(TaskState.id, User.username) \
+                     .join(TaskState.user) \
                      .filter(filter) \
-                     .order_by(TaskHistory.user_id) \
+                     .order_by(TaskState.user_id) \
                      .all()
 
     contributors = {}
@@ -313,28 +333,29 @@ def get_stats(project):
     """
 
     total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
-        .filter(Task.project_id == project.id) \
-        .filter(Task.state != Task.state_removed) \
+        .filter(
+            Task.cur_state.has(TaskState.state != TaskState.state_removed),
+            Task.project_id == project.id
+        ) \
         .scalar()
 
-    filter = and_(
-        TaskHistory.state_changed == True,  # noqa
-        TaskHistory.project_id == project.id
-    )
-    tasks = (
-        DBSession.query(
-            TaskHistory.id,
-            TaskHistory.state,
-            TaskHistory.prev_state,
-            TaskHistory.update,
-            ST_Area(Task.geometry).label('area')
-        )
-        .filter(filter)
-        .join(Task)
-        .order_by(TaskHistory.update)
-        .all()
-    )
+    subquery = DBSession.query(
+        TaskState.state,
+        TaskState.date,
+        ST_Area(Task.geometry).label('area'),
+        func.lag(TaskState.state).over(
+            partition_by=(
+                TaskState.task_id,
+                TaskState.project_id
+            ),
+            order_by=TaskState.date
+        ).label('prev_state')
+    ).join(Task).filter(
+        TaskState.project_id == project.id,
+        TaskState.state != TaskState.state_ready) \
+     .order_by(TaskState.date)
 
+    tasks = subquery.all()
     log.debug('Number of tiles: %s', len(tasks))
     stats = [[project.created.isoformat(), 0, 0]]
     done = 0
@@ -342,19 +363,19 @@ def get_stats(project):
 
     # for every day count number of changes and aggregate changed tiles
     for task in tasks:
-        if task.state == TaskHistory.state_done:
+        if task.state == TaskState.state_done:
             done += task.area
-        if task.state == TaskHistory.state_invalidated:
-            if task.prev_state == TaskHistory.state_done:
+        if task.state == TaskState.state_invalidated:
+            if task.prev_state == TaskState.state_done:
                 done -= task.area
-            elif task.prev_state == TaskHistory.state_validated:
+            elif task.prev_state == TaskState.state_validated:
                 validated -= task.area
-        if task.state == TaskHistory.state_validated:
+        if task.state == TaskState.state_validated:
             validated += task.area
             done -= task.area
 
         # append a day to the stats and add total number of 'done' tiles and a
         # copy of a current tile_changes list
-        stats.append([task.update.isoformat(), done, validated])
+        stats.append([task.date.isoformat(), done, validated])
 
     return {"total": total, "stats": stats}

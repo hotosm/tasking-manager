@@ -1,4 +1,4 @@
-% if task.locked and task.project.per_task_instructions:
+% if task.cur_lock and task.cur_lock.lock and task.project.per_task_instructions:
 <hr>
 <h4>${_('Extra Instructions')}</h4>
 <%
