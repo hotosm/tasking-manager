@@ -30,9 +30,9 @@ from osmtm.models import (
     % endif
     % if isinstance(step, TaskLock):
       % if step.lock:
-        Locked
+      <span><i class="glyphicon glyphicon-lock text-muted"></i> ${_('Locked')} ${_('by')} ${step.user.username}</span>
       % else:
-        Unlocked
+      <span>${_('Unlocked')}</span>
       % endif
     % endif
     % if isinstance(step, TaskComment):
