@@ -231,13 +231,21 @@ def check_for_updates(request):
         updated.append(task.to_feature())
 
     tasks_lock = DBSession.query(TaskLock) \
-        .filter(TaskLock.project_id == id, TaskLock.date > date) \
+        .filter(
+            TaskLock.project_id == id,
+            TaskLock.date > date,
+            TaskLock.lock != None  # noqa
+        ) \
         .all()
     for lock in tasks_lock:
         updated.append(lock.task.to_feature())
 
     states = DBSession.query(TaskState) \
-        .filter(TaskState.project_id == id, TaskState.date > date) \
+        .filter(
+            TaskState.project_id == id,
+            TaskState.date > date,
+            TaskState.state != TaskState.state_ready
+        ) \
         .all()
     for state in states:
         updated.append(state.task.to_feature())

@@ -21,6 +21,7 @@ with open(local_settings_path):
 USER1_ID = 1
 USER2_ID = 2
 ADMIN_USER_ID = 3
+PROJECT_MANAGER_USER_ID = 4
 
 translation_manager.options.update({
     'locales': 'en fr',
@@ -52,6 +53,10 @@ def populate_db():
     user.role = User.role_admin
     DBSession.add(user)
 
+    user = User(PROJECT_MANAGER_USER_ID, u'project_manager_user')
+    user.role = User.role_project_manager
+    DBSession.add(user)
+
     license = License()
     license.name = u'LicenseBar'
     license.description = u'the_description_for_license_bar'
@@ -78,6 +83,7 @@ class BaseTestCase(unittest.TestCase):
     user1_id = USER1_ID
     user2_id = USER2_ID
     admin_user_id = ADMIN_USER_ID
+    project_manager_user_id = PROJECT_MANAGER_USER_ID
 
     def setUp(self):
         from osmtm import main
@@ -100,6 +106,9 @@ class BaseTestCase(unittest.TestCase):
 
     def login_as_admin(self):
         return self.__remember(self.admin_user_id)
+
+    def login_as_project_manager(self):
+        return self.__remember(self.project_manager_user_id)
 
     def login_as_user1(self):
         return self.__remember(self.user1_id)

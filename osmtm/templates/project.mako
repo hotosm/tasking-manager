@@ -35,7 +35,7 @@ else:
         <div class="world_map pull-right">
           <div class="marker" style="top:${top}px;left:${left}px"></div>
         </div>
-        % if user and user.is_admin or user.is_project_manager:
+        % if user and (user.is_admin or user.is_project_manager):
           <a class="btn btn-default btn-sm pull-right" href="${request.route_path('project_edit', project=project.id)}">
             Edit project
           </a>

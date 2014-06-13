@@ -41,6 +41,10 @@ class TestProjectFunctional(BaseTestCase):
         headers = self.login_as_admin()
         self.testapp.get('/project/new', headers=headers, status=200)
 
+    def test_project_new__logged_as_project_manager(self):
+        headers = self.login_as_project_manager()
+        self.testapp.get('/project/new', headers=headers, status=200)
+
     def test_project_new_grid_not_submitted(self):
         headers = self.login_as_admin()
         self.testapp.get('/project/new/grid', headers=headers,
@@ -193,13 +197,47 @@ class TestProjectFunctional(BaseTestCase):
                                status=200,
                                headers=headers_user1,
                                xhr=True)
+        res = self.testapp.get('/project/%d/task/3/done' % project_id,
+                               status=200,
+                               headers=headers_user1,
+                               xhr=True)
+
         res = self.testapp.get('/project/%d/check_for_updates' % project_id,
                                params={
                                    'interval': 1000
                                },
                                status=200)
         self.assertTrue(res.json['update'])
-        self.assertEqual(len(res.json['updated']), 1)
+        self.assertEqual(len(res.json['updated']), 3)
+
+    def test_project_check_for_updates_2(self):
+        import time
+        project_id = self.create_project()
+        time.sleep(1)
+        res = self.testapp.get('/project/%d/check_for_updates' % project_id,
+                               params={
+                                   'interval': 1000
+                               },
+                               status=200)
+        self.assertFalse(res.json['update'])
+
+        headers_user1 = self.login_as_user1()
+        res = self.testapp.get('/project/%d/task/4/lock' % project_id,
+                               status=200,
+                               headers=headers_user1,
+                               xhr=True)
+        res = self.testapp.get('/project/%d/task/4/split' % project_id,
+                               status=200,
+                               headers=headers_user1,
+                               xhr=True)
+
+        res = self.testapp.get('/project/%d/check_for_updates' % project_id,
+                               params={
+                                   'interval': 1000
+                               },
+                               status=200)
+        self.assertTrue(res.json['update'])
+        self.assertEqual(len(res.json['updated']), 7)
 
     def test_project_user_add__not_allowed(self):
         project_id = self.create_project()
