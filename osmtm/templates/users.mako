@@ -21,7 +21,8 @@
       <small>
         Keys:
         <ul>
-          <li><i class="glyphicon glyphicon-star"></i> Administrator</li>
+          <li><i class="glyphicon glyphicon-star user-admin"></i> Administrator</li>
+          <li><i class="glyphicon glyphicon-star user-project-manager"></i> Project Manager</li>
         </ul>
       </small>
     </div>
