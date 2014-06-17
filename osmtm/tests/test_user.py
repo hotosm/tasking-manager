@@ -40,6 +40,12 @@ class TestViewsFunctional(BaseTestCase):
         DBSession.delete(user)
         transaction.commit()
 
+    def test_user_admin__same_user(self):
+
+        headers = self.login_as_admin()
+        self.testapp.get('/user/%d/admin' % self.admin_user_id,
+                         headers=headers, status=400)
+
     def test_user_project_manager__logged_in_as_admin(self):
 
         from osmtm.models import User, DBSession
