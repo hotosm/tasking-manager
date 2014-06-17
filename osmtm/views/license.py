@@ -13,7 +13,8 @@ from ..models import (
 from pyramid.security import authenticated_userid
 
 
-@view_config(route_name='licenses', renderer='licenses.mako')
+@view_config(route_name='licenses', renderer='licenses.mako',
+             permission="license_edit")
 def licenses(request):
     licenses = DBSession.query(License).all()
 
@@ -46,7 +47,7 @@ def license(request):
                 redirect=redirect)
 
 
-@view_config(route_name='license_delete', permission='admin')
+@view_config(route_name='license_delete', permission='license_edit')
 def license_delete(request):
     id = request.matchdict['license']
     license = DBSession.query(License).get(id)
@@ -62,9 +63,9 @@ def license_delete(request):
 
 
 @view_config(route_name='license_new', renderer='license.edit.mako',
-             permission='admin')
+             permission='license_edit')
 @view_config(route_name='license_edit', renderer='license.edit.mako',
-             permission='admin')
+             permission='license_edit')
 def license_edit(request):
     if 'license' in request.matchdict:
         id = request.matchdict['license']

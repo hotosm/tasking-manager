@@ -3,8 +3,12 @@ from . import BaseTestCase
 
 class TestLicenseFunctional(BaseTestCase):
 
+    def test_licenses_not_authenticated(self):
+        self.testapp.get('/licenses', status=403)
+
     def test_licenses(self):
-        self.testapp.get('/licenses', status=200)
+        headers = self.login_as_admin()
+        self.testapp.get('/licenses', headers=headers, status=200)
 
     def test_license__not_authenticated(self):
         self.testapp.get('/license/%d' % 1, status=302)

@@ -32,17 +32,37 @@ else:
   </div>
   <div class="row">
     <div class="col-md-12">
-      % if contributor.admin:
-      ${_("This user is an administrator.")}<i class="glyphicon glyphicon-star"></i>
-        % if user is not None and user.admin and user != contributor:
-        <a href="${request.route_path('user_admin', id=contributor.id)}">Remove privileges.</a>
+      <p>
+      % if contributor.is_admin:
+        <i class="glyphicon glyphicon-star user-admin"></i>
+        ${_("This user is an administrator.")}
+        % if user is not None and user.is_admin and user != contributor:
+          <a href="${request.route_path('user_admin', id=contributor.id)}">Remove privileges</a>
         % endif
       % else:
-      % if user is not None and user.admin:
-        <i class="glyphicon glyphicon-star"></i>
-        <a href="${request.route_path('user_admin', id=contributor.id)}">Set as administrator.</a>
+        % if user is not None and user.is_admin:
+          <i class="glyphicon glyphicon-star user-admin"></i>
+          <a href="${request.route_path('user_admin', id=contributor.id)}">Set as administrator</a>
         % endif
       % endif
+      </p>
+
+      <p>
+      % if not contributor.is_admin:
+        % if contributor.is_project_manager:
+          <i class="glyphicon glyphicon-star user-project-manager"></i>
+          ${_("This user is a project manager.")}
+          % if user is not None and user.is_admin and user != contributor:
+            <a href="${request.route_path('user_project_manager', id=contributor.id)}">Remove privileges</a>
+          % endif
+        % else:
+          % if user is not None and user.is_admin:
+            <i class="glyphicon glyphicon-star user-project-manager"></i>
+            <a href="${request.route_path('user_project_manager', id=contributor.id)}">Set as project manager</a>
+          % endif
+        % endif
+      % endif
+      </p>
     </div>
   </div>
   <div class="row">

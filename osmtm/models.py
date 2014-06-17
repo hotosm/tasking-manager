@@ -19,6 +19,10 @@ from sqlalchemy.sql.expression import (
     select,
 )
 
+from sqlalchemy.ext.hybrid import (
+    hybrid_property
+)
+
 from geoalchemy2 import (
     Geometry,
     shape,
@@ -97,30 +101,41 @@ users_licenses_table = Table('users_licenses', Base.metadata,
                              Column('license', Integer,
                                     ForeignKey('licenses.id')))
 
+# user roles
+ADMIN = 1
+PROJECT_MANAGER = 2
+
 
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(Unicode)
-    admin = Column(Boolean)
+    role_admin = ADMIN
+    role_project_manager = PROJECT_MANAGER
+    role = Column(Integer)
 
     accepted_licenses = relationship("License", secondary=users_licenses_table)
     private_projects = relationship("Project",
                                     secondary="project_allowed_users")
 
-    def __init__(self, id, username, admin=False):
+    def __init__(self, id, username):
         self.id = id
         self.username = username
-        self.admin = admin
 
+    @hybrid_property
     def is_admin(self):
-        return self.admin is True
+        return self.role is self.role_admin
+
+    @hybrid_property
+    def is_project_manager(self):
+        return self.role is self.role_project_manager
 
     def as_dict(self):
         return {
             "id": self.id,
             "username": self.username,
-            "admin": self.admin
+            "is_admin": self.is_admin,
+            "is_project_manager": self.is_project_manager
         }
 
 # task states
@@ -177,7 +192,7 @@ class TaskLock(Base):
                       Index('task_lock_date', date.desc()),
                       {})
 
-    def __init__(self, user=None, lock=False):
+    def __init__(self, user=None, lock=None):
         self.user = user
         self.lock = lock
 
@@ -311,6 +326,19 @@ class Task(Base):
         )
 
 
+@event.listens_for(Task, "after_update")
+def after_update(mapper, connection, target):
+    project_table = Project.__table__
+    project = target.project
+    connection.execute(
+        project_table.update().
+        where(project_table.c.id == project.id).
+        values(last_update=datetime.datetime.utcnow(),
+               done=project.get_done(),
+               validated=project.get_validated())
+    )
+
+
 @event.listens_for(DBSession, "before_flush")
 def before_flush(session, flush_context, instances):
     for obj in session.dirty:
@@ -436,34 +464,19 @@ class Project(Base, Translatable):
 
         return len(tasks)
 
-    def as_dict(self, locale=None):
-        if locale:
-            self.locale = locale
-
-        centroid = self.area.centroid
-
-        return {
-            'id': self.id,
-            'name': self.name,
-            'short_description': self.short_description,
-            'created': self.created,
-            'last_update': self.last_update,
-            'status': self.status,
-            'author': self.author.username if self.author is not None else '',
-            'done': self.get_done(),
-            'centroid': [centroid.x, centroid.y],
-            'priority': self.priority
-        }
-
     def get_done(self):
         total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
-            .filter(Task.project_id == self.id) \
-            .filter(Task.state != TaskState.state_removed) \
+            .filter(
+                Task.project_id == self.id,
+                Task.cur_state.has(TaskState.state != TaskState.state_removed)
+            ) \
             .scalar()
 
         done = DBSession.query(func.sum(ST_Area(Task.geometry))) \
-            .filter(and_(Task.project_id == self.id,
-                         Task.state == TaskState.state_done)) \
+            .filter(
+                Task.project_id == self.id,
+                Task.cur_state.has(TaskState.state == TaskState.state_done)
+            ) \
             .scalar()
 
         if not done:
@@ -473,13 +486,18 @@ class Project(Base, Translatable):
 
     def get_validated(self):
         total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
-            .filter(Task.project_id == self.id) \
-            .filter(Task.state != TaskState.state_removed) \
+            .filter(
+                Task.project_id == self.id,
+                Task.cur_state.has(TaskState.state != TaskState.state_removed)
+            ) \
             .scalar()
 
         validated = DBSession.query(func.sum(ST_Area(Task.geometry))) \
-            .filter(and_(Task.project_id == self.id,
-                         Task.state == TaskState.state_validated)) \
+            .filter(
+                Task.project_id == self.id,
+                Task.cur_state.has(
+                    TaskState.state == TaskState.state_validated)
+            ) \
             .scalar()
 
         if not validated:
