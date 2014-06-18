@@ -4,6 +4,9 @@
 <a class="navbar-brand">OSM Tasking Manager</a>
 </%block>
 <%block name="content">
+<%
+login_url= request.route_path('login', _query=[('came_from', request.url)])
+%>
 <div class="container">
   <div class="row">
     <h2>
@@ -14,7 +17,7 @@
         You're ready to use the Tasking Manager.
       </p>
       <p>
-        Please <a href="${request.route_path('login')}">login</a>.
+        Please <a href="${login_url}">login</a>.
       </p>
       <p>
         Since you are the first user you'll be given admin rights.
