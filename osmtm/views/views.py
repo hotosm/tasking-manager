@@ -33,7 +33,8 @@ def home(request):
     check_task_expiration()
 
     # no user in the DB yet
-    if DBSession.query(User.username).count() == 0:   # pragma: no cover
+    if DBSession.query(User).filter(User.role == User.role_admin) \
+                .count() == 0:   # pragma: no cover
         request.override_renderer = 'start.mako'
         return dict(page_id="start")
 
