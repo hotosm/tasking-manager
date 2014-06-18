@@ -14,9 +14,6 @@ from ..models import (
     ProjectTranslation,
     User,
 )
-from sqlalchemy.orm import (
-    joinedload
-)
 
 from webhelpers.paginate import (
     PageURL_WebOb,
@@ -74,14 +71,9 @@ def home(request):
 
     query = query.filter(filter)
 
-    # join tables so that new queries are not done when parsing template
-    query = query.options(joinedload(Project.translations)) \
-                 .options(joinedload(Project.area))
-    projects = query.all()
-
     page = int(request.params.get('page', 1))
     page_url = PageURL_WebOb(request)
-    paginator = Page(projects, page, url=page_url, items_per_page=10)
+    paginator = Page(query, page, url=page_url, items_per_page=10)
 
     return dict(page_id="home", paginator=paginator)
 
