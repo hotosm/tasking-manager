@@ -115,7 +115,8 @@ class User(Base):
     role_project_manager = PROJECT_MANAGER
     role = Column(Integer)
 
-    accepted_licenses = relationship("License", secondary=users_licenses_table)
+    accepted_licenses = relationship("License", secondary=users_licenses_table,
+                                     lazy='joined')
     private_projects = relationship("Project",
                                     secondary="project_allowed_users")
 
