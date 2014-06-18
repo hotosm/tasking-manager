@@ -473,11 +473,13 @@ osmtm.project = (function() {
         .tickFormat(d3.format(".0%"));
 
     areaDone = d3.svg.area()
+        .interpolate("basis")
         .x(function(d) { return x(d.date); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y + d.y0); });
 
     areaValidated = d3.svg.area()
+        .interpolate("basis")
         .x(function(d) { return x(d.date); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y + d.y0); });
