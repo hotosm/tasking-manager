@@ -70,7 +70,7 @@ def home(request):
     direction_func = getattr(sqlalchemy, direction, None)
     sort_by = direction_func(sort_by)
 
-    query = query.order_by(sort_by, desc(Project.created))
+    query = query.order_by(sort_by, desc(Project.id))
 
     query = query.filter(filter)
 
