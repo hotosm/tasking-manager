@@ -336,10 +336,9 @@ def check_task_expiration():  # pragma: no cover
         TaskLock
     ).select_entity_from(subquery).filter(subquery.c.rank == 1)
 
-    with transaction.manager:
-        for lock in query:
-            if lock.date < datetime.datetime.utcnow() - EXPIRATION_DELTA:
-                new_lock = TaskLock()
-                new_lock.task_id = lock.task_id
-                new_lock.project_id = lock.project_id
-                DBSession.add(new_lock)
+    for lock in query:
+        if lock.date < datetime.datetime.utcnow() - EXPIRATION_DELTA:
+            new_lock = TaskLock()
+            new_lock.task_id = lock.task_id
+            new_lock.project_id = lock.project_id
+            DBSession.add(new_lock)
