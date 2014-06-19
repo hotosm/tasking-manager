@@ -55,6 +55,14 @@ def main():
 
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+
+    # then, load the Alembic configuration and generate the
+    # version table, "stamping" it with the most recent rev:
+    from alembic.config import Config
+    from alembic import command
+    alembic_cfg = Config("alembic.ini")
+    command.stamp(alembic_cfg, "head")
+
     with transaction.manager:
         geometry = '{"type":"Polygon","coordinates":[[[85.31038284301758,27.70731518595052],[85.31089782714842,27.698120147680104],[85.3242015838623,27.69842412827061],[85.323429107666,27.70731518595052],[85.31038284301758,27.70731518595052]]]}'  # noqa
         geometry = geojson.loads(geometry,
