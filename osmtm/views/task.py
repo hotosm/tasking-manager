@@ -31,7 +31,6 @@ from sqlalchemy.sql.expression import (
 from pyramid.security import authenticated_userid
 
 import datetime
-import transaction
 import random
 
 from ..models import EXPIRATION_DELTA
