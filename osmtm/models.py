@@ -248,6 +248,10 @@ class Task(Base):
     geometry = Column(Geometry('MultiPolygon', srid=4326))
     date = Column(DateTime, default=datetime.datetime.utcnow)
 
+    assigned_to_id = Column(Integer, ForeignKey('users.id'))
+    assigned_to = relationship(User)
+    assigned_date = Column(DateTime, default=datetime.datetime.utcnow)
+
     cur_lock = relationship(
         TaskLock,
         primaryjoin=lambda: and_(
