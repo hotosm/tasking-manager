@@ -36,7 +36,7 @@ from osmtm.models import (
       % endif
     % endif
     % if isinstance(step, TaskComment):
-      <span><i class="glyphicon glyphicon-comment text-muted"></i> ${_('Comment left')} ${_('by')} ${step.author.username | n}</span>
+      <span><i class="glyphicon glyphicon-comment text-muted"></i> ${_('Comment left')} ${_('by')} ${step.author.username if step.author is not None else unknown | n}</span>
       <blockquote>
         ${step.comment}
       </blockquote>
