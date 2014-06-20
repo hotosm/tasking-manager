@@ -83,10 +83,15 @@ def oauth_callback(request):  # pragma: no cover
 
         if DBSession.query(User).get(id) is None:
             user = User(id, username)
-            if DBSession.query(User.username).count() == 0:
-                user.role = User.role_admin
+
             DBSession.add(user)
             DBSession.flush()
+
+        if DBSession.query(User).filter(User.role == User.role_admin) \
+                    .count() == 0:
+            user = DBSession.query(User).get(id)
+            user.role = User.role_admin
+
         headers = remember(request, id, max_age=20 * 7 * 24 * 60 * 60)
 
     location = session.get('came_from') or '/'

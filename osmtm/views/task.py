@@ -31,7 +31,6 @@ from sqlalchemy.sql.expression import (
 from pyramid.security import authenticated_userid
 
 import datetime
-import transaction
 import random
 
 from ..models import EXPIRATION_DELTA
@@ -329,19 +328,16 @@ def check_task_expiration():  # pragma: no cover
         func.rank().over(
             partition_by=TaskLock.task_id, order_by=TaskLock.date.desc()
         ).label("rank")
-    ).subquery()
+    ).filter(TaskLock.lock.is_(True)) \
+     .subquery()
 
     query = DBSession.query(
         TaskLock
-    ).select_entity_from(subquery).filter(
-        and_(subquery.c.rank == 1,
-             subquery.c.lock.is_(True),
-             subquery.c.date < datetime.datetime.utcnow() - EXPIRATION_DELTA)
-    )
+    ).select_entity_from(subquery).filter(subquery.c.rank == 1)
 
-    tasks = query.all()
-
-    for task in tasks:
-        with transaction.manager:
-            task_lock = TaskLock(task, None, False)
-            DBSession.add(task_lock)
+    for lock in query:
+        if lock.date < datetime.datetime.utcnow() - EXPIRATION_DELTA:
+            new_lock = TaskLock()
+            new_lock.task_id = lock.task_id
+            new_lock.project_id = lock.project_id
+            DBSession.add(new_lock)

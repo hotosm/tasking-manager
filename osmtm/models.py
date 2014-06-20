@@ -2,6 +2,7 @@ from sqlalchemy import (
     Table,
     Column,
     Integer,
+    BigInteger,
     Unicode,
     ForeignKey,
     ForeignKeyConstraint,
@@ -96,10 +97,10 @@ from sqlalchemy_i18n import (
 )
 make_translatable()
 
-users_licenses_table = Table('users_licenses', Base.metadata,
-                             Column('user', Integer, ForeignKey('users.id')),
-                             Column('license', Integer,
-                                    ForeignKey('licenses.id')))
+users_licenses_table = Table(
+    'users_licenses', Base.metadata,
+    Column('user', BigInteger, ForeignKey('users.id')),
+    Column('license', Integer, ForeignKey('licenses.id')))
 
 # user roles
 ADMIN = 1
@@ -108,13 +109,14 @@ PROJECT_MANAGER = 2
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(BigInteger, primary_key=True, index=True)
     username = Column(Unicode)
     role_admin = ADMIN
     role_project_manager = PROJECT_MANAGER
     role = Column(Integer)
 
-    accepted_licenses = relationship("License", secondary=users_licenses_table)
+    accepted_licenses = relationship("License", secondary=users_licenses_table,
+                                     lazy='joined')
     private_projects = relationship("Project",
                                     secondary="project_allowed_users")
 
@@ -157,7 +159,7 @@ class TaskState(Base):
     state_invalidated = INVALIDATED
     state_removed = REMOVED
     state = Column(Integer)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(BigInteger, ForeignKey('users.id'))
     user = relationship(User)
     date = Column(DateTime, default=datetime.datetime.utcnow)
 
@@ -180,7 +182,7 @@ class TaskLock(Base):
     task_id = Column(Integer)
     project_id = Column(Integer)
     lock = Column(Boolean)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(BigInteger, ForeignKey('users.id'))
     user = relationship(User)
     date = Column(DateTime, default=datetime.datetime.utcnow)
 
@@ -205,7 +207,7 @@ class TaskComment(Base):
 
     comment = Column(Unicode)
     date = Column(DateTime, default=datetime.datetime.utcnow)
-    author_id = Column(Integer, ForeignKey('users.id'))
+    author_id = Column(BigInteger, ForeignKey('users.id'))
     author = relationship(User)
 
     __table_args__ = (ForeignKeyConstraint([task_id, project_id],
@@ -369,7 +371,7 @@ project_allowed_users = Table(
     'project_allowed_users',
     Base.metadata,
     Column('project_id', Integer, ForeignKey('project.id')),
-    Column('user_id', Integer, ForeignKey('users.id'))
+    Column('user_id', BigInteger, ForeignKey('users.id'))
 )
 
 
@@ -391,7 +393,7 @@ class Project(Base, Translatable):
 
     area_id = Column(Integer, ForeignKey('areas.id'))
     created = Column(DateTime, default=datetime.datetime.utcnow)
-    author_id = Column(Integer, ForeignKey('users.id'))
+    author_id = Column(BigInteger, ForeignKey('users.id'))
     author = relationship(User)
     last_update = Column(DateTime, default=datetime.datetime.utcnow)
     area = relationship(Area)
