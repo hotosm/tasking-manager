@@ -10,11 +10,11 @@ ${_("You have tasks assigned:")}
     <a href="#task/${task.id}">#${task.id}</a>
     % if task.cur_state:
       % if task.cur_state.state == TaskState.state_done:
-      <i class="glyphicon glyphicon-ok text-success small"></i>
+      <i class="glyphicon glyphicon-ok text-muted small"></i>
       % elif task.cur_state.state == TaskState.state_validated:
-      <i class="glyphicon glyphicon-thumbs-up text-success small"></i>
+      <i class="glyphicon glyphicon-thumbs-up text-muted small"></i>
       % elif task.cur_state.state == TaskState.state_invalidated:
-      <i class="glyphicon glyphicon-thumbs-down text-danger small"></i>
+      <i class="glyphicon glyphicon-thumbs-down text-muted small"></i>
       % endif
     % endif
   </li>
