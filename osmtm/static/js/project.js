@@ -115,6 +115,7 @@ osmtm.project = (function() {
    * Unselects task
    */
   function clearSelection() {
+    hideTooltips();
     location.hash = "";
     selectedTaskLayer.clearLayers();
     $('#task').fadeOut(function() {

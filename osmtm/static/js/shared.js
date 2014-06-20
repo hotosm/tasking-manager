@@ -38,6 +38,7 @@ $().ready(function() {
 
 function hideTooltips() {
     $('[rel=tooltip]').tooltip('hide');
+    $('[data-toggle=popover]').popover('hide');
 }
 
 $.fn.serializeObject = function()
