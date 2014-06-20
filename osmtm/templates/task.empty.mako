@@ -3,10 +3,14 @@
     clearInterval(countdownInterval);
   }
 </script>
-<div class="text-center">
-% if  locked_task is not None:
+% if locked_task is not None:
+  <div class="text-center">
   <%include file="task.current_locked.mako" />
+  </div>
+% elif user is not None and len(assigned_tasks) > 0:
+  <%include file="project.assigned_tasks.mako" />
 % else:
+  <div class="text-center">
   <p>
     ${_("Select a task on the map")}
   </p>
@@ -23,5 +27,5 @@
        ${_('Take a task at random')}
     </a>
   </p>
+  </div>
 % endif
-</div>

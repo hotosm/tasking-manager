@@ -128,8 +128,10 @@ def task_empty(request):
     user = __get_user(request, allow_none=True)
     project_id = request.matchdict['project']
     locked_task = get_locked_task(project_id, user)
+    assigned_tasks = get_assigned_tasks(project_id, user)
 
-    return dict(locked_task=locked_task, project_id=project_id)
+    return dict(locked_task=locked_task, project_id=project_id,
+                assigned_tasks=assigned_tasks)
 
 
 @view_config(route_name='task_done', renderer='json')
@@ -277,6 +279,18 @@ def get_locked_task(project_id, user):
                          Task.cur_lock.has(user_id=user.id)))
 
         return query.one()
+    except NoResultFound:
+        return None
+
+
+def get_assigned_tasks(project_id, user):
+    if user is None:
+        return None
+    try:
+        query = DBSession.query(Task) \
+            .filter(Task.project_id == project_id, Task.assigned_to == user) \
+            .order_by(Task.assigned_date.desc())
+        return query.all()
     except NoResultFound:
         return None
 
