@@ -640,7 +640,7 @@ osmtm.project = (function() {
         }
         return false;
       });
-      $(document).on('click', '.clear', clearSelection);
+      $(document).on('click', '#task_close', clearSelection);
       $(document).on('click', '#edit', exportOpen);
       $(document).on('click', '#editDropdown li', exportOpen);
       $(document).on('click', '#random', function(e) {

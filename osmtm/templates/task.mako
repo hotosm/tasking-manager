@@ -15,7 +15,7 @@ if (typeof countdownInterval != 'undefined') {
 }
 </script>
 <div>
-  <a class="btn btn-sm btn-link pull-right" title="${_('Clear selection')}"><i class="glyphicon glyphicon-remove"></i></a>
+  <a id="task_close" class="btn btn-sm btn-link pull-right" title="${_('Clear selection')}"><i class="glyphicon glyphicon-remove"></i></a>
   <h4 class="pull-left">
   <%include file="task.status.mako" />
   Task #${task.id}
