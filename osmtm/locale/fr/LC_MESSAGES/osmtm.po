@@ -287,8 +287,8 @@ msgid "you"
 msgstr "vous"
 
 #: osmtm/templates/task.locked.mako:5
-msgid "Task locked by ${username}"
-msgstr "Tâche bloquée par ${username}"
+msgid "Locked by ${username}"
+msgstr "Bloquée par ${username}"
 
 #: osmtm/templates/task.locked.mako:13
 msgid ""
