@@ -89,6 +89,11 @@ def main(global_config, **settings):
                      '/project/{project}/task/{task}/comment', xhr=True)
     config.add_route('task_gpx', '/project/{project}/task/{task}.gpx')
     config.add_route('task_osm', '/project/{project}/task/{task}.osm')
+    config.add_route('task_assign',
+                     '/project/{project}/task/{task}/assign/{user}', xhr=True)
+    config.add_route('task_assign_delete',
+                     '/project/{project}/task/{task}/assign', xhr=True,
+                     request_method="DELETE")
 
     config.add_route('users', '/users')
     config.add_route('users_json', '/users.json')

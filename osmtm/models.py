@@ -250,7 +250,7 @@ class Task(Base):
 
     assigned_to_id = Column(Integer, ForeignKey('users.id'))
     assigned_to = relationship(User)
-    assigned_date = Column(DateTime, default=datetime.datetime.utcnow)
+    assigned_date = Column(DateTime)
 
     cur_lock = relationship(
         TaskLock,

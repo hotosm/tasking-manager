@@ -260,3 +260,77 @@ class TestTaskFunctional(BaseTestCase):
 
     def test_task_gpx(self):
         self.testapp.get('/project/1/task/1.gpx', status=200)
+
+    def test_task_assign__unauthorized(self):
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/1/assign/2',
+                         headers=headers,
+                         status=403,
+                         xhr=True)
+
+    def test_task_assign__locked(self):
+        headers = self.login_as_project_manager()
+        self.testapp.get('/project/1/task/2/lock',
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/1/task/2/assign/2',
+                         headers=headers,
+                         status=400,
+                         xhr=True)
+        self.testapp.get('/project/1/task/2/unlock',
+                         headers=headers,
+                         xhr=True)
+
+    def test_task_assign(self):
+        headers = self.login_as_project_manager()
+        # assign task to user 1
+        self.testapp.get('/project/1/task/1/assign/1',
+                         headers=headers,
+                         status=200,
+                         xhr=True)
+
+        # re-assign it to user 2
+        self.testapp.get('/project/1/task/1/assign/2',
+                         headers=headers,
+                         status=200,
+                         xhr=True)
+
+    def test_task_assign_delete(self):
+        from osmtm.models import Task, DBSession
+
+        headers = self.login_as_project_manager()
+        # assign task to user 1
+        self.testapp.delete('/project/1/task/1/assign',
+                            headers=headers,
+                            status=200,
+                            xhr=True)
+
+        task = DBSession.query(Task).get((1, 1))
+        self.assertEqual(task.assigned_to_id, None)
+
+    def test_task_xhr__assigned(self):
+        headers = self.login_as_project_manager()
+        # assign task to user 1
+        self.testapp.get('/project/1/task/1/assign/1',
+                         headers=headers,
+                         status=200,
+                         xhr=True)
+
+        # user 2 cannot lock the task assigned to user 1
+        headers = self.login_as_user2()
+        res = self.testapp.get('/project/1/task/1/lock',
+                               headers=headers,
+                               status=400,
+                               xhr=True)
+        self.assertFalse(res.json['success'])
+
+        # user 1 can lock the task assigned to him
+        headers = self.login_as_user1()
+        res = self.testapp.get('/project/1/task/1/lock',
+                               headers=headers,
+                               status=200,
+                               xhr=True)
+        self.assertTrue(res.json['success'])
+        self.testapp.get('/project/1/task/1/unlock',
+                         headers=headers,
+                         xhr=True)
