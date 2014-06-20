@@ -7,7 +7,7 @@
   <div class="text-center">
   <%include file="task.current_locked.mako" />
   </div>
-% elif user is not None and len(assigned_tasks) > 0:
+% elif user and len(assigned_tasks) > 0:
   <%include file="project.assigned_tasks.mako" />
 % else:
   <div class="text-center">

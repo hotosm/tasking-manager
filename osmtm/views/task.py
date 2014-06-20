@@ -131,7 +131,7 @@ def task_empty(request):
     assigned_tasks = get_assigned_tasks(project_id, user)
 
     return dict(locked_task=locked_task, project_id=project_id,
-                assigned_tasks=assigned_tasks)
+                assigned_tasks=assigned_tasks, user=user)
 
 
 @view_config(route_name='task_done', renderer='json')
