@@ -61,6 +61,8 @@ def main():
     from alembic.config import Config
     from alembic import command
     alembic_cfg = Config("alembic.ini")
+    url = settings['sqlalchemy.url']
+    alembic_cfg.set_section_option("alembic", "sqlalchemy.url", url)
     command.stamp(alembic_cfg, "head")
 
     with transaction.manager:
