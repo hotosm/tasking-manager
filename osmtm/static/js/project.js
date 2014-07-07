@@ -154,6 +154,7 @@ osmtm.project = (function() {
    * direction {String} - The slide direction
    */
   function loadTask(id, direction) {
+    hideTooltips();
     startLoading();
     function load() {
       $('#task').load(
