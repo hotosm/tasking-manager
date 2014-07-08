@@ -17,11 +17,15 @@ from pyramid.security import authenticated_userid
 from pyramid.i18n import (
     get_locale_name,
 )
+from sqlalchemy import (
+    distinct,
+)
 from sqlalchemy.orm import (
     joinedload,
 )
 from sqlalchemy.sql.expression import (
     and_,
+    not_,
     func,
 )
 
@@ -312,6 +316,62 @@ def project_user_delete(request):
     DBSession.add(project)
 
     return dict()
+
+
+@view_config(route_name='project_users', renderer='json',
+             permission="project_show")
+def project_users(request):
+    ''' get the list of users for a given project.
+        Returns list of allowed users if project is private.
+        Return complete list of users if project is not private.
+        Users with assigned tasks will appear first. '''
+
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    query = request.params.get('q', '')
+    query_filter = User.username.like("%" + query + "%")
+
+    ''' list of users with assigned tasks '''
+    t = DBSession.query(
+            func.max(Task.assigned_date).label('date'),
+            Task.assigned_to_id
+        ) \
+        .filter(
+            Task.assigned_to_id != None,  # noqa
+            Task.project_id == id
+        ) \
+        .group_by(Task.assigned_to_id) \
+        .subquery('t')
+    assigned = DBSession.query(User) \
+        .join(t, and_(User.id == t.c.assigned_to_id)) \
+        .filter(query_filter) \
+        .order_by(t.c.date.desc()) \
+        .all()
+
+    r = []
+    for user in assigned:
+        r.append(user.username)
+
+    if project.private:
+        ''' complete list with allowed users '''
+        users = DBSession.query(User) \
+            .join(Project.allowed_users) \
+            .filter(Project.id == id, query_filter)
+        for user in users:
+            if user.username not in r:
+                r.append(user.username)
+    else:
+        ''' complete list with some users (up to 10 in total) '''
+        users = DBSession.query(User).order_by(User.username) \
+            .filter(
+                query_filter,
+                not_(User.username.in_(r))
+            ) \
+            .limit(max(0, 10 - len(r)))  # we don't want all users
+        r = r + [u.username for u in users]
+
+    return r
 
 
 @view_config(route_name='project_preset')

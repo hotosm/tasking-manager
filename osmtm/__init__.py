@@ -71,6 +71,7 @@ def main(global_config, **settings):
     config.add_route('project_user_delete', '/project/{project}/user/{user}',
                      request_method="DELETE")
     config.add_route('project_preset', '/project/{project}/preset')
+    config.add_route('project_users', '/project/{project}/users')
 
     config.add_route('task_random', '/project/{project}/random', xhr=True)
     config.add_route('task_empty', '/project/{project}/task/empty', xhr=True)
