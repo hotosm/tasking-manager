@@ -90,9 +90,9 @@ def main(global_config, **settings):
     config.add_route('task_gpx', '/project/{project}/task/{task}.gpx')
     config.add_route('task_osm', '/project/{project}/task/{task}.osm')
     config.add_route('task_assign',
-                     '/project/{project}/task/{task}/assign/{user}', xhr=True)
+                     '/project/{project}/task/{task}/user/{user}', xhr=True)
     config.add_route('task_assign_delete',
-                     '/project/{project}/task/{task}/assign', xhr=True,
+                     '/project/{project}/task/{task}/user', xhr=True,
                      request_method="DELETE")
 
     config.add_route('users', '/users')

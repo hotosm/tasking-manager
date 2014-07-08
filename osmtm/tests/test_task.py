@@ -263,7 +263,7 @@ class TestTaskFunctional(BaseTestCase):
 
     def test_task_assign__unauthorized(self):
         headers = self.login_as_user1()
-        self.testapp.get('/project/1/task/1/assign/2',
+        self.testapp.get('/project/1/task/1/user/user2',
                          headers=headers,
                          status=403,
                          xhr=True)
@@ -273,7 +273,7 @@ class TestTaskFunctional(BaseTestCase):
         self.testapp.get('/project/1/task/2/lock',
                          headers=headers,
                          xhr=True)
-        self.testapp.get('/project/1/task/2/assign/2',
+        self.testapp.get('/project/1/task/2/user/user2',
                          headers=headers,
                          status=400,
                          xhr=True)
@@ -284,13 +284,13 @@ class TestTaskFunctional(BaseTestCase):
     def test_task_assign(self):
         headers = self.login_as_project_manager()
         # assign task to user 1
-        self.testapp.get('/project/1/task/1/assign/1',
+        self.testapp.get('/project/1/task/1/user/user1',
                          headers=headers,
                          status=200,
                          xhr=True)
 
         # re-assign it to user 2
-        self.testapp.get('/project/1/task/1/assign/2',
+        self.testapp.get('/project/1/task/1/user/user2',
                          headers=headers,
                          status=200,
                          xhr=True)
@@ -300,7 +300,7 @@ class TestTaskFunctional(BaseTestCase):
 
         headers = self.login_as_project_manager()
         # assign task to user 1
-        self.testapp.delete('/project/1/task/1/assign',
+        self.testapp.delete('/project/1/task/1/user',
                             headers=headers,
                             status=200,
                             xhr=True)
@@ -311,7 +311,7 @@ class TestTaskFunctional(BaseTestCase):
     def test_task_xhr__assigned(self):
         headers = self.login_as_project_manager()
         # assign task to user 1
-        self.testapp.get('/project/1/task/1/assign/1',
+        self.testapp.get('/project/1/task/1/user/user1',
                          headers=headers,
                          status=200,
                          xhr=True)

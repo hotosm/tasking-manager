@@ -344,8 +344,10 @@ def task_assign(request):
         return dict(success=True,
                     msg=_("You cannot assign an already locked task"))
 
-    user_id = request.matchdict['user']
-    task.assigned_to_id = user_id
+    username = request.matchdict['user']
+    user = DBSession.query(User).filter(User.username == username).one()
+
+    task.assigned_to_id = user.id
     task.assigned_date = datetime.datetime.utcnow()
     DBSession.add(task)
 
