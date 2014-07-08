@@ -72,8 +72,10 @@ sorts = [('priority', 'asc', _('High priority first')),
     % endif
   </div>
   <div class="col-md-6">
-    <h3>New to the Tasking Manager?</h3>
-    <p>What is this Tasking Manager all about?</p>
+    <h3>${_('About the Tasking Manager')}</h3>
+    <p>
+    ${_('about_text')|n}
+    </p>
   </div>
 </div>
 </%block>

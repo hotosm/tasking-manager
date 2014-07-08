@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-07 19:49+0200\n"
+"POT-Creation-Date: 2014-07-08 15:24+0200\n"
 "PO-Revision-Date: 2013-09-09 11:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -57,19 +57,28 @@ msgstr ""
 msgid "Sort by:"
 msgstr ""
 
-#: osmtm/templates/home.mako:120 osmtm/templates/project.instructions.mako:7
+#: osmtm/templates/home.mako:75
+msgid "About the Tasking Manager"
+msgstr ""
+
+#: osmtm/templates/home.mako:77
+msgid "about_text"
+msgstr "OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping. The purpose of the tool is to divide up a mapping job into smaller tasks that can be completed rapidly. It shows which areas need to be mapped and which areas need the mapping validated. <br />"
+       "This approach facilitates the distribution of tasks to the various mappers in a context of emergency. It also permits to control the progress and the homogeinity of the work done (ie. Elements to cover, specific tags to use, etc.)."
+
+#: osmtm/templates/home.mako:123 osmtm/templates/project.instructions.mako:7
 msgid "Access to this project is limited"
 msgstr ""
 
-#: osmtm/templates/home.mako:122
+#: osmtm/templates/home.mako:126
 msgid "Created by"
 msgstr ""
 
-#: osmtm/templates/home.mako:123
+#: osmtm/templates/home.mako:128
 msgid "Updated"
 msgstr ""
 
-#: osmtm/templates/home.mako:124
+#: osmtm/templates/home.mako:129
 msgid "Priority:"
 msgstr ""
 
@@ -93,7 +102,7 @@ msgstr ""
 msgid "Licenses"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:300
+#: osmtm/templates/project.edit.mako:249
 msgid "Allowed users"
 msgstr ""
 
@@ -137,17 +146,17 @@ msgstr ""
 msgid "Ready"
 msgstr ""
 
-#: osmtm/templates/project.mako:87 osmtm/templates/task.history.mako:18
-#: osmtm/templates/task.status.mako:8
+#: osmtm/templates/project.mako:87 osmtm/templates/task.history.mako:26
+#: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr ""
 
-#: osmtm/templates/project.mako:87 osmtm/templates/task.status.mako:6
+#: osmtm/templates/project.mako:87 osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr ""
 
-#: osmtm/templates/project.mako:87 osmtm/templates/task.history.mako:20
-#: osmtm/templates/task.status.mako:10
+#: osmtm/templates/project.mako:87 osmtm/templates/task.history.mako:28
+#: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr ""
 
@@ -199,29 +208,29 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:14 osmtm/templates/task.status.mako:3
-msgid "Locked"
-msgstr ""
-
-#: osmtm/templates/task.history.mako:14 osmtm/templates/task.history.mako:16
-#: osmtm/templates/task.history.mako:18 osmtm/templates/task.history.mako:20
-#: osmtm/templates/task.history.mako:22
-msgid "by"
-msgstr ""
-
-#: osmtm/templates/task.history.mako:16
+#: osmtm/templates/task.history.mako:24
 msgid "Marked as done"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:22
-msgid "Comment left"
+#: osmtm/templates/task.history.mako:24 osmtm/templates/task.history.mako:26
+#: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:33
+#: osmtm/templates/task.history.mako:39
+msgid "by"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:24
+#: osmtm/templates/task.history.mako:33 osmtm/templates/task.status.mako:6
+msgid "Locked"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:35
 msgid "Unlocked"
 msgstr ""
 
-#: osmtm/templates/task.history.mako:40
+#: osmtm/templates/task.history.mako:39
+msgid "Comment left"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:51
 msgid "Nothing has happened yet."
 msgstr ""
 
@@ -247,15 +256,15 @@ msgstr ""
 msgid "min. left"
 msgstr ""
 
-#: osmtm/templates/task.mako:19
+#: osmtm/templates/task.mako:20
 msgid "Clear selection"
 msgstr ""
 
-#: osmtm/templates/task.mako:42
+#: osmtm/templates/task.mako:45
 msgid "History"
 msgstr ""
 
-#: osmtm/templates/task.mako:47
+#: osmtm/templates/task.mako:50
 msgid "See the changesets in the OSM database for this area."
 msgstr ""
 
@@ -271,24 +280,24 @@ msgstr ""
 msgid "Split"
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:3
+#: osmtm/templates/task.state.done.mako:4
 msgid "Invalidate this task if you consider it needs more work."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:11
+#: osmtm/templates/task.state.done.mako:12
 #: osmtm/templates/task.state.ready.mako:8
 msgid "Unlock"
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:17
+#: osmtm/templates/task.state.done.mako:18
 msgid "Invalidate"
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:21
+#: osmtm/templates/task.state.done.mako:22
 msgid "Validate this task if you consider that the work is complete."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:28
+#: osmtm/templates/task.state.done.mako:29
 msgid "Validate"
 msgstr ""
 
@@ -296,15 +305,15 @@ msgstr ""
 msgid "Mark task as done"
 msgstr ""
 
-#: osmtm/templates/task.unlocked.mako:9
+#: osmtm/templates/task.unlocked.mako:12
 msgid "Lock this task to tell others that you are currently working on it."
 msgstr ""
 
-#: osmtm/templates/task.unlocked.mako:14
+#: osmtm/templates/task.unlocked.mako:17
 msgid "Start mapping"
 msgstr ""
 
-#: osmtm/templates/task.unlocked.mako:18
+#: osmtm/templates/task.unlocked.mako:21
 msgid "Review the work"
 msgstr ""
 
@@ -312,8 +321,12 @@ msgstr ""
 msgid "User profile"
 msgstr ""
 
-#: osmtm/templates/user.mako:36
+#: osmtm/templates/user.mako:38
 msgid "This user is an administrator."
+msgstr ""
+
+#: osmtm/templates/user.mako:54
+msgid "This user is a project manager."
 msgstr ""
 
 #: osmtm/templates/user_menu.mako:4
@@ -324,51 +337,51 @@ msgstr "Logout"
 msgid "Users"
 msgstr ""
 
-#: osmtm/views/project.py:53
+#: osmtm/views/project.py:59
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:111
+#: osmtm/views/project.py:117
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:137
+#: osmtm/views/project.py:143
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
-#: osmtm/views/task.py:109
+#: osmtm/views/task.py:150
 msgid "Task marked as done. Thanks for your contribution"
 msgstr ""
 
-#: osmtm/views/task.py:128
+#: osmtm/views/task.py:169
 msgid "Task already locked."
 msgstr ""
 
-#: osmtm/views/task.py:134
+#: osmtm/views/task.py:174
 msgid "Task locked. You can start mapping."
 msgstr ""
 
-#: osmtm/views/task.py:155
+#: osmtm/views/task.py:191
 msgid "Task unlocked."
 msgstr ""
 
-#: osmtm/views/task.py:168
+#: osmtm/views/task.py:203
 msgid "Comment added."
 msgstr ""
 
-#: osmtm/views/task.py:182
+#: osmtm/views/task.py:225
 msgid "Task validated."
 msgstr ""
 
-#: osmtm/views/task.py:185
+#: osmtm/views/task.py:228
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:263
+#: osmtm/views/task.py:312
 msgid "Random task... none available! Sorry."
 msgstr ""
 
-#: osmtm/views/user.py:74
+#: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"
 msgstr ""
 
