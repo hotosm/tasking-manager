@@ -302,7 +302,7 @@
 <%block name="markdown_link">
 <div class="help-block pull-right"><small><em>
   <b>Tip:</b>
-  You can use <a href class="markdown">Markdown</a>
+  You can use <a href class="markdown">Markdown</a>. (HTML is not allowed)
 </em></small></div>
 </%block>
 
