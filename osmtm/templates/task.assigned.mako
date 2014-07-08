@@ -31,8 +31,8 @@
 
 <%def name="assigned_to_container()">
   <em class="text-muted small">
-    <i class="glyphicon glyphicon-user"></i>
     % if task.assigned_to:
+      <i class="glyphicon glyphicon-user"></i>
       ${assigned_to()}
     % else:
       Not assigned yet
