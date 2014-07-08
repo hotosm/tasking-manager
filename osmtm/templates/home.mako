@@ -113,7 +113,7 @@ sorts = [('priority', 'asc', _('High priority first')),
     <div style="top: ${(-centroid.y + 90) * 60 / 180 - 1}px; left: ${(centroid.x + 180) * 120 / 360 - 1}px;" class="marker"></div>
     % endif
   </div>
-  ${markdown.markdown(project.short_description, safe_mode="replace")|n}
+  ${markdown.markdown(project.short_description, safe_mode="remove")|n}
   <div class="clear"></div>
   <small class="text-muted">
     % if project.private:
