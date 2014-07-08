@@ -16,8 +16,12 @@ $(document).ready(function() {
     var i = 0;
     while (count < 10 && i < osmtm.users.length) {
       if (substrRegex.test(osmtm.users[i])) {
+        var text = osmtm.users[i];
+        if (osmtm.users[i] == assigned_to) {
+          text += ' <i class="glyphicon glyphicon-ok"></i>';
+        }
         $('#assign_users').append($('<li>', {
-          html: osmtm.users[i]
+          html: text
         }).on('click', $.proxy(function(event) {
           $.ajax({
             url: base_url + "project/" + project_id + "/task/" + task_id + "/user/" + this.user,

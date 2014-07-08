@@ -1,3 +1,6 @@
+<script type="text/javascript">
+  var assigned_to = "${task.assigned_to.username if task.assigned_to else ''}";
+</script>
 % if user and (user.is_project_manager or user.is_admin):
   <p>
     ${assigned_to_container()}
@@ -33,17 +36,14 @@
   <em class="text-muted small">
     % if task.assigned_to:
       <i class="glyphicon glyphicon-user"></i>
-      ${assigned_to()}
+      <%
+        username = _('you') if task.assigned_to == user else task.assigned_to.username
+        username = '<strong>%s</strong>' % username
+        assigned_text = _('Assigned to ${username}', mapping={'username': username})
+      %>
+      ${assigned_text|n}
     % else:
       Not assigned yet
     % endif
   </em>
-</%def>
-<%def name="assigned_to()">
-  <%
-    username = _('you') if task.assigned_to == user else task.assigned_to.username
-    username = '<strong>%s</strong>' % username
-    assigned_text = _('Assigned to ${username}', mapping={'username': username})
-  %>
-  ${assigned_text|n}
 </%def>
