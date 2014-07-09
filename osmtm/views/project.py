@@ -330,7 +330,7 @@ def project_users(request):
     project = DBSession.query(Project).get(id)
 
     query = request.params.get('q', '')
-    query_filter = User.username.like(u"%" + query + "%")
+    query_filter = User.username.ilike(u"%" + query + "%")
 
     ''' list of users with assigned tasks '''
     t = DBSession.query(
