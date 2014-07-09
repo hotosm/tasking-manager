@@ -407,7 +407,11 @@ def get_contributors(project):
 
     assigned = DBSession.query(Task.id, User.username) \
         .join(Task.assigned_to) \
-        .filter(Task.assigned_to_id != None)  # noqa
+        .filter(
+            Task.project_id == project.id,
+            Task.assigned_to_id != None  # noqa
+        ) \
+        .order_by(Task.assigned_to_id)
     for user, tasks in itertools.groupby(assigned,
                                          key=lambda t: t.username):
         if user not in contributors:
