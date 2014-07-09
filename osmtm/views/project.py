@@ -393,15 +393,26 @@ def get_contributors(project):
         TaskState.state == TaskState.state_done
     )
 
-    tasks = DBSession.query(TaskState.id, User.username) \
+    tasks = DBSession.query(TaskState.task_id, User.username) \
                      .join(TaskState.user) \
                      .filter(filter) \
                      .order_by(TaskState.user_id) \
                      .all()
 
     contributors = {}
-    for username, tasks in itertools.groupby(tasks, key=lambda t: t.username):
-        contributors[username] = [task[0] for task in tasks]
+    for user, tasks in itertools.groupby(tasks, key=lambda t: t.username):
+        if user not in contributors:
+            contributors[user] = {}
+        contributors[user]['done'] = [task[0] for task in tasks]
+
+    assigned = DBSession.query(Task.id, User.username) \
+        .join(Task.assigned_to) \
+        .filter(Task.assigned_to_id != None)  # noqa
+    for user, tasks in itertools.groupby(assigned,
+                                         key=lambda t: t.username):
+        if user not in contributors:
+            contributors[user] = {}
+        contributors[user]['assigned'] = [task[0] for task in tasks]
 
     return contributors
 

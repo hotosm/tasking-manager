@@ -546,17 +546,30 @@ osmtm.project = (function() {
     $.getJSON(
       base_url + 'project/' + project_id + '/contributors',
       function(data) {
-        var el = $('#contributors').empty();
+        var el = $('#contributors tbody').empty();
         for (var i in data) {
           var tiles = data[i];
+          var row = $('<tr>');
+
           var user = $('<a>', {
             "class": "user",
             href: base_url +  "user/" + i,
             html: i
-          })
-          el.append($('<li>', {
-            html: " <sup>" + tiles.length + "</sup>"
-          }).prepend(user));
+          })[0];
+          var cell = $('<td>', {
+            html: user
+          });
+          row.append(cell);
+          row.append($('<td>', {
+            class: 'text-center',
+            html: tiles.done && tiles.done.length || '-'
+          }));
+          row.append($('<td>', {
+            class: 'text-center',
+            html: tiles.assigned && tiles.assigned.length || '-'
+          }));
+
+          el.append(row);
         }
       }
     );
