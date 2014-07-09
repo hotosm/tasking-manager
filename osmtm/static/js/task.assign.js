@@ -18,12 +18,23 @@ $(document).ready(function() {
           $('#assign_users').append($('<li>', {
             html: text
           }).on('click', $.proxy(function(event) {
-            $.ajax({
-              url: base_url + "project/" + project_id + "/task/" + task_id + "/user/" + this.user,
+            var options = {
+              url: base_url + "project/" + project_id + "/task/" + task_id + "/user",
               success: function(data){
                 osmtm.project.loadTask(task_id);
+                if (data.msg) {
+                  $('#task_msg').html(data.msg).show()
+                  .delay(3000)
+                  .fadeOut();
+                }
               }
-            });
+            };
+            if (this.user == assigned_to) {
+              options.type = "DELETE";
+            } else {
+              options.url += '/' + this.user;
+            }
+            $.ajax(options);
           }, {user: user})));
         }
       }
