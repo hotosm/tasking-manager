@@ -561,12 +561,19 @@ osmtm.project = (function() {
           });
           row.append(cell);
           row.append($('<td>', {
-            class: 'text-center',
+            class: 'text-center highlight',
             html: tiles.done && tiles.done.length || '-'
+          }).on({
+            'hover': $.proxy(highlightTasks, null, tiles.done),
+            'mouseout': resetStyle
           }));
+
           row.append($('<td>', {
-            class: 'text-center',
+            class: 'text-center highlight',
             html: tiles.assigned && tiles.assigned.length || '-'
+          }).on({
+            'hover': $.proxy(highlightTasks, null, tiles.assigned),
+            'mouseout': resetStyle
           }));
 
           el.append(row);
@@ -632,6 +639,27 @@ osmtm.project = (function() {
     lastUpdateCheck = now;
   }
 
+  /**
+   * Highlights the tasks for the given task ids
+   */
+  function highlightTasks(tasks) {
+    tasksLayer.eachLayer(function(layer) {
+      if (tasks && tasks.indexOf(layer.feature.id) != -1) {
+        layer.setStyle({
+          weight: 2,
+          color: 'red',
+          opacity: 1
+        });
+      }
+    });
+  }
+
+  function resetStyle() {
+    tasksLayer.eachLayer(function(layer) {
+      tasksLayer.resetStyle(layer);
+    });
+  }
+
   return {
     init: function() {
       createMap();
@@ -680,7 +708,11 @@ osmtm.project = (function() {
       });
     },
 
-    loadTask: loadTask
+    loadTask: loadTask,
+
+    highlightTasks: highlightTasks,
+
+    resetStyle: resetStyle
   }
 })();
 
