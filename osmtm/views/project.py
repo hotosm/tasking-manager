@@ -367,7 +367,7 @@ def project_users(request):
             .filter(query_filter)
         if len(r) > 0:
             users = users.filter(not_(User.username.in_(r)))
-        users.limit(max(0, 10 - len(r)))  # we don't want all users
+        users = users.limit(max(0, 10 - len(r)))  # we don't want all users
         r = r + [u.username for u in users]
 
     return r
