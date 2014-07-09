@@ -17,9 +17,6 @@ from pyramid.security import authenticated_userid
 from pyramid.i18n import (
     get_locale_name,
 )
-from sqlalchemy import (
-    distinct,
-)
 from sqlalchemy.orm import (
     joinedload,
 )
