@@ -44,7 +44,7 @@ def home(request):
 
     if not user:
         filter = Project.private == False  # noqa
-    elif not user.is_admin:
+    elif not user.is_admin and not user.is_project_manager:
         query = query.outerjoin(Project.allowed_users)
         filter = or_(Project.private == False,  # noqa
                      User.id == user_id)

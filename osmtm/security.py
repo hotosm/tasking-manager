@@ -36,6 +36,7 @@ class RootFactory(object):
                 acl = [
                     (Allow, 'project:' + project_id, 'project_show'),
                     (Allow, 'group:admin', 'project_show'),
+                    (Allow, 'group:project_manager', 'project_show'),
                     (Deny, Everyone, 'project_show'),
                 ]
                 self.__acl__ = acl + list(self.__acl__)
