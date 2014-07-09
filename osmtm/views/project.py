@@ -330,7 +330,7 @@ def project_users(request):
     project = DBSession.query(Project).get(id)
 
     query = request.params.get('q', '')
-    query_filter = User.username.like("%" + query + "%")
+    query_filter = User.username.like(u"%" + query + "%")
 
     ''' list of users with assigned tasks '''
     t = DBSession.query(
@@ -364,11 +364,10 @@ def project_users(request):
     else:
         ''' complete list with some users (up to 10 in total) '''
         users = DBSession.query(User).order_by(User.username) \
-            .filter(
-                query_filter,
-                not_(User.username.in_(r))
-            ) \
-            .limit(max(0, 10 - len(r)))  # we don't want all users
+            .filter(query_filter)
+        if len(r) > 0:
+            users = users.filter(not_(User.username.in_(r)))
+        users.limit(max(0, 10 - len(r)))  # we don't want all users
         r = r + [u.username for u in users]
 
     return r
