@@ -13,14 +13,14 @@
   <div id="assign_to_selector" class="panel panel-default hide">
     <div class="panel-heading small">
       <strong>
-        Assign task to someone
+        ${_('Assign task to someone')}
       </strong>
     </div>
     <div class="panel-body">
       <form>
         <div class="form-group">
           <input type="text" id="user_filter"
-                 placeholder="Filter users" class="form-control">
+          placeholder="${_('Filter users')}" class="form-control">
         </div>
       </form>
       <ul id="assign_users" class="list-unstyled"></ul>
@@ -43,7 +43,7 @@
       %>
       ${assigned_text|n}
     % else:
-      Not assigned yet
+      ${_('Not assigned yet')}
     % endif
   </em>
 </%def>

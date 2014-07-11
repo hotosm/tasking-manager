@@ -2,8 +2,8 @@
   <thead>
     <tr>
       <th class="">${_('Contributors')}</th>
-      <th class="text-center">Done</th>
-      <th class="text-center">Assigned</th>
+      <th class="text-center">${_('Done')}</th>
+      <th class="text-center">${('Assigned')}</th>
     </tr>
   </thead>
   <tbody>
