@@ -148,6 +148,9 @@ osmtm.project = (function() {
           if (status != 'error') {
             selectedTaskLayer.clearLayers();
             selectedTaskLayer.addData(task_geometry);
+            if (!selectedTaskLayer.getBounds().intersects(lmap.getBounds())) {
+              lmap.panTo(selectedTaskLayer.getBounds().getCenter());
+            }
             $('#task').fadeIn();
             setPreferedEditor();
           } else if (request.status == '404'){
