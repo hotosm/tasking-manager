@@ -1,3 +1,4 @@
+<div id="chart"></div>
 <table id="contributors" class="small table table-condensed">
   <thead>
     <tr>
@@ -9,4 +10,3 @@
   <tbody>
   </tbody>
 </table>
-<div id="chart"></div>
