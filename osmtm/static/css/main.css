@@ -834,13 +834,7 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 #project_edit .nav-pills.small>li>a{padding-bottom:2px;padding-top:2px;border-bottom:1px solid transparent;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}
 #project_edit .nav-pills.small>li.active>a{color:inherit;background-color:transparent;border-color:#808080}
 #project_edit .preview{min-height:100px}
-#project_new_grid #leaflet{height:400px}
-#project_new_grid .grid64,#project_new_grid .grid32,#project_new_grid .grid16,#project_new_grid .grid8,#project_new_grid .grid4{width:100%;height:100%;position:absolute}
-#project_new_grid .grid64{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAYAAABXuSs3AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAJ2AAACdgBx6C5rQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAABcSURBVGiB7c5BDYAwAMDAQjDPH4cTMjTAo8uSnoI7gBsYbOYCxpzzWR356lwd+Ku4rbituK24rbituK24rbituK24rbituK24rbituK24rbituK24rbituG3b+AtYHAY+h0otbAAAAABJRU5ErkJggg==)}
-#project_new_grid .grid32{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAN1wAADdcBQiibeAAAAAd0SU1FB90DDw4JAz/iCC4AAAA2SURBVFjD7c5BDcAwDACx6zTe1ZBnMPKxEfhUt0Vv1cx8W4GnZQICAgICAgICAgICAgIC64EfrE4EP2oRPdAAAAAASUVORK5CYII=)}
-#project_new_grid .grid16{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAN1wAADdcBQiibeAAAAAd0SU1FB90DDw4JMIAyaTgAAAApSURBVDjLY5SVld3PQAFgYWBgYHj06JEjuQYwMVAIRg0YNWDUACoZAACvIgQfICVoRgAAAABJRU5ErkJggg==)}
-#project_new_grid .grid8{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAN1wAADdcBQiibeAAAAAd0SU1FB90DDw4KBIqrzk4AAAAiSURBVBjTY5SVld3PgAewMDAwMDx69MgRlwImBgJgSCgAALLOBA82NglHAAAAAElFTkSuQmCC)}
-#project_new_grid .grid4{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAN1wAADdcBQiibeAAAAAd0SU1FB90DDw4KEJBxGjMAAAAgSURBVAjXY5SVld3PgARYGBgYGB49euQIE2BiQAMYAgDKAQQHLIyrSgAAAABJRU5ErkJggg==)}
+#project_new #leaflet{height:400px}
 .clear{clear:both}
 .nav-tabs,.nav-pills{margin-bottom:15px}
 .tabs-below .nav-tabs,.tabs-right .nav-tabs,.tabs-left .nav-tabs{border-bottom:0}

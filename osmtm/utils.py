@@ -24,8 +24,8 @@ class TileBuilder(object):
         ymin = j * self.a - max
         xmax = (i + 1) * self.a - max
         ymax = (j + 1) * self.a - max
-        return MultiPolygon([Polygon([(xmin, ymin), (xmax, ymin),
-                                      (xmax, ymax), (xmin, ymax)])])
+        return Polygon([(xmin, ymin), (xmax, ymin),
+                        (xmax, ymax), (xmin, ymax)])
 
 
 # This method finds the tiles that intersect the given geometry for the given

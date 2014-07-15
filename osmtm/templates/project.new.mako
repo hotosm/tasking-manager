@@ -6,41 +6,132 @@
 </%block>
 <%block name="content">
 <div class="container">
-    <h3>What kind of project are you about to create?</h3>
     <div class="row">
-      <div class="col-md-6">
-        <label class="radio">
-          <input type="radio" id="grid" name="type" value="grid"/>
-          Square Grid
-          <p class="help-block">
-            You want the area of interest to be automatically split into grid cells for you.<br>
-            <img src="${request.static_url('osmtm:static/img/project_creation_grid.png')}" width="300">
-          </p>
-        </label>
+      <div class="col-md-8">
+        <div id="leaflet"></div>
       </div>
-      <div class="col-md-6">
-        <label class="radio">
-          <input type="radio" id="import" name="type" value="import" />
-          Arbitrary Geometries
-          <p class="help-block">
-            You have a file with polygons. One for each task.<br>
-            <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png')}" width="300">
-          </p>
-        </label>
+      <div class="col-md-4">
+        ${step1()}
+        ${step2()}
+        ${step3_grid()}
+        ${step3_arbitrary()}
       </div>
     </div>
 </div>
-<script>
-  $('input[type=radio]').attr('checked', false);
-  $('input[type=radio]').on('change', function() {
-    switch ($(this)[0].id) {
-      case "grid":
-        window.location = "${request.route_path('project_new_grid')}";
-        break;
-      case "import":
-        window.location = "${request.route_path('project_new_import')}";
-        break;
-    }
-  });
-</script>
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
+<script src="${request.static_url('osmtm:static/js/project.new.js')}"></script>
+
+</%block>
+
+<%block name="step1">
+<div id="step1" class="">
+  <h2>Step 1</h2>
+  <p>
+  <a id="draw"
+    class="btn btn-default">Draw</a> the area of interest on the map.
+  </p>
+  <p>
+  or
+  </p>
+  <p>
+  <form id="uploadform" method="post" enctype="multipart/form-data">
+    <input type="file" val="" name="import" style="visibility:hidden;height:0;position:absolute;">
+    <a id="import"
+      data-role="button"
+      class="btn btn-default"
+      rel="tooltip"
+      title="Provide a .geojson file."
+      >Import</a> a GeoJSON file to define the area of interest.
+    <span class="help-block">
+      <small>
+        Want to use an .osm file instead?<br>
+        You can use the great <a href="http://geojson.io" target="_blank">GeoJSON.io</a> to convert it to GeoJSON.
+      </small>
+    </span>
+  </form>
+  </p>
+</div>
+</%block>
+
+<%block name="step2">
+<div id="step2" class="hidden">
+  <h2>Step 2 - Type of project</h2>
+  <div class="row">
+    <div class="col-md-6">
+      <label class="radio">
+        <input type="radio" name="type" value="grid" checked/>
+        Square Grid
+        <img src="${request.static_url('osmtm:static/img/project_creation_grid.png')}" width="150">
+        <p class="help-block">
+        Area of interest automatically split into grid cells.<br>
+        </p>
+      </label>
+    </div>
+    <div class="col-md-6">
+      <label class="radio">
+        <input type="radio" name="type" value="arbitrary" disabled />
+        Arbitrary Geometries
+        <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png')}" width="150">
+        <p class="help-block">
+        Each polygon represents a task.<br>
+        </p>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <a id="step2-next" class="btn btn-default pull-right">Next
+      <span class="glyphicon glyphicon-chevron-right"></span>
+    </a>
+  </div>
+</div>
+</%block>
+
+<%block name="step3_grid">
+<div id="step3-grid" class="hidden">
+  <form id="gridform" method="post" action="${request.route_url('project_new_grid')}">
+    <h2>Step 3</h2>
+    <div class="form-group">
+      Tile size
+      <div id="tile_size" class="btn-group" >
+        <button class="btn btn-default">XL</button>
+        <button class="btn btn-default">L</button>
+        <button class="btn btn-default active">M</button>
+        <button class="btn btn-default">S</button>
+        <button class="btn btn-default">XS</button>
+      </div>
+      <span id="computing" class="help-inline hidden">Computing...</span>
+    </div>
+    <div class="form-actions pull-right">
+      <button id="cancel" class="btn btn-default">Cancel</button>
+      <input type="submit" value="Create project"
+             name="form.submitted" class="btn btn-success"/>
+    </div>
+    <div class="clearfix"></div>
+    <div class="pull-right loading help hidden">
+      Creating tiles, please wait...
+    </div>
+    <input id="zoom" type="hidden" name="zoom"/>
+    <input id="geometry" type="hidden" name="geometry"/>
+  </form>
+</div>
+</%block>
+
+<%block name="step3_arbitrary">
+<div id="step3-arbitrary" class="hidden">
+  <form id="gridform" method="post" action="${request.route_url('project_new_arbitrary')}">
+    <h2>Step 3</h2>
+    A new project will be created with <strong><span id="geometries_count"></span></strong> tasks.
+    <div class="form-actions pull-right">
+      <input type="submit" value="Create project"
+             name="form.submitted" class="btn btn-success"/>
+    </div>
+    <div class="clearfix"></div>
+    <div class="loading pull-right help hidden">
+      Creating project, please wait...
+    </div>
+    <input id="geometry_arbitrary" type="hidden" name="geometry"/>
+  </form>
+</div>
 </%block>

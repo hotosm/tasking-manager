@@ -449,7 +449,8 @@ class Project(Base, Translatable):
 
         tasks = []
         for i in get_tiles_in_geom(geom_3857, zoom):
-            geometry = ST_Transform(shape.from_shape(i[2], 3857), 4326)
+            multi = MultiPolygon([i[2]])
+            geometry = ST_Transform(shape.from_shape(multi, 3857), 4326)
             tasks.append(Task(i[0], i[1], zoom, geometry))
         self.tasks = tasks
         self.zoom = zoom
