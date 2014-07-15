@@ -131,6 +131,20 @@ osmtm.project = (function() {
   }
 
   /**
+   * Get bounds area
+   *
+   * Parameters:
+   * bounds {L.Bounds} - The bounds
+   *
+   * Returns: float
+   */
+  function getBoundsArea(bounds) {
+    var h = bounds.getNorth() - bounds.getSouth();
+    var w = bounds.getEast() - bounds.getWest();
+    return h * w;
+  };
+
+  /**
    * Loads task
    *
    * Parameters:
@@ -151,6 +165,10 @@ osmtm.project = (function() {
             if (!selectedTaskLayer.getBounds().intersects(lmap.getBounds())) {
               lmap.panTo(selectedTaskLayer.getBounds().getCenter());
             }
+            if (getBoundsArea(selectedTaskLayer.getBounds()) <
+                getBoundsArea(lmap.getBounds()) / 1000) {
+              lmap.fitBounds(selectedTaskLayer.getBounds());
+            };
             $('#task').fadeIn();
             setPreferedEditor();
           } else if (request.status == '404'){
