@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet-omnivore.min.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/project.new.js')}"></script>
 
 </%block>
@@ -46,8 +47,8 @@
       >Import</a> a GeoJSON file to define the area of interest.
     <span class="help-block">
       <small>
-        Want to use an .osm file instead?<br>
-        You can use the great <a href="http://geojson.io" target="_blank">GeoJSON.io</a> to convert it to GeoJSON.
+        Want to use an .osm or .kml file instead?<br>
+        You can use <a href="http://geojson.io" target="_blank">GeoJSON.io</a> to convert it to GeoJSON.
       </small>
     </span>
   </form>
@@ -108,6 +109,7 @@
       <input type="submit" value="Create project"
              name="form.submitted" class="btn btn-success"/>
     </div>
+    <div class="clearfix"></div>
     <div class="clearfix"></div>
     <div class="pull-right loading help hidden">
       Creating tiles, please wait...

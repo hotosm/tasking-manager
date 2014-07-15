@@ -200,13 +200,25 @@ osmtm.project_new = (function() {
         return false;
       });
       $('input[name=import]').change(function() {
+        vector.clearLayers();
         var file = $(this).val();
-        if (file.substr(-4) != 'json') {
-          alert("Please provide a .geojson file");
-        } else {
+        function onAdd() {
+          map.fitBounds(vector.getBounds());
+          $('#geometry').val(vector.toGeoJSON());
+        }
+        if (file.substr(-4) == 'json') {
           readAsText($(this)[0].files[0], function(err, text) {
-            readFile(file, text, onImport);
+            var gj = JSON.parse(text);
+            vector.addData(gj);
+            onAdd();
           });
+        } else if (file.substr(-3) == 'kml') {
+          readAsText($(this)[0].files[0], function(err, text) {
+            omnivore.kml.parse(text, null, vector);
+            onAdd();
+          });
+        } else {
+          alert("Please provide a .geojson file");
         }
       });
 
