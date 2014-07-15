@@ -137,7 +137,7 @@
           <label for="id_description" class="control-label">
             Description
           </label>
-          ${textarea_with_preview(inputname='description')}
+          ${textarea_with_preview(inputname='description', size='big')}
         </div>
       </div>
     </div>
@@ -174,7 +174,7 @@
           <label for="id_instructions" class="control-label">
             Detailed Instructions
           </label>
-          ${textarea_with_preview(inputname='instructions')}
+          ${textarea_with_preview(inputname='instructions', size='big')}
         </div>
       </div>
     </div>
@@ -302,11 +302,11 @@
 <%block name="markdown_link">
 <div class="help-block pull-right"><small><em>
   <b>Tip:</b>
-  You can use <a href class="markdown">Markdown</a>
+  You can use <a href class="markdown">Markdown</a>. (HTML is not allowed)
 </em></small></div>
 </%block>
 
-<%def name="textarea_with_preview(inputname)">
+<%def name="textarea_with_preview(inputname, size=None)">
   <div class="tab-content">
     ${locale_chooser(inputname=inputname)}
     % for locale, translation in project.translations.iteritems():
@@ -329,7 +329,7 @@
                     name="${inputname}_${locale}"
                     class="form-control"
                     placeholder="${getattr(project.translations.en, inputname)}"
-                    rows="5">${getattr(translation, inputname)}</textarea>
+                    rows="${15 if size == 'big' else 5}">${getattr(translation, inputname)}</textarea>
         </div>
         <div class="tab-pane preview" id="${inputname}_${locale}_preview"></div>
       </div>

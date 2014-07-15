@@ -14,9 +14,6 @@ from ..models import (
     ProjectTranslation,
     User,
 )
-from sqlalchemy.orm import (
-    joinedload
-)
 
 from webhelpers.paginate import (
     PageURL_WebOb,
@@ -33,7 +30,8 @@ def home(request):
     check_task_expiration()
 
     # no user in the DB yet
-    if DBSession.query(User.username).count() == 0:   # pragma: no cover
+    if DBSession.query(User).filter(User.role == User.role_admin) \
+                .count() == 0:   # pragma: no cover
         request.override_renderer = 'start.mako'
         return dict(page_id="start")
 
@@ -46,7 +44,7 @@ def home(request):
 
     if not user:
         filter = Project.private == False  # noqa
-    elif not user.admin:
+    elif not user.is_admin and not user.is_project_manager:
         query = query.outerjoin(Project.allowed_users)
         filter = or_(Project.private == False,  # noqa
                      User.id == user_id)
@@ -69,18 +67,13 @@ def home(request):
     direction_func = getattr(sqlalchemy, direction, None)
     sort_by = direction_func(sort_by)
 
-    query = query.order_by(sort_by, desc(Project.created))
+    query = query.order_by(sort_by, desc(Project.id))
 
     query = query.filter(filter)
 
-    # join tables so that new queries are not done when parsing template
-    query = query.options(joinedload(Project.translations)) \
-                 .options(joinedload(Project.area))
-    projects = query.all()
-
     page = int(request.params.get('page', 1))
     page_url = PageURL_WebOb(request)
-    paginator = Page(projects, page, url=page_url, items_per_page=10)
+    paginator = Page(query, page, url=page_url, items_per_page=10)
 
     return dict(page_id="home", paginator=paginator)
 

@@ -72,14 +72,17 @@ sorts = [('priority', 'asc', _('High priority first')),
     % endif
   </div>
   <div class="col-md-6">
-    <h3>New to the Tasking Manager?</h3>
-    <p>What is this Tasking Manager all about?</p>
+    <h3>${_('About the Tasking Manager')}</h3>
+    <p>
+    ${_('about_text')|n}
+    </p>
   </div>
 </div>
 </%block>
 
 <%def name="project_block(project, base_url, priorities)">
 <%
+    import markdown
     if request.locale_name:
         project.locale = request.locale_name
     priority = priorities[project.priority]
@@ -112,14 +115,16 @@ sorts = [('priority', 'asc', _('High priority first')),
     <div style="top: ${(-centroid.y + 90) * 60 / 180 - 1}px; left: ${(centroid.x + 180) * 120 / 360 - 1}px;" class="marker"></div>
     % endif
   </div>
-  ${project.short_description}
+  ${markdown.markdown(project.short_description, safe_mode="remove")|n}
   <div class="clear"></div>
   <small class="text-muted">
     % if project.private:
     <span class="glyphicon glyphicon-lock"
           title="${_('Access to this project is limited')}"></span> -
     % endif
-    <span>${_('Created by')} ${project.author.username if project.author else ''}</span> -
+    % if project.author:
+    <span>${_('Created by')} ${project.author.username}</span> -
+    % endif
     <span>${_('Updated')} <span class="timeago" title="${project.last_update}Z"></span></span> -
     <span>${_('Priority:')} ${priority}</span>
   </small>

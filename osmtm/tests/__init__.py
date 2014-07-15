@@ -21,6 +21,7 @@ with open(local_settings_path):
 USER1_ID = 1
 USER2_ID = 2
 ADMIN_USER_ID = 3
+PROJECT_MANAGER_USER_ID = 4
 
 translation_manager.options.update({
     'locales': 'en fr',
@@ -42,13 +43,18 @@ def populate_db():
     DBSession.configure(bind=engine)
 
     # those users are immutables ie. they're not suppose to change during tests
-    user = User(USER1_ID, u'user1', False)
+    user = User(USER1_ID, u'user1')
     DBSession.add(user)
 
-    user = User(USER2_ID, u'user2', False)
+    user = User(USER2_ID, u'user2')
     DBSession.add(user)
 
-    user = User(ADMIN_USER_ID, u'admin_user', True)
+    user = User(ADMIN_USER_ID, u'admin_user')
+    user.role = User.role_admin
+    DBSession.add(user)
+
+    user = User(PROJECT_MANAGER_USER_ID, u'project_manager_user')
+    user.role = User.role_project_manager
     DBSession.add(user)
 
     license = License()
@@ -77,6 +83,7 @@ class BaseTestCase(unittest.TestCase):
     user1_id = USER1_ID
     user2_id = USER2_ID
     admin_user_id = ADMIN_USER_ID
+    project_manager_user_id = PROJECT_MANAGER_USER_ID
 
     def setUp(self):
         from osmtm import main
@@ -99,6 +106,9 @@ class BaseTestCase(unittest.TestCase):
 
     def login_as_admin(self):
         return self.__remember(self.admin_user_id)
+
+    def login_as_project_manager(self):
+        return self.__remember(self.project_manager_user_id)
 
     def login_as_user1(self):
         return self.__remember(self.user1_id)

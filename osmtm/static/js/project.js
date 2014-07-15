@@ -131,6 +131,20 @@ osmtm.project = (function() {
   }
 
   /**
+   * Get bounds area
+   *
+   * Parameters:
+   * bounds {L.Bounds} - The bounds
+   *
+   * Returns: float
+   */
+  function getBoundsArea(bounds) {
+    var h = bounds.getNorth() - bounds.getSouth();
+    var w = bounds.getEast() - bounds.getWest();
+    return h * w;
+  };
+
+  /**
    * Loads task
    *
    * Parameters:
@@ -148,6 +162,13 @@ osmtm.project = (function() {
           if (status != 'error') {
             selectedTaskLayer.clearLayers();
             selectedTaskLayer.addData(task_geometry);
+            if (!selectedTaskLayer.getBounds().intersects(lmap.getBounds())) {
+              lmap.panTo(selectedTaskLayer.getBounds().getCenter());
+            }
+            if (getBoundsArea(selectedTaskLayer.getBounds()) <
+                getBoundsArea(lmap.getBounds()) / 1000) {
+              lmap.fitBounds(selectedTaskLayer.getBounds());
+            };
             $('#task').fadeIn();
             setPreferedEditor();
           } else if (request.status == '404'){
@@ -440,6 +461,8 @@ osmtm.project = (function() {
       formData[submitName] = true;
       $.post(form.action, formData, function(response) {
         handleTaskResponse(response);
+      }).fail(function(error) {
+        console.error("Something wrong happened");
       });
     }
 
@@ -471,11 +494,13 @@ osmtm.project = (function() {
         .tickFormat(d3.format(".0%"));
 
     areaDone = d3.svg.area()
+        .interpolate("basis")
         .x(function(d) { return x(d.date); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y + d.y0); });
 
     areaValidated = d3.svg.area()
+        .interpolate("basis")
         .x(function(d) { return x(d.date); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y + d.y0); });

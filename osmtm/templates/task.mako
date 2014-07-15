@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 <%
+import geojson
 from geoalchemy2 import shape
 from geoalchemy2.functions import ST_Centroid
-import geojson
+from osmtm.models import TaskState
 geometry_as_shape = shape.to_shape(task.geometry)
 centroid = geometry_as_shape.centroid
 bounds = geometry_as_shape.bounds
@@ -18,28 +19,29 @@ if (typeof countdownInterval != 'undefined') {
   Task #${task.id}
   <a class="btn btn-sm btn-link clear pull-right" title="${_('Clear selection')}"><i class="glyphicon glyphicon-remove"></i></a>
   <div id="task_actions">
-% if task.locked:
+% if task.cur_lock and task.cur_lock.lock:
   <%include file="task.locked.mako" />
 % else:
   <%include file="task.unlocked.mako" />
 % endif
-% if task.state in [task.state_ready, task.state_invalidated]:
+
+% if task.cur_state.state == TaskState.state_ready or task.cur_state.state == TaskState.state_invalidated:
   <%include file="task.split.mako" />
 % endif
 
     <div class="text-center">
-% if task.state in [task.state_ready, task.state_invalidated]:
+% if task.cur_state.state == TaskState.state_ready or task.cur_state.state == TaskState.state_invalidated:
     <%include file="task.state.ready.mako" />
 % endif
 
-% if task.state in [task.state_done, task.state_validated]:
+% if task.cur_lock and task.cur_lock.lock and task.cur_state and task.cur_state.state in [TaskState.state_done, TaskState.state_validated]:
     <%include file="task.state.done.mako" />
 % endif
     </div>
 
     <%include file="task.instructions.mako" />
     <%include file="task.freecomment.mako" />
-% if len(task.history) != 0:
+% if len(task.states) != 0:
     <h4>${_('History')}</h4>
     <div><%include file="task.history.mako" /></div>
     <hr>

@@ -2,14 +2,14 @@ from pyramid.view import view_config
 from pyramid.url import route_path
 from pyramid.httpexceptions import (
     HTTPFound,
-    HTTPUnauthorized
+    HTTPUnauthorized,
+    HTTPBadRequest,
 )
 from ..models import (
     DBSession,
     User,
     Project,
-    TaskHistory,
-    Task,
+    TaskState,
 )
 
 from pyramid.security import authenticated_userid
@@ -49,13 +49,30 @@ def user_messages(request):
     return dict(page_id="messages", comments=comments)
 
 
-@view_config(route_name='user_admin', permission="admin")
+@view_config(route_name='user_admin', permission="user_edit")
 def user_admin(request):
-
     id = request.matchdict['id']
-
     user = DBSession.query(User).get(id)
-    user.admin = not user.admin
+
+    user_id = authenticated_userid(request)
+    if user.id == int(user_id):
+        raise HTTPBadRequest(
+            'You probably don\'t want to remove your privileges')
+
+    user.role = User.role_admin if not user.is_admin else None
+    DBSession.flush()
+
+    return HTTPFound(location=route_path("user", request,
+                                         username=user.username))
+
+
+@view_config(route_name='user_project_manager', permission="user_edit")
+def user_project_manager(request):
+    id = request.matchdict['id']
+    user = DBSession.query(User).get(id)
+
+    user.role = User.role_project_manager if not user.is_project_manager  \
+        else None
     DBSession.flush()
 
     return HTTPFound(location=route_path("user", request,
@@ -80,11 +97,10 @@ def user(request):
 
 def __get_projects(user_id):
     """ get the tiles that changed """
-    filter = and_(TaskHistory.state_changed.is_(True),
-                  TaskHistory.state == Task.state_done,
-                  TaskHistory.user_id == user_id,
-                  TaskHistory.project_id == Project.id)
-    projects = DBSession.query(Project, func.count(TaskHistory.user_id)) \
+    filter = and_(TaskState.state == TaskState.state_done,
+                  TaskState.user_id == user_id,
+                  TaskState.project_id == Project.id)
+    projects = DBSession.query(Project, func.count(TaskState.user_id)) \
                         .filter(filter) \
                         .group_by(Project.id) \
                         .order_by(desc(Project.id)) \

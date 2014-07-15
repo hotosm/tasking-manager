@@ -93,6 +93,7 @@ def main(global_config, **settings):
     config.add_route('user_messages', '/user/messages')
     config.add_route('user', '/user/{username}')
     config.add_route('user_admin', '/user/{id}/admin')
+    config.add_route('user_project_manager', '/user/{id}/project_manager')
     config.add_route('user_prefered_editor',
                      '/user/prefered_editor/{editor}', xhr=True)
     config.add_route('user_prefered_language',

@@ -8,7 +8,7 @@ class TestViewsFunctional(BaseTestCase):
 
     def test_users_json(self):
         res = self.testapp.get('/users.json', status=200)
-        self.assertEqual(len(res.json), 3)
+        self.assertEqual(len(res.json), 4)
 
     def test_user_messages__not_authenticated(self):
         self.testapp.get('/user/messages', status=302)
@@ -25,7 +25,7 @@ class TestViewsFunctional(BaseTestCase):
 
         userid = 5463
         username = u'dude_user'
-        user = User(userid, username, False)
+        user = User(userid, username)
         DBSession.add(user)
         DBSession.flush()
         transaction.commit()
@@ -36,6 +36,34 @@ class TestViewsFunctional(BaseTestCase):
         res2 = res.follow(headers=headers, status=200)
         self.failUnless('dude_user' in res2.body)
         self.failUnless('This user is an administrator' in res2.body)
+
+        DBSession.delete(user)
+        transaction.commit()
+
+    def test_user_admin__same_user(self):
+
+        headers = self.login_as_admin()
+        self.testapp.get('/user/%d/admin' % self.admin_user_id,
+                         headers=headers, status=400)
+
+    def test_user_project_manager__logged_in_as_admin(self):
+
+        from osmtm.models import User, DBSession
+        import transaction
+
+        userid = 5463
+        username = u'simon_user'
+        user = User(userid, username)
+        DBSession.add(user)
+        DBSession.flush()
+        transaction.commit()
+
+        headers = self.login_as_admin()
+        res = self.testapp.get('/user/%d/project_manager' % userid,
+                               headers=headers,
+                               status=302)
+        res2 = res.follow(headers=headers, status=200)
+        self.failUnless('This user is a project manager' in res2.body)
 
         DBSession.delete(user)
         transaction.commit()

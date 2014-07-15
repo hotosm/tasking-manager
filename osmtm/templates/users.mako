@@ -5,33 +5,31 @@
 <a class="navbar-brand">OSM Tasking Manager - ${_('Users')}</a>
 </%block>
 <%block name="content">
-<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
 <div class="container" ng-app="users">
   <div class="row" ng-controller="usersCrtl">
     <div class="col-md-8">
-      <ul ng-repeat="user in users">
+      <ul>
+        % for user in users:
         <li>
-          <a href="user/{{user.username}}">{{user.username}}</a>
-          <i class="glyphicon glyphicon-star" ng-show="user.admin"></i>
+          <a href="user/${user.username}">${user.username}</a>
+          % if user.is_admin:
+            <i class="glyphicon glyphicon-star user-admin"></i>
+          % elif user.is_project_manager:
+            <i class="glyphicon glyphicon-star user-project-manager"></i>
+          % endif
         </li>
+        % endfor
       </ul>
     </div>
     <div class="col-md-4">
       <small>
         Keys:
         <ul>
-          <li><i class="glyphicon glyphicon-star"></i> Administrator</li>
+          <li><i class="glyphicon glyphicon-star user-admin"></i> Administrator</li>
+          <li><i class="glyphicon glyphicon-star user-project-manager"></i> Project Manager</li>
         </ul>
       </small>
     </div>
   </div>
 </div>
-<%
-  from json import dumps
-%>
-
-<script>
-  var users = ${dumps([user.as_dict() for user in users])|n};
-</script>
-<script type="text/javascript" src="${request.static_url('osmtm:static/js/users.js')}"></script>
 </%block>
