@@ -44,11 +44,11 @@
       class="btn btn-default"
       rel="tooltip"
       title="Provide a .geojson file."
-      >Import</a> a GeoJSON file to define the area of interest.
+      >Import</a> a <em>GeoJSON</em> or <em>KML</em> file.
     <span class="help-block">
       <small>
-        Want to use an .osm or .kml file instead?<br>
-        You can use <a href="http://geojson.io" target="_blank">GeoJSON.io</a> to convert it to GeoJSON.
+        Want to use an <em>.osm</em> file instead?<br>
+        You can use <a href="http://geojson.io" target="_blank">GeoJSON.io</a> to convert it to <em>GeoJSON</em>.
       </small>
     </span>
   </form>
@@ -64,6 +64,7 @@
       <label class="radio">
         <input type="radio" name="type" value="grid" checked/>
         Square Grid
+        <br>
         <img src="${request.static_url('osmtm:static/img/project_creation_grid.png')}" width="150">
         <p class="help-block">
         Area of interest automatically split into grid cells.<br>
@@ -74,6 +75,7 @@
       <label id="arbitrary" class="radio mask">
         <input type="radio" name="type" value="arbitrary" disabled />
         Arbitrary Geometries
+        <br>
         <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png')}" width="150">
         <p class="help-block">
         Each polygon represents a task.<br>
