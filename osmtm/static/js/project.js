@@ -546,7 +546,18 @@ osmtm.project = (function() {
     $.getJSON(
       base_url + 'project/' + project_id + '/contributors',
       function(data) {
-        var el = $('#contributors tbody').empty();
+        var body = $('#contributors tbody').empty();
+        var footer = $('#contributors tfoot').empty();
+        var total = {
+          'done': [],
+          'assigned': []
+        };
+        for (var i in data) {
+          total.done = total.done.concat(data[i].done);
+          total.assigned = total.assigned.concat(data[i].assigned);
+        }
+        data['sum'] = total;
+
         for (var i in data) {
           var tiles = data[i];
           var row = $('<tr>', {
@@ -561,7 +572,7 @@ osmtm.project = (function() {
             html: i
           })[0];
           var cell = $('<td>', {
-            html: user
+            html: i == 'sum' ? '' : user
           });
           row.append(cell);
           row.append($('<td>', {
@@ -578,7 +589,11 @@ osmtm.project = (function() {
             })
           }));
 
-          el.append(row);
+          if (i == 'sum') {
+            footer.append(row);
+          } else {
+            body.append(row);
+          }
         }
       }
     );
@@ -721,10 +736,6 @@ osmtm.project = (function() {
     },
 
     loadTask: loadTask,
-
-    highlightTasks: highlightTasks,
-
-    resetStyle: resetStyle
   }
 })();
 
