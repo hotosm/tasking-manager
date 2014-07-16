@@ -134,7 +134,8 @@ class TestProjectFunctional(BaseTestCase):
                                    'imagery': 'imagery_bar',
                                    'license_id': 1,
                                    'name_fr': 'the_name_in_french',
-                                   'priority': 2
+                                   'priority': 2,
+                                   'status': 2,
                                },
                                status=302)
 
@@ -150,6 +151,7 @@ class TestProjectFunctional(BaseTestCase):
                              'form.submitted': True,
                              'license_id': 1,
                              'priority': 2,
+                             'status': 2,
                              'private': 'on',
                          },
                          status=302)
@@ -168,6 +170,7 @@ class TestProjectFunctional(BaseTestCase):
                               'form.submitted': True,
                               'license_id': 1,
                               'priority': 2,
+                              'status': 2,
                           },
                           status=302)
 
@@ -407,6 +410,7 @@ class TestProjectFunctional(BaseTestCase):
 
         user1 = DBSession.query(User).get(USER1_ID)
         project = DBSession.query(Project).get(project_id)
+        project.status = project.status_published
         project.allowed_users.append(user1)
         DBSession.add(project)
         DBSession.flush()
@@ -414,3 +418,17 @@ class TestProjectFunctional(BaseTestCase):
 
         res = self.testapp.get('/', status=200, headers=headers_user1)
         self.assertTrue("private_project" in res.body)
+
+    def test_project_publish__not_allowed(self):
+        project_id = self.create_project()
+
+        headers = self.login_as_user1()
+        self.testapp.get('/project/%d/publish' % project_id, headers=headers,
+                         status=403)
+
+    def test_project_publish(self):
+        project_id = self.create_project()
+
+        headers = self.login_as_project_manager()
+        self.testapp.get('/project/%d/publish' % project_id, headers=headers,
+                         status=302)

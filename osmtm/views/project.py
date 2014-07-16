@@ -186,6 +186,7 @@ def project_edit(request):
         else:
             project.private = False
 
+        project.status = request.params['status']
         project.priority = request.params['priority']
 
         if 'josm_preset' in request.params:
@@ -198,6 +199,18 @@ def project_edit(request):
                          project=project.id))
 
     return dict(page_id='project_edit', project=project, licenses=licenses)
+
+
+@view_config(route_name='project_publish',
+             permission='project_edit')
+def project_publish(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    project.status = project.status_published
+
+    return HTTPFound(location=route_path('project', request,
+                                         project=project.id))
 
 
 @view_config(route_name='project_contributors', renderer='json')

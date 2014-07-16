@@ -59,6 +59,7 @@ def main(global_config, **settings):
     config.add_route('project_new_import', '/project/new/import')
     config.add_route('project', '/project/{project}')
     config.add_route('project_edit', '/project/{project}/edit')
+    config.add_route('project_publish', '/project/{project}/publish')
     config.add_route('project_check_for_update',
                      '/project/{project}/check_for_updates')
     config.add_route('project_contributors', '/project/{project}/contributors',
