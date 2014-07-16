@@ -173,6 +173,7 @@ osmtm.project_new = (function() {
           map.fitBounds(vector.getBounds());
           var gj = vector.toGeoJSON();
           $('#geometry').val(JSON.stringify(gj)).trigger('change');
+          $('input[value=arbitrary]').attr('disabled', false);
         }
         if (file.substr(-4) == 'json') {
           readAsText($(this)[0].files[0], function(err, text) {
