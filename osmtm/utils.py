@@ -2,7 +2,7 @@ import os
 import ConfigParser
 import geojson
 import shapely
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon
 from shapely.prepared import prep
 from math import floor, ceil
 
