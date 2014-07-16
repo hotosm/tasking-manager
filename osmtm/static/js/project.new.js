@@ -125,6 +125,7 @@ osmtm.project_new = (function() {
         $('#computing').addClass('hidden');
         tasksLayer.clearLayers();
         tasksLayer.addData(data);
+        $('#grid_geometries_count').html(data.features[0].geometry.coordinates.length);
       },
       dataType: "json"
     });
@@ -156,7 +157,7 @@ osmtm.project_new = (function() {
               count++;
             }
           });
-          $('#geometries_count').html(count);
+          $('#arbitrary_geometries_count').html(count);
         }
       });
 
