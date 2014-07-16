@@ -46,7 +46,6 @@ osmtm.project_new = (function() {
     });
     map.on('drawing', function(e) {
       $('#draw').addClass('active');
-      cancel();
     });
     map.addLayer(vector);
 
@@ -57,13 +56,6 @@ osmtm.project_new = (function() {
         opacity: 0.7
       }
     }).addTo(map);
-  }
-
-  function cancel() {
-    vector.clearLayers();
-    $('#geometry').val('');
-    $('#help-step1').removeClass("hidden");
-    $('#partition').addClass("hidden");
   }
 
   function toGeoJSON(polygon) {
@@ -96,17 +88,6 @@ osmtm.project_new = (function() {
 
     return coords;
   }
-
-  function onImport(err, gj, warning) {
-    if (gj && gj.features) {
-      vector.addData(gj);
-      map.fitBounds(vector.getBounds());
-      window.setTimeout(function() {
-        $('#geometry').val(JSON.stringify(gj)).trigger('change');
-        $('input[value=arbitrary]').attr('disabled', false);
-      }, 500);
-    }
-  }
   // taken from the great GeoJSON.io
   function readAsText(f, callback) {
     try {
@@ -127,15 +108,6 @@ osmtm.project_new = (function() {
       callback({
         message: 'Dropped file was unreadable'
       });
-    }
-  }
-
-  function readFile(f, text, callback) {
-    try {
-      var gj = JSON.parse(text);
-      return callback(null, gj);
-    } catch (e) {
-      alert('invalid JSON');
     }
   }
 
@@ -161,11 +133,6 @@ osmtm.project_new = (function() {
   return {
     init: function() {
       createMap();
-
-      $('#cancel').click(function() {
-        cancel();
-        return false;
-      });
 
       $('#geometry').change(function() {
         $('#step1').addClass("hidden");
@@ -204,7 +171,8 @@ osmtm.project_new = (function() {
         var file = $(this).val();
         function onAdd() {
           map.fitBounds(vector.getBounds());
-          $('#geometry').val(vector.toGeoJSON());
+          var gj = vector.toGeoJSON();
+          $('#geometry').val(JSON.stringify(gj)).trigger('change');
         }
         if (file.substr(-4) == 'json') {
           readAsText($(this)[0].files[0], function(err, text) {

@@ -105,7 +105,6 @@
       <span id="computing" class="help-inline hidden">Computing...</span>
     </div>
     <div class="form-actions pull-right">
-      <button id="cancel" class="btn btn-default">Cancel</button>
       <input type="submit" value="Create project"
              name="form.submitted" class="btn btn-success"/>
     </div>
