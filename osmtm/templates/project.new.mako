@@ -71,7 +71,7 @@
       </label>
     </div>
     <div class="col-md-6">
-      <label class="radio">
+      <label id="arbitrary" class="radio mask">
         <input type="radio" name="type" value="arbitrary" disabled />
         Arbitrary Geometries
         <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png')}" width="150">

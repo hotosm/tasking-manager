@@ -835,6 +835,7 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 #project_edit .nav-pills.small>li.active>a{color:inherit;background-color:transparent;border-color:#808080}
 #project_edit .preview{min-height:100px}
 #project_new #leaflet{height:400px}
+#project_new .mask{opacity:.6;filter:alpha(opacity=60)}
 .clear{clear:both}
 .nav-tabs,.nav-pills{margin-bottom:15px}
 .tabs-below .nav-tabs,.tabs-right .nav-tabs,.tabs-left .nav-tabs{border-bottom:0}
