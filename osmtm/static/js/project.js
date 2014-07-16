@@ -673,11 +673,13 @@ osmtm.project = (function() {
         }
       } else if (tasks.done && tasks.done.indexOf(layer.feature.id) != -1) {
         style = {
-          fillColor: 'orange'
+          weight: 2,
+          fillColor: 'orange',
+          opacity: 1
         }
       } else {
         style = {
-          opacity: 0.1,
+          opacity: 0.3,
           fillOpacity: 0.1
         }
       }
