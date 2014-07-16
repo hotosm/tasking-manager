@@ -821,8 +821,10 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 #project #instructions dt{color:#999;font-weight:normal}
 #project #instructions dd{margin-left:10px;border:1px solid #dfdfdf;padding:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box;background-color:#efefef}
 #project #editDropdown li a{cursor:pointer}
-#project #contributors td.highlight{cursor:pointer}
-#project #contributors td.highlight:hover{background-color:#eee}
+#project #contributors tr.highlight{cursor:pointer}
+#project #contributors tr.highlight:hover{background-color:#eee}#project #contributors tr.highlight:hover td span{padding:0 4px}
+#project #contributors tr.highlight:hover td.done span{background-color:rgba(255,165,0,0.4)}
+#project #contributors tr.highlight:hover td.assigned span{border:1px solid #f00}
 #project #assign_users{max-height:300px;overflow:auto}#project #assign_users li{padding:4px;border-bottom:1px solid #dfdfdf;cursor:pointer}
 #project #assign_users li:hover{background-color:#d3d3d3}
 #project #assign_to_selector{position:absolute;width:250px;border-color:#d3d3d3;-webkit-box-shadow:0 3px 12px 2px rgba(0,0,0,0.15);-moz-box-shadow:0 3px 12px 2px rgba(0,0,0,0.15);box-shadow:0 3px 12px 2px rgba(0,0,0,0.15);z-index:2}

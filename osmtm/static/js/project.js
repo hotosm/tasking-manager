@@ -549,7 +549,11 @@ osmtm.project = (function() {
         var el = $('#contributors tbody').empty();
         for (var i in data) {
           var tiles = data[i];
-          var row = $('<tr>');
+          var row = $('<tr>', {
+            class: 'highlight',
+            'mouseover': $.proxy(highlightTasks, null, tiles),
+            'mouseout': resetStyle
+          });
 
           var user = $('<a>', {
             "class": "user",
@@ -561,19 +565,17 @@ osmtm.project = (function() {
           });
           row.append(cell);
           row.append($('<td>', {
-            class: 'text-center highlight',
-            html: tiles.done && tiles.done.length || '-'
-          }).on({
-            'hover': $.proxy(highlightTasks, null, tiles.done),
-            'mouseout': resetStyle
+            class: 'text-center done',
+            html: $('<span>', {
+              html: tiles.done && tiles.done.length || '-'
+            })
           }));
 
           row.append($('<td>', {
-            class: 'text-center highlight',
-            html: tiles.assigned && tiles.assigned.length || '-'
-          }).on({
-            'hover': $.proxy(highlightTasks, null, tiles.assigned),
-            'mouseout': resetStyle
+            class: 'text-center assigned',
+            html: $('<span>', {
+              html: tiles.assigned && tiles.assigned.length || '-'
+            })
           }));
 
           el.append(row);
@@ -644,13 +646,23 @@ osmtm.project = (function() {
    */
   function highlightTasks(tasks) {
     tasksLayer.eachLayer(function(layer) {
-      if (tasks && tasks.indexOf(layer.feature.id) != -1) {
-        layer.setStyle({
+      if (tasks.assigned && tasks.assigned.indexOf(layer.feature.id) != -1) {
+        style = {
           weight: 2,
           color: 'red',
           opacity: 1
-        });
+        }
+      } else if (tasks.done && tasks.done.indexOf(layer.feature.id) != -1) {
+        style = {
+          fillColor: 'orange'
+        }
+      } else {
+        style = {
+          opacity: 0.1,
+          fillOpacity: 0.1
+        }
       }
+      layer.setStyle(style);
     });
   }
 
