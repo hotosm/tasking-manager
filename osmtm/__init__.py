@@ -87,6 +87,7 @@ def main(global_config, **settings):
     config.add_route('task_comment',
                      '/project/{project}/task/{task}/comment', xhr=True)
     config.add_route('task_gpx', '/project/{project}/task/{task}.gpx')
+    config.add_route('task_osm', '/project/{project}/task/{task}.osm')
 
     config.add_route('users', '/users')
     config.add_route('users_json', '/users.json')
