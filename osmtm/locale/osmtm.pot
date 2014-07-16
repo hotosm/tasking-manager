@@ -199,8 +199,12 @@ msgstr ""
 msgid "You must leave a comment."
 msgstr ""
 
-#: osmtm/templates/project.stats.mako:4
+#: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
+msgstr ""
+
+#: osmtm/templates/project.stats.mako:7
+msgid "Assigned"
 msgstr ""
 
 #: osmtm/templates/task.assigned.mako:16

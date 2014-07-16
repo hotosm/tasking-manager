@@ -4,7 +4,7 @@
     <tr>
       <th class="">${_('Contributors')}</th>
       <th class="text-center">${_('Done')}</th>
-      <th class="text-center">${('Assigned')}</th>
+      <th class="text-center">${_('Assigned')}</th>
     </tr>
   </thead>
   <tbody>

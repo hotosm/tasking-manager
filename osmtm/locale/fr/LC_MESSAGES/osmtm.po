@@ -207,9 +207,13 @@ msgstr "Validé"
 msgid "You must leave a comment."
 msgstr "Vous devez laisser un commentaire."
 
-#: osmtm/templates/project.stats.mako:4
+#: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
 msgstr "Contributeurs"
+
+#: osmtm/templates/project.stats.mako:7
+msgid "Assigned"
+msgstr "Assigné"
 
 #: osmtm/templates/task.assigned.mako:16
 msgid "Assign task to someone"
@@ -455,3 +459,4 @@ msgstr "Assignation de la tâche supprimée"
 #: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"
 msgstr "Désolé, ce projet n'existe pas"
+
