@@ -553,8 +553,12 @@ osmtm.project = (function() {
           'assigned': []
         };
         for (var i in data) {
-          total.done = total.done.concat(data[i].done);
-          total.assigned = total.assigned.concat(data[i].assigned);
+          if (data[i].done) {
+            total.done = total.done.concat(data[i].done);
+          }
+          if (data[i].assigned) {
+            total.assigned = total.assigned.concat(data[i].assigned);
+          }
         }
         data['sum'] = total;
 
