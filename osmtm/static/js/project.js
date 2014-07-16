@@ -344,6 +344,13 @@ osmtm.project = (function() {
         complete: function(t) {
           if (t.status != 200) {
             alert("JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?");
+          } else {
+            $.ajax({
+              url: 'http://127.0.0.1:8111/import',
+              data: {
+                url: task_osm_url
+              }
+            });
           }
         }
       });
