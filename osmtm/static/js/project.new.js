@@ -175,6 +175,7 @@ osmtm.project_new = (function() {
           var gj = vector.toGeoJSON();
           $('#geometry').val(JSON.stringify(gj)).trigger('change');
           $('#arbitrary').removeClass('mask');
+          $('#arbitrary').tooltip('destroy');
           $('input[value=arbitrary]').attr('disabled', false);
         }
         if (file.substr(-4) == 'json') {

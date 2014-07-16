@@ -72,7 +72,10 @@
       </label>
     </div>
     <div class="col-md-6">
-      <label id="arbitrary" class="radio mask">
+      <label id="arbitrary" class="radio mask"
+             rel="tooltip"
+             data-original-title="${_('You cannot select this option unless you import a file with polygons.')}"
+             >
         <input type="radio" name="type" value="arbitrary" disabled />
         Arbitrary Geometries
         <br>
