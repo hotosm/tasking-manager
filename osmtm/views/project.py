@@ -141,12 +141,12 @@ def project_new_arbitrary(request):
 
     user_id = authenticated_userid(request)
     user = DBSession.query(User).get(user_id)
-    project = Project(
-        u'Untitled project',
-        user
-    )
 
     try:
+        project = Project(
+            u'Untitled project',
+            user
+        )
         count = project.import_from_geojson(request.POST['geometry'])
         _ = request.translate
         request.session.flash(_("Successfully imported ${n} geometries",
@@ -164,6 +164,8 @@ def project_new_arbitrary(request):
              renderer="json",
              permission="project_edit")
 def project_grid_simulate(request):
+    ''' Returns collection of polygons representing the grid cells to be
+        created. Helpful when creating a new project '''
     geometry = request.params['geometry']
     zoom = int(request.params['zoom'])
 

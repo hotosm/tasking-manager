@@ -312,7 +312,8 @@ class Task(Base):
         self.zoom = zoom
         if geometry is None:
             geometry = self.to_polygon()
-            geometry = ST_Transform(shape.from_shape(geometry, 3857), 4326)
+            multipolygon = MultiPolygon([geometry])
+            geometry = ST_Transform(shape.from_shape(multipolygon, 3857), 4326)
 
         self.geometry = geometry
 
