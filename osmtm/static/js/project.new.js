@@ -16,32 +16,32 @@ osmtm.project_new = (function() {
 
     drawControl = new L.Control.Draw({
       position: 'topleft',
-      rectangle: false,
-      circle: false,
-      marker: false,
-      polyline: false,
-      polygon: {
-        title: 'Draw the area of interest'
+      draw: {
+        rectangle: false,
+        circle: false,
+        marker: false,
+        polyline: false,
+        polygon: {
+          title: 'Draw the area of interest'
+        }
       }
     });
     map.addControl(drawControl);
 
+    window.drawControl = drawControl;
     $('#draw').on('click', function() {
-      var handler = drawControl.handlers.polygon;
-      if (handler._enabled) {
-        handler.disable();
-        $(this).removeClass('active');
-      } else {
-        handler.enable();
-        $(this).addClass('active');
+      for (var toolbarId  in drawControl._toolbars) {
+        var toolbar = drawControl._toolbars[toolbarId];
+        toolbar._modes.polygon.handler.enable();
       }
     });
 
     vector = new L.geoJson();
-    map.on('draw:poly-created', function(e) {
-      vector.addLayer(e.poly);
+    map.on('draw:created', function(e) {
+      vector.addLayer(e.layer);
       map.fitBounds(vector.getBounds());
-      $('#geometry').val(toGeoJSON(e.poly)).trigger('change');
+      var gj = vector.toGeoJSON();
+      $('#geometry').val(JSON.stringify(gj)).trigger('change');
       $('#draw').removeClass('active');
     });
     map.on('drawing', function(e) {
@@ -56,15 +56,6 @@ osmtm.project_new = (function() {
         opacity: 0.7
       }
     }).addTo(map);
-  }
-
-  function toGeoJSON(polygon) {
-    var json, type, latlng, latlngs = [], i;
-
-    type = 'Polygon';
-    polygon._latlngs.push(polygon._latlngs[0]);
-    latlngs = LatLngsToCoords(polygon._latlngs, 1);
-    return JSON.stringify({"type": "Feature", "geometry": {"type": 'Polygon', "coordinates": [latlngs]}});
   }
 
   function LatLngToCoords(LatLng, reverse) { // (LatLng, Boolean) -> Array
@@ -162,7 +153,7 @@ osmtm.project_new = (function() {
       });
 
       $('#import').click(function() {
-        drawControl.handlers.polygon.disable();
+        drawControl.editing.polygon.disable();
         $('#draw').removeClass('active');
         $('input[name=import]').click();
         return false;
