@@ -118,16 +118,17 @@ In general managing translation files involves:
 
 ### Using Transifex service
 
-* in the project top level directory, initialize transifex service (after installing `transifex-client'): `tx init`
+* in the project top level directory, initialize transifex service (after installing `transifex-client`): `tx init`
   * the init process will ask for service URL and username/password, which will be saved to `~/.transifexrc` file
-* if the project has already been initialized, but you are missing `~/.transifexrc`, create the file and modify it's access privileges `chmod 600 ~/.transifexrc`:
+* if the project has already been initialized, but you are missing `~/.transifexrc`, create the file and modify it's access privileges `chmod 600 ~/.transifexrc`
+
+Example `.transifexrc` file:
 
     [https://www.transifex.com]
     hostname = https://www.transifex.com
     password = my_super_password
     token =
     username = my_transifex_username
-
 
 * after creating the project on the Transifex service: `osm-tasking-manager2`, generate the pot file, and add it as a `master` resource on the project, full resource name, in this case, is `osm-tasking-manager2.master`
 
