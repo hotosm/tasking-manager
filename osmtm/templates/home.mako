@@ -88,9 +88,9 @@ sorts = [('priority', 'asc', _('High priority first')),
     priority = priorities[project.priority]
 
     if project.status == project.status_archived:
-        status = _('Archived')
+        status = 'Archived'
     elif project.status == project.status_draft:
-        status = _('Draft')
+        status = 'Draft'
     else:
         status = ''
 %>
@@ -137,7 +137,7 @@ sorts = [('priority', 'asc', _('High priority first')),
     <span>${_('Updated')} <span class="timeago" title="${project.last_update}Z"></span></span> -
     <span>${_('Priority:')} ${priority}</span>
     % if status:
-    - <span>${status}</span>
+    - <span>${_(status)}</span>
     % endif
   </small>
 </div>
