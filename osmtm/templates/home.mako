@@ -86,8 +86,15 @@ sorts = [('priority', 'asc', _('High priority first')),
     if request.locale_name:
         project.locale = request.locale_name
     priority = priorities[project.priority]
+
+    if project.status == project.status_archived:
+        status = 'Archived'
+    elif project.status == project.status_draft:
+        status = 'Draft'
+    else:
+        status = ''
 %>
-<div class="project well">
+<div class="project well ${status.lower()}">
   <ul class="nav project-stats">
     <li>
       <table>
@@ -103,7 +110,9 @@ sorts = [('priority', 'asc', _('High priority first')),
       </table>
     </li>
   </ul>
-  <h4><a href="${base_url}project/${project.id}">#${project.id} ${project.name}</a>
+  <h4>
+    <a href="${base_url}project/${project.id}">#${project.id} ${project.name}
+    </a>
   </h4>
   <div class="clear"></div>
   <div class="world_map">
@@ -127,6 +136,9 @@ sorts = [('priority', 'asc', _('High priority first')),
     % endif
     <span>${_('Updated')} <span class="timeago" title="${project.last_update}Z"></span></span> -
     <span>${_('Priority:')} ${priority}</span>
+    % if status:
+    - <span>${_(status)}</span>
+    % endif
   </small>
 </div>
 </%def>

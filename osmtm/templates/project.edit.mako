@@ -68,7 +68,29 @@
 </div>
 </%block>
 <%block name="description">
+
     <div class="row">
+      <!-- status -->
+      <div class="form-group col-md-2">
+        <label for="id_status" class="control-label">Status</label>
+        <select id="id_status" name="status" class="form-control">
+          <%
+          from osmtm.models import Project
+          statuses = {
+            Project.status_archived: _('Archived'),
+            Project.status_published: _('Published'),
+            Project.status_draft: _('Draft'),
+          }
+          %>
+          % for s in statuses:
+            <%
+            selected = 'selected' if project.status == s else ''
+            %>
+            <option value="${s}" ${selected}>${statuses[s]}</option>
+          % endfor
+        </select>
+      </div>
+
       <div class="form-group col-md-2">
         <label for="id_priority" class="control-label">Priority</label>
         <select id="id_priority" name="priority" class="form-control">

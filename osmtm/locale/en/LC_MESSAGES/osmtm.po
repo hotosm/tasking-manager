@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-08 15:24+0200\n"
+"POT-Creation-Date: 2014-07-17 08:59+0200\n"
 "PO-Revision-Date: 2013-09-09 11:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -63,22 +63,29 @@ msgstr ""
 
 #: osmtm/templates/home.mako:77
 msgid "about_text"
-msgstr "OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping. The purpose of the tool is to divide up a mapping job into smaller tasks that can be completed rapidly. It shows which areas need to be mapped and which areas need the mapping validated. <br />"
-       "This approach facilitates the distribution of tasks to the various mappers in a context of emergency. It also permits to control the progress and the homogeinity of the work done (ie. Elements to cover, specific tags to use, etc.)."
+msgstr ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is "
+"to divide up a mapping job into smaller tasks that can be completed "
+"rapidly. It shows which areas need to be mapped and which areas need the "
+"mapping validated. <br />This approach facilitates the distribution of "
+"tasks to the various mappers in a context of emergency. It also permits "
+"to control the progress and the homogeinity of the work done (ie. "
+"Elements to cover, specific tags to use, etc.)."
 
-#: osmtm/templates/home.mako:123 osmtm/templates/project.instructions.mako:7
+#: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:31
 msgid "Access to this project is limited"
 msgstr ""
 
-#: osmtm/templates/home.mako:126
+#: osmtm/templates/home.mako:135
 msgid "Created by"
 msgstr ""
 
-#: osmtm/templates/home.mako:128
+#: osmtm/templates/home.mako:137
 msgid "Updated"
 msgstr ""
 
-#: osmtm/templates/home.mako:129
+#: osmtm/templates/home.mako:138
 msgid "Priority:"
 msgstr ""
 
@@ -102,65 +109,89 @@ msgstr ""
 msgid "Licenses"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:249
+#: osmtm/templates/project.edit.mako:80 osmtm/templates/project.mako:10
+msgid "Archived"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:81
+msgid "Published"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:8
+msgid "Draft"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:271
 msgid "Allowed users"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:15
+#: osmtm/templates/project.instructions.mako:17
+msgid "This project is not published yet."
+msgstr ""
+
+#: osmtm/templates/project.instructions.mako:20
+msgid "Publish"
+msgstr ""
+
+#: osmtm/templates/project.instructions.mako:24
+msgid "This project was archived."
+msgstr ""
+
+#: osmtm/templates/project.instructions.mako:39
 msgid "Entities to Map"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:27
+#: osmtm/templates/project.instructions.mako:51
 msgid "Changeset Comment"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:40
+#: osmtm/templates/project.instructions.mako:64
 msgid "Imagery"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:62
+#: osmtm/templates/project.instructions.mako:86
 msgid "Start contributing"
 msgstr ""
 
-#: osmtm/templates/project.mako:30
+#: osmtm/templates/project.mako:37
 msgid "Instructions"
 msgstr ""
 
-#: osmtm/templates/project.mako:31
+#: osmtm/templates/project.mako:38
 msgid "Contribute"
 msgstr ""
 
-#: osmtm/templates/project.mako:32
+#: osmtm/templates/project.mako:39
 msgid "Activity"
 msgstr ""
 
-#: osmtm/templates/project.mako:33
+#: osmtm/templates/project.mako:40
 msgid "Stats"
 msgstr ""
 
-#: osmtm/templates/project.mako:50
+#: osmtm/templates/project.mako:57
 msgid "Loading"
 msgstr ""
 
-#: osmtm/templates/project.mako:87
+#: osmtm/templates/project.mako:94
 msgid "Ready"
 msgstr ""
 
-#: osmtm/templates/project.mako:87 osmtm/templates/task.history.mako:26
+#: osmtm/templates/project.mako:94 osmtm/templates/task.history.mako:26
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr ""
 
-#: osmtm/templates/project.mako:87 osmtm/templates/task.status.mako:10
+#: osmtm/templates/project.mako:94 osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr ""
 
-#: osmtm/templates/project.mako:87 osmtm/templates/task.history.mako:28
+#: osmtm/templates/project.mako:94 osmtm/templates/task.history.mako:28
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr ""
 
-#: osmtm/templates/project.mako:88
+#: osmtm/templates/project.mako:95
 msgid "You must leave a comment."
 msgstr ""
 

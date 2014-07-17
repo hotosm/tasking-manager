@@ -382,12 +382,11 @@ project_allowed_users = Table(
 class Project(Base, Translatable):
     __tablename__ = 'project'
     id = Column(Integer, primary_key=True)
-    # statuses are:
-    # 0 - archived
-    # 1 - published
-    # 2 - draft
-    # 3 - featured
-    status = Column(Integer)
+
+    status_archived = 0
+    status_published = 1
+    status_draft = 2
+    status = Column(Integer, default=status_draft)
 
     locale = 'en'
 
@@ -429,7 +428,6 @@ class Project(Base, Translatable):
 
     def __init__(self, name, user=None):
         self.name = name
-        self.status = 2
         self.author = user
 
     # auto magically fills the area with tasks for the given zoom

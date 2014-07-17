@@ -2,7 +2,14 @@
 <%inherit file="base.mako"/>
 <%block name="header">
 <a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
-<a class="navbar-brand">${project.name}</a>
+<a class="navbar-brand">
+  ${project.name}
+  % if project.status == project.status_draft:
+   (${_('Draft')})
+  % elif project.status == project.status_archived:
+   (${_('Archived')})
+  % endif
+</a>
 </%block>
 <%block name="content">
 <%

@@ -71,10 +71,12 @@ def project(request):
 
     user_id = authenticated_userid(request)
     locked_task = None
+    user = None
     if user_id:
         user = DBSession.query(User).get(user_id)
         locked_task = get_locked_task(project.id, user)
     return dict(page_id='project', project=project,
+                user=user,
                 locked_task=locked_task,
                 history=history,)
 
@@ -186,6 +188,7 @@ def project_edit(request):
         else:
             project.private = False
 
+        project.status = request.params['status']
         project.priority = request.params['priority']
 
         if 'josm_preset' in request.params:
@@ -198,6 +201,18 @@ def project_edit(request):
                          project=project.id))
 
     return dict(page_id='project_edit', project=project, licenses=licenses)
+
+
+@view_config(route_name='project_publish',
+             permission='project_edit')
+def project_publish(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    project.status = project.status_published
+
+    return HTTPFound(location=route_path('project', request,
+                                         project=project.id))
 
 
 @view_config(route_name='project_contributors', renderer='json')
