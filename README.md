@@ -103,3 +103,69 @@ current data is a good idea.
 Then you can run the following command:
 
     env/bin/alembic upgrade head
+
+
+## Localization
+
+### Initializing translation files
+
+In general managing translation files involves:
+
+* generate *pot* file: `python setup.py extract_messages`
+* initialize a message catalogue file (english): `python setup.py init_catalog -l en`
+  * if the catalogue is already created use: `python setup.py update_catalog`
+* eventually compile messages: `python setup.py compile_catalog`
+
+### Using Transifex service
+
+* in the project top level directory, initialize transifex service (after installing `transifex-client'): `tx init`
+  * the init process will ask for service URL and username/password, which will be saved to `~/.transifexrc` file
+* if the project has already been initialized, but you are missing `~/.transifexrc`, create the file and modify it's access privileges `chmod 600 ~/.transifexrc`:
+
+    [https://www.transifex.com]
+    hostname = https://www.transifex.com
+    password = my_super_password
+    token =
+    username = my_transifex_username
+
+
+* after creating the project on the Transifex service: `osm-tasking-manager2`, generate the pot file, and add it as a `master` resource on the project, full resource name, in this case, is `osm-tasking-manager2.master`
+
+#### Setting up resources
+
+* add initial source file, in this case English:
+  * `tx set --source -r osm-tasking-manager2.master -l en osmtm/locale/en/LC_MESSAGES/osmtm.po`
+* add existing source files, in this case French:
+  * `tx set -r osm-tasking-manager2.master -l fr osmtm/locale/fr/LC_MESSAGES/osmtm.po`
+* push resources on the transifex service (this will overwrite any existing resources on the service)
+  * `tx push -s -t`
+  * `-s` - pushes source files (English)
+  * `-t` - pushes translation files (French)
+
+#### Pulling changes
+
+* to pull latest changes from Transifex service execute: `tx pull`
+  * this will pull every available language from the Transifex service, even the languages that are not yet mapped
+  * if the language is not mapped, translated language file will be saved to the local `.tx` directory, which is not what we want so we need to define the mapping
+  * for example, if we want to correctly map Croaian language you need to execute: `tx set -r osm-tasking-manager2.master -l hr osmtm/locale/hr/LC_MESSAGES/osmtm.po`
+    * there is no need to create the actual po file or the directory structure, Transifex client will manage that for us
+* there is also a possibility to pull specific languages: `tx pull -l hr`
+* or pull only languages that have a certain completeness percentage: `tx pull --minimum-perc=90`
+
+### Transifex workflow
+
+#### Updating source files, locally and on the service
+
+* update pot and source po file
+  * `python setup.py extract_messages`
+  * `python setup.py update_catalog`
+
+* push the source file to Transifex service
+  * `tx push -s`
+
+#### Pull latest changes from the service
+
+* after there are some translation updates, pull latest changes for mapped resources
+  * `tx pull -l fr -l hr`
+* compile language files
+  * `python setup.py compile_catalog`
