@@ -192,7 +192,8 @@ def project_edit(request):
         project.status = request.params['status']
         project.priority = request.params['priority']
 
-        if 'due_date' in request.params:
+        if 'due_date' in request.params and \
+                request.params.get('due_date') != '':
             due_date = request.params.get('due_date')
             due_date = datetime.datetime.strptime(due_date, "%m/%d/%Y")
             project.due_date = due_date
