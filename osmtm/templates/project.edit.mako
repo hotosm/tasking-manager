@@ -5,7 +5,9 @@
 <a class="navbar-brand">${project.name} - Edit</a>
 </%block>
 <%block name="content">
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/datepicker3.css')}">
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
+<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/bootstrap-datepicker.js')}"></script>
 <div id="markdown_cheat_sheet" class="modal fade">
   <div class="modal-dialog">
   <div class="modal-content">
@@ -308,6 +310,21 @@
 </%block>
 
 <%block name="misc">
+<div class="form-group">
+  <div class="input-group">
+    <label>
+      Project due date
+    </label>
+    <div class="input-group date">
+      <input type="text" class="form-control"
+             name="due_date"
+             value="${project.due_date.strftime('%m/%d/%Y') if project.due_date is not None else ''}">
+      <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+    </div>
+    <div class="help-block">The date after which the project will automatically be archived.</div>
+  </div>
+</div>
+
 <div class="form-group">
 
   <label for="id_josm_preset" class="control-label">JOSM Preset</label>

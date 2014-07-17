@@ -192,6 +192,11 @@ def project_edit(request):
         project.status = request.params['status']
         project.priority = request.params['priority']
 
+        if 'due_date' in request.params:
+            due_date = request.params.get('due_date')
+            due_date = datetime.datetime.strptime(due_date, "%m/%d/%Y")
+            project.due_date = due_date
+
         if 'josm_preset' in request.params:
             josm_preset = request.params.get('josm_preset')
             if hasattr(josm_preset, 'value'):
