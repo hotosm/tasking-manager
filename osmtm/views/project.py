@@ -71,10 +71,12 @@ def project(request):
 
     user_id = authenticated_userid(request)
     locked_task = None
+    user = None
     if user_id:
         user = DBSession.query(User).get(user_id)
         locked_task = get_locked_task(project.id, user)
     return dict(page_id='project', project=project,
+                user=user,
                 locked_task=locked_task,
                 history=history,)
 

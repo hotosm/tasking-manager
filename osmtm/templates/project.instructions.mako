@@ -1,14 +1,5 @@
 <%
 import markdown
-
-# FIXME already done in base.mako
-from pyramid.security import authenticated_userid
-from osmtm.models import DBSession, User
-username = authenticated_userid(request)
-if username is not None:
-   user = DBSession.query(User).get(username)
-else:
-   user = None
 %>
 % if project.status in [project.status_draft, project.status_archived] :
 <p class="alert alert-warning text-muted">
