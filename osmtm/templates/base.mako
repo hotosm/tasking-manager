@@ -94,7 +94,7 @@ ${message | n}
 % if page_id is not 'project':
     <footer class="footer">
       <div class="container">
-        <p class="col-md-6">Designed and built for the <a>Humanitarian OpenStreetMap Team</a> with
+        <p class="col-md-6">Designed and built for the <a href="http://hot.openstreetmap.org">Humanitarian OpenStreetMap Team</a> with
 		 initial sponsorship from the Australia-Indonesia Facility for Disaster Reduction.
         </p>
         <p class="pull-right">Fork the code on <a href="http://github.com/hotosm/osm-tasking-manager2">github</a>.
