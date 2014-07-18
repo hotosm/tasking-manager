@@ -115,6 +115,7 @@ In general managing translation files involves:
 * initialize a message catalogue file (english): `python setup.py init_catalog -l en`
   * if the catalogue is already created use: `python setup.py update_catalog`
 * eventually compile messages: `python setup.py compile_catalog`
+* append new language to the `available_languages` configuration variable in *production.ini* file, for example `available_languages = en fr`
 
 ### Using Transifex service
 
@@ -166,6 +167,9 @@ Example `.transifexrc` file:
 
 #### Pull latest changes from the service
 
+* when adding a new language:
+  * we need to configure local mapping: `tx set -r osm-tasking-manager2.master -l hr osmtm/locale/hr/LC_MESSAGES/osmtm.po`
+  * append the new language to the `available_languages` configuration variable in *production.ini* file: `available_languages = en fr hr`
 * after there are some translation updates, pull latest changes for mapped resources
   * `tx pull -l fr -l hr`
 * compile language files
