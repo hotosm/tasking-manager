@@ -315,6 +315,16 @@ class TestProjectFunctional(BaseTestCase):
                                status=200, xhr=True)
         self.assertTrue('user1' in res)
 
+        # assign task to user 2
+        headers = self.login_as_project_manager()
+        self.testapp.get('/project/%d/task/1/user/user2' % project_id,
+                         headers=headers,
+                         status=200,
+                         xhr=True)
+        res = self.testapp.get('/project/%d/contributors' % project_id,
+                               status=200, xhr=True)
+        self.assertTrue('user2' in res)
+
     def test_project_stats(self):
         project_id = self.create_project()
 
