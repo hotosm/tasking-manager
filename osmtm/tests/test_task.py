@@ -18,6 +18,11 @@ class TestTaskFunctional(BaseTestCase):
     def test_task_empty(self):
         self.testapp.get('/project/1/task/empty', status=200, xhr=True)
 
+    def test_task_empty__loggedin(self):
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/empty', status=200,
+                         headers=headers, xhr=True)
+
     def test_task_done__not_loggedin(self):
         self.testapp.get('/project/1/task/1/done', status=401, xhr=True)
 

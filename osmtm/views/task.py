@@ -286,13 +286,10 @@ def get_locked_task(project_id, user):
 def get_assigned_tasks(project_id, user):
     if user is None:
         return None
-    try:
-        query = DBSession.query(Task) \
-            .filter(Task.project_id == project_id, Task.assigned_to == user) \
-            .order_by(Task.assigned_date.desc())
-        return query.all()
-    except NoResultFound:
-        return None
+    query = DBSession.query(Task) \
+        .filter(Task.project_id == project_id, Task.assigned_to == user) \
+        .order_by(Task.assigned_date.desc())
+    return query.all()
 
 
 @view_config(route_name='task_random', http_cache=0, renderer='json')
