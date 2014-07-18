@@ -226,7 +226,7 @@ msgstr "Filtrar usuarios"
 
 #: osmtm/templates/task.assigned.mako:40 osmtm/templates/task.locked.mako:3
 msgid "you"
-msgstr "tú"
+msgstr "Tú"
 
 #: osmtm/templates/task.assigned.mako:42
 msgid "Assigned to ${username}"
@@ -242,7 +242,7 @@ msgstr "Deja un comentario"
 
 #: osmtm/templates/task.current_locked.mako:2
 msgid "a task"
-msgstr "una tarea"
+msgstr "Una tarea"
 
 #: osmtm/templates/task.current_locked.mako:3
 msgid "You already have ${task_link} locked."
@@ -262,7 +262,7 @@ msgstr "Selecciona una tarea del mapa"
 
 #: osmtm/templates/task.empty.mako:21
 msgid "or"
-msgstr "o"
+msgstr "O"
 
 #: osmtm/templates/task.empty.mako:27
 msgid "Take a task at random"
@@ -280,7 +280,7 @@ msgstr "Marcada como hecha"
 #: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:33
 #: osmtm/templates/task.history.mako:39
 msgid "by"
-msgstr "por"
+msgstr "Por"
 
 #: osmtm/templates/task.history.mako:33 osmtm/templates/task.status.mako:6
 msgid "Locked"
@@ -316,11 +316,11 @@ msgstr ""
 
 #: osmtm/templates/task.locked.mako:15
 msgid "min. left"
-msgstr ""
+msgstr "Minutos restantes"
 
 #: osmtm/templates/task.mako:18
 msgid "Clear selection"
-msgstr "minutos restantes"
+msgstr "Deshacer la selección"
 
 #: osmtm/templates/task.mako:56
 msgid "See the changesets in the OSM database for this area."
@@ -460,13 +460,3 @@ msgstr "Eliminada la asignación de tarea"
 #: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"
 msgstr "Lo sentimos. Este usuario no existe"
-
-#~ msgid "about_text"
-#~ msgstr ""
-
-#~ msgid "Chart"
-#~ msgstr ""
-
-#~ msgid "History"
-#~ msgstr ""
-
