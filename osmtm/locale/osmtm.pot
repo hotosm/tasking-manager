@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: osmtm 2.1.1\n"
+"Project-Id-Version: osmtm 2.2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 08:59+0200\n"
+"POT-Creation-Date: 2014-07-17 19:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,10 +62,18 @@ msgid "About the Tasking Manager"
 msgstr ""
 
 #: osmtm/templates/home.mako:77
-msgid "about_text"
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the Humanitarian"
+" OSM Team collaborative mapping. The purpose of the tool is to divide up a "
+"mapping job into smaller tasks that can be completed rapidly. It shows which "
+"areas need to be mapped and which areas need the mapping validated. <br "
+"/>This approach facilitates the distribution of tasks to the various mappers "
+"in a context of emergency. It also permits to control the progress and the "
+"homogeinity of the work done (ie. Elements to cover, specific tags to use, "
+"etc.)."
 msgstr ""
 
-#: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:31
+#: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:22
 msgid "Access to this project is limited"
 msgstr ""
 
@@ -117,31 +125,31 @@ msgstr ""
 msgid "Allowed users"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:17
+#: osmtm/templates/project.instructions.mako:8
 msgid "This project is not published yet."
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:20
+#: osmtm/templates/project.instructions.mako:11
 msgid "Publish"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:24
+#: osmtm/templates/project.instructions.mako:15
 msgid "This project was archived."
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:39
+#: osmtm/templates/project.instructions.mako:30
 msgid "Entities to Map"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:51
+#: osmtm/templates/project.instructions.mako:42
 msgid "Changeset Comment"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:64
+#: osmtm/templates/project.instructions.mako:55
 msgid "Imagery"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:86
+#: osmtm/templates/project.instructions.mako:77
 msgid "Start contributing"
 msgstr ""
 
@@ -363,11 +371,11 @@ msgstr ""
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:117
+#: osmtm/views/project.py:119
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:143
+#: osmtm/views/project.py:145
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 

@@ -28,7 +28,8 @@ requires = [
     'simplejson',
     'geojson==1.0.6',
     'webhelpers==1.3',
-    'alembic==0.6.4'
+    'alembic==0.6.4',
+    'transifex-client'
 ]
 
 setup(name='osmtm',
