@@ -15,6 +15,10 @@ from sqlalchemy import (
     and_
 )
 
+from sqlalchemy.orm import (
+    joinedload,
+)
+
 from sqlalchemy.sql.expression import (
     func,
     select,
@@ -513,6 +517,14 @@ class Project(Base, Translatable):
 
     def to_bbox(self):
         return shape.to_shape(self.area.geometry).bounds
+
+    def get_locked(self):
+
+        query = DBSession.query(Task).options(joinedload(Task.cur_lock)) \
+            .filter(and_(Task.cur_lock.has(lock=True),
+                         Task.project_id == self.id))
+
+        return query.all()
 
 # the time delta after which the task is unlocked (in seconds)
 EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
