@@ -178,6 +178,28 @@ class TestProjectFunctional(BaseTestCase):
         project = DBSession.query(Project).get(project_id)
         self.assertEqual(project.josm_preset, 'blah')
 
+    def test_project_edit__submitted_due_date(self):
+        headers = self.login_as_admin()
+        project_id = self.create_project()
+        date_str = '1/1/2150'
+        self.testapp.post('/project/%d/edit' % project_id,
+                          headers=headers,
+                          upload_files=[('josm_preset', 'preset.xml', 'blah')],
+                          params={
+                              'form.submitted': True,
+                              'license_id': 1,
+                              'priority': 2,
+                              'status': 2,
+                              'due_date': date_str
+                          },
+                          status=302)
+
+        from osmtm.models import Project, DBSession
+        project = DBSession.query(Project).get(project_id)
+        import datetime
+        date = datetime.datetime.strptime(date_str, "%m/%d/%Y")
+        self.assertEqual(project.due_date, date)
+
     def test_project_tasks_json(self):
         project_id = 1
         res = self.testapp.get('/project/%d/tasks.json' % project_id,
@@ -444,14 +466,7 @@ class TestProjectFunctional(BaseTestCase):
                          status=302)
 
     def test_project_users(self):
-        import transaction
-        from osmtm.models import Project, DBSession
         project_id = self.create_project()
-
-        project = DBSession.query(Project).get(project_id)
-        DBSession.add(project)
-        DBSession.flush()
-        transaction.commit()
 
         res = self.testapp.get('/project/%d/users' % project_id,
                                status=200, xhr=True)
@@ -499,3 +514,21 @@ class TestProjectFunctional(BaseTestCase):
                                headers=headers,
                                status=200, xhr=True)
         self.assertEqual(len(res.json), 1)
+
+    def test_project_check_expiration(self):
+        import transaction
+        from osmtm.models import Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+
+        import datetime
+        now = datetime.datetime.now()
+        project.due_date = now - datetime.timedelta(hours=5)
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        self.testapp.get('/', status=200)
+        project = DBSession.query(Project).get(project_id)
+        self.assertEqual(project.status, Project.status_archived)
