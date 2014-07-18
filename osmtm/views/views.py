@@ -51,6 +51,9 @@ def home(request):
     else:
         filter = True  # make it work with an and_ filter
 
+    if not user or (not user.is_admin and not user.is_project_manager):
+        filter = and_(Project.status == Project.status_published, filter)
+
     if 'search' in request.params:
         s = request.params.get('search')
         PT = ProjectTranslation

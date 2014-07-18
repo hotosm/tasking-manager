@@ -321,6 +321,15 @@ def task_gpx(request):
                 project_id=task.project_id)
 
 
+@view_config(route_name='task_osm', renderer='task.osm.mako')
+def task_osm(request):
+    task = __get_task(request)
+    request.response.headerlist.append(('Access-Control-Allow-Origin',
+                                        'http://www.openstreetmap.org'))
+    return dict(multipolygon=shape.to_shape(task.geometry),
+                project_id=task.project_id)
+
+
 # unlock any expired task
 def check_task_expiration():  # pragma: no cover
     subquery = DBSession.query(

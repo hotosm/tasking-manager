@@ -54,6 +54,7 @@ if (typeof countdownInterval != 'undefined') {
 </div>
 
 <script>
+var task_osm_url = "${request.route_url('task_osm', project=task.project_id, task=task.id)}";
 var task_geometry = ${geojson.dumps(geometry_as_shape)|n};
 var task_centroid = [${centroid.x}, ${centroid.y}];
 var task_bounds = [${bounds[0]}, ${bounds[1]}, ${bounds[2]}, ${bounds[3]}];

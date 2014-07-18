@@ -2,6 +2,7 @@ from __future__ import with_statement
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
+from osmtm.utils import load_local_settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -48,8 +49,11 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+
+    settings = config.get_section(config.config_ini_section)
+    load_local_settings(settings)
     engine = engine_from_config(
-        config.get_section(config.config_ini_section),
+        settings,
         prefix='sqlalchemy.',
         poolclass=pool.NullPool
     )
