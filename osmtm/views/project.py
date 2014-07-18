@@ -52,6 +52,7 @@ log = logging.getLogger(__name__)
              permission='project_show')
 def project(request):
     check_task_expiration()
+    check_project_expiration()
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
 
@@ -191,6 +192,13 @@ def project_edit(request):
 
         project.status = request.params['status']
         project.priority = request.params['priority']
+
+        if request.params.get('due_date', '') != '':
+            due_date = request.params.get('due_date')
+            due_date = datetime.datetime.strptime(due_date, "%m/%d/%Y")
+            project.due_date = due_date
+        else:
+            project.due_date = None
 
         if 'josm_preset' in request.params:
             josm_preset = request.params.get('josm_preset')
@@ -473,3 +481,14 @@ def get_stats(project):
         stats.append([task.date.isoformat(), done, validated])
 
     return {"total": total, "stats": stats}
+
+
+def check_project_expiration():
+    ''' Verifies if a project has expired, ie. that its due date is over '''
+    expired = DBSession.query(Project) \
+                       .filter(Project.due_date < datetime.datetime.now()) \
+                       .filter(Project.status != Project.status_archived)
+
+    for project in expired:
+        project.status = Project.status_archived
+        DBSession.add(project)

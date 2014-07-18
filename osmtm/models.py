@@ -430,6 +430,8 @@ class Project(Base, Translatable):
 
     josm_preset = Column(Unicode)
 
+    due_date = Column(DateTime)
+
     def __init__(self, name, user=None):
         self.name = name
         self.author = user
