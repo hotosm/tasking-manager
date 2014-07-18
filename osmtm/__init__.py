@@ -46,6 +46,9 @@ def main(global_config, **settings):
     # transaction when requests begin/end.
     config.include('pyramid_tm')
 
+    # enable exception logger
+    config.include('pyramid_exclog')
+
     session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
     config.set_session_factory(session_factory)
 
