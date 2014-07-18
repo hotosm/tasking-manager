@@ -741,7 +741,7 @@ osmtm.project = (function() {
       });
     },
 
-    loadTask: loadTask,
+    loadTask: loadTask
   }
 })();
 
