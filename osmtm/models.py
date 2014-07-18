@@ -505,6 +505,9 @@ class Project(Base, Translatable):
 
         return round(validated * 100 / total) if total != 0 else 0
 
+    def to_bbox(self):
+        return shape.to_shape(self.area.geometry).bounds
+
 # the time delta after which the task is unlocked (in seconds)
 EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
 
