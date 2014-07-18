@@ -71,6 +71,7 @@ def main(global_config, **settings):
     config.add_route('project_user_delete', '/project/{project}/user/{user}',
                      request_method="DELETE")
     config.add_route('project_preset', '/project/{project}/preset')
+    config.add_route('project_users', '/project/{project}/users')
 
     config.add_route('task_random', '/project/{project}/random', xhr=True)
     config.add_route('task_empty', '/project/{project}/task/empty', xhr=True)
@@ -89,6 +90,11 @@ def main(global_config, **settings):
                      '/project/{project}/task/{task}/comment', xhr=True)
     config.add_route('task_gpx', '/project/{project}/task/{task}.gpx')
     config.add_route('task_osm', '/project/{project}/task/{task}.osm')
+    config.add_route('task_assign',
+                     '/project/{project}/task/{task}/user/{user}', xhr=True)
+    config.add_route('task_assign_delete',
+                     '/project/{project}/task/{task}/user', xhr=True,
+                     request_method="DELETE")
 
     config.add_route('users', '/users')
     config.add_route('users_json', '/users.json')

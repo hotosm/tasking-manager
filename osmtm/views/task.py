@@ -128,8 +128,10 @@ def task_empty(request):
     user = __get_user(request, allow_none=True)
     project_id = request.matchdict['project']
     locked_task = get_locked_task(project_id, user)
+    assigned_tasks = get_assigned_tasks(project_id, user)
 
-    return dict(locked_task=locked_task, project_id=project_id)
+    return dict(locked_task=locked_task, project_id=project_id,
+                assigned_tasks=assigned_tasks, user=user)
 
 
 @view_config(route_name='task_done', renderer='json')
@@ -167,6 +169,12 @@ def lock(request):
         return dict(success=False,
                     task=dict(id=task.id),
                     error_msg=_("Task already locked."))
+
+    if task.assigned_to is not None and task.assigned_to != user:
+        request.response.status = 400
+        return dict(success=False,
+                    task=dict(id=task.id),
+                    error_msg=_("Task assigned to someone else."))
 
     task.locks.append(TaskLock(user=user, lock=True))
     DBSession.add(task)
@@ -275,6 +283,15 @@ def get_locked_task(project_id, user):
         return None
 
 
+def get_assigned_tasks(project_id, user):
+    if user is None:
+        return None
+    query = DBSession.query(Task) \
+        .filter(Task.project_id == project_id, Task.assigned_to == user) \
+        .order_by(Task.assigned_date.desc())
+    return query.all()
+
+
 @view_config(route_name='task_random', http_cache=0, renderer='json')
 def random_task(request):
     """Gets a random not-done task. First it tries to get one that does not
@@ -310,6 +327,43 @@ def random_task(request):
     _ = request.translate
     return dict(success=False,
                 error_msg=_("Random task... none available! Sorry."))
+
+
+@view_config(route_name='task_assign', renderer='json',
+             permission='project_edit')
+def task_assign(request):
+    """Assigns a taks to a given user"""
+    task = __get_task(request)
+
+    _ = request.translate
+    if task.cur_lock and task.cur_lock.lock:
+        request.response.status = 400
+        return dict(success=True,
+                    msg=_("You cannot assign an already locked task"))
+
+    username = request.matchdict['user']
+    user = DBSession.query(User).filter(User.username == username).one()
+
+    task.assigned_to_id = user.id
+    task.assigned_date = datetime.datetime.utcnow()
+    DBSession.add(task)
+
+    return dict(success=True,
+                msg=_("Task assigned."))
+
+
+@view_config(route_name='task_assign_delete', renderer='json',
+             permission='project_edit')
+def task_assign_delete(request):
+    """Remove assignment"""
+    task = __get_task(request)
+
+    task.assigned_to_id = None
+    task.assigned_date = None
+
+    _ = request.translate
+    return dict(success=True,
+                msg=_("Task assignment removed"))
 
 
 @view_config(route_name='task_gpx', renderer='task.gpx.mako')

@@ -6,7 +6,7 @@ from osmtm.models import TaskState
   % if locked_task != task:
     <%include file="task.current_locked.mako" />
   % endif
-% else:
+% elif not task.assigned_to or task.assigned_to == user:
     <a id="lock" href="${request.route_path('task_lock', task=task.id, project=task.project_id)}"
        rel="tooltip"
        data-original-title="${_('Lock this task to tell others that you are currently working on it.')}"

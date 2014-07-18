@@ -1,5 +1,14 @@
-<h4>${_('Contributors')}</h4>
-<ul id="contributors">
-</ul>
-<h4>${_('Chart')}</h4>
 <div id="chart"></div>
+<table id="contributors" class="small table table-condensed">
+  <thead>
+    <tr>
+      <th class="">${_('Contributors')}</th>
+      <th class="text-center">${_('Done')}</th>
+      <th class="text-center">${_('Assigned')}</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+  <tfoot>
+  </tfoot>
+</table>

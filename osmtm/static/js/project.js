@@ -115,6 +115,7 @@ osmtm.project = (function() {
    * Unselects task
    */
   function clearSelection() {
+    hideTooltips();
     location.hash = "";
     selectedTaskLayer.clearLayers();
     $('#task').fadeOut(function() {
@@ -153,6 +154,7 @@ osmtm.project = (function() {
    * direction {String} - The slide direction
    */
   function loadTask(id, direction) {
+    hideTooltips();
     startLoading();
     function load() {
       $('#task').load(
@@ -544,17 +546,58 @@ osmtm.project = (function() {
     $.getJSON(
       base_url + 'project/' + project_id + '/contributors',
       function(data) {
-        var el = $('#contributors').empty();
+        var body = $('#contributors tbody').empty();
+        var footer = $('#contributors tfoot').empty();
+        var total = {
+          'done': [],
+          'assigned': []
+        };
+        for (var i in data) {
+          if (data[i].done) {
+            total.done = total.done.concat(data[i].done);
+          }
+          if (data[i].assigned) {
+            total.assigned = total.assigned.concat(data[i].assigned);
+          }
+        }
+        data['sum'] = total;
+
         for (var i in data) {
           var tiles = data[i];
+          var row = $('<tr>', {
+            class: 'highlight',
+            'mouseover': $.proxy(highlightTasks, null, tiles),
+            'mouseout': resetStyle
+          });
+
           var user = $('<a>', {
             "class": "user",
             href: base_url +  "user/" + i,
             html: i
-          })
-          el.append($('<li>', {
-            html: " <sup>" + tiles.length + "</sup>"
-          }).prepend(user));
+          })[0];
+          var cell = $('<td>', {
+            html: i == 'sum' ? '' : user
+          });
+          row.append(cell);
+          row.append($('<td>', {
+            class: 'text-center done',
+            html: $('<span>', {
+              html: tiles.done && tiles.done.length || '-'
+            })
+          }));
+
+          row.append($('<td>', {
+            class: 'text-center assigned',
+            html: $('<span>', {
+              html: tiles.assigned && tiles.assigned.length || '-'
+            })
+          }));
+
+          if (i == 'sum') {
+            footer.append(row);
+          } else {
+            body.append(row);
+          }
         }
       }
     );
@@ -617,6 +660,39 @@ osmtm.project = (function() {
     lastUpdateCheck = now;
   }
 
+  /**
+   * Highlights the tasks for the given task ids
+   */
+  function highlightTasks(tasks) {
+    tasksLayer.eachLayer(function(layer) {
+      if (tasks.assigned && tasks.assigned.indexOf(layer.feature.id) != -1) {
+        style = {
+          weight: 2,
+          color: 'red',
+          opacity: 1
+        }
+      } else if (tasks.done && tasks.done.indexOf(layer.feature.id) != -1) {
+        style = {
+          weight: 2,
+          fillColor: 'orange',
+          opacity: 1
+        }
+      } else {
+        style = {
+          opacity: 0.3,
+          fillOpacity: 0.1
+        }
+      }
+      layer.setStyle(style);
+    });
+  }
+
+  function resetStyle() {
+    tasksLayer.eachLayer(function(layer) {
+      tasksLayer.resetStyle(layer);
+    });
+  }
+
   return {
     init: function() {
       createMap();
@@ -640,7 +716,7 @@ osmtm.project = (function() {
         }
         return false;
       });
-      $(document).on('click', '.clear', clearSelection);
+      $(document).on('click', '#task_close', clearSelection);
       $(document).on('click', '#edit', exportOpen);
       $(document).on('click', '#editDropdown li', exportOpen);
       $(document).on('click', '#random', function(e) {

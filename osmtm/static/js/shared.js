@@ -34,10 +34,19 @@ $().ready(function() {
             window.open(this.href, '_blank');
         }
     });
+
+    $(document).on('click', function (e) {
+      //only buttons
+      if ($(e.target).data('toggle') !== 'popover' &&
+          $(e.target).parents('.popover.in').length === 0) {
+        $('[data-toggle="popover"]').popover('hide');
+      }
+    });
 });
 
 function hideTooltips() {
     $('[rel=tooltip]').tooltip('hide');
+    $('[data-toggle=popover]').popover('hide');
 }
 
 $.fn.serializeObject = function()

@@ -304,6 +304,52 @@ html, body {
     #editDropdown li a {
         cursor: pointer;
     }
+
+    #contributors {
+      tfoot {
+        tr {
+          background-color: #f2f2f2;
+        }
+        td {
+          border-top: 2px solid #ddd;
+        }
+      }
+      tr.highlight {
+        cursor: pointer;
+      }
+      tr.highlight:hover {
+        background-color: #eee;
+        td span {
+          padding: 0 4px;
+        }
+        td.done span {
+          background-color: rgba(255, 165, 0, 0.4);
+        }
+        td.assigned span {
+          border: 1px solid red;
+        }
+      }
+    }
+
+    #assign_users {
+      max-height: 300px;
+      overflow: auto;
+      li {
+        padding: 4px;
+        border-bottom: 1px solid #dfdfdf;
+        cursor: pointer;
+      }
+      li:hover {
+        background-color: lightgrey;
+      }
+    }
+    #assign_to_selector {
+      position: absolute;
+      width: 250px;
+      border-color: lightgrey;
+      .box-shadow(0, 3px, 12px, 2px, rgba(0, 0, 0, 0.15));
+      z-index: 2;
+    }
 }
 
 #project_edit {

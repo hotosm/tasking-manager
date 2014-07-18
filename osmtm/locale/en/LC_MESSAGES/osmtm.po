@@ -63,6 +63,8 @@ msgstr ""
 
 #: osmtm/templates/home.mako:77
 msgid ""
+msgid "about_text"
+msgstr ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
 "Humanitarian OSM Team collaborative mapping. The purpose of the tool is "
 "to divide up a mapping job into smaller tasks that can be completed "
@@ -121,7 +123,11 @@ msgstr ""
 msgid "Draft"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:271
+#: osmtm/templates/project.assigned_tasks.mako:6
+msgid "You have tasks assigned:"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:249
 msgid "Allowed users"
 msgstr ""
 
@@ -183,6 +189,7 @@ msgid "Invalidated"
 msgstr ""
 
 #: osmtm/templates/project.mako:94 osmtm/templates/task.status.mako:10
+#: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr ""
 
@@ -195,12 +202,32 @@ msgstr ""
 msgid "You must leave a comment."
 msgstr ""
 
-#: osmtm/templates/project.stats.mako:1
+#: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
 msgstr ""
 
-#: osmtm/templates/project.stats.mako:4
-msgid "Chart"
+#: osmtm/templates/project.stats.mako:7
+msgid "Assigned"
+msgstr ""
+
+#: osmtm/templates/task.assigned.mako:16
+msgid "Assign task to someone"
+msgstr ""
+
+#: osmtm/templates/task.assigned.mako:23
+msgid "Filter users"
+msgstr ""
+
+#: osmtm/templates/task.assigned.mako:40 osmtm/templates/task.locked.mako:3
+msgid "you"
+msgstr ""
+
+#: osmtm/templates/task.assigned.mako:42
+msgid "Assigned to ${username}"
+msgstr ""
+
+#: osmtm/templates/task.assigned.mako:46
+msgid "Not assigned yet"
 msgstr ""
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:5
@@ -223,19 +250,19 @@ msgstr ""
 msgid "Edit with"
 msgstr ""
 
-#: osmtm/templates/task.empty.mako:11
+#: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
 msgstr ""
 
-#: osmtm/templates/task.empty.mako:17
+#: osmtm/templates/task.empty.mako:21
 msgid "or"
 msgstr ""
 
-#: osmtm/templates/task.empty.mako:23
+#: osmtm/templates/task.empty.mako:27
 msgid "Take a task at random"
 msgstr ""
 
-#: osmtm/templates/task.freecomment.mako:7
+#: osmtm/templates/task.freecomment.mako:8
 msgid "Comment"
 msgstr ""
 
@@ -269,12 +296,8 @@ msgstr ""
 msgid "Extra Instructions"
 msgstr ""
 
-#: osmtm/templates/task.locked.mako:3
-msgid "you"
-msgstr ""
-
 #: osmtm/templates/task.locked.mako:5
-msgid "Task locked by ${username}"
+msgid "Locked by ${username}"
 msgstr ""
 
 #: osmtm/templates/task.locked.mako:13
@@ -287,15 +310,11 @@ msgstr ""
 msgid "min. left"
 msgstr ""
 
-#: osmtm/templates/task.mako:20
+#: osmtm/templates/task.mako:18
 msgid "Clear selection"
 msgstr ""
 
-#: osmtm/templates/task.mako:45
-msgid "History"
-msgstr ""
-
-#: osmtm/templates/task.mako:50
+#: osmtm/templates/task.mako:56
 msgid "See the changesets in the OSM database for this area."
 msgstr ""
 
@@ -368,7 +387,7 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: osmtm/views/project.py:59
+#: osmtm/views/project.py:60
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
@@ -380,36 +399,52 @@ msgstr ""
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
-#: osmtm/views/task.py:150
+#: osmtm/views/task.py:152
 msgid "Task marked as done. Thanks for your contribution"
 msgstr ""
 
-#: osmtm/views/task.py:169
+#: osmtm/views/task.py:171
 msgid "Task already locked."
 msgstr ""
 
-#: osmtm/views/task.py:174
+#: osmtm/views/task.py:177
+msgid "Task assigned to someone else."
+msgstr ""
+
+#: osmtm/views/task.py:182
 msgid "Task locked. You can start mapping."
 msgstr ""
 
-#: osmtm/views/task.py:191
+#: osmtm/views/task.py:199
 msgid "Task unlocked."
 msgstr ""
 
-#: osmtm/views/task.py:203
+#: osmtm/views/task.py:211
 msgid "Comment added."
 msgstr ""
 
-#: osmtm/views/task.py:225
+#: osmtm/views/task.py:233
 msgid "Task validated."
 msgstr ""
 
-#: osmtm/views/task.py:228
+#: osmtm/views/task.py:236
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:312
+#: osmtm/views/task.py:332
 msgid "Random task... none available! Sorry."
+msgstr ""
+
+#: osmtm/views/task.py:345
+msgid "You cannot assign an already locked task"
+msgstr ""
+
+#: osmtm/views/task.py:355
+msgid "Task assigned."
+msgstr ""
+
+#: osmtm/views/task.py:369
+msgid "Task assignment removed"
 msgstr ""
 
 #: osmtm/views/user.py:91
@@ -417,5 +452,11 @@ msgid "Sorry, this user doesn't  exist"
 msgstr ""
 
 #~ msgid "about_text"
+#~ msgstr ""
+
+#~ msgid "Chart"
+#~ msgstr ""
+
+#~ msgid "History"
 #~ msgstr ""
 

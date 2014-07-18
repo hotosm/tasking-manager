@@ -63,14 +63,7 @@ msgstr "À propos du gestionnaire de tâches"
 
 #: osmtm/templates/home.mako:77
 msgid ""
-"OSM Tasking Manager is a mapping tool designed and built for the "
-"Humanitarian OSM Team collaborative mapping. The purpose of the tool is "
-"to divide up a mapping job into smaller tasks that can be completed "
-"rapidly. It shows which areas need to be mapped and which areas need the "
-"mapping validated. <br />This approach facilitates the distribution of "
-"tasks to the various mappers in a context of emergency. It also permits "
-"to control the progress and the homogeinity of the work done (ie. "
-"Elements to cover, specific tags to use, etc.)."
+msgid "about_text"
 msgstr ""
 "Le gestionnaire de tâches OSM est un outil de cartographie developpé pour"
 " Humanitarian OSM Team. Le but de cet outil est de diviser une zone à "
@@ -81,6 +74,7 @@ msgstr ""
 "dans un contexte d'urgence. Cela permet aussi de contrôler l'avancement "
 "et l'homogénéité du travail effectué (ex. Éléments à couvrir, mots clés à"
 " utiliser, etc...)."
+msgstr ""
 
 #: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:22
 msgid "Access to this project is limited"
@@ -134,7 +128,11 @@ msgstr "Publié"
 msgid "Draft"
 msgstr "Brouillon"
 
-#: osmtm/templates/project.edit.mako:271
+#: osmtm/templates/project.assigned_tasks.mako:6
+msgid "You have tasks assigned:"
+msgstr "Des tâches vous ont été assignées :"
+
+#: osmtm/templates/project.edit.mako:249
 msgid "Allowed users"
 msgstr "Utilisateurs autorisés"
 
@@ -196,6 +194,7 @@ msgid "Invalidated"
 msgstr "Invalidé"
 
 #: osmtm/templates/project.mako:94 osmtm/templates/task.status.mako:10
+#: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "Fait"
 
@@ -208,13 +207,33 @@ msgstr "Validé"
 msgid "You must leave a comment."
 msgstr "Vous devez laisser un commentaire."
 
-#: osmtm/templates/project.stats.mako:1
+#: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
 msgstr "Contributeurs"
 
-#: osmtm/templates/project.stats.mako:4
-msgid "Chart"
-msgstr "Graphique"
+#: osmtm/templates/project.stats.mako:7
+msgid "Assigned"
+msgstr "Assigné"
+
+#: osmtm/templates/task.assigned.mako:16
+msgid "Assign task to someone"
+msgstr "Assigner la tâche à quelqu'un"
+
+#: osmtm/templates/task.assigned.mako:23
+msgid "Filter users"
+msgstr "Filtrer les utilisateurs"
+
+#: osmtm/templates/task.assigned.mako:40 osmtm/templates/task.locked.mako:3
+msgid "you"
+msgstr "vous"
+
+#: osmtm/templates/task.assigned.mako:42
+msgid "Assigned to ${username}"
+msgstr "Assignée à ${username}"
+
+#: osmtm/templates/task.assigned.mako:46
+msgid "Not assigned yet"
+msgstr "Pas encore assignée"
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:5
 msgid "Leave a comment"
@@ -236,19 +255,19 @@ msgstr "Sélectionner à nouveau"
 msgid "Edit with"
 msgstr "Editer avec"
 
-#: osmtm/templates/task.empty.mako:11
+#: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
 msgstr "Sélectionner une tâche sur la carte"
 
-#: osmtm/templates/task.empty.mako:17
+#: osmtm/templates/task.empty.mako:21
 msgid "or"
 msgstr "ou"
 
-#: osmtm/templates/task.empty.mako:23
+#: osmtm/templates/task.empty.mako:27
 msgid "Take a task at random"
 msgstr "Prendre une tâche au hasard"
 
-#: osmtm/templates/task.freecomment.mako:7
+#: osmtm/templates/task.freecomment.mako:8
 msgid "Comment"
 msgstr "Commenter"
 
@@ -282,13 +301,9 @@ msgstr "Rien ne s'est encore passé."
 msgid "Extra Instructions"
 msgstr "Instructions additionnelles"
 
-#: osmtm/templates/task.locked.mako:3
-msgid "you"
-msgstr "vous"
-
 #: osmtm/templates/task.locked.mako:5
-msgid "Task locked by ${username}"
-msgstr "Tâche bloquée par ${username}"
+msgid "Locked by ${username}"
+msgstr "Bloquée par ${username}"
 
 #: osmtm/templates/task.locked.mako:13
 msgid ""
@@ -302,15 +317,11 @@ msgstr ""
 msgid "min. left"
 msgstr "min. restantes"
 
-#: osmtm/templates/task.mako:20
+#: osmtm/templates/task.mako:18
 msgid "Clear selection"
 msgstr "Effacer la sélection"
 
-#: osmtm/templates/task.mako:45
-msgid "History"
-msgstr "Historique"
-
-#: osmtm/templates/task.mako:50
+#: osmtm/templates/task.mako:56
 msgid "See the changesets in the OSM database for this area."
 msgstr "Voir les modifications pour cette zone dans la base de données OSM"
 
@@ -375,7 +386,7 @@ msgstr "Cet utilisateur est administrateur."
 
 #: osmtm/templates/user.mako:54
 msgid "This user is a project manager."
-msgstr ""
+msgstr "Cet utilisateur est 'responsable projet'"
 
 #: osmtm/templates/user_menu.mako:4
 msgid "logout"
@@ -385,7 +396,7 @@ msgstr "Se déconnecter"
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: osmtm/views/project.py:59
+#: osmtm/views/project.py:60
 msgid "Sorry, this project doesn't  exist"
 msgstr "Désolé, ce projet n'existe pas"
 
@@ -397,37 +408,53 @@ msgstr "Projet #${project_id} créé avec succès"
 msgid "Successfully imported ${n} geometries"
 msgstr "${n} géométries importées"
 
-#: osmtm/views/task.py:150
+#: osmtm/views/task.py:152
 msgid "Task marked as done. Thanks for your contribution"
 msgstr "Tâche marquée comme réalisée. Merci pour votre participation."
 
-#: osmtm/views/task.py:169
+#: osmtm/views/task.py:171
 msgid "Task already locked."
 msgstr "Tâche déjà bloquée."
 
-#: osmtm/views/task.py:174
+#: osmtm/views/task.py:177
+msgid "Task assigned to someone else."
+msgstr "Tâche assignée à une quelqu'un d'autre."
+
+#: osmtm/views/task.py:182
 msgid "Task locked. You can start mapping."
 msgstr "Tâche bloquée. Vous pouvez commencer à cartographier."
 
-#: osmtm/views/task.py:191
+#: osmtm/views/task.py:199
 msgid "Task unlocked."
 msgstr "Tâche débloquée."
 
-#: osmtm/views/task.py:203
+#: osmtm/views/task.py:211
 msgid "Comment added."
 msgstr "Commentaire ajouté."
 
-#: osmtm/views/task.py:225
+#: osmtm/views/task.py:233
 msgid "Task validated."
 msgstr "Tâche validée"
 
-#: osmtm/views/task.py:228
+#: osmtm/views/task.py:236
 msgid "Task invalidated."
 msgstr "Tâche invalidée"
 
-#: osmtm/views/task.py:312
+#: osmtm/views/task.py:332
 msgid "Random task... none available! Sorry."
 msgstr "Tâche au hasard... aucune disponible ! Désolé."
+
+#: osmtm/views/task.py:345
+msgid "You cannot assign an already locked task"
+msgstr ""
+
+#: osmtm/views/task.py:355
+msgid "Task assigned."
+msgstr "Tâche assignée"
+
+#: osmtm/views/task.py:369
+msgid "Task assignment removed"
+msgstr "Assignation de la tâche supprimée"
 
 #: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"

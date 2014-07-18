@@ -15,17 +15,23 @@ if (typeof countdownInterval != 'undefined') {
 }
 </script>
 <div>
+  <a id="task_close" class="btn btn-sm btn-link pull-right" title="${_('Clear selection')}"><i class="glyphicon glyphicon-remove"></i></a>
+  <h4 class="pull-left">
   <%include file="task.status.mako" />
   Task #${task.id}
-  <a class="btn btn-sm btn-link clear pull-right" title="${_('Clear selection')}"><i class="glyphicon glyphicon-remove"></i></a>
+  </h4>
+  <div class="clear"></div>
   <div id="task_actions">
 % if task.cur_lock and task.cur_lock.lock:
   <%include file="task.locked.mako" />
 % else:
+  <%include file="task.assigned.mako" />
   <%include file="task.unlocked.mako" />
 % endif
 
-% if task.cur_state.state == TaskState.state_ready or task.cur_state.state == TaskState.state_invalidated:
+
+
+% if not task.assigned_to and (task.cur_state.state == TaskState.state_ready or task.cur_state.state == TaskState.state_invalidated):
   <%include file="task.split.mako" />
 % endif
 
@@ -42,7 +48,7 @@ if (typeof countdownInterval != 'undefined') {
     <%include file="task.instructions.mako" />
     <%include file="task.freecomment.mako" />
 % if len(task.states) != 0:
-    <h4>${_('History')}</h4>
+    <hr>
     <div><%include file="task.history.mako" /></div>
     <hr>
     <p><a href="http://www.openstreetmap.org/history?bbox=${bounds[0]},${bounds[1]},${bounds[2]},${bounds[3]}"
@@ -54,6 +60,7 @@ if (typeof countdownInterval != 'undefined') {
 </div>
 
 <script>
+var task_id = ${task.id};
 var task_osm_url = "${request.route_url('task_osm', project=task.project_id, task=task.id)}";
 var task_geometry = ${geojson.dumps(geometry_as_shape)|n};
 var task_centroid = [${centroid.x}, ${centroid.y}];
