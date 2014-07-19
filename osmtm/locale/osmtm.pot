@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 19:43+0200\n"
+"POT-Creation-Date: 2014-07-19 17:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -109,23 +109,23 @@ msgstr ""
 msgid "Licenses"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:80 osmtm/templates/project.mako:10
-msgid "Archived"
-msgstr ""
-
-#: osmtm/templates/project.edit.mako:81
-msgid "Published"
-msgstr ""
-
-#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:8
-msgid "Draft"
-msgstr ""
-
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:249
+#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:10
+msgid "Archived"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:83
+msgid "Published"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:84 osmtm/templates/project.mako:8
+msgid "Draft"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:273
 msgid "Allowed users"
 msgstr ""
 
@@ -186,7 +186,8 @@ msgstr ""
 msgid "Invalidated"
 msgstr ""
 
-#: osmtm/templates/project.mako:94 osmtm/templates/task.status.mako:10
+#: osmtm/templates/project.mako:94 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr ""
 
@@ -383,15 +384,15 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: osmtm/views/project.py:60
+#: osmtm/views/project.py:61
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:119
+#: osmtm/views/project.py:121
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:145
+#: osmtm/views/project.py:147
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
@@ -427,19 +428,19 @@ msgstr ""
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:332
+#: osmtm/views/task.py:329
 msgid "Random task... none available! Sorry."
 msgstr ""
 
-#: osmtm/views/task.py:345
+#: osmtm/views/task.py:342
 msgid "You cannot assign an already locked task"
 msgstr ""
 
-#: osmtm/views/task.py:355
+#: osmtm/views/task.py:352
 msgid "Task assigned."
 msgstr ""
 
-#: osmtm/views/task.py:369
+#: osmtm/views/task.py:366
 msgid "Task assignment removed"
 msgstr ""
 

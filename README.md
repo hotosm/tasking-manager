@@ -160,7 +160,7 @@ Example `.transifexrc` file:
 
 * update pot and source po file
   * `python setup.py extract_messages`
-  * `python setup.py update_catalog`
+  * `python setup.py init_catalog -l en`
 
 * push the source file to Transifex service
   * `tx push -s`
@@ -171,6 +171,6 @@ Example `.transifexrc` file:
   * we need to configure local mapping: `tx set -r osm-tasking-manager2.master -l hr osmtm/locale/hr/LC_MESSAGES/osmtm.po`
   * append the new language to the `available_languages` configuration variable in *production.ini* file: `available_languages = en fr hr`
 * after there are some translation updates, pull latest changes for mapped resources
-  * `tx pull -l fr -l hr`
+  * `tx pull -l fr,hr`
 * compile language files
   * `python setup.py compile_catalog`
