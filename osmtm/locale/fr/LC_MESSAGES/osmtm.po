@@ -1,21 +1,24 @@
-# French translations for osmtm.
-# Copyright (C) 2013 ORGANIZATION
+# English translations for osmtm.
+# Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the osmtm project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
-#
+# 
+# Translators:
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013
+# Pierre GIRAUD <pierre.giraud@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: osmtm 2.0\n"
+"Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 19:43+0200\n"
-"PO-Revision-Date: 2013-09-09 10:08+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: fr <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"POT-Creation-Date: 2014-07-19 17:16+0200\n"
+"PO-Revision-Date: 2014-07-19 16:18+0000\n"
+"Last-Translator: Dražen Odobašić <dodobasic@gmail.com>\n"
+"Language-Team: French (http://www.transifex.com/projects/p/osm-tasking-manager2/language/fr/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: osmtm/templates/base.mako:50
 msgid "login to OpenStreetMap"
@@ -63,18 +66,15 @@ msgstr "À propos du gestionnaire de tâches"
 
 #: osmtm/templates/home.mako:77
 msgid ""
-msgid "about_text"
-msgstr ""
-"Le gestionnaire de tâches OSM est un outil de cartographie developpé pour"
-" Humanitarian OSM Team. Le but de cet outil est de diviser une zone à "
-"cartographier en plus petites tâches qui peuvent être réalisées "
-"rapidement. On y voit les zones qui doivent être cartographiées ainsi que"
-" les zones dont la cartographie a besoin d'être validée.<br />Cette "
-"approche facilite la distribution des tâches aux différentes mappeurs "
-"dans un contexte d'urgence. Cela permet aussi de contrôler l'avancement "
-"et l'homogénéité du travail effectué (ex. Éléments à couvrir, mots clés à"
-" utiliser, etc...)."
-msgstr ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated. <br />This approach facilitates the distribution of tasks to the "
+"various mappers in a context of emergency. It also permits to control the "
+"progress and the homogeinity of the work done (ie. Elements to cover, "
+"specific tags to use, etc.)."
+msgstr "Le gestionnaire de tâches OSM est un outil de cartographie developpé pour Humanitarian OSM Team. Le but de cet outil est de diviser une zone à cartographier en plus petites tâches qui peuvent être réalisées rapidement. On y voit les zones qui doivent être cartographiées ainsi que les zones dont la cartographie a besoin d'être validée.<br />Cette approche facilite la distribution des tâches aux différentes mappeurs dans un contexte d'urgence. Cela permet aussi de contrôler l'avancement et l'homogénéité du travail effectué (ex. Éléments à couvrir, mots clés à utiliser, etc...)."
 
 #: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:22
 msgid "Access to this project is limited"
@@ -94,19 +94,15 @@ msgstr "Priorité :"
 
 #: osmtm/templates/imagery.mako:26
 msgid ""
-"If you have JOSM running and remote control activated, clicking this link"
-" should automatically load imagery."
-msgstr ""
-"Si JOSM est déjà lancé avec le contrôle à distance activé, cliquez sur ce"
-" lien et l'imagerie devrait être automatiquement chargée."
+"If you have JOSM running and remote control activated, clicking this link "
+"should automatically load imagery."
+msgstr "Si JOSM est déjà lancé avec le contrôle à distance activé, cliquez sur ce lien et l'imagerie devrait être automatiquement chargée."
 
 #: osmtm/templates/imagery.mako:33
 msgid ""
 "Imagery should load automatically when you will open a task using the iD "
 "Editor"
-msgstr ""
-"L'imagerie devrait se charger automatiquement quand vous chargerez la "
-"tâche dans iD"
+msgstr "L'imagerie devrait se charger automatiquement quand vous chargerez la tâche dans iD"
 
 #: osmtm/templates/imagery.mako:67
 msgid "You need to accept the license first"
@@ -116,23 +112,23 @@ msgstr "Vous devez d'abord accepter la licence"
 msgid "Licenses"
 msgstr "Licences"
 
-#: osmtm/templates/project.edit.mako:80 osmtm/templates/project.mako:10
+#: osmtm/templates/project.assigned_tasks.mako:6
+msgid "You have tasks assigned:"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:10
 msgid "Archived"
 msgstr "Archivé"
 
-#: osmtm/templates/project.edit.mako:81
+#: osmtm/templates/project.edit.mako:83
 msgid "Published"
 msgstr "Publié"
 
-#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:8
+#: osmtm/templates/project.edit.mako:84 osmtm/templates/project.mako:8
 msgid "Draft"
 msgstr "Brouillon"
 
-#: osmtm/templates/project.assigned_tasks.mako:6
-msgid "You have tasks assigned:"
-msgstr "Des tâches vous ont été assignées :"
-
-#: osmtm/templates/project.edit.mako:249
+#: osmtm/templates/project.edit.mako:273
 msgid "Allowed users"
 msgstr "Utilisateurs autorisés"
 
@@ -166,7 +162,7 @@ msgstr "Commencer à contribuer"
 
 #: osmtm/templates/project.mako:37
 msgid "Instructions"
-msgstr ""
+msgstr "Instructions"
 
 #: osmtm/templates/project.mako:38
 msgid "Contribute"
@@ -178,7 +174,7 @@ msgstr "Activité"
 
 #: osmtm/templates/project.mako:40
 msgid "Stats"
-msgstr ""
+msgstr "Stats"
 
 #: osmtm/templates/project.mako:57
 msgid "Loading"
@@ -193,7 +189,7 @@ msgstr "Prêt"
 msgid "Invalidated"
 msgstr "Invalidé"
 
-#: osmtm/templates/project.mako:94 osmtm/templates/task.status.mako:10
+#: osmtm/templates/project.mako:94 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "Fait"
@@ -213,15 +209,15 @@ msgstr "Contributeurs"
 
 #: osmtm/templates/project.stats.mako:7
 msgid "Assigned"
-msgstr "Assigné"
+msgstr ""
 
 #: osmtm/templates/task.assigned.mako:16
 msgid "Assign task to someone"
-msgstr "Assigner la tâche à quelqu'un"
+msgstr ""
 
 #: osmtm/templates/task.assigned.mako:23
 msgid "Filter users"
-msgstr "Filtrer les utilisateurs"
+msgstr ""
 
 #: osmtm/templates/task.assigned.mako:40 osmtm/templates/task.locked.mako:3
 msgid "you"
@@ -229,11 +225,11 @@ msgstr "vous"
 
 #: osmtm/templates/task.assigned.mako:42
 msgid "Assigned to ${username}"
-msgstr "Assignée à ${username}"
+msgstr ""
 
 #: osmtm/templates/task.assigned.mako:46
 msgid "Not assigned yet"
-msgstr "Pas encore assignée"
+msgstr ""
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:5
 msgid "Leave a comment"
@@ -303,15 +299,13 @@ msgstr "Instructions additionnelles"
 
 #: osmtm/templates/task.locked.mako:5
 msgid "Locked by ${username}"
-msgstr "Bloquée par ${username}"
+msgstr ""
 
 #: osmtm/templates/task.locked.mako:13
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
-msgstr ""
-"Si vous ne terminez pas le travail dans le temps imparti, la tâche sera "
-"débloquée automatiquement"
+msgstr "Si vous ne terminez pas le travail dans le temps imparti, la tâche sera débloquée automatiquement"
 
 #: osmtm/templates/task.locked.mako:15
 msgid "min. left"
@@ -364,9 +358,7 @@ msgstr "Marquer comme réalisé"
 
 #: osmtm/templates/task.unlocked.mako:12
 msgid "Lock this task to tell others that you are currently working on it."
-msgstr ""
-"Bloquer cette tâche pour avertir les autres que vous êtres en train de "
-"travailler dessus."
+msgstr "Bloquer cette tâche pour avertir les autres que vous êtres en train de travailler dessus."
 
 #: osmtm/templates/task.unlocked.mako:17
 msgid "Start mapping"
@@ -386,7 +378,7 @@ msgstr "Cet utilisateur est administrateur."
 
 #: osmtm/templates/user.mako:54
 msgid "This user is a project manager."
-msgstr "Cet utilisateur est 'responsable projet'"
+msgstr "Cet utilisateur est responsable projet."
 
 #: osmtm/templates/user_menu.mako:4
 msgid "logout"
@@ -396,15 +388,15 @@ msgstr "Se déconnecter"
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: osmtm/views/project.py:60
+#: osmtm/views/project.py:61
 msgid "Sorry, this project doesn't  exist"
 msgstr "Désolé, ce projet n'existe pas"
 
-#: osmtm/views/project.py:119
+#: osmtm/views/project.py:121
 msgid "Project #${project_id} created successfully"
 msgstr "Projet #${project_id} créé avec succès"
 
-#: osmtm/views/project.py:145
+#: osmtm/views/project.py:147
 msgid "Successfully imported ${n} geometries"
 msgstr "${n} géométries importées"
 
@@ -418,7 +410,7 @@ msgstr "Tâche déjà bloquée."
 
 #: osmtm/views/task.py:177
 msgid "Task assigned to someone else."
-msgstr "Tâche assignée à une quelqu'un d'autre."
+msgstr ""
 
 #: osmtm/views/task.py:182
 msgid "Task locked. You can start mapping."
@@ -440,23 +432,22 @@ msgstr "Tâche validée"
 msgid "Task invalidated."
 msgstr "Tâche invalidée"
 
-#: osmtm/views/task.py:332
+#: osmtm/views/task.py:329
 msgid "Random task... none available! Sorry."
 msgstr "Tâche au hasard... aucune disponible ! Désolé."
 
-#: osmtm/views/task.py:345
+#: osmtm/views/task.py:342
 msgid "You cannot assign an already locked task"
 msgstr ""
 
-#: osmtm/views/task.py:355
+#: osmtm/views/task.py:352
 msgid "Task assigned."
-msgstr "Tâche assignée"
+msgstr ""
 
-#: osmtm/views/task.py:369
+#: osmtm/views/task.py:366
 msgid "Task assignment removed"
-msgstr "Assignation de la tâche supprimée"
+msgstr ""
 
 #: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"
 msgstr "Désolé, ce projet n'existe pas"
-
