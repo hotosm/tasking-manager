@@ -63,7 +63,14 @@ msgstr "Sobre el Tasking Manager"
 
 #: osmtm/templates/home.mako:77
 msgid ""
-msgid "about_text"
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is "
+"to divide up a mapping job into smaller tasks that can be completed "
+"rapidly. It shows which areas need to be mapped and which areas need the "
+"mapping validated. <br />This approach facilitates the distribution of "
+"tasks to the various mappers in a context of emergency. It also permits "
+"to control the progress and the homogeinity of the work done (ie. "
+"Elements to cover, specific tags to use, etc.)."
 msgstr ""
 "El Gestor de Tareas de OpenStreetMap (OSM Tasking Manager) es una "
 "herramienta de cartografía colaborativa diseñada por el Equipo "
@@ -75,7 +82,6 @@ msgstr ""
 "en un contexto de emergencia. También permite controlar el progreso y "
 "la homogeneidad del trabajo hecho (es decir, los elementos a cubrir, "
 "las etiquetas específicas que hay que usar, etc.)."
-msgstr ""
 
 #: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:22
 msgid "Access to this project is limited"
