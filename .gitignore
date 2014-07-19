@@ -46,3 +46,7 @@ local.test.ini
 
 # node modules
 node_modules
+
+# default log files
+osmtm.log
+exception.log
