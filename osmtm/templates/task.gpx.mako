@@ -6,7 +6,7 @@ timestamp = timestamp.isoformat()
 %>
 <gpx xmlns="http://www.topografix.com/GPX/1/1">
 <metadata>
-  <link href="https://github.com/hotosm/osm-tasking-manager">
+  <link href="https://github.com/hotosm/osm-tasking-manager2">
     <text>HOT Tasking Manager</text>
   </link>
   <time>${timestamp}</time>
