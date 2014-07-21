@@ -13,6 +13,7 @@ from ..models import (
     Project,
     ProjectTranslation,
     User,
+    TaskLock,
 )
 
 from webhelpers.paginate import (
@@ -66,6 +67,14 @@ def home(request):
                        .filter(search_filter) \
                        .all()
         filter = and_(Project.id.in_(ids), filter)
+
+    # filter projects on which the current user worked on
+    if request.params.get('my', '') == 'on':
+        ids = DBSession.query(TaskLock.project_id) \
+                       .filter(TaskLock.user_id == user_id) \
+                       .all()
+        filter = and_(Project.id.in_(ids), filter)
+        pass
 
     sort_by = 'project.%s' % request.params.get('sort_by', 'priority')
     direction = request.params.get('direction', 'asc')
