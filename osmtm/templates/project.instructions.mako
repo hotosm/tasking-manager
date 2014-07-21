@@ -1,4 +1,5 @@
 <%
+import bleach
 import markdown
 %>
 % if project.status in [project.status_draft, project.status_archived] :
@@ -22,7 +23,7 @@ import markdown
   ${_('Access to this project is limited')}
 </p>
 % endif
-<p>${markdown.markdown(project.description, safe_mode="remove")|n}</p>
+<p>${markdown.markdown(bleach.clean(project.description, strip=True)) |n}</p>
 <hr />
 <dl>
   % if project.entities_to_map:
@@ -69,7 +70,7 @@ import markdown
 </p>
 % endif
 <hr />
-<p>${markdown.markdown(project.instructions, safe_mode="remove")|n}</p>
+<p>${markdown.markdown(bleach.clean(project.instructions, strip=True)) |n}</p>
 <p class="text-center">
   <a id="start"
      class="btn btn-success btn-lg">
