@@ -423,6 +423,7 @@ class TestProjectFunctional(BaseTestCase):
         project = DBSession.query(Project).get(project_id)
         project.name = u"private_project"
         project.private = True
+        project.status = Project.status_published
         DBSession.add(project)
         DBSession.flush()
         transaction.commit()
@@ -450,6 +451,39 @@ class TestProjectFunctional(BaseTestCase):
 
         res = self.testapp.get('/', status=200, headers=headers_user1)
         self.assertTrue("private_project" in res.body)
+
+    def test_home__my_projects(self):
+        import transaction
+        from osmtm.models import Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+        name = "project_not_worked_on_by_user"
+        project.name = u"" + name
+        project.status = Project.status_published
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        headers = self.login_as_user1()
+        res = self.testapp.get('/', status=200, headers=headers)
+        self.assertTrue(name in res.body)
+
+        res = self.testapp.get('/', status=200, headers=headers,
+                               params={
+                                   'my': 'on'
+                               })
+        self.assertFalse(name in res.body)
+
+        self.testapp.get('/project/%d/task/1/lock' % project_id, status=200,
+                         headers=headers,
+                         xhr=True)
+
+        res = self.testapp.get('/', status=200, headers=headers,
+                               params={
+                                   'my': 'on'
+                               })
+        self.assertTrue(name in res.body)
 
     def test_project_publish__not_allowed(self):
         project_id = self.create_project()
