@@ -69,7 +69,7 @@ def home(request):
         filter = and_(Project.id.in_(ids), filter)
 
     # filter projects on which the current user worked on
-    if request.params.get('my', '') == 'on':
+    if request.params.get('my_projects', '') == 'on':
         ids = DBSession.query(TaskLock.project_id) \
                        .filter(TaskLock.user_id == user_id) \
                        .all()

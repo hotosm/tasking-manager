@@ -69,8 +69,8 @@ sorts = [('priority', 'asc', _('High priority first')),
         <div class="col-md-12">
           <div class="checkbox input-sm pull-right">
             <label>
-              <input type="checkbox" name="my"
-                ${'checked' if request.params.get('my') == 'on' else ''}
+              <input type="checkbox" name="my_projects"
+                ${'checked' if request.params.get('my_projects') == 'on' else ''}
                 onclick="this.form.submit();"> ${_('Your projects')}
             </label>
           </div>

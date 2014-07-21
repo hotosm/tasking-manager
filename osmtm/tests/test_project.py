@@ -471,7 +471,7 @@ class TestProjectFunctional(BaseTestCase):
 
         res = self.testapp.get('/', status=200, headers=headers,
                                params={
-                                   'my': 'on'
+                                   'my_projects': 'on'
                                })
         self.assertFalse(name in res.body)
 
