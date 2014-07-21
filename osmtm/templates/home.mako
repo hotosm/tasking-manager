@@ -99,6 +99,19 @@ sorts = [('priority', 'asc', _('High priority first')),
     <li>
       <table>
         <tr>
+          <%
+            locked = project.get_locked()
+            title = _('${locked} user(s) is (are) currently working on this project', mapping={'locked': locked})
+          %>
+          % if locked:
+          <td>
+            <span title="${title}" class="text-muted">
+              <span class="glyphicon glyphicon-user"></span>
+              ${locked}
+            </span>
+            &nbsp;
+          </td>
+          % endif
           <td>
             <div class="progress">
               <div style="width: ${project.done}%;" class="progress-bar progress-bar-warning"></div>
