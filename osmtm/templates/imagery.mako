@@ -19,22 +19,6 @@
 <p>
   ${project.imagery}
 </p>
-<p>
-  <a href='http://127.0.0.1:8111/imagery?title=${project.name}&type=${type}&url=${project.imagery}'
-    class="btn btn-default btn-xs"
-    target="_blank" rel="tooltip"
-    data-original-title="${_('If you have JOSM running and remote control activated, clicking this link should automatically load imagery.')}">
-    <span class="glyphicon glyphicon-share-alt"></span>
-    JOSM
-  </a>
-  <a
-    class="btn btn-default btn-xs"
-    rel="tooltip"
-    data-original-title="${_('Imagery should load automatically when you will open a task using the iD Editor')}">
-    <span class="glyphicon glyphicon-share-alt"></span>
-    iD Editor
-  </a>
-</p>
 % elif not license_accepted:
 <p>
   tms[22]:http://xxx.xxxx.com/hot/1.0.0/xxxxxx/{zoom}/{x}/{y}.png

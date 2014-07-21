@@ -336,6 +336,11 @@ osmtm.project = (function() {
     // currently selected task)
     switch (editor) {
       case "josm":
+      if (typeof licenseAgreementUrl != 'undefined') {
+        alert(requiresLicenseAgreementMsg);
+        window.location = licenseAgreementUrl;
+        break;
+      }
       url = getLink({
         base: 'http://127.0.0.1:8111/load_and_zoom?',
         bounds: task_bounds,
@@ -352,6 +357,14 @@ osmtm.project = (function() {
           } else {
             $.ajax({
               url: url
+            });
+            $.ajax({
+              url: 'http://127.0.0.1:8111/imagery',
+              data: {
+                title: "Tasking Manager - #" + project_id,
+                type: imagery_url.toLowerCase().substring(0,3),
+                url: imagery_url
+              }
             });
           }
         }
