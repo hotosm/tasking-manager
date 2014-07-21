@@ -518,13 +518,14 @@ class Project(Base, Translatable):
     def to_bbox(self):
         return shape.to_shape(self.area.geometry).bounds
 
+    # get the count of currently locked tasks
     def get_locked(self):
 
         query = DBSession.query(Task).options(joinedload(Task.cur_lock)) \
             .filter(and_(Task.cur_lock.has(lock=True),
                          Task.project_id == self.id))
 
-        return query.all()
+        return query.count()
 
 # the time delta after which the task is unlocked (in seconds)
 EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)

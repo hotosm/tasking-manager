@@ -100,7 +100,7 @@ sorts = [('priority', 'asc', _('High priority first')),
       <table>
         <tr>
           <%
-            locked = len(project.get_locked())
+            locked = project.get_locked()
             title = _('${locked} user(s) is (are) currently working on this project', mapping={'locked': locked})
           %>
           % if locked:
