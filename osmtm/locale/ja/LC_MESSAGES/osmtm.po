@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-07-19 17:16+0200\n"
-"PO-Revision-Date: 2014-07-21 05:19+0000\n"
+"PO-Revision-Date: 2014-07-21 13:17+0000\n"
 "Last-Translator: nyampire <nyampire@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/osm-tasking-manager2/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -29,19 +29,19 @@ msgstr "緊急"
 
 #: osmtm/templates/home.mako:9
 msgid "high"
-msgstr "優先度高"
+msgstr "高"
 
 #: osmtm/templates/home.mako:9
 msgid "medium"
-msgstr "優先度中"
+msgstr "中"
 
 #: osmtm/templates/home.mako:9
 msgid "low"
-msgstr "優先度低"
+msgstr "低"
 
 #: osmtm/templates/home.mako:11
 msgid "High priority first"
-msgstr ""
+msgstr "優先度順"
 
 #: osmtm/templates/home.mako:12
 msgid "Creation date"
@@ -73,7 +73,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeinity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr ""
+msgstr "OSM Tasking Managerは、OSM人道支援チーム \"Humanitarian OSM Team, HOT\" による多人数マッピング作業を効率的に実施するためのツールです。このツールでは、マッピング対象の地域を小さなタスクに分割することによって作業を素早く実施することができるようにします。ツール内では、マッピングが必要とされている地域と、内容の確認が必要とされている地域が一覧で表示されます。<br />この方法を使うことにより、災害発生時に多くのマッパーが対象となる地域を一斉に描画するという状況において、それぞれが行なうべきことを適切に切り分けることが可能です。また、作業の進捗確認や、作業結果の均質化を行なうことも可能となります。(例: 描画対象となる地物の選定、特殊なタグの使用など...)"
 
 #: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:22
 msgid "Access to this project is limited"
@@ -113,7 +113,7 @@ msgstr "ライセンス"
 
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
-msgstr ""
+msgstr "担当中タスク: "
 
 #: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:10
 msgid "Archived"
@@ -157,7 +157,7 @@ msgstr "航空写真"
 
 #: osmtm/templates/project.instructions.mako:77
 msgid "Start contributing"
-msgstr "地図描きに参加"
+msgstr "参加"
 
 #: osmtm/templates/project.mako:37
 msgid "Instructions"
@@ -191,7 +191,7 @@ msgstr "差し戻し"
 #: osmtm/templates/project.mako:94 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
-msgstr ""
+msgstr "完了"
 
 #: osmtm/templates/project.mako:94 osmtm/templates/task.history.mako:28
 #: osmtm/templates/task.status.mako:14
@@ -208,15 +208,15 @@ msgstr "参加者"
 
 #: osmtm/templates/project.stats.mako:7
 msgid "Assigned"
-msgstr ""
+msgstr "担当中"
 
 #: osmtm/templates/task.assigned.mako:16
 msgid "Assign task to someone"
-msgstr ""
+msgstr "タスク担当依頼"
 
 #: osmtm/templates/task.assigned.mako:23
 msgid "Filter users"
-msgstr ""
+msgstr "ユーザをフィルタ"
 
 #: osmtm/templates/task.assigned.mako:40 osmtm/templates/task.locked.mako:3
 msgid "you"
@@ -224,11 +224,11 @@ msgstr "あなた"
 
 #: osmtm/templates/task.assigned.mako:42
 msgid "Assigned to ${username}"
-msgstr ""
+msgstr "${username} へタスク担当依頼"
 
 #: osmtm/templates/task.assigned.mako:46
 msgid "Not assigned yet"
-msgstr ""
+msgstr "担当中タスクなし"
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:5
 msgid "Leave a comment"
@@ -298,7 +298,7 @@ msgstr "追加インストラクション"
 
 #: osmtm/templates/task.locked.mako:5
 msgid "Locked by ${username}"
-msgstr ""
+msgstr "${username} によりロック中"
 
 #: osmtm/templates/task.locked.mako:13
 msgid ""
@@ -409,7 +409,7 @@ msgstr "タスクは既にロック中です。"
 
 #: osmtm/views/task.py:177
 msgid "Task assigned to someone else."
-msgstr ""
+msgstr "誰かが担当中"
 
 #: osmtm/views/task.py:182
 msgid "Task locked. You can start mapping."
@@ -437,15 +437,15 @@ msgstr "タスクのランダム選択...空いているタスクがありませ
 
 #: osmtm/views/task.py:342
 msgid "You cannot assign an already locked task"
-msgstr ""
+msgstr "ロック中のタスクへの担当依頼はできません"
 
 #: osmtm/views/task.py:352
 msgid "Task assigned."
-msgstr ""
+msgstr "タスク担当開始。"
 
 #: osmtm/views/task.py:366
 msgid "Task assignment removed"
-msgstr ""
+msgstr "タスク担当の削除実施"
 
 #: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"

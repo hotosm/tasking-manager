@@ -4,13 +4,14 @@
 # 
 # Translators:
 # Rafael Ávila Coya <ravilacoya@gmail.com>, 2014
+# Rafael Ávila Coya <ravilacoya@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-07-19 17:16+0200\n"
-"PO-Revision-Date: 2014-07-19 16:18+0000\n"
-"Last-Translator: Dražen Odobašić <dodobasic@gmail.com>\n"
+"PO-Revision-Date: 2014-07-20 00:54+0000\n"
+"Last-Translator: Rafael Ávila Coya <ravilacoya@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/osm-tasking-manager2/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -113,7 +114,7 @@ msgstr "Licencias"
 
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
-msgstr ""
+msgstr "Tienes tareas asignadas:"
 
 #: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:10
 msgid "Archived"
@@ -208,15 +209,15 @@ msgstr "Colaboradores"
 
 #: osmtm/templates/project.stats.mako:7
 msgid "Assigned"
-msgstr ""
+msgstr "Asignada"
 
 #: osmtm/templates/task.assigned.mako:16
 msgid "Assign task to someone"
-msgstr ""
+msgstr "Asignar la tarea a alguien"
 
 #: osmtm/templates/task.assigned.mako:23
 msgid "Filter users"
-msgstr ""
+msgstr "Filtrar usuarios"
 
 #: osmtm/templates/task.assigned.mako:40 osmtm/templates/task.locked.mako:3
 msgid "you"
@@ -224,11 +225,11 @@ msgstr "Tú"
 
 #: osmtm/templates/task.assigned.mako:42
 msgid "Assigned to ${username}"
-msgstr ""
+msgstr "Asignar a ${username}"
 
 #: osmtm/templates/task.assigned.mako:46
 msgid "Not assigned yet"
-msgstr ""
+msgstr "Todavía no asignada"
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:5
 msgid "Leave a comment"
@@ -298,7 +299,7 @@ msgstr "Instrucciones adicionales"
 
 #: osmtm/templates/task.locked.mako:5
 msgid "Locked by ${username}"
-msgstr ""
+msgstr "Bloqueada por ${username}"
 
 #: osmtm/templates/task.locked.mako:13
 msgid ""
@@ -409,7 +410,7 @@ msgstr "Tarea ya bloqueada."
 
 #: osmtm/views/task.py:177
 msgid "Task assigned to someone else."
-msgstr ""
+msgstr "Tarea asignada a otra persona."
 
 #: osmtm/views/task.py:182
 msgid "Task locked. You can start mapping."
@@ -437,15 +438,15 @@ msgstr "Tarea aleatoria... ¡no hay ninguna disponible! Lo sentimos."
 
 #: osmtm/views/task.py:342
 msgid "You cannot assign an already locked task"
-msgstr ""
+msgstr "No puedes asignar una tarea que ya ha sido bloqueada"
 
 #: osmtm/views/task.py:352
 msgid "Task assigned."
-msgstr ""
+msgstr "Tarea asignada."
 
 #: osmtm/views/task.py:366
 msgid "Task assignment removed"
-msgstr ""
+msgstr "Eliminada la asignación de tarea"
 
 #: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"
