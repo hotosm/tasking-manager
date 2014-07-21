@@ -7,4 +7,5 @@ source_lang = en
 trans.de = osmtm/locale/de/LC_MESSAGES/osmtm.po
 trans.es = osmtm/locale/es/LC_MESSAGES/osmtm.po
 trans.fr = osmtm/locale/fr/LC_MESSAGES/osmtm.po
+trans.pt = osmtm/locale/pt/LC_MESSAGES/osmtm.po
 
