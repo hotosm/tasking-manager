@@ -389,7 +389,8 @@ def check_task_expiration():  # pragma: no cover
     subquery = DBSession.query(
         TaskLock,
         func.rank().over(
-            partition_by=TaskLock.task_id, order_by=TaskLock.date.desc()
+            partition_by=(TaskLock.task_id, TaskLock.project_id),
+            order_by=TaskLock.date.desc()
         ).label("rank")
     ).subquery()
 
