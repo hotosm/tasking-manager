@@ -1,0 +1,448 @@
+# English translations for osmtm.
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the osmtm project.
+# 
+# Translators:
+# Supaplex <bejokeup@gmail.com>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: osm-tasking-manager2\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2014-07-22 08:12+0200\n"
+"PO-Revision-Date: 2014-07-22 06:20+0000\n"
+"Last-Translator: Dražen Odobašić <dodobasic@gmail.com>\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/osm-tasking-manager2/language/zh_TW/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: osmtm/templates/base.mako:50
+msgid "login to OpenStreetMap"
+msgstr "登入開放街圖"
+
+#: osmtm/templates/home.mako:9
+msgid "urgent"
+msgstr "緊急"
+
+#: osmtm/templates/home.mako:9
+msgid "high"
+msgstr "高"
+
+#: osmtm/templates/home.mako:9
+msgid "medium"
+msgstr "中"
+
+#: osmtm/templates/home.mako:9
+msgid "low"
+msgstr "低"
+
+#: osmtm/templates/home.mako:11
+msgid "High priority first"
+msgstr "高優先性先"
+
+#: osmtm/templates/home.mako:12
+msgid "Creation date"
+msgstr "建立日期"
+
+#: osmtm/templates/home.mako:13
+msgid "Last update"
+msgstr "最後更新"
+
+#: osmtm/templates/home.mako:43
+msgid "Search"
+msgstr "搜尋"
+
+#: osmtm/templates/home.mako:49
+msgid "Sort by:"
+msgstr "排序："
+
+#: osmtm/templates/home.mako:74
+msgid "Your projects"
+msgstr ""
+
+#: osmtm/templates/home.mako:89
+msgid "About the Tasking Manager"
+msgstr "關於任務分配管理系統"
+
+#: osmtm/templates/home.mako:91
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated. <br />This approach facilitates the distribution of tasks to the "
+"various mappers in a context of emergency. It also permits to control the "
+"progress and the homogeinity of the work done (ie. Elements to cover, "
+"specific tags to use, etc.)."
+msgstr "開放街圖任務管理工具是一套由人道開放街圖小組開發設計的畫圖工具，主要的目的是將畫圖任務分配得更小，並且能快速完成。從這套工具能顯示那些區域需要畫，以及那些區域需要驗證。<br/>這麼一來，這套工具能協調無數圖客能夠彼此合作繪製災區，允許管控流程和統一工作的共同標準(例如著默的重點，用到的特殊標籤等)"
+
+#: osmtm/templates/home.mako:119
+msgid "${locked} user(s) is (are) currently working on this project"
+msgstr ""
+
+#: osmtm/templates/home.mako:160 osmtm/templates/project.instructions.mako:23
+msgid "Access to this project is limited"
+msgstr "專案權限受限"
+
+#: osmtm/templates/home.mako:163
+msgid "Created by"
+msgstr "由誰建立"
+
+#: osmtm/templates/home.mako:165
+msgid "Updated"
+msgstr "更新"
+
+#: osmtm/templates/home.mako:166
+msgid "Priority:"
+msgstr "優先度"
+
+#: osmtm/templates/imagery.mako:51
+msgid "You need to accept the license first"
+msgstr "你必須先接受授權條款"
+
+#: osmtm/templates/license.mako:5 osmtm/templates/licenses.mako:5
+msgid "Licenses"
+msgstr "授權條款"
+
+#: osmtm/templates/project.assigned_tasks.mako:6
+msgid "You have tasks assigned:"
+msgstr "你被指派的任務："
+
+#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:10
+msgid "Archived"
+msgstr "存檔"
+
+#: osmtm/templates/project.edit.mako:83
+msgid "Published"
+msgstr "發佈"
+
+#: osmtm/templates/project.edit.mako:84 osmtm/templates/project.mako:8
+msgid "Draft"
+msgstr "草稿"
+
+#: osmtm/templates/project.edit.mako:273
+msgid "Allowed users"
+msgstr "擁有權限的使用者"
+
+#: osmtm/templates/project.instructions.mako:9
+msgid "This project is not published yet."
+msgstr "這個專案還沒有發佈。"
+
+#: osmtm/templates/project.instructions.mako:12
+msgid "Publish"
+msgstr "發佈"
+
+#: osmtm/templates/project.instructions.mako:16
+msgid "This project was archived."
+msgstr "這個專案已經存檔了。"
+
+#: osmtm/templates/project.instructions.mako:31
+msgid "Entities to Map"
+msgstr "命名地圖"
+
+#: osmtm/templates/project.instructions.mako:43
+msgid "Changeset Comment"
+msgstr "編輯變動註解"
+
+#: osmtm/templates/project.instructions.mako:56
+msgid "Imagery"
+msgstr "影像"
+
+#: osmtm/templates/project.instructions.mako:78
+msgid "Start contributing"
+msgstr "開始貢獻"
+
+#: osmtm/templates/project.mako:37
+msgid "Instructions"
+msgstr "說明"
+
+#: osmtm/templates/project.mako:38
+msgid "Contribute"
+msgstr "貢獻"
+
+#: osmtm/templates/project.mako:39
+msgid "Activity"
+msgstr "最新變動列表"
+
+#: osmtm/templates/project.mako:40
+msgid "Stats"
+msgstr "統計數據"
+
+#: osmtm/templates/project.mako:57
+msgid "Loading"
+msgstr "載入中"
+
+#: osmtm/templates/project.mako:94
+msgid "Ready"
+msgstr "準備好了"
+
+#: osmtm/templates/project.mako:94 osmtm/templates/task.history.mako:26
+#: osmtm/templates/task.status.mako:12
+msgid "Invalidated"
+msgstr "驗證無效"
+
+#: osmtm/templates/project.mako:94 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/task.status.mako:10
+msgid "Done"
+msgstr "完成"
+
+#: osmtm/templates/project.mako:94 osmtm/templates/task.history.mako:28
+#: osmtm/templates/task.status.mako:14
+msgid "Validated"
+msgstr "驗證通過"
+
+#: osmtm/templates/project.mako:95
+msgid "You must leave a comment."
+msgstr "你必須輸入註解"
+
+#: osmtm/templates/project.stats.mako:5
+msgid "Contributors"
+msgstr "貢獻者"
+
+#: osmtm/templates/project.stats.mako:7
+msgid "Assigned"
+msgstr "指派的"
+
+#: osmtm/templates/task.assigned.mako:16
+msgid "Assign task to someone"
+msgstr "指派任務給某個人"
+
+#: osmtm/templates/task.assigned.mako:23
+msgid "Filter users"
+msgstr "過濾使用者"
+
+#: osmtm/templates/task.assigned.mako:40 osmtm/templates/task.locked.mako:3
+msgid "you"
+msgstr "你"
+
+#: osmtm/templates/task.assigned.mako:42
+msgid "Assigned to ${username}"
+msgstr "指派給 ${username}"
+
+#: osmtm/templates/task.assigned.mako:46
+msgid "Not assigned yet"
+msgstr "還未指派"
+
+#: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:5
+msgid "Leave a comment"
+msgstr "輸入註解"
+
+#: osmtm/templates/task.current_locked.mako:2
+msgid "a task"
+msgstr "一項任務"
+
+#: osmtm/templates/task.current_locked.mako:3
+msgid "You already have ${task_link} locked."
+msgstr "你已經將 ${task_link} 鎖定了。"
+
+#: osmtm/templates/task.current_locked.mako:10
+msgid "Select it again"
+msgstr "再選一次"
+
+#: osmtm/templates/task.editors.mako:8
+msgid "Edit with"
+msgstr "選擇編輯器"
+
+#: osmtm/templates/task.empty.mako:15
+msgid "Select a task on the map"
+msgstr "在地圖上選擇任務"
+
+#: osmtm/templates/task.empty.mako:21
+msgid "or"
+msgstr "或"
+
+#: osmtm/templates/task.empty.mako:27
+msgid "Take a task at random"
+msgstr "隨意選擇任務"
+
+#: osmtm/templates/task.freecomment.mako:8
+msgid "Comment"
+msgstr "註解"
+
+#: osmtm/templates/task.history.mako:24
+msgid "Marked as done"
+msgstr "標記為完成"
+
+#: osmtm/templates/task.history.mako:24 osmtm/templates/task.history.mako:26
+#: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:33
+#: osmtm/templates/task.history.mako:39
+msgid "by"
+msgstr "由"
+
+#: osmtm/templates/task.history.mako:33 osmtm/templates/task.status.mako:6
+msgid "Locked"
+msgstr "鎖定"
+
+#: osmtm/templates/task.history.mako:35
+msgid "Unlocked"
+msgstr "解除鎖定"
+
+#: osmtm/templates/task.history.mako:39
+msgid "Comment left"
+msgstr "已經輸入註解"
+
+#: osmtm/templates/task.history.mako:51
+msgid "Nothing has happened yet."
+msgstr "什麼事情都還沒有發生。"
+
+#: osmtm/templates/task.instructions.mako:3
+msgid "Extra Instructions"
+msgstr "詳細說明"
+
+#: osmtm/templates/task.locked.mako:5
+msgid "Locked by ${username}"
+msgstr "由 ${username} 鎖定"
+
+#: osmtm/templates/task.locked.mako:13
+msgid ""
+"If you do not complete or release this task in time, it will be "
+"automatically unlocked"
+msgstr "如果你在一定時間內，沒有完成或是解除鎖住任務，那麼就會自動解除鎖定"
+
+#: osmtm/templates/task.locked.mako:15
+msgid "min. left"
+msgstr "分鐘剩下"
+
+#: osmtm/templates/task.mako:18
+msgid "Clear selection"
+msgstr "清除選擇區域"
+
+#: osmtm/templates/task.mako:56
+msgid "See the changesets in the OSM database for this area."
+msgstr "在開放街圖資料庫看這個區域的編輯變動。"
+
+#: osmtm/templates/task.split.mako:3
+msgid "Task is too big?"
+msgstr "任務內容太多了嗎？"
+
+#: osmtm/templates/task.split.mako:13
+msgid "Are you sure you want to split this task?"
+msgstr "你確定你要分割這項任務嗎？"
+
+#: osmtm/templates/task.split.mako:15
+msgid "Split"
+msgstr "分割"
+
+#: osmtm/templates/task.state.done.mako:4
+msgid "Invalidate this task if you consider it needs more work."
+msgstr "如果你覺得這項任務還需要更多努力，那就讓任務驗證無效。"
+
+#: osmtm/templates/task.state.done.mako:12
+#: osmtm/templates/task.state.ready.mako:8
+msgid "Unlock"
+msgstr "解除鎖定"
+
+#: osmtm/templates/task.state.done.mako:18
+msgid "Invalidate"
+msgstr "驗證無效"
+
+#: osmtm/templates/task.state.done.mako:22
+msgid "Validate this task if you consider that the work is complete."
+msgstr "如果你覺得任務已經完成，那就驗證通過這項任務。"
+
+#: osmtm/templates/task.state.done.mako:29
+msgid "Validate"
+msgstr "驗證通過"
+
+#: osmtm/templates/task.state.ready.mako:10
+msgid "Mark task as done"
+msgstr "任務標示為完成"
+
+#: osmtm/templates/task.unlocked.mako:12
+msgid "Lock this task to tell others that you are currently working on it."
+msgstr "鎖定這項任務以便讓其他人知道你正在努力畫圖。"
+
+#: osmtm/templates/task.unlocked.mako:17
+msgid "Start mapping"
+msgstr "開始畫圖"
+
+#: osmtm/templates/task.unlocked.mako:21
+msgid "Review the work"
+msgstr "複查任務"
+
+#: osmtm/templates/user.mako:5
+msgid "User profile"
+msgstr "使用者檔案"
+
+#: osmtm/templates/user.mako:38
+msgid "This user is an administrator."
+msgstr "該使用者是管理員"
+
+#: osmtm/templates/user.mako:54
+msgid "This user is a project manager."
+msgstr "該使用者是專案管理員"
+
+#: osmtm/templates/user_menu.mako:4
+msgid "logout"
+msgstr "登出"
+
+#: osmtm/templates/users.mako:5
+msgid "Users"
+msgstr "使用者"
+
+#: osmtm/views/project.py:61
+msgid "Sorry, this project doesn't  exist"
+msgstr "抱歉，這項計畫並不存在"
+
+#: osmtm/views/project.py:121
+msgid "Project #${project_id} created successfully"
+msgstr "專案 #${project_id} 成功建立"
+
+#: osmtm/views/project.py:147
+msgid "Successfully imported ${n} geometries"
+msgstr "匯入 ${n} 形狀成功"
+
+#: osmtm/views/task.py:152
+msgid "Task marked as done. Thanks for your contribution"
+msgstr "任務已經完成。謝謝你的貢獻"
+
+#: osmtm/views/task.py:171
+msgid "Task already locked."
+msgstr "任務已經鎖定"
+
+#: osmtm/views/task.py:177
+msgid "Task assigned to someone else."
+msgstr "任務指派給其他人了。"
+
+#: osmtm/views/task.py:182
+msgid "Task locked. You can start mapping."
+msgstr "任務已經鎖定，你可以開始畫圖。"
+
+#: osmtm/views/task.py:199
+msgid "Task unlocked."
+msgstr "任務已經解除鎖定。"
+
+#: osmtm/views/task.py:211
+msgid "Comment added."
+msgstr "註解已經新增"
+
+#: osmtm/views/task.py:233
+msgid "Task validated."
+msgstr "任務驗證完成"
+
+#: osmtm/views/task.py:236
+msgid "Task invalidated."
+msgstr "任務驗證未過"
+
+#: osmtm/views/task.py:329
+msgid "Random task... none available! Sorry."
+msgstr "隨機選擇任務... 抱歉，沒有可以選擇的！"
+
+#: osmtm/views/task.py:342
+msgid "You cannot assign an already locked task"
+msgstr "你無法選擇已經鎖定的任務"
+
+#: osmtm/views/task.py:352
+msgid "Task assigned."
+msgstr "任務已指派。"
+
+#: osmtm/views/task.py:366
+msgid "Task assignment removed"
+msgstr "移除指派的任務"
+
+#: osmtm/views/user.py:91
+msgid "Sorry, this user doesn't  exist"
+msgstr "抱歉，這位使用者並不存存"
