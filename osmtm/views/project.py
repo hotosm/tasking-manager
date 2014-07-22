@@ -112,7 +112,7 @@ def project_new_grid(request):
         DBSession.add(project)
         DBSession.flush()
 
-        zoom = int(request.params['zoom'])
+        tile_size = int(request.params['tile_size'])
 
         geometry = request.params['geometry']
 
@@ -120,6 +120,11 @@ def project_new_grid(request):
         multipolygon = convert_to_multipolygon(geoms)
 
         geometry = shape.from_shape(multipolygon, 4326)
+
+        geom_3857 = DBSession.execute(ST_Transform(geometry, 3857)).scalar()
+        geom_3857 = shape.to_shape(geom_3857)
+        zoom = get_zoom_for_tile_size(geom_3857, tile_size)
+
         project.area = Area(geometry)
         project.auto_fill(zoom)
 
@@ -167,7 +172,7 @@ def project_grid_simulate(request):
     ''' Returns collection of polygons representing the grid cells to be
         created. Helpful when creating a new project '''
     geometry = request.params['geometry']
-    zoom = int(request.params['zoom'])
+    tile_size = int(request.params['tile_size'])
 
     geoms = parse_geojson(geometry)
     multipolygon = convert_to_multipolygon(geoms)
@@ -176,6 +181,8 @@ def project_grid_simulate(request):
 
     geom_3857 = DBSession.execute(ST_Transform(geometry, 3857)).scalar()
     geom_3857 = shape.to_shape(geom_3857)
+    zoom = get_zoom_for_tile_size(geom_3857, tile_size)
+
     found = get_tiles_in_geom(geom_3857, zoom)
     polygons = [i[2] for i in found]
     from shapely.geometry import MultiPolygon
@@ -523,3 +530,9 @@ def check_project_expiration():
     for project in expired:
         project.status = Project.status_archived
         DBSession.add(project)
+
+
+def get_zoom_for_tile_size(geom, tile_size):
+
+    import math
+    return 29 - math.log(geom.area, 10) / 0.6 + tile_size

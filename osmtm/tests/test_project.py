@@ -51,7 +51,6 @@ class TestProjectFunctional(BaseTestCase):
                          params={
                              'form.submitted': True,
                              'geometry': 'blah',  # noqa
-                             'zoom': 10
                          },
                          status=302)
 
@@ -62,12 +61,12 @@ class TestProjectFunctional(BaseTestCase):
                          params={
                              'form.submitted': True,
                              'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}]}',  # noqa
-                             'zoom': 10
+                             'tile_size': -2
                          },
                          status=302)
 
         project = DBSession.query(Project).order_by(Project.id.desc()).first()
-        self.assertEqual(len(project.tasks), 11)
+        self.assertEqual(len(project.tasks), 22)
 
     def test_project_grid_simulate(self):
         headers = self.login_as_admin()
@@ -75,14 +74,14 @@ class TestProjectFunctional(BaseTestCase):
                 params={
                     'form.submitted': True,
                     'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}]}',  # noqa
-                    'zoom': 10
+                    'tile_size': -2
                     },
                 xhr=True,
                 status=200
         )
 
         count = len(res.json['features'][0]['geometry']['coordinates'])
-        self.assertEqual(count, 11)
+        self.assertEqual(count, 22)
 
     def test_project_new_arbitrary__invalid_json(self):
         headers = self.login_as_admin()

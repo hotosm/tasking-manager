@@ -104,12 +104,12 @@ osmtm.project_new = (function() {
 
   function changeTileSize(index) {
     $('#computing').removeClass('hidden');
-    $('#zoom').val(map.getBoundsZoom(vector.getBounds()) + index + 2);
+    $('input[name=tile_size]').val(index - 2);
     $.ajax({
       url: base_url + "project/grid_simulate",
       type: 'POST',
       data: {
-        zoom: $('#zoom').val(),
+        tile_size: $('input[name=tile_size]').val(),
         geometry: $('#geometry').val()
       },
       success: function(data) {

@@ -121,7 +121,7 @@
     <div class="pull-right loading help hidden">
       Creating tiles, please wait...
     </div>
-    <input id="zoom" type="hidden" name="zoom"/>
+    <input type="hidden" name="tile_size"/>
     <input id="geometry" type="hidden" name="geometry"/>
   </form>
 </div>
