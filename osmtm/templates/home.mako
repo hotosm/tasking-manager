@@ -30,39 +30,53 @@ sorts = [('priority', 'asc', _('High priority first')),
           action="${request.current_route_url()}"
           method="GET">
 
-      <input type="hidden" name="sort_by"
-             value="${request.params.get('sort_by', 'priority')}">
-      <input type="hidden" name="direction"
-             value="${request.params.get('direction', 'asc')}">
+      <div class="row">
+        <div class="col-md-12">
+          <input type="hidden" name="sort_by"
+                 value="${request.params.get('sort_by', 'priority')}">
+          <input type="hidden" name="direction"
+                 value="${request.params.get('direction', 'asc')}">
 
-      <div class="form-group left-inner-addon">
-        <i class="glyphicon glyphicon-search text-muted"></i>
-        <input type="search" class="form-control input-sm"
-               name="search" placeholder="${_('Search')}"
-               value="${request.params.get('search', '')}">
+          <div class="form-group left-inner-addon">
+            <i class="glyphicon glyphicon-search text-muted"></i>
+            <input type="search" class="form-control input-sm"
+                   name="search" placeholder="${_('Search')}"
+                   value="${request.params.get('search', '')}">
+          </div>
+          <div class="btn-group pull-right">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                    data-toggle="dropdown">
+              ${_('Sort by:')} <strong>${button_text}</strong>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              % for sort in sorts:
+                <%
+                  qs['sort_by'] = sort[0]
+                  qs['direction'] = sort[1]
+                %>
+                <li>
+                  <a href="${request.current_route_url(_query=qs.items())}">
+                    ${sort[2]}
+                  </a>
+                </li>
+              % endfor
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="btn-group pull-right">
-        <button type="button" class="btn btn-default btn-sm dropdown-toggle"
-                data-toggle="dropdown">
-          ${_('Sort by:')} <strong>${button_text}</strong>
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-          % for sort in sorts:
-            <%
-              qs['sort_by'] = sort[0]
-              qs['direction'] = sort[1]
-            %>
-            <li>
-              <a href="${request.current_route_url(_query=qs.items())}">
-                ${sort[2]}
-              </a>
-            </li>
-          % endfor
-        </ul>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="checkbox input-sm pull-right">
+            <label>
+              <input type="checkbox" name="my_projects"
+                ${'checked' if request.params.get('my_projects') == 'on' else ''}
+                onclick="this.form.submit();"> ${_('Your projects')}
+            </label>
+          </div>
+        </div>
       </div>
     </form>
-    <hr>
     % if paginator.items:
         % for project in paginator.items:
           ${project_block(project=project, base_url=base_url,
@@ -83,6 +97,7 @@ sorts = [('priority', 'asc', _('High priority first')),
 <%def name="project_block(project, base_url, priorities)">
 <%
     import markdown
+    import bleach
     if request.locale_name:
         project.locale = request.locale_name
     priority = priorities[project.priority]
@@ -99,6 +114,19 @@ sorts = [('priority', 'asc', _('High priority first')),
     <li>
       <table>
         <tr>
+          <%
+            locked = project.get_locked()
+            title = _('${locked} user(s) is (are) currently working on this project', mapping={'locked': locked})
+          %>
+          % if locked:
+          <td>
+            <span title="${title}" class="text-muted">
+              <span class="glyphicon glyphicon-user"></span>
+              ${locked}
+            </span>
+            &nbsp;
+          </td>
+          % endif
           <td>
             <div class="progress">
               <div style="width: ${project.done}%;" class="progress-bar progress-bar-warning"></div>
@@ -124,7 +152,7 @@ sorts = [('priority', 'asc', _('High priority first')),
     <div style="top: ${(-centroid.y + 90) * 60 / 180 - 1}px; left: ${(centroid.x + 180) * 120 / 360 - 1}px;" class="marker"></div>
     % endif
   </div>
-  ${markdown.markdown(project.short_description, safe_mode="remove")|n}
+  ${markdown.markdown(bleach.clean(project.short_description, strip=True)) |n}
   <div class="clear"></div>
   <small class="text-muted">
     % if project.private:

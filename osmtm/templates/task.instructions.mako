@@ -3,11 +3,12 @@
 <h4>${_('Extra Instructions')}</h4>
 <%
   import markdown
+  import bleach
   content = task.project.per_task_instructions
   if task.x and task.y and task.zoom:
     content = content.replace('{x}', str(task.x)) \
                      .replace('{y}', str(task.y)) \
                      .replace('{z}', str(task.zoom))
 %>
-  <p>${markdown.markdown(content, safe_mode="remove")|n}</p>
+  <p>${markdown.markdown(bleach.clean(content, strip=True)) |n}</p>
 % endif

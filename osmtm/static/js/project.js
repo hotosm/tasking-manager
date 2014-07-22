@@ -336,21 +336,34 @@ osmtm.project = (function() {
     // currently selected task)
     switch (editor) {
       case "josm":
+      if (typeof licenseAgreementUrl != 'undefined') {
+        alert(requiresLicenseAgreementMsg);
+        window.location = licenseAgreementUrl;
+        break;
+      }
       url = getLink({
         base: 'http://127.0.0.1:8111/load_and_zoom?',
         bounds: task_bounds,
         protocol: 'lbrt'
       });
       $.ajax({
-        url: url,
+        url: 'http://127.0.0.1:8111/import',
+        data: {
+          url: task_osm_url
+        },
         complete: function(t) {
           if (t.status != 200) {
             alert("JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?");
           } else {
             $.ajax({
-              url: 'http://127.0.0.1:8111/import',
+              url: url
+            });
+            $.ajax({
+              url: 'http://127.0.0.1:8111/imagery',
               data: {
-                url: task_osm_url
+                title: "Tasking Manager - #" + project_id,
+                type: imagery_url.toLowerCase().substring(0,3),
+                url: imagery_url
               }
             });
           }
