@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-19 17:16+0200\n"
-"PO-Revision-Date: 2014-07-19 18:09+0200\n"
+"POT-Creation-Date: 2014-07-22 08:12+0200\n"
+"PO-Revision-Date: 2014-07-22 08:12+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -49,19 +49,23 @@ msgstr ""
 msgid "Last update"
 msgstr ""
 
-#: osmtm/templates/home.mako:41
+#: osmtm/templates/home.mako:43
 msgid "Search"
 msgstr ""
 
-#: osmtm/templates/home.mako:47
+#: osmtm/templates/home.mako:49
 msgid "Sort by:"
 msgstr ""
 
-#: osmtm/templates/home.mako:75
+#: osmtm/templates/home.mako:74
+msgid "Your projects"
+msgstr ""
+
+#: osmtm/templates/home.mako:89
 msgid "About the Tasking Manager"
 msgstr ""
 
-#: osmtm/templates/home.mako:77
+#: osmtm/templates/home.mako:91
 msgid ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
 "Humanitarian OSM Team collaborative mapping. The purpose of the tool is "
@@ -73,35 +77,27 @@ msgid ""
 "Elements to cover, specific tags to use, etc.)."
 msgstr ""
 
-#: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:22
+#: osmtm/templates/home.mako:119
+msgid "${locked} user(s) is (are) currently working on this project"
+msgstr ""
+
+#: osmtm/templates/home.mako:160 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
 msgstr ""
 
-#: osmtm/templates/home.mako:135
+#: osmtm/templates/home.mako:163
 msgid "Created by"
 msgstr ""
 
-#: osmtm/templates/home.mako:137
+#: osmtm/templates/home.mako:165
 msgid "Updated"
 msgstr ""
 
-#: osmtm/templates/home.mako:138
+#: osmtm/templates/home.mako:166
 msgid "Priority:"
 msgstr ""
 
-#: osmtm/templates/imagery.mako:26
-msgid ""
-"If you have JOSM running and remote control activated, clicking this link"
-" should automatically load imagery."
-msgstr ""
-
-#: osmtm/templates/imagery.mako:33
-msgid ""
-"Imagery should load automatically when you will open a task using the iD "
-"Editor"
-msgstr ""
-
-#: osmtm/templates/imagery.mako:67
+#: osmtm/templates/imagery.mako:51
 msgid "You need to accept the license first"
 msgstr ""
 
@@ -129,31 +125,31 @@ msgstr ""
 msgid "Allowed users"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:8
+#: osmtm/templates/project.instructions.mako:9
 msgid "This project is not published yet."
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:11
+#: osmtm/templates/project.instructions.mako:12
 msgid "Publish"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:15
+#: osmtm/templates/project.instructions.mako:16
 msgid "This project was archived."
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:30
+#: osmtm/templates/project.instructions.mako:31
 msgid "Entities to Map"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:42
+#: osmtm/templates/project.instructions.mako:43
 msgid "Changeset Comment"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:55
+#: osmtm/templates/project.instructions.mako:56
 msgid "Imagery"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:77
+#: osmtm/templates/project.instructions.mako:78
 msgid "Start contributing"
 msgstr ""
 
