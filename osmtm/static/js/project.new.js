@@ -153,7 +153,6 @@ osmtm.project_new = (function() {
       });
 
       $('#import').click(function() {
-        drawControl.editing.polygon.disable();
         $('#draw').removeClass('active');
         $('input[name=import]').click();
         return false;
