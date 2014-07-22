@@ -64,29 +64,40 @@ def load_local_settings(settings):
         settings.update(config.items('app:main'))
 
 
+def parse_feature(feature):
+    if isinstance(feature.geometry, geojson.geometry.Polygon) or \
+       isinstance(feature.geometry, geojson.geometry.MultiPolygon):
+        return shapely.geometry.asShape(feature.geometry)
+    return None
+
+
 def parse_geojson(input):
     collection = geojson.loads(input,
                                object_hook=geojson.GeoJSON.to_instance)
 
-    polygons = []
+    if not hasattr(collection, "features") or \
+            len(collection.features) < 1:
+        raise ValueError("GeoJSON file doesn't contain any feature.")
 
-    if isinstance(collection, geojson.feature.Feature) and \
-       isinstance(collection.geometry, geojson.geometry.Polygon):
-        polygons.append(shapely.geometry.asShape(collection.geometry))
-    else:
-        if not hasattr(collection, "features") or \
-                len(collection.features) < 1:
-            raise ValueError("GeoJSON file doesn't contain any feature.")
+    geoms = filter(lambda x: x is not None,
+                   map(parse_feature, collection.features))
 
-        for feature in collection.features:
-            geometry = shapely.geometry.asShape(feature.geometry)
+    if len(geoms) == 0:
+        raise ValueError("GeoJSON file doesn't contain any polygon nor " +
+                         "multipolygon.")
 
-            if not isinstance(geometry, shapely.geometry.Polygon):
-                continue
+    return geoms
 
-            polygons.append(geometry)
 
-    if len(polygons) == 0:
-        raise ValueError("GeoJSON file doesn't contain any polygon.")
+# converts a list of (multi)polygon geometries to one single multipolygon
+def convert_to_multipolygon(geoms):
+    from shapely.geometry import MultiPolygon
 
-    return polygons
+    rings = []
+    for geom in geoms:
+        if isinstance(geom, MultiPolygon):
+            rings = rings + [geom for geom in geom.geoms]
+        else:
+            rings = rings + [geom]
+
+    return MultiPolygon([ring for ring in rings])

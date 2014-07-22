@@ -458,12 +458,13 @@ class Project(Base, Translatable):
 
     def import_from_geojson(self, input):
 
-        polygons = parse_geojson(input)
+        geoms = parse_geojson(input)
 
         tasks = []
-        for polygon in polygons:
-            multi = MultiPolygon([polygon])
-            tasks.append(Task(None, None, None, 'SRID=4326;%s' % multi.wkt))
+        for geom in geoms:
+            if not isinstance(geom, MultiPolygon):
+                geom = MultiPolygon([geom])
+            tasks.append(Task(None, None, None, 'SRID=4326;%s' % geom.wkt))
 
         self.tasks = tasks
 

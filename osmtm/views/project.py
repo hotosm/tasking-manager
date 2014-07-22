@@ -46,6 +46,7 @@ from .task import get_locked_task, check_task_expiration
 
 from ..utils import (
     parse_geojson,
+    convert_to_multipolygon,
     get_tiles_in_geom,
 )
 
@@ -115,9 +116,8 @@ def project_new_grid(request):
 
         geometry = request.params['geometry']
 
-        polygons = parse_geojson(geometry)
-        from shapely.geometry import MultiPolygon
-        multipolygon = MultiPolygon([polygon for polygon in polygons])
+        geoms = parse_geojson(geometry)
+        multipolygon = convert_to_multipolygon(geoms)
 
         geometry = shape.from_shape(multipolygon, 4326)
         project.area = Area(geometry)
@@ -169,9 +169,8 @@ def project_grid_simulate(request):
     geometry = request.params['geometry']
     zoom = int(request.params['zoom'])
 
-    polygons = parse_geojson(geometry)
-    from shapely.geometry import MultiPolygon
-    multipolygon = MultiPolygon([polygon for polygon in polygons])
+    geoms = parse_geojson(geometry)
+    multipolygon = convert_to_multipolygon(geoms)
 
     geometry = shape.from_shape(multipolygon, 4326)
 
@@ -179,6 +178,7 @@ def project_grid_simulate(request):
     geom_3857 = shape.to_shape(geom_3857)
     found = get_tiles_in_geom(geom_3857, zoom)
     polygons = [i[2] for i in found]
+    from shapely.geometry import MultiPolygon
     multi = MultiPolygon(polygons)
 
     geometry = DBSession.execute(

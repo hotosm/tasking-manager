@@ -61,7 +61,7 @@ class TestProjectFunctional(BaseTestCase):
         self.testapp.get('/project/new/grid', headers=headers,
                          params={
                              'form.submitted': True,
-                             'geometry': '{"type": "Feature", "geometry": {"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}',  # noqa
+                             'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}]}',  # noqa
                              'zoom': 10
                          },
                          status=302)
@@ -74,7 +74,7 @@ class TestProjectFunctional(BaseTestCase):
         res = self.testapp.get('/project/grid_simulate', headers=headers,
                 params={
                     'form.submitted': True,
-                    'geometry': '{"type": "Feature", "geometry": {"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}',  # noqa
+                    'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}]}',  # noqa
                     'zoom': 10
                     },
                 xhr=True,
