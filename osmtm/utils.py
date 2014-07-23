@@ -100,4 +100,4 @@ def convert_to_multipolygon(geoms):
         else:
             rings = rings + [geom]
 
-    return MultiPolygon([ring for ring in rings])
+    return MultiPolygon(rings)
