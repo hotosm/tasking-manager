@@ -110,7 +110,7 @@
       <span id="computing" class="help-inline hidden">Computing...</span>
     </div>
     <div>
-      A new project will be created with <strong><span id="grid_geometries_count"></span></strong> tasks.
+      A new project will be created with <strong id="grid_geometries_count"></strong> tasks.
     </div>
     <div class="form-actions pull-right">
       <input type="submit" value="Create project"
