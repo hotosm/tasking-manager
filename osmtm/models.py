@@ -454,7 +454,6 @@ class Project(Base, Translatable):
             geometry = ST_Transform(shape.from_shape(multi, 3857), 4326)
             tasks.append(Task(i[0], i[1], zoom, geometry))
         self.tasks = tasks
-        self.zoom = zoom
 
     def import_from_geojson(self, input):
 

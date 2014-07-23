@@ -535,4 +535,4 @@ def check_project_expiration():
 def get_zoom_for_tile_size(geom, tile_size):
 
     import math
-    return 28 - math.log(geom.area, 10) / 0.6 + tile_size
+    return int(28 - math.log(geom.area, 10) / 0.6 + tile_size)
