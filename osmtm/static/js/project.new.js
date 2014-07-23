@@ -131,6 +131,14 @@ osmtm.project_new = (function() {
         map.removeControl(drawControl);
       });
 
+      $('#step2-back').click(function() {
+        $('#step1').removeClass("hidden");
+        $('#step2').addClass("hidden");
+        $('#arbitrary').addClass('mask');
+        $('#geometry').val('');
+        vector.clearLayers();
+        map.addControl(drawControl);
+      });
       $('#step2-next').click(function() {
         $('#step2').addClass("hidden");
 
@@ -149,6 +157,12 @@ osmtm.project_new = (function() {
           });
           $('#arbitrary_geometries_count').html(count);
         }
+      });
+      $('.step3-back').click(function() {
+        $('#step2').removeClass("hidden");
+        $('#step3-grid').addClass("hidden");
+        $('#step3-arbitrary').addClass("hidden");
+        tasksLayer.clearLayers();
       });
 
       $('#import').click(function() {

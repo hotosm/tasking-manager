@@ -87,9 +87,15 @@
     </div>
   </div>
   <div class="row">
-    <a id="step2-next" class="btn btn-default pull-right">Next
-      <span class="glyphicon glyphicon-chevron-right"></span>
-    </a>
+    <div class="pull-right">
+      <a id="step2-back" class="btn btn-default">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+        Back
+      </a>
+      <a id="step2-next" class="btn btn-default">Next
+        <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
   </div>
 </div>
 </%block>
@@ -113,6 +119,10 @@
       A new project will be created with <strong id="grid_geometries_count"></strong> tasks.
     </div>
     <div class="form-actions pull-right">
+      <a class="btn btn-default step3-back">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+        Back
+      </a>
       <input type="submit" value="Create project"
              name="form.submitted" class="btn btn-success"/>
     </div>
@@ -133,6 +143,10 @@
     <h2>Step 3</h2>
     A new project will be created with <strong><span id="arbitrary_geometries_count"></span></strong> tasks.
     <div class="form-actions pull-right">
+      <a class="btn btn-default step3-back">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+        Back
+      </a>
       <input type="submit" value="Create project"
              name="form.submitted" class="btn btn-success"/>
     </div>
