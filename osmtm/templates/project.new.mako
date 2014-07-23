@@ -43,7 +43,7 @@
       data-role="button"
       class="btn btn-default"
       rel="tooltip"
-      title="Provide a .geojson file."
+      title="Provide a .geojson or .kml file."
       >Import</a> a <em>GeoJSON</em> or <em>KML</em> file.
     <span class="help-block">
       <small>
