@@ -28,7 +28,6 @@ osmtm.project_new = (function() {
     });
     map.addControl(drawControl);
 
-    window.drawControl = drawControl;
     $('#draw').on('click', function() {
       for (var toolbarId  in drawControl._toolbars) {
         var toolbar = drawControl._toolbars[toolbarId];
