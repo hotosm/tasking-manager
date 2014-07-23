@@ -312,7 +312,8 @@ class Task(Base):
         self.zoom = zoom
         if geometry is None:
             geometry = self.to_polygon()
-            geometry = ST_Transform(shape.from_shape(geometry, 3857), 4326)
+            multipolygon = MultiPolygon([geometry])
+            geometry = ST_Transform(shape.from_shape(multipolygon, 3857), 4326)
 
         self.geometry = geometry
 
@@ -449,19 +450,21 @@ class Project(Base, Translatable):
 
         tasks = []
         for i in get_tiles_in_geom(geom_3857, zoom):
-            geometry = ST_Transform(shape.from_shape(i[2], 3857), 4326)
+            multi = MultiPolygon([i[2]])
+            geometry = ST_Transform(shape.from_shape(multi, 3857), 4326)
             tasks.append(Task(i[0], i[1], zoom, geometry))
         self.tasks = tasks
         self.zoom = zoom
 
     def import_from_geojson(self, input):
 
-        polygons = parse_geojson(input)
+        geoms = parse_geojson(input)
 
         tasks = []
-        for polygon in polygons:
-            multi = MultiPolygon([polygon])
-            tasks.append(Task(None, None, None, 'SRID=4326;%s' % multi.wkt))
+        for geom in geoms:
+            if not isinstance(geom, MultiPolygon):
+                geom = MultiPolygon([geom])
+            tasks.append(Task(None, None, None, 'SRID=4326;%s' % geom.wkt))
 
         self.tasks = tasks
 

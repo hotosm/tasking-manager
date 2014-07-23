@@ -45,68 +45,82 @@ class TestProjectFunctional(BaseTestCase):
         headers = self.login_as_project_manager()
         self.testapp.get('/project/new', headers=headers, status=200)
 
-    def test_project_new_grid_not_submitted(self):
+    def test_project_new_grid__invalid_json(self):
         headers = self.login_as_admin()
         self.testapp.get('/project/new/grid', headers=headers,
-                         status=200)
+                         params={
+                             'form.submitted': True,
+                             'geometry': 'blah',  # noqa
+                         },
+                         status=302)
 
-    def test_project_new_grid_submitted(self):
+    def test_project_new_grid(self):
         from osmtm.models import DBSession, Project
         headers = self.login_as_admin()
         self.testapp.get('/project/new/grid', headers=headers,
                          params={
                              'form.submitted': True,
-                             'geometry': '{"type": "Feature", "geometry": {"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}',  # noqa
-                             'zoom': 10
+                             'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}]}',  # noqa
+                             'tile_size': -2
                          },
                          status=302)
 
         project = DBSession.query(Project).order_by(Project.id.desc()).first()
-        self.assertEqual(len(project.tasks), 11)
+        self.assertEqual(len(project.tasks), 7)
 
-    def test_project_new_import_not_submitted(self):
+    def test_project_grid_simulate(self):
         headers = self.login_as_admin()
-        self.testapp.get('/project/new/import', headers=headers,
-                         status=200)
+        res = self.testapp.get('/project/grid_simulate', headers=headers,
+                params={
+                    'form.submitted': True,
+                    'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}]}',  # noqa
+                    'tile_size': -2
+                    },
+                xhr=True,
+                status=200
+        )
 
-    def test_project_new_import_invalid_json(self):
+        count = len(res.json['features'][0]['geometry']['coordinates'])
+        self.assertEqual(count, 7)
+
+    def test_project_new_arbitrary__invalid_json(self):
         headers = self.login_as_admin()
-        self.testapp.post('/project/new/import',
-                          upload_files=[('import', 'map.geojson', 'blah')],
+        self.testapp.post('/project/new/arbitrary',
                           headers=headers,
                           params={
-                              'form.submitted': True
+                              'form.submitted': True,
+                              'geometry': 'blah'
                           },
-                          status=200)
+                          status=302)
 
-    def test_project_new_import_invalid_json_bis(self):
+    def test_project_new_arbitrary__invalid_json_bis(self):
         headers = self.login_as_admin()
-        self.testapp.post('/project/new/import',
-                          upload_files=[('import', 'map.geojson', '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[-5.625,39.232253141714885],[-2.63671875,40.78054143186031]]}}]}')],  # noqa
+        self.testapp.post('/project/new/arbitrary',
                           headers=headers,
                           params={
-                              'form.submitted': True
+                              'form.submitted': True,
+                              'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[-5.625,39.232253141714885],[-2.63671875,40.78054143186031]]}}]}'  # noqa
                           },
-                          status=200)
+                          status=302)
 
-    def test_project_new_import_no_feature(self):
+    def test_project_new_arbitrary__no_feature(self):
         headers = self.login_as_admin()
-        self.testapp.post('/project/new/import',
-                          upload_files=[('import', 'map.geojson', '{"type":"FeatureCollection","features":[]}')],  # noqa
+        self.testapp.post('/project/new/arbitrary',
                           headers=headers,
                           params={
-                              'form.submitted': True
+                              'form.submitted': True,
+                              'geometry': '{"type":"FeatureCollection","features":[]}'  # noqa
                           },
-                          status=200)
+                          status=302)
 
-    def test_project_new_import_submitted(self):
+    def test_project_new_arbitrary(self):
         from osmtm.models import DBSession, Project
         headers = self.login_as_admin()
-        self.testapp.post('/project/new/import',
-                          upload_files=[('import', 'map.geojson', '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[4.39453125,19.559790136497398],[4.04296875,21.37124437061832],[7.6025390625,22.917922936146045],[8.96484375,20.05593126519445],[5.625,18.93746442964186],[4.39453125,19.559790136497398]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.3623046875,17.09879223767869],[3.0322265625,18.687878686034196],[6.0205078125,18.271086109608877],[6.2841796875,16.972741019999035],[5.3173828125,16.509832826905846],[4.482421875,17.056784609942554],[2.900390625,16.088042220148807],[1.3623046875,17.09879223767869]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.0986328125,19.849393958422805],[1.7578125,21.53484700204879],[3.7353515625,20.46818922264095],[3.33984375,18.979025953255267],[0.439453125,19.394067895396628],[1.0986328125,19.849393958422805]]]}}]}')],  # noqa
+        self.testapp.post('/project/new/arbitrary',
                           headers=headers,
                           params={
-                              'form.submitted': True
+                              'form.submitted': True,
+                              'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[4.39453125,19.559790136497398],[4.04296875,21.37124437061832],[7.6025390625,22.917922936146045],[8.96484375,20.05593126519445],[5.625,18.93746442964186],[4.39453125,19.559790136497398]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.3623046875,17.09879223767869],[3.0322265625,18.687878686034196],[6.0205078125,18.271086109608877],[6.2841796875,16.972741019999035],[5.3173828125,16.509832826905846],[4.482421875,17.056784609942554],[2.900390625,16.088042220148807],[1.3623046875,17.09879223767869]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.0986328125,19.849393958422805],[1.7578125,21.53484700204879],[3.7353515625,20.46818922264095],[3.33984375,18.979025953255267],[0.439453125,19.394067895396628],[1.0986328125,19.849393958422805]]]}}]}'  # noqa
                           },
                           status=302)
 
