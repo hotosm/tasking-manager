@@ -67,7 +67,7 @@
         <br>
         <img src="${request.static_url('osmtm:static/img/project_creation_grid.png')}" width="150">
         <p class="help-block">
-        Area of interest automatically split into grid cells.<br>
+        Area of interest is automatically split into grid cells. Each one is a task.<br>
         </p>
       </label>
     </div>
