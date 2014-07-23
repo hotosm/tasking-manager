@@ -179,7 +179,7 @@ osmtm.project_new = (function() {
             onAdd();
           });
         } else {
-          alert("Please provide a .geojson file");
+          alert("Please provide a .geojson or a .kml file");
         }
       });
 
