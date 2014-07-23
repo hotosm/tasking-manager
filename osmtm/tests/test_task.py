@@ -342,3 +342,37 @@ class TestTaskFunctional(BaseTestCase):
 
     def test_task_osm(self):
         self.testapp.get('/project/1/task/1.osm', status=200)
+
+    def test_task_difficulty(self):
+        from osmtm.models import Task, DBSession
+        headers = self.login_as_project_manager()
+        self.testapp.put('/project/1/task/1/difficulty/3',
+                         headers=headers,
+                         status=200,
+                         xhr=True)
+
+        task = DBSession.query(Task).get((1, 1))
+        self.assertEqual(task.difficulty, task.difficulty_hard)
+
+    def test_task_difficulty_delete(self):
+        from osmtm.models import Task, DBSession
+
+        import transaction
+        task = DBSession.query(Task).get((1, 1))
+        task.difficulty = task.difficulty_easy
+        DBSession.add(task)
+        DBSession.flush()
+        transaction.commit()
+
+        task = DBSession.query(Task).get((1, 1))
+        self.assertEqual(task.difficulty, task.difficulty_easy)
+
+        headers = self.login_as_project_manager()
+        # assign task to user 1
+        self.testapp.delete('/project/1/task/1/difficulty',
+                            headers=headers,
+                            status=200,
+                            xhr=True)
+
+        task = DBSession.query(Task).get((1, 1))
+        self.assertEqual(task.difficulty, None)

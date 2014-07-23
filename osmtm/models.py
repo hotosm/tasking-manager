@@ -258,6 +258,11 @@ class Task(Base):
     assigned_to = relationship(User)
     assigned_date = Column(DateTime)
 
+    difficulty_easy = 1
+    difficulty_medium = 2
+    difficulty_hard = 3
+    difficulty = Column(Integer)
+
     cur_lock = relationship(
         TaskLock,
         primaryjoin=lambda: and_(

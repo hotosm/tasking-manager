@@ -95,4 +95,5 @@ var commentRequiredMsg = "${_('You must leave a comment.')}"
 </script>
   <script src="http://d3js.org/d3.v3.js"></script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js', _query={'v':'2.3.1'})}"></script>
+  <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.difficulty.js', _query={'v':'2.3.1'})}"></script>
 </%block>
