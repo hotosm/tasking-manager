@@ -38,7 +38,7 @@
   </p>
   <p>
   <form id="uploadform" method="post" enctype="multipart/form-data">
-    <input type="file" val="" name="import" style="visibility:hidden;height:0;position:absolute;">
+    <input type="file" val="" name="import" class="hidden" />
     <a id="import"
       data-role="button"
       class="btn btn-default"
