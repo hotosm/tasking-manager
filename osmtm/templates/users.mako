@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
-<a class="navbar-brand">OSM Tasking Manager - ${_('Users')}</a>
+<h1>${_('Users')}</h1>
 </%block>
 <%block name="content">
 <div class="container" ng-app="users">

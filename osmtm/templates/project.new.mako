@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
-<a class="navbar-brand">Project New</a>
+<h1>Project New</h1>
 </%block>
 <%block name="content">
 <div class="container">
