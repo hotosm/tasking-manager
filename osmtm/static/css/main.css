@@ -786,7 +786,7 @@ html,body{background-color:#fff;padding-top:30px;line-height:18px}
 .messages sup .badge{font-size:.9em;padding:0;padding-left:4px;padding-right:4px;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box}
 #home .updated-at,#home .created-by{font-size:11px;color:#666;margin:0}
 #home .project{padding:10px 10px 5px 10px}#home .project h4{margin:0}
-#home .archived,#home .draft{background:url(../img/closed_back.gif) transparent}
+#home .archived,#home .draft{background:url(../img/closed_back.gif) transparent;border-color:#efefef}#home .archived a,#home .draft a{color:#808080}
 #home ul.project-stats{float:right;font-size:11px;margin-bottom:0}#home ul.project-stats li{float:left;margin-left:10px;color:#666}
 #home ul.project-stats .progress{height:10px;width:30px;margin-bottom:0}
 #project #main_content{position:absolute;left:0;top:110px;bottom:0;width:100%}
