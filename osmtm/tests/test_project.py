@@ -66,7 +66,7 @@ class TestProjectFunctional(BaseTestCase):
                          status=302)
 
         project = DBSession.query(Project).order_by(Project.id.desc()).first()
-        self.assertEqual(len(project.tasks), 7)
+        self.assertEqual(len(project.tasks), 4)
 
     def test_project_grid_simulate(self):
         headers = self.login_as_admin()
@@ -81,7 +81,7 @@ class TestProjectFunctional(BaseTestCase):
         )
 
         count = len(res.json['features'][0]['geometry']['coordinates'])
-        self.assertEqual(count, 7)
+        self.assertEqual(count, 4)
 
     def test_project_new_arbitrary__invalid_json(self):
         headers = self.login_as_admin()
