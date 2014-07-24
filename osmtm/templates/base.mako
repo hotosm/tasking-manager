@@ -3,15 +3,15 @@
 <html>
   <head>
     <title>OSM Tasking Manager</title>
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css')}">
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css')}">
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/showdown.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name)}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/shared.js')}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js')}"></script>
+    <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css', _query={'v':'2.3.0'})}">
+    <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css', _query={'v':'2.3.0'})}">
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js', _query={'v':'2.3.0'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/showdown.js', _query={'v':'2.3.0'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js', _query={'v':'2.3.0'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name, _query={'v':'2.3.0'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js', _query={'v':'2.3.0'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/shared.js', _query={'v':'2.3.0'})}"></script>
+    <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js', _query={'v':'2.3.0'})}"></script>
 <%
 from pyramid.security import authenticated_userid
 from osmtm.models import DBSession, User, TaskComment
