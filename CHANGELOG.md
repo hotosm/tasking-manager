@@ -1,6 +1,11 @@
 OSM Tasking Manager Changelog
 =============================
 
+## 2.3.1 (2014-07-24)
+
+ * Fixed bug with Potlatch2 not launching.
+ * Fixed issue with static resources being cached by browser.
+
 ## 2.3.0 (2014-07-24)
 
  * Project creation workflow is made easier. KML can also be used as source.
