@@ -17,11 +17,11 @@
       </div>
     </div>
 </div>
-<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
-<script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
-<script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
-<script src="${request.static_url('osmtm:static/js/lib/leaflet-omnivore.min.js')}"></script>
-<script src="${request.static_url('osmtm:static/js/project.new.js')}"></script>
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css', _query={'v':'2.3.1'})}"/>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.3.1'})}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js', _query={'v':'2.3.1'})}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet-omnivore.min.js', _query={'v':'2.3.1'})}"></script>
+<script src="${request.static_url('osmtm:static/js/project.new.js', _query={'v':'2.3.1'})}"></script>
 
 </%block>
 
@@ -64,7 +64,7 @@
         <input type="radio" name="type" value="grid" checked/>
         Square Grid
         <br>
-        <img src="${request.static_url('osmtm:static/img/project_creation_grid.png')}" width="150">
+        <img src="${request.static_url('osmtm:static/img/project_creation_grid.png', _query={'v':'2.3.1'})}" width="150">
         <p class="help-block">
         Area of interest is automatically split into grid cells. Each one is a task.<br>
         </p>
@@ -78,7 +78,7 @@
         <input type="radio" name="type" value="arbitrary" disabled />
         Arbitrary Geometries
         <br>
-        <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png')}" width="150">
+        <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png', _query={'v':'2.3.1'})}" width="150">
         <p class="help-block">
         Each polygon represents a task.<br>
         </p>

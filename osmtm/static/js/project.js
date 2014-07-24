@@ -306,11 +306,11 @@ osmtm.project = (function() {
       return Math.round(input*p)/p;
     }
     function getLink(options) {
-      var bounds = options.bounds;
-      var so = new L.LatLng(bounds[0], bounds[1]),
-      ne = new L.LatLng(bounds[2], bounds[3]),
-      zoom = lmap.getBoundsZoom(new L.LatLngBounds(so, ne));
-      var c = options.centroid;
+      var bounds = options.bounds,
+          so = new L.LatLng(bounds[0], bounds[1]),
+          ne = new L.LatLng(bounds[2], bounds[3]),
+          zoom = lmap.getBoundsZoom(new L.LatLngBounds(so, ne));
+          c = options.centroid;
       switch (options.protocol) {
         case 'lbrt':
         return options.base + $.param({
@@ -373,6 +373,7 @@ osmtm.project = (function() {
       case "potlatch2":
       url = getLink({
         base: 'http://www.openstreetmap.org/edit?editor=potlatch2&',
+        bounds: task_bounds,
         centroid: task_centroid,
         protocol: 'llz'
       });
@@ -381,6 +382,7 @@ osmtm.project = (function() {
       case "wp":
       url = getLink({
         base: 'http://walking-papers.org/?',
+        bounds: task_bounds,
         centroid: task_centroid,
         protocol: 'llz'
       });
