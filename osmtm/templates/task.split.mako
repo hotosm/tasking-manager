@@ -1,5 +1,5 @@
 % if user and task.cur_lock and task.cur_lock.lock and task.cur_lock.user == user and task.zoom is not None:
-  <p class="text-muted">
+  <p class="text-muted text-center">
   <span>${_('Task is too big?')}</span>
   <%
     disabled = ""

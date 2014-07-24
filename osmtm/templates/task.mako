@@ -22,14 +22,21 @@ if (typeof countdownInterval != 'undefined') {
   </h4>
   <div class="clear"></div>
   <div id="task_actions">
+  <div class="text-muted small">
 % if task.cur_lock and task.cur_lock.lock:
   <%include file="task.locked.mako" />
-% else:
+% endif
   <%include file="task.assigned.mako" />
+  </div>
+  <hr>
+
+% if task.cur_lock and task.cur_lock.lock:
+  % if user and task.cur_lock.user == user:
+    <%include file="task.editors.mako" />
+  % endif
+% else:
   <%include file="task.unlocked.mako" />
 % endif
-
-
 
 % if not task.assigned_to and (task.cur_state.state == TaskState.state_ready or task.cur_state.state == TaskState.state_invalidated):
   <%include file="task.split.mako" />

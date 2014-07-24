@@ -31,10 +31,12 @@ from geoalchemy2 import (
 )
 from geoalchemy2.functions import (
     ST_Area,
+    ST_Transform,
 )
 
 from geojson import (
     FeatureCollection,
+    Feature,
 )
 
 import datetime
@@ -42,7 +44,11 @@ import itertools
 
 from .task import get_locked_task, check_task_expiration
 
-from ..utils import parse_geojson
+from ..utils import (
+    parse_geojson,
+    convert_to_multipolygon,
+    get_tiles_in_geom,
+)
 
 import logging
 log = logging.getLogger(__name__)
@@ -83,20 +89,21 @@ def project(request):
                 history=history,)
 
 
-@view_config(route_name='project_new', renderer='project.new.mako',
+@view_config(route_name='project_new',
+             renderer='project.new.mako',
              permission="project_edit")
 def project_new(request):
     return dict(page_id='project_new')
 
 
 @view_config(route_name='project_new_grid',
-             renderer='project.new.grid.mako',
+             renderer='project.new.mako',
              permission="project_edit")
 def project_new_grid(request):
-    if 'zoom' in request.params:
+    user_id = authenticated_userid(request)
+    user = DBSession.query(User).get(user_id)
 
-        user_id = authenticated_userid(request)
-        user = DBSession.query(User).get(user_id)
+    try:
         project = Project(
             u'Untitled project',
             user
@@ -105,15 +112,19 @@ def project_new_grid(request):
         DBSession.add(project)
         DBSession.flush()
 
-        zoom = int(request.params['zoom'])
+        tile_size = int(request.params['tile_size'])
 
         geometry = request.params['geometry']
 
-        polygons = parse_geojson(geometry)
-        from shapely.geometry import MultiPolygon
-        multipolygon = MultiPolygon([polygon for polygon in polygons])
+        geoms = parse_geojson(geometry)
+        multipolygon = convert_to_multipolygon(geoms)
 
         geometry = shape.from_shape(multipolygon, 4326)
+
+        geom_3857 = DBSession.execute(ST_Transform(geometry, 3857)).scalar()
+        geom_3857 = shape.to_shape(geom_3857)
+        zoom = get_zoom_for_tile_size(geom_3857, tile_size)
+
         project.area = Area(geometry)
         project.auto_fill(zoom)
 
@@ -123,37 +134,64 @@ def project_new_grid(request):
                               'success')
         return HTTPFound(location=route_path('project_edit', request,
                                              project=project.id))
+    except Exception, e:
+        msg = "Sorry, could not create the project. <br />%s" % e.message
+        request.session.flash(msg, 'alert')
+        raise HTTPFound(location=route_path('project_new', request))
 
-    return dict(page_id='project_new_grid')
 
-
-@view_config(route_name='project_new_import',
-             renderer='project.new.import.mako',
+@view_config(route_name='project_new_arbitrary',
              permission="project_edit")
-def project_new_import(request):
-    if 'import' in request.params:
+def project_new_arbitrary(request):
 
-        user_id = authenticated_userid(request)
-        user = DBSession.query(User).get(user_id)
+    user_id = authenticated_userid(request)
+    user = DBSession.query(User).get(user_id)
+
+    try:
         project = Project(
             u'Untitled project',
             user
         )
+        count = project.import_from_geojson(request.POST['geometry'])
+        _ = request.translate
+        request.session.flash(_("Successfully imported ${n} geometries",
+                              mapping={'n': count}),
+                              'success')
+        return HTTPFound(location=route_path('project_edit', request,
+                         project=project.id))
+    except Exception, e:
+        msg = "Sorry, could not create the project. <br />%s" % e.message
+        request.session.flash(msg, 'alert')
+        raise HTTPFound(location=route_path('project_new', request))
 
-        try:
-            input_file = request.POST['import'].file
-            count = project.import_from_geojson(input_file.read())
-            _ = request.translate
-            request.session.flash(_("Successfully imported ${n} geometries",
-                                  mapping={'n': count}),
-                                  'success')
-            return HTTPFound(location=route_path('project_edit', request,
-                             project=project.id))
-        except Exception, e:
-            msg = "Sorry, this is not a JSON valid file. <br />%s" % e.message
-            request.session.flash(msg, 'alert')
 
-    return dict(page_id='project_new_import')
+@view_config(route_name="project_grid_simulate",
+             renderer="json",
+             permission="project_edit")
+def project_grid_simulate(request):
+    ''' Returns collection of polygons representing the grid cells to be
+        created. Helpful when creating a new project '''
+    geometry = request.params['geometry']
+    tile_size = int(request.params['tile_size'])
+
+    geoms = parse_geojson(geometry)
+    multipolygon = convert_to_multipolygon(geoms)
+
+    geometry = shape.from_shape(multipolygon, 4326)
+
+    geom_3857 = DBSession.execute(ST_Transform(geometry, 3857)).scalar()
+    geom_3857 = shape.to_shape(geom_3857)
+    zoom = get_zoom_for_tile_size(geom_3857, tile_size)
+
+    found = get_tiles_in_geom(geom_3857, zoom)
+    polygons = [i[2] for i in found]
+    from shapely.geometry import MultiPolygon
+    multi = MultiPolygon(polygons)
+
+    geometry = DBSession.execute(
+        ST_Transform(shape.from_shape(multi, 3857), 4326)).scalar()
+
+    return FeatureCollection([Feature(geometry=shape.to_shape(geometry))])
 
 
 @view_config(route_name='project_edit', renderer='project.edit.mako',
@@ -492,3 +530,9 @@ def check_project_expiration():
     for project in expired:
         project.status = Project.status_archived
         DBSession.add(project)
+
+
+def get_zoom_for_tile_size(geom, tile_size):
+
+    import math
+    return int(28 - math.log(geom.area, 10) / 0.6 + tile_size)

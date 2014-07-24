@@ -34,7 +34,9 @@ comments = []
     <div class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <%block name="header"></%block>
+          <a href="${request.route_path('home')}" class="navbar-brand">
+            <i class="glyphicon glyphicon-home"></i> OSM Tasking Manager
+          </a>
         </div>
         <ul class="nav navbar-nav navbar-right">
           <%include file="languages_menu.mako" args="languages=languages"/>
@@ -65,6 +67,9 @@ ${message | n}
       </div>
     </div>
 % endif
+  <div class="container">
+    <div class="row"><%block name="header"></%block></div>
+  </div>
 % if  request.session.peek_flash('success'):
     <div class="container">
       <div class="row">

@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<a href="${request.route_path('home')}" class="navbar-brand"><i class="glyphicon glyphicon-home"></i></a>
-<a class="navbar-brand">
+<h1>
   ${project.name}
   % if project.status == project.status_draft:
    (${_('Draft')})
   % elif project.status == project.status_archived:
    (${_('Archived')})
   % endif
-</a>
+</h1>
 </%block>
 <%block name="content">
 <%

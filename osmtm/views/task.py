@@ -310,7 +310,7 @@ def random_task(request):
         .filter(Task.cur_state.has(state=TaskState.state_ready)) \
         .filter(Task.geometry.ST_Disjoint(locked.c.taskunion))
     count = taskgetter.count()
-    if count != 0:
+    if count != 0:  # pragma: no cover
         atask = taskgetter.offset(random.randint(0, count - 1)).first()
         return dict(success=True, task=dict(id=atask.id))
 

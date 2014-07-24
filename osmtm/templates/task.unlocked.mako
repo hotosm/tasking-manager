@@ -23,3 +23,4 @@ from osmtm.models import TaskState
     </a>
 % endif
 </div>
+<p></p>
