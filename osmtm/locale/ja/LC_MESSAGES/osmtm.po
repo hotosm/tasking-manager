@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-19 17:16+0200\n"
-"PO-Revision-Date: 2014-07-21 13:17+0000\n"
-"Last-Translator: nyampire <nyampire@gmail.com>\n"
+"POT-Creation-Date: 2014-07-24 08:55+0200\n"
+"PO-Revision-Date: 2014-07-24 06:56+0000\n"
+"Last-Translator: Dražen Odobašić <dodobasic@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/osm-tasking-manager2/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,51 +19,55 @@ msgstr ""
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: osmtm/templates/base.mako:50
+#: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
 msgstr "OpenStreetMapログイン"
 
-#: osmtm/templates/home.mako:9
+#: osmtm/templates/home.mako:8
 msgid "urgent"
 msgstr "緊急"
 
-#: osmtm/templates/home.mako:9
+#: osmtm/templates/home.mako:8
 msgid "high"
 msgstr "高"
 
-#: osmtm/templates/home.mako:9
+#: osmtm/templates/home.mako:8
 msgid "medium"
 msgstr "中"
 
-#: osmtm/templates/home.mako:9
+#: osmtm/templates/home.mako:8
 msgid "low"
 msgstr "低"
 
-#: osmtm/templates/home.mako:11
+#: osmtm/templates/home.mako:10
 msgid "High priority first"
 msgstr "優先度順"
 
-#: osmtm/templates/home.mako:12
+#: osmtm/templates/home.mako:11
 msgid "Creation date"
 msgstr "作成日"
 
-#: osmtm/templates/home.mako:13
+#: osmtm/templates/home.mako:12
 msgid "Last update"
 msgstr "更新日"
 
-#: osmtm/templates/home.mako:41
+#: osmtm/templates/home.mako:42
 msgid "Search"
 msgstr "検索"
 
-#: osmtm/templates/home.mako:47
+#: osmtm/templates/home.mako:48
 msgid "Sort by:"
 msgstr "並び替え"
 
-#: osmtm/templates/home.mako:75
+#: osmtm/templates/home.mako:73
+msgid "Your projects"
+msgstr "あなたのプロジェクト"
+
+#: osmtm/templates/home.mako:88
 msgid "About the Tasking Manager"
 msgstr "Tasking Managerについて"
 
-#: osmtm/templates/home.mako:77
+#: osmtm/templates/home.mako:90
 msgid ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
 "Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
@@ -75,39 +79,31 @@ msgid ""
 "specific tags to use, etc.)."
 msgstr "OSM Tasking Managerは、OSM人道支援チーム \"Humanitarian OSM Team, HOT\" による多人数マッピング作業を効率的に実施するためのツールです。このツールでは、マッピング対象の地域を小さなタスクに分割することによって作業を素早く実施することができるようにします。ツール内では、マッピングが必要とされている地域と、内容の確認が必要とされている地域が一覧で表示されます。<br />この方法を使うことにより、災害発生時に多くのマッパーが対象となる地域を一斉に描画するという状況において、それぞれが行なうべきことを適切に切り分けることが可能です。また、作業の進捗確認や、作業結果の均質化を行なうことも可能となります。(例: 描画対象となる地物の選定、特殊なタグの使用など...)"
 
-#: osmtm/templates/home.mako:132 osmtm/templates/project.instructions.mako:22
+#: osmtm/templates/home.mako:118
+msgid "${locked} user(s) is (are) currently working on this project"
+msgstr "現在 ${locked} 人がプロジェクト参加中です"
+
+#: osmtm/templates/home.mako:159 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
 msgstr "プロジェクトへのアクセス制限中"
 
-#: osmtm/templates/home.mako:135
+#: osmtm/templates/home.mako:162
 msgid "Created by"
 msgstr "作成者"
 
-#: osmtm/templates/home.mako:137
+#: osmtm/templates/home.mako:164
 msgid "Updated"
 msgstr "更新"
 
-#: osmtm/templates/home.mako:138
+#: osmtm/templates/home.mako:165
 msgid "Priority:"
 msgstr "優先度"
 
-#: osmtm/templates/imagery.mako:26
-msgid ""
-"If you have JOSM running and remote control activated, clicking this link "
-"should automatically load imagery."
-msgstr "JOSMが起動中で、なおかつ遠隔操作が有効化されている場合、リンクをクリックすることで自動的に航空写真の読み込みが実行されます。"
-
-#: osmtm/templates/imagery.mako:33
-msgid ""
-"Imagery should load automatically when you will open a task using the iD "
-"Editor"
-msgstr "iDエディタを使ってタスクを開いた場合、航空写真の読み込みは自動的に行われるはずです。"
-
-#: osmtm/templates/imagery.mako:67
+#: osmtm/templates/imagery.mako:51
 msgid "You need to accept the license first"
 msgstr "ライセンスに同意する必要があります"
 
-#: osmtm/templates/license.mako:5 osmtm/templates/licenses.mako:5
+#: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
 msgid "Licenses"
 msgstr "ライセンス"
 
@@ -115,92 +111,96 @@ msgstr "ライセンス"
 msgid "You have tasks assigned:"
 msgstr "担当中タスク: "
 
-#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.mako:10
+#: osmtm/templates/project.edit.mako:81 osmtm/templates/project.mako:9
 msgid "Archived"
 msgstr "アーカイブ"
 
-#: osmtm/templates/project.edit.mako:83
+#: osmtm/templates/project.edit.mako:82
 msgid "Published"
 msgstr "公開中"
 
-#: osmtm/templates/project.edit.mako:84 osmtm/templates/project.mako:8
+#: osmtm/templates/project.edit.mako:83 osmtm/templates/project.mako:7
 msgid "Draft"
 msgstr "下書き"
 
-#: osmtm/templates/project.edit.mako:273
+#: osmtm/templates/project.edit.mako:272
 msgid "Allowed users"
 msgstr "許可ユーザ"
 
-#: osmtm/templates/project.instructions.mako:8
+#: osmtm/templates/project.instructions.mako:9
 msgid "This project is not published yet."
 msgstr "このプロジェクトは未公開です"
 
-#: osmtm/templates/project.instructions.mako:11
+#: osmtm/templates/project.instructions.mako:12
 msgid "Publish"
 msgstr "公開"
 
-#: osmtm/templates/project.instructions.mako:15
+#: osmtm/templates/project.instructions.mako:16
 msgid "This project was archived."
 msgstr "プロジェクトをアーカイブしました"
 
-#: osmtm/templates/project.instructions.mako:30
+#: osmtm/templates/project.instructions.mako:31
 msgid "Entities to Map"
 msgstr "マップする対象"
 
-#: osmtm/templates/project.instructions.mako:42
+#: osmtm/templates/project.instructions.mako:43
 msgid "Changeset Comment"
 msgstr "変更セットのコメント指定"
 
-#: osmtm/templates/project.instructions.mako:55
+#: osmtm/templates/project.instructions.mako:56
 msgid "Imagery"
 msgstr "航空写真"
 
-#: osmtm/templates/project.instructions.mako:77
+#: osmtm/templates/project.instructions.mako:78
 msgid "Start contributing"
 msgstr "参加"
 
-#: osmtm/templates/project.mako:37
+#: osmtm/templates/project.mako:36
 msgid "Instructions"
 msgstr "インストラクション"
 
-#: osmtm/templates/project.mako:38
+#: osmtm/templates/project.mako:37
 msgid "Contribute"
 msgstr "参加"
 
-#: osmtm/templates/project.mako:39
+#: osmtm/templates/project.mako:38
 msgid "Activity"
 msgstr "活動状況"
 
-#: osmtm/templates/project.mako:40
+#: osmtm/templates/project.mako:39
 msgid "Stats"
 msgstr "統計"
 
-#: osmtm/templates/project.mako:57
+#: osmtm/templates/project.mako:56
 msgid "Loading"
 msgstr "読み込み中"
 
-#: osmtm/templates/project.mako:94
+#: osmtm/templates/project.mako:93
 msgid "Ready"
 msgstr "準備完了"
 
-#: osmtm/templates/project.mako:94 osmtm/templates/task.history.mako:26
+#: osmtm/templates/project.mako:93 osmtm/templates/task.history.mako:26
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr "差し戻し"
 
-#: osmtm/templates/project.mako:94 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:93 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "完了"
 
-#: osmtm/templates/project.mako:94 osmtm/templates/task.history.mako:28
+#: osmtm/templates/project.mako:93 osmtm/templates/task.history.mako:28
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr "確認完了"
 
-#: osmtm/templates/project.mako:95
+#: osmtm/templates/project.mako:94
 msgid "You must leave a comment."
 msgstr "コメントを入力してください"
+
+#: osmtm/templates/project.new.mako:76
+msgid "You cannot select this option unless you import a file with polygons."
+msgstr ""
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
@@ -210,27 +210,27 @@ msgstr "参加者"
 msgid "Assigned"
 msgstr "担当中"
 
-#: osmtm/templates/task.assigned.mako:16
+#: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
 msgstr "タスク担当依頼"
 
-#: osmtm/templates/task.assigned.mako:23
+#: osmtm/templates/task.assigned.mako:25
 msgid "Filter users"
 msgstr "ユーザをフィルタ"
 
-#: osmtm/templates/task.assigned.mako:40 osmtm/templates/task.locked.mako:3
+#: osmtm/templates/task.assigned.mako:42 osmtm/templates/task.locked.mako:2
 msgid "you"
 msgstr "あなた"
 
-#: osmtm/templates/task.assigned.mako:42
+#: osmtm/templates/task.assigned.mako:44
 msgid "Assigned to ${username}"
 msgstr "${username} へタスク担当依頼"
 
-#: osmtm/templates/task.assigned.mako:46
+#: osmtm/templates/task.assigned.mako:48
 msgid "Not assigned yet"
 msgstr "担当中タスクなし"
 
-#: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:5
+#: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:4
 msgid "Leave a comment"
 msgstr "コメント入力"
 
@@ -262,7 +262,7 @@ msgstr "or"
 msgid "Take a task at random"
 msgstr "ランダム選択"
 
-#: osmtm/templates/task.freecomment.mako:8
+#: osmtm/templates/task.freecomment.mako:7
 msgid "Comment"
 msgstr "コメント"
 
@@ -296,17 +296,17 @@ msgstr "活動がありません"
 msgid "Extra Instructions"
 msgstr "追加インストラクション"
 
-#: osmtm/templates/task.locked.mako:5
+#: osmtm/templates/task.locked.mako:4
 msgid "Locked by ${username}"
 msgstr "${username} によりロック中"
 
-#: osmtm/templates/task.locked.mako:13
+#: osmtm/templates/task.locked.mako:14
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
 msgstr "作業が完了した場合や、作業の経過時間が長い場合、ロックは自動的に解除されます"
 
-#: osmtm/templates/task.locked.mako:15
+#: osmtm/templates/task.locked.mako:16
 msgid "min. left"
 msgstr "分後に解除"
 
@@ -314,7 +314,7 @@ msgstr "分後に解除"
 msgid "Clear selection"
 msgstr "選択解除"
 
-#: osmtm/templates/task.mako:56
+#: osmtm/templates/task.mako:63
 msgid "See the changesets in the OSM database for this area."
 msgstr "この地域の変更セットをOSMデータベースで確認"
 
@@ -367,15 +367,15 @@ msgstr "マッピング開始"
 msgid "Review the work"
 msgstr "作業内容確認"
 
-#: osmtm/templates/user.mako:5
+#: osmtm/templates/user.mako:4
 msgid "User profile"
 msgstr "ユーザプロフィール"
 
-#: osmtm/templates/user.mako:38
+#: osmtm/templates/user.mako:37
 msgid "This user is an administrator."
 msgstr "このユーザは管理者です。"
 
-#: osmtm/templates/user.mako:54
+#: osmtm/templates/user.mako:53
 msgid "This user is a project manager."
 msgstr "このユーザはプロジェクト管理者です。"
 
@@ -383,19 +383,19 @@ msgstr "このユーザはプロジェクト管理者です。"
 msgid "logout"
 msgstr "ログアウト"
 
-#: osmtm/templates/users.mako:5
+#: osmtm/templates/users.mako:4
 msgid "Users"
 msgstr "ユーザ"
 
-#: osmtm/views/project.py:61
+#: osmtm/views/project.py:67
 msgid "Sorry, this project doesn't  exist"
 msgstr "プロジェクトが存在しません"
 
-#: osmtm/views/project.py:121
+#: osmtm/views/project.py:132
 msgid "Project #${project_id} created successfully"
 msgstr "プロジェクト #${project_id} の作成完了"
 
-#: osmtm/views/project.py:147
+#: osmtm/views/project.py:157
 msgid "Successfully imported ${n} geometries"
 msgstr "${n} 個のジオメトリを正常にインポートしました"
 
