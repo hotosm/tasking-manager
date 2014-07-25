@@ -401,7 +401,7 @@ osmtm.project = (function() {
           protocol: 'id'
         });
         url += "&gpx=" + gpx_url;
-        if (typeof imagery_url != "undefined") {
+        if (typeof imagery_url != "undefined" && imagery_url !== '') {
           // url is supposed to look like tms[22]:http://hiu...
           u = imagery_url.substring(imagery_url.indexOf('http'));
           u = u.replace('zoom', 'z');
