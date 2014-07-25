@@ -339,3 +339,6 @@ class TestTaskFunctional(BaseTestCase):
         self.testapp.get('/project/1/task/1/unlock',
                          headers=headers,
                          xhr=True)
+
+    def test_task_osm(self):
+        self.testapp.get('/project/1/task/1.osm', status=200)
