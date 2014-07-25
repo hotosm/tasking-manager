@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<h1>${project.name} - Edit</h1>
+<h1>${project.id} - ${project.name} - Edit</h1>
 </%block>
 <%block name="content">
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/datepicker3.css', _query={'v':'2.3.1'})}">
