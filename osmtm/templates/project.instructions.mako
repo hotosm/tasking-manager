@@ -23,7 +23,7 @@ import markdown
   ${_('Access to this project is limited')}
 </p>
 % endif
-<p>${markdown.markdown(bleach.clean(project.description, strip=True)) |n}</p>
+<p>${bleach.clean(markdown.markdown(project.description), strip=True) |n}</p>
 <hr />
 <dl>
   % if project.entities_to_map:
@@ -70,7 +70,7 @@ import markdown
 </p>
 % endif
 <hr />
-<p>${markdown.markdown(bleach.clean(project.instructions, strip=True)) |n}</p>
+<p>${bleach.clean(markdown.markdown(project.instructions), strip=True) |n}</p>
 <p class="text-center">
   <a id="start"
      class="btn btn-success btn-lg">

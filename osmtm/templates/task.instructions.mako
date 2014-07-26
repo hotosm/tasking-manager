@@ -10,5 +10,5 @@
                      .replace('{y}', str(task.y)) \
                      .replace('{z}', str(task.zoom))
 %>
-  <p>${markdown.markdown(bleach.clean(content, strip=True)) |n}</p>
+  <p>${bleach.clean(markdown.markdown(content), strip=True) |n}</p>
 % endif
