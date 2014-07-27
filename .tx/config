@@ -8,6 +8,7 @@ trans.de = osmtm/locale/de/LC_MESSAGES/osmtm.po
 trans.es = osmtm/locale/es/LC_MESSAGES/osmtm.po
 trans.fr = osmtm/locale/fr/LC_MESSAGES/osmtm.po
 trans.ja = osmtm/locale/ja/LC_MESSAGES/osmtm.po
+trans.lt = osmtm/locale/lt/LC_MESSAGES/osmtm.po
 trans.pt = osmtm/locale/pt/LC_MESSAGES/osmtm.po
 trans.zh_TW = osmtm/locale/zh_TW/LC_MESSAGES/osmtm.po
 
