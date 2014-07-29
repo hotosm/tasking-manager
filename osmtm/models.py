@@ -591,6 +591,24 @@ class License(Base):
     def __init__(self):
         pass
 
+
+class Message(Base):
+    __tablename__ = "message"
+    id = Column(Integer, primary_key=True)
+    message = Column(Unicode)
+
+    from_user_id = Column(BigInteger, ForeignKey('users.id'))
+    from_user = relationship(User, foreign_keys=[from_user_id])
+
+    to_user_id = Column(BigInteger, ForeignKey('users.id'))
+    to_user = relationship(User, foreign_keys=[to_user_id])
+
+    date = Column(DateTime, default=datetime.datetime.utcnow())
+    read = Column(Boolean)
+
+    def __init__(self):
+        pass
+
 from json import (
     JSONEncoder,
     dumps as _dumps,
