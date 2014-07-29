@@ -1,7 +1,18 @@
 <%page args="user" />
-<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">${user.username}<b class="caret"></b></a>
+<%
+  unread = user.unread_messages
+%>
+<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">
+  ${user.username}
+  ${unread_badge(unread)}
+  <b class="caret"></b></a>
   <ul role="menu" class="dropdown-menu">
     <li><a href="${request.route_path('user', username=user.username)}">${_('Your page')}</a></li>
+    <li>
+      <a href="${request.route_path('user_messages')}">${_('Messages')}
+      ${unread_badge(unread)}
+      </a>
+    </li>
     <li><a href="${request.route_path('logout')}">${_('logout')}</a></li>
     <li class="divider"></li>
     <li>
@@ -19,3 +30,9 @@
     % endif
   </ul>
 </li>
+
+<%def name="unread_badge(unread)">
+  % if len(unread) > 0:
+  <span class="badge">${len(unread)}</span>
+  % endif
+</%def>

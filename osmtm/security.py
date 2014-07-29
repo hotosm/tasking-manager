@@ -8,6 +8,7 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 from .models import (
     User,
     Project,
+    Message,
 )
 
 from pyramid.security import (
@@ -40,6 +41,15 @@ class RootFactory(object):
                     (Deny, Everyone, 'project_show'),
                 ]
                 self.__acl__ = acl + list(self.__acl__)
+        if request.matchdict and 'message' in request.matchdict:
+            message_id = request.matchdict['message']
+            message = DBSession.query(Message).get(message_id)
+            if message is not None:
+                acl = [
+                    (Allow, 'message:' + message_id, 'message_show'),
+                    (Deny, Everyone, 'message_show'),
+                ]
+                self.__acl__ = acl + list(self.__acl__)
         pass
 
 
@@ -49,6 +59,8 @@ def group_membership(user, request):
     if user:
         for project in user.private_projects:
             perms += ['project:' + str(project.id)]
+        for message in user.messages:
+            perms += ['message:' + str(message.id)]
         if user.is_admin:
             perms += ['group:admin']
         if user.is_project_manager:

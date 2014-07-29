@@ -10,6 +10,7 @@ from ..models import (
     User,
     Project,
     TaskState,
+    Message,
 )
 
 from pyramid.security import authenticated_userid
@@ -36,17 +37,19 @@ def users_json(request):
     return r
 
 
-@view_config(route_name='user_messages', renderer='user.messages.mako')
+@view_config(route_name='user_messages', http_cache=0,
+             renderer='user.messages.mako')
 def user_messages(request):
 
     user_id = authenticated_userid(request)
 
     if not user_id:
         raise HTTPUnauthorized()
-    DBSession.query(User).get(user_id)
 
-    comments = []
-    return dict(page_id="messages", comments=comments)
+    messages = DBSession.query(Message) \
+                        .filter(Message.to_user_id == user_id) \
+                        .order_by(Message.date.desc())
+    return dict(page_id="messages", messages=messages)
 
 
 @view_config(route_name='user_admin', permission="user_edit")

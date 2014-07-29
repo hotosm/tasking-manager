@@ -13,7 +13,8 @@ from ..models import (
     TaskComment,
     PriorityArea,
     Project,
-    User
+    User,
+    Message,
 )
 from geoalchemy2 import (
     shape,
@@ -37,6 +38,9 @@ import datetime
 import random
 
 from ..models import EXPIRATION_DELTA, ST_SetSRID
+
+import logging
+log = logging.getLogger(__name__)
 
 
 def __get_user(request, allow_none=False):
@@ -222,6 +226,26 @@ def add_comment(request, task, user):
         DBSession.flush()
 
 
+def send_invalidation_message(request, task, user):
+    comment = request.params.get('comment', '')
+
+    states = sorted(task.states, key=lambda state: state.date, reverse=True)
+
+    to = None
+    for state in states:
+        if state.state == TaskState.state_done:
+            to = state.user
+            break
+
+    from_ = user
+    _ = request.translate
+    href = request.route_path('project', project=task.project_id)
+    href = href + '#task/%s' % task.id
+    link = '<a href="%s">#%d</a>' % (href, task.id)
+    subject = _('Task ${link} invalidated', mapping={'link': link})
+    DBSession.add(Message(subject, from_, to, comment))
+
+
 @view_config(route_name='task_validate', renderer="json")
 def validate(request):
     user = __get_user(request)
@@ -237,6 +261,7 @@ def validate(request):
     else:
         state = TaskState.state_invalidated
         msg = _("Task invalidated.")
+        send_invalidation_message(request, task, user)
 
     add_comment(request, task, user)
 

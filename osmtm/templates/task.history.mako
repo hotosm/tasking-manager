@@ -51,6 +51,4 @@ from osmtm.models import (
 <div>${_('Nothing has happened yet.')}</div>
 % endif
 
-<script>$('.timeago').timeago()
-
-</script>
+<script>$('.timeago').timeago()</script>

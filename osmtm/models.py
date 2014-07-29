@@ -49,6 +49,9 @@ from shapely.geometry import (
     MultiPolygon
 )
 
+import logging
+log = logging.getLogger(__name__)
+
 
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
@@ -125,6 +128,12 @@ class User(Base):
                                      lazy='joined')
     private_projects = relationship("Project",
                                     secondary="project_allowed_users")
+    unread_messages = relationship(
+        'Message',
+        primaryjoin=lambda: and_(
+            User.id == Message.to_user_id,
+            Message.read.isnot(True)  # noqa
+        ))
 
     def __init__(self, id, username):
         self.id = id
@@ -596,18 +605,23 @@ class Message(Base):
     __tablename__ = "message"
     id = Column(Integer, primary_key=True)
     message = Column(Unicode)
+    subject = Column(Unicode)
 
     from_user_id = Column(BigInteger, ForeignKey('users.id'))
     from_user = relationship(User, foreign_keys=[from_user_id])
 
     to_user_id = Column(BigInteger, ForeignKey('users.id'))
-    to_user = relationship(User, foreign_keys=[to_user_id])
+    to_user = relationship(User, foreign_keys=[to_user_id],
+                           backref='messages')
 
-    date = Column(DateTime, default=datetime.datetime.utcnow())
+    date = Column(DateTime, default=datetime.datetime.utcnow)
     read = Column(Boolean)
 
-    def __init__(self):
-        pass
+    def __init__(self, subject, from_, to, message):
+        self.subject = subject
+        self.from_user = from_
+        self.to_user = to
+        self.message = message
 
 from json import (
     JSONEncoder,

@@ -1,13 +1,13 @@
 """Added message table
 
-Revision ID: 1deb5a0b6167
+Revision ID: 3f282468e66e
 Revises: 58cdd82df884
-Create Date: 2014-07-29 11:24:31.461531
+Create Date: 2014-07-29 18:00:47.003786
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '1deb5a0b6167'
+revision = '3f282468e66e'
 down_revision = '58cdd82df884'
 
 from alembic import op
@@ -19,6 +19,7 @@ def upgrade():
         'message',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('message', sa.Unicode(), nullable=True),
+        sa.Column('subject', sa.Unicode(), nullable=True),
         sa.Column('from_user_id', sa.BigInteger(), nullable=True),
         sa.Column('to_user_id', sa.BigInteger(), nullable=True),
         sa.Column('date', sa.DateTime(), nullable=True),
