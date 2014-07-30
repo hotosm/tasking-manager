@@ -1,3 +1,5 @@
+import math
+
 from sqlalchemy import (
     Table,
     Column,
@@ -494,7 +496,7 @@ class Project(Base, Translatable):
         if not done:
             done = 0
 
-        return round(done * 100 / total) if total != 0 else 0
+        return math.floor(done * 100 / total) if total != 0 else 0
 
     def get_validated(self):
         total = DBSession.query(func.sum(ST_Area(Task.geometry))) \
@@ -515,7 +517,7 @@ class Project(Base, Translatable):
         if not validated:
             validated = 0
 
-        return round(validated * 100 / total) if total != 0 else 0
+        return math.floor(validated * 100 / total) if total != 0 else 0
 
     def to_bbox(self):
         return shape.to_shape(self.area.geometry).bounds
