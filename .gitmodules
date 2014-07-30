@@ -4,9 +4,6 @@
 [submodule "osmtm/static/js/lib/Leaflet.draw"]
 	path = osmtm/static/js/lib/Leaflet.draw
 	url = https://github.com/Leaflet/Leaflet.draw.git
-[submodule "osmtm/static/js/lib/Leaflet.utfgrid"]
-	path = osmtm/static/js/lib/Leaflet.utfgrid
-	url = https://github.com/danzel/Leaflet.utfgrid.git
 [submodule "osmtm/static/js/lib/jquery-timeago"]
 	path = osmtm/static/js/lib/jquery-timeago
     url = https://github.com/rmm5t/jquery-timeago.git
