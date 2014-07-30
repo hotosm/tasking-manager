@@ -2,7 +2,7 @@
 <%inherit file="base.mako"/>
 <%block name="header">
 <h1>
-  ${project.name}
+  #${project.id} - ${project.name}
   % if project.status == project.status_draft:
    (${_('Draft')})
   % elif project.status == project.status_archived:
