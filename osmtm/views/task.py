@@ -91,7 +91,7 @@ def __ensure_task_locked(task, user):
         raise HTTPForbidden("You need to lock the task first.")
 
 
-@view_config(route_name='task_xhr', renderer='task.mako')
+@view_config(route_name='task_xhr', renderer='task.mako', http_cache=0)
 def task_xhr(request):
     user = __get_user(request, allow_none=True)
     task = __get_task(request)
@@ -130,7 +130,7 @@ def task_xhr(request):
                 history=history)
 
 
-@view_config(route_name='task_empty', renderer='task.empty.mako')
+@view_config(route_name='task_empty', renderer='task.empty.mako', http_cache=0)
 def task_empty(request):
     user = __get_user(request, allow_none=True)
     project_id = request.matchdict['project']
