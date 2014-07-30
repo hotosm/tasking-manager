@@ -11,6 +11,7 @@ osmtm.project = (function() {
   var line;
   var chart;
   var lastUpdateCheck = (new Date()).getTime();
+  var lockedCounter;
 
   var states = [
     ['#dfdfdf'],
@@ -28,6 +29,16 @@ osmtm.project = (function() {
       var container = L.DomUtil.create('div', 'legend-control');
 
       var ul = L.DomUtil.create('ul', null, container);
+
+      var key, color;
+
+      key = L.DomUtil.create('li', null, ul);
+      color = L.DomUtil.create('div', 'key-color', key);
+      color.style.border = '2px solid orange';
+      key.innerHTML += 'Cur. worked on ';
+
+      lockedCounter = $('<span>');
+      $(key).append(lockedCounter);
 
       var i;
       for (i = 1; i < states.length; i++) {
@@ -98,6 +109,7 @@ osmtm.project = (function() {
       base_url + 'project/' + project_id + '/tasks.json',
       function(data) {
         tasksLayer.addData(data);
+        updateLockedCounter();
       }
     );
 
@@ -669,10 +681,23 @@ osmtm.project = (function() {
             });
             tasksLayer.addData(task);
           });
+          updateLockedCounter();
         }
       }, dataType: "json"}
     );
     lastUpdateCheck = now;
+  }
+
+  /**
+   * Updates the 'currently worked on' counter
+   */
+  function updateLockedCounter() {
+    var count = 0;
+    var layers = tasksLayer.getLayers();
+    var locked = layers.filter(function(l) {
+      return l.feature.properties.locked == true;
+    });
+    lockedCounter.html('(' + locked.length + ')');
   }
 
   /**
