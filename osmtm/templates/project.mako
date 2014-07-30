@@ -8,6 +8,12 @@
   % elif project.status == project.status_archived:
    (${_('Archived')})
   % endif
+  % if user and (user.is_admin or user.is_project_manager):
+    <a class="btn btn-default btn-sm pull-right" href="${request.route_path('project_edit', project=project.id)}">
+      <span class="glyphicon glyphicon-cog"></span>
+      Edit
+    </a>
+  % endif
 </h1>
 </%block>
 <%block name="content">
@@ -41,11 +47,6 @@ else:
         <div class="world_map pull-right">
           <div class="marker" style="top:${top}px;left:${left}px"></div>
         </div>
-        % if user and (user.is_admin or user.is_project_manager):
-          <a class="btn btn-default btn-sm pull-right" href="${request.route_path('project_edit', project=project.id)}">
-            Edit project
-          </a>
-        % endif
       </ul>
     </div>
   </div>
@@ -89,6 +90,7 @@ var geometry = ${dumps(geometry)|n};
 % if locked_task is not None:
 window.location.hash = "task/${locked_task.id}";
 % endif
+var priority_areas = ${dumps(priority_areas)|n};
 
 var statesI18n = ["${_('Ready')}", "${_('Invalidated')}", "${_('Done')}", "${_('Validated')}"];
 var commentRequiredMsg = "${_('You must leave a comment.')}"

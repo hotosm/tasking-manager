@@ -208,7 +208,7 @@ class TestTaskFunctional(BaseTestCase):
         import geoalchemy2
         import shapely
         import transaction
-        from osmtm.models import Area, Project, DBSession
+        from osmtm.models import Task, TaskLock, Area, Project, User, DBSession
 
         shape = shapely.geometry.Polygon(
             [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
@@ -222,8 +222,60 @@ class TestTaskFunctional(BaseTestCase):
         DBSession.flush()
         project_id = project.id
 
-        task = project.tasks[0]
-        task.locked = True
+        user2 = DBSession.query(User).filter(User.id == self.user2_id).one()
+        task = DBSession.query(Task).filter(Task.project_id == project_id) \
+            .first()
+        task.locks.append(TaskLock(user=user2, lock=True))
+        DBSession.add(task)
+
+        transaction.commit()
+
+        headers = self.login_as_user1()
+        res = self.testapp.get('/project/%d/random' % project_id, status=200,
+                               headers=headers,
+                               xhr=True)
+        self.assertTrue(res.json['success'])
+
+    def test_task_random__priority_areas(self):
+        import geoalchemy2
+        import shapely
+        import transaction
+        from osmtm.models import (
+            Task, TaskLock, Area, Project, PriorityArea, User, DBSession,
+        )
+
+        shape = shapely.geometry.Polygon(
+            [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
+        geometry = geoalchemy2.shape.from_shape(shape, 4326)
+        area = Area(geometry)
+        project = Project(u'test project')
+        project.area = area
+        project.auto_fill(12)
+
+        DBSession.add(project)
+        DBSession.flush()
+        project_id = project.id
+
+        shape = shapely.geometry.Polygon(
+            [(7.23, 41.25), (7.23, 41.12), (7.24, 41.25)])
+        geometry = geoalchemy2.shape.from_shape(shape, 4326)
+        project.priority_areas.append(PriorityArea(geometry))
+
+        transaction.commit()
+
+        # priority only
+        headers = self.login_as_user1()
+        res = self.testapp.get('/project/%d/random' % project_id, status=200,
+                               headers=headers,
+                               xhr=True)
+        self.assertTrue(res.json['success'])
+
+        # priority + busy task
+        user2 = DBSession.query(User).filter(User.id == self.user2_id).one()
+        task = DBSession.query(Task).filter(Task.project_id == project_id) \
+            .first()
+        task.locks.append(TaskLock(user=user2, lock=True))
+        DBSession.add(task)
 
         transaction.commit()
 

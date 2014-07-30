@@ -391,6 +391,22 @@ project_allowed_users = Table(
 )
 
 
+class PriorityArea(Base):
+    __tablename__ = 'priority_area'
+    id = Column(Integer, primary_key=True)
+    geometry = Column(Geometry('Polygon', srid=4326))
+
+    def __init__(self, geometry):
+        self.geometry = geometry
+
+project_priority_areas = Table(
+    'project_priority_areas',
+    Base.metadata,
+    Column('project_id', Integer, ForeignKey('project.id')),
+    Column('priority_area_id', Integer, ForeignKey('priority_area.id'))
+)
+
+
 # A project corresponds to a given mapping job to do on a given area
 # Example 1: trace the major roads
 # Example 2: trace the buildings
@@ -443,6 +459,9 @@ class Project(Base, Translatable):
     josm_preset = Column(Unicode)
 
     due_date = Column(DateTime)
+
+    priority_areas = relationship(PriorityArea,
+                                  secondary=project_priority_areas)
 
     def __init__(self, name, user=None):
         self.name = name

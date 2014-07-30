@@ -137,6 +137,28 @@ class TestProjectFunctional(BaseTestCase):
         self.testapp.get('/project/%d/edit' % project_id, headers=headers,
                          status=200)
 
+    def test_project_edit_not_submitted_priority_areas(self):
+        import transaction
+        headers = self.login_as_admin()
+        project_id = self.create_project()
+
+        from osmtm.models import Project, PriorityArea, DBSession
+        project = DBSession.query(Project).get(project_id)
+
+        import shapely
+        import geoalchemy2
+        shape = shapely.geometry.Polygon(
+            [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
+        geometry = geoalchemy2.shape.from_shape(shape, 4326)
+        priority_area = PriorityArea(geometry)
+        project.priority_areas.append(priority_area)
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        self.testapp.get('/project/%d/edit' % project_id, headers=headers,
+                         status=200)
+
     def test_project_edit_submitted(self):
         headers = self.login_as_admin()
         headers['Accept-Language'] = 'fr'
@@ -213,6 +235,71 @@ class TestProjectFunctional(BaseTestCase):
         import datetime
         date = datetime.datetime.strptime(date_str, "%m/%d/%Y")
         self.assertEqual(project.due_date, date)
+
+    def test_project_edit__submitted_priority_areas(self):
+        headers = self.login_as_admin()
+        project_id = self.create_project()
+        self.testapp.post('/project/%d/edit' % project_id,
+                          headers=headers,
+                          params={
+                              'form.submitted': True,
+                              'priority': 2,
+                              'status': 2,
+                              'priority_areas': '{"type":"FeatureCollection","features":[{"geometry":{"type":"Polygon","coordinates":[[[85.31424522399902,27.70260377553105],[85.31424522399902,27.70419959861825],[85.31639099121094,27.70419959861825],[85.31639099121094,27.70260377553105],[85.31424522399902,27.70260377553105]]]},"type":"Feature","id":null,"properties":{}}]}'  # noqa
+                          },
+                          status=302)
+
+        from osmtm.models import Project, DBSession
+        project = DBSession.query(Project).get(project_id)
+        self.assertEqual(len(project.priority_areas), 1)
+
+        self.testapp.post('/project/%d/edit' % project_id,
+                          headers=headers,
+                          params={
+                              'form.submitted': True,
+                              'priority': 2,
+                              'status': 2,
+                              'priority_areas': '{"type":"FeatureCollection","features":[{"geometry":{"type":"Polygon","coordinates":[[[85.31,27.702],[85.31,27.7],[85.31,27.704],[85.31,27.702],[85.31,27.702]]]},"type":"Feature","id":null,"properties":{}}, {"geometry":{"type":"Polygon","coordinates":[[[85.31,27.702],[85.31,27.7],[85.31,27.704],[85.31,27.702],[85.31,27.702]]]},"type":"Feature","id":null,"properties":{}}]}'  # noqa
+                          },
+                          status=302)
+
+        from osmtm.models import Project, DBSession
+        project = DBSession.query(Project).get(project_id)
+        self.assertEqual(len(project.priority_areas), 2)
+
+        self.testapp.post('/project/%d/edit' % project_id,
+                          headers=headers,
+                          params={
+                              'form.submitted': True,
+                              'priority': 2,
+                              'status': 2,
+                              'priority_areas': '{"type":"FeatureCollection","features":[{"geometry":{"type":"Polygon","coordinates":[[[85.3,27.702],[85.31,27.7],[85.31,27.704],[85.31,27.702],[85.3,27.702]]]},"type":"Feature","id":null,"properties":{}}, {"geometry":{"type":"Polygon","coordinates":[[[85.31,27.702],[85.31,27.7],[85.31,27.704],[85.31,27.702],[85.31,27.702]]]},"type":"Feature","id":null,"properties":{}}]}'  # noqa
+                          },
+                          status=302)
+
+        from osmtm.models import Project, DBSession
+        project = DBSession.query(Project).get(project_id)
+        self.assertEqual(len(project.priority_areas), 2)
+
+    def test_project_priority_areas(self):
+        import transaction
+        project_id = self.create_project()
+
+        from osmtm.models import Project, PriorityArea, DBSession
+        project = DBSession.query(Project).get(project_id)
+
+        import shapely
+        import geoalchemy2
+        shape = shapely.geometry.Polygon(
+            [(7.23, 41.25), (7.23, 41.12), (7.41, 41.20)])
+        geometry = geoalchemy2.shape.from_shape(shape, 4326)
+        priority_area = PriorityArea(geometry)
+        project.priority_areas.append(priority_area)
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        self.testapp.get('/project/%d' % project_id, status=200)
 
     def test_project_tasks_json(self):
         project_id = 1

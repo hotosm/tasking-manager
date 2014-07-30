@@ -11,6 +11,8 @@ from ..models import (
     TaskState,
     TaskLock,
     TaskComment,
+    PriorityArea,
+    Project,
     User
 )
 from geoalchemy2 import (
@@ -24,6 +26,7 @@ from sqlalchemy.orm import (
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.expression import (
+    not_,
     and_,
     func,
 )
@@ -33,7 +36,7 @@ from pyramid.security import authenticated_userid
 import datetime
 import random
 
-from ..models import EXPIRATION_DELTA
+from ..models import EXPIRATION_DELTA, ST_SetSRID
 
 
 def __get_user(request, allow_none=False):
@@ -292,37 +295,70 @@ def get_assigned_tasks(project_id, user):
     return query.all()
 
 
+def find_matching_task(project_id, filter):
+    query = DBSession.query(Task) \
+        .filter_by(project_id=project_id) \
+        .filter(Task.cur_state.has(state=TaskState.state_ready)) \
+        .filter(not_(Task.cur_lock.has(lock=True)))
+
+    query = query.filter(filter)
+
+    count = query.count()
+    if count != 0:  # pragma: no cover
+        atask = query.offset(random.randint(0, count - 1)).first()
+        return atask
+
+    return None
+
+
 @view_config(route_name='task_random', http_cache=0, renderer='json')
 def random_task(request):
     """Gets a random not-done task. First it tries to get one that does not
        border any in-progress tasks."""
     project_id = request.matchdict['project']
 
-    # we will ask about the area occupied by tasks locked by others, so we can
-    # steer clear of them
-    locked = DBSession.query(Task.geometry.ST_Union().label('taskunion')) \
+    # filter for tasks not bordering busy tasks
+    locked = DBSession.query(Task.geometry.ST_Union()) \
         .filter_by(project_id=project_id) \
-        .filter(Task.cur_lock.has(lock=True)).subquery()
+        .filter(Task.cur_lock.has(lock=True)) \
+        .scalar()
+    locked_filter = None
+    if locked is not None:
+        locked_filter = Task.geometry.ST_Disjoint(ST_SetSRID(locked, 4326))
 
-    # first search attempt - all available tasks that do not border busy tasks
-    taskgetter = DBSession.query(Task) \
-        .filter_by(project_id=project_id) \
-        .filter(Task.cur_state.has(state=TaskState.state_ready)) \
-        .filter(Task.geometry.ST_Disjoint(locked.c.taskunion))
-    count = taskgetter.count()
-    if count != 0:  # pragma: no cover
-        atask = taskgetter.offset(random.randint(0, count - 1)).first()
-        return dict(success=True, task=dict(id=atask.id))
+    # filter for tasks within priority areas
+    priority = DBSession.query(PriorityArea.geometry.ST_Union()) \
+        .join(Project.priority_areas) \
+        .filter(Project.id == project_id) \
+        .scalar()
+    priority_filter = None
+    if priority is not None:
+        priority_filter = Task.geometry.ST_Intersects(
+            ST_SetSRID(priority, 4326)
+        )
 
-    # second search attempt - if the non-bordering constraint gave us no hits,
-    # we discard that constraint
-    taskgetter = DBSession.query(Task) \
-        .filter_by(project_id=project_id) \
-        .filter(Task.cur_state.has(state=TaskState.state_ready))
-    count = taskgetter.count()
-    if count != 0:
-        atask = taskgetter.offset(random.randint(0, count - 1)).first()
-        return dict(success=True, task=dict(id=atask.id))
+    # search attempts
+    filters = []
+
+    if priority_filter is not None and locked_filter is not None:
+        # tasks in priority areas and not bordering busy tasks
+        filters.append(and_(locked_filter, priority_filter))
+
+    if priority_filter is not None:
+        # tasks in priority areas
+        filters.append(priority_filter)
+
+    if locked_filter is not None:
+        # tasks not bordering busy tasks
+        filters.append(locked_filter)
+
+    # any other available task
+    filters.append(True)
+
+    for filter in filters:
+        atask = find_matching_task(project_id, filter)
+        if atask:
+            return dict(success=True, task=dict(id=atask.id))
 
     _ = request.translate
     return dict(success=False,

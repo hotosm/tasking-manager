@@ -7,6 +7,9 @@
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/datepicker3.css', _query={'v':'2.3.1'})}">
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js', _query={'v':'2.3.1'})}"></script>
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/bootstrap-datepicker.js', _query={'v':'2.3.1'})}"></script>
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css', _query={'v':'2.3.1'})}"/>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.3.1'})}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js', _query={'v':'2.3.1'})}"></script>
 <div id="markdown_cheat_sheet" class="modal fade">
   <div class="modal-dialog">
   <div class="modal-content">
@@ -21,6 +24,13 @@
 <script>
   var converter = new Showdown.converter();
   var project_id = ${project.id};
+<%
+from shapely.wkb import loads
+from geojson import Feature, FeatureCollection, dumps
+geometry = loads(str(project.area.geometry.data))
+%>
+  var geometry = ${dumps(geometry)|n};
+  var priority_areas = ${dumps(priority_areas)|n};
 </script>
 <div class="container">
   <form method="post" action="" enctype="multipart/form-data" class="form"
@@ -32,6 +42,7 @@
           <li><a href="#instructions" data-toggle="tab">Instructions</a></li>
           <li><a href="#area" data-toggle="tab">Area</a></li>
           <li><a href="#imagery" data-toggle="tab">Imagery</a></li>
+          <li><a id="priority_areas_tab" href="#priority_areas" data-toggle="tab">Priority Areas</a></li>
           <li><a href="#allowed_users" data-toggle="tab">Allowed Users</a></li>
           <li><a href="#misc" data-toggle="tab">Misc</a></li>
         </ul>
@@ -43,10 +54,13 @@
             ${instructions()}
           </div>
           <div class="tab-pane" id="area">
-            Area modifications are not available yet.
+            ${area()}
           </div>
           <div class="tab-pane" id="imagery">
             ${imagery()}
+          </div>
+          <div class="tab-pane" id="priority_areas">
+            ${priority_areas_()}
           </div>
           <div class="tab-pane" id="allowed_users">
             ${allowed_users()}
@@ -57,6 +71,7 @@
         </div>
       </div>
     </div>
+    <hr>
     <div class="row pull-right">
       <div class="form-group">
         <a href="${request.route_path('project', project=project.id)}" class="btn btn-default">Cancel</a>
@@ -220,6 +235,31 @@
       </div>
     </div>
 
+</%block>
+
+<%block name="area">
+<div class="row">
+  <p class="alert alert-warning col-md-6">
+  Area modifications are not available yet.
+  </p>
+</div>
+</%block>
+
+<%block name="priority_areas_">
+<div class="row">
+  <div class="col-md-4">
+    <label>
+      ${len(project.priority_areas)} priority area(s)
+    </label>
+    <div class="help-block">
+    If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area.
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div id="leaflet_priority_areas"></div>
+    <input type="hidden" name="priority_areas" />
+  </div>
+</div>
 </%block>
 
 <%block name="imagery">
