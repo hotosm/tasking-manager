@@ -384,6 +384,33 @@ def task_osm(request):
                 project_id=task.project_id)
 
 
+@view_config(route_name='task_difficulty', renderer='json',
+             permission='project_edit')
+def task_difficulty(request):
+    """Change task difficulty"""
+    task = __get_task(request)
+    difficulty = request.matchdict['difficulty']
+
+    task.difficulty = difficulty
+
+    _ = request.translate
+    return dict(success=True,
+                msg=_("Task difficulty changed."))
+
+
+@view_config(route_name='task_difficulty_delete', renderer='json',
+             permission='project_edit')
+def task_difficulty_delete(request):
+    """Remove assignment"""
+    task = __get_task(request)
+
+    task.difficulty = None
+
+    _ = request.translate
+    return dict(success=True,
+                msg=_("Task difficulty removed"))
+
+
 # unlock any expired task
 def check_task_expiration():  # pragma: no cover
     subquery = DBSession.query(

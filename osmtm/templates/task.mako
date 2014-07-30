@@ -23,6 +23,7 @@ if (typeof countdownInterval != 'undefined') {
   <div class="clear"></div>
   <div id="task_actions">
   <div class="text-muted small">
+  <%include file="task.difficulty.mako" />
 % if task.cur_lock and task.cur_lock.lock:
   <%include file="task.locked.mako" />
 % endif
