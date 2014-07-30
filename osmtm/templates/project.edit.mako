@@ -23,8 +23,7 @@
   var project_id = ${project.id};
 </script>
 <div class="container">
-  <form method="post" action="" enctype="multipart/form-data" class="form"
-        enctype="multipart/form-data">
+  <form method="post" action="" enctype="multipart/form-data" class="form">
     <div class="row">
       <div class="tabbable tabs row">
         <ul class="nav nav-tabs">
