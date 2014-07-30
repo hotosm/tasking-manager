@@ -129,7 +129,7 @@ class User(Base):
         'Message',
         primaryjoin=lambda: and_(
             User.id == Message.to_user_id,
-            Message.read.isnot(True)  # noqa
+            Message.read.isnot(True)
         ))
 
     def __init__(self, id, username):
