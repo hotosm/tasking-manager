@@ -49,9 +49,6 @@ from shapely.geometry import (
     MultiPolygon
 )
 
-import logging
-log = logging.getLogger(__name__)
-
 
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
