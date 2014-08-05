@@ -348,6 +348,20 @@ def check_for_updates(request):
     return dict(update=False)
 
 
+@view_config(route_name="project_tasks_json_xhr", renderer='json',
+             http_cache=0)
+def project_tasks_json_xhr(request):
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+
+    tasks = DBSession.query(Task) \
+                     .filter(Task.project_id == project.id) \
+                     .options(joinedload(Task.cur_state)) \
+                     .options(joinedload(Task.cur_lock)) \
+
+    return FeatureCollection([task.to_feature() for task in tasks])
+
+
 @view_config(route_name="project_tasks_json", renderer='json',
              http_cache=0)
 def project_tasks_json(request):
@@ -359,6 +373,8 @@ def project_tasks_json(request):
                      .options(joinedload(Task.cur_state)) \
                      .options(joinedload(Task.cur_lock)) \
 
+    request.response.content_disposition = \
+        'attachment; filename="hot_osmtm_%s.json"' % id
     return FeatureCollection([task.to_feature() for task in tasks])
 
 
