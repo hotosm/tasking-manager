@@ -862,8 +862,8 @@ h1{margin:0;font-size:20px;height:36px;line-height:30px}
 .tabs-right>.nav-tabs>.active a,.tabs-right>.nav-tabs>.active a:hover,.tabs-right>.nav-tabs>.active a:focus{border-color:#ddd #ddd #ddd transparent;*border-left-color:#fff}
 #chart{font:10px sans-serif}#chart .axis path,#chart .axis line{fill:none;stroke:#000;shape-rendering:crispedges}
 #chart .tick line{stroke:#ccc;stroke-opacity:.5}
-#chart .area.done{fill:#ffa500;fill-opacity:.5;stroke-width:0}
-#chart .area.validated{fill:#008000;fill-opacity:.5;stroke-width:0}
+#chart .legend .done,#chart .area.done{fill:#ffa500;fill-opacity:.5;stroke-width:0}
+#chart .legend .validated,#chart .area.validated{fill:#008000;fill-opacity:.5;stroke-width:0}
 .left-inner-addon{position:relative}
 .left-inner-addon input{padding-left:30px}
 .left-inner-addon i{position:absolute;padding:8px 10px;pointer-events:none}
