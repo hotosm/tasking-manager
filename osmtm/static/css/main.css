@@ -611,6 +611,12 @@ textarea.input-group-sm>.form-control,textarea.input-group-sm>.input-group-addon
 .navbar-inverse .navbar-nav>.open>a,.navbar-inverse .navbar-nav>.open>a:hover,.navbar-inverse .navbar-nav>.open>a:focus{background-color:#080808;color:#fff}
 @media (max-width:767px){.navbar-inverse .navbar-nav .open .dropdown-menu>.dropdown-header{border-color:#080808} .navbar-inverse .navbar-nav .open .dropdown-menu .divider{background-color:#080808} .navbar-inverse .navbar-nav .open .dropdown-menu>li>a{color:#999}.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:hover,.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:focus{color:#fff;background-color:transparent} .navbar-inverse .navbar-nav .open .dropdown-menu>.active>a,.navbar-inverse .navbar-nav .open .dropdown-menu>.active>a:hover,.navbar-inverse .navbar-nav .open .dropdown-menu>.active>a:focus{color:#fff;background-color:#080808} .navbar-inverse .navbar-nav .open .dropdown-menu>.disabled>a,.navbar-inverse .navbar-nav .open .dropdown-menu>.disabled>a:hover,.navbar-inverse .navbar-nav .open .dropdown-menu>.disabled>a:focus{color:#444;background-color:transparent}}
 .navbar-inverse .navbar-link{color:#999}.navbar-inverse .navbar-link:hover{color:#fff}
+.badge{display:inline-block;min-width:10px;padding:3px 7px;font-size:12px;font-weight:bold;color:#fff;line-height:1;vertical-align:baseline;white-space:nowrap;text-align:center;background-color:#999;border-radius:10px}.badge:empty{display:none}
+.btn .badge{position:relative;top:-1px}
+.btn-xs .badge{top:0;padding:1px 5px}
+a.badge:hover,a.badge:focus{color:#fff;text-decoration:none;cursor:pointer}
+a.list-group-item.active>.badge,.nav-pills>.active>a>.badge{color:#428bca;background-color:#fff}
+.nav-pills>li>a>.badge{margin-left:3px}
 .alert{padding:15px;margin-bottom:20px;border:1px solid transparent;border-radius:4px}.alert h4{margin-top:0;color:inherit}
 .alert .alert-link{font-weight:bold}
 .alert>p,.alert>ul{margin-bottom:0}
@@ -780,6 +786,9 @@ textarea.input-group.input-group-lg .twitter-typeahead .tt-input,textarea.input-
 .tt-dropdown-menu .tt-suggestion p{margin:0}
 html,body{background-color:#fff;padding-top:30px;line-height:18px}
 .navbar-default{background-image:-webkit-linear-gradient(top, #9b0d0b 0, #b4242e 100%);background-image:linear-gradient(to bottom, #9b0d0b 0, #b4242e 100%);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff9b0d0b', endColorstr='#ffb4242e', GradientType=0)}
+.navbar-default .navbar-nav>li>a .badge{background-color:#fff;color:#000}
+.navbar-default .navbar-nav>li>a:hover .badge{background-color:#333;color:#fff}
+.navbar-default .navbar-nav>.open a .badge,.navbar-default .navbar-nav>.open a:hover .badge{background-color:#ccc;color:#333}
 h1{margin:0;font-size:20px;height:36px;line-height:30px}
 .footer{background-color:#eee;min-width:940px;padding:30px 0;text-shadow:0 1px 0 #fff;border-top:1px solid #e5e5e5;-webkit-box-shadow:inset 0 5px 15px rgba(0,0,0,0.025);-moz-box-shadow:inset 0 5px 15px rgba(0,0,0,0.025)}.footer p{color:#555}
 .world_map{float:right;background:url(../img/world_map.png);width:120px;height:60px;position:relative;margin:2px;z-index:2}.world_map .marker{background-color:#f00;width:3px;height:3px;position:absolute}
@@ -838,6 +847,7 @@ h1{margin:0;font-size:20px;height:36px;line-height:30px}
 #project_edit #leaflet_priority_areas{height:450px}
 #project_new #leaflet{height:400px}
 #project_new .mask{opacity:.6;filter:alpha(opacity=60)}
+#messages table>tbody>tr.unread{background-color:#efefef}
 .clear{clear:both}
 .nav-tabs,.nav-pills{margin-bottom:15px}
 .tabs-below .nav-tabs,.tabs-right .nav-tabs,.tabs-left .nav-tabs{border-bottom:0}

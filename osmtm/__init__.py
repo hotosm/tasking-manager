@@ -122,6 +122,8 @@ def main(global_config, **settings):
     config.add_route('license_edit', '/license/{license}/edit')
     config.add_route('license_delete', '/license/{license}/delete')
 
+    config.add_route('message_read', '/message/read/{message}')
+
     config.add_translation_dirs('osmtm:locale')
     config.set_locale_negotiator('osmtm.i18n.custom_locale_negotiator')
 
