@@ -60,9 +60,9 @@ def __get_user(request, allow_none=False):
 
 
 def __get_task(request, lock_for_update=False):
-    check_task_expiration()
     task_id = request.matchdict['task']
     project_id = request.matchdict['project']
+    check_task_expiration(project_id)
     filter = and_(Task.project_id == project_id, Task.id == task_id)
     query = DBSession.query(Task) \
                      .options(joinedload(Task.cur_lock)) \
@@ -473,19 +473,23 @@ def task_difficulty_delete(request):
 
 
 # unlock any expired task
-def check_task_expiration():  # pragma: no cover
+def check_task_expiration(project_id):  # pragma: no cover
+
     subquery = DBSession.query(
-        TaskLock,
-        func.rank().over(
-            partition_by=(TaskLock.task_id, TaskLock.project_id),
-            order_by=TaskLock.date.desc()
-        ).label("rank")
-    ).subquery()
+        TaskLock.task_id,
+        TaskLock.project_id,
+        func.max(TaskLock.date).label('date')
+    ).filter(not_(TaskLock.lock.is_(None)), TaskLock.project_id == project_id) \
+     .group_by(TaskLock.task_id, TaskLock.project_id).subquery()
 
     query = DBSession.query(
         TaskLock
-    ).select_entity_from(subquery) \
-     .filter(subquery.c.rank == 1, subquery.c.lock.is_(True))
+    ).join(
+        subquery, and_(
+            TaskLock.task_id == subquery.c.task_id,
+            TaskLock.project_id == subquery.c.project_id,
+            TaskLock.date == subquery.c.date)
+    ).filter(TaskLock.lock.is_(True))
 
     for lock in query:
         if lock.date < datetime.datetime.utcnow() - EXPIRATION_DELTA:
