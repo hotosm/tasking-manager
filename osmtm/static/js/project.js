@@ -668,6 +668,32 @@ osmtm.project = (function() {
       chart.selectAll('.area.done')
            .datum(layers[1])
            .attr("d", areaDone);
+
+      var last = data[data.length - 1];
+      var legend = chart.selectAll('.legend')
+          .data([
+            ['done', Math.floor((last.done + last.validated) * 100) + '%'],
+            ['validated ', Math.floor(last.validated * 100) + '%']
+          ], function(d) { return d[1]});
+      legend.exit().remove()
+
+      legendEnter = legend.enter()
+        .append('g')
+          .attr('class', 'legend');
+
+      legendEnter.append('rect')
+        .attr('x', 10)
+        .attr('y', function(d, i){ return i *  16;})
+        .attr('width', 10)
+        .attr('height', 10)
+        .attr('class', function(d) {
+          return d[0]
+        });
+
+      legendEnter.append('text')
+        .attr('x', 25)
+        .attr('y', function(d, i){ return i *  16 + 8;})
+        .text(function(d) { return d[0] + ' ' + d[1];})
     });
   }
 
