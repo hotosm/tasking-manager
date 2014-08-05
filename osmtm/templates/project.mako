@@ -9,7 +9,13 @@
    (${_('Archived')})
   % endif
   % if user and (user.is_admin or user.is_project_manager):
-    <a class="btn btn-default btn-sm pull-right" href="${request.route_path('project_edit', project=project.id)}">
+    <a class="btn btn-link btn-sm pull-right"
+       href="${request.route_path('project_tasks_json', project=project.id)}"
+       target="_blank">
+       <span class="glyphicon glyphicon-cloud-download"></span>
+      Export
+    </a>
+    <a class="btn btn-link btn-sm pull-right" href="${request.route_path('project_edit', project=project.id)}">
       <span class="glyphicon glyphicon-cog"></span>
       Edit
     </a>

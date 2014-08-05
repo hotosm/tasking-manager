@@ -301,6 +301,13 @@ class TestProjectFunctional(BaseTestCase):
 
         self.testapp.get('/project/%d' % project_id, status=200)
 
+    def test_project_tasks_json_xkr(self):
+        project_id = 1
+        res = self.testapp.get('/project/%d/tasks.json' % project_id,
+                               xhr=True,
+                               status=200)
+        self.assertEqual(len(res.json['features']), 6)
+
     def test_project_tasks_json(self):
         project_id = 1
         res = self.testapp.get('/project/%d/tasks.json' % project_id,
