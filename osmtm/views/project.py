@@ -6,6 +6,7 @@ from ..models import (
     DBSession,
     Project,
     Area,
+    PriorityArea,
     User,
     Task,
     TaskState,
@@ -29,6 +30,11 @@ from sqlalchemy.sql.expression import (
 from geoalchemy2 import (
     shape,
 )
+
+from shapely.geometry import (
+    MultiPolygon
+)
+
 from geoalchemy2.functions import (
     ST_Area,
     ST_Transform,
@@ -83,10 +89,16 @@ def project(request):
     if user_id:
         user = DBSession.query(User).get(user_id)
         locked_task = get_locked_task(project.id, user)
+
+    features = []
+    for area in project.priority_areas:
+        features.append(Feature(geometry=shape.to_shape(area.geometry)))
+
     return dict(page_id='project', project=project,
                 user=user,
                 locked_task=locked_task,
-                history=history,)
+                history=history,
+                priority_areas=FeatureCollection(features),)
 
 
 @view_config(route_name='project_new',
@@ -185,7 +197,6 @@ def project_grid_simulate(request):
 
     found = get_tiles_in_geom(geom_3857, zoom)
     polygons = [i[2] for i in found]
-    from shapely.geometry import MultiPolygon
     multi = MultiPolygon(polygons)
 
     geometry = DBSession.execute(
@@ -243,11 +254,31 @@ def project_edit(request):
             if hasattr(josm_preset, 'value'):
                 project.josm_preset = josm_preset.value.decode('UTF-8')
 
+        # Remove the previously set priority areas
+        for area in project.priority_areas:
+            DBSession.delete(area)
+        project.priority_areas[:] = []
+        DBSession.flush()
+
+        priority_areas = request.params.get('priority_areas', '')
+
+        if priority_areas != '':
+            geoms = parse_geojson(priority_areas)
+
+            for geom in geoms:
+                geom = 'SRID=4326;%s' % geom.wkt
+                project.priority_areas.append(PriorityArea(geom))
+
         DBSession.add(project)
         return HTTPFound(location=route_path('project', request,
                          project=project.id))
 
-    return dict(page_id='project_edit', project=project, licenses=licenses)
+    features = []
+    for area in project.priority_areas:
+        features.append(Feature(geometry=shape.to_shape(area.geometry)))
+
+    return dict(page_id='project_edit', project=project, licenses=licenses,
+                priority_areas=FeatureCollection(features))
 
 
 @view_config(route_name='project_publish',

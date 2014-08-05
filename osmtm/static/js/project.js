@@ -121,6 +121,15 @@ osmtm.project = (function() {
     }).addTo(lmap);
 
     lmap.addControl(new Legend());
+
+    var priority = new L.geoJson(null, {
+      style: {
+        color: 'red',
+        weight: 1
+      }
+    });
+    priority.addData(priority_areas);
+    lmap.addLayer(priority);
   }
 
   /**
