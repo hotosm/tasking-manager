@@ -84,7 +84,6 @@ else:
   </div>
 </div>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.4.0'})}"></script>
-<script src="${request.static_url('osmtm:static/js/lib/Leaflet.utfgrid/dist/leaflet.utfgrid.js', _query={'v':'2.4.0'})}"></script>
 <script>
 <%
 from shapely.wkb import loads
