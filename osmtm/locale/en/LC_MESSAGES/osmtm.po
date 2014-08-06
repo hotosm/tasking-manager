@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: osmtm 2.2\n"
+"Project-Id-Version: osmtm 2.3.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-24 08:55+0200\n"
-"PO-Revision-Date: 2014-07-24 08:55+0200\n"
+"POT-Creation-Date: 2014-07-29 12:41+0200\n"
+"PO-Revision-Date: 2014-07-29 12:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
