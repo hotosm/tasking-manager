@@ -1,4 +1,4 @@
-<osm version="0.6" generator="HOT Tasking Manager" upload="false">
+<osm version="0.6" generator="HOT Tasking Manager">
 <%
     id = -2
 %>
