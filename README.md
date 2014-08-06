@@ -107,7 +107,7 @@ To run the tests, use the following command:
 OSMTM is localized on [https://www.transifex.com/projects/p/osm-tasking-manager2/](Transifex) service.
 
 It's possible to create translations for two resources: **current** and
-**master**. *Current* resoruce represents currently deployed instance of the
+**master**. *Current* resource represents currently deployed instance of the
 OSMTM [http://tasks.hotosm.org](). *Master* resource represents actively
 developed code that will become *current* once it gets deployed.
 
