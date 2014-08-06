@@ -4,13 +4,14 @@
 # 
 # Translators:
 # Supaplex <bejokeup@gmail.com>, 2014
+# shangkuanlc <shangkuanlc@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-24 08:55+0200\n"
-"PO-Revision-Date: 2014-07-24 06:56+0000\n"
-"Last-Translator: Dražen Odobašić <dodobasic@gmail.com>\n"
+"POT-Creation-Date: 2014-07-29 12:41+0200\n"
+"PO-Revision-Date: 2014-07-26 14:31+0000\n"
+"Last-Translator: shangkuanlc <shangkuanlc@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/osm-tasking-manager2/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +22,7 @@ msgstr ""
 
 #: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
-msgstr "登入開放街圖"
+msgstr "以開放街圖帳號登入"
 
 #: osmtm/templates/home.mako:8
 msgid "urgent"
@@ -77,19 +78,19 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeinity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr "開放街圖任務管理工具是一套由人道開放街圖小組開發設計的畫圖工具，主要的目的是將畫圖任務分配得更小，並且能快速完成。從這套工具能顯示那些區域需要畫，以及那些區域需要驗證。<br/>這麼一來，這套工具能協調無數圖客能夠彼此合作繪製災區，允許管控流程和統一工作的共同標準(例如著默的重點，用到的特殊標籤等)"
+msgstr "開放街圖任務管理工具是一套由人道開放街圖小組(HOT)開發設計的畫圖工具，此工具的主要目的是將畫圖的工作劃分得更小，以期能快速完成繪製任務。從這套工具能顯示那些區域需要志工參與繪製，以及那些區域需要驗證。<br/>這麼一來，這套工具能協調無數圖客共同合作繪製急難救助圖資，並協調進度流程和建立任務的統一標準（例如任務著墨的重點元素、自定義的特殊標籤等）"
 
 #: osmtm/templates/home.mako:118
 msgid "${locked} user(s) is (are) currently working on this project"
-msgstr "${locked} 使用者()()目前正在努力畫專案"
+msgstr "${locked} 使用者()()目前正在執行此專案中"
 
 #: osmtm/templates/home.mako:159 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
-msgstr "專案權限受限"
+msgstr "存取此專案權限受限"
 
 #: osmtm/templates/home.mako:162
 msgid "Created by"
-msgstr "由誰建立"
+msgstr "由下列使用者建立"
 
 #: osmtm/templates/home.mako:164
 msgid "Updated"
@@ -200,7 +201,7 @@ msgstr "你必須輸入註解"
 
 #: osmtm/templates/project.new.mako:76
 msgid "You cannot select this option unless you import a file with polygons."
-msgstr ""
+msgstr "除非你匯入含有多邊形的檔案，否則無法選擇這個選項。"
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
@@ -260,7 +261,7 @@ msgstr "或"
 
 #: osmtm/templates/task.empty.mako:27
 msgid "Take a task at random"
-msgstr "隨意選擇任務"
+msgstr "隨機選擇任務"
 
 #: osmtm/templates/task.freecomment.mako:7
 msgid "Comment"
@@ -332,7 +333,7 @@ msgstr "分割"
 
 #: osmtm/templates/task.state.done.mako:4
 msgid "Invalidate this task if you consider it needs more work."
-msgstr "如果你覺得這項任務還需要更多努力，那就讓任務驗證無效。"
+msgstr "如果你覺得這項任務尚未完成而還需要更多處理，那就讓任務驗證無效。"
 
 #: osmtm/templates/task.state.done.mako:12
 #: osmtm/templates/task.state.ready.mako:8
@@ -357,7 +358,7 @@ msgstr "任務標示為完成"
 
 #: osmtm/templates/task.unlocked.mako:12
 msgid "Lock this task to tell others that you are currently working on it."
-msgstr "鎖定這項任務以便讓其他人知道你正在努力畫圖。"
+msgstr "鎖定這項任務以便讓其他人知道你正在進行此項繪圖任務。"
 
 #: osmtm/templates/task.unlocked.mako:17
 msgid "Start mapping"
@@ -433,7 +434,7 @@ msgstr "任務驗證未過"
 
 #: osmtm/views/task.py:329
 msgid "Random task... none available! Sorry."
-msgstr "隨機選擇任務... 抱歉，沒有可以選擇的！"
+msgstr "隨機選擇任務... 沒有可分配任務了，抱歉！"
 
 #: osmtm/views/task.py:342
 msgid "You cannot assign an already locked task"
@@ -449,4 +450,4 @@ msgstr "移除指派的任務"
 
 #: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"
-msgstr "抱歉，這位使用者並不存存"
+msgstr "抱歉，這位使用者並不存在"

@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-24 08:55+0200\n"
-"PO-Revision-Date: 2014-07-24 06:56+0000\n"
-"Last-Translator: Dražen Odobašić <dodobasic@gmail.com>\n"
+"POT-Creation-Date: 2014-07-29 12:41+0200\n"
+"PO-Revision-Date: 2014-07-25 02:23+0000\n"
+"Last-Translator: nyampire <nyampire@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/osm-tasking-manager2/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -200,7 +200,7 @@ msgstr "コメントを入力してください"
 
 #: osmtm/templates/project.new.mako:76
 msgid "You cannot select this option unless you import a file with polygons."
-msgstr ""
+msgstr "このオプションはポリゴンデータのファイルにのみ対応しています。"
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"

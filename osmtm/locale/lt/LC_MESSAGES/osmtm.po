@@ -1,23 +1,23 @@
-# Lithuanian translations for osmtm.
+# English translations for osmtm.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the osmtm project.
-# Aurimas Fišeras <aurimas@members.fsf.org>, 2014.
+# 
+# Translators:
+# Aurimas Fišeras <aurimas@members.fsf.org>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: osmtm 2.2\n"
+"Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-24 08:55+0200\n"
-"PO-Revision-Date: 2014-07-27 10:32+0300\n"
-"Last-Translator: Aurimas Fišeras <aurimas@members.fsf.org>\n"
-"Language-Team: komp_lt@konf.lt\n"
-"Language: lt\n"
+"POT-Creation-Date: 2014-07-29 12:41+0200\n"
+"PO-Revision-Date: 2014-07-29 10:40+0000\n"
+"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"Language-Team: Lithuanian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/lt/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"(n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Virtaal 0.7.1\n"
 "Generated-By: Babel 1.3\n"
+"Language: lt\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
@@ -70,22 +70,14 @@ msgstr "Apie užduočių tvarkytuvę"
 #: osmtm/templates/home.mako:90
 msgid ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
-"Humanitarian OSM Team collaborative mapping. The purpose of the tool is "
-"to divide up a mapping job into smaller tasks that can be completed "
-"rapidly. It shows which areas need to be mapped and which areas need the "
-"mapping validated. <br />This approach facilitates the distribution of "
-"tasks to the various mappers in a context of emergency. It also permits "
-"to control the progress and the homogeinity of the work done (ie. "
-"Elements to cover, specific tags to use, etc.)."
-msgstr ""
-"OSM užduočių tvarkytuvė yra žemėlapių kūrimo įrankis sukurtas OSM humanistų "
-"komandai žemėlapių kūrimui bendradarbiaujant. Šio įrankio tikslas yra "
-"padalinti žemėlapio kūrimo darbą į mažesnes užduotis, kurios gali būti "
-"greitai užbaigtos. Jis parodo, kurios vietos turi būti pažymėtos žemėlapyje, "
-"kurių žymėjimai žemėlapyje turi būti patikrinti. <br />Šis būdas palengvina "
-"užduočių paskirstymą įvairiems žemėlapių kūrėjams kritinių situacijų atveju. "
-"Jis taip pat leidžia kontroliuoti atliekamo darbo eigą ir homogeniškumą ("
-"pvz., kuriuos elementus įtraukti, kokias žymas naudoti, etc.)."
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated. <br />This approach facilitates the distribution of tasks to the "
+"various mappers in a context of emergency. It also permits to control the "
+"progress and the homogeinity of the work done (ie. Elements to cover, "
+"specific tags to use, etc.)."
+msgstr "OSM užduočių tvarkytuvė yra žemėlapių kūrimo įrankis sukurtas OSM humanistų komandai žemėlapių kūrimui bendradarbiaujant. Šio įrankio tikslas yra padalinti žemėlapio kūrimo darbą į mažesnes užduotis, kurios gali būti greitai užbaigtos. Jis parodo, kurios vietos turi būti pažymėtos žemėlapyje, kurių žymėjimai žemėlapyje turi būti patikrinti. <br />Šis būdas palengvina užduočių paskirstymą įvairiems žemėlapių kūrėjams kritinių situacijų atveju. Jis taip pat leidžia kontroliuoti atliekamo darbo eigą ir homogeniškumą (pvz., kuriuos elementus įtraukti, kokias žymas naudoti, etc.)."
 
 #: osmtm/templates/home.mako:118
 msgid "${locked} user(s) is (are) currently working on this project"
@@ -208,8 +200,7 @@ msgstr "Privalote pakomentuoti."
 
 #: osmtm/templates/project.new.mako:76
 msgid "You cannot select this option unless you import a file with polygons."
-msgstr ""
-"Negalite pasirinkti šio nustatymo, jei neimportavote failo su daugiakampiais."
+msgstr "Negalite pasirinkti šio nustatymo, jei neimportavote failo su daugiakampiais."
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
@@ -313,9 +304,7 @@ msgstr "Užblokuota (${username})"
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
-msgstr ""
-"Jei nebaigsite ar neatblokuosite šios užduoties laiku, ji bus automatiškai "
-"atblokuota"
+msgstr "Jei nebaigsite ar neatblokuosite šios užduoties laiku, ji bus automatiškai atblokuota"
 
 #: osmtm/templates/task.locked.mako:16
 msgid "min. left"
