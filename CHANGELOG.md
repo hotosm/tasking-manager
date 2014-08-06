@@ -1,6 +1,16 @@
 OSM Tasking Manager Changelog
 =============================
 
+## 2.4.0 (2014-08-06)
+
+ * Languages added: Lithuanian, Indonesian
+ * Layout issues fixed
+ * Difficulty can be set for each task
+ * Priority areas can be defined for a project
+ * Users are informed when a task they worked on is invalidated
+ * Project tasks can be exported to GeoJSON
+ * Performance enhancements
+
 ## 2.3.1 (2014-07-24)
 
  * Fixed bug with Potlatch2 not launching.

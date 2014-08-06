@@ -83,8 +83,8 @@ else:
     </div>
   </div>
 </div>
-<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.3.1'})}"></script>
-<script src="${request.static_url('osmtm:static/js/lib/Leaflet.utfgrid/dist/leaflet.utfgrid.js', _query={'v':'2.3.1'})}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.4.0'})}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/Leaflet.utfgrid/dist/leaflet.utfgrid.js', _query={'v':'2.4.0'})}"></script>
 <script>
 <%
 from shapely.wkb import loads
@@ -102,6 +102,6 @@ var statesI18n = ["${_('Ready')}", "${_('Invalidated')}", "${_('Done')}", "${_('
 var commentRequiredMsg = "${_('You must leave a comment.')}"
 </script>
   <script src="http://d3js.org/d3.v3.js"></script>
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js', _query={'v':'2.3.1'})}"></script>
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.difficulty.js', _query={'v':'2.3.1'})}"></script>
+  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js', _query={'v':'2.4.0'})}"></script>
+  <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.difficulty.js', _query={'v':'2.4.0'})}"></script>
 </%block>
