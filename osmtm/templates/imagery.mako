@@ -20,8 +20,8 @@
   ${project.imagery}
 </p>
 % elif not license_accepted:
-<p>
-  tms[22]:http://xxx.xxxx.com/hot/1.0.0/xxxxxx/{zoom}/{x}/{y}.png
+<p class="text-muted">
+[${_('imagery url available only after accepting the license')}]
 </p>
 % endif
 % if project.license:
