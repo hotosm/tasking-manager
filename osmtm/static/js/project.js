@@ -10,7 +10,9 @@ osmtm.project = (function() {
   var yAxis;
   var line;
   var chart;
+  var checkTimeout;
   var lastUpdateCheck = (new Date()).getTime();
+  var pageFocusInterval;
   var lockedCounter;
 
   var states = [
@@ -698,6 +700,13 @@ osmtm.project = (function() {
   }
 
   function checkForUpdates() {
+    window.clearTimeout(checkTimeout);
+    checkTimeout = window.setTimeout(checkForUpdates, 5000);
+    if (document.hasFocus && !document.hasFocus()) {
+      clearInterval(pageFocusInterval);
+      pageFocusInterval = setInterval( checkPageFocus, 200 );
+      return;
+    }
     var now = (new Date()).getTime();
     var interval = now - lastUpdateCheck;
     $.ajax({
@@ -721,6 +730,13 @@ osmtm.project = (function() {
       }, dataType: "json"}
     );
     lastUpdateCheck = now;
+  }
+
+  function checkPageFocus() {
+    if (document.hasFocus && document.hasFocus()) {
+      clearInterval(pageFocusInterval);
+      checkForUpdates();
+    }
   }
 
   /**
@@ -807,7 +823,7 @@ osmtm.project = (function() {
       }).run();
 
       // automaticaly checks for tile state updates
-      window.setInterval(checkForUpdates, 20000);
+      checkForUpdates();
 
       $(document).on('submit', 'form', onFormSubmit);
       $(document).on("click", "form button[type=submit]", function() {
