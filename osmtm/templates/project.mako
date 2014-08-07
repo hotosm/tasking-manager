@@ -98,7 +98,8 @@ window.location.hash = "task/${locked_task.id}";
 var priority_areas = ${dumps(priority_areas)|n};
 
 var statesI18n = ["${_('Ready')}", "${_('Invalidated')}", "${_('Done')}", "${_('Validated')}"];
-var commentRequiredMsg = "${_('You must leave a comment.')}"
+var commentRequiredMsg = "${_('You must leave a comment.')}";
+var highPriorityI18n = "${_('High priority')}";
 </script>
   <script src="http://d3js.org/d3.v3.js"></script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js', _query={'v':'2.4.1'})}"></script>
