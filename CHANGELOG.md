@@ -1,6 +1,10 @@
 OSM Tasking Manager Changelog
 =============================
 
+## 2.4.2 (2014-08-08)
+
+ * More or less important bugs fixed
+
 ## 2.4.1 (2014-08-07)
 
  * Reverted a patch which was inserting wrong record in lock table

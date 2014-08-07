@@ -83,7 +83,7 @@ else:
     </div>
   </div>
 </div>
-<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.4.1'})}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.4.2'})}"></script>
 <script>
 <%
 from shapely.wkb import loads
@@ -102,6 +102,6 @@ var commentRequiredMsg = "${_('You must leave a comment.')}";
 var highPriorityI18n = "${_('High priority')}";
 </script>
   <script src="http://d3js.org/d3.v3.js"></script>
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js', _query={'v':'2.4.1'})}"></script>
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.difficulty.js', _query={'v':'2.4.1'})}"></script>
+  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js', _query={'v':'2.4.2'})}"></script>
+  <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.difficulty.js', _query={'v':'2.4.2'})}"></script>
 </%block>
