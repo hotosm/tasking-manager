@@ -256,7 +256,10 @@ geometry = loads(str(project.area.geometry.data))
   </div>
   <div class="col-md-8">
     <div id="leaflet_priority_areas"></div>
-    <input type="hidden" name="priority_areas" />
+    <%
+      from geojson import dumps
+    %>
+    <input type="hidden" name="priority_areas" value="${dumps(priority_areas)}"/>
   </div>
 </div>
 </%block>
