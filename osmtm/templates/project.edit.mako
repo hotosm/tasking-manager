@@ -4,12 +4,12 @@
 <h1>${project.id} - ${project.name} - Edit</h1>
 </%block>
 <%block name="content">
-<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/datepicker3.css', _query={'v':'2.4.0'})}">
-<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js', _query={'v':'2.4.0'})}"></script>
-<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/bootstrap-datepicker.js', _query={'v':'2.4.0'})}"></script>
-<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css', _query={'v':'2.4.0'})}"/>
-<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.4.0'})}"></script>
-<script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js', _query={'v':'2.4.0'})}"></script>
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/datepicker3.css', _query={'v':'2.4.1'})}">
+<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js', _query={'v':'2.4.1'})}"></script>
+<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/bootstrap-datepicker.js', _query={'v':'2.4.1'})}"></script>
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css', _query={'v':'2.4.1'})}"/>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.4.1'})}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js', _query={'v':'2.4.1'})}"></script>
 <div id="markdown_cheat_sheet" class="modal fade">
   <div class="modal-dialog">
   <div class="modal-content">
@@ -78,7 +78,7 @@ geometry = loads(str(project.area.geometry.data))
       </div>
     </div>
   </form>
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js', _query={'v':'2.4.0'})}"></script>
+  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js', _query={'v':'2.4.1'})}"></script>
   <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 </div>
 </%block>

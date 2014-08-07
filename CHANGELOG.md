@@ -1,6 +1,10 @@
 OSM Tasking Manager Changelog
 =============================
 
+## 2.4.1 (2014-08-07)
+
+ * Reverted a patch which was inserting wrong record in lock table
+
 ## 2.4.0 (2014-08-06)
 
  * Languages added: Lithuanian, Indonesian
