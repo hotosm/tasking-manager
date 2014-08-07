@@ -259,7 +259,7 @@ geometry = loads(str(project.area.geometry.data))
     <%
       from geojson import dumps
     %>
-    <input type="hidden" name="priority_areas" value="${dumps(priority_areas)}"/>
+    <input type="hidden" name="priority_areas" value="${dumps(priority_areas) if len(priority_areas.features) != 0 else ''}"/>
   </div>
 </div>
 </%block>
