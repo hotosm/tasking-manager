@@ -8,9 +8,10 @@
 <% id = id -1 %>
 % endfor
 <way id="-1">
-% for i in range(1, len(polygon.exterior.coords) + 1):
+% for i in range(1, len(polygon.exterior.coords)):
 <nd ref="-${i + 1}"/>
 % endfor
+<nd ref="-2"/>
 <tag k="josm/ignore" v="true" />
 </way>
 % endfor
