@@ -54,6 +54,29 @@ osmtm.project = (function() {
     }
   });
 
+  var LegendPriority = L.Control.extend({
+    options: {
+      position: 'bottomleft'
+    },
+
+    onAdd: function(map) {
+      var container = L.DomUtil.create('div', 'legend-control');
+
+      var ul = L.DomUtil.create('ul', null, container);
+
+      var key, color;
+
+      key = L.DomUtil.create('li', null, ul);
+      color = L.DomUtil.create('div', 'key-color', key);
+      color.style.border = '1px solid #FF9A9A';
+      color.style.opacity = "1";
+      color.style.backgroundColor = '#FFE6EA';
+      key.innerHTML += highPriorityI18n;
+
+      return container;
+    }
+  });
+
   // creates the Leaflet map
   function createMap() {
     lmap = L.map('leaflet');
@@ -122,16 +145,20 @@ osmtm.project = (function() {
         }
     }).addTo(lmap);
 
+    if (priority_areas && priority_areas.features.length > 0) {
+      var priority = new L.geoJson(null, {
+        style: {
+          color: 'red',
+          weight: 1
+        }
+      });
+      priority.addData(priority_areas);
+      lmap.addLayer(priority);
+      lmap.addControl(new LegendPriority());
+    }
+
     lmap.addControl(new Legend());
 
-    var priority = new L.geoJson(null, {
-      style: {
-        color: 'red',
-        weight: 1
-      }
-    });
-    priority.addData(priority_areas);
-    lmap.addLayer(priority);
   }
 
   /**
