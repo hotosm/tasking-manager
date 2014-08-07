@@ -127,7 +127,7 @@ geometry = loads(str(project.area.geometry.data))
           </label>
           ${locale_chooser(inputname='name')}
           <div class="tab-content">
-            % for locale, translation in project.translations.iteritems():
+            % for locale, translation in translations:
             <div id="tab_name_${locale}"
                  data-locale="${locale}"
                  class="tab-pane ${'active' if locale == 'en' else ''}">
@@ -151,7 +151,7 @@ geometry = loads(str(project.area.geometry.data))
           </label>
           ${locale_chooser(inputname='short_description')}
           <div class="tab-content">
-            % for locale, translation in project.translations.iteritems():
+            % for locale, translation in translations:
               <div id="short_description_${locale}"
                    data-locale="${locale}"
                    class="tab-pane ${'active' if locale == 'en' else ''}">
@@ -389,7 +389,7 @@ geometry = loads(str(project.area.geometry.data))
 <%def name="textarea_with_preview(inputname, size=None)">
   <div class="tab-content">
     ${locale_chooser(inputname=inputname)}
-    % for locale, translation in project.translations.iteritems():
+    % for locale, translation in translations:
     <div id="tab_${inputname}_${locale}"
          data-locale="${locale}"
          class="tab-pane ${'active' if locale == 'en' else ''}">
@@ -431,7 +431,7 @@ geometry = loads(str(project.area.geometry.data))
 
 <%def name="locale_chooser(inputname)">
   <div class="btn-group pull-right" id="locale_chooser_${inputname}">
-    % for locale, translation in project.translations.iteritems():
+    % for locale, translation in translations:
     <a href
       class="btn btn-default btn-xs ${'active' if locale == 'en' else ''}"
       data-locale="${locale}">
