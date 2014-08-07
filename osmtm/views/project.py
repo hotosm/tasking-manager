@@ -273,11 +273,14 @@ def project_edit(request):
         return HTTPFound(location=route_path('project', request,
                          project=project.id))
 
+    translations = project.translations.items()
+
     features = []
     for area in project.priority_areas:
         features.append(Feature(geometry=shape.to_shape(area.geometry)))
 
     return dict(page_id='project_edit', project=project, licenses=licenses,
+                translations=translations,
                 priority_areas=FeatureCollection(features))
 
 
