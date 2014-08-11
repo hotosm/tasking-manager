@@ -340,13 +340,18 @@ class Task(Base):
         return tb.create_square(self.x, self.y)
 
     def to_feature(self):
+        properties = {
+            'state': self.cur_state.state if self.cur_state else 0,
+            'locked': self.cur_lock and self.cur_lock.lock
+        }
+        if self.x and self.y and self.zoom:
+            properties['x'] = self.x
+            properties['y'] = self.y
+            properties['zoom'] = self.zoom
         return Feature(
             geometry=shape.to_shape(self.geometry),
             id=self.id,
-            properties={
-                'state': self.cur_state.state if self.cur_state else 0,
-                'locked': self.cur_lock and self.cur_lock.lock
-            }
+            properties=properties
         )
 
 
