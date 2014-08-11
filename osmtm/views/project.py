@@ -63,9 +63,9 @@ log = logging.getLogger(__name__)
 @view_config(route_name='project', renderer='project.mako', http_cache=0,
              permission='project_show')
 def project(request):
+    check_task_expiration()
     check_project_expiration()
     id = request.matchdict['project']
-    check_task_expiration(id)
     project = DBSession.query(Project).get(id)
 
     if project is None:
@@ -273,11 +273,14 @@ def project_edit(request):
         return HTTPFound(location=route_path('project', request,
                          project=project.id))
 
+    translations = project.translations.items()
+
     features = []
     for area in project.priority_areas:
         features.append(Feature(geometry=shape.to_shape(area.geometry)))
 
     return dict(page_id='project_edit', project=project, licenses=licenses,
+                translations=translations,
                 priority_areas=FeatureCollection(features))
 
 

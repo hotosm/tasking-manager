@@ -115,9 +115,6 @@ sorts = [('priority', 'asc', _('High priority first')),
         status = 'Draft'
     else:
         status = ''
-
-    from osmtm.views.task import check_task_expiration
-    check_task_expiration(project.id)
 %>
 <div class="project well ${status.lower()}">
   <ul class="nav project-stats">

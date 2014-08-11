@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[osm-tasking-manager2.master]
+[osm-tasking-manager2.current]
 source_file = osmtm/locale/en/LC_MESSAGES/osmtm.po
 source_lang = en
 trans.de = osmtm/locale/de/LC_MESSAGES/osmtm.po
