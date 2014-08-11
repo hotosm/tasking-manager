@@ -35,7 +35,7 @@ requires = [
 ]
 
 setup(name='osmtm',
-      version='2.3.1',
+      version='2.5-dev',
       description='osmtm',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

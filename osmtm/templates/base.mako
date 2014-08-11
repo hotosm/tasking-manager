@@ -3,15 +3,15 @@
 <html>
   <head>
     <title>OSM Tasking Manager</title>
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css', _query={'v':'2.3.1'})}">
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css', _query={'v':'2.3.1'})}">
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js', _query={'v':'2.3.1'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/showdown.js', _query={'v':'2.3.1'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js', _query={'v':'2.3.1'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name, _query={'v':'2.3.1'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js', _query={'v':'2.3.1'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/shared.js', _query={'v':'2.3.1'})}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js', _query={'v':'2.3.1'})}"></script>
+    <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css', _query={'v':'2.5-dev'})}">
+    <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css', _query={'v':'2.5-dev'})}">
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js', _query={'v':'2.5-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/showdown.js', _query={'v':'2.5-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js', _query={'v':'2.5-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name, _query={'v':'2.5-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js', _query={'v':'2.5-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/shared.js', _query={'v':'2.5-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js', _query={'v':'2.5-dev'})}"></script>
 <%
 from pyramid.security import authenticated_userid
 from osmtm.models import DBSession, User, TaskComment
