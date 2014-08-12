@@ -19,7 +19,7 @@ def upgrade():
     op.create_table(
         'priority_area',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('geometry', ga.Geometry(geometry_type='POLYGON', srid=4326, management=True), nullable=True),
+        sa.Column('geometry', ga.Geometry(geometry_type='POLYGON', srid=4326), nullable=True),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_table(
