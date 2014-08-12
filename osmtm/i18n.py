@@ -15,6 +15,10 @@ from pyramid.events import (
 def add_renderer_globals(event):
     request = event['request']
     event['_'] = request.translate
+    # ngettext is used to define a translatable plural string as one of the
+    # supported keywords by Babel """https://github.com/mitsuhiko/babel/blob/
+    # master/babel/messages/extract.py#L34"""
+    event['ngettext'] = request.plural_translate
     event['localizer'] = request.localizer
 
 tsf = TranslationStringFactory('osmtm')
@@ -27,8 +31,16 @@ def add_localizer(event):
 
     def auto_translate(*args, **kwargs):
         return localizer.translate(tsf(*args, **kwargs))
+
+    def translate_plural(*args, **kwargs):
+        # set the default domain if not provided by the context
+        kwargs.setdefault('domain', 'osmtm')
+
+        return localizer.pluralize(*args, **kwargs)
+
     request.localizer = localizer
     request.translate = auto_translate
+    request.plural_translate = translate_plural
 
 
 @subscriber(NewRequest)

@@ -123,7 +123,9 @@ sorts = [('priority', 'asc', _('High priority first')),
         <tr>
           <%
             locked = project.get_locked()
-            title = _('${locked} user(s) is (are) currently working on this project', mapping={'locked': locked})
+            # plural forms are defined ngettext(singular, plural, n, ...)
+            # 'n' is the conditional for choosing the right plural form
+            title = ngettext('${locked} user is currently working on this project', '${locked} users are currently working on this project', locked, mapping={'locked': locked})
           %>
           % if locked:
           <td>
