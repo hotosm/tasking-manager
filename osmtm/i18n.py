@@ -1,14 +1,13 @@
 # subscribers.py
 
-from pyramid.i18n import (
-    get_localizer,
-    TranslationStringFactory,
-)
+from pyramid.i18n import get_localizer
 from pyramid.events import (
     NewRequest,
     BeforeRender,
     subscriber,
 )
+
+DEFAULT_TRANSLATION_DOMAIN = 'osmtm'
 
 
 @subscriber(BeforeRender)
@@ -21,8 +20,6 @@ def add_renderer_globals(event):
     event['ngettext'] = request.plural_translate
     event['localizer'] = request.localizer
 
-tsf = TranslationStringFactory('osmtm')
-
 
 @subscriber(NewRequest)
 def add_localizer(event):
@@ -30,11 +27,14 @@ def add_localizer(event):
     localizer = get_localizer(request)
 
     def auto_translate(*args, **kwargs):
-        return localizer.translate(tsf(*args, **kwargs))
+        # set the default domain if not provided by the context
+        kwargs.setdefault('domain', DEFAULT_TRANSLATION_DOMAIN)
+
+        return localizer.translate(*args, **kwargs)
 
     def translate_plural(*args, **kwargs):
         # set the default domain if not provided by the context
-        kwargs.setdefault('domain', 'osmtm')
+        kwargs.setdefault('domain', DEFAULT_TRANSLATION_DOMAIN)
 
         return localizer.pluralize(*args, **kwargs)
 
