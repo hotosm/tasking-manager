@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-07 10:32+0200\n"
-"PO-Revision-Date: 2014-08-06 12:50+0000\n"
-"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"POT-Creation-Date: 2014-08-06 11:21+0200\n"
+"PO-Revision-Date: 2014-08-06 09:45+0000\n"
+"Last-Translator: Manfred Reiter <ma.reiter@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/osm-tasking-manager2/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -79,23 +79,23 @@ msgid ""
 "specific tags to use, etc.)."
 msgstr "Der OSM Tasking Manager ist ein Mappingtool, das für das Humanitarion OSM Team zum gemeinsamen Mappen geschaffen wurde. Der Zweck dieses Tools ist es Mappingaufgaben in Teilbereiche zu gliedern, die schnell erledigt werden können. Es zeigt, welche Bereiche gemappt und welche Bereiche geprüft werden müssen. <br /> Dies erleichtert die Aufgabenverteilung an verschiedene Mapper in einem Notfall. Er erlaubt auch den Fortschritt der Mappingaktivitäten und die Homogenität des Mappens (d.h. zu taggende Elemente, Benutzung von Tags usw.) sicherzustellen."
 
-#: osmtm/templates/home.mako:126
+#: osmtm/templates/home.mako:129
 msgid "${locked} user(s) is (are) currently working on this project"
 msgstr "${locked} Nutzer arbeiten/arbeitet z. Zt. an diesem Projekt"
 
-#: osmtm/templates/home.mako:167 osmtm/templates/project.instructions.mako:23
+#: osmtm/templates/home.mako:170 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
 msgstr "Der Zugang zu diesem Projekt ist beschränkt"
 
-#: osmtm/templates/home.mako:170
+#: osmtm/templates/home.mako:173
 msgid "Created by"
 msgstr "Erstellt von"
 
-#: osmtm/templates/home.mako:172
+#: osmtm/templates/home.mako:175
 msgid "Updated"
 msgstr "Upgedated"
 
-#: osmtm/templates/home.mako:173
+#: osmtm/templates/home.mako:176
 msgid "Priority:"
 msgstr "Priorität:"
 
@@ -187,26 +187,26 @@ msgstr "Statistiken"
 msgid "Loading"
 msgstr "Laden"
 
-#: osmtm/templates/project.mako:100
+#: osmtm/templates/project.mako:101
 msgid "Ready"
 msgstr "Bereit"
 
-#: osmtm/templates/project.mako:100 osmtm/templates/task.history.mako:26
+#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:26
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr "Nicht geprüft"
 
-#: osmtm/templates/project.mako:100 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "Fertig"
 
-#: osmtm/templates/project.mako:100 osmtm/templates/task.history.mako:28
+#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:28
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr "Geprüft"
 
-#: osmtm/templates/project.mako:101
+#: osmtm/templates/project.mako:102
 msgid "You must leave a comment."
 msgstr "Du musst einen Kommentar eingeben."
 
