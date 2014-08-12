@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-06 11:21+0200\n"
-"PO-Revision-Date: 2014-08-06 09:22+0000\n"
-"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"POT-Creation-Date: 2014-07-29 12:41+0200\n"
+"PO-Revision-Date: 2014-07-25 02:23+0000\n"
+"Last-Translator: nyampire <nyampire@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/osm-tasking-manager2/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -59,15 +59,15 @@ msgstr "検索"
 msgid "Sort by:"
 msgstr "並び替え"
 
-#: osmtm/templates/home.mako:78
+#: osmtm/templates/home.mako:73
 msgid "Your projects"
 msgstr "あなたのプロジェクト"
 
-#: osmtm/templates/home.mako:96
+#: osmtm/templates/home.mako:88
 msgid "About the Tasking Manager"
 msgstr "Tasking Managerについて"
 
-#: osmtm/templates/home.mako:98
+#: osmtm/templates/home.mako:90
 msgid ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
 "Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
@@ -79,29 +79,25 @@ msgid ""
 "specific tags to use, etc.)."
 msgstr "OSM Tasking Managerは、OSM人道支援チーム \"Humanitarian OSM Team, HOT\" による多人数マッピング作業を効率的に実施するためのツールです。このツールでは、マッピング対象の地域を小さなタスクに分割することによって作業を素早く実施することができるようにします。ツール内では、マッピングが必要とされている地域と、内容の確認が必要とされている地域が一覧で表示されます。<br />この方法を使うことにより、災害発生時に多くのマッパーが対象となる地域を一斉に描画するという状況において、それぞれが行なうべきことを適切に切り分けることが可能です。また、作業の進捗確認や、作業結果の均質化を行なうことも可能となります。(例: 描画対象となる地物の選定、特殊なタグの使用など...)"
 
-#: osmtm/templates/home.mako:129
+#: osmtm/templates/home.mako:118
 msgid "${locked} user(s) is (are) currently working on this project"
 msgstr "現在 ${locked} 人がプロジェクト参加中です"
 
-#: osmtm/templates/home.mako:170 osmtm/templates/project.instructions.mako:23
+#: osmtm/templates/home.mako:159 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
 msgstr "プロジェクトへのアクセス制限中"
 
-#: osmtm/templates/home.mako:173
+#: osmtm/templates/home.mako:162
 msgid "Created by"
 msgstr "作成者"
 
-#: osmtm/templates/home.mako:175
+#: osmtm/templates/home.mako:164
 msgid "Updated"
 msgstr "更新"
 
-#: osmtm/templates/home.mako:176
+#: osmtm/templates/home.mako:165
 msgid "Priority:"
 msgstr "優先度"
-
-#: osmtm/templates/imagery.mako:24
-msgid "imagery url available only after accepting the license"
-msgstr ""
 
 #: osmtm/templates/imagery.mako:51
 msgid "You need to accept the license first"
@@ -111,31 +107,23 @@ msgstr "ライセンスに同意する必要があります"
 msgid "Licenses"
 msgstr "ライセンス"
 
-#: osmtm/templates/message.mako:11 osmtm/templates/user_menu.mako:12
-msgid "Messages"
-msgstr ""
-
-#: osmtm/templates/message.mako:19
-msgid "From:"
-msgstr ""
-
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
 msgstr "担当中タスク: "
 
-#: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:9
+#: osmtm/templates/project.edit.mako:81 osmtm/templates/project.mako:9
 msgid "Archived"
 msgstr "アーカイブ"
 
-#: osmtm/templates/project.edit.mako:96
+#: osmtm/templates/project.edit.mako:82
 msgid "Published"
 msgstr "公開中"
 
-#: osmtm/templates/project.edit.mako:97 osmtm/templates/project.mako:7
+#: osmtm/templates/project.edit.mako:83 osmtm/templates/project.mako:7
 msgid "Draft"
 msgstr "下書き"
 
-#: osmtm/templates/project.edit.mako:311
+#: osmtm/templates/project.edit.mako:272
 msgid "Allowed users"
 msgstr "許可ユーザ"
 
@@ -167,46 +155,46 @@ msgstr "航空写真"
 msgid "Start contributing"
 msgstr "参加"
 
-#: osmtm/templates/project.mako:48
+#: osmtm/templates/project.mako:36
 msgid "Instructions"
 msgstr "インストラクション"
 
-#: osmtm/templates/project.mako:49
+#: osmtm/templates/project.mako:37
 msgid "Contribute"
 msgstr "参加"
 
-#: osmtm/templates/project.mako:50
+#: osmtm/templates/project.mako:38
 msgid "Activity"
 msgstr "活動状況"
 
-#: osmtm/templates/project.mako:51
+#: osmtm/templates/project.mako:39
 msgid "Stats"
 msgstr "統計"
 
-#: osmtm/templates/project.mako:63
+#: osmtm/templates/project.mako:56
 msgid "Loading"
 msgstr "読み込み中"
 
-#: osmtm/templates/project.mako:101
+#: osmtm/templates/project.mako:93
 msgid "Ready"
 msgstr "準備完了"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:26
+#: osmtm/templates/project.mako:93 osmtm/templates/task.history.mako:26
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr "差し戻し"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:93 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "完了"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:28
+#: osmtm/templates/project.mako:93 osmtm/templates/task.history.mako:28
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr "確認完了"
 
-#: osmtm/templates/project.mako:102
+#: osmtm/templates/project.mako:94
 msgid "You must leave a comment."
 msgstr "コメントを入力してください"
 
@@ -257,41 +245,6 @@ msgstr "現在 ${task_link} をロック中です"
 #: osmtm/templates/task.current_locked.mako:10
 msgid "Select it again"
 msgstr "再選択"
-
-#: osmtm/templates/task.difficulty.mako:7
-#: osmtm/templates/task.difficulty.mako:50
-msgid "Hard"
-msgstr ""
-
-#: osmtm/templates/task.difficulty.mako:8
-msgid "Difficulty: hard<br>Level: advanced"
-msgstr ""
-
-#: osmtm/templates/task.difficulty.mako:11
-#: osmtm/templates/task.difficulty.mako:50
-msgid "Medium"
-msgstr ""
-
-#: osmtm/templates/task.difficulty.mako:12
-msgid "Difficulty: medium<br>Level: intermediate"
-msgstr ""
-
-#: osmtm/templates/task.difficulty.mako:15
-#: osmtm/templates/task.difficulty.mako:50
-msgid "Easy"
-msgstr ""
-
-#: osmtm/templates/task.difficulty.mako:16
-msgid "Difficulty: easy<br>Level: beginner"
-msgstr ""
-
-#: osmtm/templates/task.difficulty.mako:19
-msgid "Difficulty"
-msgstr ""
-
-#: osmtm/templates/task.difficulty.mako:20
-msgid "No difficulty set yet"
-msgstr ""
 
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
@@ -361,7 +314,7 @@ msgstr "分後に解除"
 msgid "Clear selection"
 msgstr "選択解除"
 
-#: osmtm/templates/task.mako:64
+#: osmtm/templates/task.mako:63
 msgid "See the changesets in the OSM database for this area."
 msgstr "この地域の変更セットをOSMデータベースで確認"
 
@@ -426,11 +379,7 @@ msgstr "このユーザは管理者です。"
 msgid "This user is a project manager."
 msgstr "このユーザはプロジェクト管理者です。"
 
-#: osmtm/templates/user_menu.mako:10
-msgid "Your page"
-msgstr ""
-
-#: osmtm/templates/user_menu.mako:16
+#: osmtm/templates/user_menu.mako:4
 msgid "logout"
 msgstr "ログアウト"
 
@@ -438,78 +387,66 @@ msgstr "ログアウト"
 msgid "Users"
 msgstr "ユーザ"
 
-#: osmtm/views/project.py:73
+#: osmtm/views/project.py:67
 msgid "Sorry, this project doesn't  exist"
 msgstr "プロジェクトが存在しません"
 
-#: osmtm/views/project.py:144
+#: osmtm/views/project.py:132
 msgid "Project #${project_id} created successfully"
 msgstr "プロジェクト #${project_id} の作成完了"
 
-#: osmtm/views/project.py:169
+#: osmtm/views/project.py:157
 msgid "Successfully imported ${n} geometries"
 msgstr "${n} 個のジオメトリを正常にインポートしました"
 
-#: osmtm/views/task.py:159
+#: osmtm/views/task.py:152
 msgid "Task marked as done. Thanks for your contribution"
 msgstr "タスクを完了状態にしました。おつかれさまでした！"
 
-#: osmtm/views/task.py:178
+#: osmtm/views/task.py:171
 msgid "Task already locked."
 msgstr "タスクは既にロック中です。"
 
-#: osmtm/views/task.py:184
+#: osmtm/views/task.py:177
 msgid "Task assigned to someone else."
 msgstr "誰かが担当中"
 
-#: osmtm/views/task.py:189
+#: osmtm/views/task.py:182
 msgid "Task locked. You can start mapping."
 msgstr "タスクをロックしました。マッピングを開始できます。"
 
-#: osmtm/views/task.py:206
+#: osmtm/views/task.py:199
 msgid "Task unlocked."
 msgstr "タスクをアンロックしました。"
 
-#: osmtm/views/task.py:218
+#: osmtm/views/task.py:211
 msgid "Comment added."
 msgstr "コメント追加完了。"
 
-#: osmtm/views/task.py:245
-msgid "Task ${link} invalidated"
-msgstr ""
-
-#: osmtm/views/task.py:260
+#: osmtm/views/task.py:233
 msgid "Task validated."
 msgstr "タスクの内容確認完了。"
 
-#: osmtm/views/task.py:263
+#: osmtm/views/task.py:236
 msgid "Task invalidated."
 msgstr "タスクの差し戻し完了。"
 
-#: osmtm/views/task.py:390
+#: osmtm/views/task.py:329
 msgid "Random task... none available! Sorry."
 msgstr "タスクのランダム選択...空いているタスクがありません。ごめんなさい！"
 
-#: osmtm/views/task.py:403
+#: osmtm/views/task.py:342
 msgid "You cannot assign an already locked task"
 msgstr "ロック中のタスクへの担当依頼はできません"
 
-#: osmtm/views/task.py:413
+#: osmtm/views/task.py:352
 msgid "Task assigned."
 msgstr "タスク担当開始。"
 
-#: osmtm/views/task.py:427
+#: osmtm/views/task.py:366
 msgid "Task assignment removed"
 msgstr "タスク担当の削除実施"
 
-#: osmtm/views/task.py:459
-msgid "Task difficulty changed."
-msgstr ""
-
-#: osmtm/views/task.py:472
-msgid "Task difficulty removed"
-msgstr ""
-
-#: osmtm/views/user.py:94
+#: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"
 msgstr "ユーザが存在しません"

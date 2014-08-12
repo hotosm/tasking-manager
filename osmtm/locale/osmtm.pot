@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: osmtm 2.4.0\n"
+"Project-Id-Version: osmtm 2.3.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-06 14:46+0200\n"
+"POT-Creation-Date: 2014-08-06 11:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,26 +185,26 @@ msgstr ""
 msgid "Loading"
 msgstr ""
 
-#: osmtm/templates/project.mako:100
+#: osmtm/templates/project.mako:101
 msgid "Ready"
 msgstr ""
 
-#: osmtm/templates/project.mako:100 osmtm/templates/task.history.mako:26
+#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:26
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr ""
 
-#: osmtm/templates/project.mako:100 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr ""
 
-#: osmtm/templates/project.mako:100 osmtm/templates/task.history.mako:28
+#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:28
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr ""
 
-#: osmtm/templates/project.mako:101
+#: osmtm/templates/project.mako:102
 msgid "You must leave a comment."
 msgstr ""
 

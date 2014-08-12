@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-06 11:21+0200\n"
-"PO-Revision-Date: 2014-08-06 09:45+0000\n"
+"POT-Creation-Date: 2014-07-29 12:41+0200\n"
+"PO-Revision-Date: 2014-08-06 08:39+0000\n"
 "Last-Translator: Manfred Reiter <ma.reiter@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/osm-tasking-manager2/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -59,15 +59,15 @@ msgstr "Suchen"
 msgid "Sort by:"
 msgstr "Sortieren nach"
 
-#: osmtm/templates/home.mako:78
+#: osmtm/templates/home.mako:73
 msgid "Your projects"
 msgstr "Deine Projekte"
 
-#: osmtm/templates/home.mako:96
+#: osmtm/templates/home.mako:88
 msgid "About the Tasking Manager"
 msgstr "Über den Tasking Manager"
 
-#: osmtm/templates/home.mako:98
+#: osmtm/templates/home.mako:90
 msgid ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
 "Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
@@ -79,29 +79,25 @@ msgid ""
 "specific tags to use, etc.)."
 msgstr "Der OSM Tasking Manager ist ein Mappingtool, das für das Humanitarion OSM Team zum gemeinsamen Mappen geschaffen wurde. Der Zweck dieses Tools ist es Mappingaufgaben in Teilbereiche zu gliedern, die schnell erledigt werden können. Es zeigt, welche Bereiche gemappt und welche Bereiche geprüft werden müssen. <br /> Dies erleichtert die Aufgabenverteilung an verschiedene Mapper in einem Notfall. Er erlaubt auch den Fortschritt der Mappingaktivitäten und die Homogenität des Mappens (d.h. zu taggende Elemente, Benutzung von Tags usw.) sicherzustellen."
 
-#: osmtm/templates/home.mako:129
+#: osmtm/templates/home.mako:118
 msgid "${locked} user(s) is (are) currently working on this project"
 msgstr "${locked} Nutzer arbeiten/arbeitet z. Zt. an diesem Projekt"
 
-#: osmtm/templates/home.mako:170 osmtm/templates/project.instructions.mako:23
+#: osmtm/templates/home.mako:159 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
 msgstr "Der Zugang zu diesem Projekt ist beschränkt"
 
-#: osmtm/templates/home.mako:173
+#: osmtm/templates/home.mako:162
 msgid "Created by"
 msgstr "Erstellt von"
 
-#: osmtm/templates/home.mako:175
+#: osmtm/templates/home.mako:164
 msgid "Updated"
 msgstr "Upgedated"
 
-#: osmtm/templates/home.mako:176
+#: osmtm/templates/home.mako:165
 msgid "Priority:"
 msgstr "Priorität:"
-
-#: osmtm/templates/imagery.mako:24
-msgid "imagery url available only after accepting the license"
-msgstr "URL der Bilder steht erst nach dem Akzeptieren der Lizenz zur Verfügung"
 
 #: osmtm/templates/imagery.mako:51
 msgid "You need to accept the license first"
@@ -111,31 +107,23 @@ msgstr "Du musst zunächst die LIzenzbedingungen akzeptieren."
 msgid "Licenses"
 msgstr "Lizenzen"
 
-#: osmtm/templates/message.mako:11 osmtm/templates/user_menu.mako:12
-msgid "Messages"
-msgstr "Nachrichten"
-
-#: osmtm/templates/message.mako:19
-msgid "From:"
-msgstr "von:"
-
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
 msgstr "Du hast zugeordnete Aufgaben:"
 
-#: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:9
+#: osmtm/templates/project.edit.mako:81 osmtm/templates/project.mako:9
 msgid "Archived"
 msgstr "Gespeichert"
 
-#: osmtm/templates/project.edit.mako:96
+#: osmtm/templates/project.edit.mako:82
 msgid "Published"
 msgstr "Veröffentlicht"
 
-#: osmtm/templates/project.edit.mako:97 osmtm/templates/project.mako:7
+#: osmtm/templates/project.edit.mako:83 osmtm/templates/project.mako:7
 msgid "Draft"
 msgstr "Entwurf"
 
-#: osmtm/templates/project.edit.mako:311
+#: osmtm/templates/project.edit.mako:272
 msgid "Allowed users"
 msgstr "Erlaubte Benutzer"
 
@@ -165,48 +153,48 @@ msgstr "Bild"
 
 #: osmtm/templates/project.instructions.mako:78
 msgid "Start contributing"
-msgstr "Mitmachen"
+msgstr "Starten"
 
-#: osmtm/templates/project.mako:48
+#: osmtm/templates/project.mako:36
 msgid "Instructions"
 msgstr "Anweisungen"
 
-#: osmtm/templates/project.mako:49
+#: osmtm/templates/project.mako:37
 msgid "Contribute"
 msgstr "Mitmachen"
 
-#: osmtm/templates/project.mako:50
+#: osmtm/templates/project.mako:38
 msgid "Activity"
-msgstr "Aktivitäten"
+msgstr "Aktivität"
 
-#: osmtm/templates/project.mako:51
+#: osmtm/templates/project.mako:39
 msgid "Stats"
 msgstr "Statistiken"
 
-#: osmtm/templates/project.mako:63
+#: osmtm/templates/project.mako:56
 msgid "Loading"
 msgstr "Laden"
 
-#: osmtm/templates/project.mako:101
+#: osmtm/templates/project.mako:93
 msgid "Ready"
 msgstr "Bereit"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:26
+#: osmtm/templates/project.mako:93 osmtm/templates/task.history.mako:26
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr "Nicht geprüft"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:93 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "Fertig"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:28
+#: osmtm/templates/project.mako:93 osmtm/templates/task.history.mako:28
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr "Geprüft"
 
-#: osmtm/templates/project.mako:102
+#: osmtm/templates/project.mako:94
 msgid "You must leave a comment."
 msgstr "Du musst einen Kommentar eingeben."
 
@@ -258,41 +246,6 @@ msgstr "Du hast bereits ${task_link} gesperrt."
 msgid "Select it again"
 msgstr "Nochmals auswählen"
 
-#: osmtm/templates/task.difficulty.mako:7
-#: osmtm/templates/task.difficulty.mako:50
-msgid "Hard"
-msgstr "Schwierig"
-
-#: osmtm/templates/task.difficulty.mako:8
-msgid "Difficulty: hard<br>Level: advanced"
-msgstr "Schwierigkeitsgrad: schwierig<br>Niveaustufe: Fortgeschritten"
-
-#: osmtm/templates/task.difficulty.mako:11
-#: osmtm/templates/task.difficulty.mako:50
-msgid "Medium"
-msgstr "Mittel"
-
-#: osmtm/templates/task.difficulty.mako:12
-msgid "Difficulty: medium<br>Level: intermediate"
-msgstr "Schwierigkeitsgrad: mittel<br>Niveaustufe: fortgeschrittene Anfänger"
-
-#: osmtm/templates/task.difficulty.mako:15
-#: osmtm/templates/task.difficulty.mako:50
-msgid "Easy"
-msgstr "Leicht"
-
-#: osmtm/templates/task.difficulty.mako:16
-msgid "Difficulty: easy<br>Level: beginner"
-msgstr "Schwierigkeitsgrad: leicht<br>Niveaustufe: Anfänger"
-
-#: osmtm/templates/task.difficulty.mako:19
-msgid "Difficulty"
-msgstr "Schwierigkeitsgrad"
-
-#: osmtm/templates/task.difficulty.mako:20
-msgid "No difficulty set yet"
-msgstr "Der Schwierigkeitsgrad wurde noch nicht festgelegt"
-
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
 msgstr "Bearbeiten mit "
@@ -315,7 +268,7 @@ msgstr "Kommentar"
 
 #: osmtm/templates/task.history.mako:24
 msgid "Marked as done"
-msgstr "Als beendet markiert"
+msgstr "Als beendet markieren"
 
 #: osmtm/templates/task.history.mako:24 osmtm/templates/task.history.mako:26
 #: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:33
@@ -361,7 +314,7 @@ msgstr "verbleibende Minuten"
 msgid "Clear selection"
 msgstr "Auswahl aufheben"
 
-#: osmtm/templates/task.mako:64
+#: osmtm/templates/task.mako:63
 msgid "See the changesets in the OSM database for this area."
 msgstr "Die Changesets für diesen Bereich in der OSM Datenbank ansehen."
 
@@ -426,11 +379,7 @@ msgstr "Dieser Nutzer ist Administrator"
 msgid "This user is a project manager."
 msgstr "Dieser Nutzer ist Projektmanager"
 
-#: osmtm/templates/user_menu.mako:10
-msgid "Your page"
-msgstr "Deine Seite"
-
-#: osmtm/templates/user_menu.mako:16
+#: osmtm/templates/user_menu.mako:4
 msgid "logout"
 msgstr "Logout"
 
@@ -438,78 +387,66 @@ msgstr "Logout"
 msgid "Users"
 msgstr "Nutzer"
 
-#: osmtm/views/project.py:73
+#: osmtm/views/project.py:67
 msgid "Sorry, this project doesn't  exist"
 msgstr "Entschuldigung, dieses Projekt existier nicht."
 
-#: osmtm/views/project.py:144
+#: osmtm/views/project.py:132
 msgid "Project #${project_id} created successfully"
 msgstr "Projekt #${project_id} erfolgreich erstellt"
 
-#: osmtm/views/project.py:169
+#: osmtm/views/project.py:157
 msgid "Successfully imported ${n} geometries"
 msgstr "Erfolgreicher Import von ${n} Geometrien"
 
-#: osmtm/views/task.py:159
+#: osmtm/views/task.py:152
 msgid "Task marked as done. Thanks for your contribution"
 msgstr "Aufgabe als beendet markiert. Vielen Dank für Deine Mitarbeit."
 
-#: osmtm/views/task.py:178
+#: osmtm/views/task.py:171
 msgid "Task already locked."
 msgstr "Aufgabe zur Zeit gesperrt."
 
-#: osmtm/views/task.py:184
+#: osmtm/views/task.py:177
 msgid "Task assigned to someone else."
 msgstr "Aufgabe ist jemandem zugeordnet."
 
-#: osmtm/views/task.py:189
+#: osmtm/views/task.py:182
 msgid "Task locked. You can start mapping."
 msgstr "Aufgabe gesperrt. Du kannst mit dem Mappen beginnen."
 
-#: osmtm/views/task.py:206
+#: osmtm/views/task.py:199
 msgid "Task unlocked."
 msgstr "Aufgabe freigegeben."
 
-#: osmtm/views/task.py:218
+#: osmtm/views/task.py:211
 msgid "Comment added."
 msgstr "Kommentar hinzugefügt."
 
-#: osmtm/views/task.py:245
-msgid "Task ${link} invalidated"
-msgstr "Aufgabe ${link} nicht geprüft"
-
-#: osmtm/views/task.py:260
+#: osmtm/views/task.py:233
 msgid "Task validated."
 msgstr "Aufgabe geprüft."
 
-#: osmtm/views/task.py:263
+#: osmtm/views/task.py:236
 msgid "Task invalidated."
 msgstr "Aufgabe für ungültig erklärt."
 
-#: osmtm/views/task.py:390
+#: osmtm/views/task.py:329
 msgid "Random task... none available! Sorry."
 msgstr "Zufällige Aufabenverteilung ... leider nicht verfügbar."
 
-#: osmtm/views/task.py:403
+#: osmtm/views/task.py:342
 msgid "You cannot assign an already locked task"
 msgstr "Du kannst eine gesperrte Aufgabe nicht zuordnen"
 
-#: osmtm/views/task.py:413
+#: osmtm/views/task.py:352
 msgid "Task assigned."
 msgstr "Aufgabe zugeordnet"
 
-#: osmtm/views/task.py:427
+#: osmtm/views/task.py:366
 msgid "Task assignment removed"
 msgstr "Aufgabenzuordnung gelöscht"
 
-#: osmtm/views/task.py:459
-msgid "Task difficulty changed."
-msgstr "Schwierigkeitsgrad der Aufgabe geändert."
-
-#: osmtm/views/task.py:472
-msgid "Task difficulty removed"
-msgstr "Schwierigkeitsgrad der Aufgabe gelöscht"
-
-#: osmtm/views/user.py:94
+#: osmtm/views/user.py:91
 msgid "Sorry, this user doesn't  exist"
-msgstr "Entschuldigung dieser Benutzer existiert nicht."
+msgstr "Entschuldigung dieser Benutzer existier nicht."
