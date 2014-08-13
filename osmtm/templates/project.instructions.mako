@@ -52,16 +52,14 @@ import markdown
     ${project.changeset_comment}
   </dd>
   % endif
+  % if project.imagery:
   <dt>
     ${_('Imagery')}
   </dt>
   <dd>
-    % if project.imagery:
       <%include file="imagery.mako" />
-    % else:
-      N/A
-    % endif
   </dd>
+  % endif
 </dl>
 % if project.josm_preset:
 <p >
