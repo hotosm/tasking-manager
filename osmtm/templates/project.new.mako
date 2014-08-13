@@ -17,19 +17,11 @@
       </div>
     </div>
 </div>
-<<<<<<< HEAD
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css', _query={'v':'2.5-dev'})}"/>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.5-dev'})}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js', _query={'v':'2.5-dev'})}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet-omnivore.min.js', _query={'v':'2.5-dev'})}"></script>
 <script src="${request.static_url('osmtm:static/js/project.new.js', _query={'v':'2.5-dev'})}"></script>
-=======
-<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css', _query={'v':'2.4.2'})}"/>
-<script src="${request.static_url('osmtm:static/js/lib/leaflet.js', _query={'v':'2.4.2'})}"></script>
-<script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js', _query={'v':'2.4.2'})}"></script>
-<script src="${request.static_url('osmtm:static/js/lib/leaflet-omnivore.min.js', _query={'v':'2.4.2'})}"></script>
-<script src="${request.static_url('osmtm:static/js/project.new.js', _query={'v':'2.4.2'})}"></script>
->>>>>>> 2.4
 
 </%block>
 
@@ -72,11 +64,7 @@
         <input type="radio" name="type" value="grid" checked/>
         Square Grid
         <br>
-<<<<<<< HEAD
         <img src="${request.static_url('osmtm:static/img/project_creation_grid.png', _query={'v':'2.5-dev'})}" width="150">
-=======
-        <img src="${request.static_url('osmtm:static/img/project_creation_grid.png', _query={'v':'2.4.2'})}" width="150">
->>>>>>> 2.4
         <p class="help-block">
         Area of interest is automatically split into grid cells. Each one is a task.<br>
         </p>
@@ -90,11 +78,7 @@
         <input type="radio" name="type" value="arbitrary" disabled />
         Arbitrary Geometries
         <br>
-<<<<<<< HEAD
         <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png', _query={'v':'2.5-dev'})}" width="150">
-=======
-        <img src="${request.static_url('osmtm:static/img/project_creation_arbitrary.png', _query={'v':'2.4.2'})}" width="150">
->>>>>>> 2.4
         <p class="help-block">
         Each polygon represents a task.<br>
         </p>

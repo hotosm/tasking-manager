@@ -78,11 +78,7 @@ geometry = loads(str(project.area.geometry.data))
       </div>
     </div>
   </form>
-<<<<<<< HEAD
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js', _query={'v':'2.5-dev'})}"></script>
-=======
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js', _query={'v':'2.4.2'})}"></script>
->>>>>>> 2.4
   <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 </div>
 </%block>
