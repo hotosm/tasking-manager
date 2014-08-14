@@ -32,7 +32,7 @@ def add_localizer(event):
 
         return localizer.translate(*args, **kwargs)
 
-    def translate_plural(*args, **kwargs):
+    def auto_plural_translate(*args, **kwargs):
         # set the default domain if not provided by the context
         kwargs.setdefault('domain', DEFAULT_TRANSLATION_DOMAIN)
 
@@ -40,7 +40,7 @@ def add_localizer(event):
 
     request.localizer = localizer
     request.translate = auto_translate
-    request.plural_translate = translate_plural
+    request.plural_translate = auto_plural_translate
 
 
 @subscriber(NewRequest)
