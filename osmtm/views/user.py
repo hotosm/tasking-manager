@@ -128,10 +128,11 @@ def check_user_name(user):
         xmldoc = minidom.parse(usock)
         user_el = xmldoc.getElementsByTagName('user')[0]
         display_name = user_el.getAttribute('display_name')
-        user.username = display_name
 
-        DBSession.add(user)
-        DBSession.flush()
+        if user.username != display_name:
+            user.username = display_name
+            DBSession.add(user)
+            DBSession.flush()
     except:
         # don't lock application if no response can be received from OSM API
         pass
