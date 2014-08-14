@@ -18,6 +18,9 @@ from sqlalchemy import func, desc
 from sqlalchemy.sql.expression import and_
 from sqlalchemy.orm.exc import NoResultFound
 
+import urllib2
+from xml.dom import minidom
+
 
 @view_config(route_name='users', renderer='users.mako')
 def users(request):
@@ -94,6 +97,12 @@ def user(request):
         request.session.flash(_("Sorry, this user doesn't  exist"))
         return HTTPFound(location=route_path('users', request))
 
+    user = check_user_name(user)
+    # username has changed
+    if user.username != username:
+        return HTTPFound(location=route_path('user', request,
+                                             username=user.username))
+
     projects = __get_projects(user.id)
     return dict(page_id="user", contributor=user, projects=projects)
 
@@ -109,3 +118,18 @@ def __get_projects(user_id):
                         .order_by(desc(Project.id)) \
                         .all()
     return [{"project": p[0], "count": int(p[1])} for p in projects]
+
+
+def check_user_name(user):
+    ''' Get the display_name from OSM API '''
+    url = 'http://www.openstreetmap.org/api/0.6/user/%s' % user.id
+    usock = urllib2.urlopen(url)
+    xmldoc = minidom.parse(usock)
+    user_el = xmldoc.getElementsByTagName('user')[0]
+    display_name = user_el.getAttribute('display_name')
+    user.username = display_name
+
+    DBSession.add(user)
+    DBSession.flush()
+
+    return user
