@@ -122,14 +122,18 @@ def __get_projects(user_id):
 
 def check_user_name(user):
     ''' Get the display_name from OSM API '''
-    url = 'http://www.openstreetmap.org/api/0.6/user/%s' % user.id
-    usock = urllib2.urlopen(url)
-    xmldoc = minidom.parse(usock)
-    user_el = xmldoc.getElementsByTagName('user')[0]
-    display_name = user_el.getAttribute('display_name')
-    user.username = display_name
+    try:
+        url = 'http://www.openstreetmap.org/api/0.6/user/%s' % user.id
+        usock = urllib2.urlopen(url)
+        xmldoc = minidom.parse(usock)
+        user_el = xmldoc.getElementsByTagName('user')[0]
+        display_name = user_el.getAttribute('display_name')
+        user.username = display_name
 
-    DBSession.add(user)
-    DBSession.flush()
+        DBSession.add(user)
+        DBSession.flush()
+    except:
+        # don't lock application if no response can be received from OSM API
+        pass
 
     return user
