@@ -1,18 +1,14 @@
 <osm version="0.6" generator="HOT Tasking Manager">
-<%
-    id = -2
-%>
 % for polygon in multipolygon:
-% for point in polygon.exterior.coords:
-<node id="${id}" lon="${point[0]}" lat="${point[1]}"><tag k="josm/ignore" v="true" /></node>
-<% id = id -1 %>
+% for i, point in enumerate(polygon.exterior.coords[:-1]):
+  <node id="-${i + 2}" lon="${point[0]}" lat="${point[1]}"><tag k="josm/ignore" v="true" /></node>
 % endfor
-<way id="-1">
-% for i in range(1, len(polygon.exterior.coords)):
-<nd ref="-${i + 1}"/>
+  <way id="-1">
+% for i, point in enumerate(polygon.exterior.coords[:-1]):
+    <nd ref="-${i + 2}"/>
 % endfor
-<nd ref="-2"/>
-<tag k="josm/ignore" v="true" />
-</way>
+    <nd ref="-2"/>
+    <tag k="josm/ignore" v="true" />
+  </way>
 % endfor
 </osm>
