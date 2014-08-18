@@ -138,5 +138,6 @@ def main(global_config, **settings):
     config.scan(ignore=['osmtm.tests', 'osmtm.scripts'])
 
     bleach.ALLOWED_TAGS.append(u'p')
+    bleach.ALLOWED_TAGS.append(u'pre')
 
     return config.make_wsgi_app()
