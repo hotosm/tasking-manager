@@ -66,11 +66,7 @@ sorts = [('priority', 'asc', _('High priority first')),
       </div>
       <div class="row">
         <div class="col-md-12">
-          <%
-            from pyramid.security import authenticated_userid
-            username = authenticated_userid(request)
-          %>
-          % if username is not None:
+          % if user and user.username is not None:
           <div class="checkbox input-sm pull-right">
             <label>
               <input type="checkbox" name="my_projects"

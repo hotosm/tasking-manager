@@ -13,14 +13,8 @@
     <script src="${request.static_url('osmtm:static/js/shared.js', _query={'v':'2.5-dev'})}"></script>
     <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js', _query={'v':'2.5-dev'})}"></script>
 <%
-from pyramid.security import authenticated_userid
-from osmtm.models import DBSession, User, TaskComment
+from osmtm.models import DBSession, TaskComment
 login_url= request.route_path('login', _query=[('came_from', request.url)])
-username = authenticated_userid(request)
-if username is not None:
-   user = DBSession.query(User).get(username)
-else:
-   user = None
 languages = request.registry.settings.available_languages.split()
 
 comments = []
@@ -40,13 +34,13 @@ comments = []
         </div>
         <ul class="nav navbar-nav navbar-right">
           <%include file="languages_menu.mako" args="languages=languages"/>
-          % if  user is not None:
+          % if user:
           <%
               badge = ""
               if len(comments) > 0:
                   badge = '<sup><span class="badge badge-important">%s</span></sup>' % len(comments)
           %>
-          <%include file="user_menu.mako" args="user=user"/>
+          <%include file="user_menu.mako" />
           % else:
           <li>
           <a href="${login_url}" class="btn btn-link pull-right">${_('login to OpenStreetMap')}</a>

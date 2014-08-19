@@ -1,4 +1,4 @@
-<%page args="user" />
+<%page />
 <%
   unread = user.unread_messages
 %>
