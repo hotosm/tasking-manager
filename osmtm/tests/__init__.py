@@ -24,7 +24,7 @@ ADMIN_USER_ID = 3
 PROJECT_MANAGER_USER_ID = 4
 
 translation_manager.options.update({
-    'locales': 'en fr',
+    'locales': ['en', 'fr'],
     'get_locale_fallback': True
 })
 
