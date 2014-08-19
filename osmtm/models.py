@@ -122,7 +122,7 @@ class User(Base):
     role = Column(Integer)
 
     accepted_licenses = relationship("License", secondary=users_licenses_table,
-                                     lazy='joined')
+                                     lazy='select')
     private_projects = relationship("Project",
                                     secondary="project_allowed_users")
     unread_messages = relationship(

@@ -42,7 +42,9 @@ def home(request):
 
     query = DBSession.query(Project) \
         .options(joinedload(Project.translations['en'])) \
-        .options(joinedload(Project.translations[request.locale_name]))
+        .options(joinedload(Project.translations[request.locale_name])) \
+        .options(joinedload(Project.author)) \
+        .options(joinedload(Project.area))
 
     user_id = authenticated_userid(request)
     user = None
