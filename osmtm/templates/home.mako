@@ -66,7 +66,7 @@ sorts = [('priority', 'asc', _('High priority first')),
       </div>
       <div class="row">
         <div class="col-md-12">
-          % if user and user.username is not None:
+          % if user and user.username:
           <div class="checkbox input-sm pull-right">
             <label>
               <input type="checkbox" name="my_projects"
