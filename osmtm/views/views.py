@@ -26,6 +26,8 @@ from .project import check_project_expiration
 
 from pyramid.security import authenticated_userid
 
+from sqlalchemy.orm import joinedload
+
 
 @view_config(route_name='home', renderer='home.mako')
 def home(request):
@@ -38,7 +40,11 @@ def home(request):
         request.override_renderer = 'start.mako'
         return dict(page_id="start")
 
-    query = DBSession.query(Project)
+    query = DBSession.query(Project) \
+        .options(joinedload(Project.translations['en'])) \
+        .options(joinedload(Project.translations[request.locale_name])) \
+        .options(joinedload(Project.author)) \
+        .options(joinedload(Project.area))
 
     user_id = authenticated_userid(request)
     user = None
@@ -93,7 +99,7 @@ def home(request):
     page_url = PageURL_WebOb(request)
     paginator = Page(query, page, url=page_url, items_per_page=10)
 
-    return dict(page_id="home", paginator=paginator)
+    return dict(page_id="home", paginator=paginator, user=user)
 
 
 @view_config(route_name="user_prefered_editor", renderer='json')
