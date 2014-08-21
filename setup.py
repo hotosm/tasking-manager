@@ -31,7 +31,8 @@ requires = [
     'webhelpers==1.3',
     'alembic==0.6.4',
     'transifex-client',
-    'pyramid-exclog==0.7'
+    'pyramid-exclog==0.7',
+    'httpretty',
 ]
 
 setup(name='osmtm',

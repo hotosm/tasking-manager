@@ -7,6 +7,10 @@ from ..models import (
     User,
 )
 
+from user import (
+    check_user_name
+)
+
 from pyramid.security import (
     remember,
     forget,
@@ -81,11 +85,13 @@ def oauth_callback(request):  # pragma: no cover
         id = user_elt.attrib['id']
         username = user_elt.attrib['display_name']
 
-        if DBSession.query(User).get(id) is None:
+        user = DBSession.query(User).get(id)
+        if user is None:
             user = User(id, username)
-
             DBSession.add(user)
             DBSession.flush()
+        else:
+            check_user_name(user)
 
         if DBSession.query(User).filter(User.role == User.role_admin) \
                     .count() == 0:
