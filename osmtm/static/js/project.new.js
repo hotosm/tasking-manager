@@ -121,6 +121,23 @@ osmtm.project_new = (function() {
     });
   }
 
+  // converts closed linestrings to polygons
+  function convertLinesToPolygons(obj) {
+    var features = obj.features,
+        len = features.length;
+    for (var i = 0; i < len; i++) {
+      var f = features[i];
+      var c = f.geometry.coordinates;
+      var first = c[0];
+      var last = c[c.length - 1];
+      if (f.geometry.type == "LineString" && first[0] == last[0] &&
+          first[1] == last[1]) {
+        f.geometry.type = "Polygon";
+        f.geometry.coordinates = [f.geometry.coordinates];
+      }
+    }
+  }
+
   return {
     init: function() {
       createMap();
@@ -184,6 +201,7 @@ osmtm.project_new = (function() {
         if (file.substr(-4) == 'json') {
           readAsText($(this)[0].files[0], function(err, text) {
             var gj = JSON.parse(text);
+            convertLinesToPolygons(gj);
             vector.addData(gj);
             onAdd();
           });
