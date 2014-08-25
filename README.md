@@ -43,11 +43,6 @@ Then create a database named `osmtm`:
     sudo -u postgres createdb -O www-data osmtm
     sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
 
-You're now ready to do the initial population of the database. An
-`initialize_osmtm_db` script is available in the virtual env for that:
-
-    env/bin/initialize_osmtm_db
-
 ### Local settings
 
 You certainly will need some local specific settings, like the db user or
@@ -61,6 +56,13 @@ For example:
 Note: you can also put your local settings file anywhere else on your
 file system, and then create a `LOCAL_SETTINGS_PATH` environment variable
 to make the project aware of this.
+
+### Populate the database
+
+You're now ready to do the initial population of the database. An
+`initialize_osmtm_db` script is available in the virtual env for that:
+
+    env/bin/initialize_osmtm_db
 
 ## Launch the application
 
