@@ -377,7 +377,8 @@ osmtm.project = (function() {
         });
         case 'id':
         return options.base + '#map=' +
-        [zoom, c[1], c[0]].join('/');
+        [zoom, c[1], c[0]].join('/') +
+        '&comment=' + changeset_comment;
 
       }
     }
