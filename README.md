@@ -25,7 +25,7 @@ To create a virtual Python environment:
     cd osm-tasking-manager2
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
-    env/bin/python setup.py develop
+    ./env/bin/python setup.py develop
 
 *Tip: if you encounter problems installing `psycopg2` especially on Mac, it is recommended to follow advice proposed [here](http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa).*
 
@@ -43,11 +43,6 @@ Then create a database named `osmtm`:
     sudo -u postgres createdb -O www-data osmtm
     sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
 
-You're now ready to do the initial population of the database. An
-`initialize_osmtm_db` script is available in the virtual env for that:
-
-    env/bin/initialize_osmtm_db
-
 ### Local settings
 
 You certainly will need some local specific settings, like the db user or
@@ -62,9 +57,20 @@ Note: you can also put your local settings file anywhere else on your
 file system, and then create a `LOCAL_SETTINGS_PATH` environment variable
 to make the project aware of this.
 
+### Populate the database
+
+You're now ready to do the initial population of the database. An
+`initialize_osmtm_db` script is available in the virtual env for that:
+
+    ./env/bin/initialize_osmtm_db
+
 ## Launch the application
 
-    env/bin/pserve --reload development.ini
+    ./env/bin/pserve --reload development.ini
+
+You will see messages, hopefully including a line like `serving on http://0.0.0.0:6543`.
+Visit that address in your web browser - you should see your local Tasking Manager!
+
 
 ## Styles
 
@@ -89,7 +95,7 @@ For example:
 
 To run the tests, use the following command:
 
-    env/bin/nosetests
+    ./env/bin/nosetests
 
 ## Application deployment
 
