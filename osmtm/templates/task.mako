@@ -83,5 +83,5 @@ var gpx_url = window.location.origin +
     (project.license in user.accepted_licenses or not project.license):
 var imagery_url = "${project.imagery}";
 % endif
-var changeset_comment = "${quote_plus(project.changeset_comment)}";
+var changeset_comment = "${quote_plus(project.changeset_comment, '')}";
 </script>
