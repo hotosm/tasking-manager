@@ -25,7 +25,7 @@ To create a virtual Python environment:
     cd osm-tasking-manager2
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
-    env/bin/python setup.py develop
+    ./env/bin/python setup.py develop
 
 *Tip: if you encounter problems installing `psycopg2` especially on Mac, it is recommended to follow advice proposed [here](http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa).*
 
@@ -62,11 +62,11 @@ to make the project aware of this.
 You're now ready to do the initial population of the database. An
 `initialize_osmtm_db` script is available in the virtual env for that:
 
-    env/bin/initialize_osmtm_db
+    ./env/bin/initialize_osmtm_db
 
 ## Launch the application
 
-    env/bin/pserve --reload development.ini
+    ./env/bin/pserve --reload development.ini
 
 ## Styles
 
@@ -91,7 +91,7 @@ For example:
 
 To run the tests, use the following command:
 
-    env/bin/nosetests
+    ./env/bin/nosetests
 
 ## Application deployment
 
