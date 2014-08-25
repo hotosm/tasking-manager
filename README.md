@@ -64,7 +64,7 @@ You're now ready to do the initial population of the database. An
 
     ./env/bin/initialize_osmtm_db
 
-## Launch the application
+### Launch the application
 
     ./env/bin/pserve --reload development.ini
 
