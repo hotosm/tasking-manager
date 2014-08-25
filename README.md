@@ -68,6 +68,10 @@ You're now ready to do the initial population of the database. An
 
     ./env/bin/pserve --reload development.ini
 
+You will see messages, hopefully including a line like `serving on http://0.0.0.0:6543`.
+Visit that address in your web browser - you should see your local Tasking Manager!
+
+
 ## Styles
 
 The CSS stylesheet are compiled using less. Launch the following command as
