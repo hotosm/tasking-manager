@@ -1,23 +1,24 @@
 # subscribers.py
 
-from pyramid.i18n import (
-    get_localizer,
-    TranslationStringFactory,
-)
+from pyramid.i18n import get_localizer
 from pyramid.events import (
     NewRequest,
     BeforeRender,
     subscriber,
 )
 
+DEFAULT_TRANSLATION_DOMAIN = 'osmtm'
+
 
 @subscriber(BeforeRender)
 def add_renderer_globals(event):
     request = event['request']
     event['_'] = request.translate
+    # ngettext is used to define a translatable plural string as one of the
+    # supported keywords by Babel """https://github.com/mitsuhiko/babel/blob/
+    # master/babel/messages/extract.py#L34"""
+    event['ngettext'] = request.plural_translate
     event['localizer'] = request.localizer
-
-tsf = TranslationStringFactory('osmtm')
 
 
 @subscriber(NewRequest)
@@ -26,9 +27,20 @@ def add_localizer(event):
     localizer = get_localizer(request)
 
     def auto_translate(*args, **kwargs):
-        return localizer.translate(tsf(*args, **kwargs))
+        # set the default domain if not provided by the context
+        kwargs.setdefault('domain', DEFAULT_TRANSLATION_DOMAIN)
+
+        return localizer.translate(*args, **kwargs)
+
+    def auto_plural_translate(*args, **kwargs):
+        # set the default domain if not provided by the context
+        kwargs.setdefault('domain', DEFAULT_TRANSLATION_DOMAIN)
+
+        return localizer.pluralize(*args, **kwargs)
+
     request.localizer = localizer
     request.translate = auto_translate
+    request.plural_translate = auto_plural_translate
 
 
 @subscriber(NewRequest)
