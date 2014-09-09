@@ -1,3 +1,7 @@
+// Core variables and mixins
+@import "../bootstrap/less/variables.less";
+
+@import "custom.less";
 @import "bootstrap.less";
 @icon-font-path: "../bootstrap/fonts/";
 
@@ -25,26 +29,6 @@ html, body {
     background-color: #FFF;
     padding-top: 30px;
     line-height: 18px;
-}
-
-.navbar-default {
-  #gradient > .vertical(#9B0D0B, #B4242E);
-}
-
-.navbar-default .navbar-nav>li>a .badge {
-  background-color: white;
-  color: black;
-}
-
-.navbar-default .navbar-nav>li>a:hover .badge {
-  background-color: #333;
-  color: white;
-}
-
-.navbar-default .navbar-nav>.open a .badge,
-.navbar-default .navbar-nav>.open a:hover .badge {
-  background-color: #ccc;
-  color: #333;
 }
 
 h1 {
