@@ -50,3 +50,7 @@ node_modules
 # default log files
 osmtm.log
 exception.log
+
+# custom layout files
+osmtm/templates/custom.mako
+osmtm/static/css/custom.less
