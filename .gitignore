@@ -51,6 +51,9 @@ node_modules
 osmtm.log
 exception.log
 
+# generated css file
+osmtm/static/css/main.css
+
 # custom layout files
 osmtm/templates/custom.mako
 osmtm/static/css/custom.less
