@@ -112,6 +112,12 @@ To run the tests, use the following command:
 1. restart application server
 
 
+## Customization
+
+In case you install your own instance you may want to customize its look and
+feel. You can do so by modifying the following files:
+`osmtm/templates/custom.mako` & `osmtm/static/css/custom.less`
+
 ## Localization
 
 OSMTM is localized on [https://www.transifex.com/projects/p/osm-tasking-manager2/](Transifex) service.
