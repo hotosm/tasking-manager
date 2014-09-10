@@ -116,7 +116,8 @@ To run the tests, use the following command:
 
 In case you install your own instance you may want to customize its look and
 feel. You can do so by modifying the following files:
-`osmtm/templates/custom.mako` & `osmtm/static/css/custom.less`
+`osmtm/templates/custom.mako`, `osmtm/static/css/custom.less` &
+`osmtm/static/img/favicon.ico`
 
 ## Localization
 

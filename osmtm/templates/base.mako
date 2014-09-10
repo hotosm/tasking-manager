@@ -4,6 +4,7 @@
 <html>
   <head>
     <title>${custom.instance_name()}</title>
+    <link rel="shortcut icon" href="${request.static_url('osmtm:static/img/favicon.ico')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css', _query={'v':'2.5-dev'})}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css', _query={'v':'2.5-dev'})}">
     <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js', _query={'v':'2.5-dev'})}"></script>
