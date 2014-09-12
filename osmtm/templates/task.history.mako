@@ -5,6 +5,10 @@ from osmtm.models import (
     TaskLock,
     TaskComment,
 )
+from osmtm.mako_filters import (
+    convert_mentions,
+    markdown_filter,
+)
 %>
 <%page args="section='task'"/>
 % for index, step in enumerate(history):
@@ -38,7 +42,7 @@ from osmtm.models import (
     % if isinstance(step, TaskComment):
       <span><i class="glyphicon glyphicon-comment text-muted"></i> ${_('Comment left')} ${_('by')} ${step.author.username if step.author is not None else unknown | n}</span>
       <blockquote>
-        ${step.comment}
+        ${step.comment | convert_mentions(request), markdown_filter, n}
       </blockquote>
     % endif
       <p class="text-muted">

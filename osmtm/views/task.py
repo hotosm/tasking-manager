@@ -36,8 +36,10 @@ from pyramid.security import authenticated_userid
 
 import datetime
 import random
+import re
 
 from ..models import EXPIRATION_DELTA, ST_SetSRID
+from user import username_to_userid
 
 import logging
 log = logging.getLogger(__name__)
@@ -221,9 +223,44 @@ def comment(request):
 def add_comment(request, task, user):
     if 'comment' in request.params and request.params.get('comment') != '':
         comment = request.params['comment']
+
+        # check for mentions in the comment
+        p = re.compile(ur'((?<=@)\w+|\[.+?\])')
+
+        def repl(var):
+            username = var.group()
+            username = re.sub('(\[|\])', '', username)
+            return username_to_userid(username)
+
+        # put ids instead of usernames in comment
+        comment = re.sub(p, repl, comment)
+
+        p = re.compile(ur'((?<=@)\d+)')
+        for userid in p.findall(comment):
+            to = DBSession.query(User).get(userid)
+            if to:
+                mention_user(request, user, to, comment)
+
         task.comments.append(TaskComment(comment, user))
         DBSession.add(task)
         DBSession.flush()
+
+
+def mention_user(request, from_, to, comment):
+
+    _ = request.translate
+    project_id = request.matchdict['project']
+    task_id = request.matchdict['task']
+    href = request.route_path('project', project=project_id)
+    href = href + '#task/%s' % task_id
+    link = '<a href="%s">#%s</a>' % (href, task_id)
+    subject = _('You were mentioned in a comment - Task ${link}',
+                mapping={'link': link})
+    send_message(subject, from_, to, comment)
+
+
+def send_message(subject, from_, to_, msg):
+    DBSession.add(Message(subject, from_, to_, msg))
 
 
 def send_invalidation_message(request, task, user):
@@ -243,7 +280,7 @@ def send_invalidation_message(request, task, user):
     href = href + '#task/%s' % task.id
     link = '<a href="%s">#%d</a>' % (href, task.id)
     subject = _('Task ${link} invalidated', mapping={'link': link})
-    DBSession.add(Message(subject, from_, to, comment))
+    send_message(subject, from_, to, comment)
 
 
 @view_config(route_name='task_validate', renderer="json")

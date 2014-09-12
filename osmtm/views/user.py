@@ -31,13 +31,13 @@ def users(request):
 
 @view_config(route_name='users_json', renderer='json')
 def users_json(request):
-    users = DBSession.query(User).order_by(User.username).all()
+    query = DBSession.query(User).order_by(User.username)
 
-    r = []
-    for user in users:
-        r.append(user.username)
+    if 'q' in request.params:
+        q = request.params.get('q')
+        query = query.filter(User.username.ilike('%' + q + '%')).limit(10)
 
-    return r
+    return [u.username for u in query.all()]
 
 
 @view_config(route_name='user_messages', http_cache=0,
@@ -138,3 +138,10 @@ def check_user_name(user):
         pass
 
     return user
+
+
+def username_to_userid(username):
+    ''' Looks for a username and returns corresponding id '''
+    id_ = DBSession.query(User.id).filter(User.username == username).scalar()
+
+    return str(id_) if id_ else username
