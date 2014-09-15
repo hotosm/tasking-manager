@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
+<%def name="title()">${'#%d - %s' % (project.id, project.name)}</%def>
 <%block name="header">
 <h1>
   #${project.id} - ${project.name}
