@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
+<%def name="title()">${_('Messages')}</%def>
 <%block name="header">
 </%block>
 <%block name="content">

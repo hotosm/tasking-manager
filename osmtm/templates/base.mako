@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 <%namespace file="custom.mako" name="custom"/>
+<%def name="title()"></%def>
 <!DOCTYPE html>
 <html>
   <head>
-    <title>${custom.instance_name()}</title>
+  <title>${custom.instance_name()} - ${self.title()}</title>
     <link rel="shortcut icon" href="${request.static_url('osmtm:static/img/favicon.ico')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css', _query={'v':'2.5-dev'})}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css', _query={'v':'2.5-dev'})}">
