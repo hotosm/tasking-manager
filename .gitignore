@@ -50,6 +50,3 @@ node_modules
 # default log files
 osmtm.log
 exception.log
-
-# generated css file
-osmtm/static/css/main.css
