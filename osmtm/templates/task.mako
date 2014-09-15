@@ -84,4 +84,5 @@ var gpx_url = window.location.origin +
 var imagery_url = "${project.imagery}";
 % endif
 var changeset_comment = "${quote_plus(project.changeset_comment, '')}";
+osmtm.project.initAtWho();
 </script>

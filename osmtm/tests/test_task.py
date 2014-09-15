@@ -123,6 +123,25 @@ class TestTaskFunctional(BaseTestCase):
                                xhr=True)
         self.assertTrue(res.json['success'])
 
+    def test_task_comment__with_mention(self):
+        from osmtm.models import Message, DBSession
+        headers = self.login_as_user1()
+        res = self.testapp.get('/project/1/task/3/comment', status=200,
+                               headers=headers,
+                               params={
+                                   'comment': 'some_comment @user2'
+                               },
+                               xhr=True)
+        self.assertTrue(res.json['success'])
+
+        messages = DBSession.query(Message) \
+                            .filter(Message.to_user_id == self.user2_id).all()
+        self.assertEqual(len(messages), 1)
+
+        res = self.testapp.get('/project/1/task/3', status=200, xhr=True)
+        # confirm that the convert_mention filter is correctly called
+        self.assertTrue('<a href="/user/user2">@user2</a>' in res)
+
     def test_task_invalidate(self):
         headers = self.login_as_user1()
         self.testapp.get('/project/1/task/5/lock',

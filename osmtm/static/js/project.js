@@ -22,6 +22,30 @@ osmtm.project = (function() {
     ['green']
   ];
 
+  var at_config = {
+    at: "@",
+    tpl: "<li data-value='${name}'>${name}</li>",
+    show_the_at: true,
+    limit: 10,
+    callbacks: {
+      remote_filter: function(query, callback) {
+        $.getJSON(base_url + "users.json", {q: query}, function(data) {
+          var names = $.map(data,function(value,i) {
+            return {'id':i,'name':value};
+          });
+          callback(names);
+        });
+      },
+      before_insert: function(value)  {
+        // username contains a space
+        if (value.match((/ /))) {
+          value = ['[', value, ']'].join('');
+        }
+        return '@' + value;
+      }
+    }
+  };
+
   var Legend = L.Control.extend({
     options: {
       position: 'bottomleft'
@@ -860,6 +884,10 @@ osmtm.project = (function() {
         $("button[type=submit]", $(this).parents("form")).removeAttr("clicked");
         $(this).attr("clicked", "true");
       });
+    },
+
+    initAtWho: function() {
+      $('[name=comment]').atwho(at_config);
     },
 
     loadTask: loadTask
