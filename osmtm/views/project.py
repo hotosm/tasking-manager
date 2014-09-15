@@ -95,7 +95,6 @@ def project(request):
         features.append(Feature(geometry=shape.to_shape(area.geometry)))
 
     return dict(page_id='project', project=project,
-                user=user,
                 locked_task=locked_task,
                 history=history,
                 priority_areas=FeatureCollection(features),)

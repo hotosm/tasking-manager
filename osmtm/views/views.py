@@ -99,7 +99,7 @@ def home(request):
     page_url = PageURL_WebOb(request)
     paginator = Page(query, page, url=page_url, items_per_page=10)
 
-    return dict(page_id="home", paginator=paginator, user=user)
+    return dict(page_id="home", paginator=paginator)
 
 
 @view_config(route_name="user_prefered_editor", renderer='json')
