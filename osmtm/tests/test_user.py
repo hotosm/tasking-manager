@@ -7,6 +7,12 @@ class TestViewsFunctional(BaseTestCase):
     def test_users(self):
         self.testapp.get('/users', status=200)
 
+    def test_users__logged_in(self):
+        headers = self.login_as_user1()
+        res = self.testapp.get('/users', headers=headers)
+        # user should appear as authenticated
+        self.assertFalse('login to OpenStreetMap' in res.body)
+
     def test_users_json(self):
         res = self.testapp.get('/users.json', status=200)
         self.assertEqual(len(res.json), 4)
