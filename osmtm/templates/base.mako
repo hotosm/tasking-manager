@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+<%namespace file="custom.mako" name="custom"/>
 <!DOCTYPE html>
 <html>
   <head>
-    <title>OSM Tasking Manager</title>
+    <title>${custom.instance_name()}</title>
+    <link rel="shortcut icon" href="${request.static_url('osmtm:static/img/favicon.ico')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css', _query={'v':'2.5-dev'})}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css', _query={'v':'2.5-dev'})}">
     <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js', _query={'v':'2.5-dev'})}"></script>
@@ -29,7 +31,7 @@ comments = []
       <div class="container">
         <div class="navbar-header">
           <a href="${request.route_path('home')}" class="navbar-brand">
-            <i class="glyphicon glyphicon-home"></i> OSM Tasking Manager
+            <i class="glyphicon glyphicon-home"></i> ${custom.instance_name()}
           </a>
         </div>
         <ul class="nav navbar-nav navbar-right">

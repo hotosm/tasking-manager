@@ -72,12 +72,16 @@ You will see messages, hopefully including a line like `serving on http://0.0.0.
 Visit that address in your web browser - you should see your local Tasking Manager!
 
 
-## Styles
+### Styles
 
 The CSS stylesheet are compiled using less. Launch the following command as
-soon as you change the css::
+soon as you change the css:
 
     lessc -ru osmtm/static/css/main.less > osmtm/static/css/main.css
+
+## Launch the application
+
+    env/bin/pserve --reload development.ini
 
 ## Tests
 
@@ -107,6 +111,13 @@ To run the tests, use the following command:
 1. compile messages: `python setup.py compile_catalog`
 1. restart application server
 
+
+## Customization
+
+In case you install your own instance you may want to customize its look and
+feel. You can do so by modifying the following files:
+`osmtm/templates/custom.mako`, `osmtm/static/css/custom.less` &
+`osmtm/static/img/favicon.ico`
 
 ## Localization
 
