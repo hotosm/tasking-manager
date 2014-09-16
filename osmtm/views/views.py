@@ -102,6 +102,11 @@ def home(request):
     return dict(page_id="home", paginator=paginator)
 
 
+@view_config(route_name='about', renderer='about.mako')
+def about(request):
+    return dict(page_id="about")
+
+
 @view_config(route_name="user_prefered_editor", renderer='json')
 def user_prefered_editor(request):
     editor = request.matchdict['editor']
