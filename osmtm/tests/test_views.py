@@ -6,6 +6,9 @@ class TestViewsFunctional(BaseTestCase):
     def test_home(self):
         self.testapp.get('/', status=200)
 
+    def test_about(self):
+        self.testapp.get('/about', status=200)
+
     def test_authenticated(self):
 
         headers = self.login_as_admin()
