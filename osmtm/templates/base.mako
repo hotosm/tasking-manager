@@ -102,7 +102,8 @@ ${message | n}
         <p class="pull-right">Fork the code on <a href="http://github.com/hotosm/osm-tasking-manager2">github</a>.
         </p>
         <p>
-          <a href="${request.route_path('about')}">${_('About')}</a>
+          <a href="${request.route_path('about')}">${_('About the Tasking Manager')}</a><br />
+          ${custom.footer_contact_text()}
         </p>
       </div>
     </footer>
