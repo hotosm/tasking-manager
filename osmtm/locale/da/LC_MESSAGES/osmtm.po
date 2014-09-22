@@ -3,25 +3,25 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
-# Manfred Reiter <ma.reiter@gmail.com>, 2014
+# Neogeografen <soren.johannessen@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-09-16 11:53+0200\n"
-"PO-Revision-Date: 2014-09-16 10:07+0000\n"
-"Last-Translator: Manfred Reiter <ma.reiter@gmail.com>\n"
-"Language-Team: German (http://www.transifex.com/projects/p/osm-tasking-manager2/language/de/)\n"
+"PO-Revision-Date: 2014-09-16 14:00+0000\n"
+"Last-Translator: Neogeografen <soren.johannessen@gmail.com>\n"
+"Language-Team: Danish (http://www.transifex.com/projects/p/osm-tasking-manager2/language/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
-"Language: de\n"
+"Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: osmtm/templates/about.mako:10 osmtm/templates/home.mako:92
 msgid "About the Tasking Manager"
-msgstr "Über den Tasking Manager"
+msgstr "Om Tasking Manager"
 
 #: osmtm/templates/about.mako:12 osmtm/templates/home.mako:94
 msgid ""
@@ -33,338 +33,338 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeinity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr "Der OSM Tasking Manager ist ein Mappingtool, das für das Humanitarion OSM Team zum gemeinsamen Mappen geschaffen wurde. Der Zweck dieses Tools ist es Mappingaufgaben in Teilbereiche zu gliedern, die schnell erledigt werden können. Es zeigt, welche Bereiche gemappt und welche Bereiche geprüft werden müssen. <br /> Dies erleichtert die Aufgabenverteilung an verschiedene Mapper in einem Notfall. Er erlaubt auch den Fortschritt der Mappingaktivitäten und die Homogenität des Mappens (d.h. zu taggende Elemente, Benutzung von Tags usw.) sicherzustellen."
+msgstr "OSM Tasking Manager er et kortlægningsværktøj der er designet og bygget til Humanitarian OSM for at understøtte samarbejde. Formålet med værktøjet er at opdele en større kortlægning hurtigt ud i mindre opgaver. Værktøjet viser hvilke områder der skal kortlægges og hvilke områder der skal valideres.<br/>Denne arbejdsdeling i tilfælde af krisesituationer gør distribution af opgaver til forskellige kortlæggere meget lettere. Det tillader også kontrol over processen og giver en vis standardisering af arbejdsopgaverne. (fx hvilke objekter der skal kortlægges, bestemte tags der skal benyttes osv)"
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
-msgstr ""
+msgstr "Sponsorer og finansiering"
 
 #: osmtm/templates/about.mako:15
 msgid ""
 "OSM Tasking Manager was designed and built for the <a "
 "href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
-msgstr ""
+msgstr "OSM Tasking Manager er udviklet og bygget til brug for <a href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
 
 #: osmtm/templates/about.mako:17
 msgid "With the invaluable help from:"
-msgstr ""
+msgstr "Med værdifuld hjælp fra:"
 
 #: osmtm/templates/about.mako:45
 msgid "Getting Started"
-msgstr "Anfangen"
+msgstr "Kom godt i gang"
 
 #: osmtm/templates/about.mako:47
 msgid "Some resources to help you start using the Tasking Manager:"
-msgstr ""
+msgstr "Nogle vejledninger til at hjælpe dig i gang med Tasking Manager:"
 
 #: osmtm/templates/about.mako:56
 msgid ""
 "OSM Tasking Manager is an open source software.<br>Feel free to report "
 "issues and contribute."
-msgstr "Der OSM Tasking Manager ist quelloffene Software. <br>Wir bitten um Mithilfe und Fehlermeldungen."
+msgstr "OSM Tasking Manager er open source software.<br>Finder du fejl er du velkommen til at bidrage med dette."
 
 #: osmtm/templates/about.mako:58
 msgid ""
 "The <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application "
 "code</a> is available on github"
-msgstr ""
+msgstr "Softwaren og <a href=\"http://github.com/hotosm/osm-tasking-manager2\">kode</a> er tilgængelig på GitHub"
 
 #: osmtm/templates/about.mako:60
 msgid ""
 "Lead developer: Pierre GIRAUD (<a "
 "href=\"//www.camptocamp.com\">Camptocamp</a>)"
-msgstr ""
+msgstr "Udviklerleder Pierre GIRAUD (<a href=\"//www.camptocamp.com\">Camptocamp</a>)"
 
 #: osmtm/templates/about.mako:61
 msgid ""
 "with the help of <a href=\"https://github.com/hotosm/osm-tasking-"
 "manager2/graphs/contributors\">other contributors</a>."
-msgstr ""
+msgstr "med hjælp af <a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">følgende andre bidragsydere</a>."
 
 #: osmtm/templates/base.mako:40 osmtm/templates/base.mako:105
 msgid "About"
-msgstr "Über"
+msgstr "Om"
 
 #: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
-msgstr "Bei OpenStreetMap einloggen"
+msgstr "login til OpenStreetMap"
 
 #: osmtm/templates/home.mako:8
 msgid "urgent"
-msgstr "dringend"
+msgstr "haster"
 
 #: osmtm/templates/home.mako:8
 msgid "high"
-msgstr "hoch"
+msgstr "høj"
 
 #: osmtm/templates/home.mako:8
 msgid "medium"
-msgstr "mittel"
+msgstr "medium"
 
 #: osmtm/templates/home.mako:8
 msgid "low"
-msgstr "niedrig"
+msgstr "lille"
 
 #: osmtm/templates/home.mako:10
 msgid "High priority first"
-msgstr "Hohe Priorität zuerst"
+msgstr "Høj prioritet først"
 
 #: osmtm/templates/home.mako:11
 msgid "Creation date"
-msgstr "Erstellungsdatum"
+msgstr "Oprettelsesdato"
 
 #: osmtm/templates/home.mako:12
 msgid "Last update"
-msgstr "zuletzt aktualisiert"
+msgstr "Sidste opdatering"
 
 #: osmtm/templates/home.mako:42
 msgid "Search"
-msgstr "Suchen"
+msgstr "Søg"
 
 #: osmtm/templates/home.mako:48
 msgid "Sort by:"
-msgstr "Sortieren nach"
+msgstr "Sortér efter:"
 
 #: osmtm/templates/home.mako:74
 msgid "Your projects"
-msgstr "Deine Projekte"
+msgstr "Dine projekter"
 
 #: osmtm/templates/home.mako:124
 msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
-msgstr[0] "${locked} Mapper arbeiten z. Zt. an diesem Projekt"
-msgstr[1] "${locked} Mapper arbeiten z. Zt. an diesem Projekt"
+msgstr[0] "bruger"
+msgstr[1] "${locked} brugere arbejder allerede på dette projekt"
 
 #: osmtm/templates/home.mako:165 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
-msgstr "Der Zugang zu diesem Projekt ist beschränkt"
+msgstr "Adgang til dette projekt er begrænset"
 
 #: osmtm/templates/home.mako:168
 msgid "Created by"
-msgstr "Erstellt von"
+msgstr "Lavet af"
 
 #: osmtm/templates/home.mako:170
 msgid "Updated"
-msgstr "Upgedated"
+msgstr "Opdateret"
 
 #: osmtm/templates/home.mako:171
 msgid "Priority:"
-msgstr "Priorität:"
+msgstr "Prioritet:"
 
 #: osmtm/templates/imagery.mako:24
 msgid "imagery url available only after accepting the license"
-msgstr "URL der Bilder steht erst nach dem Akzeptieren der Lizenz zur Verfügung"
+msgstr "billede URL er først tilgængeligt efter accept af licensen"
 
 #: osmtm/templates/imagery.mako:51
 msgid "You need to accept the license first"
-msgstr "Du musst zunächst die LIzenzbedingungen akzeptieren."
+msgstr "Du er nødt til at acceptere licensen først"
 
 #: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
 msgid "Licenses"
-msgstr "Lizenzen"
+msgstr "Licenser"
 
 #: osmtm/templates/message.mako:3 osmtm/templates/message.mako:12
 #: osmtm/templates/user_menu.mako:12
 msgid "Messages"
-msgstr "Nachrichten"
+msgstr "Beskeder"
 
 #: osmtm/templates/message.mako:20
 msgid "From:"
-msgstr "von:"
+msgstr "Fra:"
 
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
-msgstr "Du hast zugeordnete Aufgaben:"
+msgstr "Du har opgaver tildelt:"
 
 #: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:10
 msgid "Archived"
-msgstr "Gespeichert"
+msgstr "Arkiveret"
 
 #: osmtm/templates/project.edit.mako:96
 msgid "Published"
-msgstr "Veröffentlicht"
+msgstr "Udgivet"
 
 #: osmtm/templates/project.edit.mako:97 osmtm/templates/project.mako:8
 msgid "Draft"
-msgstr "Entwurf"
+msgstr "Udkast"
 
 #: osmtm/templates/project.edit.mako:314
 msgid "Allowed users"
-msgstr "Erlaubte Benutzer"
+msgstr "Tilladte brugere"
 
 #: osmtm/templates/project.instructions.mako:9
 msgid "This project is not published yet."
-msgstr "Diese Projekt ist noch nicht veröffentlicht."
+msgstr "Dette projekt er ikke publiceret endnu."
 
 #: osmtm/templates/project.instructions.mako:12
 msgid "Publish"
-msgstr "Veröffentlichen"
+msgstr "Publicer"
 
 #: osmtm/templates/project.instructions.mako:16
 msgid "This project was archived."
-msgstr "Dieses Projekt wurde archiviert."
+msgstr "Dette projekt var arkiveret."
 
 #: osmtm/templates/project.instructions.mako:31
 msgid "Entities to Map"
-msgstr "zu mappende Einheiten"
+msgstr "Enheder at kortlægge"
 
 #: osmtm/templates/project.instructions.mako:43
 msgid "Changeset Comment"
-msgstr "Changeset Kommentar"
+msgstr "Changeset kommentar"
 
 #: osmtm/templates/project.instructions.mako:57
 msgid "Imagery"
-msgstr "Bild"
+msgstr "Billede"
 
 #: osmtm/templates/project.instructions.mako:76
 msgid "Start contributing"
-msgstr "Mitmachen"
+msgstr "Start med at bidrage"
 
 #: osmtm/templates/project.mako:49
 msgid "Instructions"
-msgstr "Anweisungen"
+msgstr "Instruktioner"
 
 #: osmtm/templates/project.mako:50
 msgid "Contribute"
-msgstr "Mitmachen"
+msgstr "Bidrag"
 
 #: osmtm/templates/project.mako:51
 msgid "Activity"
-msgstr "Aktivitäten"
+msgstr "Aktivitet"
 
 #: osmtm/templates/project.mako:52
 msgid "Stats"
-msgstr "Statistiken"
+msgstr "Statistik"
 
 #: osmtm/templates/project.mako:64
 msgid "Loading"
-msgstr "Laden"
+msgstr "Indlæser"
 
 #: osmtm/templates/project.mako:101
 msgid "Ready"
-msgstr "Bereit"
+msgstr "Klar"
 
 #: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:30
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
-msgstr "Nicht geprüft"
+msgstr "Ej godkendt"
 
 #: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
-msgstr "Fertig"
+msgstr "Færdig"
 
 #: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:32
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
-msgstr "Geprüft"
+msgstr "Valideret"
 
 #: osmtm/templates/project.mako:102
 msgid "You must leave a comment."
-msgstr "Du musst einen Kommentar eingeben."
+msgstr "Du skal efterlade en kommentar."
 
 #: osmtm/templates/project.mako:103
 msgid "High priority"
-msgstr "Hohe Priorität"
+msgstr "Høj prioritet"
 
 #: osmtm/templates/project.new.mako:76
 msgid "You cannot select this option unless you import a file with polygons."
-msgstr "Sie können diese Option nicht auswählen bis Sie eine Datei mit Polygonen importiert haben."
+msgstr "Du kan ikke vælge denne her mulighed med mindre du importerer en fil med polygoner."
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
-msgstr "Mitarbeiter"
+msgstr "Bidragsydere"
 
 #: osmtm/templates/project.stats.mako:7
 msgid "Assigned"
-msgstr "Zugeordnet"
+msgstr "Tildelt"
 
 #: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
-msgstr "Jemandem eine Aufgabe zuordnen"
+msgstr "Tildel opgaven til nogen"
 
 #: osmtm/templates/task.assigned.mako:25
 msgid "Filter users"
-msgstr "Nutzer filtern"
+msgstr "Filtrere brugere"
 
 #: osmtm/templates/task.assigned.mako:42 osmtm/templates/task.locked.mako:2
 msgid "you"
-msgstr "Dich"
+msgstr "dig"
 
 #: osmtm/templates/task.assigned.mako:44
 msgid "Assigned to ${username}"
-msgstr "Zugordnet zu ${username}"
+msgstr "Tildelt til ${username}"
 
 #: osmtm/templates/task.assigned.mako:48
 msgid "Not assigned yet"
-msgstr "Noch nicht zugeordnet"
+msgstr "Ikke tildelt endnu"
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:4
 msgid "Leave a comment"
-msgstr "Hinterlasse einen Kommentar"
+msgstr "Efterlad en kommentar"
 
 #: osmtm/templates/task.current_locked.mako:2
 msgid "a task"
-msgstr "eine Aufgabe"
+msgstr "en opgave"
 
 #: osmtm/templates/task.current_locked.mako:3
 msgid "You already have ${task_link} locked."
-msgstr "Du hast bereits ${task_link} gesperrt."
+msgstr "Du har allerede ${task_link} låst."
 
 #: osmtm/templates/task.current_locked.mako:10
 msgid "Select it again"
-msgstr "Nochmals auswählen"
+msgstr "Vælg den igen"
 
 #: osmtm/templates/task.difficulty.mako:7
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Hard"
-msgstr "Schwierig"
+msgstr "Svær"
 
 #: osmtm/templates/task.difficulty.mako:8
 msgid "Difficulty: hard<br>Level: advanced"
-msgstr "Schwierigkeitsgrad: schwierig<br>Niveaustufe: Fortgeschritten"
+msgstr "Sværhedsgrad: svær<br>Niveau: avanceret"
 
 #: osmtm/templates/task.difficulty.mako:11
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Medium"
-msgstr "Mittel"
+msgstr "Medium"
 
 #: osmtm/templates/task.difficulty.mako:12
 msgid "Difficulty: medium<br>Level: intermediate"
-msgstr "Schwierigkeitsgrad: mittel<br>Niveaustufe: fortgeschrittene Anfänger"
+msgstr "Sværhedsgrad: medium<br>Niveau: let øvede"
 
 #: osmtm/templates/task.difficulty.mako:15
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Easy"
-msgstr "Leicht"
+msgstr "Nemt"
 
 #: osmtm/templates/task.difficulty.mako:16
 msgid "Difficulty: easy<br>Level: beginner"
-msgstr "Schwierigkeitsgrad: leicht<br>Niveaustufe: Anfänger"
+msgstr "Sværhedsgrad: nemt<br>Niveau: begynder"
 
 #: osmtm/templates/task.difficulty.mako:19
 msgid "Difficulty"
-msgstr "Schwierigkeitsgrad"
+msgstr "Sværhedsgrad"
 
 #: osmtm/templates/task.difficulty.mako:20
 msgid "No difficulty set yet"
-msgstr "Der Schwierigkeitsgrad wurde noch nicht festgelegt"
+msgstr "Ingen sværhedsgrad er angivet endnu"
 
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
-msgstr "Bearbeiten mit "
+msgstr "Redigerer med"
 
 #: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
-msgstr "Wähle eine Aufgabe auf der Karte"
+msgstr "Vælg en opgave på kortet"
 
 #: osmtm/templates/task.empty.mako:21
 msgid "or"
-msgstr "oder"
+msgstr "eller"
 
 #: osmtm/templates/task.empty.mako:27
 msgid "Take a task at random"
-msgstr "Eine zufällige Aufgabe wählen"
+msgstr "Tag en tilfældig opgave"
 
 #: osmtm/templates/task.freecomment.mako:7
 msgid "Comment"
@@ -372,205 +372,205 @@ msgstr "Kommentar"
 
 #: osmtm/templates/task.history.mako:28
 msgid "Marked as done"
-msgstr "Als beendet markiert"
+msgstr "Angivet som færdig"
 
 #: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:30
 #: osmtm/templates/task.history.mako:32 osmtm/templates/task.history.mako:37
 #: osmtm/templates/task.history.mako:43
 msgid "by"
-msgstr "von"
+msgstr "af"
 
 #: osmtm/templates/task.history.mako:37 osmtm/templates/task.status.mako:6
 msgid "Locked"
-msgstr "Gesperrt"
+msgstr "Låst"
 
 #: osmtm/templates/task.history.mako:39
 msgid "Unlocked"
-msgstr "Geöffnet"
+msgstr "Ulåst"
 
 #: osmtm/templates/task.history.mako:43
 msgid "Comment left"
-msgstr "Kommentar fehlt"
+msgstr "Kommentar efterladt"
 
 #: osmtm/templates/task.history.mako:55
 msgid "Nothing has happened yet."
-msgstr "Bis jetzt ist nichts passiert."
+msgstr "Ingenting er sket endnu."
 
 #: osmtm/templates/task.instructions.mako:3
 msgid "Extra Instructions"
-msgstr "Zusätzliche Anleitungen"
+msgstr "Ekstra instruktioner"
 
 #: osmtm/templates/task.locked.mako:4
 msgid "Locked by ${username}"
-msgstr "Gesperrt für ${username}"
+msgstr "Låst af ${username}"
 
 #: osmtm/templates/task.locked.mako:14
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
-msgstr "Wenn Du diese Aufgabe nicht rechtzeitig beendest oder freigibst, wir sie automatisch freigegeben."
+msgstr "Hvis du ikke når at færdiggøre  eller udgive denne opgave, så vil den automatisk blive låst op"
 
 #: osmtm/templates/task.locked.mako:16
 msgid "min. left"
-msgstr "verbleibende Minuten"
+msgstr "minutter tilbage"
 
 #: osmtm/templates/task.mako:19
 msgid "Clear selection"
-msgstr "Auswahl aufheben"
+msgstr "Nulstil valgte"
 
 #: osmtm/templates/task.mako:65
 msgid "See the changesets in the OSM database for this area."
-msgstr "Die Changesets für diesen Bereich in der OSM Datenbank ansehen."
+msgstr "Se ændringssæt i OSM databasen for dette område."
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
-msgstr "Die Aufgabe ist zu groß?"
+msgstr "Opgaven er for stor?"
 
 #: osmtm/templates/task.split.mako:13
 msgid "Are you sure you want to split this task?"
-msgstr "Bist Du sicher, dass Du diese Aufgabe teilen möchtest?"
+msgstr "Er du sikker på du vil opdele denne opgave?"
 
 #: osmtm/templates/task.split.mako:15
 msgid "Split"
-msgstr "Teilen"
+msgstr "Split op"
 
 #: osmtm/templates/task.state.done.mako:4
 msgid "Invalidate this task if you consider it needs more work."
-msgstr "Diese Aufgabe markieren, wenn Du meinst, dass noch zusätzliche Arbeiten notwendig sind."
+msgstr "Godkend ej denne opgave hvis du mener at der er behov for mere arbejde."
 
 #: osmtm/templates/task.state.done.mako:12
 #: osmtm/templates/task.state.ready.mako:8
 msgid "Unlock"
-msgstr "Öffnen"
+msgstr "Ulåst"
 
 #: osmtm/templates/task.state.done.mako:18
 msgid "Invalidate"
-msgstr "Ungültig"
+msgstr "Ej godkendes"
 
 #: osmtm/templates/task.state.done.mako:22
 msgid "Validate this task if you consider that the work is complete."
-msgstr "Diese Aufgabe bestätigen, wenn Du meinst, dass die Arbeit abeschlossen ist."
+msgstr "Validere denne opgave hvis du synes at arbejdet er komplet."
 
 #: osmtm/templates/task.state.done.mako:29
 msgid "Validate"
-msgstr "Validieren"
+msgstr "Godkend"
 
 #: osmtm/templates/task.state.ready.mako:10
 msgid "Mark task as done"
-msgstr "Aufgabe als erledigt markieren"
+msgstr "Angiv opgaven som færdig"
 
 #: osmtm/templates/task.unlocked.mako:12
 msgid "Lock this task to tell others that you are currently working on it."
-msgstr "Diese Aufgabe sperren, um anderen mitzuteilen, dass Du im Moment daran arbeitest."
+msgstr "Lås denne opgave for at fortælle andre at du pt. arbejder på denne."
 
 #: osmtm/templates/task.unlocked.mako:17
 msgid "Start mapping"
-msgstr "Mit dem Mappen beginnen"
+msgstr "Start kortlægning"
 
 #: osmtm/templates/task.unlocked.mako:21
 msgid "Review the work"
-msgstr "Die Arbeit überprüfen"
+msgstr "Kvalitetstjek arbejdet"
 
 #: osmtm/templates/user.mako:3 osmtm/templates/user.mako:5
 msgid "User profile"
-msgstr "Benutzerprofil"
+msgstr "Brugerprofil"
 
 #: osmtm/templates/user.mako:38
 msgid "This user is an administrator."
-msgstr "Dieser Nutzer ist Administrator"
+msgstr "Denne bruger er administrator."
 
 #: osmtm/templates/user.mako:54
 msgid "This user is a project manager."
-msgstr "Dieser Nutzer ist Projektmanager"
+msgstr "Denne bruger er projektmanager."
 
 #: osmtm/templates/user_menu.mako:10
 msgid "Your page"
-msgstr "Deine Seite"
+msgstr "Din side"
 
 #: osmtm/templates/user_menu.mako:16
 msgid "logout"
-msgstr "Logout"
+msgstr "logud"
 
 #: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
 msgid "Users"
-msgstr "Nutzer"
+msgstr "Brugere"
 
 #: osmtm/views/project.py:73
 msgid "Sorry, this project doesn't  exist"
-msgstr "Entschuldigung, dieses Projekt existier nicht."
+msgstr "Beklager, dette projekt findes ikke"
 
 #: osmtm/views/project.py:143
 msgid "Project #${project_id} created successfully"
-msgstr "Projekt #${project_id} erfolgreich erstellt"
+msgstr "Projekt  #${project_id}  blev lavet med succes"
 
 #: osmtm/views/project.py:168
 msgid "Successfully imported ${n} geometries"
-msgstr "Erfolgreicher Import von ${n} Geometrien"
+msgstr "Der blev med succes importeret ${n} geometri elementer"
 
 #: osmtm/views/task.py:161
 msgid "Task marked as done. Thanks for your contribution"
-msgstr "Aufgabe als beendet markiert. Vielen Dank für Deine Mitarbeit."
+msgstr "Opgaven er markeret som færdig. Tak for dit bidrag."
 
 #: osmtm/views/task.py:180
 msgid "Task already locked."
-msgstr "Aufgabe zur Zeit gesperrt."
+msgstr "Opgaven er allerede låst."
 
 #: osmtm/views/task.py:186
 msgid "Task assigned to someone else."
-msgstr "Aufgabe ist jemandem zugeordnet."
+msgstr "Opgaven er blevet tildelt anden person. "
 
 #: osmtm/views/task.py:191
 msgid "Task locked. You can start mapping."
-msgstr "Aufgabe gesperrt. Du kannst mit dem Mappen beginnen."
+msgstr "Opgaven er låst. Du kan begynde at kortlægge."
 
 #: osmtm/views/task.py:208
 msgid "Task unlocked."
-msgstr "Aufgabe freigegeben."
+msgstr "Opgaven ulåst."
 
 #: osmtm/views/task.py:220
 msgid "Comment added."
-msgstr "Kommentar hinzugefügt."
+msgstr "Kommentar tilføjet."
 
 #: osmtm/views/task.py:257
 msgid "You were mentioned in a comment - Task ${link}"
-msgstr ""
+msgstr "Du er blevet nævnt i en kommentar - Opgave ${link}"
 
 #: osmtm/views/task.py:282
 msgid "Task ${link} invalidated"
-msgstr "Aufgabe ${link} nicht geprüft"
+msgstr "Opgave  ${link} ej godkendt"
 
 #: osmtm/views/task.py:297
 msgid "Task validated."
-msgstr "Aufgabe geprüft."
+msgstr "Opgaven valideret."
 
 #: osmtm/views/task.py:300
 msgid "Task invalidated."
-msgstr "Aufgabe für ungültig erklärt."
+msgstr "Opgaven ej godkendt."
 
 #: osmtm/views/task.py:427
 msgid "Random task... none available! Sorry."
-msgstr "Zufällige Aufabenverteilung ... leider nicht verfügbar."
+msgstr "Tilfældig opgave... beklager, er ikke tilgængeligt."
 
 #: osmtm/views/task.py:440
 msgid "You cannot assign an already locked task"
-msgstr "Du kannst eine gesperrte Aufgabe nicht zuordnen"
+msgstr "Du kan ikke få tildelt en allerede låst opgave"
 
 #: osmtm/views/task.py:450
 msgid "Task assigned."
-msgstr "Aufgabe zugeordnet"
+msgstr "Opgave tildelt."
 
 #: osmtm/views/task.py:464
 msgid "Task assignment removed"
-msgstr "Aufgabenzuordnung gelöscht"
+msgstr "Den tildelte opgave er fjernet"
 
 #: osmtm/views/task.py:496
 msgid "Task difficulty changed."
-msgstr "Schwierigkeitsgrad der Aufgabe geändert."
+msgstr "Opgavens sværhedsgrad ændret."
 
 #: osmtm/views/task.py:509
 msgid "Task difficulty removed"
-msgstr "Schwierigkeitsgrad der Aufgabe gelöscht"
+msgstr "Opgavens sværhedsgrad fjernet"
 
 #: osmtm/views/user.py:97
 msgid "Sorry, this user doesn't  exist"
-msgstr "Entschuldigung dieser Benutzer existiert nicht."
+msgstr "Beklager, denne bruger findes ikke"

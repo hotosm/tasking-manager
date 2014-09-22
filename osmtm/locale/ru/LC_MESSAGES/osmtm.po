@@ -3,25 +3,26 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
-# Manfred Reiter <ma.reiter@gmail.com>, 2014
+# allardais <ergo@list.ru>, 2014
+# Ilya Zverev <zverik@textual.ru>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-09-16 11:53+0200\n"
-"PO-Revision-Date: 2014-09-16 10:07+0000\n"
-"Last-Translator: Manfred Reiter <ma.reiter@gmail.com>\n"
-"Language-Team: German (http://www.transifex.com/projects/p/osm-tasking-manager2/language/de/)\n"
+"PO-Revision-Date: 2014-09-16 09:54+0000\n"
+"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"Language-Team: Russian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
-"Language: de\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: osmtm/templates/about.mako:10 osmtm/templates/home.mako:92
 msgid "About the Tasking Manager"
-msgstr "Über den Tasking Manager"
+msgstr "О менеджере задач"
 
 #: osmtm/templates/about.mako:12 osmtm/templates/home.mako:94
 msgid ""
@@ -33,7 +34,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeinity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr "Der OSM Tasking Manager ist ein Mappingtool, das für das Humanitarion OSM Team zum gemeinsamen Mappen geschaffen wurde. Der Zweck dieses Tools ist es Mappingaufgaben in Teilbereiche zu gliedern, die schnell erledigt werden können. Es zeigt, welche Bereiche gemappt und welche Bereiche geprüft werden müssen. <br /> Dies erleichtert die Aufgabenverteilung an verschiedene Mapper in einem Notfall. Er erlaubt auch den Fortschritt der Mappingaktivitäten und die Homogenität des Mappens (d.h. zu taggende Elemente, Benutzung von Tags usw.) sicherzustellen."
+msgstr "Менеджер задач OSM спроектирован и написан для картографических задач команды гуманитарной картопомощи (HOT). Его цель — разбить работу по созданию карты на небольшие задачи, выполнимые за короткое время. Он показывает список районов, где нужна карта, и где нужно проверить качество работы.<br />Такой подход помогает распределить задачи между участниками в контексте чрезвычайной помощи. Он также позволяет контролировать ход работ и однородность результата (например, указанием важных объектов, используемых тегов и т.п.)."
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
@@ -51,7 +52,7 @@ msgstr ""
 
 #: osmtm/templates/about.mako:45
 msgid "Getting Started"
-msgstr "Anfangen"
+msgstr ""
 
 #: osmtm/templates/about.mako:47
 msgid "Some resources to help you start using the Tasking Manager:"
@@ -61,7 +62,7 @@ msgstr ""
 msgid ""
 "OSM Tasking Manager is an open source software.<br>Feel free to report "
 "issues and contribute."
-msgstr "Der OSM Tasking Manager ist quelloffene Software. <br>Wir bitten um Mithilfe und Fehlermeldungen."
+msgstr ""
 
 #: osmtm/templates/about.mako:58
 msgid ""
@@ -83,453 +84,454 @@ msgstr ""
 
 #: osmtm/templates/base.mako:40 osmtm/templates/base.mako:105
 msgid "About"
-msgstr "Über"
+msgstr ""
 
 #: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
-msgstr "Bei OpenStreetMap einloggen"
+msgstr "представиться через OpenStreetMap"
 
 #: osmtm/templates/home.mako:8
 msgid "urgent"
-msgstr "dringend"
+msgstr "срочно"
 
 #: osmtm/templates/home.mako:8
 msgid "high"
-msgstr "hoch"
+msgstr "высокий"
 
 #: osmtm/templates/home.mako:8
 msgid "medium"
-msgstr "mittel"
+msgstr "средний"
 
 #: osmtm/templates/home.mako:8
 msgid "low"
-msgstr "niedrig"
+msgstr "низкий"
 
 #: osmtm/templates/home.mako:10
 msgid "High priority first"
-msgstr "Hohe Priorität zuerst"
+msgstr "сначала важные"
 
 #: osmtm/templates/home.mako:11
 msgid "Creation date"
-msgstr "Erstellungsdatum"
+msgstr "по дате создания"
 
 #: osmtm/templates/home.mako:12
 msgid "Last update"
-msgstr "zuletzt aktualisiert"
+msgstr "по времени обновления"
 
 #: osmtm/templates/home.mako:42
 msgid "Search"
-msgstr "Suchen"
+msgstr "Поиск"
 
 #: osmtm/templates/home.mako:48
 msgid "Sort by:"
-msgstr "Sortieren nach"
+msgstr "Порядок:"
 
 #: osmtm/templates/home.mako:74
 msgid "Your projects"
-msgstr "Deine Projekte"
+msgstr "Ваши проекты"
 
 #: osmtm/templates/home.mako:124
 msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
-msgstr[0] "${locked} Mapper arbeiten z. Zt. an diesem Projekt"
-msgstr[1] "${locked} Mapper arbeiten z. Zt. an diesem Projekt"
+msgstr[0] "Над проектом работает ${locked} человек"
+msgstr[1] "Над проектом работают ${locked} человек(а)"
+msgstr[2] "Над проектом работают ${locked} человек(а)"
 
 #: osmtm/templates/home.mako:165 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
-msgstr "Der Zugang zu diesem Projekt ist beschränkt"
+msgstr "Доступ к проекту ограничен"
 
 #: osmtm/templates/home.mako:168
 msgid "Created by"
-msgstr "Erstellt von"
+msgstr "Создан"
 
 #: osmtm/templates/home.mako:170
 msgid "Updated"
-msgstr "Upgedated"
+msgstr "Обновлён"
 
 #: osmtm/templates/home.mako:171
 msgid "Priority:"
-msgstr "Priorität:"
+msgstr "Приоритет:"
 
 #: osmtm/templates/imagery.mako:24
 msgid "imagery url available only after accepting the license"
-msgstr "URL der Bilder steht erst nach dem Akzeptieren der Lizenz zur Verfügung"
+msgstr "url снимков станет доступен только после соглашения с условиями"
 
 #: osmtm/templates/imagery.mako:51
 msgid "You need to accept the license first"
-msgstr "Du musst zunächst die LIzenzbedingungen akzeptieren."
+msgstr "Вам нужно согласиться с условиями"
 
 #: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
 msgid "Licenses"
-msgstr "Lizenzen"
+msgstr "Условия"
 
 #: osmtm/templates/message.mako:3 osmtm/templates/message.mako:12
 #: osmtm/templates/user_menu.mako:12
 msgid "Messages"
-msgstr "Nachrichten"
+msgstr "Сообщения"
 
 #: osmtm/templates/message.mako:20
 msgid "From:"
-msgstr "von:"
+msgstr "От:"
 
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
-msgstr "Du hast zugeordnete Aufgaben:"
+msgstr "Вам назначены задачи:"
 
 #: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:10
 msgid "Archived"
-msgstr "Gespeichert"
+msgstr "В архиве"
 
 #: osmtm/templates/project.edit.mako:96
 msgid "Published"
-msgstr "Veröffentlicht"
+msgstr "Опубликовано"
 
 #: osmtm/templates/project.edit.mako:97 osmtm/templates/project.mako:8
 msgid "Draft"
-msgstr "Entwurf"
+msgstr "Черновик"
 
 #: osmtm/templates/project.edit.mako:314
 msgid "Allowed users"
-msgstr "Erlaubte Benutzer"
+msgstr "Допущенные пользователи"
 
 #: osmtm/templates/project.instructions.mako:9
 msgid "This project is not published yet."
-msgstr "Diese Projekt ist noch nicht veröffentlicht."
+msgstr "Этот проект ещё не опубликован."
 
 #: osmtm/templates/project.instructions.mako:12
 msgid "Publish"
-msgstr "Veröffentlichen"
+msgstr "Опубликовать"
 
 #: osmtm/templates/project.instructions.mako:16
 msgid "This project was archived."
-msgstr "Dieses Projekt wurde archiviert."
+msgstr "Проект убран в архив."
 
 #: osmtm/templates/project.instructions.mako:31
 msgid "Entities to Map"
-msgstr "zu mappende Einheiten"
+msgstr "Что картировать"
 
 #: osmtm/templates/project.instructions.mako:43
 msgid "Changeset Comment"
-msgstr "Changeset Kommentar"
+msgstr "Комментарий к пакетам правок"
 
 #: osmtm/templates/project.instructions.mako:57
 msgid "Imagery"
-msgstr "Bild"
+msgstr "Снимки"
 
 #: osmtm/templates/project.instructions.mako:76
 msgid "Start contributing"
-msgstr "Mitmachen"
+msgstr "Принять участие"
 
 #: osmtm/templates/project.mako:49
 msgid "Instructions"
-msgstr "Anweisungen"
+msgstr "Инструкция"
 
 #: osmtm/templates/project.mako:50
 msgid "Contribute"
-msgstr "Mitmachen"
+msgstr "Участвовать"
 
 #: osmtm/templates/project.mako:51
 msgid "Activity"
-msgstr "Aktivitäten"
+msgstr "Деятельность"
 
 #: osmtm/templates/project.mako:52
 msgid "Stats"
-msgstr "Statistiken"
+msgstr "Статистика"
 
 #: osmtm/templates/project.mako:64
 msgid "Loading"
-msgstr "Laden"
+msgstr "Загружаю"
 
 #: osmtm/templates/project.mako:101
 msgid "Ready"
-msgstr "Bereit"
+msgstr "Готово"
 
 #: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:30
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
-msgstr "Nicht geprüft"
+msgstr "Отклонено"
 
 #: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
-msgstr "Fertig"
+msgstr "Сделано"
 
 #: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:32
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
-msgstr "Geprüft"
+msgstr "Проверено"
 
 #: osmtm/templates/project.mako:102
 msgid "You must leave a comment."
-msgstr "Du musst einen Kommentar eingeben."
+msgstr "Напишите пару слов в комментарий."
 
 #: osmtm/templates/project.mako:103
 msgid "High priority"
-msgstr "Hohe Priorität"
+msgstr "Высокий приоритет"
 
 #: osmtm/templates/project.new.mako:76
 msgid "You cannot select this option unless you import a file with polygons."
-msgstr "Sie können diese Option nicht auswählen bis Sie eine Datei mit Polygonen importiert haben."
+msgstr "Эта опция доступна только если вы импортируете файл с полигонами."
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
-msgstr "Mitarbeiter"
+msgstr "Участники"
 
 #: osmtm/templates/project.stats.mako:7
 msgid "Assigned"
-msgstr "Zugeordnet"
+msgstr "Назначены"
 
 #: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
-msgstr "Jemandem eine Aufgabe zuordnen"
+msgstr "Назначить кому-нибудь задачу"
 
 #: osmtm/templates/task.assigned.mako:25
 msgid "Filter users"
-msgstr "Nutzer filtern"
+msgstr "Фильтр пользователей"
 
 #: osmtm/templates/task.assigned.mako:42 osmtm/templates/task.locked.mako:2
 msgid "you"
-msgstr "Dich"
+msgstr "вы"
 
 #: osmtm/templates/task.assigned.mako:44
 msgid "Assigned to ${username}"
-msgstr "Zugordnet zu ${username}"
+msgstr "Назначена ${username}"
 
 #: osmtm/templates/task.assigned.mako:48
 msgid "Not assigned yet"
-msgstr "Noch nicht zugeordnet"
+msgstr "Ещё не назначена"
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:4
 msgid "Leave a comment"
-msgstr "Hinterlasse einen Kommentar"
+msgstr "Оставить комментарий"
 
 #: osmtm/templates/task.current_locked.mako:2
 msgid "a task"
-msgstr "eine Aufgabe"
+msgstr "задача"
 
 #: osmtm/templates/task.current_locked.mako:3
 msgid "You already have ${task_link} locked."
-msgstr "Du hast bereits ${task_link} gesperrt."
+msgstr "У вас уже заблокирована ${task_link}."
 
 #: osmtm/templates/task.current_locked.mako:10
 msgid "Select it again"
-msgstr "Nochmals auswählen"
+msgstr "Выберите её заново"
 
 #: osmtm/templates/task.difficulty.mako:7
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Hard"
-msgstr "Schwierig"
+msgstr "Высокая"
 
 #: osmtm/templates/task.difficulty.mako:8
 msgid "Difficulty: hard<br>Level: advanced"
-msgstr "Schwierigkeitsgrad: schwierig<br>Niveaustufe: Fortgeschritten"
+msgstr "Сложность: высокая<br>Уровень: продвинутый"
 
 #: osmtm/templates/task.difficulty.mako:11
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Medium"
-msgstr "Mittel"
+msgstr "Средняя"
 
 #: osmtm/templates/task.difficulty.mako:12
 msgid "Difficulty: medium<br>Level: intermediate"
-msgstr "Schwierigkeitsgrad: mittel<br>Niveaustufe: fortgeschrittene Anfänger"
+msgstr "Сложность: средняя<br>Уровень: опытный"
 
 #: osmtm/templates/task.difficulty.mako:15
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Easy"
-msgstr "Leicht"
+msgstr "Низкая"
 
 #: osmtm/templates/task.difficulty.mako:16
 msgid "Difficulty: easy<br>Level: beginner"
-msgstr "Schwierigkeitsgrad: leicht<br>Niveaustufe: Anfänger"
+msgstr "Сложность: низкая<br>Уровень: начинающий"
 
 #: osmtm/templates/task.difficulty.mako:19
 msgid "Difficulty"
-msgstr "Schwierigkeitsgrad"
+msgstr "Сложность"
 
 #: osmtm/templates/task.difficulty.mako:20
 msgid "No difficulty set yet"
-msgstr "Der Schwierigkeitsgrad wurde noch nicht festgelegt"
+msgstr "Сложность не указана"
 
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
-msgstr "Bearbeiten mit "
+msgstr "Править в"
 
 #: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
-msgstr "Wähle eine Aufgabe auf der Karte"
+msgstr "Выберите задачу на карте"
 
 #: osmtm/templates/task.empty.mako:21
 msgid "or"
-msgstr "oder"
+msgstr "или"
 
 #: osmtm/templates/task.empty.mako:27
 msgid "Take a task at random"
-msgstr "Eine zufällige Aufgabe wählen"
+msgstr "Получите случайную задачу"
 
 #: osmtm/templates/task.freecomment.mako:7
 msgid "Comment"
-msgstr "Kommentar"
+msgstr "Комментарий"
 
 #: osmtm/templates/task.history.mako:28
 msgid "Marked as done"
-msgstr "Als beendet markiert"
+msgstr "Отмечена сделанной"
 
 #: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:30
 #: osmtm/templates/task.history.mako:32 osmtm/templates/task.history.mako:37
 #: osmtm/templates/task.history.mako:43
 msgid "by"
-msgstr "von"
+msgstr "пользователем"
 
 #: osmtm/templates/task.history.mako:37 osmtm/templates/task.status.mako:6
 msgid "Locked"
-msgstr "Gesperrt"
+msgstr "Занята"
 
 #: osmtm/templates/task.history.mako:39
 msgid "Unlocked"
-msgstr "Geöffnet"
+msgstr "Свободна"
 
 #: osmtm/templates/task.history.mako:43
 msgid "Comment left"
-msgstr "Kommentar fehlt"
+msgstr "Комментарий оставлен"
 
 #: osmtm/templates/task.history.mako:55
 msgid "Nothing has happened yet."
-msgstr "Bis jetzt ist nichts passiert."
+msgstr "Пока ничего не произошло."
 
 #: osmtm/templates/task.instructions.mako:3
 msgid "Extra Instructions"
-msgstr "Zusätzliche Anleitungen"
+msgstr "Дополнительные инструкции"
 
 #: osmtm/templates/task.locked.mako:4
 msgid "Locked by ${username}"
-msgstr "Gesperrt für ${username}"
+msgstr "Занята ${username}"
 
 #: osmtm/templates/task.locked.mako:14
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
-msgstr "Wenn Du diese Aufgabe nicht rechtzeitig beendest oder freigibst, wir sie automatisch freigegeben."
+msgstr "Если вы не закончите или не освободите задачу вовремя, её освободят автоматически"
 
 #: osmtm/templates/task.locked.mako:16
 msgid "min. left"
-msgstr "verbleibende Minuten"
+msgstr "мин. осталось"
 
 #: osmtm/templates/task.mako:19
 msgid "Clear selection"
-msgstr "Auswahl aufheben"
+msgstr "Очистить выбор"
 
 #: osmtm/templates/task.mako:65
 msgid "See the changesets in the OSM database for this area."
-msgstr "Die Changesets für diesen Bereich in der OSM Datenbank ansehen."
+msgstr "Посмотреть пакеты правок в базе OSM для этой области."
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
-msgstr "Die Aufgabe ist zu groß?"
+msgstr "Задача слишком велика?"
 
 #: osmtm/templates/task.split.mako:13
 msgid "Are you sure you want to split this task?"
-msgstr "Bist Du sicher, dass Du diese Aufgabe teilen möchtest?"
+msgstr "Уверены, что хотите разбить задачу?"
 
 #: osmtm/templates/task.split.mako:15
 msgid "Split"
-msgstr "Teilen"
+msgstr "Разбить"
 
 #: osmtm/templates/task.state.done.mako:4
 msgid "Invalidate this task if you consider it needs more work."
-msgstr "Diese Aufgabe markieren, wenn Du meinst, dass noch zusätzliche Arbeiten notwendig sind."
+msgstr "Отклоните задачу, если над ней стоит ещё поработать."
 
 #: osmtm/templates/task.state.done.mako:12
 #: osmtm/templates/task.state.ready.mako:8
 msgid "Unlock"
-msgstr "Öffnen"
+msgstr "Освободить"
 
 #: osmtm/templates/task.state.done.mako:18
 msgid "Invalidate"
-msgstr "Ungültig"
+msgstr "Отклонить"
 
 #: osmtm/templates/task.state.done.mako:22
 msgid "Validate this task if you consider that the work is complete."
-msgstr "Diese Aufgabe bestätigen, wenn Du meinst, dass die Arbeit abeschlossen ist."
+msgstr "Одобрите, если считаете, что работа выполнена хорошо."
 
 #: osmtm/templates/task.state.done.mako:29
 msgid "Validate"
-msgstr "Validieren"
+msgstr "Одобрить"
 
 #: osmtm/templates/task.state.ready.mako:10
 msgid "Mark task as done"
-msgstr "Aufgabe als erledigt markieren"
+msgstr "Отметить задачу сделанной"
 
 #: osmtm/templates/task.unlocked.mako:12
 msgid "Lock this task to tell others that you are currently working on it."
-msgstr "Diese Aufgabe sperren, um anderen mitzuteilen, dass Du im Moment daran arbeitest."
+msgstr "Заблокировать задачу, чтобы никто другой не начал над ней работать."
 
 #: osmtm/templates/task.unlocked.mako:17
 msgid "Start mapping"
-msgstr "Mit dem Mappen beginnen"
+msgstr "Приступить к картированию"
 
 #: osmtm/templates/task.unlocked.mako:21
 msgid "Review the work"
-msgstr "Die Arbeit überprüfen"
+msgstr "Оценить результат"
 
 #: osmtm/templates/user.mako:3 osmtm/templates/user.mako:5
 msgid "User profile"
-msgstr "Benutzerprofil"
+msgstr "Профиль пользователя"
 
 #: osmtm/templates/user.mako:38
 msgid "This user is an administrator."
-msgstr "Dieser Nutzer ist Administrator"
+msgstr "Это администратор."
 
 #: osmtm/templates/user.mako:54
 msgid "This user is a project manager."
-msgstr "Dieser Nutzer ist Projektmanager"
+msgstr "Это менеджер проектов."
 
 #: osmtm/templates/user_menu.mako:10
 msgid "Your page"
-msgstr "Deine Seite"
+msgstr "Ваша страница"
 
 #: osmtm/templates/user_menu.mako:16
 msgid "logout"
-msgstr "Logout"
+msgstr "выйти"
 
 #: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
 msgid "Users"
-msgstr "Nutzer"
+msgstr "Пользователи"
 
 #: osmtm/views/project.py:73
 msgid "Sorry, this project doesn't  exist"
-msgstr "Entschuldigung, dieses Projekt existier nicht."
+msgstr "Извините, такого проекта нет"
 
 #: osmtm/views/project.py:143
 msgid "Project #${project_id} created successfully"
-msgstr "Projekt #${project_id} erfolgreich erstellt"
+msgstr "Проекст #${project_id} создан"
 
 #: osmtm/views/project.py:168
 msgid "Successfully imported ${n} geometries"
-msgstr "Erfolgreicher Import von ${n} Geometrien"
+msgstr "Импортированы ${n} геометрий"
 
 #: osmtm/views/task.py:161
 msgid "Task marked as done. Thanks for your contribution"
-msgstr "Aufgabe als beendet markiert. Vielen Dank für Deine Mitarbeit."
+msgstr "Задача отмечена выполненной. Спасибо за вклад"
 
 #: osmtm/views/task.py:180
 msgid "Task already locked."
-msgstr "Aufgabe zur Zeit gesperrt."
+msgstr "Задача уже взята."
 
 #: osmtm/views/task.py:186
 msgid "Task assigned to someone else."
-msgstr "Aufgabe ist jemandem zugeordnet."
+msgstr "Задача присвоена другому."
 
 #: osmtm/views/task.py:191
 msgid "Task locked. You can start mapping."
-msgstr "Aufgabe gesperrt. Du kannst mit dem Mappen beginnen."
+msgstr "Вы взяли задачу — приступайте к картированию."
 
 #: osmtm/views/task.py:208
 msgid "Task unlocked."
-msgstr "Aufgabe freigegeben."
+msgstr "Задача освобождена."
 
 #: osmtm/views/task.py:220
 msgid "Comment added."
-msgstr "Kommentar hinzugefügt."
+msgstr "Комментарий добавлен."
 
 #: osmtm/views/task.py:257
 msgid "You were mentioned in a comment - Task ${link}"
@@ -537,40 +539,40 @@ msgstr ""
 
 #: osmtm/views/task.py:282
 msgid "Task ${link} invalidated"
-msgstr "Aufgabe ${link} nicht geprüft"
+msgstr "Задача ${link} отклонена"
 
 #: osmtm/views/task.py:297
 msgid "Task validated."
-msgstr "Aufgabe geprüft."
+msgstr "Задача проверена."
 
 #: osmtm/views/task.py:300
 msgid "Task invalidated."
-msgstr "Aufgabe für ungültig erklärt."
+msgstr "Задача отклонена."
 
 #: osmtm/views/task.py:427
 msgid "Random task... none available! Sorry."
-msgstr "Zufällige Aufabenverteilung ... leider nicht verfügbar."
+msgstr "Случайной задачи... не нашлось. Извините."
 
 #: osmtm/views/task.py:440
 msgid "You cannot assign an already locked task"
-msgstr "Du kannst eine gesperrte Aufgabe nicht zuordnen"
+msgstr "Нельзя назначить уже занятую задачу"
 
 #: osmtm/views/task.py:450
 msgid "Task assigned."
-msgstr "Aufgabe zugeordnet"
+msgstr "Задача назначена."
 
 #: osmtm/views/task.py:464
 msgid "Task assignment removed"
-msgstr "Aufgabenzuordnung gelöscht"
+msgstr "Назначение задачи снято"
 
 #: osmtm/views/task.py:496
 msgid "Task difficulty changed."
-msgstr "Schwierigkeitsgrad der Aufgabe geändert."
+msgstr "Сложность задачи изменена"
 
 #: osmtm/views/task.py:509
 msgid "Task difficulty removed"
-msgstr "Schwierigkeitsgrad der Aufgabe gelöscht"
+msgstr "Сложность задачи снята"
 
 #: osmtm/views/user.py:97
 msgid "Sorry, this user doesn't  exist"
-msgstr "Entschuldigung dieser Benutzer existiert nicht."
+msgstr "Извините, такого пользователя нет"
