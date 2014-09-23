@@ -15,6 +15,7 @@
 - [ ] Update version number in mako templates (resources)
 - [ ] git ci -m "Bumping version A.B.C"
 - [ ] git tag A.B.C (for example 2.3.0)
+- [ ] git push upstream --tags
 
 TODO add document for Minor releases
 
