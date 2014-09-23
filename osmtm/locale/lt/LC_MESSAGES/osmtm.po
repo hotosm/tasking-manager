@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-29 12:41+0200\n"
-"PO-Revision-Date: 2014-07-29 10:40+0000\n"
+"POT-Creation-Date: 2014-09-16 11:53+0200\n"
+"PO-Revision-Date: 2014-09-16 09:54+0000\n"
 "Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
 "Language-Team: Lithuanian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/lt/)\n"
 "MIME-Version: 1.0\n"
@@ -18,6 +18,72 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Language: lt\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: osmtm/templates/about.mako:10 osmtm/templates/home.mako:92
+msgid "About the Tasking Manager"
+msgstr "Apie užduočių tvarkytuvę"
+
+#: osmtm/templates/about.mako:12 osmtm/templates/home.mako:94
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated. <br />This approach facilitates the distribution of tasks to the "
+"various mappers in a context of emergency. It also permits to control the "
+"progress and the homogeinity of the work done (ie. Elements to cover, "
+"specific tags to use, etc.)."
+msgstr "OSM užduočių tvarkytuvė yra žemėlapių kūrimo įrankis, sukurtas OSM humanistų komandai, skirtas žemėlapių kūrimui bendradarbiaujant. Šio įrankio tikslas yra padalinti žemėlapio kūrimo darbą į mažesnes užduotis, kurios gali būti greitai užbaigtos. Jis parodo, kurios vietos turi būti pažymėtos žemėlapyje, kurių žymėjimai žemėlapyje turi būti patikrinti. <br />Šis būdas palengvina užduočių paskirstymą įvairiems žemėlapių kūrėjams kritinių situacijų atveju. Jis taip pat leidžia kontroliuoti atliekamo darbo eigą ir homogeniškumą (pvz., kuriuos elementus įtraukti, kokias žymas naudoti, etc.)."
+
+#: osmtm/templates/about.mako:14
+msgid "Sponsorship and Funding"
+msgstr ""
+
+#: osmtm/templates/about.mako:15
+msgid ""
+"OSM Tasking Manager was designed and built for the <a "
+"href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
+msgstr ""
+
+#: osmtm/templates/about.mako:17
+msgid "With the invaluable help from:"
+msgstr ""
+
+#: osmtm/templates/about.mako:45
+msgid "Getting Started"
+msgstr ""
+
+#: osmtm/templates/about.mako:47
+msgid "Some resources to help you start using the Tasking Manager:"
+msgstr ""
+
+#: osmtm/templates/about.mako:56
+msgid ""
+"OSM Tasking Manager is an open source software.<br>Feel free to report "
+"issues and contribute."
+msgstr ""
+
+#: osmtm/templates/about.mako:58
+msgid ""
+"The <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application "
+"code</a> is available on github"
+msgstr ""
+
+#: osmtm/templates/about.mako:60
+msgid ""
+"Lead developer: Pierre GIRAUD (<a "
+"href=\"//www.camptocamp.com\">Camptocamp</a>)"
+msgstr ""
+
+#: osmtm/templates/about.mako:61
+msgid ""
+"with the help of <a href=\"https://github.com/hotosm/osm-tasking-"
+"manager2/graphs/contributors\">other contributors</a>."
+msgstr ""
+
+#: osmtm/templates/base.mako:40 osmtm/templates/base.mako:105
+msgid "About"
+msgstr ""
 
 #: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
@@ -59,45 +125,36 @@ msgstr "Paieška"
 msgid "Sort by:"
 msgstr "Rikiuoti pagal:"
 
-#: osmtm/templates/home.mako:73
+#: osmtm/templates/home.mako:74
 msgid "Your projects"
 msgstr "Mano projektai"
 
-#: osmtm/templates/home.mako:88
-msgid "About the Tasking Manager"
-msgstr "Apie užduočių tvarkytuvę"
+#: osmtm/templates/home.mako:124
+msgid "${locked} user is currently working on this project"
+msgid_plural "${locked} users are currently working on this project"
+msgstr[0] "${locked} naudotojas šiuo metu dirba prie šio projekto"
+msgstr[1] "${locked} naudotojai šiuo metu dirba prie šio projekto"
+msgstr[2] "${locked} naudotojų šiuo metu dirba prie šio projekto"
 
-#: osmtm/templates/home.mako:90
-msgid ""
-"OSM Tasking Manager is a mapping tool designed and built for the "
-"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
-"divide up a mapping job into smaller tasks that can be completed rapidly. It"
-" shows which areas need to be mapped and which areas need the mapping "
-"validated. <br />This approach facilitates the distribution of tasks to the "
-"various mappers in a context of emergency. It also permits to control the "
-"progress and the homogeinity of the work done (ie. Elements to cover, "
-"specific tags to use, etc.)."
-msgstr "OSM užduočių tvarkytuvė yra žemėlapių kūrimo įrankis sukurtas OSM humanistų komandai žemėlapių kūrimui bendradarbiaujant. Šio įrankio tikslas yra padalinti žemėlapio kūrimo darbą į mažesnes užduotis, kurios gali būti greitai užbaigtos. Jis parodo, kurios vietos turi būti pažymėtos žemėlapyje, kurių žymėjimai žemėlapyje turi būti patikrinti. <br />Šis būdas palengvina užduočių paskirstymą įvairiems žemėlapių kūrėjams kritinių situacijų atveju. Jis taip pat leidžia kontroliuoti atliekamo darbo eigą ir homogeniškumą (pvz., kuriuos elementus įtraukti, kokias žymas naudoti, etc.)."
-
-#: osmtm/templates/home.mako:118
-msgid "${locked} user(s) is (are) currently working on this project"
-msgstr "${locked} naudotojai šiuo metu dirba prie šio projekto"
-
-#: osmtm/templates/home.mako:159 osmtm/templates/project.instructions.mako:23
+#: osmtm/templates/home.mako:165 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
 msgstr "Prieiga prie šio projekto ribota"
 
-#: osmtm/templates/home.mako:162
+#: osmtm/templates/home.mako:168
 msgid "Created by"
 msgstr "Sukūrė"
 
-#: osmtm/templates/home.mako:164
+#: osmtm/templates/home.mako:170
 msgid "Updated"
 msgstr "Atnaujintas"
 
-#: osmtm/templates/home.mako:165
+#: osmtm/templates/home.mako:171
 msgid "Priority:"
 msgstr "Prioritetas:"
+
+#: osmtm/templates/imagery.mako:24
+msgid "imagery url available only after accepting the license"
+msgstr "vaizdų adresas prieinamas tik sutikus su licencijos sąlygomis"
 
 #: osmtm/templates/imagery.mako:51
 msgid "You need to accept the license first"
@@ -107,23 +164,32 @@ msgstr "Iš pradžių turite priimti licenciją"
 msgid "Licenses"
 msgstr "Licencijos"
 
+#: osmtm/templates/message.mako:3 osmtm/templates/message.mako:12
+#: osmtm/templates/user_menu.mako:12
+msgid "Messages"
+msgstr "Pranešimai"
+
+#: osmtm/templates/message.mako:20
+msgid "From:"
+msgstr "Nuo:"
+
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
 msgstr "Turite paskirtų užduočių:"
 
-#: osmtm/templates/project.edit.mako:81 osmtm/templates/project.mako:9
+#: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:10
 msgid "Archived"
 msgstr "Archyvuotas"
 
-#: osmtm/templates/project.edit.mako:82
+#: osmtm/templates/project.edit.mako:96
 msgid "Published"
 msgstr "Paskelbtas"
 
-#: osmtm/templates/project.edit.mako:83 osmtm/templates/project.mako:7
+#: osmtm/templates/project.edit.mako:97 osmtm/templates/project.mako:8
 msgid "Draft"
 msgstr "Juodraštis"
 
-#: osmtm/templates/project.edit.mako:272
+#: osmtm/templates/project.edit.mako:314
 msgid "Allowed users"
 msgstr "Leidžiama naudotojams"
 
@@ -147,56 +213,60 @@ msgstr "Žymėtini objektai"
 msgid "Changeset Comment"
 msgstr "Pakeitimo komentaras"
 
-#: osmtm/templates/project.instructions.mako:56
+#: osmtm/templates/project.instructions.mako:57
 msgid "Imagery"
 msgstr "Vaizdai"
 
-#: osmtm/templates/project.instructions.mako:78
+#: osmtm/templates/project.instructions.mako:76
 msgid "Start contributing"
 msgstr "Prisidėti"
 
-#: osmtm/templates/project.mako:36
+#: osmtm/templates/project.mako:49
 msgid "Instructions"
 msgstr "Instrukcijos"
 
-#: osmtm/templates/project.mako:37
+#: osmtm/templates/project.mako:50
 msgid "Contribute"
 msgstr "Prisidėti"
 
-#: osmtm/templates/project.mako:38
+#: osmtm/templates/project.mako:51
 msgid "Activity"
 msgstr "Aktyvumas"
 
-#: osmtm/templates/project.mako:39
+#: osmtm/templates/project.mako:52
 msgid "Stats"
 msgstr "Statistika"
 
-#: osmtm/templates/project.mako:56
+#: osmtm/templates/project.mako:64
 msgid "Loading"
 msgstr "Įkeliama"
 
-#: osmtm/templates/project.mako:93
+#: osmtm/templates/project.mako:101
 msgid "Ready"
 msgstr "Parengta"
 
-#: osmtm/templates/project.mako:93 osmtm/templates/task.history.mako:26
+#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:30
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr "Anuliuota"
 
-#: osmtm/templates/project.mako:93 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "Baigta"
 
-#: osmtm/templates/project.mako:93 osmtm/templates/task.history.mako:28
+#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:32
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr "Patvirtinta"
 
-#: osmtm/templates/project.mako:94
+#: osmtm/templates/project.mako:102
 msgid "You must leave a comment."
 msgstr "Privalote pakomentuoti."
+
+#: osmtm/templates/project.mako:103
+msgid "High priority"
+msgstr "Aukštas prioritetas"
 
 #: osmtm/templates/project.new.mako:76
 msgid "You cannot select this option unless you import a file with polygons."
@@ -246,6 +316,41 @@ msgstr "Jau turite užblokuotą ${task_link} užduotį."
 msgid "Select it again"
 msgstr "Pasirinkti ją vėl"
 
+#: osmtm/templates/task.difficulty.mako:7
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Hard"
+msgstr "Sunki"
+
+#: osmtm/templates/task.difficulty.mako:8
+msgid "Difficulty: hard<br>Level: advanced"
+msgstr "Sunkumas: sunki<br>Lygis: pažengęs"
+
+#: osmtm/templates/task.difficulty.mako:11
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Medium"
+msgstr "Vidutinė"
+
+#: osmtm/templates/task.difficulty.mako:12
+msgid "Difficulty: medium<br>Level: intermediate"
+msgstr "Sunkumas: vidutinė<br>Lygis: vidutinis"
+
+#: osmtm/templates/task.difficulty.mako:15
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Easy"
+msgstr "Lengva"
+
+#: osmtm/templates/task.difficulty.mako:16
+msgid "Difficulty: easy<br>Level: beginner"
+msgstr "Sunkumas: lengva<br>Lygis: pradedantysis"
+
+#: osmtm/templates/task.difficulty.mako:19
+msgid "Difficulty"
+msgstr "Sunkumas"
+
+#: osmtm/templates/task.difficulty.mako:20
+msgid "No difficulty set yet"
+msgstr "Sunkumas nenustatytas"
+
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
 msgstr "Redaguoti su"
@@ -266,29 +371,29 @@ msgstr "Parinkti užduotį atsitiktinai"
 msgid "Comment"
 msgstr "Komentuoti"
 
-#: osmtm/templates/task.history.mako:24
+#: osmtm/templates/task.history.mako:28
 msgid "Marked as done"
 msgstr "Pažymėjo, kaip baigtą:"
 
-#: osmtm/templates/task.history.mako:24 osmtm/templates/task.history.mako:26
-#: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:33
-#: osmtm/templates/task.history.mako:39
+#: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:30
+#: osmtm/templates/task.history.mako:32 osmtm/templates/task.history.mako:37
+#: osmtm/templates/task.history.mako:43
 msgid "by"
 msgstr " "
 
-#: osmtm/templates/task.history.mako:33 osmtm/templates/task.status.mako:6
+#: osmtm/templates/task.history.mako:37 osmtm/templates/task.status.mako:6
 msgid "Locked"
 msgstr "Užblokavo:"
 
-#: osmtm/templates/task.history.mako:35
+#: osmtm/templates/task.history.mako:39
 msgid "Unlocked"
 msgstr "Atblokavo"
 
-#: osmtm/templates/task.history.mako:39
+#: osmtm/templates/task.history.mako:43
 msgid "Comment left"
 msgstr "Pakomentavo:"
 
-#: osmtm/templates/task.history.mako:51
+#: osmtm/templates/task.history.mako:55
 msgid "Nothing has happened yet."
 msgstr "Nieko dar neįvyko."
 
@@ -310,11 +415,11 @@ msgstr "Jei nebaigsite ar neatblokuosite šios užduoties laiku, ji bus automati
 msgid "min. left"
 msgstr "min. liko"
 
-#: osmtm/templates/task.mako:18
+#: osmtm/templates/task.mako:19
 msgid "Clear selection"
 msgstr "Išvalyti pasirinkimą"
 
-#: osmtm/templates/task.mako:63
+#: osmtm/templates/task.mako:65
 msgid "See the changesets in the OSM database for this area."
 msgstr "Peržiūrėti šios vietos pakeitimus OSM duomenų bazėje."
 
@@ -357,7 +462,7 @@ msgstr "Pažymėti, kaip baigtą"
 
 #: osmtm/templates/task.unlocked.mako:12
 msgid "Lock this task to tell others that you are currently working on it."
-msgstr "Užblokuoti šią užduotį, kad kiti žinotų jog prie jos dirbate."
+msgstr "Užblokuoti šią užduotį, kad kiti žinotų, jog prie jos dirbate."
 
 #: osmtm/templates/task.unlocked.mako:17
 msgid "Start mapping"
@@ -367,86 +472,106 @@ msgstr "Pradėti žymėjimą"
 msgid "Review the work"
 msgstr "Patikrinti darbą"
 
-#: osmtm/templates/user.mako:4
+#: osmtm/templates/user.mako:3 osmtm/templates/user.mako:5
 msgid "User profile"
 msgstr "Naudotojo profilis"
 
-#: osmtm/templates/user.mako:37
+#: osmtm/templates/user.mako:38
 msgid "This user is an administrator."
 msgstr "Šis naudotojas yra administratorius."
 
-#: osmtm/templates/user.mako:53
+#: osmtm/templates/user.mako:54
 msgid "This user is a project manager."
 msgstr "Šis naudotojas yra projektų vadovas."
 
-#: osmtm/templates/user_menu.mako:4
+#: osmtm/templates/user_menu.mako:10
+msgid "Your page"
+msgstr "Mano puslapis"
+
+#: osmtm/templates/user_menu.mako:16
 msgid "logout"
 msgstr "atsijungti"
 
-#: osmtm/templates/users.mako:4
+#: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
 msgid "Users"
 msgstr "Naudotojai"
 
-#: osmtm/views/project.py:67
+#: osmtm/views/project.py:73
 msgid "Sorry, this project doesn't  exist"
 msgstr "Atsiprašome, šis projektas neegzistuoja"
 
-#: osmtm/views/project.py:132
+#: osmtm/views/project.py:143
 msgid "Project #${project_id} created successfully"
 msgstr "Projektas #${project_id} sukurtas sėkmingai"
 
-#: osmtm/views/project.py:157
+#: osmtm/views/project.py:168
 msgid "Successfully imported ${n} geometries"
 msgstr "Sėkmingai importuotos geometrijos: ${n}"
 
-#: osmtm/views/task.py:152
+#: osmtm/views/task.py:161
 msgid "Task marked as done. Thanks for your contribution"
 msgstr "Užduotis pažymėta baigta. Ačiū už jūsų indėlį"
 
-#: osmtm/views/task.py:171
+#: osmtm/views/task.py:180
 msgid "Task already locked."
 msgstr "Užduotis jau užblokuota."
 
-#: osmtm/views/task.py:177
+#: osmtm/views/task.py:186
 msgid "Task assigned to someone else."
 msgstr "Užduotis paskirta kam nors kitam."
 
-#: osmtm/views/task.py:182
+#: osmtm/views/task.py:191
 msgid "Task locked. You can start mapping."
 msgstr "Užduotis užblokuota. Galite pradėti žymėjimą."
 
-#: osmtm/views/task.py:199
+#: osmtm/views/task.py:208
 msgid "Task unlocked."
 msgstr "Užduotis atblokuota."
 
-#: osmtm/views/task.py:211
+#: osmtm/views/task.py:220
 msgid "Comment added."
 msgstr "Komentaras pridėtas."
 
-#: osmtm/views/task.py:233
+#: osmtm/views/task.py:257
+msgid "You were mentioned in a comment - Task ${link}"
+msgstr ""
+
+#: osmtm/views/task.py:282
+msgid "Task ${link} invalidated"
+msgstr "Užduotis ${link} anuliuota"
+
+#: osmtm/views/task.py:297
 msgid "Task validated."
 msgstr "Užduotis patvirtinta."
 
-#: osmtm/views/task.py:236
+#: osmtm/views/task.py:300
 msgid "Task invalidated."
 msgstr "Užduotis anuliuota."
 
-#: osmtm/views/task.py:329
+#: osmtm/views/task.py:427
 msgid "Random task... none available! Sorry."
 msgstr "Atsitiktinė užduotis... nėra prieinamų! Atsiprašome."
 
-#: osmtm/views/task.py:342
+#: osmtm/views/task.py:440
 msgid "You cannot assign an already locked task"
 msgstr "Negalite paskirti užblokuotos užduoties"
 
-#: osmtm/views/task.py:352
+#: osmtm/views/task.py:450
 msgid "Task assigned."
 msgstr "Užduotis paskirta."
 
-#: osmtm/views/task.py:366
+#: osmtm/views/task.py:464
 msgid "Task assignment removed"
 msgstr "Užduoties paskyrimas pašalintas"
 
-#: osmtm/views/user.py:91
+#: osmtm/views/task.py:496
+msgid "Task difficulty changed."
+msgstr "Užduoties sunkumas pakeistas."
+
+#: osmtm/views/task.py:509
+msgid "Task difficulty removed"
+msgstr "Užduoties sunkumas pašalintas."
+
+#: osmtm/views/user.py:97
 msgid "Sorry, this user doesn't  exist"
 msgstr "Atsiprašome, šis naudotojas neegzistuoja"

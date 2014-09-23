@@ -4,12 +4,16 @@ host = https://www.transifex.com
 [osm-tasking-manager2.master]
 source_file = osmtm/locale/en/LC_MESSAGES/osmtm.po
 source_lang = en
+trans.da = osmtm/locale/da/LC_MESSAGES/osmtm.po
 trans.de = osmtm/locale/de/LC_MESSAGES/osmtm.po
 trans.es = osmtm/locale/es/LC_MESSAGES/osmtm.po
 trans.fr = osmtm/locale/fr/LC_MESSAGES/osmtm.po
 trans.id = osmtm/locale/id/LC_MESSAGES/osmtm.po
+trans.it = osmtm/locale/it/LC_MESSAGES/osmtm.po
 trans.ja = osmtm/locale/ja/LC_MESSAGES/osmtm.po
 trans.lt = osmtm/locale/lt/LC_MESSAGES/osmtm.po
 trans.pt = osmtm/locale/pt/LC_MESSAGES/osmtm.po
+trans.pt_BR = osmtm/locale/pt_BR/LC_MESSAGES/osmtm.po
+trans.ru = osmtm/locale/ru/LC_MESSAGES/osmtm.po
 trans.zh_TW = osmtm/locale/zh_TW/LC_MESSAGES/osmtm.po
 
