@@ -15,5 +15,5 @@
     </p>
   </form>
 </div>
-<script src="${request.static_url('osmtm:static/js/project.new.import.js', _query={'v':'2.5-dev'})}"></script>
+<script src="${request.static_url('osmtm:static/js/project.new.import.js', _query={'v':'2.6-dev'})}"></script>
 </%block>
