@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-09-16 11:53+0200\n"
-"PO-Revision-Date: 2014-09-16 09:54+0000\n"
-"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"PO-Revision-Date: 2014-09-22 14:23+0000\n"
+"Last-Translator: nyampire <nyampire@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/osm-tasking-manager2/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,53 +37,53 @@ msgstr "OSM Tasking Managerは、OSM人道支援チーム \"Humanitarian OSM Tea
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
-msgstr ""
+msgstr "スポンサーと基金"
 
 #: osmtm/templates/about.mako:15
 msgid ""
 "OSM Tasking Manager was designed and built for the <a "
 "href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
-msgstr ""
+msgstr "OSM Tasking Managerのデザインと構築は<a href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>によって行われています。"
 
 #: osmtm/templates/about.mako:17
 msgid "With the invaluable help from:"
-msgstr ""
+msgstr "支援提供:"
 
 #: osmtm/templates/about.mako:45
 msgid "Getting Started"
-msgstr ""
+msgstr "参加はこちらから"
 
 #: osmtm/templates/about.mako:47
 msgid "Some resources to help you start using the Tasking Manager:"
-msgstr ""
+msgstr "Tasking Manager初心者向け情報:"
 
 #: osmtm/templates/about.mako:56
 msgid ""
 "OSM Tasking Manager is an open source software.<br>Feel free to report "
 "issues and contribute."
-msgstr ""
+msgstr "OSM Tasking Managerはオープンソース・ソフトウェアです。<br>不具合の報告や解決への貢献を歓迎しています。"
 
 #: osmtm/templates/about.mako:58
 msgid ""
 "The <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application "
 "code</a> is available on github"
-msgstr ""
+msgstr "<a href=\"http://github.com/hotosm/osm-tasking-manager2\">コード</a>の公開はgithubで行われています。"
 
 #: osmtm/templates/about.mako:60
 msgid ""
 "Lead developer: Pierre GIRAUD (<a "
 "href=\"//www.camptocamp.com\">Camptocamp</a>)"
-msgstr ""
+msgstr "主開発者: Pierre GIRAUD (<a href=\"//www.camptocamp.com\">Camptocamp</a>)"
 
 #: osmtm/templates/about.mako:61
 msgid ""
 "with the help of <a href=\"https://github.com/hotosm/osm-tasking-"
 "manager2/graphs/contributors\">other contributors</a>."
-msgstr ""
+msgstr "協力は<a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">その他多くの貢献者たち</a>により。"
 
 #: osmtm/templates/base.mako:40 osmtm/templates/base.mako:105
 msgid "About"
-msgstr ""
+msgstr "Tasking Managerについて"
 
 #: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
@@ -532,7 +532,7 @@ msgstr "コメント追加完了。"
 
 #: osmtm/views/task.py:257
 msgid "You were mentioned in a comment - Task ${link}"
-msgstr ""
+msgstr "あなたに関するコメントがあります - タスク ${link}"
 
 #: osmtm/views/task.py:282
 msgid "Task ${link} invalidated"
