@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
-# AlexandreMBM <alexandre.mbm@gmail.com>, 2014
+# Alexandre Magno <alexandre.mbm@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-09-16 11:53+0200\n"
 "PO-Revision-Date: 2014-09-16 21:48+0000\n"
-"Last-Translator: AlexandreMBM <alexandre.mbm@gmail.com>\n"
+"Last-Translator: Alexandre Magno <alexandre.mbm@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/osm-tasking-manager2/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
