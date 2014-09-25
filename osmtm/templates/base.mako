@@ -6,15 +6,15 @@
   <head>
   <title>${custom.instance_name()} - ${self.title()}</title>
     <link rel="shortcut icon" href="${request.static_url('osmtm:static/img/favicon.ico')}">
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css', _query={'v':'2.5-dev'})}">
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css', _query={'v':'2.5-dev'})}">
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js', _query={'v':'2.5-dev'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/showdown.js', _query={'v':'2.5-dev'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js', _query={'v':'2.5-dev'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name, _query={'v':'2.5-dev'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js', _query={'v':'2.5-dev'})}"></script>
-    <script src="${request.static_url('osmtm:static/js/shared.js', _query={'v':'2.5-dev'})}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js', _query={'v':'2.5-dev'})}"></script>
+    <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css', _query={'v':'2.6-dev'})}">
+    <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css', _query={'v':'2.6-dev'})}">
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js', _query={'v':'2.6-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/showdown.js', _query={'v':'2.6-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js', _query={'v':'2.6-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name, _query={'v':'2.6-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js', _query={'v':'2.6-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/js/shared.js', _query={'v':'2.6-dev'})}"></script>
+    <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js', _query={'v':'2.6-dev'})}"></script>
 <%
 from osmtm.models import DBSession, TaskComment
 login_url= request.route_path('login', _query=[('came_from', request.url)])

@@ -11,7 +11,7 @@
     </a>
     % endif
   </div>
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.assign.js', _query={'v':'2.5-dev'})}"></script>
+  <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.assign.js', _query={'v':'2.6-dev'})}"></script>
   <div id="assign_to_selector" class="panel panel-default hide">
     <div class="panel-heading small">
       <strong>
