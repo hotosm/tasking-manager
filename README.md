@@ -111,6 +111,42 @@ To run the tests, use the following command:
 1. compile messages: `python setup.py compile_catalog`
 1. restart application server
 
+## Installation as a mod_wsgi Application
+
+an example Apache configuration file
+
+```
+WSGIDaemonProcess OSMTM_process user=ubuntu group=ubuntu processes=1 \
+        threads=4 \
+        python-path=/home/ubuntu/osm-tasking-manager2:/home/ubuntu/osm-tasking-manager2/env/lib/python2.7/site-packages
+WSGIRestrictStdin Off
+
+<VirtualHost *:80>
+        ServerName example.org
+        # Use only 1 Python sub-interpreter.  Multiple sub-interpreters
+        # play badly with C extensions.
+        WSGIPassAuthorization On
+        WSGIScriptAlias /osmtm /home/ubuntu/osm-tasking-manager2/env/OSMTM.wsgi
+
+        <Location />
+            WSGIProcessGroup OSMTM_process
+            WSGIApplicationGroup %{GLOBAL}
+        </Location>
+
+        <Directory /home/ubuntu/osm-tasking-manager2/env>
+            <Files OSMTM.wsgi>
+                Require all granted
+            </Files>
+            Order allow,deny
+            Allow from all
+        </Directory>
+
+        LogLevel warn
+
+        CustomLog /var/log/apache2/osmtm-access.log combined
+        ErrorLog /var/log/apache2/osmtm-error.log
+</VirtualHost>
+```
 
 ## Customization
 
