@@ -300,7 +300,7 @@ msgstr ""
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:4
 msgid "Leave a comment"
-msgstr "Leave a comment - what did you acheive, what is remaining?"
+msgstr "Leave a comment - what did you achieve, what is remaining?"
 
 #: osmtm/templates/task.current_locked.mako:2
 msgid "a task"
