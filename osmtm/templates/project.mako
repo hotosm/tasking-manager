@@ -102,7 +102,7 @@ var statesI18n = ["${_('Ready')}", "${_('Invalidated')}", "${_('Done')}", "${_('
 var commentRequiredMsg = "${_('You must leave a comment.')}";
 var highPriorityI18n = "${_('High priority')}";
 </script>
-  <script src="http://d3js.org/d3.v3.js"></script>
+  <script src="${request.static_url('osmtm:static/js/lib/d3.v3.js', _query={'v':'2.6-dev'})}"></script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js', _query={'v':'2.6-dev'})}"></script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.difficulty.js', _query={'v':'2.6-dev'})}"></script>
   <script src="${request.static_url('osmtm:static/js/lib/At.js/js/jquery.caret.js', _query={'v':'2.6-dev'})}"></script>
