@@ -79,7 +79,7 @@ geometry = loads(str(project.area.geometry.data))
     </div>
   </form>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js', _query={'v':'2.6-dev'})}"></script>
-  <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+  <script src="${request.static_url('osmtm:static/js/lib/typeahead.bundle.js', _query={'v':'2.6-dev'})}"></script>
 </div>
 </%block>
 <%block name="description">
