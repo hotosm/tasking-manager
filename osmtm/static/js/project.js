@@ -654,7 +654,13 @@ osmtm.project = (function() {
         }
         data['sum'] = total;
 
-        for (var i in data) {
+        var contributors = Object.keys(data);
+        contributors.sort(function (a, b) {
+          return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
+        var i, len = contributors.length;
+        for (var k = 0; k < len; k++) {
+          var i = contributors[k];
           var tiles = data[i];
           var row = $('<tr>', {
             class: 'highlight',
