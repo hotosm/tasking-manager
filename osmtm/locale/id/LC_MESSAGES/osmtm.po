@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
+# Emir Hartato <emir.hartato@gmail.com>, 2014
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-16 11:53+0200\n"
-"PO-Revision-Date: 2014-09-16 09:54+0000\n"
+"POT-Creation-Date: 2014-10-17 14:50+0200\n"
+"PO-Revision-Date: 2014-10-17 12:53+0000\n"
 "Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/id/)\n"
 "MIME-Version: 1.0\n"
@@ -19,11 +20,12 @@ msgstr ""
 "Language: id\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: osmtm/templates/about.mako:10 osmtm/templates/home.mako:92
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:105
+#: osmtm/templates/home.mako:93
 msgid "About the Tasking Manager"
 msgstr "Tentang Tasking Manager"
 
-#: osmtm/templates/about.mako:12 osmtm/templates/home.mako:94
+#: osmtm/templates/about.mako:12 osmtm/templates/home.mako:95
 msgid ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
 "Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
@@ -33,126 +35,153 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeinity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr ""
+msgstr "OSM Tasking Manager merupakan sebuah alat pemetaan yang dirancang dan dibangun untuk pemetaan kolaboratif Humanitarian OSM Team. Tujuan dari alat ini adalah untuk membagi beberapa pekerjaan pemetaan ke dalam bagian-bagian kecil yang dapat diselesaikan secara cepat. Alat ini menunukan area mana saja yang perlu dipetakan dan area mana saja yang pelru divalidasi. <br />Pendekatan ini dapat memfasilitasi pendistribusian beberapa pekerjaan kepada berbagai pembuat peta dalam konteks keadaan darurat. Alat ini juga memungkinkan untuk mengontrol perkembangan dan homogenitas dari pekerjaan yang telah dilakukan (misalnya elemen-elemen yang akan dipetakan, atribut spesifik yang digunakan, dll.)"
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
-msgstr ""
+msgstr "Sponsor dan penyedia dana"
 
 #: osmtm/templates/about.mako:15
 msgid ""
 "OSM Tasking Manager was designed and built for the <a "
 "href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
-msgstr ""
+msgstr "OSM Tasking Manager telah dirancang dan dibangun untuk <a href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
 
 #: osmtm/templates/about.mako:17
 msgid "With the invaluable help from:"
-msgstr ""
+msgstr "Dengan bantuan sangat berharga dari:"
 
 #: osmtm/templates/about.mako:45
 msgid "Getting Started"
-msgstr ""
+msgstr "Mulai mengerjakan"
 
 #: osmtm/templates/about.mako:47
 msgid "Some resources to help you start using the Tasking Manager:"
-msgstr ""
+msgstr "Beberapa referensi yang dapat membantu anda menggunakan Tasking Manager:"
 
 #: osmtm/templates/about.mako:56
 msgid ""
 "OSM Tasking Manager is an open source software.<br>Feel free to report "
 "issues and contribute."
-msgstr ""
+msgstr "OSM Tasking Manager merupakan sebuah perangkat lunak open source. <br> Anda bebas untuk berkontribusi dan melaporkan masalah."
 
 #: osmtm/templates/about.mako:58
 msgid ""
 "The <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application "
 "code</a> is available on github"
-msgstr ""
+msgstr "<a href=\"http://github.com/hotosm/osm-tasking-manager2\">Kode aplikasi</a> terdapat dalam github"
 
 #: osmtm/templates/about.mako:60
 msgid ""
 "Lead developer: Pierre GIRAUD (<a "
 "href=\"//www.camptocamp.com\">Camptocamp</a>)"
-msgstr ""
+msgstr "Pemimpin pengembangan: Pierre GIRAUD (<a href=\"//www.camptocamp.com\">Camptocamp</a>)"
 
 #: osmtm/templates/about.mako:61
 msgid ""
 "with the help of <a href=\"https://github.com/hotosm/osm-tasking-"
 "manager2/graphs/contributors\">other contributors</a>."
-msgstr ""
+msgstr "dengan bantuan dari <a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">kontributor lainnya</a>."
 
-#: osmtm/templates/base.mako:40 osmtm/templates/base.mako:105
+#: osmtm/templates/base.mako:40
 msgid "About"
-msgstr ""
+msgstr "Tentang"
 
 #: osmtm/templates/base.mako:52
 msgid "login to OpenStreetMap"
 msgstr "masuk ke OpenStreetMap"
 
-#: osmtm/templates/home.mako:8
+#: osmtm/templates/custom.mako:6
+msgid "Questions About Tasks, Mapping or HOT?"
+msgstr ""
+
+#: osmtm/templates/custom.mako:7
+msgid ""
+"If you have any questions about a project, a task or mapping in general "
+"please ask on our mailing list: <a "
+"href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a><br"
+" /><br />Or visit us in our IRC Chat Channel, just select #hot from the pop "
+"down channel list:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT "
+"IRC Channel #hot</a><br /><br />General inquries and comments are welcomed "
+"at: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
+msgstr ""
+
+#: osmtm/templates/custom.mako:11
+msgid "Email HOT at"
+msgstr ""
+
+#: osmtm/templates/custom.mako:12
+msgid "Follow HOT on"
+msgstr ""
+
+#: osmtm/templates/custom.mako:13
+msgid "Like HOT on"
+msgstr ""
+
+#: osmtm/templates/home.mako:9
 msgid "urgent"
 msgstr "penting"
 
-#: osmtm/templates/home.mako:8
+#: osmtm/templates/home.mako:9
 msgid "high"
 msgstr "tinggi"
 
-#: osmtm/templates/home.mako:8
+#: osmtm/templates/home.mako:9
 msgid "medium"
 msgstr "sedang"
 
-#: osmtm/templates/home.mako:8
+#: osmtm/templates/home.mako:9
 msgid "low"
 msgstr "rendah"
 
-#: osmtm/templates/home.mako:10
+#: osmtm/templates/home.mako:11
 msgid "High priority first"
 msgstr "Prioritas tinggi pertama"
 
-#: osmtm/templates/home.mako:11
+#: osmtm/templates/home.mako:12
 msgid "Creation date"
 msgstr "Tanggal dibuat"
 
-#: osmtm/templates/home.mako:12
+#: osmtm/templates/home.mako:13
 msgid "Last update"
 msgstr "Update terakhir"
 
-#: osmtm/templates/home.mako:42
+#: osmtm/templates/home.mako:43
 msgid "Search"
 msgstr "Cari"
 
-#: osmtm/templates/home.mako:48
+#: osmtm/templates/home.mako:49
 msgid "Sort by:"
 msgstr "Urut berdasarkan:"
 
-#: osmtm/templates/home.mako:74
+#: osmtm/templates/home.mako:75
 msgid "Your projects"
-msgstr ""
+msgstr "masuk ke OpenStreetMap"
 
-#: osmtm/templates/home.mako:124
+#: osmtm/templates/home.mako:129
 msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
-msgstr[0] ""
+msgstr[0] "${locked} beberapa pengguna saat ini sedang mengerjakan proyek ini."
 
-#: osmtm/templates/home.mako:165 osmtm/templates/project.instructions.mako:23
+#: osmtm/templates/home.mako:170 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
 msgstr "Akses ke proyek ini terbatas"
 
-#: osmtm/templates/home.mako:168
+#: osmtm/templates/home.mako:173
 msgid "Created by"
 msgstr "Dibuat oleh"
 
-#: osmtm/templates/home.mako:170
+#: osmtm/templates/home.mako:175
 msgid "Updated"
 msgstr "Diupdate"
 
-#: osmtm/templates/home.mako:171
+#: osmtm/templates/home.mako:176
 msgid "Priority:"
 msgstr "Prioritas"
 
 #: osmtm/templates/imagery.mako:24
 msgid "imagery url available only after accepting the license"
-msgstr ""
+msgstr "url citra satelit hanya tersedia setelah anda menyetujui lisensi"
 
 #: osmtm/templates/imagery.mako:51
 msgid "You need to accept the license first"
@@ -165,15 +194,15 @@ msgstr "Lisensi"
 #: osmtm/templates/message.mako:3 osmtm/templates/message.mako:12
 #: osmtm/templates/user_menu.mako:12
 msgid "Messages"
-msgstr ""
+msgstr "Pesan"
 
 #: osmtm/templates/message.mako:20
 msgid "From:"
-msgstr ""
+msgstr "Dari:"
 
 #: osmtm/templates/project.assigned_tasks.mako:6
 msgid "You have tasks assigned:"
-msgstr ""
+msgstr "Anda telah memiliki pekerjaan yang sudah ditentukan:"
 
 #: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:10
 msgid "Archived"
@@ -264,11 +293,11 @@ msgstr "Anda harus meninggalkan sebuah komentar"
 
 #: osmtm/templates/project.mako:103
 msgid "High priority"
-msgstr ""
+msgstr "Prioritas tinggi"
 
 #: osmtm/templates/project.new.mako:76
 msgid "You cannot select this option unless you import a file with polygons."
-msgstr ""
+msgstr "Anda tidak dapat memilih pilihan ini kecuali anda mengimpor sebuah file poligon."
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
@@ -276,15 +305,15 @@ msgstr "Kontributor"
 
 #: osmtm/templates/project.stats.mako:7
 msgid "Assigned"
-msgstr ""
+msgstr "Ditentukan"
 
 #: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
-msgstr ""
+msgstr "Ditentukan untuk pengguna lain"
 
 #: osmtm/templates/task.assigned.mako:25
 msgid "Filter users"
-msgstr ""
+msgstr "Saring pengguna"
 
 #: osmtm/templates/task.assigned.mako:42 osmtm/templates/task.locked.mako:2
 msgid "you"
@@ -292,11 +321,11 @@ msgstr "anda"
 
 #: osmtm/templates/task.assigned.mako:44
 msgid "Assigned to ${username}"
-msgstr ""
+msgstr "Ditentukan untuk ${username}"
 
 #: osmtm/templates/task.assigned.mako:48
 msgid "Not assigned yet"
-msgstr ""
+msgstr "Belum ditentukan"
 
 #: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:4
 msgid "Leave a comment"
@@ -317,41 +346,51 @@ msgstr "Pilih task lagi"
 #: osmtm/templates/task.difficulty.mako:7
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Hard"
-msgstr ""
+msgstr "Sulit"
 
 #: osmtm/templates/task.difficulty.mako:8
 msgid "Difficulty: hard<br>Level: advanced"
-msgstr ""
+msgstr "Tingkat kesulitan: sulit<br> Tingkat: lanjutan"
 
 #: osmtm/templates/task.difficulty.mako:11
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Medium"
-msgstr ""
+msgstr "Sedang"
 
 #: osmtm/templates/task.difficulty.mako:12
 msgid "Difficulty: medium<br>Level: intermediate"
-msgstr ""
+msgstr "Tingkat kesulitan: sedang<br> Tingkat: menengah"
 
 #: osmtm/templates/task.difficulty.mako:15
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Easy"
-msgstr ""
+msgstr "Mudah"
 
 #: osmtm/templates/task.difficulty.mako:16
 msgid "Difficulty: easy<br>Level: beginner"
-msgstr ""
+msgstr "Tingkat kesulitan: mudah<br> Tingkat: pemula"
 
 #: osmtm/templates/task.difficulty.mako:19
 msgid "Difficulty"
-msgstr ""
+msgstr "Tingkat kesulitan"
 
 #: osmtm/templates/task.difficulty.mako:20
 msgid "No difficulty set yet"
-msgstr ""
+msgstr "Tingkat kesulitan belum diatur"
 
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
 msgstr "Edit dengan"
+
+#: osmtm/templates/task.editors.mako:24
+msgid ".gpx file"
+msgstr ""
+
+#: osmtm/templates/task.editors.mako:29
+msgid ""
+"Tip: Download the following ${task_gpx_link} and load it in JOSM in order to"
+" see the current task boundary"
+msgstr ""
 
 #: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
@@ -401,15 +440,19 @@ msgstr "Petunjuk tambahan"
 
 #: osmtm/templates/task.locked.mako:4
 msgid "Locked by ${username}"
-msgstr ""
+msgstr "Edit dengan ${username}"
 
-#: osmtm/templates/task.locked.mako:14
+#: osmtm/templates/task.locked.mako:14 osmtm/templates/task.state.done.mako:12
+msgid "Unlock"
+msgstr "Buka kunci"
+
+#: osmtm/templates/task.locked.mako:16
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
 msgstr "Jika anda tidak menyelesaikan atau melepaskan task ini pada waktunya, task ini akan terbuka secara otomatis"
 
-#: osmtm/templates/task.locked.mako:16
+#: osmtm/templates/task.locked.mako:18
 msgid "min. left"
 msgstr "menit tersisa"
 
@@ -437,11 +480,6 @@ msgstr "Bagi"
 msgid "Invalidate this task if you consider it needs more work."
 msgstr "Batalkan validasu task ini jika anda berpikir task ini membutuhkan pekerjaan tambahan"
 
-#: osmtm/templates/task.state.done.mako:12
-#: osmtm/templates/task.state.ready.mako:8
-msgid "Unlock"
-msgstr "Buka kunci"
-
 #: osmtm/templates/task.state.done.mako:18
 msgid "Invalidate"
 msgstr "Batalkan validasi"
@@ -454,7 +492,7 @@ msgstr "Validasi task ini jika anda berpikir pekerjaan ini telah selesai."
 msgid "Validate"
 msgstr "Validasi"
 
-#: osmtm/templates/task.state.ready.mako:10
+#: osmtm/templates/task.state.ready.mako:5
 msgid "Mark task as done"
 msgstr "Tandai task sudah selesai"
 
@@ -484,7 +522,7 @@ msgstr "Pengguna ini merupakan seorang manajer proyek."
 
 #: osmtm/templates/user_menu.mako:10
 msgid "Your page"
-msgstr ""
+msgstr "Halaman anda"
 
 #: osmtm/templates/user_menu.mako:16
 msgid "logout"
@@ -516,7 +554,7 @@ msgstr "Task sudah terkunci."
 
 #: osmtm/views/task.py:186
 msgid "Task assigned to someone else."
-msgstr ""
+msgstr "Tentukan tugas untuk pengguna lain"
 
 #: osmtm/views/task.py:191
 msgid "Task locked. You can start mapping."
@@ -532,11 +570,11 @@ msgstr "Komentar ditambahkan."
 
 #: osmtm/views/task.py:257
 msgid "You were mentioned in a comment - Task ${link}"
-msgstr ""
+msgstr "Anda telah disebut dalam sebuah komentar - Tugas ${link}"
 
 #: osmtm/views/task.py:282
 msgid "Task ${link} invalidated"
-msgstr ""
+msgstr "Tugas ${link} telah batal divalidasi"
 
 #: osmtm/views/task.py:297
 msgid "Task validated."
@@ -552,23 +590,23 @@ msgstr "Task acak... tidak tersedia! Maaf."
 
 #: osmtm/views/task.py:440
 msgid "You cannot assign an already locked task"
-msgstr ""
+msgstr "Anda tidak dapat mengatur tugas yang telah terkunci sebelumnya"
 
 #: osmtm/views/task.py:450
 msgid "Task assigned."
-msgstr ""
+msgstr "Tugas telah diatur."
 
 #: osmtm/views/task.py:464
 msgid "Task assignment removed"
-msgstr ""
+msgstr "Pengaturan tugas dihilangkan."
 
 #: osmtm/views/task.py:496
 msgid "Task difficulty changed."
-msgstr ""
+msgstr "Tingkat kesulitan tugas telah diubah."
 
 #: osmtm/views/task.py:509
 msgid "Task difficulty removed"
-msgstr ""
+msgstr "Tingkat kesulitan tugas dihilangkan"
 
 #: osmtm/views/user.py:97
 msgid "Sorry, this user doesn't  exist"
