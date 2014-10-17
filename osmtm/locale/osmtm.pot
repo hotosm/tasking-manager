@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: osmtm 2.6-dev\n"
+"Project-Id-Version: osmtm 2.7-dev\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-17 11:54+0200\n"
+"POT-Creation-Date: 2014-10-17 14:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -377,6 +377,16 @@ msgstr ""
 msgid "Edit with"
 msgstr ""
 
+#: osmtm/templates/task.editors.mako:24
+msgid ".gpx file"
+msgstr ""
+
+#: osmtm/templates/task.editors.mako:29
+msgid ""
+"Tip: Download the following ${task_gpx_link} and load it in JOSM in order to "
+"see the current task boundary"
+msgstr ""
+
 #: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
 msgstr ""
@@ -427,13 +437,17 @@ msgstr ""
 msgid "Locked by ${username}"
 msgstr ""
 
-#: osmtm/templates/task.locked.mako:14
+#: osmtm/templates/task.locked.mako:14 osmtm/templates/task.state.done.mako:12
+msgid "Unlock"
+msgstr ""
+
+#: osmtm/templates/task.locked.mako:16
 msgid ""
 "If you do not complete or release this task in time, it will be automatically"
 " unlocked"
 msgstr ""
 
-#: osmtm/templates/task.locked.mako:16
+#: osmtm/templates/task.locked.mako:18
 msgid "min. left"
 msgstr ""
 
@@ -461,10 +475,6 @@ msgstr ""
 msgid "Invalidate this task if you consider it needs more work."
 msgstr ""
 
-#: osmtm/templates/task.state.done.mako:12 osmtm/templates/task.state.ready.mako:8
-msgid "Unlock"
-msgstr ""
-
 #: osmtm/templates/task.state.done.mako:18
 msgid "Invalidate"
 msgstr ""
@@ -477,7 +487,7 @@ msgstr ""
 msgid "Validate"
 msgstr ""
 
-#: osmtm/templates/task.state.ready.mako:10
+#: osmtm/templates/task.state.ready.mako:5
 msgid "Mark task as done"
 msgstr ""
 

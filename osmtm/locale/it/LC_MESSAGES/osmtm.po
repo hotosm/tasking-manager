@@ -4,12 +4,13 @@
 # 
 # Translators:
 # sabas <sabas88@gmail.com>, 2014
+# tony fregoli <antonio@fregoli.it>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-16 11:53+0200\n"
-"PO-Revision-Date: 2014-09-22 10:08+0000\n"
+"POT-Creation-Date: 2014-10-17 14:50+0200\n"
+"PO-Revision-Date: 2014-10-17 12:53+0000\n"
 "Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -19,11 +20,12 @@ msgstr ""
 "Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: osmtm/templates/about.mako:10 osmtm/templates/home.mako:92
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:105
+#: osmtm/templates/home.mako:93
 msgid "About the Tasking Manager"
 msgstr "Informazioni su Tasking Manager"
 
-#: osmtm/templates/about.mako:12 osmtm/templates/home.mako:94
+#: osmtm/templates/about.mako:12 osmtm/templates/home.mako:95
 msgid ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
 "Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
@@ -81,7 +83,7 @@ msgid ""
 "manager2/graphs/contributors\">other contributors</a>."
 msgstr ""
 
-#: osmtm/templates/base.mako:40 osmtm/templates/base.mako:105
+#: osmtm/templates/base.mako:40
 msgid "About"
 msgstr ""
 
@@ -89,65 +91,92 @@ msgstr ""
 msgid "login to OpenStreetMap"
 msgstr "Accedi tramite OpenStreetMap"
 
-#: osmtm/templates/home.mako:8
+#: osmtm/templates/custom.mako:6
+msgid "Questions About Tasks, Mapping or HOT?"
+msgstr ""
+
+#: osmtm/templates/custom.mako:7
+msgid ""
+"If you have any questions about a project, a task or mapping in general "
+"please ask on our mailing list: <a "
+"href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a><br"
+" /><br />Or visit us in our IRC Chat Channel, just select #hot from the pop "
+"down channel list:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT "
+"IRC Channel #hot</a><br /><br />General inquries and comments are welcomed "
+"at: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
+msgstr ""
+
+#: osmtm/templates/custom.mako:11
+msgid "Email HOT at"
+msgstr ""
+
+#: osmtm/templates/custom.mako:12
+msgid "Follow HOT on"
+msgstr ""
+
+#: osmtm/templates/custom.mako:13
+msgid "Like HOT on"
+msgstr ""
+
+#: osmtm/templates/home.mako:9
 msgid "urgent"
 msgstr "urgente"
 
-#: osmtm/templates/home.mako:8
+#: osmtm/templates/home.mako:9
 msgid "high"
 msgstr "alta"
 
-#: osmtm/templates/home.mako:8
+#: osmtm/templates/home.mako:9
 msgid "medium"
 msgstr "media"
 
-#: osmtm/templates/home.mako:8
+#: osmtm/templates/home.mako:9
 msgid "low"
 msgstr "bassa"
 
-#: osmtm/templates/home.mako:10
+#: osmtm/templates/home.mako:11
 msgid "High priority first"
 msgstr "Precedenza alla priorità alta"
 
-#: osmtm/templates/home.mako:11
+#: osmtm/templates/home.mako:12
 msgid "Creation date"
 msgstr "Data di creazione"
 
-#: osmtm/templates/home.mako:12
+#: osmtm/templates/home.mako:13
 msgid "Last update"
 msgstr "Ultimo aggiornamento"
 
-#: osmtm/templates/home.mako:42
+#: osmtm/templates/home.mako:43
 msgid "Search"
 msgstr "Ricerca"
 
-#: osmtm/templates/home.mako:48
+#: osmtm/templates/home.mako:49
 msgid "Sort by:"
 msgstr "Ordina per:"
 
-#: osmtm/templates/home.mako:74
+#: osmtm/templates/home.mako:75
 msgid "Your projects"
 msgstr "I tuoi progetti"
 
-#: osmtm/templates/home.mako:124
+#: osmtm/templates/home.mako:129
 msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
 msgstr[0] ""
 msgstr[1] ""
 
-#: osmtm/templates/home.mako:165 osmtm/templates/project.instructions.mako:23
+#: osmtm/templates/home.mako:170 osmtm/templates/project.instructions.mako:23
 msgid "Access to this project is limited"
 msgstr "L'accesso a questo progetto è limitato"
 
-#: osmtm/templates/home.mako:168
+#: osmtm/templates/home.mako:173
 msgid "Created by"
 msgstr "Creato da"
 
-#: osmtm/templates/home.mako:170
+#: osmtm/templates/home.mako:175
 msgid "Updated"
 msgstr "Aggiornato"
 
-#: osmtm/templates/home.mako:171
+#: osmtm/templates/home.mako:176
 msgid "Priority:"
 msgstr "Priorità:"
 
@@ -354,6 +383,16 @@ msgstr "Nessuna difficoltà ancora impostata"
 msgid "Edit with"
 msgstr "Modifica con"
 
+#: osmtm/templates/task.editors.mako:24
+msgid ".gpx file"
+msgstr ""
+
+#: osmtm/templates/task.editors.mako:29
+msgid ""
+"Tip: Download the following ${task_gpx_link} and load it in JOSM in order to"
+" see the current task boundary"
+msgstr ""
+
 #: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
 msgstr "Seleziona un compito sulla mappa"
@@ -404,13 +443,17 @@ msgstr "Istruzioni ulteriori"
 msgid "Locked by ${username}"
 msgstr "Bloccato da ${username}"
 
-#: osmtm/templates/task.locked.mako:14
+#: osmtm/templates/task.locked.mako:14 osmtm/templates/task.state.done.mako:12
+msgid "Unlock"
+msgstr "Sblocca"
+
+#: osmtm/templates/task.locked.mako:16
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
 msgstr "Se non completi o rilasci questo compito in tempo, sarà automaticamente sbloccato"
 
-#: osmtm/templates/task.locked.mako:16
+#: osmtm/templates/task.locked.mako:18
 msgid "min. left"
 msgstr "minuti rimanenti"
 
@@ -438,11 +481,6 @@ msgstr "Suddividi"
 msgid "Invalidate this task if you consider it needs more work."
 msgstr "Annulla questo compito se pensi che necessiti di ulteriore lavoro."
 
-#: osmtm/templates/task.state.done.mako:12
-#: osmtm/templates/task.state.ready.mako:8
-msgid "Unlock"
-msgstr "Sblocca"
-
 #: osmtm/templates/task.state.done.mako:18
 msgid "Invalidate"
 msgstr "Annulla"
@@ -455,7 +493,7 @@ msgstr "Conferma questo compito se pensi che il lavoro sia completo."
 msgid "Validate"
 msgstr "Conferma"
 
-#: osmtm/templates/task.state.ready.mako:10
+#: osmtm/templates/task.state.ready.mako:5
 msgid "Mark task as done"
 msgstr "Segna questo compito come concluso"
 
@@ -533,7 +571,7 @@ msgstr "Commento aggiunto."
 
 #: osmtm/views/task.py:257
 msgid "You were mentioned in a comment - Task ${link}"
-msgstr ""
+msgstr "Sei stato citato in un commento - Task ${link}"
 
 #: osmtm/views/task.py:282
 msgid "Task ${link} invalidated"
