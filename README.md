@@ -71,6 +71,26 @@ You're now ready to do the initial population of the database. An
 You will see messages, hopefully including a line like `serving on http://0.0.0.0:6543`.
 Visit that address in your web browser - you should see your local Tasking Manager!
 
+### Running the application behind proxy server
+
+You need to make the following changes to the osmtm/views/osmauth.py file.
+
+    # Add the below lines in the starting
+    import httplib2
+    httplib2.debuglevel = 4
+    PROXY = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, 'PROXY-SERVER', PROXY-PORT)
+    
+NOTE: Replace the PROXY-SERVER with your proxy server address and PROXY-PORT with the port number on which your proxy is established. 
+    
+    # then add "proxy_info=PROXY" for every line in oauth.Client. 
+    client = oauth.Client(consumer, proxy_info=PROXY)
+    
+    client = oauth.Client(consumer, token, proxy_info=PROXY)
+
+Replace the host address in the development.ini file with your IP address of the system.
+
+    host='SYSTEM-IP-ADDRESS'
+
 
 ### Styles
 
