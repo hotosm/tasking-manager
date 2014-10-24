@@ -4,7 +4,7 @@ import geojson
 from geoalchemy2 import shape
 from geoalchemy2.functions import ST_Centroid
 from osmtm.models import TaskState
-from urllib import quote_plus
+from urllib import quote
 geometry_as_shape = shape.to_shape(task.geometry)
 centroid = geometry_as_shape.centroid
 bounds = geometry_as_shape.bounds
@@ -83,6 +83,6 @@ var gpx_url = window.location.origin +
     (project.license in user.accepted_licenses or not project.license):
 var imagery_url = "${project.imagery}";
 % endif
-var changeset_comment = "${quote_plus(project.changeset_comment, '')}";
+var changeset_comment = "${quote(project.changeset_comment, '')}";
 osmtm.project.initAtWho();
 </script>
