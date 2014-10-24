@@ -459,6 +459,15 @@ osmtm.project = (function() {
       });
       window.open(url);
       break;
+      case "fp":
+      url = getLink({
+        base: 'http://fieldpapers.org/make-step2-geography.php?',
+        bounds: task_bounds,
+        centroid: task_centroid,
+        protocol: 'llz'
+      });
+      window.open(url);
+      break;
       case "iDeditor":
         if (typeof licenseAgreementUrl != 'undefined') {
           alert(requiresLicenseAgreementMsg);

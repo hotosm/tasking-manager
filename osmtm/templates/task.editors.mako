@@ -15,6 +15,7 @@
       <li id="iDeditor"><a role="menuitem">iD editor</a></li>
       <li id="potlatch2"><a role="menuitem">Potlatch 2</a></li>
       <li id="wp"><a role="menuitem">Walking Papers</a></li>
+      <li id="fp"><a role="menuitem">Field Papers</a></li>
     </ul>
   </div>
   <div id="josm_task_boundary_tip" class="help-block small text-left">
