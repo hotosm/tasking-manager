@@ -275,12 +275,13 @@ def send_invalidation_message(request, task, user):
             break
 
     from_ = user
-    _ = request.translate
-    href = request.route_path('project', project=task.project_id)
-    href = href + '#task/%s' % task.id
-    link = '<a href="%s">#%d</a>' % (href, task.id)
-    subject = _('Task ${link} invalidated', mapping={'link': link})
-    send_message(subject, from_, to, comment)
+    if from_ != to:
+        _ = request.translate
+        href = request.route_path('project', project=task.project_id)
+        href = href + '#task/%s' % task.id
+        link = '<a href="%s">#%d</a>' % (href, task.id)
+        subject = _('Task ${link} invalidated', mapping={'link': link})
+        send_message(subject, from_, to, comment)
 
 
 @view_config(route_name='task_validate', renderer="json")
