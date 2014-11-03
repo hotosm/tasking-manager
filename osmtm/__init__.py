@@ -20,6 +20,10 @@ from .security import (
     group_membership,
 )
 
+from .git_cache_buster import (
+    GitCacheBuster,
+)
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -53,7 +57,8 @@ def main(global_config, **settings):
     session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
     config.set_session_factory(session_factory)
 
-    config.add_static_view('static', 'static', cache_max_age=3600)
+    config.add_static_view('static', 'static', cache_max_age=3600,
+                           cachebust=GitCacheBuster())
     config.add_route('home', '/')
     config.add_route('about', '/about')
     config.add_route('login', '/login')

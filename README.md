@@ -25,7 +25,7 @@ To create a virtual Python environment:
     cd osm-tasking-manager2
     sudo easy_install virtualenv
     virtualenv --no-site-packages env
-    ./env/bin/python setup.py develop
+    ./env/bin/pip install -r requirements.txt
 
 *Tip: if you encounter problems installing `psycopg2` especially on Mac, it is recommended to follow advice proposed [here](http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa).*
 
