@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: osmtm 2.7-dev\n"
+"Project-Id-Version: osmtm 2.8-dev\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-17 14:50+0200\n"
+"POT-Creation-Date: 2014-11-04 12:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -377,11 +377,11 @@ msgstr ""
 msgid "Edit with"
 msgstr ""
 
-#: osmtm/templates/task.editors.mako:24
+#: osmtm/templates/task.editors.mako:25
 msgid ".gpx file"
 msgstr ""
 
-#: osmtm/templates/task.editors.mako:29
+#: osmtm/templates/task.editors.mako:30
 msgid ""
 "Tip: Download the following ${task_gpx_link} and load it in JOSM in order to "
 "see the current task boundary"
@@ -438,6 +438,7 @@ msgid "Locked by ${username}"
 msgstr ""
 
 #: osmtm/templates/task.locked.mako:14 osmtm/templates/task.state.done.mako:12
+#: osmtm/templates/task.state.ready.mako:8
 msgid "Unlock"
 msgstr ""
 
@@ -487,7 +488,7 @@ msgstr ""
 msgid "Validate"
 msgstr ""
 
-#: osmtm/templates/task.state.ready.mako:5
+#: osmtm/templates/task.state.ready.mako:10
 msgid "Mark task as done"
 msgstr ""
 
@@ -567,39 +568,39 @@ msgstr ""
 msgid "You were mentioned in a comment - Task ${link}"
 msgstr ""
 
-#: osmtm/views/task.py:282
+#: osmtm/views/task.py:283
 msgid "Task ${link} invalidated"
 msgstr ""
 
-#: osmtm/views/task.py:297
+#: osmtm/views/task.py:298
 msgid "Task validated."
 msgstr ""
 
-#: osmtm/views/task.py:300
+#: osmtm/views/task.py:301
 msgid "Task invalidated."
 msgstr ""
 
-#: osmtm/views/task.py:427
+#: osmtm/views/task.py:428
 msgid "Random task... none available! Sorry."
 msgstr ""
 
-#: osmtm/views/task.py:440
+#: osmtm/views/task.py:441
 msgid "You cannot assign an already locked task"
 msgstr ""
 
-#: osmtm/views/task.py:450
+#: osmtm/views/task.py:451
 msgid "Task assigned."
 msgstr ""
 
-#: osmtm/views/task.py:464
+#: osmtm/views/task.py:465
 msgid "Task assignment removed"
 msgstr ""
 
-#: osmtm/views/task.py:496
+#: osmtm/views/task.py:497
 msgid "Task difficulty changed."
 msgstr ""
 
-#: osmtm/views/task.py:509
+#: osmtm/views/task.py:510
 msgid "Task difficulty removed"
 msgstr ""
 
