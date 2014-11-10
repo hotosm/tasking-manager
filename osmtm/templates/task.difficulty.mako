@@ -43,7 +43,7 @@ ${difficulty}
       <a href data-difficulty="0">
         <span class="text-muted">
           <span class="glyphicon glyphicon-bookmark"></span>
-          No difficulty
+          ${_('Unknown difficulty')|n}
         </span>
       </a>
     </li>

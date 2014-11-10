@@ -29,6 +29,9 @@ nosetests.xml
 # Translations
 *.mo
 
+# Editor temporary files
+*~
+
 # Mr Developer
 .mr.developer.cfg
 .project

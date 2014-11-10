@@ -17,16 +17,16 @@ else:
 %>
 <div class="container">
   <div class="row">
-    <h3>User: ${contributor.username}</h3>
+    <h3>${_('User: ${username}', mapping={'username': contributor.username})}</h3>
     <div class="col-md-12">
       % if user == contributor:
       <p>
-        This is <b>You</b>!
+        ${_('This is <b>You</b>!')|n}
       </p>
       % endif
       <p>
-        <a href="http://www.openstreetmap.org/user/${contributor.username}" title="OSM User Profile">
-          <img src="http://www.openstreetmap.org/favicon.ico" alt="[OSM]" /> OSM Profile</a>
+        <a href="http://www.openstreetmap.org/user/${contributor.username}" title="${_('OSM User Profile')}">
+          <img src="http://www.openstreetmap.org/favicon.ico" alt="[OSM]" />${_('OSM Profile')}</a>
       </p>
     </div>
   </div>
@@ -37,12 +37,12 @@ else:
         <i class="glyphicon glyphicon-star user-admin"></i>
         ${_("This user is an administrator.")}
         % if user is not None and user.is_admin and user != contributor:
-          <a href="${request.route_path('user_admin', id=contributor.id)}">Remove privileges</a>
+          <a href="${request.route_path('user_admin', id=contributor.id)}">${_('Remove privileges')}</a>
         % endif
       % else:
         % if user is not None and user.is_admin:
           <i class="glyphicon glyphicon-star user-admin"></i>
-          <a href="${request.route_path('user_admin', id=contributor.id)}">Set as administrator</a>
+          <a href="${request.route_path('user_admin', id=contributor.id)}">${_('Set as administrator')}</a>
         % endif
       % endif
       </p>
@@ -53,12 +53,12 @@ else:
           <i class="glyphicon glyphicon-star user-project-manager"></i>
           ${_("This user is a project manager.")}
           % if user is not None and user.is_admin and user != contributor:
-            <a href="${request.route_path('user_project_manager', id=contributor.id)}">Remove privileges</a>
+            <a href="${request.route_path('user_project_manager', id=contributor.id)}">${_('Remove privileges')}</a>
           % endif
         % else:
           % if user is not None and user.is_admin:
             <i class="glyphicon glyphicon-star user-project-manager"></i>
-            <a href="${request.route_path('user_project_manager', id=contributor.id)}">Set as project manager</a>
+            <a href="${request.route_path('user_project_manager', id=contributor.id)}">${_('Set as project manager')}</a>
           % endif
         % endif
       % endif
@@ -67,23 +67,25 @@ else:
   </div>
   <div class="row">
     <div class="col-md-12">
-      <h3>Projects</h3>
+      <h3>${_('Projects')}</h3>
         % if projects:
-        This user contributed to the following projects:
+        ${_('This user contributed to the following projects:')}
         <ul>
         % for p in projects:
           <li>
             <a href="${request.route_path('project', project=p["project"].id)}"
-              title="Project Details">
+              title="${_('Project Details')}">
               #${p['project'].id} ${p["project"].name}
             </a>
-            (${p["count"]} tiles)
+            (
+            ${_('${count} tiles', mapping={'count': p["count"]})}
+            )
             ${overpassturbo_link(p['project'])}
           </li>
         % endfor
         </ul>
         % else:
-        User hasn't contributed yet.
+        ${_("User hasn't contributed yet.")}
       % endif
     </div>
   </div>

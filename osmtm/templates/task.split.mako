@@ -6,7 +6,7 @@
     tooltip = ""
     if (task.zoom - task.project.zoom) > 1:
       disabled = "disabled linethrough"
-      tooltip = "You cannot split this task more."
+      tooltip = _("You cannot split this task more.")
   %>
     <a id="split" href="${request.route_path('task_split', task=task.id, project=task.project_id)}"
        rel="tooltip" data-original-title="${tooltip}"

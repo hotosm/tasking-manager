@@ -28,10 +28,10 @@
     <div class="col-md-4">
       <small>
         <p>${len(users)} ${_('Users')}</p>
-        Keys:
+        ${_('Keys:')}
         <ul>
-          <li><i class="glyphicon glyphicon-star user-admin"></i> Administrator</li>
-          <li><i class="glyphicon glyphicon-star user-project-manager"></i> Project Manager</li>
+          <li><i class="glyphicon glyphicon-star user-admin"></i> ${_('Administrator')}</li>
+          <li><i class="glyphicon glyphicon-star user-project-manager"></i> ${_('Project Manager')}</li>
         </ul>
       </small>
     </div>

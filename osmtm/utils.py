@@ -78,6 +78,7 @@ def parse_geojson(input):
     if not hasattr(collection, "features") or \
             len(collection.features) < 1:
         raise ValueError("GeoJSON file doesn't contain any feature.")
+# need translation
 
     geoms = filter(lambda x: x is not None,
                    map(parse_feature, collection.features))
@@ -85,6 +86,7 @@ def parse_geojson(input):
     if len(geoms) == 0:
         raise ValueError("GeoJSON file doesn't contain any polygon nor " +
                          "multipolygon.")
+# need translation
 
     return geoms
 

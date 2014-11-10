@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<h1>${project.id} - ${project.name} - Edit</h1>
+<h1>${project.id} - ${project.name} - ${_('Edit')}</h1>
 </%block>
 <%block name="content">
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/datepicker3.css')}">
@@ -43,13 +43,13 @@ geometry = loads(str(project.area.geometry.data))
     <div class="row">
       <div class="tabbable tabs row">
         <ul class="nav nav-tabs">
-          <li><a href="#description" data-toggle="tab">Description</a></li>
-          <li><a href="#instructions" data-toggle="tab">Instructions</a></li>
-          <li><a href="#area" data-toggle="tab">Area</a></li>
-          <li><a href="#imagery" data-toggle="tab">Imagery</a></li>
-          <li><a id="priority_areas_tab" href="#priority_areas" data-toggle="tab">Priority Areas</a></li>
-          <li><a href="#allowed_users" data-toggle="tab">Allowed Users</a></li>
-          <li><a href="#misc" data-toggle="tab">Misc</a></li>
+          <li><a href="#description" data-toggle="tab">${_('Description')}</a></li>
+          <li><a href="#instructions" data-toggle="tab">${_('Instructions')}</a></li>
+          <li><a href="#area" data-toggle="tab">${_('Area')}</a></li>
+          <li><a href="#imagery" data-toggle="tab">${_('Imagery')}</a></li>
+          <li><a id="priority_areas_tab" href="#priority_areas" data-toggle="tab">${_('Priority Areas')}</a></li>
+          <li><a href="#allowed_users" data-toggle="tab">${_('Allowed Users')}</a></li>
+          <li><a href="#misc" data-toggle="tab">${_('Misc')}</a></li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane" id="description">
@@ -79,8 +79,8 @@ geometry = loads(str(project.area.geometry.data))
     <hr>
     <div class="row pull-right">
       <div class="form-group">
-        <a href="${request.route_path('project', project=project.id)}" class="btn btn-default">Cancel</a>
-        <input id="id_submit" type="submit" value="Save the modifications" name="form.submitted" class="btn btn-primary"/>
+        <a href="${request.route_path('project', project=project.id)}" class="btn btn-default">${_('Cancel')}</a>
+        <input id="id_submit" type="submit" value="${_('Save the modifications')}" name="form.submitted" class="btn btn-primary"/>
       </div>
     </div>
   </form>
@@ -93,7 +93,7 @@ geometry = loads(str(project.area.geometry.data))
     <div class="row">
       <!-- status -->
       <div class="form-group col-md-2">
-        <label for="id_status" class="control-label">Status</label>
+        <label for="id_status" class="control-label">${_('Status')}</label>
         <select id="id_status" name="status" class="form-control">
           <%
           from osmtm.models import Project
@@ -113,7 +113,7 @@ geometry = loads(str(project.area.geometry.data))
       </div>
 
       <div class="form-group col-md-2">
-        <label for="id_priority" class="control-label">Priority</label>
+        <label for="id_priority" class="control-label">${_('Priority')}</label>
         <select id="id_priority" name="priority" class="form-control">
           % for idx, val in enumerate(['urgent', 'high', 'medium', 'low']):
             <%
@@ -129,7 +129,7 @@ geometry = loads(str(project.area.geometry.data))
     <div class="row">
       <div class="col-md-8">
         <div class="form-group">
-          <label for="id_name" class="control-label">Name of the project
+          <label for="id_name" class="control-label">${_('Name of the project')}
           </label>
           ${locale_chooser(inputname='name')}
           <div class="tab-content">
@@ -153,7 +153,7 @@ geometry = loads(str(project.area.geometry.data))
       <div class="col-md-8">
         <div class="form-group">
           <label for="id_short_description" class="control-label">
-            Short Description
+            ${_('Short Description')}
           </label>
           ${locale_chooser(inputname='short_description')}
           <div class="tab-content">
@@ -178,7 +178,7 @@ geometry = loads(str(project.area.geometry.data))
       <div class="col-md-8">
         <div class="form-group">
           <label for="id_description" class="control-label">
-            Description
+            ${_('Description')}
           </label>
           ${textarea_with_preview(inputname='description', size='big')}
         </div>
@@ -188,25 +188,25 @@ geometry = loads(str(project.area.geometry.data))
 
 <%block name="instructions">
     <div class="form-group">
-      <label class="control-label" for="id_entities_to_map">Entities to Map</label>
+      <label class="control-label" for="id_entities_to_map">${_('Entities to Map')}</label>
       <input type="text" id="id_entities_to_map"
              name="entities_to_map"
-             placeholder="primary roads, secondary roads, buildings"
+             placeholder="${_('primary roads, secondary roads, buildings')}"
              class="form-control"
              value="${project.entities_to_map if project.entities_to_map is not None else ''}"/>
       <span class="help-block">
-        The list of entities to map.<br />
+        ${_('The list of entities to map.')}<br />
       </span>
     </div>
     <div class="form-group">
-      <label class="control-label" for="id_changeset_comment">Changeset Comment</label>
+      <label class="control-label" for="id_changeset_comment">${_('Changeset Comment')}</label>
       <input type="text" id="id_changeset_comment"
              name="changeset_comment"
              class="form-control"
              value="${project.changeset_comment if project.changeset_comment is not None else ''}"/>
       <span class="help-block">
-        Comments users are recommended to add to upload commits.<br />
-        For example: <em>" Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium "</code></em>
+        ${_('Comments users are recommended to add to upload commits.')}<br />
+        ${_('For example:')}<em> "${_('Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium')}"</code></em>
       </span>
     </div>
 
@@ -215,7 +215,7 @@ geometry = loads(str(project.area.geometry.data))
       <div class="col-md-8">
         <div class="form-group">
           <label for="id_instructions" class="control-label">
-            Detailed Instructions
+            ${_('Detailed Instructions')}
           </label>
           ${textarea_with_preview(inputname='instructions', size='big')}
         </div>
@@ -228,13 +228,13 @@ geometry = loads(str(project.area.geometry.data))
       <div class="col-md-8">
         <div class="form-group">
           <label for="id_per_task_instructions" class="control-label">
-            Per Task Instructions (optional)
+            ${_('Per Task Instructions (optional)')}
           </label>
           ${textarea_with_preview(inputname='per_task_instructions')}
 
           <span class="help-block col-md-9">
-            Put here anything that can be usefull to users while taking a task. {x}, {y} and {z} will be replaced by the correponding parameters for each task.<br />
-            For example: <em>" This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM "</em>
+            ${_('Put here anything that can be usefull to users while taking a task. {x}, {y} and {z} will be replaced by the correponding parameters for each task.')}<br />
+            ${_('For example:')}<em> ${_('" This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM')}"</em>
           </span>
         </div>
       </div>
@@ -245,7 +245,7 @@ geometry = loads(str(project.area.geometry.data))
 <%block name="area">
 <div class="row">
   <p class="alert alert-warning col-md-6">
-  Area modifications are not available yet.
+  ${_('Area modifications are not available yet.')}
   </p>
 </div>
 </%block>
@@ -254,10 +254,10 @@ geometry = loads(str(project.area.geometry.data))
 <div class="row">
   <div class="col-md-4">
     <label>
-      ${len(project.priority_areas)} priority area(s)
+      ${_('${count_of} priority area(s)', mapping={'count_of': len(project.priority_areas)})}
     </label>
     <div class="help-block">
-    If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area.
+    ${_('If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area.')}
     </div>
   </div>
   <div class="col-md-8">
@@ -274,16 +274,16 @@ geometry = loads(str(project.area.geometry.data))
 <div class="row">
   <div class="col-md-6">
     <div class="form-group">
-      <label class="control-label" for="id_imagery">URL to service</label>
+      <label class="control-label" for="id_imagery">${_('URL to service')}</label>
       <input type="text" class="col-md-9 form-control" id="id_imagery" name="imagery" value="${project.imagery if project.imagery is not None else ''}"/>
       <p class="help-block">
-        <strong>Note:</strong> Follow this format for TMS urls.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png
+        <strong>${_('Note:')}</strong> ${_('Follow this format for TMS urls.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png')|n}
       </p>
     </div>
   </div>
   <div class="col-md-6">
     <div class="form-group">
-      <label class="control-label" for="id_license">Required License</label>
+      <label class="control-label" for="id_license">${_('Required License')}</label>
       <select id="id_license" name="license_id" class="form-control col-md-6">
         <option value="" />
         % for l in licenses:
@@ -309,10 +309,10 @@ geometry = loads(str(project.area.geometry.data))
           checked = 'checked' if project.private else ''
         %>
         <input type="checkbox" name="private" ${checked}>
-        <span class="glyphicon glyphicon-lock"></span> Private
+        <span class="glyphicon glyphicon-lock"></span> ${_('Private')}
       </label>
       <div class="help-block">
-        Private means that only a given list of users can access this project. In order for the user's name to be available to add to the Allowed Users - they first must visit the URL for your instance of OSMTM and Authorize access to their OpenStreetMap account. After they've done this, their username should be available for the administrator to add.
+        ${_("Private means that only a given list of users can access this project. In order for the user's name to be available to add to the Allowed Users - they first must visit the URL for your instance of OSMTM and Authorize access to their OpenStreetMap account. After they've done this, their username should be available for the administrator to add.")}
       </div>
     </div>
   </div>
@@ -337,12 +337,13 @@ geometry = loads(str(project.area.geometry.data))
   <div class="row">
     <div class="col-md-3">
       <div class="input-group">
-        <input type="text" class="form-control"
-               id="adduser"
-               placeholder="Type a username">
+        <input type="text"
+                class="form-control"
+                id="adduser"
+                placeholder="${_('Type a username')}">
         <span class="input-group-btn">
         <button class="btn btn-default disabled" type="button"
-                id="do_add_user">Add user</button>
+                id="do_add_user">${_('Add user')}</button>
         </span>
       </div>
     </div>
@@ -360,7 +361,7 @@ geometry = loads(str(project.area.geometry.data))
 <div class="form-group">
   <div class="input-group">
     <label>
-      Project due date
+      ${_('Project due date')}
     </label>
     <div class="input-group date">
       <input type="text" class="form-control"
@@ -368,27 +369,26 @@ geometry = loads(str(project.area.geometry.data))
              value="${project.due_date.strftime('%m/%d/%Y') if project.due_date is not None else ''}">
       <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
     </div>
-    <div class="help-block">The date after which the project will automatically be archived.</div>
+    <div class="help-block">${_('The date after which the project will automatically be archived.')}</div>
   </div>
 </div>
 
 <div class="form-group">
 
-  <label for="id_josm_preset" class="control-label">JOSM Preset</label>
+  <label for="id_josm_preset" class="control-label">${_('JOSM Preset')}</label>
   <input id="id_josm_preset" type="file" name="josm_preset"
          accept="application/x-josm-preset">
   % if project.josm_preset:
   <span class="help-block">
-    A JOSM Preset has already been added to this project.
+    ${_('A JOSM Preset has already been added to this project.')}
   </span>
   % endif
 </div>
 </%block>
-
 <%block name="markdown_link">
 <div class="help-block pull-right"><small><em>
-  <b>Tip:</b>
-  You can use <a href class="markdown">Markdown</a>. (HTML is not allowed)
+  <b>${_('Tip:')}</b>
+  ${_('You can use <a href class="markdown">Markdown</a>. (HTML is not allowed)')|n}
 </em></small></div>
 </%block>
 
@@ -401,10 +401,10 @@ geometry = loads(str(project.area.geometry.data))
          class="tab-pane ${'active' if locale == 'en' else ''}">
       <ul class="nav nav-pills small">
         <li class="active">
-          <a href="#${inputname}_${locale}_edit" data-toggle="tab">Edit</a>
+          <a href="#${inputname}_${locale}_edit" data-toggle="tab">${_('Edit')}</a>
         </li>
         <li>
-          <a href="#${inputname}_${locale}_preview" data-toggle="tab">Preview</a>
+          <a href="#${inputname}_${locale}_preview" data-toggle="tab">${_('Preview')}</a>
         </li>
       </ul>
       <div class="tab-content">

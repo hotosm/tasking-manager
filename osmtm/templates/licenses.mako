@@ -13,14 +13,14 @@
                 <div class="help-inline">
                   ${license.plain_text}
                 </div>
-                <a href="${request.route_path('license_edit', license=license.id)}" class="btn pull-right">edit</a><br />
+                <a href="${request.route_path('license_edit', license=license.id)}" class="btn pull-right">${_('edit')}</a><br />
                 </li>
             % endfor
             </ul>
             </ul>
         </div>
         <div class="col-md-6">
-            <a href="${request.route_path('license_new')}" class="btn btn-default">+ Create new license</a>
+            <a href="${request.route_path('license_new')}" class="btn btn-default">${_('Create new license')}</a>
         </div>
     </div>
 </div>

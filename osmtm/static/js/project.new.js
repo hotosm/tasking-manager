@@ -10,7 +10,7 @@ osmtm.project_new = (function() {
     map = L.map('leaflet').setView([0, 0], 1);
     // create the tile layer with correct attribution
     var osmUrl='http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
-    var osmAttrib='Map data © OpenStreetMap contributors';
+    var osmAttrib=osmAttribI18n;
     var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib, drawControl: true});
     map.addLayer(osm);
 
@@ -22,7 +22,7 @@ osmtm.project_new = (function() {
         marker: false,
         polyline: false,
         polygon: {
-          title: 'Draw the area of interest'
+          title: drawAreaOfInterestI18n
         }
       }
     });
@@ -86,17 +86,17 @@ osmtm.project_new = (function() {
       reader.onload = function(e) {
         if (e.target && e.target.result) callback(null, e.target.result);
         else callback({
-          message: 'Dropped file could not be loaded'
+          message: droppedFileCouldntBeLoadedI18n
         });
       };
       reader.onerror = function(e) {
         callback({
-          message: 'Dropped file was unreadable'
+          message: droppedFileWasUnreadableI18n
         });
       };
     } catch (e) {
       callback({
-        message: 'Dropped file was unreadable'
+        message: droppedFileWasUnreadableI18n
       });
     }
   }
@@ -211,7 +211,7 @@ osmtm.project_new = (function() {
             onAdd();
           });
         } else {
-          alert("Please provide a .geojson or a .kml file");
+          alert(pleaseProvideGeojsonOrKmlFileI18n);
         }
       });
 
