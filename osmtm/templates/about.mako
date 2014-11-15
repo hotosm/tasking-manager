@@ -29,7 +29,7 @@
           <a href="//www.gfdrr.org">World Bank - GFDRR</a>
         </li>
         <li>
-          <a href="">American Red Cross</a>
+          <a href="//www.redcross.org">American Red Cross</a>
         </li>
       </ul>
       </p>
