@@ -12,6 +12,10 @@ from ..models import (
     TaskState,
     Message,
 )
+from webhelpers.paginate import (
+    PageURL_WebOb,
+    Page
+)
 
 from pyramid.security import authenticated_userid
 from sqlalchemy import func, desc
@@ -25,8 +29,15 @@ from xml.dom import minidom
 @view_config(route_name='users', renderer='users.mako')
 def users(request):
     users = DBSession.query(User).all()
+    users.sort(key=lambda user: user.username)
+    users.sort(key=lambda user:
+               user.is_admin or user.is_project_manager, reverse=True)
 
-    return dict(page_id="users", users=users)
+    page = int(request.params.get('page', 1))
+    page_url = PageURL_WebOb(request)
+    paginator = Page(users, page, url=page_url, items_per_page=40)
+
+    return dict(page_id="users", users=users, paginator=paginator)
 
 
 @view_config(route_name='users_json', renderer='json')
