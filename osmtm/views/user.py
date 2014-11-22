@@ -29,6 +29,7 @@ from xml.dom import minidom
 @view_config(route_name='users', renderer='users.mako')
 def users(request):
     users = DBSession.query(User).all()
+    users.sort(key=lambda user: user.username)
     users.sort(key=lambda user: user.is_admin or user.is_project_manager, reverse=True)
 
     page = int(request.params.get('page', 1))
