@@ -9,16 +9,19 @@
   <div class="row" ng-controller="usersCrtl">
     <div class="col-md-8">
       <ul>
-        % for user in users:
-        <li>
-          <a href="user/${user.username}">${user.username}</a>
-          % if user.is_admin:
-            <i class="glyphicon glyphicon-star user-admin"></i>
-          % elif user.is_project_manager:
-            <i class="glyphicon glyphicon-star user-project-manager"></i>
-          % endif
-        </li>
-        % endfor
+        % if paginator.items:
+          % for user in paginator.items:
+            <li>
+              <a href="user/${user.username}">${user.username}</a>
+                % if user.is_admin:
+                  <i class="glyphicon glyphicon-star user-admin"></i>
+                % elif user.is_project_manager:
+                  <i class="glyphicon glyphicon-star user-project-manager"></i>
+                % endif
+            </li>
+          % endfor
+        ${paginator.pager()}
+        % endif
       </ul>
     </div>
     <div class="col-md-4">
