@@ -46,6 +46,7 @@ else:
   <div class="row">
     <div class="col-md-12">
       <ul class="nav nav-pills">
+        <li><a id="description_tab" href="#description" data-toggle="tab">${_('Description')}</a></li>
         <li class="active"><a id="instructions_tab" href="#instructions" data-toggle="tab">${_('Instructions')}</a></li>
         <li><a id="contribute_tab" href="#contribute" data-toggle="tab">${_('Contribute')}</a>
         <li><a href="#activity" data-toggle="tab">${_('Activity')}</a></li>
@@ -72,6 +73,9 @@ else:
       </div>
       <div id="instructions" class="tab-pane active">
         <%include file="project.instructions.mako" />
+      </div>
+      <div id="description" class="tab-pane">
+        <%include file="project.description.mako" />
       </div>
       <div id="contribute" class="tab-pane">
         <div id="task_empty">
