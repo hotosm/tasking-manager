@@ -200,7 +200,7 @@ geometry = loads(str(project.area.geometry.data))
              value="${project.changeset_comment if project.changeset_comment is not None else ''}"/>
       <span class="help-block">
         Comments users are recommended to add to upload commits.<br />
-        For example: <em>" Guinea, #hotosm-guinea-task-470, source=Pleiades, CNES, Astrium "</code></em>
+        For example: <em>" Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium "</code></em>
       </span>
     </div>
 
