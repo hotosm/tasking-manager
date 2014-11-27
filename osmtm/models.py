@@ -575,7 +575,7 @@ def project_after_insert(mapper, connection, target):
     connection.execute(
         project_table.update().
         where(project_table.c.id == target.id).
-        values(changeset_comment=u'#hotosm-task-%d' % target.id)
+        values(changeset_comment=u'#hotosm-project-%d' % target.id)
     )
 
 
