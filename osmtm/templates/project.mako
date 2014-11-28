@@ -74,7 +74,7 @@ else:
       <div id="instructions" class="tab-pane active">
         <%include file="project.instructions.mako" />
       </div>
-      <div id="description" class="tab-pane">
+      <div id="instructions" class="tab-pane">
         <%include file="project.description.mako" />
       </div>
       <div id="contribute" class="tab-pane">

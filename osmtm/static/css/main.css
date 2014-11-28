@@ -832,6 +832,9 @@ h1{margin:0;font-size:20px;height:36px;line-height:30px}
 #project #instructions .icon-question-sign{opacity:50;filter:alpha(opacity=5000)}
 #project #instructions dt{color:#999;font-weight:normal}
 #project #instructions dd{margin-left:10px;border:1px solid #dfdfdf;padding:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box;background-color:#efefef}
+#project #description .icon-question-sign{opacity:50;filter:alpha(opacity=5000)}
+#project #description dt{color:#999;font-weight:normal}
+#project #description dd{margin-left:10px;border:1px solid #dfdfdf;padding:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;-moz-background-clip:padding;-webkit-background-clip:padding-box;background-clip:padding-box;background-color:#efefef}
 #project #editDropdown li a{cursor:pointer}
 #project #contributors tfoot tr{background-color:#f2f2f2}
 #project #contributors tfoot td{border-top:2px solid #ddd}
