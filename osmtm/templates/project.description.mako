@@ -68,7 +68,7 @@ import markdown
 <hr />
 <p>${bleach.clean(markdown.markdown(project.instructions), strip=True) |n}</p>
 <p class="text-center">
-  <a id="start"
+  <a id="InstructionsStartContributing"
      class="btn btn-success btn-lg">
     <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
     ${_('Start contributing')}</a>
