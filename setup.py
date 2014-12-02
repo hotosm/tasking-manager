@@ -33,6 +33,7 @@ requires = [
     'transifex-client',
     'pyramid-exclog==0.7',
     'httpretty',
+    'pygments',
 ]
 
 setup(name='osmtm',
