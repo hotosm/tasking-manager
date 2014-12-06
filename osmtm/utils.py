@@ -100,4 +100,10 @@ def convert_to_multipolygon(geoms):
         else:
             rings = rings + [geom]
 
-    return MultiPolygon(rings)
+    geometry = MultiPolygon(rings)
+
+    # Downsample 3D -> 2D
+    wkt2d = geometry.to_wkt()
+    geom2d = shapely.wkt.loads(wkt2d)
+
+    return geom2d

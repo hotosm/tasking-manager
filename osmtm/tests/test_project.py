@@ -54,6 +54,18 @@ class TestProjectFunctional(BaseTestCase):
                          },
                          status=302)
 
+    def test_project_new_grid_3d(self):
+        headers = self.login_as_admin()
+        res = self.testapp.get('/project/new/grid', headers=headers,
+                               params={
+                                   'form.submitted': True,
+                                   'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[0,0,0],[1,0,0],[1,1,0],[0,0,0]]]}}]}',  # noqa
+                                   'tile_size': -2
+                               },
+                               status=302)
+        res2 = res.follow(headers=headers, status=200)
+        self.assertTrue('Save the modifications' in res2.body)
+
     def test_project_new_grid(self):
         from osmtm.models import DBSession, Project
         headers = self.login_as_admin()
