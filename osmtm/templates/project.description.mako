@@ -25,8 +25,7 @@ import markdown
 % endif
 <p>${bleach.clean(markdown.markdown(project.description), strip=True) |n}</p>
 <p class="text-center">
-  <a id="InstructionsStartContributing"
-     class="btn btn-success btn-lg">
+  <a class="btn btn-success btn-lg instructions">
     <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
-    ${_('Instructions and Start Contributing')}</a>
+    ${_('Instructions')}</a>
 </p>
