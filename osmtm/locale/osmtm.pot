@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.8-dev\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-11-04 12:56+0100\n"
+"POT-Creation-Date: 2014-11-20 11:34-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -492,7 +492,7 @@ msgstr ""
 msgid "Mark task as done"
 msgstr ""
 
-#: osmtm/templates/task.unlocked.mako:12
+#: osmtm/templates/task.unlocked.mako:13
 msgid "Lock this task to tell others that you are currently working on it."
 msgstr ""
 
@@ -501,6 +501,12 @@ msgid "Start mapping"
 msgstr ""
 
 #: osmtm/templates/task.unlocked.mako:21
+msgid ""
+"Lock this task to tell others that you are currently reviewing it. Validate "
+"that this task has been mapped correctly and completely."
+msgstr ""
+
+#: osmtm/templates/task.unlocked.mako:26
 msgid "Review the work"
 msgstr ""
 
