@@ -387,11 +387,18 @@ osmtm.project = (function() {
           c = options.centroid;
       switch (options.protocol) {
         case 'lbrt':
+        if (typeof imagery_url != "undefined" && imagery_url !== '') {
+          source=imagery_url;
+        } else {
+          source="Bing";
+        }
         return options.base + $.param({
           left: roundd(bounds[0],5),
           bottom: roundd(bounds[1],5),
           right: roundd(bounds[2],5),
-          top: roundd(bounds[3],5)
+          top: roundd(bounds[3],5),
+          changeset_comment: changeset_comment,
+          changeset_source: source
         });
         case 'llz':
         return options.base + $.param({
