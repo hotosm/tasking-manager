@@ -864,6 +864,7 @@ osmtm.project = (function() {
       loadEmptyTask();
 
       $('#start').on('click', function() {$('#contribute_tab').tab('show');});
+      $('.instructions.btn').on('click', function() {$('#instructions_tab').tab('show');});
       $('a[data-toggle="tab"]').on('shown.bs.tab', onTabShow);
 
       // actions button handlers
