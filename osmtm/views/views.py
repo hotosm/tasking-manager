@@ -1,6 +1,7 @@
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound, HTTPUnauthorized
 
+import re
 import sqlalchemy
 from sqlalchemy import (
     desc,
@@ -69,6 +70,17 @@ def home(request):
         search_filter = or_(PT.name.ilike('%%%s%%' % s),
                             PT.short_description.ilike('%%%s%%' % s),
                             PT.description.ilike('%%%s%%' % s),)
+        '''The below code extracts all the numerals in the
+           search string as a list, if there are some it
+           joins that list of number characters into a string,
+           casts it as an integer and searchs to see if there
+           is a project with that id. If there is, it adds
+           it to the search results.'''
+        digits = re.findall('\d+', s)
+        if digits:
+            search_filter = or_(
+                ProjectTranslation.id == (int(''.join(digits))),
+                search_filter)
         ids = DBSession.query(ProjectTranslation.id) \
                        .filter(search_filter) \
                        .all()
