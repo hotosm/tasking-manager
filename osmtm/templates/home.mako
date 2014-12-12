@@ -106,6 +106,7 @@ sorts = [('priority', 'asc', _('High priority first')),
 <%
     import markdown
     import bleach
+    import math
     if request.locale_name:
         project.locale = request.locale_name
     priority = priorities[project.priority]
@@ -143,7 +144,7 @@ sorts = [('priority', 'asc', _('High priority first')),
               <div style="width: ${project.validated}%;" class="progress-bar progress-bar-success"></div>
             </div>
           </td>
-          <td>&nbsp;${project.done + project.validated}%</td>
+          <td>&nbsp;${int(math.floor(project.done + project.validated))}%</td>
         </tr>
       </table>
     </li>
