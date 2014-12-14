@@ -24,6 +24,7 @@ comments = []
 %>
     <script>
         var base_url = "${request.route_path('home')}";
+        var markdown_ref_url = "${request.static_url('osmtm:static/html/markdown_quick_ref.html')}";
     </script>
 
   </head>
