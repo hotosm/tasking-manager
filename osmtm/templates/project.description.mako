@@ -23,7 +23,7 @@ import markdown
   ${_('Access to this project is limited')}
 </p>
 % endif
-<p>${bleach.clean(markdown.markdown(project.description), strip=True) |n}</p>
+<p>${markdown.markdown(bleach.clean(project.description, strip=True)) |n}</p>
 <p class="text-center">
   <a class="btn btn-success btn-lg instructions">
     <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
