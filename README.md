@@ -12,6 +12,8 @@ The application is written in Python using the Pyramid framework.
 
 This is the 2.0 version of the Tasking Manager.
 
+See a list of Tasking Manager installations [here](http://wiki.openstreetmap.org/wiki/OSM_Tasking_Manager#Operational_installations_of_the_Tasking_Manager).
+
 ## Installation
 
 First clone the git repository:
