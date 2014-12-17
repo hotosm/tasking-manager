@@ -21,33 +21,61 @@ from osmtm.mako_filters import (
 
     <div class="history ${first} ${last}">
     % if section == 'project':
-      <a href="#task/${step.task_id}">#${step.task_id}</a>
-    % endif
-    % if isinstance(step, TaskState):
-      % if step.state == step.state_done:
-      <span><i class="glyphicon glyphicon-ok text-success"></i> <b>${_('Marked as done')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
-      % elif step.state == step.state_invalidated:
-      <span><i class="glyphicon glyphicon-thumbs-down text-danger"></i> <b>${_('Invalidated')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
-      % elif step.state == step.state_validated:
-      <span><i class="glyphicon glyphicon-thumbs-up text-success"></i> <b>${_('Validated')}</b> ${_('by')} ${step.user.username if step.user is not None else unknown | n}</span>
+      <%
+      task_link = '<a href="#task/' + str(step.task_id) + '">#' + str(step.task_id) + '</a>'
+      if step.user is not None:
+        user_str = '<a href="/user/' + step.user.username + '">' + step.user.username + '</a>'
+      else:
+        user_str = 'unknown'
+      endif
+      %>
+      % if isinstance(step, TaskState):
+        % if step.state == step.state_done:
+          <span><i class="glyphicon glyphicon-ok text-success"></i> 
+          ${_('${user} marked ${tasklink} as <b>done</b>', mapping={'user':user_str, 'tasklink':task_link}) | n}</span>
+        % elif step.state == step.state_invalidated:
+          <span><i class="glyphicon glyphicon-thumbs-down text-danger"></i> 
+          ${_('${user} <b>invalidated</b> ${tasklink}', mapping={'user':user_str, 'tasklink':task_link}) | n}</span>
+        % elif step.state == step.state_validated:
+          <span><i class="glyphicon glyphicon-thumbs-up text-success"></i> 
+          ${_('${user} <b>validated</b> ${tasklink}', mapping={'user':user_str, 'tasklink':task_link}) | n}</span>
+        % endif
+      % endif
+    % else:
+      % if isinstance(step, TaskState):
+        % if step.state == step.state_done:
+          <%
+          user_str = '<a href="/user/' + step.user.username + '">' + step.user.username + '</a>'
+          %>
+          <span><i class="glyphicon glyphicon-ok text-success"></i> <b>${_('Marked as done')}</b> ${_('by')} ${user_str | n}</span>
+        % elif step.state == step.state_invalidated:
+          <span><i class="glyphicon glyphicon-thumbs-down text-danger"></i> <b>${_('Invalidated')}</b> ${_('by')} ${user_str | n}</span>
+        % elif step.state == step.state_validated:
+          <span><i class="glyphicon glyphicon-thumbs-up text-success"></i> <b>${_('Validated')}</b> ${_('by')} ${user_str | n}</span>
+        % endif
+      % elif isinstance(step, TaskLock):
+        % if step.lock:
+          <%
+          user_str = '<a href="/user/' + step.user.username + '">' + step.user.username + '</a>'
+          %>
+          <span><i class="glyphicon glyphicon-lock text-muted"></i> ${_('Locked')} ${_('by')} ${user_str | n}</span>
+        % else:
+          <span>${_('Unlocked')}</span>
+        % endif
+      % elif isinstance(step, TaskComment):
+          <%
+          user_str = '<a href="/user/' + step.author.username + '">' + step.author.username + '</a>'
+          %>
+        <span><i class="glyphicon glyphicon-comment text-muted"></i> ${_('Comment left')} ${_('by')} ${user_str | n}</span>
+        <blockquote>
+          ${step.comment | convert_mentions(request), markdown_filter, n}
+        </blockquote>
       % endif
     % endif
-    % if isinstance(step, TaskLock):
-      % if step.lock:
-      <span><i class="glyphicon glyphicon-lock text-muted"></i> ${_('Locked')} ${_('by')} ${step.user.username}</span>
-      % else:
-      <span>${_('Unlocked')}</span>
-      % endif
-    % endif
-    % if isinstance(step, TaskComment):
-      <span><i class="glyphicon glyphicon-comment text-muted"></i> ${_('Comment left')} ${_('by')} ${step.author.username if step.author is not None else unknown | n}</span>
-      <blockquote>
-        ${step.comment | convert_mentions(request), markdown_filter, n}
-      </blockquote>
-    % endif
-      <p class="text-muted">
-        <em title="${step.date}Z" class="timeago"></em>
-      </p>
+
+    <p class="text-muted">
+      <em title="${step.date}Z" class="timeago"></em>
+    </p>
     </div>
 % endfor
 
