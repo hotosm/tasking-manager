@@ -351,6 +351,7 @@ def check_for_updates(request):
 
 
 @view_config(route_name="project_tasks_json_xhr", renderer='json',
+             permission="project_show",
              http_cache=0)
 def project_tasks_json_xhr(request):
     id = request.matchdict['project']
@@ -361,10 +362,12 @@ def project_tasks_json_xhr(request):
                      .options(joinedload(Task.cur_state)) \
                      .options(joinedload(Task.cur_lock)) \
 
+    request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
     return FeatureCollection([task.to_feature() for task in tasks])
 
 
 @view_config(route_name="project_tasks_json", renderer='json',
+             permission="project_show",
              http_cache=0)
 def project_tasks_json(request):
     id = request.matchdict['project']
