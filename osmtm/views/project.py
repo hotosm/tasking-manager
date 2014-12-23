@@ -362,6 +362,7 @@ def project_tasks_json_xhr(request):
                      .options(joinedload(Task.cur_state)) \
                      .options(joinedload(Task.cur_lock)) \
 
+    request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
     return FeatureCollection([task.to_feature() for task in tasks])
 
 
