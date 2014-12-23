@@ -19,7 +19,7 @@ $().ready(function() {
 
     $('.markdown').on('click', function(event) {
       event.preventDefault();
-      $.get(base_url + "static/markdown_quick_ref.html", function(data) {
+      $.get(markdown_ref_url, function(data) {
         $('#markdown_cheat_sheet .modal-body').html(data);
         $('#markdown_cheat_sheet').modal();
       });
