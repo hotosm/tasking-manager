@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-17 14:50+0200\n"
-"PO-Revision-Date: 2014-10-17 12:53+0000\n"
+"POT-Creation-Date: 2014-12-26 08:58+0100\n"
+"PO-Revision-Date: 2014-12-26 07:59+0000\n"
 "Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Language: ru\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:105
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:106
 #: osmtm/templates/home.mako:93
 msgid "About the Tasking Manager"
 msgstr "О менеджере задач"
@@ -83,11 +83,11 @@ msgid ""
 "manager2/graphs/contributors\">other contributors</a>."
 msgstr ""
 
-#: osmtm/templates/base.mako:40
+#: osmtm/templates/base.mako:41
 msgid "About"
 msgstr ""
 
-#: osmtm/templates/base.mako:52
+#: osmtm/templates/base.mako:53
 msgid "login to OpenStreetMap"
 msgstr "представиться через OpenStreetMap"
 
@@ -158,26 +158,26 @@ msgstr "Порядок:"
 msgid "Your projects"
 msgstr "Ваши проекты"
 
-#: osmtm/templates/home.mako:129
+#: osmtm/templates/home.mako:130
 msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
 msgstr[0] "Над проектом работает ${locked} человек"
 msgstr[1] "Над проектом работают ${locked} человек(а)"
 msgstr[2] "Над проектом работают ${locked} человек(а)"
 
-#: osmtm/templates/home.mako:170 osmtm/templates/project.instructions.mako:23
+#: osmtm/templates/home.mako:171 osmtm/templates/project.description.mako:23
 msgid "Access to this project is limited"
 msgstr "Доступ к проекту ограничен"
 
-#: osmtm/templates/home.mako:173
+#: osmtm/templates/home.mako:174
 msgid "Created by"
 msgstr "Создан"
 
-#: osmtm/templates/home.mako:175
+#: osmtm/templates/home.mako:176
 msgid "Updated"
 msgstr "Обновлён"
 
-#: osmtm/templates/home.mako:176
+#: osmtm/templates/home.mako:177
 msgid "Priority:"
 msgstr "Приоритет:"
 
@@ -206,6 +206,22 @@ msgstr "От:"
 msgid "You have tasks assigned:"
 msgstr "Вам назначены задачи:"
 
+#: osmtm/templates/project.description.mako:9
+msgid "This project is not published yet."
+msgstr "Этот проект ещё не опубликован."
+
+#: osmtm/templates/project.description.mako:12
+msgid "Publish"
+msgstr "Опубликовать"
+
+#: osmtm/templates/project.description.mako:16
+msgid "This project was archived."
+msgstr "Проект убран в архив."
+
+#: osmtm/templates/project.description.mako:30 osmtm/templates/project.mako:50
+msgid "Instructions"
+msgstr "Инструкция"
+
 #: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:10
 msgid "Archived"
 msgstr "В архиве"
@@ -222,78 +238,66 @@ msgstr "Черновик"
 msgid "Allowed users"
 msgstr "Допущенные пользователи"
 
-#: osmtm/templates/project.instructions.mako:9
-msgid "This project is not published yet."
-msgstr "Этот проект ещё не опубликован."
-
-#: osmtm/templates/project.instructions.mako:12
-msgid "Publish"
-msgstr "Опубликовать"
-
-#: osmtm/templates/project.instructions.mako:16
-msgid "This project was archived."
-msgstr "Проект убран в архив."
-
-#: osmtm/templates/project.instructions.mako:31
+#: osmtm/templates/project.instructions.mako:8
 msgid "Entities to Map"
 msgstr "Что картировать"
 
-#: osmtm/templates/project.instructions.mako:43
+#: osmtm/templates/project.instructions.mako:20
 msgid "Changeset Comment"
 msgstr "Комментарий к пакетам правок"
 
-#: osmtm/templates/project.instructions.mako:57
+#: osmtm/templates/project.instructions.mako:34
 msgid "Imagery"
 msgstr "Снимки"
 
-#: osmtm/templates/project.instructions.mako:76
+#: osmtm/templates/project.instructions.mako:53
 msgid "Start contributing"
 msgstr "Принять участие"
 
 #: osmtm/templates/project.mako:49
-msgid "Instructions"
-msgstr "Инструкция"
+msgid "Description"
+msgstr ""
 
-#: osmtm/templates/project.mako:50
+#: osmtm/templates/project.mako:51
 msgid "Contribute"
 msgstr "Участвовать"
 
-#: osmtm/templates/project.mako:51
+#: osmtm/templates/project.mako:52
 msgid "Activity"
 msgstr "Деятельность"
 
-#: osmtm/templates/project.mako:52
+#: osmtm/templates/project.mako:53
 msgid "Stats"
 msgstr "Статистика"
 
-#: osmtm/templates/project.mako:64
+#: osmtm/templates/project.mako:65
 msgid "Loading"
 msgstr "Загружаю"
 
-#: osmtm/templates/project.mako:101
+#: osmtm/templates/project.mako:105
 msgid "Ready"
 msgstr "Готово"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:30
+#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:52
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr "Отклонено"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:105 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "Сделано"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:32
+#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:54
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr "Проверено"
 
-#: osmtm/templates/project.mako:102
+#: osmtm/templates/project.mako:106
 msgid "You must leave a comment."
 msgstr "Напишите пару слов в комментарий."
 
-#: osmtm/templates/project.mako:103
+#: osmtm/templates/project.mako:107
 msgid "High priority"
 msgstr "Высокий приоритет"
 
@@ -384,11 +388,11 @@ msgstr "Сложность не указана"
 msgid "Edit with"
 msgstr "Править в"
 
-#: osmtm/templates/task.editors.mako:24
+#: osmtm/templates/task.editors.mako:25
 msgid ".gpx file"
 msgstr ""
 
-#: osmtm/templates/task.editors.mako:29
+#: osmtm/templates/task.editors.mako:30
 msgid ""
 "Tip: Download the following ${task_gpx_link} and load it in JOSM in order to"
 " see the current task boundary"
@@ -410,29 +414,41 @@ msgstr "Получите случайную задачу"
 msgid "Comment"
 msgstr "Комментарий"
 
-#: osmtm/templates/task.history.mako:28
+#: osmtm/templates/task.history.mako:38
+msgid "${user} marked ${tasklink} as <b>done</b>"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:41
+msgid "${user} <b>invalidated</b> ${tasklink}"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:44
+msgid "${user} <b>validated</b> ${tasklink}"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:50
 msgid "Marked as done"
 msgstr "Отмечена сделанной"
 
-#: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:30
-#: osmtm/templates/task.history.mako:32 osmtm/templates/task.history.mako:37
-#: osmtm/templates/task.history.mako:43
+#: osmtm/templates/task.history.mako:50 osmtm/templates/task.history.mako:52
+#: osmtm/templates/task.history.mako:54 osmtm/templates/task.history.mako:58
+#: osmtm/templates/task.history.mako:63
 msgid "by"
 msgstr "пользователем"
 
-#: osmtm/templates/task.history.mako:37 osmtm/templates/task.status.mako:6
+#: osmtm/templates/task.history.mako:58 osmtm/templates/task.status.mako:6
 msgid "Locked"
 msgstr "Занята"
 
-#: osmtm/templates/task.history.mako:39
+#: osmtm/templates/task.history.mako:60
 msgid "Unlocked"
 msgstr "Свободна"
 
-#: osmtm/templates/task.history.mako:43
+#: osmtm/templates/task.history.mako:63
 msgid "Comment left"
 msgstr "Комментарий оставлен"
 
-#: osmtm/templates/task.history.mako:55
+#: osmtm/templates/task.history.mako:77
 msgid "Nothing has happened yet."
 msgstr "Пока ничего не произошло."
 
@@ -445,6 +461,7 @@ msgid "Locked by ${username}"
 msgstr "Занята ${username}"
 
 #: osmtm/templates/task.locked.mako:14 osmtm/templates/task.state.done.mako:12
+#: osmtm/templates/task.state.ready.mako:8
 msgid "Unlock"
 msgstr "Освободить"
 
@@ -494,11 +511,11 @@ msgstr "Одобрите, если считаете, что работа вып�
 msgid "Validate"
 msgstr "Одобрить"
 
-#: osmtm/templates/task.state.ready.mako:5
+#: osmtm/templates/task.state.ready.mako:10
 msgid "Mark task as done"
 msgstr "Отметить задачу сделанной"
 
-#: osmtm/templates/task.unlocked.mako:12
+#: osmtm/templates/task.unlocked.mako:13
 msgid "Lock this task to tell others that you are currently working on it."
 msgstr "Заблокировать задачу, чтобы никто другой не начал над ней работать."
 
@@ -507,6 +524,12 @@ msgid "Start mapping"
 msgstr "Приступить к картированию"
 
 #: osmtm/templates/task.unlocked.mako:21
+msgid ""
+"Lock this task to tell others that you are currently reviewing it. Validate "
+"that this task has been mapped correctly and completely."
+msgstr ""
+
+#: osmtm/templates/task.unlocked.mako:26
 msgid "Review the work"
 msgstr "Оценить результат"
 
@@ -574,42 +597,42 @@ msgstr "Комментарий добавлен."
 msgid "You were mentioned in a comment - Task ${link}"
 msgstr ""
 
-#: osmtm/views/task.py:282
+#: osmtm/views/task.py:283
 msgid "Task ${link} invalidated"
 msgstr "Задача ${link} отклонена"
 
-#: osmtm/views/task.py:297
+#: osmtm/views/task.py:298
 msgid "Task validated."
 msgstr "Задача проверена."
 
-#: osmtm/views/task.py:300
+#: osmtm/views/task.py:301
 msgid "Task invalidated."
 msgstr "Задача отклонена."
 
-#: osmtm/views/task.py:427
+#: osmtm/views/task.py:428
 msgid "Random task... none available! Sorry."
 msgstr "Случайной задачи... не нашлось. Извините."
 
-#: osmtm/views/task.py:440
+#: osmtm/views/task.py:441
 msgid "You cannot assign an already locked task"
 msgstr "Нельзя назначить уже занятую задачу"
 
-#: osmtm/views/task.py:450
+#: osmtm/views/task.py:451
 msgid "Task assigned."
 msgstr "Задача назначена."
 
-#: osmtm/views/task.py:464
+#: osmtm/views/task.py:465
 msgid "Task assignment removed"
 msgstr "Назначение задачи снято"
 
-#: osmtm/views/task.py:496
+#: osmtm/views/task.py:497
 msgid "Task difficulty changed."
 msgstr "Сложность задачи изменена"
 
-#: osmtm/views/task.py:509
+#: osmtm/views/task.py:510
 msgid "Task difficulty removed"
 msgstr "Сложность задачи снята"
 
-#: osmtm/views/user.py:97
+#: osmtm/views/user.py:108
 msgid "Sorry, this user doesn't  exist"
 msgstr "Извините, такого пользователя нет"
