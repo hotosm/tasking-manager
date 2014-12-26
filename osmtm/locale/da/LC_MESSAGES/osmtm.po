@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-17 14:50+0200\n"
-"PO-Revision-Date: 2014-10-17 12:53+0000\n"
+"POT-Creation-Date: 2014-12-26 08:58+0100\n"
+"PO-Revision-Date: 2014-12-26 07:59+0000\n"
 "Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
 "Language-Team: Danish (http://www.transifex.com/projects/p/osm-tasking-manager2/language/da/)\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:105
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:106
 #: osmtm/templates/home.mako:93
 msgid "About the Tasking Manager"
 msgstr "Om Tasking Manager"
@@ -82,17 +82,17 @@ msgid ""
 "manager2/graphs/contributors\">other contributors</a>."
 msgstr "med hjælp af <a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">følgende andre bidragsydere</a>."
 
-#: osmtm/templates/base.mako:40
+#: osmtm/templates/base.mako:41
 msgid "About"
 msgstr "Om"
 
-#: osmtm/templates/base.mako:52
+#: osmtm/templates/base.mako:53
 msgid "login to OpenStreetMap"
 msgstr "login til OpenStreetMap"
 
 #: osmtm/templates/custom.mako:6
 msgid "Questions About Tasks, Mapping or HOT?"
-msgstr ""
+msgstr "Spørgsmål om opgaver, kortlægnng eller HOT?"
 
 #: osmtm/templates/custom.mako:7
 msgid ""
@@ -103,19 +103,19 @@ msgid ""
 "down channel list:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT "
 "IRC Channel #hot</a><br /><br />General inquries and comments are welcomed "
 "at: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
-msgstr ""
+msgstr "Hvis du har nogen spørgsmål om et projekt, en opgave eller kortlægning generelt, så stil dette på vores mailing-liste: <a href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a><br /><br />Eller besøg os på vores IRC Chat kanal, vælg #hot på drop-down menu listen:  <br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel #hot</a><br /><br />Generelle spørgsmål eller kommentarer er velkommen på: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
 
 #: osmtm/templates/custom.mako:11
 msgid "Email HOT at"
-msgstr ""
+msgstr "Email til HOT på"
 
 #: osmtm/templates/custom.mako:12
 msgid "Follow HOT on"
-msgstr ""
+msgstr "Følg HOT på"
 
 #: osmtm/templates/custom.mako:13
 msgid "Like HOT on"
-msgstr ""
+msgstr "Lide HOT på"
 
 #: osmtm/templates/home.mako:9
 msgid "urgent"
@@ -157,25 +157,25 @@ msgstr "Sortér efter:"
 msgid "Your projects"
 msgstr "Dine projekter"
 
-#: osmtm/templates/home.mako:129
+#: osmtm/templates/home.mako:130
 msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
 msgstr[0] "bruger"
 msgstr[1] "${locked} brugere arbejder allerede på dette projekt"
 
-#: osmtm/templates/home.mako:170 osmtm/templates/project.instructions.mako:23
+#: osmtm/templates/home.mako:171 osmtm/templates/project.description.mako:23
 msgid "Access to this project is limited"
 msgstr "Adgang til dette projekt er begrænset"
 
-#: osmtm/templates/home.mako:173
+#: osmtm/templates/home.mako:174
 msgid "Created by"
 msgstr "Lavet af"
 
-#: osmtm/templates/home.mako:175
+#: osmtm/templates/home.mako:176
 msgid "Updated"
 msgstr "Opdateret"
 
-#: osmtm/templates/home.mako:176
+#: osmtm/templates/home.mako:177
 msgid "Priority:"
 msgstr "Prioritet:"
 
@@ -204,6 +204,22 @@ msgstr "Fra:"
 msgid "You have tasks assigned:"
 msgstr "Du har opgaver tildelt:"
 
+#: osmtm/templates/project.description.mako:9
+msgid "This project is not published yet."
+msgstr "Dette projekt er ikke publiceret endnu."
+
+#: osmtm/templates/project.description.mako:12
+msgid "Publish"
+msgstr "Publicer"
+
+#: osmtm/templates/project.description.mako:16
+msgid "This project was archived."
+msgstr "Dette projekt var arkiveret."
+
+#: osmtm/templates/project.description.mako:30 osmtm/templates/project.mako:50
+msgid "Instructions"
+msgstr "Instruktioner"
+
 #: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:10
 msgid "Archived"
 msgstr "Arkiveret"
@@ -220,78 +236,66 @@ msgstr "Udkast"
 msgid "Allowed users"
 msgstr "Tilladte brugere"
 
-#: osmtm/templates/project.instructions.mako:9
-msgid "This project is not published yet."
-msgstr "Dette projekt er ikke publiceret endnu."
-
-#: osmtm/templates/project.instructions.mako:12
-msgid "Publish"
-msgstr "Publicer"
-
-#: osmtm/templates/project.instructions.mako:16
-msgid "This project was archived."
-msgstr "Dette projekt var arkiveret."
-
-#: osmtm/templates/project.instructions.mako:31
+#: osmtm/templates/project.instructions.mako:8
 msgid "Entities to Map"
 msgstr "Enheder at kortlægge"
 
-#: osmtm/templates/project.instructions.mako:43
+#: osmtm/templates/project.instructions.mako:20
 msgid "Changeset Comment"
 msgstr "Changeset kommentar"
 
-#: osmtm/templates/project.instructions.mako:57
+#: osmtm/templates/project.instructions.mako:34
 msgid "Imagery"
 msgstr "Billede"
 
-#: osmtm/templates/project.instructions.mako:76
+#: osmtm/templates/project.instructions.mako:53
 msgid "Start contributing"
 msgstr "Start med at bidrage"
 
 #: osmtm/templates/project.mako:49
-msgid "Instructions"
-msgstr "Instruktioner"
+msgid "Description"
+msgstr ""
 
-#: osmtm/templates/project.mako:50
+#: osmtm/templates/project.mako:51
 msgid "Contribute"
 msgstr "Bidrag"
 
-#: osmtm/templates/project.mako:51
+#: osmtm/templates/project.mako:52
 msgid "Activity"
 msgstr "Aktivitet"
 
-#: osmtm/templates/project.mako:52
+#: osmtm/templates/project.mako:53
 msgid "Stats"
 msgstr "Statistik"
 
-#: osmtm/templates/project.mako:64
+#: osmtm/templates/project.mako:65
 msgid "Loading"
 msgstr "Indlæser"
 
-#: osmtm/templates/project.mako:101
+#: osmtm/templates/project.mako:105
 msgid "Ready"
 msgstr "Klar"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:30
+#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:52
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr "Ej godkendt"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:105 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "Færdig"
 
-#: osmtm/templates/project.mako:101 osmtm/templates/task.history.mako:32
+#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:54
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr "Valideret"
 
-#: osmtm/templates/project.mako:102
+#: osmtm/templates/project.mako:106
 msgid "You must leave a comment."
 msgstr "Du skal efterlade en kommentar."
 
-#: osmtm/templates/project.mako:103
+#: osmtm/templates/project.mako:107
 msgid "High priority"
 msgstr "Høj prioritet"
 
@@ -382,15 +386,15 @@ msgstr "Ingen sværhedsgrad er angivet endnu"
 msgid "Edit with"
 msgstr "Redigerer med"
 
-#: osmtm/templates/task.editors.mako:24
+#: osmtm/templates/task.editors.mako:25
 msgid ".gpx file"
-msgstr ""
+msgstr ".gpx fil"
 
-#: osmtm/templates/task.editors.mako:29
+#: osmtm/templates/task.editors.mako:30
 msgid ""
 "Tip: Download the following ${task_gpx_link} and load it in JOSM in order to"
 " see the current task boundary"
-msgstr ""
+msgstr "Tips - Download følgende ${task_gpx_link} og indlæs i JOSM for at se nuværende opgave afgrænsninger"
 
 #: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
@@ -408,29 +412,41 @@ msgstr "Tag en tilfældig opgave"
 msgid "Comment"
 msgstr "Kommentar"
 
-#: osmtm/templates/task.history.mako:28
+#: osmtm/templates/task.history.mako:38
+msgid "${user} marked ${tasklink} as <b>done</b>"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:41
+msgid "${user} <b>invalidated</b> ${tasklink}"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:44
+msgid "${user} <b>validated</b> ${tasklink}"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:50
 msgid "Marked as done"
 msgstr "Angivet som færdig"
 
-#: osmtm/templates/task.history.mako:28 osmtm/templates/task.history.mako:30
-#: osmtm/templates/task.history.mako:32 osmtm/templates/task.history.mako:37
-#: osmtm/templates/task.history.mako:43
+#: osmtm/templates/task.history.mako:50 osmtm/templates/task.history.mako:52
+#: osmtm/templates/task.history.mako:54 osmtm/templates/task.history.mako:58
+#: osmtm/templates/task.history.mako:63
 msgid "by"
 msgstr "af"
 
-#: osmtm/templates/task.history.mako:37 osmtm/templates/task.status.mako:6
+#: osmtm/templates/task.history.mako:58 osmtm/templates/task.status.mako:6
 msgid "Locked"
 msgstr "Låst"
 
-#: osmtm/templates/task.history.mako:39
+#: osmtm/templates/task.history.mako:60
 msgid "Unlocked"
 msgstr "Ulåst"
 
-#: osmtm/templates/task.history.mako:43
+#: osmtm/templates/task.history.mako:63
 msgid "Comment left"
 msgstr "Kommentar efterladt"
 
-#: osmtm/templates/task.history.mako:55
+#: osmtm/templates/task.history.mako:77
 msgid "Nothing has happened yet."
 msgstr "Ingenting er sket endnu."
 
@@ -443,6 +459,7 @@ msgid "Locked by ${username}"
 msgstr "Låst af ${username}"
 
 #: osmtm/templates/task.locked.mako:14 osmtm/templates/task.state.done.mako:12
+#: osmtm/templates/task.state.ready.mako:8
 msgid "Unlock"
 msgstr "Ulåst"
 
@@ -492,11 +509,11 @@ msgstr "Validere denne opgave hvis du synes at arbejdet er komplet."
 msgid "Validate"
 msgstr "Godkend"
 
-#: osmtm/templates/task.state.ready.mako:5
+#: osmtm/templates/task.state.ready.mako:10
 msgid "Mark task as done"
 msgstr "Angiv opgaven som færdig"
 
-#: osmtm/templates/task.unlocked.mako:12
+#: osmtm/templates/task.unlocked.mako:13
 msgid "Lock this task to tell others that you are currently working on it."
 msgstr "Lås denne opgave for at fortælle andre at du pt. arbejder på denne."
 
@@ -505,6 +522,12 @@ msgid "Start mapping"
 msgstr "Start kortlægning"
 
 #: osmtm/templates/task.unlocked.mako:21
+msgid ""
+"Lock this task to tell others that you are currently reviewing it. Validate "
+"that this task has been mapped correctly and completely."
+msgstr ""
+
+#: osmtm/templates/task.unlocked.mako:26
 msgid "Review the work"
 msgstr "Kvalitetstjek arbejdet"
 
@@ -572,42 +595,42 @@ msgstr "Kommentar tilføjet."
 msgid "You were mentioned in a comment - Task ${link}"
 msgstr "Du er blevet nævnt i en kommentar - Opgave ${link}"
 
-#: osmtm/views/task.py:282
+#: osmtm/views/task.py:283
 msgid "Task ${link} invalidated"
 msgstr "Opgave  ${link} ej godkendt"
 
-#: osmtm/views/task.py:297
+#: osmtm/views/task.py:298
 msgid "Task validated."
 msgstr "Opgaven valideret."
 
-#: osmtm/views/task.py:300
+#: osmtm/views/task.py:301
 msgid "Task invalidated."
 msgstr "Opgaven ej godkendt."
 
-#: osmtm/views/task.py:427
+#: osmtm/views/task.py:428
 msgid "Random task... none available! Sorry."
 msgstr "Tilfældig opgave... beklager, er ikke tilgængeligt."
 
-#: osmtm/views/task.py:440
+#: osmtm/views/task.py:441
 msgid "You cannot assign an already locked task"
 msgstr "Du kan ikke få tildelt en allerede låst opgave"
 
-#: osmtm/views/task.py:450
+#: osmtm/views/task.py:451
 msgid "Task assigned."
 msgstr "Opgave tildelt."
 
-#: osmtm/views/task.py:464
+#: osmtm/views/task.py:465
 msgid "Task assignment removed"
 msgstr "Den tildelte opgave er fjernet"
 
-#: osmtm/views/task.py:496
+#: osmtm/views/task.py:497
 msgid "Task difficulty changed."
 msgstr "Opgavens sværhedsgrad ændret."
 
-#: osmtm/views/task.py:509
+#: osmtm/views/task.py:510
 msgid "Task difficulty removed"
 msgstr "Opgavens sværhedsgrad fjernet"
 
-#: osmtm/views/user.py:97
+#: osmtm/views/user.py:108
 msgid "Sorry, this user doesn't  exist"
 msgstr "Beklager, denne bruger findes ikke"
