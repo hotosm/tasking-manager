@@ -26,6 +26,7 @@
     </div>
     <div class="col-md-4">
       <small>
+        <p>${len(users)} ${_('Users')}</p>
         Keys:
         <ul>
           <li><i class="glyphicon glyphicon-star user-admin"></i> Administrator</li>
