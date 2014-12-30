@@ -1,6 +1,7 @@
 <%
 import bleach
 import markdown
+import re
 %>
 % if project.status in [project.status_draft, project.status_archived] :
 <p class="alert alert-warning text-muted">
@@ -23,7 +24,7 @@ import markdown
   ${_('Access to this project is limited')}
 </p>
 % endif
-<p>${markdown.markdown(bleach.clean(project.description, strip=True)) |n}</p>
+<p>${re.sub('amp;', '',markdown.markdown(bleach.clean(project.description, strip=True))) |n}</p>
 <p class="text-center">
   <a class="btn btn-success btn-lg instructions">
     <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
