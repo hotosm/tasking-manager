@@ -7,6 +7,12 @@
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/datepicker3.css')}">
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
 <script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/bootstrap-datepicker.js')}"></script>
+<script>
+    var locale_name = "${request.locale_name}";
+</script>
+<script type="text/javascript"
+        src="${request.static_url('osmtm:static/js/lib/locales/bootstrap-datepicker.%s.js' % request.locale_name)}">
+</script>
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
