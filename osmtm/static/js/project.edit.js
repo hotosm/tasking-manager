@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $('.nav-tabs a:first').tab('show');
     $('.nav.languages li:first-of-type a').tab('show');
-    $('.input-group.date').datepicker({});
+    $('.input-group.date').datepicker({language: locale_name});
   var substringMatcher = function(strs) {
     return function findMatches(q, cb) {
       var matches, substrRegex;
