@@ -10,7 +10,7 @@ import markdown
           data-toggle="tooltip"
           data-placement="right"
           data-container="body"
-          title="The list of elements of elements we ask you to map">
+          title="${_('The list of elements of elements we ask you to map')}">
     </span>
   </dt>
   <dd>${project.entities_to_map}</dd>
@@ -22,7 +22,7 @@ import markdown
           data-toggle="tooltip"
           data-placement="right"
           data-container="body"
-          title="The comment to put when uploading data to the OSM database">
+          title="${_('The comment to put when uploading data to the OSM database')}">
     </span>
   </dt>
   <dd>
@@ -40,8 +40,11 @@ import markdown
 </dl>
 % if project.josm_preset:
 <p >
-  Using JOSM? Please use the dedicated
-  <a href="${request.route_url('project_preset', project=project.id)}">preset</a>.
+<%
+    link = '<a href="%s">%s</a>' % (request.route_url('project_preset', project=project.id), _('preset'))
+    text = _('Using JOSM? Please use the dedicated ${preset_link}.', mapping={'preset_link': link} )
+%>
+  ${text|n}
 </p>
 % endif
 <hr />

@@ -71,10 +71,11 @@ def user_admin(request):
     id = request.matchdict['id']
     user = DBSession.query(User).get(id)
 
+    _ = request.translate
     user_id = authenticated_userid(request)
     if user.id == int(user_id):
         raise HTTPBadRequest(
-            'You probably don\'t want to remove your privileges')
+            _('You probably don\'t want to remove your privileges'))
 
     user.role = User.role_admin if not user.is_admin else None
     DBSession.flush()

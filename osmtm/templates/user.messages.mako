@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
 <%block name="header">
-<h1>Messages</h1>
+<h1>${_('Messages')}</h1>
 </%block>
 <%block name="content">
 <%
@@ -11,8 +11,8 @@ import bleach
   <table class="table">
     <thead>
       <tr>
-        <th>From</th>
-        <th>Subject</th>
+        <th>${_('From')}</th>
+        <th>${_('Subject')}</th>
         <th></th>
       </tr>
     </thead>

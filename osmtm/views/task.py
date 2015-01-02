@@ -16,6 +16,7 @@ from ..models import (
     User,
     Message,
 )
+
 from geoalchemy2 import (
     shape,
 )
@@ -73,24 +74,27 @@ def __get_task(request, lock_for_update=False):
     if lock_for_update:
         query = query.with_for_update(nowait=True, of=Task)
 
+    _ = request.translate
+
     try:
         task = query.one()
     except NoResultFound:
         task = None
     except OperationalError:  # pragma: no cover
-        raise HTTPBadRequest("Cannot update task. Record lock for update.")
+        raise HTTPBadRequest(_("Cannot update task. Record lock for update."))
 
     if not task or \
        task.cur_state and task.cur_state.state == TaskState.state_removed:
         # FIXME return translated text via JSON
-        raise HTTPNotFound("This task doesn't exist.")
+        raise HTTPNotFound(_("This task doesn't exist."))
     return task
 
 
-def __ensure_task_locked(task, user):
+def __ensure_task_locked(request, task, user):
+    _ = request.translate
     locked_task = get_locked_task(task.project_id, user)
     if locked_task != task:
-        raise HTTPForbidden("You need to lock the task first.")
+        raise HTTPForbidden(_("You need to lock the task first."))
 
 
 @view_config(route_name='task_xhr', renderer='task.mako', http_cache=0)
@@ -147,7 +151,7 @@ def task_empty(request):
 def done(request):
     user = __get_user(request)
     task = __get_task(request, lock_for_update=True)
-    __ensure_task_locked(task, user)
+    __ensure_task_locked(request, task, user)
 
     add_comment(request, task, user)
 
@@ -195,7 +199,7 @@ def lock(request):
 def unlock(request):
     user = __get_user(request)
     task = __get_task(request, lock_for_update=True)
-    __ensure_task_locked(task, user)
+    __ensure_task_locked(request, task, user)
 
     add_comment(request, task, user)
 
@@ -288,7 +292,7 @@ def send_invalidation_message(request, task, user):
 def validate(request):
     user = __get_user(request)
     task = __get_task(request, lock_for_update=True)
-    __ensure_task_locked(task, user)
+    __ensure_task_locked(request, task, user)
 
     task.user = None
 
@@ -315,7 +319,7 @@ def validate(request):
 def split(request):
     user = __get_user(request)
     task = __get_task(request, lock_for_update=True)
-    __ensure_task_locked(task, user)
+    __ensure_task_locked(request, task, user)
 
     if task.zoom is None or (task.zoom - task.project.zoom) > 1:
         raise HTTPBadRequest()

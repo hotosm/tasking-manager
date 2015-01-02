@@ -31,21 +31,23 @@
 %>
 <p class="text-warning">
   <span class="glyphicon glyphicon-warning-sign"></span>
-  Access to this imagery is limited by the
-  <a href="${license_agreement_url}">
-    ${project.license.name} license agreement
-  </a>.
+<%
+    link = '<a href="%s">%s</a>' % (license_agreement_url, _('${license} license agreement', mapping={'license': project.license.name}))
+    text = _('Access to this imagery is limited by the ${license_agreement_link}.', mapping={'license_agreement_link': link} )
+%>
+  ${text|n}
 </p>
 <p class="${'text-error' if not license_accepted else 'text-success'}">
 % if license_accepted:
   <span class="glyphicon glyphicon-ok"></span>
-You have already acknowledged the terms of this license.</span>
+${_('You have already acknowledged the terms of this license.')}</span>
 % else:
-  You need to
-  <a href="${license_agreement_url}">
-    review and acknowledge
-  </a>
-  the agreement.
+<%
+    link = '<a href="%s">%s</a>' % (license_agreement_url, _('review and acknowledge'))
+    text = _('You need to ${review_and_acknowledge_link} the agreement.', mapping={'review_and_acknowledge_link': link} )
+%>
+  ${text|n}
+  
   <script>
     var licenseAgreementUrl = "${license_agreement_url}";
     var requiresLicenseAgreementMsg = "${_('You need to accept the license first') |n}"

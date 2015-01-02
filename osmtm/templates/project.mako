@@ -14,11 +14,11 @@
        href="${request.route_path('project_tasks_json', project=project.id)}"
        target="_blank">
        <span class="glyphicon glyphicon-cloud-download"></span>
-      Export
+      ${_('Export')}
     </a>
     <a class="btn btn-link btn-sm pull-right" href="${request.route_path('project_edit', project=project.id)}">
       <span class="glyphicon glyphicon-cog"></span>
-      Edit
+      ${_('Edit')|n}
     </a>
   % endif
 </h1>
@@ -102,7 +102,20 @@ window.location.hash = "task/${locked_task.id}";
 % endif
 var priority_areas = ${dumps(priority_areas)|n};
 
+var taskDoesntExist = '${_("Task doesn't exist.")}';
+var anErrorOccuredI18n = "${_('an error occured')}";
+var josmRcDidNotRespondI18n = "${_('JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?')}";
+
+var somethingWrongHappenedI18n = "${_('Something wrong happened')}";
+var pleaseLoginFirstI18n = "${_('Please login first')}";
+<%
+  link = '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  text = _(u'Map data © ${osm_link} contributors', mapping={'osm_link': link})
+%>
+var osmAttribI18n = '${text|n}';
+var curWorkedOnI18n = "${_('Cur. worked on ')}";
 var statesI18n = ["${_('Ready')}", "${_('Invalidated')}", "${_('Done')}", "${_('Validated')}"];
+var statesClasses = ["ready", "invalidated", "done", "validated"];
 var commentRequiredMsg = "${_('You must leave a comment.')}";
 var highPriorityI18n = "${_('High priority')}";
 </script>

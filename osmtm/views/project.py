@@ -111,12 +111,13 @@ def project_new(request):
              renderer='project.new.mako',
              permission="project_edit")
 def project_new_grid(request):
+    _ = request.translate
     user_id = authenticated_userid(request)
     user = DBSession.query(User).get(user_id)
 
     try:
         project = Project(
-            u'Untitled project',
+            _(u'Untitled project'),
             user
         )
 
@@ -139,14 +140,13 @@ def project_new_grid(request):
         project.area = Area(geometry)
         project.auto_fill(zoom)
 
-        _ = request.translate
         request.session.flash(_("Project #${project_id} created successfully",
                               mapping={'project_id': project.id}),
                               'success')
         return HTTPFound(location=route_path('project_edit', request,
                                              project=project.id))
     except Exception, e:
-        msg = "Sorry, could not create the project. <br />%s" % e.message
+        msg = _("Sorry, could not create the project. <br />%s") % e.message
         request.session.flash(msg, 'alert')
         raise HTTPFound(location=route_path('project_new', request))
 
@@ -154,24 +154,24 @@ def project_new_grid(request):
 @view_config(route_name='project_new_arbitrary',
              permission="project_edit")
 def project_new_arbitrary(request):
+    _ = request.translate
 
     user_id = authenticated_userid(request)
     user = DBSession.query(User).get(user_id)
 
     try:
         project = Project(
-            u'Untitled project',
+            _(u'Untitled project'),
             user
         )
         count = project.import_from_geojson(request.POST['geometry'])
-        _ = request.translate
         request.session.flash(_("Successfully imported ${n} geometries",
                               mapping={'n': count}),
                               'success')
         return HTTPFound(location=route_path('project_edit', request,
                          project=project.id))
     except Exception, e:
-        msg = "Sorry, could not create the project. <br />%s" % e.message
+        msg = _("Sorry, could not create the project. <br />%s") % e.message
         request.session.flash(msg, 'alert')
         raise HTTPFound(location=route_path('project_new', request))
 

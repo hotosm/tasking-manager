@@ -23,6 +23,7 @@ def licenses(request):
 
 @view_config(route_name='license', renderer='license.mako')
 def license(request):
+    _ = request.translate
     id = request.matchdict['license']
     license = DBSession.query(License).get(id)
     user_id = authenticated_userid(request)
@@ -37,7 +38,7 @@ def license(request):
 
     redirect = request.params.get("redirect", request.route_path("home"))
     if "accepted_terms" in request.params:
-        if request.params["accepted_terms"] == "I AGREE":
+        if request.params["accepted_terms"] == _('I AGREE'):
             user.accepted_licenses.append(license)
         elif license in user.accepted_licenses:
             user.accepted_licenses.remove(license)
@@ -49,15 +50,16 @@ def license(request):
 
 @view_config(route_name='license_delete', permission='license_edit')
 def license_delete(request):
+    _ = request.translate
     id = request.matchdict['license']
     license = DBSession.query(License).get(id)
 
     if not license:
-        request.session.flash('License doesn\'t exist!')
+        request.session.flash(_("License doesn't exist!"))
     else:
         DBSession.delete(license)
         DBSession.flush()
-        request.session.flash('License removed!')
+        request.session.flash(_('License removed!'))
 
     return HTTPFound(location=route_path('licenses', request))
 
@@ -67,6 +69,7 @@ def license_delete(request):
 @view_config(route_name='license_edit', renderer='license.edit.mako',
              permission='license_edit')
 def license_edit(request):
+    _ = request.translate
     if 'license' in request.matchdict:
         id = request.matchdict['license']
         license = DBSession.query(License).get(id)
@@ -78,9 +81,9 @@ def license_edit(request):
             license = License()
             DBSession.add(license)
             DBSession.flush()
-            request.session.flash('License created!', 'success')
+            request.session.flash(_('License created!'), 'success')
         else:
-            request.session.flash('License updated!', 'success')
+            request.session.flash(_('License updated!'), 'success')
 
         license.name = request.params['name']
         license.description = request.params['description']
