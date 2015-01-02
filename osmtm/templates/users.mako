@@ -8,6 +8,7 @@
 <div class="container" ng-app="users">
   <div class="row" ng-controller="usersCrtl">
     <div class="col-md-8">
+      ${paginate()}
       <ul>
         % if paginator.items:
           % for user in paginator.items:
@@ -20,9 +21,9 @@
                 % endif
             </li>
           % endfor
-        ${paginator.pager()}
         % endif
       </ul>
+      ${paginate()}
     </div>
     <div class="col-md-4">
       <small>
@@ -37,3 +38,17 @@
   </div>
 </div>
 </%block>
+
+<%def name="paginate()">
+<div class="text-center">
+  <div class="btn-group btn-group-xs">
+    <% link_attr={"class": "btn btn-small btn-default"} %>
+    <% curpage_attr={"class": "btn btn-default btn-primary"} %>
+    <% dotdot_attr={"class": "btn btn-default btn-small disabled"} %>
+    ${paginator.pager(format="$link_previous ~2~ $link_next",
+                      link_attr=link_attr,
+                      curpage_attr=curpage_attr,
+                      dotdot_attr=dotdot_attr)}
+  </div>
+</div>
+</%def>

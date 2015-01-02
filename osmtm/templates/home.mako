@@ -86,7 +86,7 @@ sorts = [('priority', 'asc', _('High priority first')),
           ${project_block(project=project, base_url=base_url,
                           priorities=priorities)}
         % endfor
-        ${paginator.pager()}
+        ${paginate()}
     % endif
   </div>
   <div class="col-md-6">
@@ -179,5 +179,19 @@ sorts = [('priority', 'asc', _('High priority first')),
     - <span>${_(status)}</span>
     % endif
   </small>
+</div>
+</%def>
+
+<%def name="paginate()">
+<div class="text-center">
+  <div class="btn-group btn-group-xs">
+    <% link_attr={"class": "btn btn-small btn-default"} %>
+    <% curpage_attr={"class": "btn btn-default btn-primary"} %>
+    <% dotdot_attr={"class": "btn btn-default btn-small disabled"} %>
+    ${paginator.pager(format="$link_previous ~2~ $link_next",
+                      link_attr=link_attr,
+                      curpage_attr=curpage_attr,
+                      dotdot_attr=dotdot_attr)}
+  </div>
 </div>
 </%def>
