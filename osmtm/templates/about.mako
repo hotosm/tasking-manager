@@ -60,6 +60,13 @@
         ${_('Lead developer: Pierre GIRAUD (<a href="//www.camptocamp.com">Camptocamp</a>)')|n}
         ${_('with the help of <a href="https://github.com/hotosm/osm-tasking-manager2/graphs/contributors">other contributors</a>.') |n}
       </p>
+<%
+      from osmtm.version import __VERSION__
+%>
+      <h3>Version</h3>
+      <p>
+        ${__VERSION__}
+      </p>
     </div>
   </div>
 </div>

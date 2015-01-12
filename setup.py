@@ -34,6 +34,7 @@ requires = [
     'pyramid-exclog==0.7',
     'httpretty',
     'pygments',
+    'gitversion',
 ]
 
 setup(name='osmtm',
