@@ -61,11 +61,15 @@
         ${_('with the help of <a href="https://github.com/hotosm/osm-tasking-manager2/graphs/contributors">other contributors</a>.') |n}
       </p>
 <%
-      from osmtm.version import __VERSION__
+      from gitversion import determine_git_version
+      
+      ver = determine_git_version('.')
+      url = 'https://github.com/hotosm/osm-tasking-manager2/commit/' + ver.rsplit('.',1)[1]
+      txt = '<a href="%s">%s</a>' % (url, ver)
 %>
       <h3>Version</h3>
       <p>
-        ${__VERSION__}
+        ${txt |n}
       </p>
     </div>
   </div>
