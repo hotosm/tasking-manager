@@ -51,7 +51,7 @@
           <li><a href="http://mapgive.state.gov/">MapGive</a></li>
         </ul>
       </p>
-      <h3>Open Source</h3>
+      <h3>${_('Open Source')}</h3>
       <p>
       ${_('OSM Tasking Manager is an open source software.<br>Feel free to report issues and contribute.') | n}
       </p>
@@ -67,7 +67,7 @@
       url = 'https://github.com/hotosm/osm-tasking-manager2/commit/' + ver.rsplit('.',1)[1]
       txt = '<a href="%s">%s</a>' % (url, ver)
 %>
-      <h3>Version</h3>
+      <h3>${_('Version')}</h3>
       <p>
         ${txt |n}
       </p>
