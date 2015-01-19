@@ -43,26 +43,29 @@ def home(request):
     if DBSession.query(User).filter(User.role == User.role_admin) \
                 .count() == 0:   # pragma: no cover
         request.override_renderer = 'start.mako'
-        return dict(page_id="start")  
+        return dict(page_id="start")
 
-    paginator = get_projects(request,10)
+    paginator = get_projects(request, 10)
 
     return dict(page_id="home", paginator=paginator)
+
 
 @view_config(route_name='home_json', renderer='json')
 def home_json(request):
     request.response.content_disposition = \
         'attachment; filename="hot_osmtm.json"'
-    paginator = get_projects(request,100)
+    paginator = get_projects(request, 100)
     return FeatureCollection([project.to_feature() for project in paginator])
+
 
 @view_config(route_name='home_json_xhr', renderer='json')
 def home_json_xhr(request):
     request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
-    paginator = get_projects(request,100)
+    paginator = get_projects(request, 100)
     return FeatureCollection([project.to_feature() for project in paginator])
 
-def get_projects(request,items_per_page):
+
+def get_projects(request, items_per_page):
     query = DBSession.query(Project) \
         .options(joinedload(Project.translations['en'])) \
         .options(joinedload(Project.translations[request.locale_name])) \
@@ -134,6 +137,7 @@ def get_projects(request,items_per_page):
     paginator = Page(query, page, url=page_url, items_per_page=items_per_page)
 
     return paginator
+
 
 @view_config(route_name='about', renderer='about.mako')
 def about(request):

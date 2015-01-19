@@ -99,6 +99,7 @@ def project(request):
                 history=history,
                 priority_areas=FeatureCollection(features),)
 
+
 @view_config(route_name="project_json", renderer='json',
              permission="project_show",
              http_cache=0)
@@ -108,6 +109,7 @@ def project_json(request):
         'attachment; filename="hot_osmtm_%s.json"' % id
     return get_project(id)
 
+
 @view_config(route_name="project_json_xhr", renderer='json',
              permission="project_show",
              http_cache=0)
@@ -116,13 +118,15 @@ def project_json_xhr(request):
     request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
     return get_project(id)
 
+
 def get_project(id):
-    project = DBSession.query(Project).get(id)      
+    project = DBSession.query(Project).get(id)
 
     if project is None:
         return {}
 
     return project.to_feature()
+
 
 @view_config(route_name='project_new',
              renderer='project.new.mako',
@@ -391,6 +395,7 @@ def project_tasks_json(request):
     request.response.content_disposition = \
         'attachment; filename="hot_osmtm_tasks_%s.json"' % id
     return get_tasks(id)
+
 
 def get_tasks(id):
     project = DBSession.query(Project).get(id)

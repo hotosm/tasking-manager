@@ -62,7 +62,7 @@ def main(global_config, **settings):
     config.add_route('home', '/')
     config.add_route('home_json', '/projects.json')
     config.add_route('home_json_xhr', '/projects_xhr.json',
-                      xhr=True)
+                     xhr=True)
     config.add_route('about', '/about')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
