@@ -53,7 +53,7 @@ where you can then override every needed setting.
 For example:
 
     [app:main]
-    sqlalchemy.url = postgresql://www-data:www-data@localhost/osmtm
+    sqlalchemy.url = postgresql://www-data:PASSWORD@localhost/osmtm
 
 Note: you can also put your local settings file anywhere else on your
 file system, and then create a `LOCAL_SETTINGS_PATH` environment variable
