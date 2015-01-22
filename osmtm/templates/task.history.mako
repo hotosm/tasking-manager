@@ -25,7 +25,7 @@ from osmtm.mako_filters import (
     elif hasattr(step, 'author') and step.author is not None:
       contributor = step.author.username
     if contributor is not None:
-      user_link = '<a href="/user/' + contributor + '">' + contributor + '</a>'
+      user_link = '<a href="' + request.route_path('user',username= contributor) + '">' + contributor + '</a>'
     else:
       user_link = 'unknown'
     %>
