@@ -30,7 +30,7 @@ else:
       </p>
     </div>
     <div class="col-md-6">
-    % if creation_date:
+    % if creation_date != 'null':
     <p title=${creation_date}>
        ${_('This user joined OSM on ${join_date}.', mapping={'join_date':creation_date[5:7] + \
                                                                '/' + creation_date[8:10] + '/' + \
@@ -47,7 +47,7 @@ else:
   </p>
   </div>
   <div class="col-md-6">
-  % if changeset_count:
+  % if changeset_count != 'null':
   <p>
     ${_('This user has submitted ${changes} total changesets.', mapping={'changes':changeset_count})}
   </p>

@@ -172,10 +172,12 @@ def get_addl_user_info(user_id):
         creation_date = user_el.getAttribute('account_created')
 
         changesets_el = xmldoc.getElementsByTagName('changesets')[0]
-        changesets_count = changesets_el.getAttribute('count')
+        changeset_count = changesets_el.getAttribute('count')
 
     except:
         # don't lock application if no reponse can be received from OSM API
-        pass
+        creation_date = 'null'
+        chageset_count = 'null'
 
-    return creation_date, changesets_count
+    return creation_date, changeset_count
+
