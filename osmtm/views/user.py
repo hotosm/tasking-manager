@@ -110,13 +110,16 @@ def user(request):
         return HTTPFound(location=route_path('users', request))
 
     user = check_user_name(user)
+    creation_date, changeset_count = get_addl_user_info(user.id)
+
     # username has changed
     if user.username != username:
         return HTTPFound(location=route_path('user', request,
                                              username=user.username))
 
     projects = __get_projects(user.id)
-    return dict(page_id="user", contributor=user, projects=projects)
+    return dict(page_id="user", contributor=user, projects=projects,
+                 creation_date=creation_date, changeset_count=changeset_count)
 
 
 def __get_projects(user_id):
@@ -157,3 +160,22 @@ def username_to_userid(username):
     id_ = DBSession.query(User.id).filter(User.username == username).scalar()
 
     return str(id_) if id_ else username
+
+
+def get_addl_user_info(user_id):
+    ''' Get the number of changesets by a user from OSM API.'''
+    try:
+        url = 'http://www.openstreetmap.org/api/0.6/user/%s' % user_id
+        usock = urllib2.urlopen(url)
+        xmldoc = minidom.parse(usock)
+        user_el = xmldoc.getElementsByTagName('user')[0]
+        creation_date = user_el.getAttribute('account_created')
+
+        changesets_el = xmldoc.getElementsByTagName('changesets')[0]
+        changesets_count = changesets_el.getAttribute('count')
+
+    except:
+        # don't lock application if no reponse can be received from OSM API
+        pass
+
+    return creation_date, changesets_count
