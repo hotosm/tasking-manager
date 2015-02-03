@@ -66,7 +66,7 @@ if (typeof countdownInterval != 'undefined') {
     <p><a href="http://www.openstreetmap.org/history?bbox=${bounds[0]},${bounds[1]},${bounds[2]},${bounds[3]}"
           rel="tooltip"
           data-original-title="${_('See the changesets in the OSM database for this area.')}"
-          target="_blank">${_('OSM changesets')}</a></p>
+          target="_blank">${_('OSM changesets')} | ${overpassturbo_link(history,task,bounds)}</a></p>
 % endif
   </div>
 </div>
@@ -89,3 +89,26 @@ var imagery_url = "${project.imagery}";
 var changeset_comment = "${quote(project.changeset_comment, '')}";
 osmtm.project.initAtWho();
 </script>
+
+<%def name="overpassturbo_link(history,task,bounds)" >
+<%
+import urllib
+queryprefix = '<osm-script output="json" timeout="25"><union>'
+querysuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>'
+querymiddle = ''
+userlist = []
+for step in history:
+    if hasattr(step, 'user') and step.user is not None and step.user.username not in userlist:
+	stepquery = '<query type="node"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="way"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="relation"><user name="%(name)s"/><bbox-query %(bbox)s/></query>' % {
+		'name': step.user.username,
+		'bbox': 'w="%f" s="%f" e="%f" n="%f"' % bounds
+		 }
+	querymiddle = querymiddle + stepquery
+	userlist.append(step.user.username)
+query = queryprefix + querymiddle + querysuffix
+query = urllib.quote_plus(query)
+%>
+<small>
+  <a href="http://overpass-turbo.eu/map.html?Q=${query}" rel="tooltip" data-original-title="${_('See the changes in this area using the overpass-turbo API.')}"><span class="glyphicon glyphicon-share-alt"></span> overpass-turbo</a>
+</small>
+</%def>
