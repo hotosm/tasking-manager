@@ -66,7 +66,7 @@ if (typeof countdownInterval != 'undefined') {
     <p><a href="http://www.openstreetmap.org/history?bbox=${bounds[0]},${bounds[1]},${bounds[2]},${bounds[3]}"
           rel="tooltip"
           data-original-title="${_('See the changesets in the OSM database for this area.')}"
-          target="_blank">${_('OSM changesets')} | ${overpassturbo_link(history,task,bounds)}</a></p>
+          target="_blank">${_('OSM changesets')}</a> | ${overpassturbo_link(history,task,bounds)}</p>
 % endif
   </div>
 </div>
