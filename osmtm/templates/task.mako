@@ -86,6 +86,6 @@ var gpx_url = window.location.origin +
     (project.license in user.accepted_licenses or not project.license):
 var imagery_url = "${project.imagery}";
 % endif
-var changeset_comment = "${quote(project.changeset_comment, '')}";
+var changeset_comment = "${quote(project.changeset_comment.encode('utf8'), '')}";
 osmtm.project.initAtWho();
 </script>
