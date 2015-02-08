@@ -106,7 +106,7 @@ def project(request):
 def project_json(request):
     id = request.matchdict['project']
     request.response.content_disposition = \
-        'attachment; filename="hot_osmtm_%s.json"' % id
+        'attachment; filename="osmtm_project_%s.json"' % id
     return get_project(id)
 
 
@@ -393,7 +393,7 @@ def project_tasks_json_xhr(request):
 def project_tasks_json(request):
     id = request.matchdict['project']
     request.response.content_disposition = \
-        'attachment; filename="hot_osmtm_tasks_%s.json"' % id
+        'attachment; filename="osmtm_tasks_%s.json"' % id
     return get_tasks(id)
 
 
