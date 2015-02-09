@@ -3,7 +3,6 @@ from sqlalchemy.orm import (
     sessionmaker,
 )
 from zope.sqlalchemy import ZopeTransactionExtension
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
 from .models import (
     User,
@@ -16,6 +15,8 @@ from pyramid.security import (
     Everyone,
     Deny,
 )
+
+DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
 
 class RootFactory(object):

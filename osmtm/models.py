@@ -49,6 +49,38 @@ from shapely.geometry import (
 )
 
 
+from sqlalchemy.ext.declarative import declarative_base
+
+from sqlalchemy.orm import (
+    scoped_session,
+    sessionmaker,
+    relationship
+)
+
+from .utils import (
+    TileBuilder,
+    get_tiles_in_geom,
+    max,
+    parse_geojson,
+)
+
+from zope.sqlalchemy import ZopeTransactionExtension
+
+import datetime
+
+from json import (
+    JSONEncoder,
+    dumps as _dumps,
+)
+import functools
+
+from sqlalchemy_i18n import (
+    Translatable,
+    make_translatable,
+    translation_base,
+)
+
+
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
     type = Geometry
@@ -73,33 +105,8 @@ class ST_SetSRID(GenericFunction):
     name = 'ST_SetSRID'
     type = Geometry
 
-from sqlalchemy.ext.declarative import declarative_base
-
-from sqlalchemy.orm import (
-    scoped_session,
-    sessionmaker,
-    relationship
-)
-
-from .utils import (
-    TileBuilder,
-    get_tiles_in_geom,
-    max,
-    parse_geojson,
-)
-
-from zope.sqlalchemy import ZopeTransactionExtension
-
-import datetime
-
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
-
-from sqlalchemy_i18n import (
-    Translatable,
-    make_translatable,
-    translation_base,
-)
 make_translatable()
 
 users_licenses_table = Table(
@@ -622,12 +629,6 @@ class Message(Base):
         self.from_user = from_
         self.to_user = to
         self.message = message
-
-from json import (
-    JSONEncoder,
-    dumps as _dumps,
-)
-import functools
 
 
 class ExtendedJSONEncoder(JSONEncoder):
