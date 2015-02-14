@@ -122,6 +122,6 @@ var highPriorityI18n = "${_('High priority')}";
   <script src="${request.static_url('osmtm:static/js/lib/d3.v3.js')}"></script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.js')}"></script>
   <script type="text/javascript" src="${request.static_url('osmtm:static/js/task.difficulty.js')}"></script>
-  <script src="${request.static_url('osmtm:static/js/lib/At.js/js/jquery.caret.js')}"></script>
+  <script src="${request.static_url('osmtm:static/js/lib/At.js/js/jquery.caret.min.js')}"></script>
   <script src="${request.static_url('osmtm:static/js/lib/At.js/js/jquery.atwho.js')}"></script>
 </%block>
