@@ -171,7 +171,7 @@ sorts = [('priority', 'asc', _('High priority first')),
           title="${_('Access to this project is limited')}"></span> -
     % endif
     % if project.author:
-    <span>${_('Created by')} ${project.author.username}</span> -
+    <span>${_('Created by')} <a href="${request.route_path('user',username=project.author.username)}">${project.author.username}</a></span> -
     % endif
     <span>${_('Updated')} <span class="timeago" title="${project.last_update}Z"></span></span> -
     <span>${_('Priority:')} ${priority}</span>
