@@ -326,6 +326,25 @@ class TestProjectFunctional(BaseTestCase):
                                status=200)
         self.assertEqual(len(res.json['features']), 6)
 
+    def test_project_json(self):
+        # Test case for a project that exists
+        project_id = 1
+        res = self.testapp.get('/project/%d.json' % project_id,
+                               status=200)
+        self.assertEqual(len(res.json), 4)
+        # Test case for a project that does not exist
+        project_id = 99
+        res = self.testapp.get('/project/%d.json' % project_id,
+                               status=200)
+        self.assertEqual(len(res.json), 0)
+
+    def test_project_json_xhr(self):
+        project_id = 1
+        res = self.testapp.get('/project/%d.json' % project_id,
+                               xhr=True,
+                               status=200)
+        self.assertEqual(len(res.json), 4)
+
     def test_project_check_for_updates(self):
         import time
         project_id = self.create_project()
