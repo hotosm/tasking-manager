@@ -18,4 +18,3 @@ class GitCacheBuster(PathSegmentCacheBuster):
 
     def tokenize(self, pathspec):
         return self.sha1
-        
