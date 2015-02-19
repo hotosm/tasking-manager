@@ -27,21 +27,14 @@ osmtm.project = (function() {
     tpl: "<li data-value='${name}'>${name}</li>",
     show_the_at: true,
     limit: 10,
+    data: base_url + 'users.json',
     callbacks: {
-      remote_filter: function(query, callback) {
-        $.getJSON(base_url + "users.json", {q: query}, function(data) {
-          var names = $.map(data,function(value,i) {
-            return {'id':i,'name':value};
-          });
-          callback(names);
-        });
-      },
-      before_insert: function(value)  {
+      beforeInsert: function(value)  {
         // username contains a space
         if (value.match((/ /))) {
-          value = ['[', value, ']'].join('');
+          return ['@[', value.substr(1), ']'].join('');
         }
-        return '@' + value;
+        return value;
       }
     }
   };
