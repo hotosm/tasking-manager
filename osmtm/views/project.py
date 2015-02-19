@@ -100,6 +100,34 @@ def project(request):
                 priority_areas=FeatureCollection(features),)
 
 
+@view_config(route_name="project_json", renderer='json',
+             permission="project_show",
+             http_cache=0)
+def project_json(request):
+    id = request.matchdict['project']
+    request.response.content_disposition = \
+        'attachment; filename="osmtm_project_%s.json"' % id
+    return get_project(id)
+
+
+@view_config(route_name="project_json_xhr", renderer='json',
+             permission="project_show",
+             http_cache=0)
+def project_json_xhr(request):
+    id = request.matchdict['project']
+    request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+    return get_project(id)
+
+
+def get_project(id):
+    project = DBSession.query(Project).get(id)
+
+    if project is None:
+        return {}
+
+    return project.to_feature()
+
+
 @view_config(route_name='project_new',
              renderer='project.new.mako',
              permission="project_edit")
@@ -355,15 +383,8 @@ def check_for_updates(request):
              http_cache=0)
 def project_tasks_json_xhr(request):
     id = request.matchdict['project']
-    project = DBSession.query(Project).get(id)
-
-    tasks = DBSession.query(Task) \
-                     .filter(Task.project_id == project.id) \
-                     .options(joinedload(Task.cur_state)) \
-                     .options(joinedload(Task.cur_lock)) \
-
     request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
-    return FeatureCollection([task.to_feature() for task in tasks])
+    return get_tasks(id)
 
 
 @view_config(route_name="project_tasks_json", renderer='json',
@@ -371,6 +392,12 @@ def project_tasks_json_xhr(request):
              http_cache=0)
 def project_tasks_json(request):
     id = request.matchdict['project']
+    request.response.content_disposition = \
+        'attachment; filename="osmtm_tasks_%s.json"' % id
+    return get_tasks(id)
+
+
+def get_tasks(id):
     project = DBSession.query(Project).get(id)
 
     tasks = DBSession.query(Task) \
@@ -378,8 +405,6 @@ def project_tasks_json(request):
                      .options(joinedload(Task.cur_state)) \
                      .options(joinedload(Task.cur_lock)) \
 
-    request.response.content_disposition = \
-        'attachment; filename="hot_osmtm_%s.json"' % id
     return FeatureCollection([task.to_feature() for task in tasks])
 
 

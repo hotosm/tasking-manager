@@ -571,6 +571,18 @@ class Project(Base, Translatable):
 
         return query.count()
 
+    def to_feature(self):
+        properties = {}
+        properties['name'] = self.name
+        properties['description'] = self.description
+
+        return Feature(
+            geometry=shape.to_shape(self.area.geometry),
+            id=self.id,
+            properties=properties
+        )
+
+
 # the time delta after which the task is unlocked (in seconds)
 EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
 

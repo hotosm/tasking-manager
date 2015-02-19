@@ -6,6 +6,14 @@ class TestViewsFunctional(BaseTestCase):
     def test_home(self):
         self.testapp.get('/', status=200)
 
+    def test_home_json(self):
+        res = self.testapp.get('/projects.json', status=200)
+        self.assertEqual(res.json['type'], 'FeatureCollection')
+
+    def test_home_json_xhr(self):
+        res = self.testapp.get('/projects_xhr.json', xhr=True, status=200)
+        self.assertEqual(res.json['type'], 'FeatureCollection')
+
     def test_about(self):
         self.testapp.get('/about', status=200)
 

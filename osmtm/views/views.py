@@ -22,6 +22,10 @@ from webhelpers.paginate import (
     Page
 )
 
+from geojson import (
+    FeatureCollection
+)
+
 from .task import check_task_expiration
 from .project import check_project_expiration
 
@@ -41,6 +45,27 @@ def home(request):
         request.override_renderer = 'start.mako'
         return dict(page_id="start")
 
+    paginator = get_projects(request, 10)
+
+    return dict(page_id="home", paginator=paginator)
+
+
+@view_config(route_name='home_json', renderer='json')
+def home_json(request):
+    request.response.content_disposition = \
+        'attachment; filename="hot_osmtm.json"'
+    paginator = get_projects(request, 100)
+    return FeatureCollection([project.to_feature() for project in paginator])
+
+
+@view_config(route_name='home_json_xhr', renderer='json')
+def home_json_xhr(request):
+    request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+    paginator = get_projects(request, 100)
+    return FeatureCollection([project.to_feature() for project in paginator])
+
+
+def get_projects(request, items_per_page):
     query = DBSession.query(Project) \
         .options(joinedload(Project.translations['en'])) \
         .options(joinedload(Project.translations[request.locale_name])) \
@@ -109,9 +134,9 @@ def home(request):
 
     page = int(request.params.get('page', 1))
     page_url = PageURL_WebOb(request)
-    paginator = Page(query, page, url=page_url, items_per_page=10)
+    paginator = Page(query, page, url=page_url, items_per_page=items_per_page)
 
-    return dict(page_id="home", paginator=paginator)
+    return paginator
 
 
 @view_config(route_name='about', renderer='about.mako')
