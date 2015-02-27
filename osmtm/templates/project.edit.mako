@@ -233,7 +233,7 @@ geometry = loads(str(project.area.geometry.data))
           ${textarea_with_preview(inputname='per_task_instructions')}
 
           <span class="help-block col-md-9">
-            ${_('Put here anything that can be usefull to users while taking a task. {x}, {y} and {z} will be replaced by the correponding parameters for each task.')}<br />
+            ${_('Put here anything that can be useful to users while taking a task. {x}, {y} and {z} will be replaced by the correponding parameters for each task.')}<br />
             ${_('For example:')}<em> ${_('" This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM')}"</em>
           </span>
         </div>
