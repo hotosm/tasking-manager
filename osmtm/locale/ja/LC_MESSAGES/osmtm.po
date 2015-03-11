@@ -1,15 +1,15 @@
 # English translations for osmtm.
-# Copyright (C) 2014 ORGANIZATION
+# Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
-# nyampire <nyampire@gmail.com>, 2014
+# nyampire <nyampire@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-12-26 08:58+0100\n"
-"PO-Revision-Date: 2014-12-26 07:59+0000\n"
+"POT-Creation-Date: 2015-03-11 12:54+0100\n"
+"PO-Revision-Date: 2015-03-11 11:54+0000\n"
 "Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/osm-tasking-manager2/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:106
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:111
 #: osmtm/templates/home.mako:93
 msgid "About the Tasking Manager"
 msgstr "Tasking Managerについて"
@@ -58,6 +58,10 @@ msgstr "参加はこちらから"
 msgid "Some resources to help you start using the Tasking Manager:"
 msgstr "Tasking Manager初心者向け情報:"
 
+#: osmtm/templates/about.mako:54
+msgid "Open Source"
+msgstr "オープンソース"
+
 #: osmtm/templates/about.mako:56
 msgid ""
 "OSM Tasking Manager is an open source software.<br>Feel free to report "
@@ -82,6 +86,10 @@ msgid ""
 "manager2/graphs/contributors\">other contributors</a>."
 msgstr "協力は<a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">その他多くの貢献者たち</a>により。"
 
+#: osmtm/templates/about.mako:70
+msgid "Version"
+msgstr "バージョン"
+
 #: osmtm/templates/base.mako:41
 msgid "About"
 msgstr "Tasking Managerについて"
@@ -89,6 +97,10 @@ msgstr "Tasking Managerについて"
 #: osmtm/templates/base.mako:53
 msgid "login to OpenStreetMap"
 msgstr "OpenStreetMapログイン"
+
+#: osmtm/templates/base.mako:105
+msgid "Fork the code on ${github_link}."
+msgstr "${github_link} でコードをFork."
 
 #: osmtm/templates/custom.mako:6
 msgid "Questions About Tasks, Mapping or HOT?"
@@ -162,7 +174,7 @@ msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
 msgstr[0] "現在 ${locked} 人がプロジェクト参加中です"
 
-#: osmtm/templates/home.mako:171 osmtm/templates/project.description.mako:23
+#: osmtm/templates/home.mako:171 osmtm/templates/project.description.mako:24
 msgid "Access to this project is limited"
 msgstr "プロジェクトへのアクセス制限中"
 
@@ -182,16 +194,111 @@ msgstr "優先度"
 msgid "imagery url available only after accepting the license"
 msgstr "ライセンス承諾後に航空写真が利用可能になります"
 
-#: osmtm/templates/imagery.mako:51
+#: osmtm/templates/imagery.mako:35
+msgid "${license} license agreement"
+msgstr "${license} ライセンス同意"
+
+#: osmtm/templates/imagery.mako:36
+msgid "Access to this imagery is limited by the ${license_agreement_link}."
+msgstr "この衛星写真へアクセスするには ${license_agreement_link} に同意する必要があります。"
+
+#: osmtm/templates/imagery.mako:43
+msgid "You have already acknowledged the terms of this license."
+msgstr "ライセンスの規約同意済みです。"
+
+#: osmtm/templates/imagery.mako:46
+msgid "review and acknowledge"
+msgstr "内容確認と同意"
+
+#: osmtm/templates/imagery.mako:47
+msgid "You need to ${review_and_acknowledge_link} the agreement."
+msgstr "${review_and_acknowledge_link} への同意が必要です。"
+
+#: osmtm/templates/imagery.mako:53
 msgid "You need to accept the license first"
 msgstr "ライセンスに同意する必要があります"
+
+#: osmtm/templates/license.edit.mako:4
+msgid "Edit License"
+msgstr "ライセンス編集"
+
+#: osmtm/templates/license.edit.mako:10
+msgid "Name"
+msgstr "名称"
+
+#: osmtm/templates/license.edit.mako:12
+msgid "A name for the license (provider, for example)"
+msgstr "ライセンス名称 (例: 提供者)"
+
+#: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:46
+#: osmtm/templates/project.edit.mako:181 osmtm/templates/project.mako:49
+msgid "Description"
+msgstr "解説"
+
+#: osmtm/templates/license.edit.mako:17
+msgid "The license terms"
+msgstr "ライセンス条文"
+
+#: osmtm/templates/license.edit.mako:20
+msgid "Plain Text"
+msgstr "プレーンテキスト"
+
+#: osmtm/templates/license.edit.mako:22
+msgid "A short version of the terms"
+msgstr "条文の概略版"
+
+#: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:83
+msgid "Save the modifications"
+msgstr "変更を保存"
+
+#: osmtm/templates/license.edit.mako:29
+msgid "Create the new license"
+msgstr "ライセンスを新規追加"
+
+#: osmtm/templates/license.edit.mako:32
+msgid "Delete"
+msgstr "削除"
+
+#: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:82
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: osmtm/templates/license.edit.mako:40
+msgid "Are you sure you want to delete this license?"
+msgstr "このライセンスを削除してよろしいですか？"
 
 #: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
 msgid "Licenses"
 msgstr "ライセンス"
 
+#: osmtm/templates/license.mako:10
+msgid "${license_name} License Acknowledgement"
+msgstr "${license_name} ライセンス同意"
+
+#: osmtm/templates/license.mako:11
+msgid ""
+"Access via this site to imagery identified as <em>\"${license_name}\"</em> "
+"is subject to the following usage terms:"
+msgstr "<em>\"${license_name}\"</em> により定められている、このサイトから衛星画像へ行われるアクセスは以下の条項によって規定されています: "
+
+#: osmtm/templates/license.mako:24 osmtm/views/license.py:41
+msgid "I AGREE"
+msgstr "同意します"
+
+#: osmtm/templates/license.mako:25
+msgid "No, thank you"
+msgstr "いいえ、結構です"
+
+#: osmtm/templates/licenses.mako:16
+msgid "edit"
+msgstr "編集"
+
+#: osmtm/templates/licenses.mako:23
+msgid "Create new license"
+msgstr "ライセンスを追加"
+
 #: osmtm/templates/message.mako:3 osmtm/templates/message.mako:12
-#: osmtm/templates/user_menu.mako:12
+#: osmtm/templates/user.messages.mako:4 osmtm/templates/user_menu.mako:12
 msgid "Messages"
 msgstr "メッセージ"
 
@@ -203,57 +310,236 @@ msgstr "From:"
 msgid "You have tasks assigned:"
 msgstr "担当中タスク: "
 
-#: osmtm/templates/project.description.mako:9
+#: osmtm/templates/project.description.mako:10
 msgid "This project is not published yet."
 msgstr "このプロジェクトは未公開です"
 
-#: osmtm/templates/project.description.mako:12
+#: osmtm/templates/project.description.mako:13
 msgid "Publish"
 msgstr "公開"
 
-#: osmtm/templates/project.description.mako:16
+#: osmtm/templates/project.description.mako:17
 msgid "This project was archived."
 msgstr "プロジェクトをアーカイブしました"
 
-#: osmtm/templates/project.description.mako:30 osmtm/templates/project.mako:50
+#: osmtm/templates/project.description.mako:31
+#: osmtm/templates/project.edit.mako:47 osmtm/templates/project.mako:50
 msgid "Instructions"
 msgstr "インストラクション"
 
-#: osmtm/templates/project.edit.mako:95 osmtm/templates/project.mako:10
-msgid "Archived"
-msgstr "アーカイブ"
+#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:404
+#: osmtm/templates/project.mako:21
+msgid "Edit"
+msgstr "編集"
 
-#: osmtm/templates/project.edit.mako:96
-msgid "Published"
-msgstr "公開中"
+#: osmtm/templates/project.edit.mako:48
+msgid "Area"
+msgstr "エリア"
 
-#: osmtm/templates/project.edit.mako:97 osmtm/templates/project.mako:8
-msgid "Draft"
-msgstr "下書き"
-
-#: osmtm/templates/project.edit.mako:314
-msgid "Allowed users"
-msgstr "許可ユーザ"
-
-#: osmtm/templates/project.instructions.mako:8
-msgid "Entities to Map"
-msgstr "マップする対象"
-
-#: osmtm/templates/project.instructions.mako:20
-msgid "Changeset Comment"
-msgstr "変更セットのコメント指定"
-
+#: osmtm/templates/project.edit.mako:49
 #: osmtm/templates/project.instructions.mako:34
 msgid "Imagery"
 msgstr "航空写真"
 
-#: osmtm/templates/project.instructions.mako:53
+#: osmtm/templates/project.edit.mako:50
+msgid "Priority Areas"
+msgstr "優先エリア"
+
+#: osmtm/templates/project.edit.mako:51
+msgid "Allowed Users"
+msgstr "許可ユーザ"
+
+#: osmtm/templates/project.edit.mako:52
+msgid "Misc"
+msgstr "その他"
+
+#: osmtm/templates/project.edit.mako:96
+msgid "Status"
+msgstr "ステータス"
+
+#: osmtm/templates/project.edit.mako:101 osmtm/templates/project.mako:10
+msgid "Archived"
+msgstr "アーカイブ"
+
+#: osmtm/templates/project.edit.mako:102
+msgid "Published"
+msgstr "公開中"
+
+#: osmtm/templates/project.edit.mako:103 osmtm/templates/project.mako:8
+msgid "Draft"
+msgstr "下書き"
+
+#: osmtm/templates/project.edit.mako:116
+msgid "Priority"
+msgstr "優先度"
+
+#: osmtm/templates/project.edit.mako:132
+msgid "Name of the project"
+msgstr "プロジェクト名称"
+
+#: osmtm/templates/project.edit.mako:156
+msgid "Short Description"
+msgstr "概略"
+
+#: osmtm/templates/project.edit.mako:191
+#: osmtm/templates/project.instructions.mako:8
+msgid "Entities to Map"
+msgstr "マップする対象"
+
+#: osmtm/templates/project.edit.mako:194
+msgid "primary roads, secondary roads, buildings"
+msgstr "国道、主要道、建物"
+
+#: osmtm/templates/project.edit.mako:198
+msgid "The list of entities to map."
+msgstr "マッピング対象の地物"
+
+#: osmtm/templates/project.edit.mako:202
+#: osmtm/templates/project.instructions.mako:20
+msgid "Changeset Comment"
+msgstr "変更セットのコメント指定"
+
+#: osmtm/templates/project.edit.mako:208
+msgid "Comments users are recommended to add to upload commits."
+msgstr "編集内容のアップロード時にユーザがコメント欄で使うことを推奨する文言"
+
+#: osmtm/templates/project.edit.mako:209 osmtm/templates/project.edit.mako:237
+msgid "For example:"
+msgstr "例: "
+
+#: osmtm/templates/project.edit.mako:209
+msgid "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
+msgstr "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
+
+#: osmtm/templates/project.edit.mako:218
+msgid "Detailed Instructions"
+msgstr "詳しい説明"
+
+#: osmtm/templates/project.edit.mako:231
+msgid "Per Task Instructions (optional)"
+msgstr "タスク別の説明 (オプション)"
+
+#: osmtm/templates/project.edit.mako:236
+msgid ""
+"Put here anything that can be useful to users while taking a task. {x}, {y} "
+"and {z} will be replaced by the corresponding parameters for each task."
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:237
+msgid ""
+"\" This task involves loading extra data. Click "
+"[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
+" to load the data into JOSM"
+msgstr "\" このタスクでは追加のデータを読み込みます。[こちら](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) をクリックして、データをJOSMに読み込んでください。"
+
+#: osmtm/templates/project.edit.mako:248
+msgid "Area modifications are not available yet."
+msgstr "エリア修正はまだ未実装です。"
+
+#: osmtm/templates/project.edit.mako:257
+msgid "${count_of} priority area(s)"
+msgstr "優先エリア数 ${count_of}"
+
+#: osmtm/templates/project.edit.mako:260
+msgid ""
+"If you want mappers to work on the highest priority areas first, draw one or"
+" more polygons within the project area."
+msgstr "もし優先度の高いエリアをマッパーに示したい場合、プロジェクト対象エリアの中に1つ以上のポリゴンを描いてください。"
+
+#: osmtm/templates/project.edit.mako:277
+msgid "URL to service"
+msgstr "サービスURL"
+
+#: osmtm/templates/project.edit.mako:280
+msgid "Note:"
+msgstr "注記: "
+
+#: osmtm/templates/project.edit.mako:280
+msgid ""
+"Follow this format for TMS urls.<br>tms[22]:http://hiu-"
+"maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+msgstr "TMSのURLは以下の表記方法で行います <br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+
+#: osmtm/templates/project.edit.mako:286
+msgid "Required License"
+msgstr "必要となるライセンス"
+
+#: osmtm/templates/project.edit.mako:312
+msgid "Private"
+msgstr "プライベート"
+
+#: osmtm/templates/project.edit.mako:315
+msgid ""
+"Private means that only a given list of users can access this project. In "
+"order for the user's name to be available to add to the Allowed Users - they"
+" first must visit the URL for your instance of OSMTM and Authorize access to"
+" their OpenStreetMap account. After they've done this, their username should"
+" be available for the administrator to add."
+msgstr "プライベート設定を行うことによって、プロジェクトへアクセスできるユーザを制限することが可能です。アクセスを許可するユーザ名の指定を行ってください。ユーザに対して許可を与えるには、そのユーザが一度OSMTMにアクセスし、OpenStreetMapアカウントで認証を行っている必要があります。認証が行われていれば、管理者によって対象のユーザ名を指定した追加が可能になります。"
+
+#: osmtm/templates/project.edit.mako:320
+msgid "Allowed users"
+msgstr "許可ユーザ"
+
+#: osmtm/templates/project.edit.mako:343
+msgid "Type a username"
+msgstr "ユーザ名を入力"
+
+#: osmtm/templates/project.edit.mako:346
+msgid "Add user"
+msgstr "ユーザ追加"
+
+#: osmtm/templates/project.edit.mako:364
+msgid "Project due date"
+msgstr "プロジェクト完了目標日時"
+
+#: osmtm/templates/project.edit.mako:372
+msgid "The date after which the project will automatically be archived."
+msgstr "この日時を過ぎると、プロジェクトは自動的に完了になります。"
+
+#: osmtm/templates/project.edit.mako:378
+msgid "JOSM Preset"
+msgstr "JOSMプリセット"
+
+#: osmtm/templates/project.edit.mako:383
+msgid "A JOSM Preset has already been added to this project."
+msgstr "プロジェクトに自動的に追加されるJOSMプリセット"
+
+#: osmtm/templates/project.edit.mako:390
+msgid "Tip:"
+msgstr "TIP: "
+
+#: osmtm/templates/project.edit.mako:391
+msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
+msgstr "<a href class=\"markdown\">Markdown</a>記法を使うことが可能です。(HTMLは使えません)"
+
+#: osmtm/templates/project.edit.mako:407
+msgid "Preview"
+msgstr "プレビュー"
+
+#: osmtm/templates/project.instructions.mako:13
+msgid "The list of elements of elements we ask you to map"
+msgstr "マッピング対象の要素一覧"
+
+#: osmtm/templates/project.instructions.mako:25
+msgid "The comment to put when uploading data to the OSM database"
+msgstr "OSMデータベースにデータをアップロードする際のコメント"
+
+#: osmtm/templates/project.instructions.mako:44
+msgid "preset"
+msgstr "プリセット"
+
+#: osmtm/templates/project.instructions.mako:45
+msgid "Using JOSM? Please use the dedicated ${preset_link}."
+msgstr "JOSMを使っている場合、このプロジェクト専用のプリセット ${preset_link} をお使いください。"
+
+#: osmtm/templates/project.instructions.mako:56
 msgid "Start contributing"
 msgstr "参加"
 
-#: osmtm/templates/project.mako:49
-msgid "Description"
-msgstr ""
+#: osmtm/templates/project.mako:17
+msgid "Export"
+msgstr "エクスポート"
 
 #: osmtm/templates/project.mako:51
 msgid "Contribute"
@@ -272,35 +558,176 @@ msgid "Loading"
 msgstr "読み込み中"
 
 #: osmtm/templates/project.mako:105
+msgid "Task doesn't exist."
+msgstr "タスクが存在しません。"
+
+#: osmtm/templates/project.mako:106
+msgid "an error occured"
+msgstr "エラーが発生しました"
+
+#: osmtm/templates/project.mako:107
+msgid ""
+"JOSM remote control did not respond. Do you have JOSM running and configured"
+" to be controlled remotely?"
+msgstr "JOSMリモート操作が反応しません。JOSMが起動し、リモート操作を受け付ける設定になっているかどうかを確認してください。"
+
+#: osmtm/templates/project.mako:109
+msgid "Something wrong happened"
+msgstr "よくないことが起きました"
+
+#: osmtm/templates/project.mako:110
+msgid "Please login first"
+msgstr "ログインを行ってください"
+
+#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:31
+msgid "Map data © ${osm_link} contributors"
+msgstr "地図データ © ${osm_link} の貢献者"
+
+#: osmtm/templates/project.mako:116
+msgid "Cur. worked on "
+msgstr "現在作業中"
+
+#: osmtm/templates/project.mako:117
 msgid "Ready"
 msgstr "準備完了"
 
-#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:52
+#: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:52
 #: osmtm/templates/task.status.mako:12
 msgid "Invalidated"
 msgstr "差し戻し"
 
-#: osmtm/templates/project.mako:105 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/project.mako:117 osmtm/templates/project.stats.mako:6
 #: osmtm/templates/task.status.mako:10
 msgid "Done"
 msgstr "完了"
 
-#: osmtm/templates/project.mako:105 osmtm/templates/task.history.mako:54
+#: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:54
 #: osmtm/templates/task.status.mako:14
 msgid "Validated"
 msgstr "確認完了"
 
-#: osmtm/templates/project.mako:106
+#: osmtm/templates/project.mako:119
 msgid "You must leave a comment."
 msgstr "コメントを入力してください"
 
-#: osmtm/templates/project.mako:107
+#: osmtm/templates/project.mako:120
 msgid "High priority"
 msgstr "優先度高"
 
-#: osmtm/templates/project.new.mako:76
+#: osmtm/templates/project.new.mako:4
+msgid "Project New"
+msgstr "新プロジェクト"
+
+#: osmtm/templates/project.new.mako:25
+msgid "Draw the area of interest"
+msgstr "対象のエリアを描画"
+
+#: osmtm/templates/project.new.mako:26
+msgid "Dropped file could not be loaded"
+msgstr "ドロップされたファイルが読み込めません"
+
+#: osmtm/templates/project.new.mako:27
+msgid "Dropped file was unreadable"
+msgstr "ドロップされたファイルを読むことができません"
+
+#: osmtm/templates/project.new.mako:28
+msgid "Please provide a .geojson or a .kml file"
+msgstr ".geojsonあるいは .kmlファイルを使ってください"
+
+#: osmtm/templates/project.new.mako:42 osmtm/templates/project.new.mako:82
+#: osmtm/templates/project.new.mako:131 osmtm/templates/project.new.mako:174
+msgid "Step ${number}"
+msgstr "ステップ ${number}"
+
+#: osmtm/templates/project.new.mako:47
+msgid "Draw"
+msgstr "描画"
+
+#: osmtm/templates/project.new.mako:48
+msgid "${draw_link} the area of interest on the map."
+msgstr "${draw_link} 対象のエリアをマップ表示。"
+
+#: osmtm/templates/project.new.mako:53 osmtm/templates/task.empty.mako:21
+msgid "or"
+msgstr "or"
+
+#: osmtm/templates/project.new.mako:60
+msgid "Provide a .geojson or .kml file."
+msgstr ".geojsonあるいは .kmlファイルが利用可能です。"
+
+#: osmtm/templates/project.new.mako:60
+msgid "Import"
+msgstr "インポート"
+
+#: osmtm/templates/project.new.mako:61
+msgid "${import_link} a <em>GeoJSON</em> or <em>KML</em> file."
+msgstr "${import_link} <em>GeoJSON</em> あるいは <em>KML</em> ファイル"
+
+#: osmtm/templates/project.new.mako:66
+msgid "Want to use an <em>.osm</em> file instead?"
+msgstr "手元にあるファイルが <em>.osm</em> 形式だけでしょうか？"
+
+#: osmtm/templates/project.new.mako:69
+msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
+msgstr "その場合 ${geojson_link} を使うことで<em>GeoJSON</em>形式への変換が可能です。"
+
+#: osmtm/templates/project.new.mako:83
+msgid "${step_number}  - Type of project"
+msgstr "${step_number}  - プロジェクトの種別"
+
+#: osmtm/templates/project.new.mako:90
+msgid "Square Grid"
+msgstr "正方形のグリッド"
+
+#: osmtm/templates/project.new.mako:94
+msgid ""
+"Area of interest is automatically split into grid cells. Each one is a task."
+msgstr "対象のエリアは自動的にグリッド形状に分割されます。それぞれのグリッドが1つのタスクとして扱われます。"
+
+#: osmtm/templates/project.new.mako:101
 msgid "You cannot select this option unless you import a file with polygons."
 msgstr "このオプションはポリゴンデータのファイルにのみ対応しています。"
+
+#: osmtm/templates/project.new.mako:104
+msgid "Arbitrary Geometries"
+msgstr "任意のジオメトリ"
+
+#: osmtm/templates/project.new.mako:108
+msgid "Each polygon represents a task."
+msgstr "それぞれのポリゴンが1つのタスクをあらわします。"
+
+#: osmtm/templates/project.new.mako:117 osmtm/templates/project.new.mako:154
+#: osmtm/templates/project.new.mako:184
+msgid "Back"
+msgstr "戻る"
+
+#: osmtm/templates/project.new.mako:119
+msgid "Next"
+msgstr "次へ"
+
+#: osmtm/templates/project.new.mako:135
+msgid "Tile size"
+msgstr "タイルサイズ"
+
+#: osmtm/templates/project.new.mako:143
+msgid "Computing..."
+msgstr "分割計算中..."
+
+#: osmtm/templates/project.new.mako:147 osmtm/templates/project.new.mako:178
+msgid "A new project will be created with ${number} tasks."
+msgstr "新しいプロジェクトのタスク数は ${number} です。"
+
+#: osmtm/templates/project.new.mako:156 osmtm/templates/project.new.mako:186
+msgid "Create project"
+msgstr "プロジェクト作成"
+
+#: osmtm/templates/project.new.mako:162
+msgid "Creating tiles, please wait..."
+msgstr "タイル作成中です。少々お待ちください。"
+
+#: osmtm/templates/project.new.mako:191
+msgid "Creating project, please wait..."
+msgstr "プロジェクト作成中です。少々お待ちください。"
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
@@ -381,6 +808,10 @@ msgstr "難易度"
 msgid "No difficulty set yet"
 msgstr "難易度未設定"
 
+#: osmtm/templates/task.difficulty.mako:46
+msgid "Unknown difficulty"
+msgstr "難易度未設定"
+
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
 msgstr "エディタ"
@@ -399,10 +830,6 @@ msgstr "TIP: 以下の ${task_gpx_link} をダウンロードしてJOSMで読み
 msgid "Select a task on the map"
 msgstr "マップに表示されているタスクを選択"
 
-#: osmtm/templates/task.empty.mako:21
-msgid "or"
-msgstr "or"
-
 #: osmtm/templates/task.empty.mako:27
 msgid "Take a task at random"
 msgstr "ランダム選択"
@@ -413,15 +840,15 @@ msgstr "コメント"
 
 #: osmtm/templates/task.history.mako:38
 msgid "${user} marked ${tasklink} as <b>done</b>"
-msgstr ""
+msgstr "${user} さんがタスク ${tasklink} を <b>完了</b> にしました"
 
 #: osmtm/templates/task.history.mako:41
 msgid "${user} <b>invalidated</b> ${tasklink}"
-msgstr ""
+msgstr "${user} さんがタスク ${tasklink} を<b>差し戻しました</b>"
 
 #: osmtm/templates/task.history.mako:44
 msgid "${user} <b>validated</b> ${tasklink}"
-msgstr ""
+msgstr "${user} さんがタスク ${tasklink} を<b>確認しました</b>"
 
 #: osmtm/templates/task.history.mako:50
 msgid "Marked as done"
@@ -476,13 +903,29 @@ msgstr "分後に解除"
 msgid "Clear selection"
 msgstr "選択解除"
 
-#: osmtm/templates/task.mako:65
+#: osmtm/templates/task.mako:23
+msgid "Task #${number}"
+msgstr "タスク #${number}"
+
+#: osmtm/templates/task.mako:68
 msgid "See the changesets in the OSM database for this area."
 msgstr "この地域の変更セットをOSMデータベースで確認"
+
+#: osmtm/templates/task.mako:69
+msgid "OSM changesets"
+msgstr "OSM変更セット"
+
+#: osmtm/templates/task.mako:112
+msgid "See the changes in this area using the overpass-turbo API."
+msgstr "overpass-turbo APIを使って、このエリアの変更点を確認。"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
 msgstr "タスク対象地域が大きすぎる？"
+
+#: osmtm/templates/task.split.mako:9
+msgid "You cannot split this task more."
+msgstr "これ以上タスクを分割できません。"
 
 #: osmtm/templates/task.split.mako:13
 msgid "Are you sure you want to split this task?"
@@ -524,7 +967,7 @@ msgstr "マッピング開始"
 msgid ""
 "Lock this task to tell others that you are currently reviewing it. Validate "
 "that this task has been mapped correctly and completely."
-msgstr ""
+msgstr "このタスクをロックすることで、あなたがこの区域をレビュー中であることが表示されます。このタスクの内容が正しく完全にマッピングされているか確認してください。"
 
 #: osmtm/templates/task.unlocked.mako:26
 msgid "Review the work"
@@ -534,13 +977,69 @@ msgstr "作業内容確認"
 msgid "User profile"
 msgstr "ユーザプロフィール"
 
+#: osmtm/templates/user.mako:20
+msgid "User: ${username}"
+msgstr "ユーザ: ${username}"
+
+#: osmtm/templates/user.mako:24
+msgid "This is <b>You</b>!"
+msgstr "<b>あなた</b>です！"
+
+#: osmtm/templates/user.mako:28
+msgid "OSM User Profile"
+msgstr "OSMユーザプロフィール"
+
+#: osmtm/templates/user.mako:29
+msgid "OSM Profile"
+msgstr "OSMプロフィール"
+
 #: osmtm/templates/user.mako:38
 msgid "This user is an administrator."
 msgstr "このユーザは管理者です。"
 
+#: osmtm/templates/user.mako:40 osmtm/templates/user.mako:56
+msgid "Remove privileges"
+msgstr "権限削除"
+
+#: osmtm/templates/user.mako:45
+msgid "Set as administrator"
+msgstr "管理者に指定"
+
 #: osmtm/templates/user.mako:54
 msgid "This user is a project manager."
 msgstr "このユーザはプロジェクト管理者です。"
+
+#: osmtm/templates/user.mako:61
+msgid "Set as project manager"
+msgstr "プロジェクト管理者に指定"
+
+#: osmtm/templates/user.mako:70
+msgid "Projects"
+msgstr "プロジェクト"
+
+#: osmtm/templates/user.mako:72
+msgid "This user contributed to the following projects:"
+msgstr "このユーザが貢献したプロジェクト: "
+
+#: osmtm/templates/user.mako:77
+msgid "Project Details"
+msgstr "プロジェクトの詳細"
+
+#: osmtm/templates/user.mako:81
+msgid "${count} tiles"
+msgstr "${count} タイル"
+
+#: osmtm/templates/user.mako:88
+msgid "User hasn't contributed yet."
+msgstr "このユーザからの貢献はまだありません。"
+
+#: osmtm/templates/user.messages.mako:14
+msgid "From"
+msgstr "From"
+
+#: osmtm/templates/user.messages.mako:15
+msgid "Subject"
+msgstr "対象"
 
 #: osmtm/templates/user_menu.mako:10
 msgid "Your page"
@@ -550,86 +1049,152 @@ msgstr "個人ページ"
 msgid "logout"
 msgstr "ログアウト"
 
+#: osmtm/templates/user_menu.mako:19
+msgid "Users list"
+msgstr "ユーザ一覧"
+
+#: osmtm/templates/user_menu.mako:23
+msgid "Manage licenses"
+msgstr "ライセンス管理"
+
+#: osmtm/templates/user_menu.mako:28
+msgid "Create a new project"
+msgstr "新プロジェクト作成"
+
 #: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
+#: osmtm/templates/users.mako:30
 msgid "Users"
 msgstr "ユーザ"
+
+#: osmtm/templates/users.mako:31
+msgid "Keys:"
+msgstr "キー: "
+
+#: osmtm/templates/users.mako:33
+msgid "Administrator"
+msgstr "管理者"
+
+#: osmtm/templates/users.mako:34
+msgid "Project Manager"
+msgstr "プロジェクト管理者"
+
+#: osmtm/views/license.py:58
+msgid "License doesn't exist!"
+msgstr "ライセンスが存在しません！"
+
+#: osmtm/views/license.py:62
+msgid "License removed!"
+msgstr "ライセンスが削除されました！"
+
+#: osmtm/views/license.py:84
+msgid "License created!"
+msgstr "ライセンスの作成が完了しました！"
+
+#: osmtm/views/license.py:86
+msgid "License updated!"
+msgstr "ライセンスを更新しました！"
 
 #: osmtm/views/project.py:73
 msgid "Sorry, this project doesn't  exist"
 msgstr "プロジェクトが存在しません"
 
-#: osmtm/views/project.py:143
+#: osmtm/views/project.py:148 osmtm/views/project.py:192
+msgid "Untitled project"
+msgstr "名称未設定のプロジェクト"
+
+#: osmtm/views/project.py:171
 msgid "Project #${project_id} created successfully"
 msgstr "プロジェクト #${project_id} の作成完了"
 
-#: osmtm/views/project.py:168
+#: osmtm/views/project.py:177 osmtm/views/project.py:202
+#, python-format
+msgid "Sorry, could not create the project. <br />%s"
+msgstr "プロジェクトの作成ができませんでした。<br />%s"
+
+#: osmtm/views/project.py:196
 msgid "Successfully imported ${n} geometries"
 msgstr "${n} 個のジオメトリを正常にインポートしました"
 
-#: osmtm/views/task.py:161
+#: osmtm/views/task.py:84
+msgid "Cannot update task. Record lock for update."
+msgstr "タスクの更新ができません。更新を行うためにロックを記録します。"
+
+#: osmtm/views/task.py:89
+msgid "This task doesn't exist."
+msgstr "タスクが存在しません。"
+
+#: osmtm/views/task.py:97
+msgid "You need to lock the task first."
+msgstr "タスクをロックしてから作業してください。"
+
+#: osmtm/views/task.py:165
 msgid "Task marked as done. Thanks for your contribution"
 msgstr "タスクを完了状態にしました。おつかれさまでした！"
 
-#: osmtm/views/task.py:180
+#: osmtm/views/task.py:184
 msgid "Task already locked."
 msgstr "タスクは既にロック中です。"
 
-#: osmtm/views/task.py:186
+#: osmtm/views/task.py:190
 msgid "Task assigned to someone else."
 msgstr "誰かが担当中"
 
-#: osmtm/views/task.py:191
+#: osmtm/views/task.py:195
 msgid "Task locked. You can start mapping."
 msgstr "タスクをロックしました。マッピングを開始できます。"
 
-#: osmtm/views/task.py:208
+#: osmtm/views/task.py:212
 msgid "Task unlocked."
 msgstr "タスクをアンロックしました。"
 
-#: osmtm/views/task.py:220
+#: osmtm/views/task.py:224
 msgid "Comment added."
 msgstr "コメント追加完了。"
 
-#: osmtm/views/task.py:257
+#: osmtm/views/task.py:261
 msgid "You were mentioned in a comment - Task ${link}"
 msgstr "あなたに関するコメントがあります - タスク ${link}"
 
-#: osmtm/views/task.py:283
+#: osmtm/views/task.py:287
 msgid "Task ${link} invalidated"
 msgstr "タスク ${link} 差し戻し"
 
-#: osmtm/views/task.py:298
+#: osmtm/views/task.py:302
 msgid "Task validated."
 msgstr "タスクの内容確認完了。"
 
-#: osmtm/views/task.py:301
+#: osmtm/views/task.py:305
 msgid "Task invalidated."
 msgstr "タスクの差し戻し完了。"
 
-#: osmtm/views/task.py:428
+#: osmtm/views/task.py:432
 msgid "Random task... none available! Sorry."
 msgstr "タスクのランダム選択...空いているタスクがありません。ごめんなさい！"
 
-#: osmtm/views/task.py:441
+#: osmtm/views/task.py:445
 msgid "You cannot assign an already locked task"
 msgstr "ロック中のタスクへの担当依頼はできません"
 
-#: osmtm/views/task.py:451
+#: osmtm/views/task.py:455
 msgid "Task assigned."
 msgstr "タスク担当開始。"
 
-#: osmtm/views/task.py:465
+#: osmtm/views/task.py:469
 msgid "Task assignment removed"
 msgstr "タスク担当の削除実施"
 
-#: osmtm/views/task.py:497
+#: osmtm/views/task.py:501
 msgid "Task difficulty changed."
 msgstr "タスク難易度が変更されました。"
 
-#: osmtm/views/task.py:510
+#: osmtm/views/task.py:514
 msgid "Task difficulty removed"
 msgstr "タスク難易度が削除されました。"
 
-#: osmtm/views/user.py:108
+#: osmtm/views/user.py:78
+msgid "You probably don't want to remove your privileges"
+msgstr "自分自身の権限を削除することはできません。"
+
+#: osmtm/views/user.py:109
 msgid "Sorry, this user doesn't  exist"
 msgstr "ユーザが存在しません"
