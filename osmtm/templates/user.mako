@@ -96,11 +96,11 @@ else:
 <%
 import urllib
 bbox = project.to_bbox()
-query = '<osm-script output="json" timeout="25"><union><query type="node"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="way"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="relation"><user name="%(name)s"/><bbox-query %(bbox)s/></query></union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>' % {
+query = u'<osm-script output="json" timeout="25"><union><query type="node"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="way"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="relation"><user name="%(name)s"/><bbox-query %(bbox)s/></query></union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>' % {
   'name': contributor.username,
   'bbox': 'w="%f" s="%f" e="%f" n="%f"' % bbox
 }
-query = urllib.quote_plus(query)
+query = urllib.quote_plus(query.encode('utf8'))
 %>
 <small>
   <a href="http://overpass-turbo.eu/map.html?Q=${query}" ><span class="glyphicon glyphicon-share-alt"></span> overpass-turbo</a>

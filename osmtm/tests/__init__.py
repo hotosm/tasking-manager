@@ -116,6 +116,9 @@ class BaseTestCase(unittest.TestCase):
     def login_as_user2(self):
         return self.__remember(self.user2_id)
 
+    def login_as_user(self, user_id):
+        return self.__remember(user_id)
+
     def __remember(self, userid):
         from pyramid.security import remember
         from pyramid import testing

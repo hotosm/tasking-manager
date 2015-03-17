@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from . import BaseTestCase
 import httpretty
 
@@ -15,7 +16,7 @@ class TestViewsFunctional(BaseTestCase):
 
     def test_users_json(self):
         res = self.testapp.get('/users.json', status=200)
-        self.assertEqual(len(res.json), 4)
+        self.assertEqual(len(res.json), 5)
 
     def test_users_json__query(self):
         res = self.testapp.get('/users.json',
@@ -161,3 +162,40 @@ class TestViewsFunctional(BaseTestCase):
             status=500)
 
         self.testapp.get('/user/%s' % username, status=200)
+
+    def test_user__username_with_accents(self):
+        httpretty.enable()
+
+        from osmtm.models import User, DBSession
+        import transaction
+
+        userid = 12
+        username = u'new_user_éà'
+        user = User(userid, username)
+        DBSession.add(user)
+        DBSession.flush()
+        transaction.commit()
+
+        httpretty.register_uri(
+            httpretty.GET,
+            "http://www.openstreetmap.org/api/0.6/user/%s" % userid,
+            body='<?xml version="1.0" encoding="UTF-8"?>' +
+                 '<osm> <user display_name="%s"></user></osm>' % username,
+            content_type='application/xml; charset=utf-8')
+
+        headers = self.login_as_user(userid)
+        self.testapp.get('/project/1/task/4/lock', status=200,
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/1/task/4/done', status=200,
+                         headers=headers,
+                         params={
+                             'comment': 'some_comment'
+                         },
+                         xhr=True)
+
+        self.testapp.get((u'/user/%s' % username).encode('utf8'), status=200)
+
+        self.testapp.get('/project/1/task/4', status=200,
+                         headers=headers,
+                         xhr=True)
