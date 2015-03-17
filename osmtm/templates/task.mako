@@ -99,14 +99,14 @@ querymiddle = ''
 userlist = []
 for step in history:
     if hasattr(step, 'user') and step.user is not None and step.user.username not in userlist:
-	stepquery = '<query type="node"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="way"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="relation"><user name="%(name)s"/><bbox-query %(bbox)s/></query>' % {
+	stepquery = u'<query type="node"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="way"><user name="%(name)s"/><bbox-query %(bbox)s/></query><query type="relation"><user name="%(name)s"/><bbox-query %(bbox)s/></query>' % {
 		'name': step.user.username,
 		'bbox': 'w="%f" s="%f" e="%f" n="%f"' % bounds
 		 }
 	querymiddle = querymiddle + stepquery
 	userlist.append(step.user.username)
 query = queryprefix + querymiddle + querysuffix
-query = urllib.quote_plus(query)
+query = urllib.quote_plus(query.encode('utf8'))
 %>
 <small>
   <a href="http://overpass-turbo.eu/map.html?Q=${query}" rel="tooltip" data-original-title="${_('See the changes in this area using the overpass-turbo API.')}"><span class="glyphicon glyphicon-share-alt"></span> overpass-turbo</a>
