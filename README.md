@@ -42,7 +42,7 @@ First create a database user/role named `www-data`:
 
 Then create a database named `osmtm`:
 
-    sudo -u postgres createdb -O www-data osmtm
+    sudo -u postgres createdb -T template0 osmtm -E UTF8 -O www-data
     sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
 
 ### Local settings
