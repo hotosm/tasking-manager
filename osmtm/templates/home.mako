@@ -14,7 +14,7 @@ sorts = [('priority', 'asc', _('High priority first')),
 %>
 <div class="container">
   <div class="col-md-6">
-    <h3>Projects</h3>
+    <h3>${_('Projects')}</h3>
     <%
         qs = dict(request.GET)
 
