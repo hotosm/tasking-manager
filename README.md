@@ -179,7 +179,7 @@ feel. You can do so by modifying the following files:
 
 ## Localization
 
-OSMTM is localized on [https://www.transifex.com/projects/p/osm-tasking-manager2/](Transifex) service.
+OSMTM is localized on [Transifex](https://www.transifex.com/projects/p/osm-tasking-manager2/) service.
 
 It's possible to create translations for two resources: **current** and
 **master**. *Current* resource represents currently deployed instance of the
