@@ -9,7 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGELOG.md')).read()
 requires = [
     'pyramid==1.6-dev',
     'pyramid_mako==1.0.2',
-    'SQLAlchemy==0.9.3',
+    'SQLAlchemy==0.9.9',
     'transaction',
     'pyramid_tm',
     'pyramid_debugtoolbar',
