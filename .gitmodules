@@ -7,3 +7,6 @@
 [submodule "osmtm/static/js/lib/jquery-timeago"]
 	path = osmtm/static/js/lib/jquery-timeago
     url = https://github.com/rmm5t/jquery-timeago.git
+[submodule "osmtm/static/js/lib/leaflet-control-osm-geocoder"]
+	path = osmtm/static/js/lib/leaflet-control-osm-geocoder
+	url = https://github.com/k4r573n/leaflet-control-osm-geocoder.git
