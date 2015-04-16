@@ -105,16 +105,9 @@ def project(request):
              http_cache=0)
 def project_json(request):
     id = request.matchdict['project']
-    request.response.content_disposition = \
-        'attachment; filename="osmtm_project_%s.json"' % id
-    return get_project(id)
-
-
-@view_config(route_name="project_json_xhr", renderer='json',
-             permission="project_show",
-             http_cache=0)
-def project_json_xhr(request):
-    id = request.matchdict['project']
+    if not request.is_xhr:
+        request.response.content_disposition = \
+            'attachment; filename="osmtm_project_%s.json"' % id
     request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
     return get_project(id)
 
@@ -378,22 +371,16 @@ def check_for_updates(request):
     return dict(update=False)
 
 
-@view_config(route_name="project_tasks_json_xhr", renderer='json',
-             permission="project_show",
-             http_cache=0)
-def project_tasks_json_xhr(request):
-    id = request.matchdict['project']
-    request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
-    return get_tasks(id)
-
-
 @view_config(route_name="project_tasks_json", renderer='json',
              permission="project_show",
              http_cache=0)
 def project_tasks_json(request):
     id = request.matchdict['project']
-    request.response.content_disposition = \
-        'attachment; filename="osmtm_tasks_%s.json"' % id
+    if not request.is_xhr:
+        request.response.content_disposition = \
+            'attachment; filename="osmtm_tasks_%s.json"' % id
+
+    request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
     return get_tasks(id)
 
 

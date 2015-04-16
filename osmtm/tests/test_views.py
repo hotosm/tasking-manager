@@ -11,7 +11,7 @@ class TestViewsFunctional(BaseTestCase):
         self.assertEqual(res.json['type'], 'FeatureCollection')
 
     def test_home_json_xhr(self):
-        res = self.testapp.get('/projects_xhr.json', xhr=True, status=200)
+        res = self.testapp.get('/projects.json', xhr=True, status=200)
         self.assertEqual(res.json['type'], 'FeatureCollection')
 
     def test_about(self):

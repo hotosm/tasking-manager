@@ -52,16 +52,11 @@ def home(request):
 
 @view_config(route_name='home_json', renderer='json')
 def home_json(request):
-    request.response.content_disposition = \
-        'attachment; filename="hot_osmtm.json"'
+    if not request.is_xhr:
+        request.response.content_disposition = \
+            'attachment; filename="hot_osmtm.json"'
     paginator = get_projects(request, 100)
-    return FeatureCollection([project.to_feature() for project in paginator])
-
-
-@view_config(route_name='home_json_xhr', renderer='json')
-def home_json_xhr(request):
     request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
-    paginator = get_projects(request, 100)
     return FeatureCollection([project.to_feature() for project in paginator])
 
 
