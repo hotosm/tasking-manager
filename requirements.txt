@@ -1,2 +1,0 @@
--e git+https://github.com/Pylons/pyramid.git#egg=pyramid
--e .
