@@ -177,7 +177,6 @@ def get_addl_user_info(user_id):
     except:
         # don't lock application if no reponse can be received from OSM API
         creation_date = 'null'
-        chageset_count = 'null'
+        changeset_count = 'null'
 
     return creation_date, changeset_count
-

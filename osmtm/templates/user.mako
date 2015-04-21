@@ -31,10 +31,8 @@ else:
     </div>
     <div class="col-md-6">
     % if creation_date != 'null':
-    <p title=${creation_date}>
-       ${_('This user joined OSM on ${join_date}.', mapping={'join_date':creation_date[5:7] + \
-                                                               '/' + creation_date[8:10] + '/' + \
-                                                               creation_date[0:4]})}
+    <p>
+       ${_('This user joined OSM ')} <span class="timeago" title="${creation_date}"></span>.
     </p>
     % endif
     </div>
