@@ -119,7 +119,7 @@ def user(request):
 
     projects = __get_projects(user.id)
     return dict(page_id="user", contributor=user, projects=projects,
-                 creation_date=creation_date, changeset_count=changeset_count)
+                creation_date=creation_date, changeset_count=changeset_count)
 
 
 def __get_projects(user_id):
