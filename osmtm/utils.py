@@ -2,9 +2,6 @@ import os
 import ConfigParser
 import geojson
 import shapely
-import bleach
-import markdown
-import re
 from shapely.geometry import Polygon
 from shapely.prepared import prep
 from math import floor, ceil

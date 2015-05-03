@@ -8,6 +8,7 @@ from .models import (
 
 amp = re.compile('&amp;')
 
+
 def markdown_filter(text):
     ''' Mako filter for markdown and bleach
     '''
