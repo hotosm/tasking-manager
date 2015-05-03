@@ -561,7 +561,7 @@ osmtm.project = (function() {
     var submitName = $("button[type=submit][clicked=true]").attr("name");
 
     // require a comment for invalidation
-    if (submitName == 'invalidate' && !formData.comment) {
+    if (submitName == 'invalidate' && !formData.comment.trim()) {
       alert(commentRequiredMsg);
     } else {
       formData[submitName] = true;
