@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
+# Primož Skale <primoz.skale@t-2.si>, 2015
 # stefan.b <stefan.baebler@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-11 12:54+0100\n"
-"PO-Revision-Date: 2015-04-11 20:19+0000\n"
+"POT-Creation-Date: 2015-04-20 09:30+0200\n"
+"PO-Revision-Date: 2015-05-03 21:28+0000\n"
 "Last-Translator: stefan.b <stefan.baebler@gmail.com>\n"
 "Language-Team: Slovenian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/sl/)\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +35,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeinity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr "Upravitelj nalog OSM je načrtovan in narejen za sodelovanje pri delu  Humanitarnega aktiva OSM (HOT). Namen orodja je razbitje kartografskih opravil na manjše naloge, ki jih je možno opraviti hitro. Prikazuje področja, kje je potrebno kartografiranje in kje je potrebno kartografijo potrditi.<br />Ta pristop v nujnih primerih olajša porazdelitev nalog različnim kartografom. Omogoča tudi nadzor nad potekom in enoten način dela (t.j. želene elemente, uporabo določenih oznak, ipd)."
+msgstr "Upravitelj nalog OSM je načrtovan in narejen za sodelovanje pri delu  Humanitarnega aktiva OSM (HOT). Namen orodja je razbitje kartografskih opravil na manjše naloge, ki jih je možno hitro opraviti.. Prikazuje področja, kjer je potrebno kartografiranje in kjer je potrebno kartografijo potrditi.<br />Ta pristop v nujnih primerih olajša porazdelitev nalog različnim kartografom. Omogoča tudi nadzor nad potekom in enoten način dela (t.j. želene elemente, uporabo določenih oznak, ipd)."
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
@@ -157,6 +158,10 @@ msgstr "Datum stvaritve"
 msgid "Last update"
 msgstr "Zadnja sprememba"
 
+#: osmtm/templates/home.mako:17 osmtm/templates/user.mako:70
+msgid "Projects"
+msgstr "Projekti"
+
 #: osmtm/templates/home.mako:43
 msgid "Search"
 msgstr "Išči"
@@ -183,7 +188,7 @@ msgstr "Dostop do tega projekta je omejen"
 
 #: osmtm/templates/home.mako:174
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #: osmtm/templates/home.mako:176
 msgid "Updated"
@@ -268,7 +273,7 @@ msgstr "Prekliči"
 
 #: osmtm/templates/license.edit.mako:40
 msgid "Are you sure you want to delete this license?"
-msgstr ""
+msgstr "Ali ste prepričani, da želite izbrisati to licenco?"
 
 #: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
 msgid "Licenses"
@@ -542,7 +547,7 @@ msgstr ""
 
 #: osmtm/templates/project.mako:17
 msgid "Export"
-msgstr ""
+msgstr "Izvoz"
 
 #: osmtm/templates/project.mako:51
 msgid "Contribute"
@@ -554,7 +559,7 @@ msgstr ""
 
 #: osmtm/templates/project.mako:53
 msgid "Stats"
-msgstr ""
+msgstr "Statistika"
 
 #: osmtm/templates/project.mako:65
 msgid "Loading"
@@ -566,7 +571,7 @@ msgstr "Naloga ne obstaja."
 
 #: osmtm/templates/project.mako:106
 msgid "an error occured"
-msgstr ""
+msgstr "prišlo je do napake"
 
 #: osmtm/templates/project.mako:107
 msgid ""
@@ -582,7 +587,7 @@ msgstr ""
 msgid "Please login first"
 msgstr ""
 
-#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:31
+#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:33
 msgid "Map data © ${osm_link} contributors"
 msgstr "Podatki zemljevida © sodelavci ${osm_link}"
 
@@ -592,7 +597,7 @@ msgstr "Trenutno v delu"
 
 #: osmtm/templates/project.mako:117
 msgid "Ready"
-msgstr ""
+msgstr "Pripravljen"
 
 #: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:52
 #: osmtm/templates/task.status.mako:12
@@ -621,114 +626,114 @@ msgstr ""
 msgid "Project New"
 msgstr "Nov projekt"
 
-#: osmtm/templates/project.new.mako:25
+#: osmtm/templates/project.new.mako:27
 msgid "Draw the area of interest"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:26
+#: osmtm/templates/project.new.mako:28
 msgid "Dropped file could not be loaded"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:27
+#: osmtm/templates/project.new.mako:29
 msgid "Dropped file was unreadable"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:28
+#: osmtm/templates/project.new.mako:30
 msgid "Please provide a .geojson or a .kml file"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:42 osmtm/templates/project.new.mako:82
-#: osmtm/templates/project.new.mako:131 osmtm/templates/project.new.mako:174
+#: osmtm/templates/project.new.mako:44 osmtm/templates/project.new.mako:84
+#: osmtm/templates/project.new.mako:133 osmtm/templates/project.new.mako:176
 msgid "Step ${number}"
-msgstr ""
+msgstr "Korak ${number}"
 
-#: osmtm/templates/project.new.mako:47
+#: osmtm/templates/project.new.mako:49
 msgid "Draw"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:48
+#: osmtm/templates/project.new.mako:50
 msgid "${draw_link} the area of interest on the map."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:53 osmtm/templates/task.empty.mako:21
+#: osmtm/templates/project.new.mako:55 osmtm/templates/task.empty.mako:21
 msgid "or"
 msgstr "ali"
 
-#: osmtm/templates/project.new.mako:60
+#: osmtm/templates/project.new.mako:62
 msgid "Provide a .geojson or .kml file."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:60
+#: osmtm/templates/project.new.mako:62
 msgid "Import"
-msgstr ""
+msgstr "Uvoz"
 
-#: osmtm/templates/project.new.mako:61
+#: osmtm/templates/project.new.mako:63
 msgid "${import_link} a <em>GeoJSON</em> or <em>KML</em> file."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:66
+#: osmtm/templates/project.new.mako:68
 msgid "Want to use an <em>.osm</em> file instead?"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:69
+#: osmtm/templates/project.new.mako:71
 msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:83
+#: osmtm/templates/project.new.mako:85
 msgid "${step_number}  - Type of project"
-msgstr ""
+msgstr "${step_number}  - Vrsta projekta"
 
-#: osmtm/templates/project.new.mako:90
+#: osmtm/templates/project.new.mako:92
 msgid "Square Grid"
 msgstr "Kvadratna mreža"
 
-#: osmtm/templates/project.new.mako:94
+#: osmtm/templates/project.new.mako:96
 msgid ""
 "Area of interest is automatically split into grid cells. Each one is a task."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:101
+#: osmtm/templates/project.new.mako:103
 msgid "You cannot select this option unless you import a file with polygons."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:104
+#: osmtm/templates/project.new.mako:106
 msgid "Arbitrary Geometries"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:108
+#: osmtm/templates/project.new.mako:110
 msgid "Each polygon represents a task."
 msgstr "Vsak poligon predstavlja nalogo."
 
-#: osmtm/templates/project.new.mako:117 osmtm/templates/project.new.mako:154
-#: osmtm/templates/project.new.mako:184
+#: osmtm/templates/project.new.mako:119 osmtm/templates/project.new.mako:156
+#: osmtm/templates/project.new.mako:186
 msgid "Back"
-msgstr ""
+msgstr "Nazaj"
 
-#: osmtm/templates/project.new.mako:119
+#: osmtm/templates/project.new.mako:121
 msgid "Next"
-msgstr ""
+msgstr "Naprej"
 
-#: osmtm/templates/project.new.mako:135
+#: osmtm/templates/project.new.mako:137
 msgid "Tile size"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:143
+#: osmtm/templates/project.new.mako:145
 msgid "Computing..."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:147 osmtm/templates/project.new.mako:178
+#: osmtm/templates/project.new.mako:149 osmtm/templates/project.new.mako:180
 msgid "A new project will be created with ${number} tasks."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:156 osmtm/templates/project.new.mako:186
+#: osmtm/templates/project.new.mako:158 osmtm/templates/project.new.mako:188
 msgid "Create project"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:162
+#: osmtm/templates/project.new.mako:164
 msgid "Creating tiles, please wait..."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:191
+#: osmtm/templates/project.new.mako:193
 msgid "Creating project, please wait..."
 msgstr ""
 
@@ -779,7 +784,7 @@ msgstr ""
 #: osmtm/templates/task.difficulty.mako:7
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Hard"
-msgstr ""
+msgstr "Težavno"
 
 #: osmtm/templates/task.difficulty.mako:8
 msgid "Difficulty: hard<br>Level: advanced"
@@ -788,7 +793,7 @@ msgstr "Težavnost: težka<br>Nivo: napredni"
 #: osmtm/templates/task.difficulty.mako:11
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Medium"
-msgstr ""
+msgstr "Srednje"
 
 #: osmtm/templates/task.difficulty.mako:12
 msgid "Difficulty: medium<br>Level: intermediate"
@@ -797,7 +802,7 @@ msgstr "Težavnost: srednja<br>Nivo: srednji"
 #: osmtm/templates/task.difficulty.mako:15
 #: osmtm/templates/task.difficulty.mako:50
 msgid "Easy"
-msgstr ""
+msgstr "Enostavno"
 
 #: osmtm/templates/task.difficulty.mako:16
 msgid "Difficulty: easy<br>Level: beginner"
@@ -821,7 +826,7 @@ msgstr "Uredi z"
 
 #: osmtm/templates/task.editors.mako:25
 msgid ".gpx file"
-msgstr ""
+msgstr "datoteka .gpx"
 
 #: osmtm/templates/task.editors.mako:30
 msgid ""
@@ -982,11 +987,11 @@ msgstr "Uporabniški profil"
 
 #: osmtm/templates/user.mako:20
 msgid "User: ${username}"
-msgstr ""
+msgstr "Uporabnik: ${username}"
 
 #: osmtm/templates/user.mako:24
 msgid "This is <b>You</b>!"
-msgstr ""
+msgstr "To ste <b>Vi</b>!"
 
 #: osmtm/templates/user.mako:28
 msgid "OSM User Profile"
@@ -998,15 +1003,15 @@ msgstr "OSM profil"
 
 #: osmtm/templates/user.mako:38
 msgid "This user is an administrator."
-msgstr ""
+msgstr "Ta uporabnik je skrbnik."
 
 #: osmtm/templates/user.mako:40 osmtm/templates/user.mako:56
 msgid "Remove privileges"
-msgstr ""
+msgstr "Odstrani pooblastila"
 
 #: osmtm/templates/user.mako:45
 msgid "Set as administrator"
-msgstr ""
+msgstr "Nastavi za skrbnika"
 
 #: osmtm/templates/user.mako:54
 msgid "This user is a project manager."
@@ -1015,10 +1020,6 @@ msgstr "Ta uporabnik je vodja projekta"
 #: osmtm/templates/user.mako:61
 msgid "Set as project manager"
 msgstr "Nastavi kot vodjo projekta"
-
-#: osmtm/templates/user.mako:70
-msgid "Projects"
-msgstr "Projekti"
 
 #: osmtm/templates/user.mako:72
 msgid "This user contributed to the following projects:"
@@ -1034,15 +1035,15 @@ msgstr ""
 
 #: osmtm/templates/user.mako:88
 msgid "User hasn't contributed yet."
-msgstr ""
+msgstr "Uporabnik ni prispeval še ničesar."
 
 #: osmtm/templates/user.messages.mako:14
 msgid "From"
-msgstr ""
+msgstr "Od"
 
 #: osmtm/templates/user.messages.mako:15
 msgid "Subject"
-msgstr ""
+msgstr "Zadeva"
 
 #: osmtm/templates/user_menu.mako:10
 msgid "Your page"
@@ -1054,7 +1055,7 @@ msgstr "odjava"
 
 #: osmtm/templates/user_menu.mako:19
 msgid "Users list"
-msgstr ""
+msgstr "Seznam uporabnikov"
 
 #: osmtm/templates/user_menu.mako:23
 msgid "Manage licenses"
@@ -1062,7 +1063,7 @@ msgstr "Upravljanje dovoljenj"
 
 #: osmtm/templates/user_menu.mako:28
 msgid "Create a new project"
-msgstr ""
+msgstr "Ustvari nov projekt"
 
 #: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
 #: osmtm/templates/users.mako:30
@@ -1099,22 +1100,22 @@ msgstr "Dovoljenje posodobljeno!"
 
 #: osmtm/views/project.py:73
 msgid "Sorry, this project doesn't  exist"
-msgstr ""
+msgstr "Oprostite, ta projekt ne obstaja"
 
-#: osmtm/views/project.py:148 osmtm/views/project.py:192
+#: osmtm/views/project.py:141 osmtm/views/project.py:185
 msgid "Untitled project"
-msgstr ""
+msgstr "Neimenovan projekt"
 
-#: osmtm/views/project.py:171
+#: osmtm/views/project.py:164
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:177 osmtm/views/project.py:202
+#: osmtm/views/project.py:170 osmtm/views/project.py:195
 #, python-format
 msgid "Sorry, could not create the project. <br />%s"
 msgstr ""
 
-#: osmtm/views/project.py:196
+#: osmtm/views/project.py:189
 msgid "Successfully imported ${n} geometries"
 msgstr ""
 
@@ -1128,7 +1129,7 @@ msgstr "Ta naloga ne obstaja."
 
 #: osmtm/views/task.py:97
 msgid "You need to lock the task first."
-msgstr ""
+msgstr "Najprej morate nalogo zakleniti."
 
 #: osmtm/views/task.py:165
 msgid "Task marked as done. Thanks for your contribution"
@@ -1200,4 +1201,4 @@ msgstr ""
 
 #: osmtm/views/user.py:109
 msgid "Sorry, this user doesn't  exist"
-msgstr ""
+msgstr "Oprostite, ta uporabnik ne obstaja"
