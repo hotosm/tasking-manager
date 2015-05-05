@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-04-20 09:30+0200\n"
-"PO-Revision-Date: 2015-05-03 21:28+0000\n"
-"Last-Translator: stefan.b <stefan.baebler@gmail.com>\n"
+"PO-Revision-Date: 2015-05-04 12:47+0000\n"
+"Last-Translator: Primož Skale <primoz.skale@t-2.si>\n"
 "Language-Team: Slovenian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,7 +35,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeinity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr "Upravitelj nalog OSM je načrtovan in narejen za sodelovanje pri delu  Humanitarnega aktiva OSM (HOT). Namen orodja je razbitje kartografskih opravil na manjše naloge, ki jih je možno hitro opraviti.. Prikazuje področja, kjer je potrebno kartografiranje in kjer je potrebno kartografijo potrditi.<br />Ta pristop v nujnih primerih olajša porazdelitev nalog različnim kartografom. Omogoča tudi nadzor nad potekom in enoten način dela (t.j. želene elemente, uporabo določenih oznak, ipd)."
+msgstr "Upravitelj nalog OSM je načrtovan in narejen za sodelovanje pri delu  Humanitarnega aktiva OSM (HOT). Namen orodja je razbitje kartografskih opravil na manjše naloge, ki jih je možno hitro opraviti. Prikazuje področja, kjer je potrebno kartografiranje in kjer je potrebno kartografijo potrditi.<br />Ta pristop v nujnih primerih olajša porazdelitev nalog različnim kartografom. Omogoča tudi nadzor nad potekom in enoten način dela (t.j. želene elemente, uporabo določenih oznak, ipd)."
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
@@ -116,7 +116,7 @@ msgid ""
 "down channel list:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT "
 "IRC Channel #hot</a><br /><br />General inquries and comments are welcomed "
 "at: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
-msgstr ""
+msgstr "Postavite vprašanje na našem dopisnem seznamu <a href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a>, če vas karkoli zanima glede projekta, opravil ali kartografiranja v splošnem. Lahko nas obiščite na našem IRC kanalu za klepet - preprosto izberite #hot iz seznama kanalov:<br/><a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC kanal #hot</a><br /><br />Splošne poizvedbe in komentarje prejemamo na: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
 
 #: osmtm/templates/custom.mako:11
 msgid "Email HOT at"
@@ -200,31 +200,31 @@ msgstr "Prednost:"
 
 #: osmtm/templates/imagery.mako:24
 msgid "imagery url available only after accepting the license"
-msgstr ""
+msgstr "povezava do slikovnega gradiva je omogočena le po sprejetju licence"
 
 #: osmtm/templates/imagery.mako:35
 msgid "${license} license agreement"
-msgstr ""
+msgstr "licenčna pogodba ${license}"
 
 #: osmtm/templates/imagery.mako:36
 msgid "Access to this imagery is limited by the ${license_agreement_link}."
-msgstr ""
+msgstr "Dostop do tega slikovnega gradiva je omejen z ${license_agreement_link}."
 
 #: osmtm/templates/imagery.mako:43
 msgid "You have already acknowledged the terms of this license."
-msgstr ""
+msgstr "Pogoje te licence ste že sprejeli."
 
 #: osmtm/templates/imagery.mako:46
 msgid "review and acknowledge"
-msgstr ""
+msgstr "pregledati in potrditi"
 
 #: osmtm/templates/imagery.mako:47
 msgid "You need to ${review_and_acknowledge_link} the agreement."
-msgstr ""
+msgstr "Morate ${review_and_acknowledge_link} sporazum."
 
 #: osmtm/templates/imagery.mako:53
 msgid "You need to accept the license first"
-msgstr ""
+msgstr "Najprej morate sprejeti licenco"
 
 #: osmtm/templates/license.edit.mako:4
 msgid "Edit License"
@@ -236,7 +236,7 @@ msgstr "Ime"
 
 #: osmtm/templates/license.edit.mako:12
 msgid "A name for the license (provider, for example)"
-msgstr ""
+msgstr "Ime licence (npr. ponudnika)"
 
 #: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:46
 #: osmtm/templates/project.edit.mako:181 osmtm/templates/project.mako:49
@@ -253,7 +253,7 @@ msgstr "Navadno besedilo"
 
 #: osmtm/templates/license.edit.mako:22
 msgid "A short version of the terms"
-msgstr ""
+msgstr "Krajša različica pogojev"
 
 #: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:83
 msgid "Save the modifications"
@@ -281,13 +281,13 @@ msgstr "Dovoljenja"
 
 #: osmtm/templates/license.mako:10
 msgid "${license_name} License Acknowledgement"
-msgstr ""
+msgstr "Potrditev licence ${license_name}"
 
 #: osmtm/templates/license.mako:11
 msgid ""
 "Access via this site to imagery identified as <em>\"${license_name}\"</em> "
 "is subject to the following usage terms:"
-msgstr ""
+msgstr "Dostop do slikovnega gradiva označenega z  <em>\"${license_name}\"</em> preko te strani poteka v skladu z naslednjimi pogoji uporabe:"
 
 #: osmtm/templates/license.mako:24 osmtm/views/license.py:41
 msgid "I AGREE"
@@ -299,7 +299,7 @@ msgstr "Ne, hvala"
 
 #: osmtm/templates/licenses.mako:16
 msgid "edit"
-msgstr ""
+msgstr "uredi"
 
 #: osmtm/templates/licenses.mako:23
 msgid "Create new license"
@@ -338,7 +338,7 @@ msgstr "Navodila"
 #: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:404
 #: osmtm/templates/project.mako:21
 msgid "Edit"
-msgstr ""
+msgstr "Uredi"
 
 #: osmtm/templates/project.edit.mako:48
 msgid "Area"
@@ -347,7 +347,7 @@ msgstr "Področje"
 #: osmtm/templates/project.edit.mako:49
 #: osmtm/templates/project.instructions.mako:34
 msgid "Imagery"
-msgstr ""
+msgstr "Slikovno gradivo"
 
 #: osmtm/templates/project.edit.mako:50
 msgid "Priority Areas"
@@ -355,7 +355,7 @@ msgstr "Prednostna področja"
 
 #: osmtm/templates/project.edit.mako:51
 msgid "Allowed Users"
-msgstr ""
+msgstr "Dovoljeni uporabniki"
 
 #: osmtm/templates/project.edit.mako:52
 msgid "Misc"
@@ -363,11 +363,11 @@ msgstr "Razno"
 
 #: osmtm/templates/project.edit.mako:96
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: osmtm/templates/project.edit.mako:101 osmtm/templates/project.mako:10
 msgid "Archived"
-msgstr ""
+msgstr "Arhivirano"
 
 #: osmtm/templates/project.edit.mako:102
 msgid "Published"
@@ -392,15 +392,15 @@ msgstr "Kratek opis"
 #: osmtm/templates/project.edit.mako:191
 #: osmtm/templates/project.instructions.mako:8
 msgid "Entities to Map"
-msgstr ""
+msgstr "Entitete za kartirati"
 
 #: osmtm/templates/project.edit.mako:194
 msgid "primary roads, secondary roads, buildings"
-msgstr ""
+msgstr "glavne ceste, sekundarne ceste, zgradbe"
 
 #: osmtm/templates/project.edit.mako:198
 msgid "The list of entities to map."
-msgstr ""
+msgstr "Seznam entitet, ki jih je potrebno kartirati."
 
 #: osmtm/templates/project.edit.mako:202
 #: osmtm/templates/project.instructions.mako:20
@@ -409,7 +409,7 @@ msgstr "Komentar paketa sprememb"
 
 #: osmtm/templates/project.edit.mako:208
 msgid "Comments users are recommended to add to upload commits."
-msgstr ""
+msgstr "Uporabnikom se svetuje, da dodajo komentar pri nalaganju popravkov."
 
 #: osmtm/templates/project.edit.mako:209 osmtm/templates/project.edit.mako:237
 msgid "For example:"
@@ -417,7 +417,7 @@ msgstr "Na primer:"
 
 #: osmtm/templates/project.edit.mako:209
 msgid "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
-msgstr ""
+msgstr "Guinea, #hotosm-guinea-project-470, vir=Pleiades, CNES, Astrium"
 
 #: osmtm/templates/project.edit.mako:218
 msgid "Detailed Instructions"
@@ -431,18 +431,18 @@ msgstr "Navodila za nalogo (neobvezno)"
 msgid ""
 "Put here anything that can be useful to users while taking a task. {x}, {y} "
 "and {z} will be replaced by the corresponding parameters for each task."
-msgstr ""
+msgstr "Sem vpišite vse kar bi končnim uporabnikom pomagalo pri izvajanju opravila. {x}, {y} in {z} bodo zamenjani z ustreznimi parametri posameznega opravila."
 
 #: osmtm/templates/project.edit.mako:237
 msgid ""
 "\" This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
 " to load the data into JOSM"
-msgstr ""
+msgstr "\" To opravila zahteva naložitev dodatnih podatkov. Kliknite [tukaj] (http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) za naložitev podatkov v JOSM"
 
 #: osmtm/templates/project.edit.mako:248
 msgid "Area modifications are not available yet."
-msgstr ""
+msgstr "Vse spremembe še niso na voljo."
 
 #: osmtm/templates/project.edit.mako:257
 msgid "${count_of} priority area(s)"
@@ -452,11 +452,11 @@ msgstr "${count_of} prednostnih področij"
 msgid ""
 "If you want mappers to work on the highest priority areas first, draw one or"
 " more polygons within the project area."
-msgstr ""
+msgstr "Če želite, da kartografi pričnejo z delom najprej na področjih višje prioritete, narišite enega ali več poligonov znotraj projektnega področja."
 
 #: osmtm/templates/project.edit.mako:277
 msgid "URL to service"
-msgstr ""
+msgstr "URL naslov storitve"
 
 #: osmtm/templates/project.edit.mako:280
 msgid "Note:"
@@ -466,7 +466,7 @@ msgstr "Opomba:"
 msgid ""
 "Follow this format for TMS urls.<br>tms[22]:http://hiu-"
 "maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
-msgstr ""
+msgstr "Sledite temu formatu povezav TMS.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
 
 #: osmtm/templates/project.edit.mako:286
 msgid "Required License"
@@ -483,11 +483,11 @@ msgid ""
 " first must visit the URL for your instance of OSMTM and Authorize access to"
 " their OpenStreetMap account. After they've done this, their username should"
 " be available for the administrator to add."
-msgstr ""
+msgstr "Zasebno pomeni, da le uporabniki na danem seznamu lahko dostopajo do tega projekta. Da bo uporabniško ime uporabnika mogoče dodati na seznam dovoljenih uporabnikov, mora uporabnik najprej obiskati povezavo vaše instance OSMTM in avtorizirati dostop do svojega računa OpenStreetMap. Po tem opravilu bodo lahko skrbniki dodali uporabniško ime tega uporabnika na zgornji seznam."
 
 #: osmtm/templates/project.edit.mako:320
 msgid "Allowed users"
-msgstr ""
+msgstr "Dovoljeni uporabniki"
 
 #: osmtm/templates/project.edit.mako:343
 msgid "Type a username"
@@ -503,15 +503,15 @@ msgstr "Rok zaključka projekta"
 
 #: osmtm/templates/project.edit.mako:372
 msgid "The date after which the project will automatically be archived."
-msgstr ""
+msgstr "Datum po katerem bo projekt samodejno arhiviran."
 
 #: osmtm/templates/project.edit.mako:378
 msgid "JOSM Preset"
-msgstr ""
+msgstr "Prednastavitev JOSM"
 
 #: osmtm/templates/project.edit.mako:383
 msgid "A JOSM Preset has already been added to this project."
-msgstr ""
+msgstr "Prednastavitev JSOM je že bila dodana na ta projekt."
 
 #: osmtm/templates/project.edit.mako:390
 msgid "Tip:"
@@ -519,7 +519,7 @@ msgstr "Namig:"
 
 #: osmtm/templates/project.edit.mako:391
 msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
-msgstr ""
+msgstr "Uporabite lahko jezik <a href class=\"markdown\">Markdown</a>. (Jezik HTML ni dovoljen)"
 
 #: osmtm/templates/project.edit.mako:407
 msgid "Preview"
@@ -527,23 +527,23 @@ msgstr "Predogled"
 
 #: osmtm/templates/project.instructions.mako:13
 msgid "The list of elements of elements we ask you to map"
-msgstr ""
+msgstr "Seznam elementov, za katere vas prosimo, da jih kartirate"
 
 #: osmtm/templates/project.instructions.mako:25
 msgid "The comment to put when uploading data to the OSM database"
-msgstr ""
+msgstr "Komentar za dodati pri nalaganju podatkov v podatkovno bazo OSM"
 
 #: osmtm/templates/project.instructions.mako:44
 msgid "preset"
-msgstr ""
+msgstr "prednastavitev"
 
 #: osmtm/templates/project.instructions.mako:45
 msgid "Using JOSM? Please use the dedicated ${preset_link}."
-msgstr ""
+msgstr "Uporabljate program JOSM? Prosimo uporabite namensko ${preset_link}."
 
 #: osmtm/templates/project.instructions.mako:56
 msgid "Start contributing"
-msgstr ""
+msgstr "Začnite prispevati"
 
 #: osmtm/templates/project.mako:17
 msgid "Export"
@@ -551,11 +551,11 @@ msgstr "Izvoz"
 
 #: osmtm/templates/project.mako:51
 msgid "Contribute"
-msgstr ""
+msgstr "Prispevajte"
 
 #: osmtm/templates/project.mako:52
 msgid "Activity"
-msgstr ""
+msgstr "Aktivnost"
 
 #: osmtm/templates/project.mako:53
 msgid "Stats"
@@ -563,7 +563,7 @@ msgstr "Statistika"
 
 #: osmtm/templates/project.mako:65
 msgid "Loading"
-msgstr ""
+msgstr "Nalaganje"
 
 #: osmtm/templates/project.mako:105
 msgid "Task doesn't exist."
@@ -577,15 +577,15 @@ msgstr "prišlo je do napake"
 msgid ""
 "JOSM remote control did not respond. Do you have JOSM running and configured"
 " to be controlled remotely?"
-msgstr ""
+msgstr "Oddaljeno upravljanje programa JOSM se ni odzvalo. Ali imate zagnan program JOSM in nastavljeno, da ga je mogoče upravljati na daljavo?"
 
 #: osmtm/templates/project.mako:109
 msgid "Something wrong happened"
-msgstr ""
+msgstr "Nekaj je šlo narobe"
 
 #: osmtm/templates/project.mako:110
 msgid "Please login first"
-msgstr ""
+msgstr "Prosimo, najprej se prijavite"
 
 #: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:33
 msgid "Map data © ${osm_link} contributors"
@@ -616,11 +616,11 @@ msgstr "Potrjeno"
 
 #: osmtm/templates/project.mako:119
 msgid "You must leave a comment."
-msgstr ""
+msgstr "Vpisati morate komentar."
 
 #: osmtm/templates/project.mako:120
 msgid "High priority"
-msgstr ""
+msgstr "Visoka prioriteta"
 
 #: osmtm/templates/project.new.mako:4
 msgid "Project New"
@@ -628,19 +628,19 @@ msgstr "Nov projekt"
 
 #: osmtm/templates/project.new.mako:27
 msgid "Draw the area of interest"
-msgstr ""
+msgstr "Narišite želeno področje"
 
 #: osmtm/templates/project.new.mako:28
 msgid "Dropped file could not be loaded"
-msgstr ""
+msgstr "Datoteko ni bilo mogoče naložiti"
 
 #: osmtm/templates/project.new.mako:29
 msgid "Dropped file was unreadable"
-msgstr ""
+msgstr "Datoteko ni bilo mogoče prebrati"
 
 #: osmtm/templates/project.new.mako:30
 msgid "Please provide a .geojson or a .kml file"
-msgstr ""
+msgstr "Prosimo, pripravite datoteko tipa .geojson ali .kml"
 
 #: osmtm/templates/project.new.mako:44 osmtm/templates/project.new.mako:84
 #: osmtm/templates/project.new.mako:133 osmtm/templates/project.new.mako:176
@@ -649,11 +649,11 @@ msgstr "Korak ${number}"
 
 #: osmtm/templates/project.new.mako:49
 msgid "Draw"
-msgstr ""
+msgstr "Narišite"
 
 #: osmtm/templates/project.new.mako:50
 msgid "${draw_link} the area of interest on the map."
-msgstr ""
+msgstr "${draw_link} področje, ki vas zanima na zemljevid."
 
 #: osmtm/templates/project.new.mako:55 osmtm/templates/task.empty.mako:21
 msgid "or"
@@ -661,7 +661,7 @@ msgstr "ali"
 
 #: osmtm/templates/project.new.mako:62
 msgid "Provide a .geojson or .kml file."
-msgstr ""
+msgstr "Pripravite datoteko tipa .geojson ali .kml."
 
 #: osmtm/templates/project.new.mako:62
 msgid "Import"
@@ -669,15 +669,15 @@ msgstr "Uvoz"
 
 #: osmtm/templates/project.new.mako:63
 msgid "${import_link} a <em>GeoJSON</em> or <em>KML</em> file."
-msgstr ""
+msgstr "${import_link} datoteko tipa <em>GeoJSON</em> ali <em>KML</em>."
 
 #: osmtm/templates/project.new.mako:68
 msgid "Want to use an <em>.osm</em> file instead?"
-msgstr ""
+msgstr "Ali želite namesto tega uporabiti datoteko tipa <em>.osm</em>?"
 
 #: osmtm/templates/project.new.mako:71
 msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
-msgstr ""
+msgstr "Uporabite lahko ${geojson_link} za pretvorbo v tip <em>GeoJSON</em>."
 
 #: osmtm/templates/project.new.mako:85
 msgid "${step_number}  - Type of project"
@@ -690,15 +690,15 @@ msgstr "Kvadratna mreža"
 #: osmtm/templates/project.new.mako:96
 msgid ""
 "Area of interest is automatically split into grid cells. Each one is a task."
-msgstr ""
+msgstr "Področje zanimanja je samodejno razdeljeno v mrežo celic. Vsaka celica predstavlja eno opravilo."
 
 #: osmtm/templates/project.new.mako:103
 msgid "You cannot select this option unless you import a file with polygons."
-msgstr ""
+msgstr "Ne morete izbrati te možnosti razen, če prej ne naložite datoteke poligonov."
 
 #: osmtm/templates/project.new.mako:106
 msgid "Arbitrary Geometries"
-msgstr ""
+msgstr "Poljubne geometrije"
 
 #: osmtm/templates/project.new.mako:110
 msgid "Each polygon represents a task."
@@ -715,27 +715,27 @@ msgstr "Naprej"
 
 #: osmtm/templates/project.new.mako:137
 msgid "Tile size"
-msgstr ""
+msgstr "Velikost ploščice"
 
 #: osmtm/templates/project.new.mako:145
 msgid "Computing..."
-msgstr ""
+msgstr "Računam..."
 
 #: osmtm/templates/project.new.mako:149 osmtm/templates/project.new.mako:180
 msgid "A new project will be created with ${number} tasks."
-msgstr ""
+msgstr "Ustvarjen bo nov projekt s sledečim številom opravil: ${number}"
 
 #: osmtm/templates/project.new.mako:158 osmtm/templates/project.new.mako:188
 msgid "Create project"
-msgstr ""
+msgstr "Ustvari projekt"
 
 #: osmtm/templates/project.new.mako:164
 msgid "Creating tiles, please wait..."
-msgstr ""
+msgstr "Ustvarjanje ploščic, prosimo počakajte..."
 
 #: osmtm/templates/project.new.mako:193
 msgid "Creating project, please wait..."
-msgstr ""
+msgstr "Ustvarjanje projekta, prosimo počakajte..."
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
@@ -751,11 +751,11 @@ msgstr "Dodeli nalogo nekomu"
 
 #: osmtm/templates/task.assigned.mako:25
 msgid "Filter users"
-msgstr ""
+msgstr "Filtriraj uporabnike"
 
 #: osmtm/templates/task.assigned.mako:42 osmtm/templates/task.locked.mako:2
 msgid "you"
-msgstr ""
+msgstr "vi"
 
 #: osmtm/templates/task.assigned.mako:44
 msgid "Assigned to ${username}"
@@ -775,11 +775,11 @@ msgstr "naloga"
 
 #: osmtm/templates/task.current_locked.mako:3
 msgid "You already have ${task_link} locked."
-msgstr ""
+msgstr "Imate že zaklenjeno ${task_link}."
 
 #: osmtm/templates/task.current_locked.mako:10
 msgid "Select it again"
-msgstr ""
+msgstr "Še enkrat izberite"
 
 #: osmtm/templates/task.difficulty.mako:7
 #: osmtm/templates/task.difficulty.mako:50
@@ -832,7 +832,7 @@ msgstr "datoteka .gpx"
 msgid ""
 "Tip: Download the following ${task_gpx_link} and load it in JOSM in order to"
 " see the current task boundary"
-msgstr ""
+msgstr "Namig: Prenesite naslednje ${task_gpx_link} in ga odprite v programu JOSM za prikaz meja trenutnega opravila."
 
 #: osmtm/templates/task.empty.mako:15
 msgid "Select a task on the map"
@@ -866,7 +866,7 @@ msgstr "Označeno kot dokončano"
 #: osmtm/templates/task.history.mako:54 osmtm/templates/task.history.mako:58
 #: osmtm/templates/task.history.mako:63
 msgid "by"
-msgstr ""
+msgstr "od"
 
 #: osmtm/templates/task.history.mako:58 osmtm/templates/task.status.mako:6
 msgid "Locked"
@@ -882,7 +882,7 @@ msgstr "Komentar vpisan"
 
 #: osmtm/templates/task.history.mako:77
 msgid "Nothing has happened yet."
-msgstr ""
+msgstr "Nič se še ni dogodilo."
 
 #: osmtm/templates/task.instructions.mako:3
 msgid "Extra Instructions"
@@ -901,15 +901,15 @@ msgstr "Odkleni"
 msgid ""
 "If you do not complete or release this task in time, it will be "
 "automatically unlocked"
-msgstr ""
+msgstr "Če tega opravila ne zaključite oz. sprostite pravočasno, bo le-to odklenjeno samodejno."
 
 #: osmtm/templates/task.locked.mako:18
 msgid "min. left"
-msgstr ""
+msgstr "minut še na voljo"
 
 #: osmtm/templates/task.mako:19
 msgid "Clear selection"
-msgstr ""
+msgstr "Počisti izbiro"
 
 #: osmtm/templates/task.mako:23
 msgid "Task #${number}"
@@ -917,15 +917,15 @@ msgstr "Naloga #${number}"
 
 #: osmtm/templates/task.mako:68
 msgid "See the changesets in the OSM database for this area."
-msgstr ""
+msgstr "Prikažite spremembe podatkovne baze OSM za to področje."
 
 #: osmtm/templates/task.mako:69
 msgid "OSM changesets"
-msgstr ""
+msgstr "Spremembe OSM"
 
 #: osmtm/templates/task.mako:112
 msgid "See the changes in this area using the overpass-turbo API."
-msgstr ""
+msgstr "Prikažite spremebe tega področja z uporabo vmesnika API overpass-turbo."
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -965,21 +965,21 @@ msgstr "Označi nalogo kot dokončano"
 
 #: osmtm/templates/task.unlocked.mako:13
 msgid "Lock this task to tell others that you are currently working on it."
-msgstr ""
+msgstr "Zaklenite to opravilo, da ostali uporabniki vedo, da trenutno vi delate na njem."
 
 #: osmtm/templates/task.unlocked.mako:17
 msgid "Start mapping"
-msgstr ""
+msgstr "Začnite kartirati"
 
 #: osmtm/templates/task.unlocked.mako:21
 msgid ""
 "Lock this task to tell others that you are currently reviewing it. Validate "
 "that this task has been mapped correctly and completely."
-msgstr ""
+msgstr "Zaklenite to opravilo, da ostali uporabniki vedo, da ga trenutno pregledujete. Potrdite to opravilo, če menite, da je bilo njegovo področje pravilno in v celoti kartirano."
 
 #: osmtm/templates/task.unlocked.mako:26
 msgid "Review the work"
-msgstr ""
+msgstr "Preglejte delo"
 
 #: osmtm/templates/user.mako:3 osmtm/templates/user.mako:5
 msgid "User profile"
@@ -1031,7 +1031,7 @@ msgstr "Podrobnosti projekta"
 
 #: osmtm/templates/user.mako:81
 msgid "${count} tiles"
-msgstr ""
+msgstr "${count} ploščic"
 
 #: osmtm/templates/user.mako:88
 msgid "User hasn't contributed yet."
@@ -1108,20 +1108,20 @@ msgstr "Neimenovan projekt"
 
 #: osmtm/views/project.py:164
 msgid "Project #${project_id} created successfully"
-msgstr ""
+msgstr "Projekt #${project_id} je bil uspešno ustvarjen"
 
 #: osmtm/views/project.py:170 osmtm/views/project.py:195
 #, python-format
 msgid "Sorry, could not create the project. <br />%s"
-msgstr ""
+msgstr "Oprostite, projekta ni bilo mogoče ustvariti. <br />%s"
 
 #: osmtm/views/project.py:189
 msgid "Successfully imported ${n} geometries"
-msgstr ""
+msgstr "${n} geometrij je bilo uspešno uvoženih"
 
 #: osmtm/views/task.py:84
 msgid "Cannot update task. Record lock for update."
-msgstr ""
+msgstr "Ni mogoče posodobiti opravila. Zapis za posodobitev je bil zaklenjen."
 
 #: osmtm/views/task.py:89
 msgid "This task doesn't exist."
@@ -1145,7 +1145,7 @@ msgstr "Naloga dodeljena nekomu drugemu."
 
 #: osmtm/views/task.py:195
 msgid "Task locked. You can start mapping."
-msgstr ""
+msgstr "Opravilo zaklenjeno. Lahko pričnete s kartiranjem."
 
 #: osmtm/views/task.py:212
 msgid "Task unlocked."
@@ -1157,7 +1157,7 @@ msgstr "Komentar dodan."
 
 #: osmtm/views/task.py:261
 msgid "You were mentioned in a comment - Task ${link}"
-msgstr ""
+msgstr "Omenjeni ste v komentarju - Opravilo ${link}"
 
 #: osmtm/views/task.py:287
 msgid "Task ${link} invalidated"
@@ -1173,7 +1173,7 @@ msgstr "Naloga razveljavljena."
 
 #: osmtm/views/task.py:432
 msgid "Random task... none available! Sorry."
-msgstr ""
+msgstr "Naključno opravilo... ni na voljo! Oprostite."
 
 #: osmtm/views/task.py:445
 msgid "You cannot assign an already locked task"
@@ -1197,7 +1197,7 @@ msgstr "Težavnost naloge odstranjena"
 
 #: osmtm/views/user.py:78
 msgid "You probably don't want to remove your privileges"
-msgstr ""
+msgstr "Po vsej verjetnosti si ne želite odvzeti že danih privilegijev."
 
 #: osmtm/views/user.py:109
 msgid "Sorry, this user doesn't  exist"
