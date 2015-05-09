@@ -507,11 +507,9 @@ osmtm.project = (function() {
         loadTask(task.id);
         location.hash = ["task", task.id].join('/');
         return false;
-      }else{
-        $('#task_msg').html("Error: random task should have returned a task ID but did not").show()
       }
-      if (data.msg) {
-        $('#task_msg').html(data.msg).show()
+      if (data.error_msg) {
+        $('#task_error_msg').html(data.error_msg).show()
         .delay(3000)
         .fadeOut();
       }
