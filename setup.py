@@ -24,6 +24,7 @@ requires = [
     'shapely',
     'geoalchemy2',
     'Babel',
+    'sqlalchemy-utils==0.30.0',
     'sqlalchemy-i18n==0.8.4',
     'WebTest==2.0.14',
     'simplejson',
