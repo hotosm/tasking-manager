@@ -385,14 +385,14 @@ osmtm.project = (function() {
         } else {
           source="Bing";
         }
-        return options.base + $.param({
+        return options.base + decodeURIComponent($.param({
           left: roundd(bounds[0],5),
           bottom: roundd(bounds[1],5),
           right: roundd(bounds[2],5),
           top: roundd(bounds[3],5),
           changeset_comment: changeset_comment,
           changeset_source: source
-        });
+        }));
         case 'llz':
         return options.base + $.param({
           lon: roundd(c[0],5),
