@@ -18,32 +18,31 @@ done = task.cur_state and task.cur_state.state == TaskState.state_done
       <i class="glyphicon glyphicon-thumbs-down icon-white"></i> ${_('Invalidate')}
     </button>
     % if done:
-      % if user == task.states[0].user and not (user.is_admin or user.is_project_manager):
-<%
-validation_message = _("You cannot validate a task that you have marked done.")
-%>
-      <button type="submit" rel="tooltip"
-              name="validate"
-              data-container="body"
-              class="btn btn-success" disabled>
-        <i class="glyphicon glyphicon-thumbs-up icon-white"></i> ${_('Validate')}
-      </button>
-      <div id="self_validation" class="help-block small text-right">
-        <em><i class="glyphicon glyphicon-warning-sign"></i>
-        ${validation_message}</em>
-      </div>
-      % else:
 <%
 tooltip = _("Validate this task if you consider that the work is complete.")
 %>
-      <button type="submit" rel="tooltip"
+      % if user == task.states[0].user and not (user.is_admin or user.is_project_manager):
+<%
+selfvalidatestate = """ type="button" disabled """
+selfvalidatetext = _("You cannot validate a task that you have personally marked as done.")
+selfvalidatediv = """<div id="self_validation" class="help-block small text-right">
+        <em><i class="glyphicon glyphicon-warning-sign"></i>""" + \
+        selfvalidatetext + """</em></div>"""
+%>
+      % else:
+<%
+selfvalidatestate = """ type="submit" """
+selfvalidatediv = """"""
+%>
+      % endif
+      <button rel="tooltip"
               name="validate"
               data-container="body"
               data-original-title="${tooltip}"
-              class="btn btn-success">
+              class="btn btn-success" ${selfvalidatestate | n }>
         <i class="glyphicon glyphicon-thumbs-up icon-white"></i> ${_('Validate')}
       </button>
-      % endif
+      ${selfvalidatediv | n}
     % endif
   </form>
 % endif
