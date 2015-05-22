@@ -48,7 +48,7 @@ from geojson import (
 import datetime
 import itertools
 
-from .task import get_locked_task, check_task_expiration
+from .task import get_locked_task
 
 from ..utils import (
     parse_geojson,
@@ -63,7 +63,6 @@ log = logging.getLogger(__name__)
 @view_config(route_name='project', renderer='project.mako', http_cache=0,
              permission='project_show')
 def project(request):
-    check_task_expiration()
     check_project_expiration()
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)

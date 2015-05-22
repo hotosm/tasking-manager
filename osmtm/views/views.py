@@ -26,7 +26,6 @@ from geojson import (
     FeatureCollection
 )
 
-from .task import check_task_expiration
 from .project import check_project_expiration
 
 from pyramid.security import authenticated_userid
@@ -36,7 +35,6 @@ from sqlalchemy.orm import joinedload
 
 @view_config(route_name='home', renderer='home.mako')
 def home(request):
-    check_task_expiration()
     check_project_expiration()
 
     # no user in the DB yet
