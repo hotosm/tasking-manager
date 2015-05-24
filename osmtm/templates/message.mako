@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+<%
+from osmtm.mako_filters import convert_mentions
+%>
 <%inherit file="base.mako"/>
 <%def name="title()">${_('Messages')}</%def>
 <%block name="header">
@@ -21,7 +24,7 @@
     <em title="${message.date}Z" class="timeago small"></em>
   </p>
   <p>
-    ${message.message|n}
+    ${message.message | convert_mentions(request), n}
   </p>
 </div>
 <script>$('.timeago').timeago()</script>
