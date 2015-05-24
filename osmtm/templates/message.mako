@@ -17,7 +17,8 @@
     <strong>${message.subject|n}</strong>
   </p>
   <p class="text-muted">
-    ${_('From:')} ${message.from_user.username}<br>
+    ${_('From:')} <a href=${request.route_path('user',username=message.from_user.username)}>
+      ${message.from_user.username}</a><br>
     <em title="${message.date}Z" class="timeago small"></em>
   </p>
   <p>
