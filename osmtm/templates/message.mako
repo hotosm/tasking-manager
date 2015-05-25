@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
-<%
-from osmtm.mako_filters import convert_mentions
-%>
 <%inherit file="base.mako"/>
 <%def name="title()">${_('Messages')}</%def>
 <%block name="header">
 </%block>
 <%block name="content">
+<%
+from osmtm.mako_filters import (
+    convert_mentions,
+    markdown_filter,
+)
+%>
 <div class="container" ng-app="projects">
   <div class="row">
     <h4>
@@ -24,7 +27,7 @@ from osmtm.mako_filters import convert_mentions
     <em title="${message.date}Z" class="timeago small"></em>
   </p>
   <p>
-    ${message.message | convert_mentions(request), n}
+    ${message.message | convert_mentions(request), markdown_filter, n}
   </p>
 </div>
 <script>$('.timeago').timeago()</script>
