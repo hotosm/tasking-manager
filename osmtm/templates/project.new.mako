@@ -18,7 +18,9 @@
     </div>
 </div>
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet-control-osm-geocoder/Control.OSMGeocoder.css')}"/>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/leaflet-control-osm-geocoder/Control.OSMGeocoder.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet-omnivore.min.js')}"></script>
 <script>

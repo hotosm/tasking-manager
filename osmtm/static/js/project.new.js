@@ -14,6 +14,9 @@ osmtm.project_new = (function() {
     var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib, drawControl: true});
     map.addLayer(osm);
 
+    var osmGeocoder = new L.Control.OSMGeocoder();
+    map.addControl(osmGeocoder);
+    
     drawControl = new L.Control.Draw({
       position: 'topleft',
       draw: {

@@ -7,9 +7,9 @@ README = open(os.path.join(here, 'README.md')).read()
 CHANGES = open(os.path.join(here, 'CHANGELOG.md')).read()
 
 requires = [
-    'pyramid==1.6-dev',
+    'pyramid==1.6a1',
     'pyramid_mako==1.0.2',
-    'SQLAlchemy==0.9.3',
+    'SQLAlchemy==0.9.9',
     'transaction',
     'pyramid_tm',
     'pyramid_debugtoolbar',
@@ -24,6 +24,7 @@ requires = [
     'shapely',
     'geoalchemy2',
     'Babel',
+    'sqlalchemy-utils==0.30.0',
     'sqlalchemy-i18n==0.8.4',
     'WebTest==2.0.14',
     'simplejson',

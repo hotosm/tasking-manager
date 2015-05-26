@@ -385,14 +385,14 @@ osmtm.project = (function() {
         } else {
           source="Bing";
         }
-        return options.base + $.param({
+        return options.base + decodeURIComponent($.param({
           left: roundd(bounds[0],5),
           bottom: roundd(bounds[1],5),
           right: roundd(bounds[2],5),
           top: roundd(bounds[3],5),
           changeset_comment: changeset_comment,
           changeset_source: source
-        });
+        }));
         case 'llz':
         return options.base + $.param({
           lon: roundd(c[0],5),
@@ -507,11 +507,9 @@ osmtm.project = (function() {
         loadTask(task.id);
         location.hash = ["task", task.id].join('/');
         return false;
-      }else{
-        $('#task_msg').html("Error: random task should have returned a task ID but did not").show()
       }
-      if (data.msg) {
-        $('#task_msg').html(data.msg).show()
+      if (data.error_msg) {
+        $('#task_error_msg').html(data.error_msg).show()
         .delay(3000)
         .fadeOut();
       }
@@ -561,7 +559,7 @@ osmtm.project = (function() {
     var submitName = $("button[type=submit][clicked=true]").attr("name");
 
     // require a comment for invalidation
-    if (submitName == 'invalidate' && !formData.comment) {
+    if (submitName == 'invalidate' && !formData.comment.trim()) {
       alert(commentRequiredMsg);
     } else {
       formData[submitName] = true;

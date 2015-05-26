@@ -1,6 +1,8 @@
 OSM Tasking Manager Changelog
 =============================
 
+See https://github.com/hotosm/osm-tasking-manager2/releases
+
 ## 2.4.2 (2014-08-08)
 
  * More or less important bugs fixed

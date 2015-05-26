@@ -19,7 +19,8 @@ import bleach
     <tbody>
       % for message in messages:
       <tr class="${'unread' if message.read != True else ''}">
-        <td>${message.from_user.username}</td>
+        <td><a href=${request.route_path('user',username=message.from_user.username)}>
+          ${message.from_user.username}</a></td>
         <td>
           <a href="${request.route_path('message_read', message=message.id)}">
             ${bleach.clean(message.subject, [], strip=True)|n}

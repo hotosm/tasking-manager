@@ -20,10 +20,6 @@ from .security import (
     group_membership,
 )
 
-from .git_cache_buster import (
-    GitCacheBuster,
-)
-
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -57,12 +53,9 @@ def main(global_config, **settings):
     session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
     config.set_session_factory(session_factory)
 
-    config.add_static_view('static', 'static', cache_max_age=3600,
-                           cachebust=GitCacheBuster())
+    config.add_static_view('static', 'static', cachebust=True)
     config.add_route('home', '/')
     config.add_route('home_json', '/projects.json')
-    config.add_route('home_json_xhr', '/projects_xhr.json',
-                     xhr=True)
     config.add_route('about', '/about')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
@@ -71,8 +64,6 @@ def main(global_config, **settings):
     config.add_route('project_new_grid', '/project/new/grid')
     config.add_route('project_new_arbitrary', '/project/new/arbitrary')
     config.add_route('project_grid_simulate', '/project/grid_simulate')
-    config.add_route('project_json_xhr', '/project/{project}.json',
-                     xhr=True)
     config.add_route('project_json', '/project/{project}.json')
     config.add_route('project', '/project/{project}')
     config.add_route('project_edit', '/project/{project}/edit')
@@ -82,8 +73,6 @@ def main(global_config, **settings):
     config.add_route('project_contributors', '/project/{project}/contributors',
                      xhr=True)
     config.add_route('project_stats', '/project/{project}/stats')
-    config.add_route('project_tasks_json_xhr', '/project/{project}/tasks.json',
-                     xhr=True)
     config.add_route('project_tasks_json', '/project/{project}/tasks.json')
     config.add_route('project_user_add', '/project/{project}/user/{user}',
                      request_method="PUT")

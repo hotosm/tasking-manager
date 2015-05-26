@@ -1,6 +1,5 @@
 <%
-import bleach
-import markdown
+from osmtm.mako_filters import markdown_filter
 %>
 <dl>
   % if project.entities_to_map:
@@ -48,7 +47,7 @@ import markdown
 </p>
 % endif
 <hr />
-<p>${bleach.clean(markdown.markdown(project.instructions), strip=True) |n}</p>
+<p>${project.instructions | markdown_filter, n}</p>
 <p class="text-center">
   <a id="start"
      class="btn btn-success btn-lg">

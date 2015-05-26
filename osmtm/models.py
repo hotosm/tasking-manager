@@ -575,6 +575,19 @@ class Project(Base, Translatable):
         properties = {}
         properties['name'] = self.name
         properties['description'] = self.description
+        properties['short_description'] = self.short_description
+        properties['instructions'] = self.instructions
+        properties['per_task_instructions'] = self.per_task_instructions
+        properties['status'] = self.status
+        properties['created'] = self.created.strftime('%FT%TZ')
+        if self.author:
+            properties['author'] = self.author.username
+        properties['last_update'] = self.last_update.strftime('%FT%TZ')
+        properties['license'] = self.license_id
+        properties['priority'] = self.priority
+        properties['done'] = self.done
+        properties['validated'] = self.validated
+        properties['changeset_comment'] = self.changeset_comment
 
         return Feature(
             geometry=shape.to_shape(self.area.geometry),

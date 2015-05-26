@@ -6,11 +6,15 @@ from .models import (
     User,
 )
 
+amp = re.compile('&amp;')
+
 
 def markdown_filter(text):
     ''' Mako filter for markdown and bleach
     '''
-    return bleach.clean(markdown.markdown(text), strip=True)
+    cleaned = bleach.clean(text, strip=True)
+    parsed = markdown.markdown(cleaned)
+    return re.sub(amp, '&', parsed)
 
 
 p = re.compile(ur'(@\d+)')

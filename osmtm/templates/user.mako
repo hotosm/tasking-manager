@@ -18,7 +18,7 @@ else:
 <div class="container">
   <div class="row">
     <h3>${_('User: ${username}', mapping={'username': contributor.username})}</h3>
-    <div class="col-md-12">
+    <div class="col-md-6">
       % if user == contributor:
       <p>
         ${_('This is <b>You</b>!')|n}
@@ -29,6 +29,28 @@ else:
           <img src="http://www.openstreetmap.org/favicon.ico" alt="[OSM]" />${_('OSM Profile')}</a>
       </p>
     </div>
+    <div class="col-md-6">
+    % if creation_date != 'null':
+    <p>
+       ${_('This user joined OSM ')} <span class="timeago" title="${creation_date}"></span>.
+    </p>
+    % endif
+    </div>
+  </div>
+  <div class="row">
+  <div class="col-md-6">
+  <p>
+    <a href="http://www.openstreetmap.org/user/${contributor.username}/history" title="${_('OSM User Changeset History')}">
+      ${_('OSM Edit History')}</a>
+  </p>
+  </div>
+  <div class="col-md-6">
+  % if changeset_count != 'null':
+  <p>
+    ${_('This user has submitted ${changes} total changesets.', mapping={'changes':changeset_count})}
+  </p>
+  % endif
+  </div>
   </div>
   <div class="row">
     <div class="col-md-12">
