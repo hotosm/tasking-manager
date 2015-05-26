@@ -4,6 +4,12 @@
 <%block name="header">
 </%block>
 <%block name="content">
+<%
+from osmtm.mako_filters import (
+    convert_mentions,
+    markdown_filter,
+)
+%>
 <div class="container" ng-app="projects">
   <div class="row">
     <h4>
@@ -22,7 +28,7 @@
     <em title="${message.date}Z" class="timeago small"></em>
   </p>
   <p>
-    ${message.message|n}
+    ${message.message | convert_mentions(request), markdown_filter, n}
   </p>
 </div>
 <script>$('.timeago').timeago()</script>
