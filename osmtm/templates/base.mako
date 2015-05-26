@@ -28,6 +28,7 @@
 from osmtm.models import DBSession, TaskComment
 login_url= request.route_path('login', _query=[('came_from', request.url)])
 languages = request.registry.settings.available_languages.split()
+languages_full = request.registry.settings.available_languages_full.split()
 
 comments = []
 %>
@@ -49,7 +50,7 @@ comments = []
           <li>
           <a href="${request.route_path('about')}" class="btn btn-link pull-right">${_('About')}</a>
           </li>
-          <%include file="languages_menu.mako" args="languages=languages"/>
+          <%include file="languages_menu.mako" args="languages=languages, languages_full=languages_full"/>
           % if user:
           <%
               badge = ""
