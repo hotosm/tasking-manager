@@ -28,7 +28,7 @@
 from osmtm.models import DBSession, TaskComment
 login_url= request.route_path('login', _query=[('came_from', request.url)])
 languages = request.registry.settings.available_languages.split()
-languages_full = request.registry.settings.available_languages_full.split()
+languages_full = request.registry.settings.available_languages_full.split(",")
 
 comments = []
 %>
