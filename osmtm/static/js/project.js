@@ -461,7 +461,7 @@ osmtm.project = (function() {
       break;
       case "fp":
       url = getLink({
-        base: 'http://fieldpapers.org/make-step2-geography.php?',
+        base: 'http://fieldpapers.org/compose/select?',
         bounds: task_bounds,
         centroid: task_centroid,
         protocol: 'llz'
