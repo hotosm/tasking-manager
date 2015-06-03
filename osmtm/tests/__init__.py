@@ -70,6 +70,7 @@ def populate_db():
     project = Project(u'test project')
     project.area = area
     project.auto_fill(12)
+    project.status = Project.status_published
     DBSession.add(project)
 
     transaction.commit()

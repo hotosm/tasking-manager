@@ -16,6 +16,7 @@ class TestProjectFunctional(BaseTestCase):
         project = Project(u'test project')
         project.area = area
         project.auto_fill(12)
+        project.status = Project.status_published
 
         DBSession.add(project)
         DBSession.flush()
@@ -553,6 +554,22 @@ class TestProjectFunctional(BaseTestCase):
                          status=403,
                          headers=headers_user1)
 
+    def test_project__draft_not_allowed(self):
+        import transaction
+        from osmtm.models import Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+        project.status = Project.status_draft
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        headers_user1 = self.login_as_user1()
+        self.testapp.get('/project/%d' % project_id,
+                         status=403,
+                         headers=headers_user1)
+
     def test_home__private_not_allowed(self):
         import transaction
         from . import USER1_ID
@@ -562,7 +579,6 @@ class TestProjectFunctional(BaseTestCase):
         project = DBSession.query(Project).get(project_id)
         project.name = u"private_project"
         project.private = True
-        project.status = Project.status_published
         DBSession.add(project)
         DBSession.flush()
         transaction.commit()
