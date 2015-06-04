@@ -70,20 +70,23 @@ def main(global_config, **settings):
     config.add_route('project_publish', '/project/{project:\d+}/publish')
     config.add_route('project_check_for_update',
                      '/project/{project:\d+}/check_for_updates')
-    config.add_route('project_contributors', '/project/{project:\d+}/contributors',
-                     xhr=True)
+    config.add_route('project_contributors',
+                     '/project/{project:\d+}/contributors', xhr=True)
     config.add_route('project_stats', '/project/{project:\d+}/stats')
     config.add_route('project_tasks_json', '/project/{project:\d+}/tasks.json')
     config.add_route('project_user_add', '/project/{project:\d+}/user/{user}',
                      request_method="PUT")
-    config.add_route('project_user_delete', '/project/{project:\d+}/user/{user}',
+    config.add_route('project_user_delete',
+                     '/project/{project:\d+}/user/{user}',
                      request_method="DELETE")
     config.add_route('project_preset', '/project/{project:\d+}/preset')
     config.add_route('project_users', '/project/{project:\d+}/users')
 
     config.add_route('task_random', '/project/{project:\d+}/random', xhr=True)
-    config.add_route('task_empty', '/project/{project:\d+}/task/empty', xhr=True)
-    config.add_route('task_xhr', '/project/{project:\d+}/task/{task:\d+}', xhr=True)
+    config.add_route('task_empty', '/project/{project:\d+}/task/empty',
+                     xhr=True)
+    config.add_route('task_xhr', '/project/{project:\d+}/task/{task:\d+}',
+                     xhr=True)
     config.add_route('task_done',
                      '/project/{project:\d+}/task/{task:\d+}/done', xhr=True)
     config.add_route('task_lock',
@@ -93,22 +96,25 @@ def main(global_config, **settings):
     config.add_route('task_split',
                      '/project/{project:\d+}/task/{task:\d+}/split', xhr=True)
     config.add_route('task_validate',
-                     '/project/{project:\d+}/task/{task:\d+}/validate', xhr=True)
+                     '/project/{project:\d+}/task/{task:\d+}/validate',
+                     xhr=True)
     config.add_route('task_comment',
-                     '/project/{project:\d+}/task/{task:\d+}/comment', xhr=True)
+                     '/project/{project:\d+}/task/{task:\d+}/comment',
+                     xhr=True)
     config.add_route('task_gpx', '/project/{project:\d+}/task/{task:\d+}.gpx')
     config.add_route('task_osm', '/project/{project:\d+}/task/{task:\d+}.osm')
     config.add_route('task_assign',
-                     '/project/{project:\d+}/task/{task:\d+}/user/{user}', xhr=True)
+                     '/project/{project:\d+}/task/{task:\d+}/user/{user}',
+                     xhr=True)
     config.add_route('task_assign_delete',
                      '/project/{project:\d+}/task/{task:\d+}/user', xhr=True,
                      request_method="DELETE")
     config.add_route('task_difficulty',
-                     '/project/{project:\d+}/task/{task:\d+}/difficulty/{difficulty:\d+}',
-                     xhr=True)
+                     '/project/{project:\d+}/task/{task:\d+}/difficulty/' +
+                     '{difficulty:\d+}', xhr=True)
     config.add_route('task_difficulty_delete',
-                     '/project/{project:\d+}/task/{task:\d+}/difficulty', xhr=True,
-                     request_method='DELETE')
+                     '/project/{project:\d+}/task/{task:\d+}/difficulty',
+                     xhr=True, request_method='DELETE')
 
     config.add_route('users', '/users')
     config.add_route('users_json', '/users.json')
