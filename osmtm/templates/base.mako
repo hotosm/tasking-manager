@@ -11,7 +11,16 @@
     <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/showdown.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js' % request.locale_name)}"></script>
+    <%
+      timeago_locale_baseurl = 'osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js'
+      try:
+        timeago_locale = request.static_url(timeago_locale_baseurl % request.locale_name.replace('_', '-'))
+      except IOError:
+        timeago_locale = request.static_url(timeago_locale_baseurl % request.locale_name[:2])
+      except IOError:
+        timeago_locale = request.static_url(timeago_locale_baseurl % 'en')
+    %>
+    <script src="${timeago_locale}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/shared.js')}"></script>
     <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js')}"></script>
