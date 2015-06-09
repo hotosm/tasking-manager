@@ -9,7 +9,7 @@ from osmtm.mako_filters import markdown_filter
           data-toggle="tooltip"
           data-placement="right"
           data-container="body"
-          title="${_('The list of elements of elements we ask you to map')}">
+          title="${_('The list of elements we ask you to map')}">
     </span>
   </dt>
   <dd>${project.entities_to_map}</dd>
