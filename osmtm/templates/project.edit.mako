@@ -10,9 +10,18 @@
 <script>
     var locale_name = "${request.locale_name}";
 </script>
-<script type="text/javascript"
-        src="${request.static_url('osmtm:static/js/lib/locales/bootstrap-datepicker.%s.js' % request.locale_name)}">
-</script>
+
+<%
+  bootstrap_locale_baseurl = 'osmtm:static/js/lib/locales/bootstrap-datepicker.%s.js'
+  try:
+    bootstrap_locale = request.static_url(bootstrap_locale_baseurl % request.locale_name.replace('_', '-'))
+  except IOError:
+    bootstrap_locale = request.static_url(bootstrap_locale_baseurl % request.locale_name[:2])
+  except IOError:
+    bootstrap_locale = request.static_url(bootstrap_locale_baseurl % 'en')
+%>
+<script type="text/javascript" src="${bootstrap_locale}"></script>
+
 <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
