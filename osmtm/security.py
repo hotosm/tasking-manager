@@ -34,7 +34,9 @@ class RootFactory(object):
         if request.matchdict and 'project' in request.matchdict:
             project_id = request.matchdict['project']
             project = DBSession.query(Project).get(project_id)
-            if project is not None and project.private:
+            if project is not None and \
+                    (project.private or
+                     project.status == Project.status_draft):
                 acl = [
                     (Allow, 'project:' + project_id, 'project_show'),
                     (Allow, 'group:admin', 'project_show'),
