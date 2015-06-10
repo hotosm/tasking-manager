@@ -4,7 +4,7 @@ $().ready(function() {
 
 
     $('.navbar .languages li a').on('click', function() {
-        var language = $(this).text();
+        var language = $(this).attr("href");
 
         $.ajax({
             url: base_url + 'user/prefered_language/' + language,

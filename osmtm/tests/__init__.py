@@ -1,3 +1,5 @@
+# coding: utf8
+
 import ConfigParser
 import unittest
 import transaction
@@ -91,6 +93,7 @@ class BaseTestCase(unittest.TestCase):
         from webtest import TestApp
         settings = {
             'available_languages': 'en fr',
+            'available_languages_full': 'English, Français',
             'local_settings_path': local_settings_path
         }
         self.app = main({}, **settings)
