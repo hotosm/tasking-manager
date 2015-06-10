@@ -36,6 +36,7 @@ requires = [
     'httpretty',
     'pygments',
     'gitversion',
+    'APScheduler==3.0.3',
 ]
 
 setup(name='osmtm',

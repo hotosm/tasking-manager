@@ -16,10 +16,6 @@ from sqlalchemy import (
     and_
 )
 
-from sqlalchemy.orm import (
-    joinedload,
-)
-
 from sqlalchemy.sql.expression import (
     func,
     select,
@@ -216,6 +212,18 @@ class TaskLock(Base):
         self.lock = lock
 
 
+@event.listens_for(TaskLock, "after_insert")
+def task_lock_after_insert(mapper, connection, target):
+    task_table = Task.__table__
+    date = target.date if target.lock is True else None
+    connection.execute(
+        task_table.update().
+        where(and_(task_table.c.id == target.task_id,
+                   task_table.c.project_id == target.project_id)).
+        values(lock_date=date)
+    )
+
+
 class TaskComment(Base):
     __tablename__ = "task_comment"
     id = Column(Integer, primary_key=True)
@@ -264,6 +272,7 @@ class Task(Base):
     project_id = Column(Integer, ForeignKey('project.id'), index=True)
     geometry = Column(Geometry('MultiPolygon', srid=4326))
     date = Column(DateTime, default=datetime.datetime.utcnow)
+    lock_date = Column(DateTime, default=None)
 
     assigned_to_id = Column(Integer, ForeignKey('users.id'))
     assigned_to = relationship(User)
@@ -322,7 +331,9 @@ class Task(Base):
         cascade="all, delete, delete-orphan",
         backref="task")
 
-    __table_args__ = (PrimaryKeyConstraint('project_id', 'id'), {})
+    __table_args__ = (PrimaryKeyConstraint('project_id', 'id'),
+                      Index('task_lock_date_', date.desc()),
+                      {},)
 
     def __init__(self, x, y, zoom, geometry=None):
         self.x = x
@@ -347,7 +358,7 @@ class Task(Base):
     def to_feature(self):
         properties = {
             'state': self.cur_state.state if self.cur_state else 0,
-            'locked': self.cur_lock and self.cur_lock.lock
+            'locked': self.lock_date is not None
         }
         if self.x and self.y and self.zoom:
             properties['x'] = self.x
@@ -565,8 +576,8 @@ class Project(Base, Translatable):
     # get the count of currently locked tasks
     def get_locked(self):
 
-        query = DBSession.query(Task).options(joinedload(Task.cur_lock)) \
-            .filter(and_(Task.cur_lock.has(lock=True),
+        query = DBSession.query(Task) \
+            .filter(and_(Task.lock_date.__ne__(None),
                          Task.project_id == self.id))
 
         return query.count()

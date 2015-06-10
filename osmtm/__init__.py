@@ -20,6 +20,12 @@ from .security import (
     group_membership,
 )
 
+from .views.task import check_task_expiration
+
+from apscheduler.schedulers.background import BackgroundScheduler
+scheduler = BackgroundScheduler()
+scheduler.start()
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -146,5 +152,8 @@ def main(global_config, **settings):
 
     bleach.ALLOWED_TAGS.append(u'p')
     bleach.ALLOWED_TAGS.append(u'pre')
+
+    scheduler.add_job(check_task_expiration, 'interval', seconds=5,
+                      replace_existing=True)
 
     return config.make_wsgi_app()
