@@ -381,7 +381,7 @@ osmtm.project = (function() {
       switch (options.protocol) {
         case 'lbrt':
         if (typeof imagery_url != "undefined" && imagery_url !== '') {
-          source=imagery_url;
+          source=encodeURIComponent(imagery_url);
         } else {
           source="Bing";
         }
@@ -485,7 +485,7 @@ osmtm.project = (function() {
           // url is supposed to look like tms[22]:http://hiu...
           u = imagery_url.substring(imagery_url.indexOf('http'));
           u = u.replace('zoom', 'z');
-          url += "&background=custom:" + u;
+          url += "&background=custom:" + encodeURIComponent(u);
         }
         window.open(url);
         break;
