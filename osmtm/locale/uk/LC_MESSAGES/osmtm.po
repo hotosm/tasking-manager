@@ -1,0 +1,1269 @@
+# English translations for osmtm.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the osmtm project.
+# 
+# Translators:
+# andygol, 2014-2015
+msgid ""
+msgstr ""
+"Project-Id-Version: osm-tasking-manager2\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-06-16 12:04+0200\n"
+"PO-Revision-Date: 2015-06-16 10:04+0000\n"
+"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"Language-Team: Ukrainian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/uk/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:121
+#: osmtm/templates/home.mako:93
+msgid "About the Tasking Manager"
+msgstr "Про Менеджер Завдань"
+
+#: osmtm/templates/about.mako:12
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated. <br />This approach facilitates the distribution of tasks to the "
+"various mappers in a context of emergency. It also permits to control the "
+"progress and the homogeneity of the work done (ie. Elements to cover, "
+"specific tags to use, etc.)."
+msgstr ""
+
+#: osmtm/templates/about.mako:14
+msgid "Sponsorship and Funding"
+msgstr "Спонсорство та фінансування"
+
+#: osmtm/templates/about.mako:15
+msgid ""
+"OSM Tasking Manager was designed and built for the <a "
+"href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
+msgstr "Менеджер Завдань OSM був спроектований і створений <a href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
+
+#: osmtm/templates/about.mako:17
+msgid "With the invaluable help from:"
+msgstr "З неоціненною допомогою від:"
+
+#: osmtm/templates/about.mako:45
+msgid "Getting Started"
+msgstr "Розпочати"
+
+#: osmtm/templates/about.mako:47
+msgid "Some resources to help you start using the Tasking Manager:"
+msgstr "Деякі ресурси, що допоможуть вам розпочати користуватись Менеджером Завадань"
+
+#: osmtm/templates/about.mako:54
+msgid "Open Source"
+msgstr "Вільне програмне забезпечення"
+
+#: osmtm/templates/about.mako:56
+msgid ""
+"OSM Tasking Manager is an open source software.<br>Feel free to report "
+"issues and contribute."
+msgstr "Менеджер Завдань OSM програмне забезпечення з відкритими сирцями. <br>Не соромтесь повідомляти про проблеми і робити свій внесок у його вдосконалення."
+
+#: osmtm/templates/about.mako:58
+msgid ""
+"The <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application "
+"code</a> is available on github"
+msgstr "<a href=\"http://github.com/hotosm/osm-tasking-manager2\">Сирці</a> доступні на github"
+
+#: osmtm/templates/about.mako:60
+msgid ""
+"Lead developer: Pierre GIRAUD (<a "
+"href=\"//www.camptocamp.com\">Camptocamp</a>)"
+msgstr "Провідний розробник: П’єр Жиро (<a href=\"//www.camptocamp.com\">Camptocamp</a>)"
+
+#: osmtm/templates/about.mako:61
+msgid ""
+"with the help of <a href=\"https://github.com/hotosm/osm-tasking-"
+"manager2/graphs/contributors\">other contributors</a>."
+msgstr "за участі <a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">інших учасників</a>."
+
+#: osmtm/templates/about.mako:70
+msgid "Version"
+msgstr "Версія"
+
+#: osmtm/templates/base.mako:51
+msgid "About"
+msgstr "Про"
+
+#: osmtm/templates/base.mako:63
+msgid "login to OpenStreetMap"
+msgstr "вхід у OpenStreetMap"
+
+#: osmtm/templates/base.mako:115
+msgid "Fork the code on ${github_link}."
+msgstr "Отримайте сирці на ${github_link}."
+
+#: osmtm/templates/custom.mako:6
+msgid "Questions About Tasks, Mapping or HOT?"
+msgstr "Запитання про Завдання, Мапінг або HOT?"
+
+#: osmtm/templates/custom.mako:7
+msgid ""
+"If you have any questions about a project, a task or mapping in general "
+"please ask on our mailing list: <a "
+"href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a><br"
+" /><br />Or visit us in our IRC Chat Channel, just select #hot from the pop "
+"down channel list:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT "
+"IRC Channel #hot</a><br /><br />General inquries and comments are welcomed "
+"at: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
+msgstr "Якщо у вас є питання стосовно проекту, завдань чи процесу мапінгу взагалі, звертайтесь з ними до нашого списку розсилки: <a href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a><br /><br />Або відвідайте наш канал IRC, просто оберіть #hot зі списку каналів:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel #hot</a><br /><br />Загальні питання та коментарі чекаємо за адресою: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
+
+#: osmtm/templates/custom.mako:11
+msgid "Email HOT at"
+msgstr "Написати листа до HOT"
+
+#: osmtm/templates/custom.mako:12
+msgid "Follow HOT on"
+msgstr "Підписатись на HOT у"
+
+#: osmtm/templates/custom.mako:13
+msgid "Like HOT on"
+msgstr "Вподобати HOT у"
+
+#: osmtm/templates/home.mako:9
+msgid "urgent"
+msgstr "терміново"
+
+#: osmtm/templates/home.mako:9
+msgid "high"
+msgstr "високий"
+
+#: osmtm/templates/home.mako:9
+msgid "medium"
+msgstr "середній"
+
+#: osmtm/templates/home.mako:9
+msgid "low"
+msgstr "низький"
+
+#: osmtm/templates/home.mako:11
+msgid "High priority first"
+msgstr "Важливі спочатку"
+
+#: osmtm/templates/home.mako:12
+msgid "Creation date"
+msgstr "Дата створення"
+
+#: osmtm/templates/home.mako:13
+msgid "Last update"
+msgstr "Останнє оновлення"
+
+#: osmtm/templates/home.mako:17 osmtm/templates/user.mako:92
+msgid "Projects"
+msgstr "Проекти"
+
+#: osmtm/templates/home.mako:43
+msgid "Search"
+msgstr "Пошук"
+
+#: osmtm/templates/home.mako:49
+msgid "Sort by:"
+msgstr "Впорядкувати за:"
+
+#: osmtm/templates/home.mako:75
+msgid "Your projects"
+msgstr "Ваші проекти"
+
+#: osmtm/templates/home.mako:95
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated. <br />This approach facilitates the distribution of tasks to the "
+"various mappers in a context of emergency. It also permits to control the "
+"progress and the homogeinity of the work done (ie. Elements to cover, "
+"specific tags to use, etc.)."
+msgstr "Менеджер Завдань OSM — інструмент мапінгу спроектований і створений для використання Humanitarian OSM Team для колективного мапінгу. Основним завданням якого є розділення роботи на невеличкі шматочки, які можуть бути виконанні досить швидко. Він показує ділянки, які потрібно замапити та замаплені ділянки, які потрібно перевірити.<br />Такий підхід  полегшує розподіл завдань серед учасників в залежності від важливості ситуації. Він також дозволяє керувати процесом та однорідністю виконання роботи (тобто, наявністю певних елементів, теґів та т.і.)"
+
+#: osmtm/templates/home.mako:129
+msgid "${locked} user is currently working on this project"
+msgid_plural "${locked} users are currently working on this project"
+msgstr[0] "${locked} користувач в даний час працює над цим проектом"
+msgstr[1] "${locked} користувача в даний час працюють над цим проектом"
+msgstr[2] "${locked} користувачів в даний час працюють над цим проектом"
+
+#: osmtm/templates/home.mako:170 osmtm/templates/project.description.mako:22
+msgid "Access to this project is limited"
+msgstr "Доступ до цього проекту обмежено"
+
+#: osmtm/templates/home.mako:173
+msgid "Created by"
+msgstr "Створено"
+
+#: osmtm/templates/home.mako:175
+msgid "Updated"
+msgstr "Оновлено"
+
+#: osmtm/templates/home.mako:176
+msgid "Priority:"
+msgstr "Пріоритет:"
+
+#: osmtm/templates/imagery.mako:24
+msgid "imagery url available only after accepting the license"
+msgstr "url фонових знімків стане доступний тільки після погодження з умовами ліцензії"
+
+#: osmtm/templates/imagery.mako:35
+msgid "${license} license agreement"
+msgstr "${license} ліцензійною угодою"
+
+#: osmtm/templates/imagery.mako:36
+msgid "Access to this imagery is limited by the ${license_agreement_link}."
+msgstr "Доступ до цих знімків обмежений ${license_agreement_link}."
+
+#: osmtm/templates/imagery.mako:43
+msgid "You have already acknowledged the terms of this license."
+msgstr "Ви вже погодились з умовами цієї ліцензії."
+
+#: osmtm/templates/imagery.mako:46
+msgid "review and acknowledge"
+msgstr "ознайомитись та прийняти"
+
+#: osmtm/templates/imagery.mako:47
+msgid "You need to ${review_and_acknowledge_link} the agreement."
+msgstr "Вам потрібно ${review_and_acknowledge_link} умови."
+
+#: osmtm/templates/imagery.mako:53
+msgid "You need to accept the license first"
+msgstr "Спочатку вам потрібно погодитись з умовами ліцензії"
+
+#: osmtm/templates/license.edit.mako:4
+msgid "Edit License"
+msgstr "Змінити ліцензію"
+
+#: osmtm/templates/license.edit.mako:10
+msgid "Name"
+msgstr "Назва"
+
+#: osmtm/templates/license.edit.mako:12
+msgid "A name for the license (provider, for example)"
+msgstr "Назва ліцензії (наприклад, постачальник)"
+
+#: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:55
+#: osmtm/templates/project.edit.mako:190 osmtm/templates/project.mako:49
+msgid "Description"
+msgstr "Опис"
+
+#: osmtm/templates/license.edit.mako:17
+msgid "The license terms"
+msgstr "Ліцензійні умови"
+
+#: osmtm/templates/license.edit.mako:20
+msgid "Plain Text"
+msgstr "Звичайний текст"
+
+#: osmtm/templates/license.edit.mako:22
+msgid "A short version of the terms"
+msgstr "Скорочена версія умов"
+
+#: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:92
+msgid "Save the modifications"
+msgstr "Зберегти зміни"
+
+#: osmtm/templates/license.edit.mako:29
+msgid "Create the new license"
+msgstr "Додати нову ліцензію"
+
+#: osmtm/templates/license.edit.mako:32
+msgid "Delete"
+msgstr "Вилучити"
+
+#: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:91
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: osmtm/templates/license.edit.mako:40
+msgid "Are you sure you want to delete this license?"
+msgstr "Ви впевнені, що хочете вилучити цю ліцензію?"
+
+#: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
+msgid "Licenses"
+msgstr "Ліцензії"
+
+#: osmtm/templates/license.mako:10
+msgid "${license_name} License Acknowledgement"
+msgstr "Підтвердження ліцензії ${license_name}"
+
+#: osmtm/templates/license.mako:11
+msgid ""
+"Access via this site to imagery identified as <em>\"${license_name}\"</em> "
+"is subject to the following usage terms:"
+msgstr "Доступ до знімків <em>\"${license_name}\"</em> з цього сайту, надається на наступних умовах:"
+
+#: osmtm/templates/license.mako:24 osmtm/views/license.py:41
+msgid "I AGREE"
+msgstr "ПОГОДЖУЮСЬ"
+
+#: osmtm/templates/license.mako:25
+msgid "No, thank you"
+msgstr "Ні, дякую"
+
+#: osmtm/templates/licenses.mako:16
+msgid "edit"
+msgstr "редагувати"
+
+#: osmtm/templates/licenses.mako:23
+msgid "Create new license"
+msgstr "Додати нову ліцензію"
+
+#: osmtm/templates/message.mako:3 osmtm/templates/message.mako:18
+#: osmtm/templates/user.messages.mako:4 osmtm/templates/user_menu.mako:12
+msgid "Messages"
+msgstr "Повідомлення"
+
+#: osmtm/templates/message.mako:26
+msgid "From:"
+msgstr "Від:"
+
+#: osmtm/templates/project.assigned_tasks.mako:6
+msgid "You have tasks assigned:"
+msgstr "Ви маєте призначенні завдання:"
+
+#: osmtm/templates/project.description.mako:8
+msgid "This project is not published yet."
+msgstr "Цей проект ще неопублікований."
+
+#: osmtm/templates/project.description.mako:11
+msgid "Publish"
+msgstr "Опублікувати"
+
+#: osmtm/templates/project.description.mako:15
+msgid "This project was archived."
+msgstr "Проект в архіві."
+
+#: osmtm/templates/project.description.mako:29
+#: osmtm/templates/project.edit.mako:56 osmtm/templates/project.mako:50
+msgid "Instructions"
+msgstr "Інструкції"
+
+#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:413
+#: osmtm/templates/project.mako:21
+msgid "Edit"
+msgstr "Редагувати"
+
+#: osmtm/templates/project.edit.mako:57
+msgid "Area"
+msgstr "Область"
+
+#: osmtm/templates/project.edit.mako:58
+#: osmtm/templates/project.instructions.mako:33
+msgid "Imagery"
+msgstr "Фонове зображення"
+
+#: osmtm/templates/project.edit.mako:59
+msgid "Priority Areas"
+msgstr "Приорітетні області"
+
+#: osmtm/templates/project.edit.mako:60
+msgid "Allowed Users"
+msgstr "Дозволи"
+
+#: osmtm/templates/project.edit.mako:61
+msgid "Misc"
+msgstr "Інше"
+
+#: osmtm/templates/project.edit.mako:105
+msgid "Status"
+msgstr "Стан"
+
+#: osmtm/templates/project.edit.mako:110 osmtm/templates/project.mako:10
+msgid "Archived"
+msgstr "В архівні"
+
+#: osmtm/templates/project.edit.mako:111
+msgid "Published"
+msgstr "Опубліковані"
+
+#: osmtm/templates/project.edit.mako:112 osmtm/templates/project.mako:8
+msgid "Draft"
+msgstr "Чернетки"
+
+#: osmtm/templates/project.edit.mako:125
+msgid "Priority"
+msgstr "Приорітет"
+
+#: osmtm/templates/project.edit.mako:141
+msgid "Name of the project"
+msgstr "Назва проекту"
+
+#: osmtm/templates/project.edit.mako:165
+msgid "Short Description"
+msgstr "Короткий опис"
+
+#: osmtm/templates/project.edit.mako:200
+#: osmtm/templates/project.instructions.mako:7
+msgid "Entities to Map"
+msgstr "Що мапити"
+
+#: osmtm/templates/project.edit.mako:203
+msgid "primary roads, secondary roads, buildings"
+msgstr "основні дороги, другорядні дороги, будинки"
+
+#: osmtm/templates/project.edit.mako:207
+msgid "The list of entities to map."
+msgstr "Перелік об’єктів для наненсення на мапу."
+
+#: osmtm/templates/project.edit.mako:211
+#: osmtm/templates/project.instructions.mako:19
+msgid "Changeset Comment"
+msgstr "Коментар для наборів змін"
+
+#: osmtm/templates/project.edit.mako:217
+msgid "Comments users are recommended to add to upload commits."
+msgstr "Рекомендовані коментарі, які користувачам треба додавати до їх правок."
+
+#: osmtm/templates/project.edit.mako:218 osmtm/templates/project.edit.mako:246
+msgid "For example:"
+msgstr "Наприклад:"
+
+#: osmtm/templates/project.edit.mako:218
+msgid "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
+msgstr "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
+
+#: osmtm/templates/project.edit.mako:227
+msgid "Detailed Instructions"
+msgstr "Докладні інструкції"
+
+#: osmtm/templates/project.edit.mako:240
+msgid "Per Task Instructions (optional)"
+msgstr "Інструкції до кожного завдання (за бажанням)"
+
+#: osmtm/templates/project.edit.mako:245
+msgid ""
+"Put here anything that can be useful to users while taking a task. {x}, {y} "
+"and {z} will be replaced by the corresponding parameters for each task."
+msgstr "Вкажіть все, що буде корисним для користувачів, для виконання завдання. {x}, {y} та {z} будуть замінені на відповідні параметри для кожного завдання."
+
+#: osmtm/templates/project.edit.mako:246
+msgid ""
+"\" This task involves loading extra data. Click "
+"[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
+" to load the data into JOSM"
+msgstr "\" Це завдання потребує завантаження додаткових даних. Тицніть [тут](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm), щоб завантажити дані в JOSM"
+
+#: osmtm/templates/project.edit.mako:257
+msgid "Area modifications are not available yet."
+msgstr "Редагування областей поки недоступне."
+
+#: osmtm/templates/project.edit.mako:266
+msgid "${count_of} priority area(s)"
+msgstr "${count_of} приорітетних областей(і)"
+
+#: osmtm/templates/project.edit.mako:269
+msgid ""
+"If you want mappers to work on the highest priority areas first, draw one or"
+" more polygons within the project area."
+msgstr "Якщо ви бажаєте, щоб мапери спочатку працювали над областями з високим приорітетом, позначте їх одним чи кількома полігонами в середині області проекта."
+
+#: osmtm/templates/project.edit.mako:286
+msgid "URL to service"
+msgstr "URL до сервісу"
+
+#: osmtm/templates/project.edit.mako:289
+msgid "Note:"
+msgstr "Примітки:"
+
+#: osmtm/templates/project.edit.mako:289
+msgid ""
+"Follow this format for TMS urls.<br>tms[22]:http://hiu-"
+"maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+msgstr "Дотримуйтесь наступного формату, для TMS-посилань.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+
+#: osmtm/templates/project.edit.mako:295
+msgid "Required License"
+msgstr "Потребує ліцензії"
+
+#: osmtm/templates/project.edit.mako:321
+msgid "Private"
+msgstr "Приватно"
+
+#: osmtm/templates/project.edit.mako:324
+msgid ""
+"Private means that only a given list of users can access this project. In "
+"order for the user's name to be available to add to the Allowed Users - they"
+" first must visit the URL for your instance of OSMTM and Authorize access to"
+" their OpenStreetMap account. After they've done this, their username should"
+" be available for the administrator to add."
+msgstr "„Пріватно“ означає, що тільки обмежене коло користувачів мають доступ до цього проекту. Для того, щоб користувача можна було додати до переліку „Допущених користувачів“, він спочатку повинен відвідати URL вашого екземпляру OSMTM та Авторизувати доступ до його облікових даних в OpenStreetMap. Після цього, адміністратор буде в змозі додати його до переліку."
+
+#: osmtm/templates/project.edit.mako:329
+msgid "Allowed users"
+msgstr "Допущені користувачі"
+
+#: osmtm/templates/project.edit.mako:352
+msgid "Type a username"
+msgstr "Введіть користувача"
+
+#: osmtm/templates/project.edit.mako:355
+msgid "Add user"
+msgstr "Додати користувача"
+
+#: osmtm/templates/project.edit.mako:373
+msgid "Project due date"
+msgstr "Дата закінчення проекту"
+
+#: osmtm/templates/project.edit.mako:381
+msgid "The date after which the project will automatically be archived."
+msgstr "Дата, після якої проект буде автоматично переведений в архів."
+
+#: osmtm/templates/project.edit.mako:387
+msgid "JOSM Preset"
+msgstr "Заготовки JOSM"
+
+#: osmtm/templates/project.edit.mako:392
+msgid "A JOSM Preset has already been added to this project."
+msgstr "Заготовки JOSM вже додані до цього проекту."
+
+#: osmtm/templates/project.edit.mako:399
+msgid "Tip:"
+msgstr "Порада:"
+
+#: osmtm/templates/project.edit.mako:400
+msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
+msgstr "Ви може використовувати <a href class=\"markdown\">Markdown</a>. (HTML заборонений)"
+
+#: osmtm/templates/project.edit.mako:416
+msgid "Preview"
+msgstr "Перегляд"
+
+#: osmtm/templates/project.instructions.mako:12
+msgid "The list of elements we ask you to map"
+msgstr ""
+
+#: osmtm/templates/project.instructions.mako:24
+msgid "The comment to put when uploading data to the OSM database"
+msgstr "Додайте наступний коментар до ваших правок під час завантаження їх в базу даних OSM"
+
+#: osmtm/templates/project.instructions.mako:43
+msgid "preset"
+msgstr "заготовки"
+
+#: osmtm/templates/project.instructions.mako:44
+msgid "Using JOSM? Please use the dedicated ${preset_link}."
+msgstr "Використовуєте JOSM? Будь ласка, використовуйте ці ${preset_link}."
+
+#: osmtm/templates/project.instructions.mako:55
+msgid "Start contributing"
+msgstr "Прийняти участь"
+
+#: osmtm/templates/project.mako:17
+msgid "Export"
+msgstr "Експорт"
+
+#: osmtm/templates/project.mako:51
+msgid "Contribute"
+msgstr "Брати участь"
+
+#: osmtm/templates/project.mako:52
+msgid "Activity"
+msgstr "Діяльність"
+
+#: osmtm/templates/project.mako:53
+msgid "Stats"
+msgstr "Статистика"
+
+#: osmtm/templates/project.mako:65
+msgid "Loading"
+msgstr "Заватаження"
+
+#: osmtm/templates/project.mako:105
+msgid "Task doesn't exist."
+msgstr "Завдання не існує."
+
+#: osmtm/templates/project.mako:106
+msgid "an error occured"
+msgstr "виникла помилка"
+
+#: osmtm/templates/project.mako:107
+msgid ""
+"JOSM remote control did not respond. Do you have JOSM running and configured"
+" to be controlled remotely?"
+msgstr "Неможливо встановити зв’язок з JOSM за допомогою Дистанційного керування. Перевірте, що у вас JOSM запущений та в ньому увімкнено Дистанційне керування."
+
+#: osmtm/templates/project.mako:109
+msgid "Something wrong happened"
+msgstr "Сталось щось не так, як треба"
+
+#: osmtm/templates/project.mako:110
+msgid "Please login first"
+msgstr "Спочатку увійдіть"
+
+#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:33
+msgid "Map data © ${osm_link} contributors"
+msgstr "Дані мапи © Учасники ${osm_link}"
+
+#: osmtm/templates/project.mako:116
+msgid "Cur. worked on "
+msgstr "В роботі"
+
+#: osmtm/templates/project.mako:117
+msgid "Ready"
+msgstr "Готово"
+
+#: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:52
+#: osmtm/templates/task.status.mako:12
+msgid "Invalidated"
+msgstr "Відхилено"
+
+#: osmtm/templates/project.mako:117 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/task.status.mako:10
+msgid "Done"
+msgstr "Виконано"
+
+#: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:54
+#: osmtm/templates/task.status.mako:14
+msgid "Validated"
+msgstr "Ухвалено"
+
+#: osmtm/templates/project.mako:119
+msgid "You must leave a comment."
+msgstr "Ви повинні залишити коментар."
+
+#: osmtm/templates/project.mako:120
+msgid "High priority"
+msgstr "Високий пріоритет"
+
+#: osmtm/templates/project.new.mako:4
+msgid "Project New"
+msgstr "Новий проект"
+
+#: osmtm/templates/project.new.mako:27
+msgid "Draw the area of interest"
+msgstr "Окресліть потрібну ділянку"
+
+#: osmtm/templates/project.new.mako:28
+msgid "Dropped file could not be loaded"
+msgstr "Неможливо завантажити доданий файл"
+
+#: osmtm/templates/project.new.mako:29
+msgid "Dropped file was unreadable"
+msgstr "Неможливо прочитати доданий файл"
+
+#: osmtm/templates/project.new.mako:30
+msgid "Please provide a .geojson or a .kml file"
+msgstr "Будь ласка, вкажіть файл .geojson або .kml"
+
+#: osmtm/templates/project.new.mako:44 osmtm/templates/project.new.mako:84
+#: osmtm/templates/project.new.mako:133 osmtm/templates/project.new.mako:176
+msgid "Step ${number}"
+msgstr "Крок ${number}"
+
+#: osmtm/templates/project.new.mako:49
+msgid "Draw"
+msgstr "Позначте"
+
+#: osmtm/templates/project.new.mako:50
+msgid "${draw_link} the area of interest on the map."
+msgstr "${draw_link} потрібну область на мапі."
+
+#: osmtm/templates/project.new.mako:55 osmtm/templates/task.empty.mako:21
+msgid "or"
+msgstr "або"
+
+#: osmtm/templates/project.new.mako:62
+msgid "Provide a .geojson or .kml file."
+msgstr "Вкажіть .geojson або .kml файл."
+
+#: osmtm/templates/project.new.mako:62
+msgid "Import"
+msgstr "Імпорт"
+
+#: osmtm/templates/project.new.mako:63
+msgid "${import_link} a <em>GeoJSON</em> or <em>KML</em> file."
+msgstr "${import_link} <em>GeoJSON</em> або <em>KML</em> файл."
+
+#: osmtm/templates/project.new.mako:68
+msgid "Want to use an <em>.osm</em> file instead?"
+msgstr "Бажаєте використати замість цього файл <em>.osm</em>?"
+
+#: osmtm/templates/project.new.mako:71
+msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
+msgstr "Ви можете скористатись ${geojson_link} для перетворення його на <em>GeoJSON</em>."
+
+#: osmtm/templates/project.new.mako:85
+msgid "${step_number}  - Type of project"
+msgstr "${step_number}  - Тип проекту"
+
+#: osmtm/templates/project.new.mako:92
+msgid "Square Grid"
+msgstr "Квадратна решітка"
+
+#: osmtm/templates/project.new.mako:96
+msgid ""
+"Area of interest is automatically split into grid cells. Each one is a task."
+msgstr "Область проекту буде автоматично поділена на клітинки. По одній на кожне завдання."
+
+#: osmtm/templates/project.new.mako:103
+msgid "You cannot select this option unless you import a file with polygons."
+msgstr "Ви не можете вибрати цю опцію, доки ви не імпортувати файл з полігонами."
+
+#: osmtm/templates/project.new.mako:106
+msgid "Arbitrary Geometries"
+msgstr "Довільна геометрія"
+
+#: osmtm/templates/project.new.mako:110
+msgid "Each polygon represents a task."
+msgstr "Кожен полігон – завдання."
+
+#: osmtm/templates/project.new.mako:119 osmtm/templates/project.new.mako:156
+#: osmtm/templates/project.new.mako:186
+msgid "Back"
+msgstr "Назад"
+
+#: osmtm/templates/project.new.mako:121
+msgid "Next"
+msgstr "Далі"
+
+#: osmtm/templates/project.new.mako:137
+msgid "Tile size"
+msgstr "Розмір квадратів"
+
+#: osmtm/templates/project.new.mako:145
+msgid "Computing..."
+msgstr "Обчислення…"
+
+#: osmtm/templates/project.new.mako:149 osmtm/templates/project.new.mako:180
+msgid "A new project will be created with ${number} tasks."
+msgstr "Новий проект буде складатись з ${number} завдань."
+
+#: osmtm/templates/project.new.mako:158 osmtm/templates/project.new.mako:188
+msgid "Create project"
+msgstr "Створити проект"
+
+#: osmtm/templates/project.new.mako:164
+msgid "Creating tiles, please wait..."
+msgstr "Створення квадратів, зачекайте…"
+
+#: osmtm/templates/project.new.mako:193
+msgid "Creating project, please wait..."
+msgstr "Створення проекту, зачекайте…"
+
+#: osmtm/templates/project.stats.mako:5
+msgid "Contributors"
+msgstr "Учасники"
+
+#: osmtm/templates/project.stats.mako:7
+msgid "Assigned"
+msgstr "Призначені"
+
+#: osmtm/templates/start.mako:4
+msgid "OSM Tasking Manager"
+msgstr ""
+
+#: osmtm/templates/start.mako:13
+msgid "Welcome, new user!"
+msgstr ""
+
+#: osmtm/templates/start.mako:17
+msgid "You're ready to use the Tasking Manager."
+msgstr ""
+
+#: osmtm/templates/start.mako:17
+msgid "Since you are the first user you'll be given admin rights."
+msgstr ""
+
+#: osmtm/templates/start.mako:20
+msgid "Please login"
+msgstr ""
+
+#: osmtm/templates/task.assigned.mako:18
+msgid "Assign task to someone"
+msgstr "Призначити комусь завдання"
+
+#: osmtm/templates/task.assigned.mako:25
+msgid "Filter users"
+msgstr "Фільтрувати користувачів"
+
+#: osmtm/templates/task.assigned.mako:42 osmtm/templates/task.locked.mako:2
+msgid "you"
+msgstr "ви"
+
+#: osmtm/templates/task.assigned.mako:44
+msgid "Assigned to ${username}"
+msgstr "Призначено ${username}"
+
+#: osmtm/templates/task.assigned.mako:48
+msgid "Not assigned yet"
+msgstr "Ще не призначено"
+
+#: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:4
+msgid "Leave a comment"
+msgstr "Залишити коментар"
+
+#: osmtm/templates/task.current_locked.mako:2
+msgid "a task"
+msgstr "завдання"
+
+#: osmtm/templates/task.current_locked.mako:3
+msgid "You already have ${task_link} locked."
+msgstr "Ви вже працюєте над ${task_link}."
+
+#: osmtm/templates/task.current_locked.mako:10
+msgid "Select it again"
+msgstr "Обрати завдання знов"
+
+#: osmtm/templates/task.difficulty.mako:7
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Hard"
+msgstr "Важко"
+
+#: osmtm/templates/task.difficulty.mako:8
+msgid "Difficulty: hard<br>Level: advanced"
+msgstr "Складність: важко<br>Рівень: для досвідчених"
+
+#: osmtm/templates/task.difficulty.mako:11
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Medium"
+msgstr "Середньо"
+
+#: osmtm/templates/task.difficulty.mako:12
+msgid "Difficulty: medium<br>Level: intermediate"
+msgstr "Складність: середня<br>Рівень: помірний"
+
+#: osmtm/templates/task.difficulty.mako:15
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Easy"
+msgstr "Легко"
+
+#: osmtm/templates/task.difficulty.mako:16
+msgid "Difficulty: easy<br>Level: beginner"
+msgstr "Складність: легко<br>Рівень: для всіх"
+
+#: osmtm/templates/task.difficulty.mako:19
+msgid "Difficulty"
+msgstr "Складність"
+
+#: osmtm/templates/task.difficulty.mako:20
+msgid "No difficulty set yet"
+msgstr "Рівень складності ще не встановлений"
+
+#: osmtm/templates/task.difficulty.mako:46
+msgid "Unknown difficulty"
+msgstr "Складніть невідома"
+
+#: osmtm/templates/task.editors.mako:8
+msgid "Edit with"
+msgstr "Редагувати у"
+
+#: osmtm/templates/task.editors.mako:25
+msgid ".gpx file"
+msgstr ".gpx файл"
+
+#: osmtm/templates/task.editors.mako:30
+msgid ""
+"Tip: Download the following ${task_gpx_link} and load it in JOSM in order to"
+" see the current task boundary"
+msgstr "Порада: Завантажте цей ${task_gpx_link} та відкрийте його в JOSM, щоб побачити межі поточного завдання"
+
+#: osmtm/templates/task.empty.mako:15
+msgid "Select a task on the map"
+msgstr "Оберіть завдання на мапі"
+
+#: osmtm/templates/task.empty.mako:27
+msgid "Take a task at random"
+msgstr "Отримайте випадкове завдання"
+
+#: osmtm/templates/task.freecomment.mako:7
+msgid "Comment"
+msgstr "Коментар"
+
+#: osmtm/templates/task.history.mako:38
+msgid "${user} marked ${tasklink} as <b>done</b>"
+msgstr "${user} позначив ${tasklink} як <b>завершене</b>"
+
+#: osmtm/templates/task.history.mako:41
+msgid "${user} <b>invalidated</b> ${tasklink}"
+msgstr "${user} <b>відхилив</b> ${tasklink}"
+
+#: osmtm/templates/task.history.mako:44
+msgid "${user} <b>validated</b> ${tasklink}"
+msgstr "${user} <b>затвердив</b> ${tasklink}"
+
+#: osmtm/templates/task.history.mako:50
+msgid "Marked as done"
+msgstr "Позначено як виконане"
+
+#: osmtm/templates/task.history.mako:50 osmtm/templates/task.history.mako:52
+#: osmtm/templates/task.history.mako:54 osmtm/templates/task.history.mako:58
+#: osmtm/templates/task.history.mako:63
+msgid "by"
+msgstr "користувачем"
+
+#: osmtm/templates/task.history.mako:58 osmtm/templates/task.status.mako:6
+msgid "Locked"
+msgstr "Зайнято"
+
+#: osmtm/templates/task.history.mako:60
+msgid "Unlocked"
+msgstr "Вільно"
+
+#: osmtm/templates/task.history.mako:63
+msgid "Comment left"
+msgstr "Коментар записаний"
+
+#: osmtm/templates/task.history.mako:77
+msgid "Nothing has happened yet."
+msgstr "Поки нічого не сталось."
+
+#: osmtm/templates/task.instructions.mako:3
+msgid "Extra Instructions"
+msgstr "Додаткові інструкції"
+
+#: osmtm/templates/task.locked.mako:4
+msgid "Locked by ${username}"
+msgstr "Виконується ${username}"
+
+#: osmtm/templates/task.locked.mako:14 osmtm/templates/task.state.done.mako:12
+#: osmtm/templates/task.state.ready.mako:15
+msgid "Unlock"
+msgstr "Розблокувати"
+
+#: osmtm/templates/task.locked.mako:16
+msgid ""
+"If you do not complete or release this task in time, it will be "
+"automatically unlocked"
+msgstr "Якщо ви не закінчите або не розблокуєте завдання вчасно, воно буде розблоковане автоматично"
+
+#: osmtm/templates/task.locked.mako:18
+msgid "min. left"
+msgstr "хв. залишилось"
+
+#: osmtm/templates/task.mako:19
+msgid "Clear selection"
+msgstr "Зняти виділення"
+
+#: osmtm/templates/task.mako:23
+msgid "Task #${number}"
+msgstr "Завдання #${number}"
+
+#: osmtm/templates/task.mako:68
+msgid "See the changesets in the OSM database for this area."
+msgstr "Переглянути набори змін в базі даних OSM для цієї території."
+
+#: osmtm/templates/task.mako:69
+msgid "OSM changesets"
+msgstr "Набір змін OSM"
+
+#: osmtm/templates/task.mako:112
+msgid "See the changes in this area using the overpass-turbo API."
+msgstr "Переглянути зміни в цій області, використовуючи overpass-turbo API."
+
+#: osmtm/templates/task.mako:112
+msgid "overpass-turbo"
+msgstr ""
+
+#: osmtm/templates/task.split.mako:3
+msgid "Task is too big?"
+msgstr "Завдання завелике?"
+
+#: osmtm/templates/task.split.mako:9
+msgid "You cannot split this task more."
+msgstr "Неможливо ще більше розділити це завдання."
+
+#: osmtm/templates/task.split.mako:13
+msgid "Are you sure you want to split this task?"
+msgstr "Ви впевнені, що бажаєте розділити завдання?"
+
+#: osmtm/templates/task.split.mako:15
+msgid "Split"
+msgstr "Розділити"
+
+#: osmtm/templates/task.state.done.mako:4
+msgid "Invalidate this task if you consider it needs more work."
+msgstr "Відхилити це завдання, якщо ви вважаєте, що з ним треба ще попрацювати."
+
+#: osmtm/templates/task.state.done.mako:18
+msgid "Invalidate"
+msgstr "Відхилити"
+
+#: osmtm/templates/task.state.done.mako:22
+msgid "Validate this task if you consider that the work is complete."
+msgstr "Ухваліть це завдання, якщо ви вважаєте, що воно виконане."
+
+#: osmtm/templates/task.state.done.mako:27
+msgid "You cannot validate a task that you have personally marked as done."
+msgstr ""
+
+#: osmtm/templates/task.state.done.mako:43
+msgid "Validate"
+msgstr "Ухвалити"
+
+#: osmtm/templates/task.state.ready.mako:4
+msgid ""
+"Stop working on this task and unlock it. You may resume work on it again "
+"later."
+msgstr ""
+
+#: osmtm/templates/task.state.ready.mako:5
+msgid ""
+"Mark this task as done if you have completed all items in the instructions."
+msgstr ""
+
+#: osmtm/templates/task.state.ready.mako:22
+msgid "Mark task as done"
+msgstr "Позначити завдання як виконане"
+
+#: osmtm/templates/task.unlocked.mako:13
+msgid "Lock this task to tell others that you are currently working on it."
+msgstr "Заблокуйте завдання, щоб сповістити інших, що ви над ним працюєте."
+
+#: osmtm/templates/task.unlocked.mako:17
+msgid "Start mapping"
+msgstr "Розпочати мапити"
+
+#: osmtm/templates/task.unlocked.mako:21
+msgid ""
+"Lock this task to tell others that you are currently reviewing it. Validate "
+"that this task has been mapped correctly and completely."
+msgstr "Заблокуйте це завдання, щоб дати знати іншим, що ви зараз оцінюєте його. Перевірте чи було це завдання виконане повністю та коректно."
+
+#: osmtm/templates/task.unlocked.mako:26
+msgid "Review the work"
+msgstr "Перевірити роботу"
+
+#: osmtm/templates/user.mako:3 osmtm/templates/user.mako:5
+msgid "User profile"
+msgstr "Профіль користувача"
+
+#: osmtm/templates/user.mako:20
+msgid "User: ${username}"
+msgstr "Користувач: ${username}"
+
+#: osmtm/templates/user.mako:24
+msgid "This is <b>You</b>!"
+msgstr "Це <b>Ви</b>!"
+
+#: osmtm/templates/user.mako:28
+msgid "OSM User Profile"
+msgstr "Профіль користувача в OSM"
+
+#: osmtm/templates/user.mako:29
+msgid "OSM Profile"
+msgstr "Профіль в OSM"
+
+#: osmtm/templates/user.mako:35
+msgid "This user joined OSM "
+msgstr ""
+
+#: osmtm/templates/user.mako:43
+msgid "OSM User Changeset History"
+msgstr ""
+
+#: osmtm/templates/user.mako:44
+msgid "OSM Edit History"
+msgstr ""
+
+#: osmtm/templates/user.mako:50
+msgid "This user has submitted ${changes} total changesets."
+msgstr ""
+
+#: osmtm/templates/user.mako:60
+msgid "This user is an administrator."
+msgstr "Цей користувач — адміністратор."
+
+#: osmtm/templates/user.mako:62 osmtm/templates/user.mako:78
+msgid "Remove privileges"
+msgstr "Вилучити привілеї"
+
+#: osmtm/templates/user.mako:67
+msgid "Set as administrator"
+msgstr "Призначити Адміністратором"
+
+#: osmtm/templates/user.mako:76
+msgid "This user is a project manager."
+msgstr "Цей користувач — керівник проекту."
+
+#: osmtm/templates/user.mako:83
+msgid "Set as project manager"
+msgstr "Призначити керівником проекту"
+
+#: osmtm/templates/user.mako:94
+msgid "This user contributed to the following projects:"
+msgstr "Цей учасник бере участь в наступних проектах:"
+
+#: osmtm/templates/user.mako:99
+msgid "Project Details"
+msgstr "Подробиці проекту"
+
+#: osmtm/templates/user.mako:103
+msgid "${count} tiles"
+msgstr "${count} квадратів"
+
+#: osmtm/templates/user.mako:110
+msgid "User hasn't contributed yet."
+msgstr "Користувач ще не брав участі."
+
+#: osmtm/templates/user.messages.mako:14
+msgid "From"
+msgstr "З"
+
+#: osmtm/templates/user.messages.mako:15
+msgid "Subject"
+msgstr "Тема"
+
+#: osmtm/templates/user_menu.mako:10
+msgid "Your page"
+msgstr "Ваша сторінка"
+
+#: osmtm/templates/user_menu.mako:16
+msgid "logout"
+msgstr "вийти"
+
+#: osmtm/templates/user_menu.mako:19
+msgid "Users list"
+msgstr "Перелік користувачів"
+
+#: osmtm/templates/user_menu.mako:23
+msgid "Manage licenses"
+msgstr "Керування ліцензіями"
+
+#: osmtm/templates/user_menu.mako:28
+msgid "Create a new project"
+msgstr "Створити новий проект"
+
+#: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
+#: osmtm/templates/users.mako:30
+msgid "Users"
+msgstr "Користувачі"
+
+#: osmtm/templates/users.mako:31
+msgid "Keys:"
+msgstr "Ключі:"
+
+#: osmtm/templates/users.mako:33
+msgid "Administrator"
+msgstr "Адміністратор"
+
+#: osmtm/templates/users.mako:34
+msgid "Project Manager"
+msgstr "Керівник проекту"
+
+#: osmtm/views/license.py:58
+msgid "License doesn't exist!"
+msgstr "Ліцензії не існує!"
+
+#: osmtm/views/license.py:62
+msgid "License removed!"
+msgstr "Ліцензію вилучено!"
+
+#: osmtm/views/license.py:84
+msgid "License created!"
+msgstr "Ліцензію створено!"
+
+#: osmtm/views/license.py:86
+msgid "License updated!"
+msgstr "Ліцензію оновлено!"
+
+#: osmtm/views/project.py:72
+msgid "Sorry, this project doesn't  exist"
+msgstr "На жаль, такого проекту не існує"
+
+#: osmtm/views/project.py:140 osmtm/views/project.py:184
+msgid "Untitled project"
+msgstr "Проект без назви"
+
+#: osmtm/views/project.py:163
+msgid "Project #${project_id} created successfully"
+msgstr "Проект #${project_id} створений"
+
+#: osmtm/views/project.py:169 osmtm/views/project.py:194
+#, python-format
+msgid "Sorry, could not create the project. <br />%s"
+msgstr "Вибачте, неможливо створити проект. <br />%s"
+
+#: osmtm/views/project.py:188
+msgid "Successfully imported ${n} geometries"
+msgstr "Імпортовано ${n} геометрій"
+
+#: osmtm/views/task.py:83
+msgid "Cannot update task. Record lock for update."
+msgstr "Не вдається оновити завдання. Завдання в роботі."
+
+#: osmtm/views/task.py:88
+msgid "This task doesn't exist."
+msgstr "Завдання не існує."
+
+#: osmtm/views/task.py:96
+msgid "You need to lock the task first."
+msgstr "Вам потрібно спочатку взяти завдання."
+
+#: osmtm/views/task.py:164
+msgid "Task marked as done. Thanks for your contribution"
+msgstr "Завдання позначено як виконане. Дякуємо за ваш внесок"
+
+#: osmtm/views/task.py:183
+msgid "Task already locked."
+msgstr "Завдання вже заблоковане."
+
+#: osmtm/views/task.py:189
+msgid "Task assigned to someone else."
+msgstr "Завдання призначене комусь іншому."
+
+#: osmtm/views/task.py:194
+msgid "Task locked. You can start mapping."
+msgstr "Завдання заблоковане. Можете ставати до роботи."
+
+#: osmtm/views/task.py:211
+msgid "Task unlocked."
+msgstr "Завдання розблоковане."
+
+#: osmtm/views/task.py:223
+msgid "Comment added."
+msgstr "Коментар додано."
+
+#: osmtm/views/task.py:260
+msgid "You were mentioned in a comment - Task ${link}"
+msgstr "Вас згадано у коментарі — Завдання ${link}"
+
+#: osmtm/views/task.py:286
+msgid "Task ${link} invalidated"
+msgstr "Завдання ${link} відхилене"
+
+#: osmtm/views/task.py:301
+msgid "Task validated."
+msgstr "Завдання ухвалене."
+
+#: osmtm/views/task.py:304
+msgid "Task invalidated."
+msgstr "Завдання відхилене."
+
+#: osmtm/views/task.py:431
+msgid "Random task... none available! Sorry."
+msgstr "Випадкове завдання… не знайшлось! Вибачте."
+
+#: osmtm/views/task.py:444
+msgid "You cannot assign an already locked task"
+msgstr "Ви не можете призначати заблоковані завдання"
+
+#: osmtm/views/task.py:454
+msgid "Task assigned."
+msgstr "Завдання призначене."
+
+#: osmtm/views/task.py:468
+msgid "Task assignment removed"
+msgstr "Призначення зняте"
+
+#: osmtm/views/task.py:500
+msgid "Task difficulty changed."
+msgstr "Складність завдання змінена."
+
+#: osmtm/views/task.py:513
+msgid "Task difficulty removed"
+msgstr "Складність завдання знята"
+
+#: osmtm/views/user.py:78
+msgid "You probably don't want to remove your privileges"
+msgstr "Можливо, ви не бажаєете позбавляти себе привілеїв"
+
+#: osmtm/views/user.py:109
+msgid "Sorry, this user doesn't  exist"
+msgstr "Вибачте, такого користувача не існує"
