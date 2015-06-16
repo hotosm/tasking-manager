@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-11 12:54+0100\n"
-"PO-Revision-Date: 2015-03-11 11:54+0000\n"
+"POT-Creation-Date: 2015-06-16 12:04+0200\n"
+"PO-Revision-Date: 2015-06-16 10:04+0000\n"
 "Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
 "Language-Team: Portuguese (http://www.transifex.com/projects/p/osm-tasking-manager2/language/pt/)\n"
 "MIME-Version: 1.0\n"
@@ -19,12 +19,12 @@ msgstr ""
 "Language: pt\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:111
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:121
 #: osmtm/templates/home.mako:93
 msgid "About the Tasking Manager"
 msgstr "Sobre o gestor de tarefas"
 
-#: osmtm/templates/about.mako:12 osmtm/templates/home.mako:95
+#: osmtm/templates/about.mako:12
 msgid ""
 "OSM Tasking Manager is a mapping tool designed and built for the "
 "Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
@@ -32,9 +32,9 @@ msgid ""
 " shows which areas need to be mapped and which areas need the mapping "
 "validated. <br />This approach facilitates the distribution of tasks to the "
 "various mappers in a context of emergency. It also permits to control the "
-"progress and the homogeinity of the work done (ie. Elements to cover, "
+"progress and the homogeneity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr "O OSM Tasking Manager é uma ferramenta desenvolvida pela Humanitarian OSM Team que permite a quem queira contribuir uma interface destinada para uma atividade de mapeamento coletivo. O propósito desta ferramenta é sobretudo dividir o esforço de mapear grandes áreas em pequenas tarefas, ou parcelas, que podem ser completadas mais rapidamente. O interface mostra-lhe as áreas a ser mapeadas e as áreas terminadas que precisam apenas de ser validadas. <br />Esta abordagem facilita a distribuição das tarefas para vários mapeadores num contexto de emergência. Permite também controlar o progresso e a homogeneidade do trabalho realizado (isto é, elementos que necessitam de ser mapeados, etiquetas especificas a utilizar, etc.)."
+msgstr ""
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
@@ -90,15 +90,15 @@ msgstr "com a ajuda de<a href=\"https://github.com/hotosm/osm-tasking-manager2/g
 msgid "Version"
 msgstr ""
 
-#: osmtm/templates/base.mako:41
+#: osmtm/templates/base.mako:51
 msgid "About"
 msgstr "Sobre"
 
-#: osmtm/templates/base.mako:53
+#: osmtm/templates/base.mako:63
 msgid "login to OpenStreetMap"
 msgstr "Iniciar sessão"
 
-#: osmtm/templates/base.mako:105
+#: osmtm/templates/base.mako:115
 msgid "Fork the code on ${github_link}."
 msgstr ""
 
@@ -157,6 +157,10 @@ msgstr "Data de criação"
 msgid "Last update"
 msgstr "Última atualização"
 
+#: osmtm/templates/home.mako:17 osmtm/templates/user.mako:92
+msgid "Projects"
+msgstr ""
+
 #: osmtm/templates/home.mako:43
 msgid "Search"
 msgstr "Pesquisar"
@@ -169,25 +173,37 @@ msgstr "Ordenar por:"
 msgid "Your projects"
 msgstr "Meus projectos"
 
-#: osmtm/templates/home.mako:130
+#: osmtm/templates/home.mako:95
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated. <br />This approach facilitates the distribution of tasks to the "
+"various mappers in a context of emergency. It also permits to control the "
+"progress and the homogeinity of the work done (ie. Elements to cover, "
+"specific tags to use, etc.)."
+msgstr "O OSM Tasking Manager é uma ferramenta desenvolvida pela Humanitarian OSM Team que permite a quem queira contribuir uma interface destinada para uma atividade de mapeamento coletivo. O propósito desta ferramenta é sobretudo dividir o esforço de mapear grandes áreas em pequenas tarefas, ou parcelas, que podem ser completadas mais rapidamente. O interface mostra-lhe as áreas a ser mapeadas e as áreas terminadas que precisam apenas de ser validadas. <br />Esta abordagem facilita a distribuição das tarefas para vários mapeadores num contexto de emergência. Permite também controlar o progresso e a homogeneidade do trabalho realizado (isto é, elementos que necessitam de ser mapeados, etiquetas especificas a utilizar, etc.)."
+
+#: osmtm/templates/home.mako:129
 msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
 msgstr[0] "${locked} utilizador está atualmente a trabalhar neste projeto"
 msgstr[1] "${locked} utilizadores estão atualmente a trabalhar neste projeto"
 
-#: osmtm/templates/home.mako:171 osmtm/templates/project.description.mako:24
+#: osmtm/templates/home.mako:170 osmtm/templates/project.description.mako:22
 msgid "Access to this project is limited"
 msgstr "O acesso a este projeto é limitado"
 
-#: osmtm/templates/home.mako:174
+#: osmtm/templates/home.mako:173
 msgid "Created by"
 msgstr "Criado por"
 
-#: osmtm/templates/home.mako:176
+#: osmtm/templates/home.mako:175
 msgid "Updated"
 msgstr "Atualizado "
 
-#: osmtm/templates/home.mako:177
+#: osmtm/templates/home.mako:176
 msgid "Priority:"
 msgstr "Prioridade:"
 
@@ -231,8 +247,8 @@ msgstr ""
 msgid "A name for the license (provider, for example)"
 msgstr ""
 
-#: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:46
-#: osmtm/templates/project.edit.mako:181 osmtm/templates/project.mako:49
+#: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:55
+#: osmtm/templates/project.edit.mako:190 osmtm/templates/project.mako:49
 msgid "Description"
 msgstr ""
 
@@ -248,7 +264,7 @@ msgstr ""
 msgid "A short version of the terms"
 msgstr ""
 
-#: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:83
+#: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:92
 msgid "Save the modifications"
 msgstr ""
 
@@ -260,7 +276,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:82
+#: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:91
 msgid "Cancel"
 msgstr ""
 
@@ -298,12 +314,12 @@ msgstr ""
 msgid "Create new license"
 msgstr ""
 
-#: osmtm/templates/message.mako:3 osmtm/templates/message.mako:12
+#: osmtm/templates/message.mako:3 osmtm/templates/message.mako:18
 #: osmtm/templates/user.messages.mako:4 osmtm/templates/user_menu.mako:12
 msgid "Messages"
 msgstr "Mensagens"
 
-#: osmtm/templates/message.mako:20
+#: osmtm/templates/message.mako:26
 msgid "From:"
 msgstr "Remetente:"
 
@@ -311,165 +327,165 @@ msgstr "Remetente:"
 msgid "You have tasks assigned:"
 msgstr "Você tem parcelas que lhe foram atribuídas:"
 
-#: osmtm/templates/project.description.mako:10
+#: osmtm/templates/project.description.mako:8
 msgid "This project is not published yet."
 msgstr "Este projeto não se encontra publicado."
 
-#: osmtm/templates/project.description.mako:13
+#: osmtm/templates/project.description.mako:11
 msgid "Publish"
 msgstr "Publicar"
 
-#: osmtm/templates/project.description.mako:17
+#: osmtm/templates/project.description.mako:15
 msgid "This project was archived."
 msgstr "Este projeto foi arquivado"
 
-#: osmtm/templates/project.description.mako:31
-#: osmtm/templates/project.edit.mako:47 osmtm/templates/project.mako:50
+#: osmtm/templates/project.description.mako:29
+#: osmtm/templates/project.edit.mako:56 osmtm/templates/project.mako:50
 msgid "Instructions"
 msgstr "Instruções"
 
-#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:404
+#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:413
 #: osmtm/templates/project.mako:21
 msgid "Edit"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:48
+#: osmtm/templates/project.edit.mako:57
 msgid "Area"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:49
-#: osmtm/templates/project.instructions.mako:34
+#: osmtm/templates/project.edit.mako:58
+#: osmtm/templates/project.instructions.mako:33
 msgid "Imagery"
 msgstr "Imagem aérea"
 
-#: osmtm/templates/project.edit.mako:50
+#: osmtm/templates/project.edit.mako:59
 msgid "Priority Areas"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:51
+#: osmtm/templates/project.edit.mako:60
 msgid "Allowed Users"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:52
+#: osmtm/templates/project.edit.mako:61
 msgid "Misc"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:96
+#: osmtm/templates/project.edit.mako:105
 msgid "Status"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:101 osmtm/templates/project.mako:10
+#: osmtm/templates/project.edit.mako:110 osmtm/templates/project.mako:10
 msgid "Archived"
 msgstr "Arquivado"
 
-#: osmtm/templates/project.edit.mako:102
+#: osmtm/templates/project.edit.mako:111
 msgid "Published"
 msgstr "Publicado"
 
-#: osmtm/templates/project.edit.mako:103 osmtm/templates/project.mako:8
+#: osmtm/templates/project.edit.mako:112 osmtm/templates/project.mako:8
 msgid "Draft"
 msgstr "Rascunho"
 
-#: osmtm/templates/project.edit.mako:116
+#: osmtm/templates/project.edit.mako:125
 msgid "Priority"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:132
+#: osmtm/templates/project.edit.mako:141
 msgid "Name of the project"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:156
+#: osmtm/templates/project.edit.mako:165
 msgid "Short Description"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:191
-#: osmtm/templates/project.instructions.mako:8
+#: osmtm/templates/project.edit.mako:200
+#: osmtm/templates/project.instructions.mako:7
 msgid "Entities to Map"
 msgstr "Elementos a mapear"
 
-#: osmtm/templates/project.edit.mako:194
+#: osmtm/templates/project.edit.mako:203
 msgid "primary roads, secondary roads, buildings"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:198
+#: osmtm/templates/project.edit.mako:207
 msgid "The list of entities to map."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:202
-#: osmtm/templates/project.instructions.mako:20
+#: osmtm/templates/project.edit.mako:211
+#: osmtm/templates/project.instructions.mako:19
 msgid "Changeset Comment"
 msgstr "Sumario de edição"
 
-#: osmtm/templates/project.edit.mako:208
+#: osmtm/templates/project.edit.mako:217
 msgid "Comments users are recommended to add to upload commits."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:209 osmtm/templates/project.edit.mako:237
+#: osmtm/templates/project.edit.mako:218 osmtm/templates/project.edit.mako:246
 msgid "For example:"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:209
+#: osmtm/templates/project.edit.mako:218
 msgid "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:218
+#: osmtm/templates/project.edit.mako:227
 msgid "Detailed Instructions"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:231
+#: osmtm/templates/project.edit.mako:240
 msgid "Per Task Instructions (optional)"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:236
+#: osmtm/templates/project.edit.mako:245
 msgid ""
 "Put here anything that can be useful to users while taking a task. {x}, {y} "
 "and {z} will be replaced by the corresponding parameters for each task."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:237
+#: osmtm/templates/project.edit.mako:246
 msgid ""
 "\" This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
 " to load the data into JOSM"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:248
+#: osmtm/templates/project.edit.mako:257
 msgid "Area modifications are not available yet."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:257
+#: osmtm/templates/project.edit.mako:266
 msgid "${count_of} priority area(s)"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:260
+#: osmtm/templates/project.edit.mako:269
 msgid ""
 "If you want mappers to work on the highest priority areas first, draw one or"
 " more polygons within the project area."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:277
+#: osmtm/templates/project.edit.mako:286
 msgid "URL to service"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:280
+#: osmtm/templates/project.edit.mako:289
 msgid "Note:"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:280
+#: osmtm/templates/project.edit.mako:289
 msgid ""
 "Follow this format for TMS urls.<br>tms[22]:http://hiu-"
 "maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:286
+#: osmtm/templates/project.edit.mako:295
 msgid "Required License"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:312
+#: osmtm/templates/project.edit.mako:321
 msgid "Private"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:315
+#: osmtm/templates/project.edit.mako:324
 msgid ""
 "Private means that only a given list of users can access this project. In "
 "order for the user's name to be available to add to the Allowed Users - they"
@@ -478,63 +494,63 @@ msgid ""
 " be available for the administrator to add."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:320
+#: osmtm/templates/project.edit.mako:329
 msgid "Allowed users"
 msgstr "Utilizadores autorizados "
 
-#: osmtm/templates/project.edit.mako:343
+#: osmtm/templates/project.edit.mako:352
 msgid "Type a username"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:346
+#: osmtm/templates/project.edit.mako:355
 msgid "Add user"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:364
+#: osmtm/templates/project.edit.mako:373
 msgid "Project due date"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:372
+#: osmtm/templates/project.edit.mako:381
 msgid "The date after which the project will automatically be archived."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:378
+#: osmtm/templates/project.edit.mako:387
 msgid "JOSM Preset"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:383
+#: osmtm/templates/project.edit.mako:392
 msgid "A JOSM Preset has already been added to this project."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:390
+#: osmtm/templates/project.edit.mako:399
 msgid "Tip:"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:391
+#: osmtm/templates/project.edit.mako:400
 msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:407
+#: osmtm/templates/project.edit.mako:416
 msgid "Preview"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:13
-msgid "The list of elements of elements we ask you to map"
+#: osmtm/templates/project.instructions.mako:12
+msgid "The list of elements we ask you to map"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:25
+#: osmtm/templates/project.instructions.mako:24
 msgid "The comment to put when uploading data to the OSM database"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:44
+#: osmtm/templates/project.instructions.mako:43
 msgid "preset"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:45
+#: osmtm/templates/project.instructions.mako:44
 msgid "Using JOSM? Please use the dedicated ${preset_link}."
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:56
+#: osmtm/templates/project.instructions.mako:55
 msgid "Start contributing"
 msgstr "Comece a contribuir"
 
@@ -580,7 +596,7 @@ msgstr ""
 msgid "Please login first"
 msgstr ""
 
-#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:31
+#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:33
 msgid "Map data © ${osm_link} contributors"
 msgstr ""
 
@@ -619,114 +635,114 @@ msgstr "Alta prioridade"
 msgid "Project New"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:25
+#: osmtm/templates/project.new.mako:27
 msgid "Draw the area of interest"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:26
+#: osmtm/templates/project.new.mako:28
 msgid "Dropped file could not be loaded"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:27
+#: osmtm/templates/project.new.mako:29
 msgid "Dropped file was unreadable"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:28
+#: osmtm/templates/project.new.mako:30
 msgid "Please provide a .geojson or a .kml file"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:42 osmtm/templates/project.new.mako:82
-#: osmtm/templates/project.new.mako:131 osmtm/templates/project.new.mako:174
+#: osmtm/templates/project.new.mako:44 osmtm/templates/project.new.mako:84
+#: osmtm/templates/project.new.mako:133 osmtm/templates/project.new.mako:176
 msgid "Step ${number}"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:47
+#: osmtm/templates/project.new.mako:49
 msgid "Draw"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:48
+#: osmtm/templates/project.new.mako:50
 msgid "${draw_link} the area of interest on the map."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:53 osmtm/templates/task.empty.mako:21
+#: osmtm/templates/project.new.mako:55 osmtm/templates/task.empty.mako:21
 msgid "or"
 msgstr "ou"
 
-#: osmtm/templates/project.new.mako:60
+#: osmtm/templates/project.new.mako:62
 msgid "Provide a .geojson or .kml file."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:60
+#: osmtm/templates/project.new.mako:62
 msgid "Import"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:61
+#: osmtm/templates/project.new.mako:63
 msgid "${import_link} a <em>GeoJSON</em> or <em>KML</em> file."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:66
+#: osmtm/templates/project.new.mako:68
 msgid "Want to use an <em>.osm</em> file instead?"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:69
+#: osmtm/templates/project.new.mako:71
 msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:83
+#: osmtm/templates/project.new.mako:85
 msgid "${step_number}  - Type of project"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:90
+#: osmtm/templates/project.new.mako:92
 msgid "Square Grid"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:94
+#: osmtm/templates/project.new.mako:96
 msgid ""
 "Area of interest is automatically split into grid cells. Each one is a task."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:101
+#: osmtm/templates/project.new.mako:103
 msgid "You cannot select this option unless you import a file with polygons."
 msgstr "Não é possível seleccionar esta opção a não ser que seja importado um ficheiro com polígonos."
 
-#: osmtm/templates/project.new.mako:104
+#: osmtm/templates/project.new.mako:106
 msgid "Arbitrary Geometries"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:108
+#: osmtm/templates/project.new.mako:110
 msgid "Each polygon represents a task."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:117 osmtm/templates/project.new.mako:154
-#: osmtm/templates/project.new.mako:184
+#: osmtm/templates/project.new.mako:119 osmtm/templates/project.new.mako:156
+#: osmtm/templates/project.new.mako:186
 msgid "Back"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:119
+#: osmtm/templates/project.new.mako:121
 msgid "Next"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:135
+#: osmtm/templates/project.new.mako:137
 msgid "Tile size"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:143
+#: osmtm/templates/project.new.mako:145
 msgid "Computing..."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:147 osmtm/templates/project.new.mako:178
+#: osmtm/templates/project.new.mako:149 osmtm/templates/project.new.mako:180
 msgid "A new project will be created with ${number} tasks."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:156 osmtm/templates/project.new.mako:186
+#: osmtm/templates/project.new.mako:158 osmtm/templates/project.new.mako:188
 msgid "Create project"
 msgstr ""
 
-#: osmtm/templates/project.new.mako:162
+#: osmtm/templates/project.new.mako:164
 msgid "Creating tiles, please wait..."
 msgstr ""
 
-#: osmtm/templates/project.new.mako:191
+#: osmtm/templates/project.new.mako:193
 msgid "Creating project, please wait..."
 msgstr ""
 
@@ -737,6 +753,26 @@ msgstr "Contribuidores"
 #: osmtm/templates/project.stats.mako:7
 msgid "Assigned"
 msgstr "Atribuído"
+
+#: osmtm/templates/start.mako:4
+msgid "OSM Tasking Manager"
+msgstr ""
+
+#: osmtm/templates/start.mako:13
+msgid "Welcome, new user!"
+msgstr ""
+
+#: osmtm/templates/start.mako:17
+msgid "You're ready to use the Tasking Manager."
+msgstr ""
+
+#: osmtm/templates/start.mako:17
+msgid "Since you are the first user you'll be given admin rights."
+msgstr ""
+
+#: osmtm/templates/start.mako:20
+msgid "Please login"
+msgstr ""
 
 #: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
@@ -886,7 +922,7 @@ msgid "Locked by ${username}"
 msgstr "Bloqueada por ${username}"
 
 #: osmtm/templates/task.locked.mako:14 osmtm/templates/task.state.done.mako:12
-#: osmtm/templates/task.state.ready.mako:8
+#: osmtm/templates/task.state.ready.mako:15
 msgid "Unlock"
 msgstr "Desbloquear"
 
@@ -920,6 +956,10 @@ msgstr ""
 msgid "See the changes in this area using the overpass-turbo API."
 msgstr ""
 
+#: osmtm/templates/task.mako:112
+msgid "overpass-turbo"
+msgstr ""
+
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
 msgstr "A parcela é demasiado grande?"
@@ -948,11 +988,26 @@ msgstr "Invalidar"
 msgid "Validate this task if you consider that the work is complete."
 msgstr "Valide esta parcela se considerar que o trabalho está completo."
 
-#: osmtm/templates/task.state.done.mako:29
+#: osmtm/templates/task.state.done.mako:27
+msgid "You cannot validate a task that you have personally marked as done."
+msgstr ""
+
+#: osmtm/templates/task.state.done.mako:43
 msgid "Validate"
 msgstr "Validar"
 
-#: osmtm/templates/task.state.ready.mako:10
+#: osmtm/templates/task.state.ready.mako:4
+msgid ""
+"Stop working on this task and unlock it. You may resume work on it again "
+"later."
+msgstr ""
+
+#: osmtm/templates/task.state.ready.mako:5
+msgid ""
+"Mark this task as done if you have completed all items in the instructions."
+msgstr ""
+
+#: osmtm/templates/task.state.ready.mako:22
 msgid "Mark task as done"
 msgstr "Definir a parcela como terminada "
 
@@ -994,43 +1049,55 @@ msgstr ""
 msgid "OSM Profile"
 msgstr ""
 
-#: osmtm/templates/user.mako:38
+#: osmtm/templates/user.mako:35
+msgid "This user joined OSM "
+msgstr ""
+
+#: osmtm/templates/user.mako:43
+msgid "OSM User Changeset History"
+msgstr ""
+
+#: osmtm/templates/user.mako:44
+msgid "OSM Edit History"
+msgstr ""
+
+#: osmtm/templates/user.mako:50
+msgid "This user has submitted ${changes} total changesets."
+msgstr ""
+
+#: osmtm/templates/user.mako:60
 msgid "This user is an administrator."
 msgstr "Este utilizador é um administrador."
 
-#: osmtm/templates/user.mako:40 osmtm/templates/user.mako:56
+#: osmtm/templates/user.mako:62 osmtm/templates/user.mako:78
 msgid "Remove privileges"
 msgstr ""
 
-#: osmtm/templates/user.mako:45
+#: osmtm/templates/user.mako:67
 msgid "Set as administrator"
 msgstr ""
 
-#: osmtm/templates/user.mako:54
+#: osmtm/templates/user.mako:76
 msgid "This user is a project manager."
 msgstr "Este utilizador é um gestor de projecto."
 
-#: osmtm/templates/user.mako:61
+#: osmtm/templates/user.mako:83
 msgid "Set as project manager"
 msgstr ""
 
-#: osmtm/templates/user.mako:70
-msgid "Projects"
-msgstr ""
-
-#: osmtm/templates/user.mako:72
+#: osmtm/templates/user.mako:94
 msgid "This user contributed to the following projects:"
 msgstr ""
 
-#: osmtm/templates/user.mako:77
+#: osmtm/templates/user.mako:99
 msgid "Project Details"
 msgstr ""
 
-#: osmtm/templates/user.mako:81
+#: osmtm/templates/user.mako:103
 msgid "${count} tiles"
 msgstr ""
 
-#: osmtm/templates/user.mako:88
+#: osmtm/templates/user.mako:110
 msgid "User hasn't contributed yet."
 msgstr ""
 
@@ -1095,100 +1162,100 @@ msgstr ""
 msgid "License updated!"
 msgstr ""
 
-#: osmtm/views/project.py:73
+#: osmtm/views/project.py:72
 msgid "Sorry, this project doesn't  exist"
 msgstr "Desculpe, este projeto não existe"
 
-#: osmtm/views/project.py:148 osmtm/views/project.py:192
+#: osmtm/views/project.py:140 osmtm/views/project.py:184
 msgid "Untitled project"
 msgstr ""
 
-#: osmtm/views/project.py:171
+#: osmtm/views/project.py:163
 msgid "Project #${project_id} created successfully"
 msgstr "Projeto #${project_id} criado com sucesso!"
 
-#: osmtm/views/project.py:177 osmtm/views/project.py:202
+#: osmtm/views/project.py:169 osmtm/views/project.py:194
 #, python-format
 msgid "Sorry, could not create the project. <br />%s"
 msgstr ""
 
-#: osmtm/views/project.py:196
+#: osmtm/views/project.py:188
 msgid "Successfully imported ${n} geometries"
 msgstr "Geometrias ${n} importadas com sucesso!"
 
-#: osmtm/views/task.py:84
+#: osmtm/views/task.py:83
 msgid "Cannot update task. Record lock for update."
 msgstr ""
 
-#: osmtm/views/task.py:89
+#: osmtm/views/task.py:88
 msgid "This task doesn't exist."
 msgstr ""
 
-#: osmtm/views/task.py:97
+#: osmtm/views/task.py:96
 msgid "You need to lock the task first."
 msgstr ""
 
-#: osmtm/views/task.py:165
+#: osmtm/views/task.py:164
 msgid "Task marked as done. Thanks for your contribution"
 msgstr "Parcela definida como terminada. Obrigado pela sua contribuição!"
 
-#: osmtm/views/task.py:184
+#: osmtm/views/task.py:183
 msgid "Task already locked."
 msgstr "Parcela atualmente bloqueada."
 
-#: osmtm/views/task.py:190
+#: osmtm/views/task.py:189
 msgid "Task assigned to someone else."
 msgstr "Parcela atribuída a outra pessoa."
 
-#: osmtm/views/task.py:195
+#: osmtm/views/task.py:194
 msgid "Task locked. You can start mapping."
 msgstr "Parcela bloqueada. Pode começar a mapear."
 
-#: osmtm/views/task.py:212
+#: osmtm/views/task.py:211
 msgid "Task unlocked."
 msgstr "Parcela desbloqueada."
 
-#: osmtm/views/task.py:224
+#: osmtm/views/task.py:223
 msgid "Comment added."
 msgstr "Comentário adicionado."
 
-#: osmtm/views/task.py:261
+#: osmtm/views/task.py:260
 msgid "You were mentioned in a comment - Task ${link}"
 msgstr "Foste mencionado num comentário - Task ${link}"
 
-#: osmtm/views/task.py:287
+#: osmtm/views/task.py:286
 msgid "Task ${link} invalidated"
 msgstr "Parcela #{link} invalidada"
 
-#: osmtm/views/task.py:302
+#: osmtm/views/task.py:301
 msgid "Task validated."
 msgstr "Parcela validada."
 
-#: osmtm/views/task.py:305
+#: osmtm/views/task.py:304
 msgid "Task invalidated."
 msgstr "Parcela invalidada."
 
-#: osmtm/views/task.py:432
+#: osmtm/views/task.py:431
 msgid "Random task... none available! Sorry."
 msgstr "Desculpe, nenhuma parcela encontra-se disponível."
 
-#: osmtm/views/task.py:445
+#: osmtm/views/task.py:444
 msgid "You cannot assign an already locked task"
 msgstr "Não é possível atribuir uma parcela bloqueada"
 
-#: osmtm/views/task.py:455
+#: osmtm/views/task.py:454
 msgid "Task assigned."
 msgstr "Parcela atribuída."
 
-#: osmtm/views/task.py:469
+#: osmtm/views/task.py:468
 msgid "Task assignment removed"
 msgstr "Removida a atribuição desta parcela"
 
-#: osmtm/views/task.py:501
+#: osmtm/views/task.py:500
 msgid "Task difficulty changed."
 msgstr "Dificuldade da parcela alterada."
 
-#: osmtm/views/task.py:514
+#: osmtm/views/task.py:513
 msgid "Task difficulty removed"
 msgstr "Dificuldade da parcela removida."
 
