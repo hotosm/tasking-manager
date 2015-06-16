@@ -16,5 +16,7 @@ trans.nl_NL = osmtm/locale/nl_NL/LC_MESSAGES/osmtm.po
 trans.pt = osmtm/locale/pt/LC_MESSAGES/osmtm.po
 trans.pt_BR = osmtm/locale/pt_BR/LC_MESSAGES/osmtm.po
 trans.ru = osmtm/locale/ru/LC_MESSAGES/osmtm.po
+trans.sl = osmtm/locale/sl/LC_MESSAGES/osmtm.po
 trans.zh_TW = osmtm/locale/zh_TW/LC_MESSAGES/osmtm.po
+trans.uk = osmtm/locale/uk/LC_MESSAGES/osmtm.po
 
