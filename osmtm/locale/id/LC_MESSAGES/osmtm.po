@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
+# adityo dwijananto <adz.only@gmail.com>, 2015
 # Emir Hartato <emir.hartato@gmail.com>, 2014
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2013
 msgid ""
@@ -10,8 +11,8 @@ msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-06-16 12:04+0200\n"
-"PO-Revision-Date: 2015-06-16 10:04+0000\n"
-"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"PO-Revision-Date: 2015-06-24 04:32+0000\n"
+"Last-Translator: adityo dwijananto <adz.only@gmail.com>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/osm-tasking-manager2/language/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,7 +36,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeneity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr ""
+msgstr "Tasking Manager OSM adalah alat pemetaan yang didesain dan dibuat Humanitarian OSM Team untuk pemetaan bersama. Tujuan dari alat ini adalah untuk membagi pekerjaan pemetaan menjadi beberapa area kecil yang bisa dikerjakan secara cepat. Ini menunjukkan area mana yang butuh dipetakan dan area mana yang butuh divalidasi. <br />Pendekatan ini memfasilitasi distribusi pekerjaan ke berbagai pemeta dalam konteks kebencanaan. Alat ini juga memungkinkan untuk mengatur proses dan kesamaan dari hasil pekerjaan yang dikerjakan (contoh elemen apa saja yang dipetakan, tag spesifik yang digunakan, dll)."
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
@@ -61,7 +62,7 @@ msgstr "Beberapa referensi yang dapat membantu anda menggunakan Tasking Manager:
 
 #: osmtm/templates/about.mako:54
 msgid "Open Source"
-msgstr ""
+msgstr "Open Source"
 
 #: osmtm/templates/about.mako:56
 msgid ""
@@ -89,7 +90,7 @@ msgstr "dengan bantuan dari <a href=\"https://github.com/hotosm/osm-tasking-mana
 
 #: osmtm/templates/about.mako:70
 msgid "Version"
-msgstr ""
+msgstr "Versi"
 
 #: osmtm/templates/base.mako:51
 msgid "About"
@@ -101,7 +102,7 @@ msgstr "masuk ke OpenStreetMap"
 
 #: osmtm/templates/base.mako:115
 msgid "Fork the code on ${github_link}."
-msgstr ""
+msgstr "Ambil kode pada ${github_link}."
 
 #: osmtm/templates/custom.mako:6
 msgid "Questions About Tasks, Mapping or HOT?"
@@ -160,7 +161,7 @@ msgstr "Update terakhir"
 
 #: osmtm/templates/home.mako:17 osmtm/templates/user.mako:92
 msgid "Projects"
-msgstr ""
+msgstr "Proyek"
 
 #: osmtm/templates/home.mako:43
 msgid "Search"
@@ -213,23 +214,23 @@ msgstr "url citra satelit hanya tersedia setelah anda menyetujui lisensi"
 
 #: osmtm/templates/imagery.mako:35
 msgid "${license} license agreement"
-msgstr ""
+msgstr "${license} perjanjian lisensi"
 
 #: osmtm/templates/imagery.mako:36
 msgid "Access to this imagery is limited by the ${license_agreement_link}."
-msgstr ""
+msgstr "Akses ke citra satelit ini dibatasi oleh ${license_agreement_link}."
 
 #: osmtm/templates/imagery.mako:43
 msgid "You have already acknowledged the terms of this license."
-msgstr ""
+msgstr "Anda sudah mengakui syarat dan ketentuan dari lisensi ini."
 
 #: osmtm/templates/imagery.mako:46
 msgid "review and acknowledge"
-msgstr ""
+msgstr "meninjau dan mengakui"
 
 #: osmtm/templates/imagery.mako:47
 msgid "You need to ${review_and_acknowledge_link} the agreement."
-msgstr ""
+msgstr "Anda harus perjanjian ${review_and_acknowledge_link}. "
 
 #: osmtm/templates/imagery.mako:53
 msgid "You need to accept the license first"
@@ -237,52 +238,52 @@ msgstr "Sebelumnya, Anda harus menyetujui lisensi"
 
 #: osmtm/templates/license.edit.mako:4
 msgid "Edit License"
-msgstr ""
+msgstr "Mengedit Lisensi"
 
 #: osmtm/templates/license.edit.mako:10
 msgid "Name"
-msgstr ""
+msgstr "Nama"
 
 #: osmtm/templates/license.edit.mako:12
 msgid "A name for the license (provider, for example)"
-msgstr ""
+msgstr "Nama untuk lisensi (misalnya penyedia)"
 
 #: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:55
 #: osmtm/templates/project.edit.mako:190 osmtm/templates/project.mako:49
 msgid "Description"
-msgstr ""
+msgstr "Deskripsi"
 
 #: osmtm/templates/license.edit.mako:17
 msgid "The license terms"
-msgstr ""
+msgstr "Syarat lisensi"
 
 #: osmtm/templates/license.edit.mako:20
 msgid "Plain Text"
-msgstr ""
+msgstr "Teks Biasa"
 
 #: osmtm/templates/license.edit.mako:22
 msgid "A short version of the terms"
-msgstr ""
+msgstr "Versi pendek dari syarat"
 
 #: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:92
 msgid "Save the modifications"
-msgstr ""
+msgstr "Simpan modifikasi"
 
 #: osmtm/templates/license.edit.mako:29
 msgid "Create the new license"
-msgstr ""
+msgstr "Buat lisensi baru"
 
 #: osmtm/templates/license.edit.mako:32
 msgid "Delete"
-msgstr ""
+msgstr "Hapus"
 
 #: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:91
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 #: osmtm/templates/license.edit.mako:40
 msgid "Are you sure you want to delete this license?"
-msgstr ""
+msgstr "Apakah anda yakin ingin menghapus lisensi ini?"
 
 #: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
 msgid "Licenses"
@@ -290,29 +291,29 @@ msgstr "Lisensi"
 
 #: osmtm/templates/license.mako:10
 msgid "${license_name} License Acknowledgement"
-msgstr ""
+msgstr "${license_name} Pengakuan Lisensi"
 
 #: osmtm/templates/license.mako:11
 msgid ""
 "Access via this site to imagery identified as <em>\"${license_name}\"</em> "
 "is subject to the following usage terms:"
-msgstr ""
+msgstr "Akses melalui situs ini untuk mengidentifikasi citra satelit sebagai <em>\"${license_name}\"</em> yang menjadi subyek kepada syarat dan ketentuan penggunaan dibawah ini:"
 
 #: osmtm/templates/license.mako:24 osmtm/views/license.py:41
 msgid "I AGREE"
-msgstr ""
+msgstr "SAYA SETUJU"
 
 #: osmtm/templates/license.mako:25
 msgid "No, thank you"
-msgstr ""
+msgstr "Tidak, terima kasih"
 
 #: osmtm/templates/licenses.mako:16
 msgid "edit"
-msgstr ""
+msgstr "mengedit"
 
 #: osmtm/templates/licenses.mako:23
 msgid "Create new license"
-msgstr ""
+msgstr "Membuat lisensi baru"
 
 #: osmtm/templates/message.mako:3 osmtm/templates/message.mako:18
 #: osmtm/templates/user.messages.mako:4 osmtm/templates/user_menu.mako:12
@@ -347,11 +348,11 @@ msgstr "Petunjuk"
 #: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:413
 #: osmtm/templates/project.mako:21
 msgid "Edit"
-msgstr ""
+msgstr "Mengedit"
 
 #: osmtm/templates/project.edit.mako:57
 msgid "Area"
-msgstr ""
+msgstr "Area"
 
 #: osmtm/templates/project.edit.mako:58
 #: osmtm/templates/project.instructions.mako:33
@@ -360,19 +361,19 @@ msgstr "Citra satelit"
 
 #: osmtm/templates/project.edit.mako:59
 msgid "Priority Areas"
-msgstr ""
+msgstr "Area Prioritas"
 
 #: osmtm/templates/project.edit.mako:60
 msgid "Allowed Users"
-msgstr ""
+msgstr "Pengguna yang diperbolehkan"
 
 #: osmtm/templates/project.edit.mako:61
 msgid "Misc"
-msgstr ""
+msgstr "Lainnya"
 
 #: osmtm/templates/project.edit.mako:105
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: osmtm/templates/project.edit.mako:110 osmtm/templates/project.mako:10
 msgid "Archived"
@@ -388,15 +389,15 @@ msgstr "Konsep"
 
 #: osmtm/templates/project.edit.mako:125
 msgid "Priority"
-msgstr ""
+msgstr "Prioritas"
 
 #: osmtm/templates/project.edit.mako:141
 msgid "Name of the project"
-msgstr ""
+msgstr "Nama proyek"
 
 #: osmtm/templates/project.edit.mako:165
 msgid "Short Description"
-msgstr ""
+msgstr "Deskripsi singkat"
 
 #: osmtm/templates/project.edit.mako:200
 #: osmtm/templates/project.instructions.mako:7
@@ -405,11 +406,11 @@ msgstr "Entitas yang dipetakan"
 
 #: osmtm/templates/project.edit.mako:203
 msgid "primary roads, secondary roads, buildings"
-msgstr ""
+msgstr "jalan primer, jalan sekunder, bangunan"
 
 #: osmtm/templates/project.edit.mako:207
 msgid "The list of entities to map."
-msgstr ""
+msgstr "Daftar entitas yang dipetakan."
 
 #: osmtm/templates/project.edit.mako:211
 #: osmtm/templates/project.instructions.mako:19
@@ -418,72 +419,72 @@ msgstr "Komentar perubahan"
 
 #: osmtm/templates/project.edit.mako:217
 msgid "Comments users are recommended to add to upload commits."
-msgstr ""
+msgstr "Komen pengguna sangat direkomendasikan untuk ditambahkan ketika mengunggah perubahan."
 
 #: osmtm/templates/project.edit.mako:218 osmtm/templates/project.edit.mako:246
 msgid "For example:"
-msgstr ""
+msgstr "Sebagai contoh:"
 
 #: osmtm/templates/project.edit.mako:218
 msgid "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
-msgstr ""
+msgstr "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
 
 #: osmtm/templates/project.edit.mako:227
 msgid "Detailed Instructions"
-msgstr ""
+msgstr "Instruksi Lengkap"
 
 #: osmtm/templates/project.edit.mako:240
 msgid "Per Task Instructions (optional)"
-msgstr ""
+msgstr "Instruksi setiap Task (opsional)"
 
 #: osmtm/templates/project.edit.mako:245
 msgid ""
 "Put here anything that can be useful to users while taking a task. {x}, {y} "
 "and {z} will be replaced by the corresponding parameters for each task."
-msgstr ""
+msgstr "Letakkan disini untuk semua yang berguna untuk user ketika sedang mengambil sebuah task. {x}, {y}, dan {z} akan digantikan oleh parameter terkait untuk setiap task."
 
 #: osmtm/templates/project.edit.mako:246
 msgid ""
 "\" This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
 " to load the data into JOSM"
-msgstr ""
+msgstr "\"Task ini melibatkan pemuatan data tambahan. Klik [disini](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) untuk menampilkan data kedalam JOSM"
 
 #: osmtm/templates/project.edit.mako:257
 msgid "Area modifications are not available yet."
-msgstr ""
+msgstr "Modifikasi area saat ini belum tersedia."
 
 #: osmtm/templates/project.edit.mako:266
 msgid "${count_of} priority area(s)"
-msgstr ""
+msgstr "${count_of} area prioritas"
 
 #: osmtm/templates/project.edit.mako:269
 msgid ""
 "If you want mappers to work on the highest priority areas first, draw one or"
 " more polygons within the project area."
-msgstr ""
+msgstr "Jika anda ingin mapper untuk mengerjakan area dengan tingkat prioritas tertinggi terlebih dahulu, gambar satu atau lebih poligon didalam area proyek."
 
 #: osmtm/templates/project.edit.mako:286
 msgid "URL to service"
-msgstr ""
+msgstr "URL yang disediakan"
 
 #: osmtm/templates/project.edit.mako:289
 msgid "Note:"
-msgstr ""
+msgstr "Catatan:"
 
 #: osmtm/templates/project.edit.mako:289
 msgid ""
 "Follow this format for TMS urls.<br>tms[22]:http://hiu-"
 "maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
-msgstr ""
+msgstr "Ikuti format ini untuk url TMS.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
 
 #: osmtm/templates/project.edit.mako:295
 msgid "Required License"
-msgstr ""
+msgstr "Lisensi yang dibutuhkan"
 
 #: osmtm/templates/project.edit.mako:321
 msgid "Private"
-msgstr ""
+msgstr "Pribadi"
 
 #: osmtm/templates/project.edit.mako:324
 msgid ""
@@ -492,7 +493,7 @@ msgid ""
 " first must visit the URL for your instance of OSMTM and Authorize access to"
 " their OpenStreetMap account. After they've done this, their username should"
 " be available for the administrator to add."
-msgstr ""
+msgstr "Pribadi berarti hanya diberikan kepada daftar user yang bisa mengakses proyek ini. Agar nama user bisa digunakan untuk ditambahkan di User yang di perbolehkan - mereka harus datang mengunjungi URL untuk keperluan OSMTM dan mengautorisasi akses ke akun OpenStreetMap mereka. Setelah mereka melakukan ini, nama pengguna sudah tersedia untuk ditambahkan oleh administrator."
 
 #: osmtm/templates/project.edit.mako:329
 msgid "Allowed users"
@@ -500,55 +501,55 @@ msgstr "Pengguna yang diperbolehkan"
 
 #: osmtm/templates/project.edit.mako:352
 msgid "Type a username"
-msgstr ""
+msgstr "Ketik nama user"
 
 #: osmtm/templates/project.edit.mako:355
 msgid "Add user"
-msgstr ""
+msgstr "Tambah user"
 
 #: osmtm/templates/project.edit.mako:373
 msgid "Project due date"
-msgstr ""
+msgstr "Tenggat waktu proyek"
 
 #: osmtm/templates/project.edit.mako:381
 msgid "The date after which the project will automatically be archived."
-msgstr ""
+msgstr "Tanggal setelah proyek disimpan secara otomatis."
 
 #: osmtm/templates/project.edit.mako:387
 msgid "JOSM Preset"
-msgstr ""
+msgstr "Preset JOSM"
 
 #: osmtm/templates/project.edit.mako:392
 msgid "A JOSM Preset has already been added to this project."
-msgstr ""
+msgstr "Preset JOSM sudah ditambahkan kedalam proyek ini."
 
 #: osmtm/templates/project.edit.mako:399
 msgid "Tip:"
-msgstr ""
+msgstr "Tips:"
 
 #: osmtm/templates/project.edit.mako:400
 msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
-msgstr ""
+msgstr "Anda bisa menggunakan <a href class=\"markdown\">Markdown</a>.(HTML tidak diperbolehkan)"
 
 #: osmtm/templates/project.edit.mako:416
 msgid "Preview"
-msgstr ""
+msgstr "Pra-tampilan"
 
 #: osmtm/templates/project.instructions.mako:12
 msgid "The list of elements we ask you to map"
-msgstr ""
+msgstr "Daftar elemen yang kami minta ke anda untuk dipetakan"
 
 #: osmtm/templates/project.instructions.mako:24
 msgid "The comment to put when uploading data to the OSM database"
-msgstr ""
+msgstr "Komentar yang dimasukkan ketika mengupload data ke database OSM"
 
 #: osmtm/templates/project.instructions.mako:43
 msgid "preset"
-msgstr ""
+msgstr "preset"
 
 #: osmtm/templates/project.instructions.mako:44
 msgid "Using JOSM? Please use the dedicated ${preset_link}."
-msgstr ""
+msgstr "Menggunakan JOSM? Tolong gunakan ${preset_link} yang sudah disiapkan."
 
 #: osmtm/templates/project.instructions.mako:55
 msgid "Start contributing"
@@ -556,7 +557,7 @@ msgstr "Mulai berkontribusi"
 
 #: osmtm/templates/project.mako:17
 msgid "Export"
-msgstr ""
+msgstr "Export"
 
 #: osmtm/templates/project.mako:51
 msgid "Contribute"
@@ -576,33 +577,33 @@ msgstr "Memuat"
 
 #: osmtm/templates/project.mako:105
 msgid "Task doesn't exist."
-msgstr ""
+msgstr "Task tidak tersedia."
 
 #: osmtm/templates/project.mako:106
 msgid "an error occured"
-msgstr ""
+msgstr "Sebuah error muncul"
 
 #: osmtm/templates/project.mako:107
 msgid ""
 "JOSM remote control did not respond. Do you have JOSM running and configured"
 " to be controlled remotely?"
-msgstr ""
+msgstr "Remote control JOSM tidak merespon. Apakah Anda sudah menjalankan JOSM dan mengatur untuk diatur secara jarak jauh?"
 
 #: osmtm/templates/project.mako:109
 msgid "Something wrong happened"
-msgstr ""
+msgstr "Seuatu yang salah terjadi"
 
 #: osmtm/templates/project.mako:110
 msgid "Please login first"
-msgstr ""
+msgstr "Silahkan login dulu"
 
 #: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:33
 msgid "Map data © ${osm_link} contributors"
-msgstr ""
+msgstr "Map data © ${osm_link} kontributor"
 
 #: osmtm/templates/project.mako:116
 msgid "Cur. worked on "
-msgstr ""
+msgstr "Sedang dikerjakan"
 
 #: osmtm/templates/project.mako:117
 msgid "Ready"
@@ -633,36 +634,36 @@ msgstr "Prioritas tinggi"
 
 #: osmtm/templates/project.new.mako:4
 msgid "Project New"
-msgstr ""
+msgstr "Proyek Baru"
 
 #: osmtm/templates/project.new.mako:27
 msgid "Draw the area of interest"
-msgstr ""
+msgstr "Gambar area yang diinginkan "
 
 #: osmtm/templates/project.new.mako:28
 msgid "Dropped file could not be loaded"
-msgstr ""
+msgstr "File yang dimasukkan tidak bisa ditampilkan"
 
 #: osmtm/templates/project.new.mako:29
 msgid "Dropped file was unreadable"
-msgstr ""
+msgstr "File yang dimasukkan tidak bisa dibaca"
 
 #: osmtm/templates/project.new.mako:30
 msgid "Please provide a .geojson or a .kml file"
-msgstr ""
+msgstr "Harap berikan file .geojson atau .kml"
 
 #: osmtm/templates/project.new.mako:44 osmtm/templates/project.new.mako:84
 #: osmtm/templates/project.new.mako:133 osmtm/templates/project.new.mako:176
 msgid "Step ${number}"
-msgstr ""
+msgstr "Langkah ${number}"
 
 #: osmtm/templates/project.new.mako:49
 msgid "Draw"
-msgstr ""
+msgstr "Gambar"
 
 #: osmtm/templates/project.new.mako:50
 msgid "${draw_link} the area of interest on the map."
-msgstr ""
+msgstr "${draw_link} area yang diinginkan dipeta."
 
 #: osmtm/templates/project.new.mako:55 osmtm/templates/task.empty.mako:21
 msgid "or"
@@ -670,36 +671,36 @@ msgstr "atau"
 
 #: osmtm/templates/project.new.mako:62
 msgid "Provide a .geojson or .kml file."
-msgstr ""
+msgstr "Berikan file .geojson atau .kml"
 
 #: osmtm/templates/project.new.mako:62
 msgid "Import"
-msgstr ""
+msgstr "Import"
 
 #: osmtm/templates/project.new.mako:63
 msgid "${import_link} a <em>GeoJSON</em> or <em>KML</em> file."
-msgstr ""
+msgstr "${import_link} file <em>GeoJSON</em> atau <em>KML</em>."
 
 #: osmtm/templates/project.new.mako:68
 msgid "Want to use an <em>.osm</em> file instead?"
-msgstr ""
+msgstr "Apakah anda ingin menggunakan file <em>.osm</em> saja?"
 
 #: osmtm/templates/project.new.mako:71
 msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
-msgstr ""
+msgstr "Anda bisa menggunakan ${geojson_link} untuk merubahnya ke <em>GeoJSON</em>."
 
 #: osmtm/templates/project.new.mako:85
 msgid "${step_number}  - Type of project"
-msgstr ""
+msgstr "${step_number} - Tipe proyek"
 
 #: osmtm/templates/project.new.mako:92
 msgid "Square Grid"
-msgstr ""
+msgstr "Grid Persegi"
 
 #: osmtm/templates/project.new.mako:96
 msgid ""
 "Area of interest is automatically split into grid cells. Each one is a task."
-msgstr ""
+msgstr "Area yang diinginkan secara otomatis akan dibagi menjadi beberapa kotak. Setiap kotak adalah sebuah task."
 
 #: osmtm/templates/project.new.mako:103
 msgid "You cannot select this option unless you import a file with polygons."
@@ -707,44 +708,44 @@ msgstr "Anda tidak dapat memilih pilihan ini kecuali anda mengimpor sebuah file 
 
 #: osmtm/templates/project.new.mako:106
 msgid "Arbitrary Geometries"
-msgstr ""
+msgstr "Arbitrary Geometries"
 
 #: osmtm/templates/project.new.mako:110
 msgid "Each polygon represents a task."
-msgstr ""
+msgstr "Setiap poligon merepresentasikan sebuah task."
 
 #: osmtm/templates/project.new.mako:119 osmtm/templates/project.new.mako:156
 #: osmtm/templates/project.new.mako:186
 msgid "Back"
-msgstr ""
+msgstr "Kemabli"
 
 #: osmtm/templates/project.new.mako:121
 msgid "Next"
-msgstr ""
+msgstr "Berikutnya"
 
 #: osmtm/templates/project.new.mako:137
 msgid "Tile size"
-msgstr ""
+msgstr "Ukuran tile"
 
 #: osmtm/templates/project.new.mako:145
 msgid "Computing..."
-msgstr ""
+msgstr "Menghitung..."
 
 #: osmtm/templates/project.new.mako:149 osmtm/templates/project.new.mako:180
 msgid "A new project will be created with ${number} tasks."
-msgstr ""
+msgstr "Sebuah proyek baru akan dibuat dengan ${number} task."
 
 #: osmtm/templates/project.new.mako:158 osmtm/templates/project.new.mako:188
 msgid "Create project"
-msgstr ""
+msgstr "Buat proyek"
 
 #: osmtm/templates/project.new.mako:164
 msgid "Creating tiles, please wait..."
-msgstr ""
+msgstr "Membuat tile, mohon tunggu..."
 
 #: osmtm/templates/project.new.mako:193
 msgid "Creating project, please wait..."
-msgstr ""
+msgstr "Membuat proyek, mohon tunggu..."
 
 #: osmtm/templates/project.stats.mako:5
 msgid "Contributors"
@@ -756,23 +757,23 @@ msgstr "Ditentukan"
 
 #: osmtm/templates/start.mako:4
 msgid "OSM Tasking Manager"
-msgstr ""
+msgstr "OSM Tasking Manager"
 
 #: osmtm/templates/start.mako:13
 msgid "Welcome, new user!"
-msgstr ""
+msgstr "Selamat datang, pengguna baru!"
 
 #: osmtm/templates/start.mako:17
 msgid "You're ready to use the Tasking Manager."
-msgstr ""
+msgstr "Anda sudah siap menggunakan Tasking Manager."
 
 #: osmtm/templates/start.mako:17
 msgid "Since you are the first user you'll be given admin rights."
-msgstr ""
+msgstr "Karena anda adalah orang pertama anda akan diberikan hak admin."
 
 #: osmtm/templates/start.mako:20
 msgid "Please login"
-msgstr ""
+msgstr "Silahkan login"
 
 #: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
@@ -847,7 +848,7 @@ msgstr "Tingkat kesulitan belum diatur"
 
 #: osmtm/templates/task.difficulty.mako:46
 msgid "Unknown difficulty"
-msgstr ""
+msgstr "Kesulitan yang tidak diketahui"
 
 #: osmtm/templates/task.editors.mako:8
 msgid "Edit with"
@@ -877,15 +878,15 @@ msgstr "Komentar"
 
 #: osmtm/templates/task.history.mako:38
 msgid "${user} marked ${tasklink} as <b>done</b>"
-msgstr ""
+msgstr "${user} menandai ${tasklink} sebagai <b>selesai</b>"
 
 #: osmtm/templates/task.history.mako:41
 msgid "${user} <b>invalidated</b> ${tasklink}"
-msgstr ""
+msgstr "${user} <b>membatalkan</b> ${tasklink}"
 
 #: osmtm/templates/task.history.mako:44
 msgid "${user} <b>validated</b> ${tasklink}"
-msgstr ""
+msgstr "${user} <b>membenarkan</b> ${tasklink}"
 
 #: osmtm/templates/task.history.mako:50
 msgid "Marked as done"
@@ -942,7 +943,7 @@ msgstr "Hilangkan semua pilihan"
 
 #: osmtm/templates/task.mako:23
 msgid "Task #${number}"
-msgstr ""
+msgstr "Task #${number}"
 
 #: osmtm/templates/task.mako:68
 msgid "See the changesets in the OSM database for this area."
@@ -950,15 +951,15 @@ msgstr "Lihat perubahan pada database OSM untuk wilayah ini."
 
 #: osmtm/templates/task.mako:69
 msgid "OSM changesets"
-msgstr ""
+msgstr "OSM changesets"
 
 #: osmtm/templates/task.mako:112
 msgid "See the changes in this area using the overpass-turbo API."
-msgstr ""
+msgstr "Lihat perubahan di area ini menggunakan API overpass-turbo."
 
 #: osmtm/templates/task.mako:112
 msgid "overpass-turbo"
-msgstr ""
+msgstr "overpass-turbo"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -966,7 +967,7 @@ msgstr "Task terlalu besar?"
 
 #: osmtm/templates/task.split.mako:9
 msgid "You cannot split this task more."
-msgstr ""
+msgstr "Anda tidak dapat membagi tugas ini lagi."
 
 #: osmtm/templates/task.split.mako:13
 msgid "Are you sure you want to split this task?"
@@ -990,7 +991,7 @@ msgstr "Validasi task ini jika anda berpikir pekerjaan ini telah selesai."
 
 #: osmtm/templates/task.state.done.mako:27
 msgid "You cannot validate a task that you have personally marked as done."
-msgstr ""
+msgstr "Anda tidak bisa membenarkan task yang sudah anda tandai selesai."
 
 #: osmtm/templates/task.state.done.mako:43
 msgid "Validate"
@@ -1000,12 +1001,12 @@ msgstr "Validasi"
 msgid ""
 "Stop working on this task and unlock it. You may resume work on it again "
 "later."
-msgstr ""
+msgstr "Berhenti mengerjakan task ini dan buka. Anda bisa melanjutkan kerja ini nanti."
 
 #: osmtm/templates/task.state.ready.mako:5
 msgid ""
 "Mark this task as done if you have completed all items in the instructions."
-msgstr ""
+msgstr "Tandai task ini sebagai selesai jika anda telah menyelesaikan semua item yang diinstruksikan."
 
 #: osmtm/templates/task.state.ready.mako:22
 msgid "Mark task as done"
@@ -1023,7 +1024,7 @@ msgstr "Mulai memetakan"
 msgid ""
 "Lock this task to tell others that you are currently reviewing it. Validate "
 "that this task has been mapped correctly and completely."
-msgstr ""
+msgstr "Kunci task ini untuk memberitahukan ke orang lain bahwa anda saat ini sedang meninjaunya. Validasi task ini untuk memberitahu bahwa task ini sudah dipetkan lengkap dan benar."
 
 #: osmtm/templates/task.unlocked.mako:26
 msgid "Review the work"
@@ -1035,35 +1036,35 @@ msgstr "Profil pengguna"
 
 #: osmtm/templates/user.mako:20
 msgid "User: ${username}"
-msgstr ""
+msgstr "User: ${username}"
 
 #: osmtm/templates/user.mako:24
 msgid "This is <b>You</b>!"
-msgstr ""
+msgstr "Ini <b>Anda</b>!"
 
 #: osmtm/templates/user.mako:28
 msgid "OSM User Profile"
-msgstr ""
+msgstr "Profil OSM pengguna"
 
 #: osmtm/templates/user.mako:29
 msgid "OSM Profile"
-msgstr ""
+msgstr "Profil OSM"
 
 #: osmtm/templates/user.mako:35
 msgid "This user joined OSM "
-msgstr ""
+msgstr "User ini bergabung OSM"
 
 #: osmtm/templates/user.mako:43
 msgid "OSM User Changeset History"
-msgstr ""
+msgstr "Riwayat Changeset User OSM"
 
 #: osmtm/templates/user.mako:44
 msgid "OSM Edit History"
-msgstr ""
+msgstr "Riwayat Perubahan OSM"
 
 #: osmtm/templates/user.mako:50
 msgid "This user has submitted ${changes} total changesets."
-msgstr ""
+msgstr "User ini telah memasukkan ${changes} total changeset."
 
 #: osmtm/templates/user.mako:60
 msgid "This user is an administrator."
@@ -1071,11 +1072,11 @@ msgstr "Pengguna ini merupakan seorang administrator."
 
 #: osmtm/templates/user.mako:62 osmtm/templates/user.mako:78
 msgid "Remove privileges"
-msgstr ""
+msgstr "Hapus hak pakai"
 
 #: osmtm/templates/user.mako:67
 msgid "Set as administrator"
-msgstr ""
+msgstr "Atur sebagai admin"
 
 #: osmtm/templates/user.mako:76
 msgid "This user is a project manager."
@@ -1083,31 +1084,31 @@ msgstr "Pengguna ini merupakan seorang manajer proyek."
 
 #: osmtm/templates/user.mako:83
 msgid "Set as project manager"
-msgstr ""
+msgstr "Atur sebagai manajer proyek"
 
 #: osmtm/templates/user.mako:94
 msgid "This user contributed to the following projects:"
-msgstr ""
+msgstr "User ini telah berkontribusi kedalam proyek berikut:"
 
 #: osmtm/templates/user.mako:99
 msgid "Project Details"
-msgstr ""
+msgstr "Rincian Proyek"
 
 #: osmtm/templates/user.mako:103
 msgid "${count} tiles"
-msgstr ""
+msgstr "${count} tile"
 
 #: osmtm/templates/user.mako:110
 msgid "User hasn't contributed yet."
-msgstr ""
+msgstr "User ini belum berkontribusi."
 
 #: osmtm/templates/user.messages.mako:14
 msgid "From"
-msgstr ""
+msgstr "Dari"
 
 #: osmtm/templates/user.messages.mako:15
 msgid "Subject"
-msgstr ""
+msgstr "Subyek"
 
 #: osmtm/templates/user_menu.mako:10
 msgid "Your page"
@@ -1119,15 +1120,15 @@ msgstr "Logout"
 
 #: osmtm/templates/user_menu.mako:19
 msgid "Users list"
-msgstr ""
+msgstr "Daftar user"
 
 #: osmtm/templates/user_menu.mako:23
 msgid "Manage licenses"
-msgstr ""
+msgstr "Atur lisensi"
 
 #: osmtm/templates/user_menu.mako:28
 msgid "Create a new project"
-msgstr ""
+msgstr "Buat proyek baru"
 
 #: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
 #: osmtm/templates/users.mako:30
@@ -1136,31 +1137,31 @@ msgstr "Pengguna"
 
 #: osmtm/templates/users.mako:31
 msgid "Keys:"
-msgstr ""
+msgstr "Keys:"
 
 #: osmtm/templates/users.mako:33
 msgid "Administrator"
-msgstr ""
+msgstr "Admin"
 
 #: osmtm/templates/users.mako:34
 msgid "Project Manager"
-msgstr ""
+msgstr "Manajer proyek"
 
 #: osmtm/views/license.py:58
 msgid "License doesn't exist!"
-msgstr ""
+msgstr "Lisensi tidak tersedia!"
 
 #: osmtm/views/license.py:62
 msgid "License removed!"
-msgstr ""
+msgstr "Lisensi dihapus"
 
 #: osmtm/views/license.py:84
 msgid "License created!"
-msgstr ""
+msgstr "Lisensi dibuat!"
 
 #: osmtm/views/license.py:86
 msgid "License updated!"
-msgstr ""
+msgstr "Lisensi diperbaharui!"
 
 #: osmtm/views/project.py:72
 msgid "Sorry, this project doesn't  exist"
@@ -1168,7 +1169,7 @@ msgstr "Maaf, proyek ini tidak tersedia"
 
 #: osmtm/views/project.py:140 osmtm/views/project.py:184
 msgid "Untitled project"
-msgstr ""
+msgstr "Proyek tanpa nama"
 
 #: osmtm/views/project.py:163
 msgid "Project #${project_id} created successfully"
@@ -1177,7 +1178,7 @@ msgstr "Proyek #${project_id}  telah berhasil dibuat"
 #: osmtm/views/project.py:169 osmtm/views/project.py:194
 #, python-format
 msgid "Sorry, could not create the project. <br />%s"
-msgstr ""
+msgstr "Maaf, tidak bisa membuat proyek. <br />%s"
 
 #: osmtm/views/project.py:188
 msgid "Successfully imported ${n} geometries"
@@ -1185,15 +1186,15 @@ msgstr "${n} geometri telah sukses diimpor"
 
 #: osmtm/views/task.py:83
 msgid "Cannot update task. Record lock for update."
-msgstr ""
+msgstr "Tidak bisa memperbaharui task. Rekam untuk memperbaharui"
 
 #: osmtm/views/task.py:88
 msgid "This task doesn't exist."
-msgstr ""
+msgstr "Task ini tidak ada."
 
 #: osmtm/views/task.py:96
 msgid "You need to lock the task first."
-msgstr ""
+msgstr "Anda perlu mengkunci task dulu."
 
 #: osmtm/views/task.py:164
 msgid "Task marked as done. Thanks for your contribution"
@@ -1261,7 +1262,7 @@ msgstr "Tingkat kesulitan tugas dihilangkan"
 
 #: osmtm/views/user.py:78
 msgid "You probably don't want to remove your privileges"
-msgstr ""
+msgstr "Mungkin anda tidak ingin menghapus hak anda"
 
 #: osmtm/views/user.py:109
 msgid "Sorry, this user doesn't  exist"

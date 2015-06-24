@@ -3,17 +3,18 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
-# Alexandre Magno <alexandre.mbm@gmail.com>, 2014
+# Alexandre Magno <alexandre.mbm@gmail.com>, 2014-2015
 # Alexandre Magno <alexandre.mbm@gmail.com>, 2014
 # Fernando Trebien <fernando.trebien@gmail.com>, 2015
+# Pierre GIRAUD <pierre.giraud@gmail.com>, 2015
 # Tassia Camoes Araujo <tassia@acaia.ca>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-06-16 12:04+0200\n"
-"PO-Revision-Date: 2015-06-16 10:04+0000\n"
-"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"PO-Revision-Date: 2015-06-18 14:34+0000\n"
+"Last-Translator: Pierre GIRAUD <pierre.giraud@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/osm-tasking-manager2/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,7 +38,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeneity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr ""
+msgstr "OSM Tasking Manager é uma ferramenta de mapeamento colaborativo desenvolvida pelo Humanitarian OSM Team. Seu propósito é dividir grandes esforços de mapeamento em tarefas menores que possam ser completadas mais rapidamente. A interface mostra quais áreas precisam ser mapeadas e quais estão apenas aguardando validação. <br />Essa abordagem facilita a distribuição de tarefas entre vários mapeadores num contexto de emergência. Também permite controlar o progresso e a homogeneidade do trabalho realizado (isto é, focar o mapeamento em etiquetação e objetos específicos, por exemplo)."
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
@@ -539,7 +540,7 @@ msgstr "Visualização"
 
 #: osmtm/templates/project.instructions.mako:12
 msgid "The list of elements we ask you to map"
-msgstr ""
+msgstr "A lista de elementos que desejamos que você mapeie"
 
 #: osmtm/templates/project.instructions.mako:24
 msgid "The comment to put when uploading data to the OSM database"
@@ -759,23 +760,23 @@ msgstr "Atribuída"
 
 #: osmtm/templates/start.mako:4
 msgid "OSM Tasking Manager"
-msgstr ""
+msgstr "OSM Tasking Manager"
 
 #: osmtm/templates/start.mako:13
 msgid "Welcome, new user!"
-msgstr ""
+msgstr "Bem vindo!"
 
 #: osmtm/templates/start.mako:17
 msgid "You're ready to use the Tasking Manager."
-msgstr ""
+msgstr "Você está pronto para usar o Tasking Manager."
 
 #: osmtm/templates/start.mako:17
 msgid "Since you are the first user you'll be given admin rights."
-msgstr ""
+msgstr "Já que você é o primeiro usuário, terá direitos de administração."
 
 #: osmtm/templates/start.mako:20
 msgid "Please login"
-msgstr ""
+msgstr "Por favor, autentique-se"
 
 #: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
@@ -961,7 +962,7 @@ msgstr "Ver as alterações nesta área usando a API overpass-turbo."
 
 #: osmtm/templates/task.mako:112
 msgid "overpass-turbo"
-msgstr ""
+msgstr "overpass-turbo"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -993,7 +994,7 @@ msgstr "Declare a tarefa como válida se você considera que o trabalho está co
 
 #: osmtm/templates/task.state.done.mako:27
 msgid "You cannot validate a task that you have personally marked as done."
-msgstr ""
+msgstr "Você não pode validar uma tarefa concluída por você mesmo."
 
 #: osmtm/templates/task.state.done.mako:43
 msgid "Validate"
@@ -1003,12 +1004,12 @@ msgstr "Validar"
 msgid ""
 "Stop working on this task and unlock it. You may resume work on it again "
 "later."
-msgstr ""
+msgstr "Pare de trabalhar nesta tarefa e deixe-a desbloqueada. Outra hora você poderá retomar o trabalho nela."
 
 #: osmtm/templates/task.state.ready.mako:5
 msgid ""
 "Mark this task as done if you have completed all items in the instructions."
-msgstr ""
+msgstr "Marque esta tarefa como concluída se você tiver satisfeito a todos os itens presentes nas instruções."
 
 #: osmtm/templates/task.state.ready.mako:22
 msgid "Mark task as done"
@@ -1054,19 +1055,19 @@ msgstr "Perfil OSM"
 
 #: osmtm/templates/user.mako:35
 msgid "This user joined OSM "
-msgstr ""
+msgstr "Este usuário atenticou-se no OpenStreetMap"
 
 #: osmtm/templates/user.mako:43
 msgid "OSM User Changeset History"
-msgstr ""
+msgstr "Histórico de conjuntos de alterações no OpenStreetMap"
 
 #: osmtm/templates/user.mako:44
 msgid "OSM Edit History"
-msgstr ""
+msgstr "Histórico de edições no OpenStreetMap"
 
 #: osmtm/templates/user.mako:50
 msgid "This user has submitted ${changes} total changesets."
-msgstr ""
+msgstr "Este usuário submeteu ${changes} conjuntos de alterações."
 
 #: osmtm/templates/user.mako:60
 msgid "This user is an administrator."

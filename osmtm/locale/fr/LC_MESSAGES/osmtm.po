@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-06-16 12:04+0200\n"
-"PO-Revision-Date: 2015-06-16 10:04+0000\n"
-"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"PO-Revision-Date: 2015-06-19 10:36+0000\n"
+"Last-Translator: severin.menard <severin.menard@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/osm-tasking-manager2/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,7 +39,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeneity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr ""
+msgstr "Le gestionnaire de tâches OSM est un outil de cartographie développé pour Humanitarian OSM Team. Le but de cet outil est de diviser une zone à cartographier en plus petites tâches qui peuvent être réalisées rapidement. On y voit les zones qui doivent être cartographiées ainsi que les zones dont la cartographie a besoin d'être validée.<br />Cette approche facilite la distribution des tâches aux différentes mappeurs dans un contexte d'urgence. Cela permet aussi de contrôler l'avancement et l'homogénéité du travail effectué (ex. éléments à couvrir, mots-clés à utiliser, etc.)."
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
@@ -445,7 +445,7 @@ msgstr "Instructions pour chaque tâche (optionnel)"
 msgid ""
 "Put here anything that can be useful to users while taking a task. {x}, {y} "
 "and {z} will be replaced by the corresponding parameters for each task."
-msgstr ""
+msgstr "Ajouter ici tout ce qui peut être utile aux utilisateurs lorsqu'ils vont prendre une tâche. {x}, {y} et {z} seront remplacés par les paramètres correspondants pour chaque tâche."
 
 #: osmtm/templates/project.edit.mako:246
 msgid ""
@@ -541,7 +541,7 @@ msgstr "Aperçu"
 
 #: osmtm/templates/project.instructions.mako:12
 msgid "The list of elements we ask you to map"
-msgstr ""
+msgstr "La liste des éléments que nous vous demandons de cartographier"
 
 #: osmtm/templates/project.instructions.mako:24
 msgid "The comment to put when uploading data to the OSM database"
@@ -761,23 +761,23 @@ msgstr "Attribué"
 
 #: osmtm/templates/start.mako:4
 msgid "OSM Tasking Manager"
-msgstr ""
+msgstr "OSM Gestionaire de tâches"
 
 #: osmtm/templates/start.mako:13
 msgid "Welcome, new user!"
-msgstr ""
+msgstr "Bienvenue à vous, nouvel utilisateur !"
 
 #: osmtm/templates/start.mako:17
 msgid "You're ready to use the Tasking Manager."
-msgstr ""
+msgstr "Vous êtes prêt à utiliser le Gestionaire de tâches."
 
 #: osmtm/templates/start.mako:17
 msgid "Since you are the first user you'll be given admin rights."
-msgstr ""
+msgstr "Comme vous êtes le premier utilisateur, vous allez recevoir les droits d'administration."
 
 #: osmtm/templates/start.mako:20
 msgid "Please login"
-msgstr ""
+msgstr "Veuillez vous authentifier"
 
 #: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
@@ -963,7 +963,7 @@ msgstr "Visualiser les changements dans cette zone en utilisant l'API overpass-t
 
 #: osmtm/templates/task.mako:112
 msgid "overpass-turbo"
-msgstr ""
+msgstr "overpass-turbo"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -995,7 +995,7 @@ msgstr "Validez cette tâche si vous considérez que le travail est complet."
 
 #: osmtm/templates/task.state.done.mako:27
 msgid "You cannot validate a task that you have personally marked as done."
-msgstr ""
+msgstr "Vous ne pouvez pas valider une tâche que vous avez marquée comme faite."
 
 #: osmtm/templates/task.state.done.mako:43
 msgid "Validate"
@@ -1005,12 +1005,12 @@ msgstr "Valider"
 msgid ""
 "Stop working on this task and unlock it. You may resume work on it again "
 "later."
-msgstr ""
+msgstr "Arrêter de travailler sur cette tâche et la débloquer. Vous pourrez continuer à travailler dessus plus tard."
 
 #: osmtm/templates/task.state.ready.mako:5
 msgid ""
 "Mark this task as done if you have completed all items in the instructions."
-msgstr ""
+msgstr "Marquez cette tâche comme réalisée si vous avez fait le travail demandé dans les instructions."
 
 #: osmtm/templates/task.state.ready.mako:22
 msgid "Mark task as done"
@@ -1056,19 +1056,19 @@ msgstr "Profil d'utilisateur OSM"
 
 #: osmtm/templates/user.mako:35
 msgid "This user joined OSM "
-msgstr ""
+msgstr "Cet utilisateur a rejoint OSM"
 
 #: osmtm/templates/user.mako:43
 msgid "OSM User Changeset History"
-msgstr ""
+msgstr "Historique des modifications dans OSM pour cet utilisateur"
 
 #: osmtm/templates/user.mako:44
 msgid "OSM Edit History"
-msgstr ""
+msgstr "Historique des éditions dans OSM"
 
 #: osmtm/templates/user.mako:50
 msgid "This user has submitted ${changes} total changesets."
-msgstr ""
+msgstr "Cet utilisateur a transmis un total de ${changes} modifications."
 
 #: osmtm/templates/user.mako:60
 msgid "This user is an administrator."
