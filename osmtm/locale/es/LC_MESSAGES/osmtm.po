@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-06-16 12:04+0200\n"
-"PO-Revision-Date: 2015-06-16 10:04+0000\n"
-"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
+"PO-Revision-Date: 2015-06-17 03:41+0000\n"
+"Last-Translator: Marco Antonio <marcoantoniofrias@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/osm-tasking-manager2/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,7 +27,7 @@ msgstr ""
 #: osmtm/templates/about.mako:10 osmtm/templates/base.mako:121
 #: osmtm/templates/home.mako:93
 msgid "About the Tasking Manager"
-msgstr "Sobre el Tasking Manager"
+msgstr "Sobre el Gestor de Tareas"
 
 #: osmtm/templates/about.mako:12
 msgid ""
@@ -39,7 +39,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeneity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr ""
+msgstr "El Gestor de Tareas de OSM es una herramienta de cartografía diseñada y construida para el Equipo colaborativo de cartografiado Humanitario de OSM. El propósito de esta herramienta es dividir el trabajo de cartografiado en tareas más pequeñas que puedan ser completadas rápidamente. Muestra que áreas necesitan ser cartografiadas y que áreas necesitan ser validadas. <br />De esta manera se facilita el reparto de las tareas entre los distintos cartógrafos en un contexto de emergencia. También permite controlar el progreso y la homogeneidad del trabajo hecho (es decir, los elementos a cubrir, las etiquetas específicas a utilizar, etc.)."
 
 #: osmtm/templates/about.mako:14
 msgid "Sponsorship and Funding"
@@ -120,7 +120,7 @@ msgid ""
 "down channel list:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT "
 "IRC Channel #hot</a><br /><br />General inquries and comments are welcomed "
 "at: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
-msgstr "Si usted tiene alguna pregunta acerca de un proyecto, una tarea o la cartografía en general, por favor pregunte en nuestra lista de correo: <a href=\"https://lists.openstreetmap.org/listinfo/hot\">Lista de correo electrónico de HOT</a><br /><br />O visítenos en nuestro Canal de Chat IRC, sólo tiene que seleccionar #hot del menú desplegable de la lista de canales:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT Canal IRC #hot</a><br /><br />Consultas generales y comentarios son bienvenidos en: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
+msgstr "Si tiene alguna pregunta acerca de un proyecto, una tarea o la cartografía en general, pregunte en nuestra lista de correo: <a href=\"https://lists.openstreetmap.org/listinfo/hot\">Lista de correo electrónico de HOT</a><br /><br />O visítenos en nuestro Canal de Chat IRC, sólo tiene que seleccionar #hot del menú desplegable de la lista de canales:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT Canal IRC #hot</a><br /><br />Consultas generales y comentarios son bienvenidos en: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
 
 #: osmtm/templates/custom.mako:11
 msgid "Email HOT at"
@@ -188,7 +188,7 @@ msgid ""
 "various mappers in a context of emergency. It also permits to control the "
 "progress and the homogeinity of the work done (ie. Elements to cover, "
 "specific tags to use, etc.)."
-msgstr "El Gestor de Tareas de OpenStreetMap (OSM Tasking Manager) es una herramienta de cartografía colaborativa diseñada por el Equipo Humanitario de OpenStreetMap (Humanitarian OSM Team). El objetivo es dividir un trabajo de cartografía en pequeñas tareas que se puedan completar rápidamente. En él se muestran las áreas que necesitan ser cartografiadas y las que necesitan ser validadas. <br/>De esta manera se facilita el reparto de las tareas entre los distintos cartógrafos en un contexto de emergencia. También permite controlar el progreso y la homogeneidad del trabajo hecho (es decir, los elementos a cubrir, las etiquetas específicas que hay que usar, etc.)."
+msgstr "El Gestor de Tareas de OpenStreetMap (OSM Tasking Manager) es una herramienta de cartografía colaborativa diseñada por el Equipo Humanitario de OpenStreetMap (Humanitarian OSM Team). El objetivo es dividir un trabajo de cartografía en pequeñas tareas que se puedan completar rápidamente. En él se muestran las áreas que necesitan ser cartografiadas y las que necesitan ser validadas. <br/>De esta manera se facilita el reparto de las tareas entre los distintos cartógrafos en un contexto de emergencia. También permite controlar el progreso y la homogeneidad del trabajo hecho (por ejemplo los elementos a cubrir, las etiquetas específicas a utilizar, etc.)."
 
 #: osmtm/templates/home.mako:129
 msgid "${locked} user is currently working on this project"
@@ -466,7 +466,7 @@ msgstr "${count_of} área/s prioritaria/s"
 msgid ""
 "If you want mappers to work on the highest priority areas first, draw one or"
 " more polygons within the project area."
-msgstr "Si quieres que los usuarios trabajen primero en las áreas de alta prioridad, dibuja uno o más polígonos dentro de la área del proyecto."
+msgstr "Si quiere que los cartógrafos trabajen primero en las áreas de alta prioridad, dibuje uno o más polígonos dentro de la área del proyecto."
 
 #: osmtm/templates/project.edit.mako:286
 msgid "URL to service"
@@ -533,7 +533,7 @@ msgstr "Consejo:"
 
 #: osmtm/templates/project.edit.mako:400
 msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
-msgstr "Usted puede usar <a href class=\"markdown\">Markdown</a>. (HTML no está permitido)"
+msgstr "Puede utilizar <a href class=\"markdown\">Markdown</a>. (HTML no está permitido)"
 
 #: osmtm/templates/project.edit.mako:416
 msgid "Preview"
@@ -541,7 +541,7 @@ msgstr "Vista previa"
 
 #: osmtm/templates/project.instructions.mako:12
 msgid "The list of elements we ask you to map"
-msgstr ""
+msgstr "La lista de elementos que le pedimos cartografiar"
 
 #: osmtm/templates/project.instructions.mako:24
 msgid "The comment to put when uploading data to the OSM database"
@@ -687,11 +687,11 @@ msgstr "${import_link} al fichero <em>GeoJSON</em> o <em>KML</em>."
 
 #: osmtm/templates/project.new.mako:68
 msgid "Want to use an <em>.osm</em> file instead?"
-msgstr "¿Deseas usar alternativamente un fichero <em>.osm</em>?"
+msgstr "¿Quiere utilizar alternativamente un archivo <em>.osm</em>?"
 
 #: osmtm/templates/project.new.mako:71
 msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
-msgstr "Puedes usar ${geojson_link} para convertirlo a <em>GeoJSON</em>."
+msgstr "Puede utilizar ${geojson_link} para convertirlo a <em>GeoJSON</em>."
 
 #: osmtm/templates/project.new.mako:85
 msgid "${step_number}  - Type of project"
@@ -761,23 +761,23 @@ msgstr "Asignada"
 
 #: osmtm/templates/start.mako:4
 msgid "OSM Tasking Manager"
-msgstr ""
+msgstr "Gestor de Tareas de OSM"
 
 #: osmtm/templates/start.mako:13
 msgid "Welcome, new user!"
-msgstr ""
+msgstr "¡Bienvenido, nuevo usuario!"
 
 #: osmtm/templates/start.mako:17
 msgid "You're ready to use the Tasking Manager."
-msgstr ""
+msgstr "Usted está listo para utilizar el Gestor de Tareas."
 
 #: osmtm/templates/start.mako:17
 msgid "Since you are the first user you'll be given admin rights."
-msgstr ""
+msgstr "Dado que usted es el primer usuario se le dará derechos de administrador."
 
 #: osmtm/templates/start.mako:20
 msgid "Please login"
-msgstr ""
+msgstr "Inicie sesión"
 
 #: osmtm/templates/task.assigned.mako:18
 msgid "Assign task to someone"
@@ -963,7 +963,7 @@ msgstr "Consulta los cambios en esta área usando la API overpass-turbo."
 
 #: osmtm/templates/task.mako:112
 msgid "overpass-turbo"
-msgstr ""
+msgstr "overpass-turbo"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -971,11 +971,11 @@ msgstr "¿La tarea es demasiado grande?"
 
 #: osmtm/templates/task.split.mako:9
 msgid "You cannot split this task more."
-msgstr "Ya no puedes dividir más esta tarea."
+msgstr "No se puede dividir más esta tarea."
 
 #: osmtm/templates/task.split.mako:13
 msgid "Are you sure you want to split this task?"
-msgstr "¿Estás seguro/a de que quieres dividir esta tarea?"
+msgstr "¿Estás seguro que quiere dividir esta tarea?"
 
 #: osmtm/templates/task.split.mako:15
 msgid "Split"
@@ -995,7 +995,7 @@ msgstr "Valida esta tarea si consideras que el trabajo está completo."
 
 #: osmtm/templates/task.state.done.mako:27
 msgid "You cannot validate a task that you have personally marked as done."
-msgstr ""
+msgstr "No se puede validar un tarea que ha marcado personalmente como hecha."
 
 #: osmtm/templates/task.state.done.mako:43
 msgid "Validate"
@@ -1005,12 +1005,12 @@ msgstr "Validar"
 msgid ""
 "Stop working on this task and unlock it. You may resume work on it again "
 "later."
-msgstr ""
+msgstr "Dejar de trabajar en esta tarea y desbloquearla. Puede reanudar el trabajo sobre esto más tarde."
 
 #: osmtm/templates/task.state.ready.mako:5
 msgid ""
 "Mark this task as done if you have completed all items in the instructions."
-msgstr ""
+msgstr "Marque esta tarea como hecha si ha completado todos los ítems en las instrucciones."
 
 #: osmtm/templates/task.state.ready.mako:22
 msgid "Mark task as done"
@@ -1028,7 +1028,7 @@ msgstr "Comenzar a cartografiar"
 msgid ""
 "Lock this task to tell others that you are currently reviewing it. Validate "
 "that this task has been mapped correctly and completely."
-msgstr "Bloquee esta tarea para decir a otros que usted está actualmente revisándola.  Valide que esta tarea haya sido mapeada correcta y completamente."
+msgstr "Bloquee esta tarea para decir a otros que está actualmente revisándola.  Valide que esta tarea haya sido mapeada correcta y completamente."
 
 #: osmtm/templates/task.unlocked.mako:26
 msgid "Review the work"
@@ -1044,7 +1044,7 @@ msgstr "Usuario: ${username}"
 
 #: osmtm/templates/user.mako:24
 msgid "This is <b>You</b>!"
-msgstr "Este es <b>usted</b>!"
+msgstr "¡Este es <b>usted</b>!"
 
 #: osmtm/templates/user.mako:28
 msgid "OSM User Profile"
@@ -1056,19 +1056,19 @@ msgstr "Perfil OSM"
 
 #: osmtm/templates/user.mako:35
 msgid "This user joined OSM "
-msgstr ""
+msgstr "Este usuario se unió a OSM"
 
 #: osmtm/templates/user.mako:43
 msgid "OSM User Changeset History"
-msgstr ""
+msgstr "Historial del conjunto de cambios de usuario de OSM"
 
 #: osmtm/templates/user.mako:44
 msgid "OSM Edit History"
-msgstr ""
+msgstr "Historial de ediciones de OSM"
 
 #: osmtm/templates/user.mako:50
 msgid "This user has submitted ${changes} total changesets."
-msgstr ""
+msgstr "Este usuario ha enviado ${changes} conjuntos de cambios en total."
 
 #: osmtm/templates/user.mako:60
 msgid "This user is an administrator."
@@ -1214,7 +1214,7 @@ msgstr "Tarea asignada a otra persona."
 
 #: osmtm/views/task.py:194
 msgid "Task locked. You can start mapping."
-msgstr "Tarea bloqueada. Puedes comenzar a cartografiar."
+msgstr "Tarea bloqueada. Puede comenzar a cartografiar."
 
 #: osmtm/views/task.py:211
 msgid "Task unlocked."
@@ -1246,7 +1246,7 @@ msgstr "Tarea aleatoria... ¡no hay ninguna disponible! Lo sentimos."
 
 #: osmtm/views/task.py:444
 msgid "You cannot assign an already locked task"
-msgstr "No puedes asignar una tarea que ya ha sido bloqueada"
+msgstr "No se puede asignar una tarea que ya ha sido bloqueada"
 
 #: osmtm/views/task.py:454
 msgid "Task assigned."
