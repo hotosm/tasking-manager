@@ -25,7 +25,7 @@ CONSUMER_KEY = 'BOFkVgLDXTSMP6VHfiX8MQ'
 CONSUMER_SECRET = '4o4uLSqLWMciG2fE2zGncLcdewPNi9wU1To51Iz2E'
 
 # OSM oauth URLs
-BASE_URL = 'http://www.openstreetmap.org/oauth'
+BASE_URL = 'https://www.openstreetmap.org/oauth'
 REQUEST_TOKEN_URL = '%s/request_token' % BASE_URL
 ACCESS_TOKEN_URL = '%s/access_token' % BASE_URL
 AUTHORIZE_URL = '%s/authorize' % BASE_URL
