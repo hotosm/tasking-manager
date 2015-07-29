@@ -20,7 +20,7 @@ install:
 - createuser www-data --no-superuser --no-createdb --no-createrole -U postgres
 - createdb -O www-data osmtm_tests -U postgres
 - psql -d osmtm_tests -c "CREATE EXTENSION postgis;" -U postgres
-- easy_install flake8
+- pip install flake8
 
 script:
 - source env/bin/activate
