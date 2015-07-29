@@ -14,21 +14,19 @@ before_install:
 
 install:
 - virtualenv env
-- source env/bin/activate
-- pip install --upgrade pip
-- pip install -r requirements.txt
+- env/bin/pip install --upgrade pip
+- env/bin/pip install -r requirements.txt
 - createuser www-data --no-superuser --no-createdb --no-createrole -U postgres
 - createdb -O www-data osmtm_tests -U postgres
 - psql -d osmtm_tests -c "CREATE EXTENSION postgis;" -U postgres
-- pip install flake8
+- env/bin/pip install flake8
 
 script:
-- source env/bin/activate
 - echo [app:main] >> local.test.ini
 - echo sqlalchemy.url = postgresql://www-data:www-data@localhost/osmtm_tests >> local.test.ini
-- nosetests
-- flake8 osmtm --exclude=osmtm/static
+- env/bin/nosetests
+- env/bin/flake8 osmtm --exclude=osmtm/static
 
 after_success:
-- pip install coveralls
-- coveralls
+- env/bin/pip install coveralls
+- env/bin/coveralls
