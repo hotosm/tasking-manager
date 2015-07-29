@@ -127,10 +127,10 @@ To run the tests, use the following command:
 
 1. pull latest updates from the repository: `git pull origin`
 1. update the submodules: `git submodule update`
-1. update/install python modules: `python setup.py develop`
+1. update/install python modules: `./env/bin/python setup.py develop`
 1. create database dump: `pg_dump -Fc -f osmtm2_latest.dmp database_name`
 1. run database migrations: `alembic upgrade head`
-1. compile messages: `python setup.py compile_catalog`
+1. compile messages: `./env/bin/python setup.py compile_catalog`
 1. restart application server
 
 ## Installation as a mod_wsgi Application
@@ -190,10 +190,10 @@ developed code that will become *current* once it gets deployed.
 
 In general managing translation files involves:
 
-* generate *pot* file: `python setup.py extract_messages`
-* initialize a message catalogue file (english): `python setup.py init_catalog -l en`
-  * if the catalogue is already created use: `python setup.py update_catalog`
-* eventually compile messages: `python setup.py compile_catalog`
+* generate *pot* file: `./env/bin/python setup.py extract_messages`
+* initialize a message catalogue file (english): `./env/bin/python setup.py init_catalog -l en`
+  * if the catalogue is already created use: `./env/bin/python setup.py update_catalog`
+* eventually compile messages: `./env/bin/python setup.py compile_catalog`
 * append new language to the `available_languages` configuration variable in *production.ini* file, for example `available_languages = en fr`
 
 ### Using Transifex service
@@ -238,8 +238,8 @@ Example `.transifexrc` file:
 #### Updating source files, locally and on the service
 
 * update pot and source po file
-  * `python setup.py extract_messages`
-  * `python setup.py init_catalog -l en`
+  * `./env/bin/python setup.py extract_messages`
+  * `./env/bin/python setup.py init_catalog -l en`
 
 * push the source file to Transifex service
   * `tx push -s`
@@ -252,4 +252,4 @@ Example `.transifexrc` file:
 * after there are some translation updates, pull latest changes for mapped resources
   * `tx pull -l fr,hr`
 * compile language files
-  * `python setup.py compile_catalog`
+  * `./env/bin/python setup.py compile_catalog`
