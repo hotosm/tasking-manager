@@ -18,8 +18,6 @@ install:
 - pip install --upgrade pip
 - pip install -r requirements.txt
 - createuser www-data --no-superuser --no-createdb --no-createrole -U postgres
-- createdb -O www-data osmtm  -U postgres
-- psql -d osmtm -c "CREATE EXTENSION postgis;" -U postgres
 - createdb -O www-data osmtm_tests -U postgres
 - psql -d osmtm_tests -c "CREATE EXTENSION postgis;" -U postgres
 - easy_install flake8
