@@ -2,31 +2,31 @@ language: python
 python:
 - 2.7
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/build/hotosm/osm-tasking-manager2/env
+
+sudo: false
+
 before_install:
 - deactivate
-- sudo add-apt-repository -y -r ppa:ubuntugis/ppa
-- sudo apt-get update -qq
-- sudo apt-get install postgresql-9.1-postgis
 
 install:
 - virtualenv env
-- source env/bin/activate
-- python setup.py develop
-- sudo service postgresql restart
-- sudo -u postgres createuser www-data --no-superuser --no-createdb --no-createrole
-- sudo -u postgres createdb -O www-data osmtm
-- sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
-- sudo -u postgres createdb -O www-data osmtm_tests
-- sudo -u postgres psql -d osmtm_tests -c "CREATE EXTENSION postgis;"
-- easy_install flake8
+- env/bin/pip install --upgrade pip
+- env/bin/pip install -r requirements.txt
+- createuser www-data --no-superuser --no-createdb --no-createrole -U postgres
+- createdb -O www-data osmtm_tests -U postgres
+- psql -d osmtm_tests -c "CREATE EXTENSION postgis;" -U postgres
+- env/bin/pip install flake8
 
 script:
-- source env/bin/activate
 - echo [app:main] >> local.test.ini
 - echo sqlalchemy.url = postgresql://www-data:www-data@localhost/osmtm_tests >> local.test.ini
-- nosetests
-- flake8 osmtm --exclude=osmtm/static
+- env/bin/nosetests
+- env/bin/flake8 osmtm --exclude=osmtm/static
 
 after_success:
-- pip install coveralls
-- coveralls
+- env/bin/pip install coveralls
+- env/bin/coveralls
