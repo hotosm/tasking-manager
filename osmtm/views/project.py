@@ -12,6 +12,11 @@ from ..models import (
     TaskState,
     TaskLock,
     License,
+    READY,
+    INVALIDATED,
+    DONE,
+    VALIDATED,
+    REMOVED
 )
 from pyramid.security import authenticated_userid
 
@@ -48,7 +53,7 @@ from geojson import (
 import datetime
 import itertools
 
-from .task import get_locked_task
+from .task import get_locked_task, add_comment
 
 from ..utils import (
     parse_geojson,
@@ -491,6 +496,38 @@ def project_preset(request):
         % project.id
     response.content_type = 'application/x-josm-preset'
     return response
+
+
+@view_config(route_name='project_invalidate_all', renderer='json',
+             permission='project_edit')
+def project_invalidate_all(request):
+    if not request.POST.get('comment', None):
+        return {
+            'error': True,
+            'error_msg': 'A comment is required'
+        }
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+    user_id = authenticated_userid(request)
+    user = DBSession.query(User).get(user_id)
+    tasks = project.tasks
+    _ = request.translate
+    # state = INVALIDATED
+    tasks_affected = 0
+    for task in tasks:
+        if task.cur_state.state == TaskState.state_done:
+            tasks_affected += 1
+            task.user = None
+            task.states.append(TaskState(user=user, state=INVALIDATED))
+            task.locks.append(TaskLock(user=None, lock=False))
+            add_comment(request, task, user)
+            DBSession.add(task)
+    if tasks_affected == 0:
+        msg = _('No done tasks to invalidate.')
+    else:
+        msg = _('%d tasks invalidated' % tasks_affected)
+    DBSession.flush()
+    return dict(success=True, msg=msg)
 
 
 def get_contributors(project):

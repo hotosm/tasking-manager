@@ -29,3 +29,17 @@
   </p>
   </div>
 % endif
+
+% if user and (user.is_project_manager or user.is_admin):
+<hr />
+<div class="text-center">
+  <div class="form-group">
+    <textarea id="project_invalidate_comment" name="invalidate_all_comment" class="form-control" placeholder="${_('Leave a comment')}" rows="2"></textarea>
+
+  </div>
+  <a class="btn btn-danger btn-lg btn-invalidate-all">
+     <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
+     ${_('Invalidate all done tasks')}
+  </a>
+</div>
+% endif
