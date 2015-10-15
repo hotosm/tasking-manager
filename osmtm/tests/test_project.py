@@ -727,3 +727,61 @@ class TestProjectFunctional(BaseTestCase):
         self.testapp.get('/', status=200)
         project = DBSession.query(Project).get(project_id)
         self.assertEqual(project.status, Project.status_archived)
+
+
+    def test_project_invalidate_all(self):
+        import transaction
+        from osmtm.models import (Project, Task, TaskState, DBSession,
+                                  INVALIDATED, READY)
+        project_id = self.create_project()
+        project = DBSession.query(Project).get(project_id)
+        tasks = project.tasks
+        headers = self.login_as_user1()
+
+        # create some done tasks
+        self.testapp.get('/project/%d/task/%d/lock' % (project_id, tasks[0].id),
+                         headers=headers, status=200, xhr=True)
+        self.testapp.get('/project/%d/task/%d/done' % (project_id, tasks[0].id),
+                         headers=headers, status=200, xhr=True)
+        self.testapp.get('/project/%d/task/%d/lock' % (project_id, tasks[3].id),
+                         headers=headers, status=200, xhr=True)
+        self.testapp.get('/project/%d/task/%d/done' % (project_id, tasks[3].id),
+                         headers=headers, status=200, xhr=True)
+        params = {
+            'comment': 'test'
+        }
+
+        # test auth failure for non-admin user
+        self.testapp.post('/project/%d/invalidate_all' % project_id,
+                          params=params, headers=headers, xhr=True, status=403)
+
+        # test invalidation by authorized user
+        headers = self.login_as_project_manager()
+
+        self.testapp.post('/project/%d/invalidate_all' % project_id,
+                          params=params, headers=headers, xhr=True, status=200)
+
+        # check that our done tasks are invalidated
+        task0 = DBSession.query(Task).get((project_id, tasks[0].id))
+        self.assertEqual(task0.cur_state.state, INVALIDATED)
+        task3 = DBSession.query(Task).get((project_id, tasks[3].id))
+        self.assertEqual(task3.cur_state.state, INVALIDATED)
+
+        # check that other tasks are not touched
+        task1 = DBSession.query(Task).get((project_id, tasks[1].id))
+        self.assertEqual(task1.cur_state.state, READY)
+
+        # check 0 tasks to invalidate
+        res = self.testapp.post('/project/%d/invalidate_all' % project_id,
+                          params=params, headers=headers, xhr=True, status=200)
+        self.assertEqual(res.json['msg'], "No done tasks to invalidate.")
+
+        # check that it fails if no comment is passed
+        params = {}
+        res = self.testapp.post('/project/%d/invalidate_all' % project_id,
+                          params=params, headers=headers, xhr=True, status=200)
+        self.assertTrue(res.json.has_key('error'))
+
+
+
+
