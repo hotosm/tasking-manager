@@ -730,7 +730,6 @@ class TestProjectFunctional(BaseTestCase):
 
 
     def test_project_invalidate_all(self):
-        import transaction
         from osmtm.models import (Project, Task, TaskState, DBSession,
                                   INVALIDATED, READY)
         project_id = self.create_project()
