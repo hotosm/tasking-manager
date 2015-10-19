@@ -14,6 +14,8 @@ from osmtm.models import (
 )
 from sqlalchemy_i18n.manager import translation_manager
 
+from pyramid import testing
+
 local_settings_path = 'local.test.ini'
 
 # raise an error if the file doesn't exist
@@ -35,13 +37,13 @@ def populate_db():
     import geoalchemy2
     import shapely
 
+    testing.setUp()
     config = ConfigParser.ConfigParser()
     config.read(local_settings_path)
     db_url = config.get('app:main', 'sqlalchemy.url')
     engine = create_engine(db_url)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-
     DBSession.configure(bind=engine)
 
     # those users are immutables ie. they're not suppose to change during tests
@@ -91,6 +93,7 @@ class BaseTestCase(unittest.TestCase):
     def setUp(self):
         from osmtm import main
         from webtest import TestApp
+        self.config = testing.setUp()
         settings = {
             'available_languages': 'en fr',
             'available_languages_full': 'English, Français',
@@ -104,7 +107,7 @@ class BaseTestCase(unittest.TestCase):
         from osmtm.models import DBSession
         DBSession.bind.dispose()  # dispose engine
         DBSession.remove()
-
+        testing.tearDown()
         # forget any remembered authentication
         self.__forget()
 

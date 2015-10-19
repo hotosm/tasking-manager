@@ -76,6 +76,8 @@ from sqlalchemy_i18n import (
     translation_base,
 )
 
+from pyramid.threadlocal import get_current_registry
+
 
 class ST_Multi(GenericFunction):
     name = 'ST_Multi'
@@ -614,10 +616,12 @@ EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
 @event.listens_for(Project, "after_insert")
 def project_after_insert(mapper, connection, target):
     project_table = Project.__table__
+    settings = get_current_registry().settings
+    comment_prefix = settings.get('default_comment_prefix', '#hotosm-project')
     connection.execute(
         project_table.update().
         where(project_table.c.id == target.id).
-        values(changeset_comment=u'#hotosm-project-%d' % target.id)
+        values(changeset_comment=u'%s-%d' % (comment_prefix, target.id))
     )
 
 
