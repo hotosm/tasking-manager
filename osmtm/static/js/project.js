@@ -846,25 +846,6 @@ osmtm.project = (function() {
     });
   }
 
-  function invalidateAll(e) {
-    e.preventDefault();
-    var data = {
-      'comment': $('#project_invalidate_comment').val()
-    };
-    var url = base_url + "project/" + project_id + "/invalidate_all";
-    $.post(url, data, function(data) {
-      if (data.success) {
-        $('#task_msg').html(data.msg).show()
-          .delay(3000)
-          .fadeOut();
-      } else {
-        $('#task_error_msg').html(data.error_msg).show()
-          .delay(3000)
-          .fadeOut();
-      }
-    });
-  }
-
   return {
     init: function() {
       createMap();
@@ -912,7 +893,6 @@ osmtm.project = (function() {
         $("button[type=submit]", $(this).parents("form")).removeAttr("clicked");
         $(this).attr("clicked", "true");
       });
-      $(document).on('click', '.btn-invalidate-all', invalidateAll);
     },
 
     initAtWho: function() {

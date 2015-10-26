@@ -36,6 +36,39 @@
   </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="invalidateAllModal" tabindex="-1" role="dialog" aria-labelledby="invalidateAll">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Invalidate All</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          This will mark all tasks currently marked as 'done' as invalid. Please use this only if you are sure of what you are doing.
+        </p>
+        <div class="text-center">
+          <div class="form-group">
+            <textarea id="project_invalidate_comment" name="invalidate_all_comment" class="form-control" placeholder="${_('Leave a comment')}" rows="2"></textarea>
+
+          </div>
+          <p class="errors">
+
+          </p>
+          <a class="btn btn-danger btn-lg btn-invalidate-all">
+             <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
+             ${_('Invalidate all done tasks')}
+          </a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
   var converter = new Showdown.converter();
   var project_id = ${project.id};
@@ -392,6 +425,19 @@ geometry = loads(str(project.area.geometry.data))
     ${_('A JOSM Preset has already been added to this project.')}
   </span>
   % endif
+</div>
+
+<div class="form-group">
+  <p>
+    Click below if project instructions have changed, or if for some reason you need to invalidate all done tasks in a single step. <br />
+    WARNING: This cannot be undone.
+  </p>
+  <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#invalidateAllModal">
+    Invalidate All Tasks
+  </button>
+  <p id="invalidateAllSuccess">
+    
+  </p>
 </div>
 </%block>
 <%block name="markdown_link">

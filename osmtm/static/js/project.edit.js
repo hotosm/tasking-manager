@@ -191,6 +191,32 @@ osmtm.project.edit.priority_areas = (function() {
   };
 })();
 
+function invalidateAll(e) {
+  e.preventDefault();
+  var data = {
+    'comment': $('#project_invalidate_comment').val()
+  };
+  var url = base_url + "project/" + project_id + "/invalidate_all";
+  var $modal = $('#invalidateAllModal');
+  var $errors = $modal.find('.errors');
+  $errors.text('');
+  var $success = $('#invalidateAllSuccess');
+  $success.text('');
+  $.post(url, data, function(data) {
+    if (data.success) {
+      $modal.modal('hide');
+      $success.text(data.msg);
+    } else {
+      var error = data.error_msg;
+      $errors.text(error);
+      // $('#task_error_msg').html(data.error_msg).show()
+      //   .delay(3000)
+      //   .fadeOut();
+    }
+  });
+}
+
 $(document).ready(function() {
   osmtm.project.edit.priority_areas.init();
+  $(document).on('click', '.btn-invalidate-all', invalidateAll);
 });
