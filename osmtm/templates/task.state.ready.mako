@@ -19,7 +19,7 @@
       data-container="body"
       data-original-title="${donetip}"
       class="btn btn-success">
-      <i class="glyphicon glyphicon-ok icon-white"></i> ${_("Mapping complete")}
+      <i class="glyphicon glyphicon-ok icon-white"></i> ${_("Mark task as done")}
     </button>
   </form>
 % endif
