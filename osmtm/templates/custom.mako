@@ -2,6 +2,11 @@
   OSM Tasking Manager
 </%def>
 
+<%def  name="main_page_new_to_mapping_info()">
+  <h4>${_('New to Mapping?')}</h4>
+  ${_('Just jump over to <a target="_blank" href="http//www.openstreetmap.org">OpenStreetMap</a>, create an account, and then visit <a target="_blank" href="http://learnosm.org/en/beginner/id-editor">this tutorial</a>. Then come back here to help map for people on the ground!')|n}
+</%def>
+
 <%def  name="main_page_community_info()">
   <h4>${_('Questions About Tasks, Mapping or HOT?')}</h4>
   ${_('If you have any questions about a project, a task or mapping in general please ask on our mailing list: <a href="https://lists.openstreetmap.org/listinfo/hot">HOT E-Mail List</a><br /><br />Or visit us in our IRC Chat Channel, just select #hot from the pop down channel list:<br /><a href="http://irc.openstreetmap.org/">OSM HOT IRC Channel #hot</a><br /><br />General inquries and comments are welcomed at: <a href="mailto:info@hotosm.org" target="_top">info@hotosm.org</a>')|n}
