@@ -501,18 +501,17 @@ def project_preset(request):
 @view_config(route_name='project_invalidate_all', renderer='json',
              permission='project_edit')
 def project_invalidate_all(request):
+    _ = request.translate
     if not request.POST.get('comment', None):
         return {
             'error': True,
-            'error_msg': 'A comment is required'
+            'error_msg': _('A comment is required.')
         }
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
     user_id = authenticated_userid(request)
     user = DBSession.query(User).get(user_id)
     tasks = project.tasks
-    _ = request.translate
-    # state = INVALIDATED
     tasks_affected = 0
     for task in tasks:
         if task.cur_state.state == TaskState.state_done:

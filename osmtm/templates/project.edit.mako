@@ -43,11 +43,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Invalidate All</h4>
+        <h4 class="modal-title" id="myModalLabel">${_('Invalidate All')}</h4>
       </div>
       <div class="modal-body">
         <p>
-          This will mark all tasks currently marked as 'done' as invalid. Please use this only if you are sure of what you are doing.
+          ${_("This will mark all tasks currently marked as 'done' as invalid. Please use this only if you are sure of what you are doing.")}
         </p>
         <div class="text-center">
           <div class="form-group">
@@ -428,15 +428,21 @@ geometry = loads(str(project.area.geometry.data))
 </div>
 
 <div class="form-group">
-  <p>
-    Click below if project instructions have changed, or if for some reason you need to invalidate all done tasks in a single step. <br />
-    WARNING: This cannot be undone.
-  </p>
-  <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#invalidateAllModal">
+  <label>${_('Invalidation')}</label>
+  <br>
+  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#invalidateAllModal">
     Invalidate All Tasks
   </button>
+  <div class="help-block">
+    <p>
+    ${_('Click this button if project instructions have changed, or if for some reason you need to invalidate all done tasks in a single step.')}
+    </p>
+    <p>
+      <span class="glyphicon glyphicon-exclamation-sign"></span>
+      ${_('WARNING: This cannot be undone.')}
+    </p>
+  </div>
   <p id="invalidateAllSuccess">
-    
   </p>
 </div>
 </%block>
