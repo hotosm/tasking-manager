@@ -54,6 +54,10 @@
             <textarea id="project_invalidate_comment" name="invalidate_all_comment" class="form-control" placeholder="${_('Leave a comment')}" rows="2"></textarea>
 
           </div>
+          <div class="form-group">
+            Please enter the number ${project.id} in the box:
+            <input id="project_invalidate_challenge_id" />
+          </div>
           <p class="errors">
 
           </p>
@@ -431,7 +435,7 @@ geometry = loads(str(project.area.geometry.data))
   <label>${_('Invalidation')}</label>
   <br>
   <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#invalidateAllModal">
-    Invalidate All Tasks
+    ${_('Invalidate All Tasks')}
   </button>
   <div class="help-block">
     <p>

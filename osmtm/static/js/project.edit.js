@@ -194,7 +194,8 @@ osmtm.project.edit.priority_areas = (function() {
 function invalidateAll(e) {
   e.preventDefault();
   var data = {
-    'comment': $('#project_invalidate_comment').val()
+    'comment': $('#project_invalidate_comment').val(),
+    'challenge_id': $('#project_invalidate_challenge_id').val()
   };
   var url = base_url + "project/" + project_id + "/invalidate_all";
   var $modal = $('#invalidateAllModal');

@@ -728,7 +728,6 @@ class TestProjectFunctional(BaseTestCase):
         project = DBSession.query(Project).get(project_id)
         self.assertEqual(project.status, Project.status_archived)
 
-
     def test_project_invalidate_all(self):
         from osmtm.models import (Project, Task, TaskState, DBSession,
                                   INVALIDATED, READY)
@@ -754,8 +753,28 @@ class TestProjectFunctional(BaseTestCase):
         self.testapp.post('/project/%d/invalidate_all' % project_id,
                           params=params, headers=headers, xhr=True, status=403)
 
-        # test invalidation by authorized user
+        # test cases with logged in user
         headers = self.login_as_project_manager()
+
+        # test without passing project id as challenge
+        res = self.testapp.post('/project/%d/invalidate_all' % project_id,
+                                params=params, headers=headers, xhr=True, status=200)
+        self.assertTrue(res.json.has_key('error'))
+
+        # test passing a random string as challenge id
+        params['challenge_id'] = 'randomstring'
+        res = self.testapp.post('/project/%d/invalidate_all' % project_id,
+                                params=params, headers=headers, xhr=True, status=200)
+        self.assertTrue(res.json.has_key('error'))
+
+        # test passing a wrong project id as challenge id
+        params['challenge_id'] = 999
+        res = self.testapp.post('/project/%d/invalidate_all' % project_id,
+                                params=params, headers=headers, xhr=True, status=200)
+        self.assertTrue(res.json.has_key('error'))                
+
+        # set correct challenge id
+        params['challenge_id'] = project_id
 
         self.testapp.post('/project/%d/invalidate_all' % project_id,
                           params=params, headers=headers, xhr=True, status=200)

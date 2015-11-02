@@ -502,11 +502,21 @@ def project_preset(request):
              permission='project_edit')
 def project_invalidate_all(request):
     _ = request.translate
+
+    # If user has not entered a comment, return error
     if not request.POST.get('comment', None):
         return {
             'error': True,
             'error_msg': _('A comment is required.')
         }
+
+    challenge_id = request.POST.get('challenge_id', None)
+    if not passes_project_id_challenge(challenge_id, request.matchdict['project']):
+        return {
+            'error': True,
+            'error_msg': _('Please type the project id in the box to confirm')
+        }
+
     id = request.matchdict['project']
     project = DBSession.query(Project).get(id)
     user_id = authenticated_userid(request)
@@ -527,6 +537,23 @@ def project_invalidate_all(request):
         msg = _('%d tasks invalidated' % tasks_affected)
     DBSession.flush()
     return dict(success=True, msg=msg)
+
+
+def passes_project_id_challenge(challenge_id, project_id):
+    """
+    Checks if challenge id is the same as project id.
+    Returns True if yes, False if not
+    """
+    if not challenge_id:
+        return False
+    try:
+        challenge_id_int = int(challenge_id)
+        project_id_int = int(project_id)
+    except:
+        return False
+    if not challenge_id_int == project_id_int:
+        return False
+    return True
 
 
 def get_contributors(project):
