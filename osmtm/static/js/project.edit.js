@@ -191,6 +191,9 @@ osmtm.project.edit.priority_areas = (function() {
   };
 })();
 
+/*
+  Handles invalidate all feature
+*/
 function invalidateAll(e) {
   e.preventDefault();
   var data = {
@@ -207,9 +210,14 @@ function invalidateAll(e) {
     if (data.success) {
       $modal.modal('hide');
       $success.text(data.msg);
+      $success.prepend('<span class="glyphicon glyphicon-ok"></span> ');
+      setTimeout(function() {
+        $success.fadeOut();
+      }, 5000);
     } else {
       var error = data.error_msg;
       $errors.text(error);
+      $errors.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
       // $('#task_error_msg').html(data.error_msg).show()
       //   .delay(3000)
       //   .fadeOut();
