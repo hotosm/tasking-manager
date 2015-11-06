@@ -12,11 +12,7 @@ from ..models import (
     TaskState,
     TaskLock,
     License,
-    READY,
     INVALIDATED,
-    DONE,
-    VALIDATED,
-    REMOVED
 )
 from pyramid.security import authenticated_userid
 
@@ -511,7 +507,8 @@ def project_invalidate_all(request):
         }
 
     challenge_id = request.POST.get('challenge_id', None)
-    if not passes_project_id_challenge(challenge_id, request.matchdict['project']):
+    if not passes_project_id_challenge(challenge_id,
+                                       request.matchdict['project']):
         return {
             'error': True,
             'error_msg': _('Please type the project id in the box to confirm')

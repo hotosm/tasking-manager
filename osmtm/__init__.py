@@ -87,8 +87,8 @@ def main(global_config, **settings):
                      request_method="DELETE")
     config.add_route('project_preset', '/project/{project:\d+}/preset')
     config.add_route('project_users', '/project/{project:\d+}/users')
-    config.add_route('project_invalidate_all', '/project/{project:\d+}/invalidate_all')
-
+    config.add_route('project_invalidate_all',
+                     '/project/{project:\d+}/invalidate_all')
     config.add_route('task_random', '/project/{project:\d+}/random', xhr=True)
     config.add_route('task_empty', '/project/{project:\d+}/task/empty',
                      xhr=True)
