@@ -100,7 +100,7 @@ def oauth_callback(request):  # pragma: no cover
 
         headers = remember(request, id, max_age=20 * 7 * 24 * 60 * 60)
 
-    location = session.get('came_from') or '/'
+    location = session.get('came_from') or request.route_path('home')
     # and redirect to the main page
     return HTTPFound(location=location, headers=headers)
 
