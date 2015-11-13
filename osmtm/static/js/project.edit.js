@@ -218,9 +218,6 @@ function invalidateAll(e) {
       var error = data.error_msg;
       $errors.text(error);
       $errors.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
-      // $('#task_error_msg').html(data.error_msg).show()
-      //   .delay(3000)
-      //   .fadeOut();
     }
   });
 }
