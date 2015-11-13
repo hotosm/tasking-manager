@@ -12,7 +12,6 @@ from ..models import (
     TaskState,
     TaskLock,
     License,
-    INVALIDATED,
 )
 from pyramid.security import authenticated_userid
 
@@ -524,7 +523,8 @@ def project_invalidate_all(request):
         if task.cur_state.state == TaskState.state_done:
             tasks_affected += 1
             task.user = None
-            task.states.append(TaskState(user=user, state=INVALIDATED))
+            task.states.append(TaskState(user=user,
+                                         state=TaskState.state_invalidated))
             task.locks.append(TaskLock(user=None, lock=False))
             add_comment(request, task, user)
             DBSession.add(task)

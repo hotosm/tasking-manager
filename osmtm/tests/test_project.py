@@ -729,8 +729,7 @@ class TestProjectFunctional(BaseTestCase):
         self.assertEqual(project.status, Project.status_archived)
 
     def test_project_invalidate_all(self):
-        from osmtm.models import (Project, Task, DBSession,
-                                  INVALIDATED, READY)
+        from osmtm.models import (Project, Task, DBSession, TaskState)
         project_id = self.create_project()
         project = DBSession.query(Project).get(project_id)
         tasks = project.tasks
@@ -790,13 +789,13 @@ class TestProjectFunctional(BaseTestCase):
 
         # check that our done tasks are invalidated
         task0 = DBSession.query(Task).get((project_id, tasks[0].id))
-        self.assertEqual(task0.cur_state.state, INVALIDATED)
+        self.assertEqual(task0.cur_state.state, TaskState.state_invalidated)
         task3 = DBSession.query(Task).get((project_id, tasks[3].id))
-        self.assertEqual(task3.cur_state.state, INVALIDATED)
+        self.assertEqual(task3.cur_state.state, TaskState.state_invalidated)
 
         # check that other tasks are not touched
         task1 = DBSession.query(Task).get((project_id, tasks[1].id))
-        self.assertEqual(task1.cur_state.state, READY)
+        self.assertEqual(task1.cur_state.state, TaskState.state_ready)
 
         # check 0 tasks to invalidate
         res = self.testapp.post('/project/%d/invalidate_all' % project_id,
