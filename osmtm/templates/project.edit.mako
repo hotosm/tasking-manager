@@ -51,16 +51,16 @@
         </p>
         <div class="text-center">
           <div class="form-group">
-            <textarea id="project_invalidate_comment" name="invalidate_all_comment" class="form-control" placeholder="${_('Leave a comment')}" rows="2"></textarea>
-
+            <label for="project_invalidate_comment" class="control-label">
+              ${_('Invalidation comment')}
+            </label>
+            <textarea id="project_invalidate_comment" name="invalidate_all_comment" class="form-control" placeholder="${_('This will be sent as the invalidation comment to users.')}" rows="2"></textarea>
           </div>
           <div class="form-group">
             Please enter the number ${project.id} in the box:
             <input id="project_invalidate_challenge_id" />
           </div>
-          <p class="errors">
-
-          </p>
+          <p class="errors"></p>
           <a class="btn btn-danger btn-lg btn-invalidate-all">
              <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
              ${_('Invalidate all done tasks')}
