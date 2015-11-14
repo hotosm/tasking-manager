@@ -39,36 +39,35 @@
 
 <!-- Modal -->
 <div class="modal fade" id="invalidateAllModal" tabindex="-1" role="dialog" aria-labelledby="invalidateAll">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">${_('Invalidate All')}</h4>
+        <h4 class="modal-title" id="myModalLabel">${_('Are you sure?')}</h4>
       </div>
       <div class="modal-body">
         <p>
           ${_("This will mark all tasks currently marked as 'done' as invalid. Please use this only if you are sure of what you are doing.")}
         </p>
+        <p>
+          ${_('Please leave a comment. It will be displayed in all the invalidated tasks.')}
+        </p>
+        <p>
+          <textarea id="project_invalidate_comment" name="invalidate_all_comment" class="form-control" placeholder="${_('This will be sent as the invalidation comment to users.')}" rows="2"></textarea>
+        </p>
+        <p>
+          ${_('Please type in the project number id of the repository to confirm.')}
+        </p>
+        <p class="form-group">
+          <input id="project_invalidate_challenge_id" class="input form-control" />
+        </p>
+        <p class="errors"></p>
         <div class="text-center">
-          <div class="form-group">
-            <label for="project_invalidate_comment" class="control-label">
-              ${_('Invalidation comment')}
-            </label>
-            <textarea id="project_invalidate_comment" name="invalidate_all_comment" class="form-control" placeholder="${_('This will be sent as the invalidation comment to users.')}" rows="2"></textarea>
-          </div>
-          <div class="form-group">
-            Please enter the number ${project.id} in the box:
-            <input id="project_invalidate_challenge_id" />
-          </div>
-          <p class="errors"></p>
-          <a class="btn btn-danger btn-lg btn-invalidate-all">
+          <a class="btn btn-danger btn-invalidate-all">
              <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
              ${_('Invalidate all done tasks')}
           </a>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
