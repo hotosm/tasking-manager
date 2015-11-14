@@ -48,7 +48,7 @@ from geojson import (
 import datetime
 import itertools
 
-from .task import get_locked_task
+from .task import get_locked_task, add_comment
 
 from ..utils import (
     parse_geojson,
@@ -491,6 +491,66 @@ def project_preset(request):
         % project.id
     response.content_type = 'application/x-josm-preset'
     return response
+
+
+@view_config(route_name='project_invalidate_all', renderer='json',
+             permission='project_edit')
+def project_invalidate_all(request):
+    _ = request.translate
+
+    # If user has not entered a comment, return error
+    if not request.POST.get('comment', None):
+        return {
+            'error': True,
+            'error_msg': _('A comment is required.')
+        }
+
+    challenge_id = request.POST.get('challenge_id', None)
+    if not passes_project_id_challenge(challenge_id,
+                                       request.matchdict['project']):
+        return {
+            'error': True,
+            'error_msg': _('Please type the project id in the box to confirm')
+        }
+
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+    user_id = authenticated_userid(request)
+    user = DBSession.query(User).get(user_id)
+    tasks = project.tasks
+    tasks_affected = 0
+    for task in tasks:
+        if task.cur_state.state == TaskState.state_done:
+            tasks_affected += 1
+            task.user = None
+            task.states.append(TaskState(user=user,
+                                         state=TaskState.state_invalidated))
+            task.locks.append(TaskLock(user=None, lock=False))
+            add_comment(request, task, user)
+            DBSession.add(task)
+    if tasks_affected == 0:
+        msg = _('No done tasks to invalidate.')
+    else:
+        msg = _('%d tasks invalidated' % tasks_affected)
+    DBSession.flush()
+    return dict(success=True, msg=msg)
+
+
+def passes_project_id_challenge(challenge_id, project_id):
+    """
+    Checks if challenge id is the same as project id.
+    Returns True if yes, False if not
+    """
+    if not challenge_id:
+        return False
+    try:
+        challenge_id_int = int(challenge_id)
+        project_id_int = int(project_id)
+    except:
+        return False
+    if not challenge_id_int == project_id_int:
+        return False
+    return True
 
 
 def get_contributors(project):

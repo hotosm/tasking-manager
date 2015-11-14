@@ -36,6 +36,42 @@
   </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="invalidateAllModal" tabindex="-1" role="dialog" aria-labelledby="invalidateAll">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">${_('Are you sure?')}</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          ${_("This will mark all tasks currently marked as 'done' as invalid. Please use this only if you are sure of what you are doing.")}
+        </p>
+        <p>
+          ${_('Please leave a comment. It will be displayed in all the invalidated tasks.')}
+        </p>
+        <p>
+          <textarea id="project_invalidate_comment" name="invalidate_all_comment" class="form-control" placeholder="${_('This will be sent as the invalidation comment to users.')}" rows="2"></textarea>
+        </p>
+        <p>
+          ${_('Please type in the project number id of the repository to confirm.')}
+        </p>
+        <p class="form-group">
+          <input id="project_invalidate_challenge_id" class="input form-control" />
+        </p>
+        <p class="errors"></p>
+        <div class="text-center">
+          <a class="btn btn-danger btn-invalidate-all">
+             <span class="glyphicon glyphicon-share-alt"></span>&nbsp;
+             ${_('Invalidate all done tasks')}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
   var converter = new Showdown.converter();
   var project_id = ${project.id};
@@ -392,6 +428,25 @@ geometry = loads(str(project.area.geometry.data))
     ${_('A JOSM Preset has already been added to this project.')}
   </span>
   % endif
+</div>
+
+<div class="form-group">
+  <label>${_('Invalidation')}</label>
+  <br>
+  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#invalidateAllModal">
+    ${_('Invalidate All Tasks')}
+  </button>
+  <div class="help-block">
+    <p>
+    ${_('Click this button if project instructions have changed, or if for some reason you need to invalidate all done tasks in a single step.')}
+    </p>
+    <p>
+      <span class="glyphicon glyphicon-exclamation-sign"></span>
+      ${_('WARNING: This cannot be undone.')}
+    </p>
+  </div>
+  <p id="invalidateAllSuccess">
+  </p>
 </div>
 </%block>
 <%block name="markdown_link">

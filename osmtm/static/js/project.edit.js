@@ -191,6 +191,38 @@ osmtm.project.edit.priority_areas = (function() {
   };
 })();
 
+/*
+  Handles invalidate all feature
+*/
+function invalidateAll(e) {
+  e.preventDefault();
+  var data = {
+    'comment': $('#project_invalidate_comment').val(),
+    'challenge_id': $('#project_invalidate_challenge_id').val()
+  };
+  var url = base_url + "project/" + project_id + "/invalidate_all";
+  var $modal = $('#invalidateAllModal');
+  var $errors = $modal.find('.errors');
+  $errors.text('');
+  var $success = $('#invalidateAllSuccess');
+  $success.text('');
+  $.post(url, data, function(data) {
+    if (data.success) {
+      $modal.modal('hide');
+      $success.text(data.msg);
+      $success.prepend('<span class="glyphicon glyphicon-ok"></span> ');
+      setTimeout(function() {
+        $success.fadeOut();
+      }, 5000);
+    } else {
+      var error = data.error_msg;
+      $errors.text(error);
+      $errors.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+    }
+  });
+}
+
 $(document).ready(function() {
   osmtm.project.edit.priority_areas.init();
+  $(document).on('click', '.btn-invalidate-all', invalidateAll);
 });
