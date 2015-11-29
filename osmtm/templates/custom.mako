@@ -17,3 +17,10 @@
   ${_('Follow HOT on')} <a href='http://www.twitter.com/hotosm'>Twitter</a><br />
   ${_('Like HOT on')} <a href='http://facebook.com/hotosm'>Facebook</a>
 </%def>
+
+<%def name="analytics()">
+  <!--
+  put here any code to track usage
+  piwik or google analytics code
+  -->
+</%def>

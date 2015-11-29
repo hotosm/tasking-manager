@@ -124,5 +124,6 @@ ${message | n}
       </div>
     </footer>
 % endif
+  ${custom.analytics()}
   </body>
 </html>
