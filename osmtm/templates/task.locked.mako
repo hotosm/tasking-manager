@@ -11,7 +11,7 @@ time_left = (task.cur_lock.date - (datetime.datetime.utcnow() - EXPIRATION_DELTA
   ${locked_text|n}.&nbsp;
   % if user and task.cur_lock.user== user:
   <a id="unlock" href="${request.route_path('task_unlock', task=task.id, project=task.project_id)}">
-    ${_('Unlock')}</a>
+    ${_('Stop mapping')}</a>
   <span id="task_countdown_text" rel="tooltip"
       data-original-title="${_('If you do not complete or release this task in time, it will be automatically unlocked')}"
       data-container="body"
