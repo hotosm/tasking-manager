@@ -105,7 +105,7 @@ ${message | n}
       </div>
     </div>
 % endif
-
+    ${custom.before_content()}
     <%block name="content"></%block>
 % if page_id is not 'project':
     <footer class="footer">
