@@ -250,8 +250,9 @@ geometry = loads(str(project.area.geometry.data))
              class="form-control"
              value="${project.changeset_comment if project.changeset_comment is not None else ''}"/>
       <span class="help-block">
-        ${_('Comments users are recommended to add to upload commits.')}<br />
-        ${_('For example:')}<em> "${_('Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium')}"</code></em>
+        ${_('Default comments added to uploaded changeset comment field. Users should also be encouraged add text describing what they mapped.')}<br />
+        ${_('Example defaults:')}<em> "${_('#hotosm-guinea-project-470 #missingmaps')}"</em><br />
+        ${_('Hashtags are sometimes used for analysis later, but should be human informative and not overused #group #event for example')}
       </span>
     </div>
 

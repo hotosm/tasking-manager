@@ -21,12 +21,15 @@ from osmtm.mako_filters import markdown_filter
           data-toggle="tooltip"
           data-placement="right"
           data-container="body"
-          title="${_('The comment to put when uploading data to the OSM database')}">
+          title="${_('The default comment entered when uploading data to the OSM database. Please add to the default comment a description of what you actually mapped.')}">
     </span>
   </dt>
   <dd>
     ${project.changeset_comment}
   </dd>
+  <span class="help-block">
+    ${_('When saving your work, leave the default comment but add what you actually mapped, for example "added buildings and a residential road"')}
+  </span>
   % endif
   % if project.imagery:
   <dt>
