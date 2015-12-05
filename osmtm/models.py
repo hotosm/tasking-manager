@@ -617,7 +617,11 @@ EXPIRATION_DELTA = datetime.timedelta(seconds=2 * 60 * 60)
 def project_after_insert(mapper, connection, target):
     project_table = Project.__table__
     settings = get_current_registry().settings
-    comment_prefix = settings.get('default_comment_prefix', '#hotosm-project')
+    # settings may be None
+    # This happens for example when initializing the database
+    default_comment_prefix = settings.get('default_comment_prefix') \
+        if settings is not None else None
+    comment_prefix = default_comment_prefix or '#hotosm-project'
     connection.execute(
         project_table.update().
         where(project_table.c.id == target.id).
