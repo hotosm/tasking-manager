@@ -28,7 +28,7 @@ from osmtm.mako_filters import markdown_filter
     ${project.changeset_comment}
   </dd>
   <span class="help-block">
-    ${_('When saving your work, leave the default comment but add what you actually mapped, for example "added buildings and a residential road"')}
+    ${_('When saving your work, pleaes leave the default comment but add what you actually mapped, for example "added buildings and a residential road".')}
   </span>
   % endif
   % if project.imagery:
