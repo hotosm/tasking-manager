@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.12-dev\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-12-02 22:12+0100\n"
-"PO-Revision-Date: 2015-12-02 22:12+0100\n"
+"POT-Creation-Date: 2015-12-07 11:16+0100\n"
+"PO-Revision-Date: 2015-12-07 11:17+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -371,7 +371,7 @@ msgstr ""
 msgid "Instructions"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:468
+#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:469
 #: osmtm/templates/project.mako:21
 msgid "Edit"
 msgstr ""
@@ -407,7 +407,7 @@ msgid "Area"
 msgstr ""
 
 #: osmtm/templates/project.edit.mako:94
-#: osmtm/templates/project.instructions.mako:33
+#: osmtm/templates/project.instructions.mako:36
 msgid "Imagery"
 msgstr ""
 
@@ -470,76 +470,84 @@ msgid "Changeset Comment"
 msgstr ""
 
 #: osmtm/templates/project.edit.mako:253
-msgid "Comments users are recommended to add to upload commits."
-msgstr ""
-
-#: osmtm/templates/project.edit.mako:254 osmtm/templates/project.edit.mako:282
-msgid "For example:"
+msgid ""
+"Default comments added to uploaded changeset comment field. Users should "
+"also be encouraged add text describing what they mapped."
 msgstr ""
 
 #: osmtm/templates/project.edit.mako:254
-msgid "Guinea, #hotosm-guinea-project-470, source=Pleiades, CNES, Astrium"
+msgid "Example defaults:"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:263
+#: osmtm/templates/project.edit.mako:255
+msgid ""
+"Hashtags are sometimes used for analysis later, but should be human "
+"informative and not overused, #group #event for example."
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:264
 msgid "Detailed Instructions"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:276
+#: osmtm/templates/project.edit.mako:277
 msgid "Per Task Instructions (optional)"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:281
+#: osmtm/templates/project.edit.mako:282
 msgid ""
 "Put here anything that can be useful to users while taking a task. {x}, "
 "{y} and {z} will be replaced by the corresponding parameters for each "
 "task."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:282
+#: osmtm/templates/project.edit.mako:283
+msgid "For example:"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:283
 msgid ""
 "\" This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
 " to load the data into JOSM"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:293
+#: osmtm/templates/project.edit.mako:294
 msgid "Area modifications are not available yet."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:302
+#: osmtm/templates/project.edit.mako:303
 msgid "${count_of} priority area(s)"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:305
+#: osmtm/templates/project.edit.mako:306
 msgid ""
 "If you want mappers to work on the highest priority areas first, draw one"
 " or more polygons within the project area."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:322
+#: osmtm/templates/project.edit.mako:323
 msgid "URL to service"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:325
+#: osmtm/templates/project.edit.mako:326
 msgid "Note:"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:325
+#: osmtm/templates/project.edit.mako:326
 msgid ""
 "Follow this format for TMS urls.<br>tms[22]:http://hiu-"
 "maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:331
+#: osmtm/templates/project.edit.mako:332
 msgid "Required License"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:357
+#: osmtm/templates/project.edit.mako:358
 msgid "Private"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:360
+#: osmtm/templates/project.edit.mako:361
 msgid ""
 "Private means that only a given list of users can access this project. In"
 " order for the user's name to be available to add to the Allowed Users - "
@@ -548,61 +556,61 @@ msgid ""
 "username should be available for the administrator to add."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:365
+#: osmtm/templates/project.edit.mako:366
 msgid "Allowed users"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:388
+#: osmtm/templates/project.edit.mako:389
 msgid "Type a username"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:391
+#: osmtm/templates/project.edit.mako:392
 msgid "Add user"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:409
+#: osmtm/templates/project.edit.mako:410
 msgid "Project due date"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:417
+#: osmtm/templates/project.edit.mako:418
 msgid "The date after which the project will automatically be archived."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:423
+#: osmtm/templates/project.edit.mako:424
 msgid "JOSM Preset"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:428
+#: osmtm/templates/project.edit.mako:429
 msgid "A JOSM Preset has already been added to this project."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:434
+#: osmtm/templates/project.edit.mako:435
 msgid "Invalidation"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:437
+#: osmtm/templates/project.edit.mako:438
 msgid "Invalidate All Tasks"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:441
+#: osmtm/templates/project.edit.mako:442
 msgid ""
 "Click this button if project instructions have changed, or if for some "
 "reason you need to invalidate all done tasks in a single step."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:445
+#: osmtm/templates/project.edit.mako:446
 msgid "WARNING: This cannot be undone."
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:454
+#: osmtm/templates/project.edit.mako:455
 msgid "Tip:"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:455
+#: osmtm/templates/project.edit.mako:456
 msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
 msgstr ""
 
-#: osmtm/templates/project.edit.mako:471
+#: osmtm/templates/project.edit.mako:472
 msgid "Preview"
 msgstr ""
 
@@ -611,18 +619,27 @@ msgid "The list of elements we ask you to map"
 msgstr ""
 
 #: osmtm/templates/project.instructions.mako:24
-msgid "The comment to put when uploading data to the OSM database"
+msgid ""
+"The default comment entered when uploading data to the OSM database. "
+"Please add to the default comment a description of what you actually "
+"mapped."
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:43
+#: osmtm/templates/project.instructions.mako:31
+msgid ""
+"When saving your work, pleaes leave the default comment but add what you "
+"actually mapped, for example \"added buildings and a residential road\"."
+msgstr ""
+
+#: osmtm/templates/project.instructions.mako:46
 msgid "preset"
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:44
+#: osmtm/templates/project.instructions.mako:47
 msgid "Using JOSM? Please use the dedicated ${preset_link}."
 msgstr ""
 
-#: osmtm/templates/project.instructions.mako:55
+#: osmtm/templates/project.instructions.mako:58
 msgid "Start contributing"
 msgstr ""
 
