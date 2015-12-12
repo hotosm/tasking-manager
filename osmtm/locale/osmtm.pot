@@ -613,7 +613,7 @@ msgstr ""
 
 #: osmtm/templates/project.instructions.mako:31
 msgid ""
-"When saving your work, pleaes leave the default comment but add what you "
+"When saving your work, please leave the default comment but add what you "
 "actually mapped, for example \"added buildings and a residential road\"."
 msgstr ""
 
