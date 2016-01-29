@@ -73,7 +73,7 @@
   </div>
 </div>
 <script>
-  var converter = new Showdown.converter();
+  var converter = new showdown.Converter({extensions: ['youtube']});
   var project_id = ${project.id};
 <%
 from shapely.wkb import loads

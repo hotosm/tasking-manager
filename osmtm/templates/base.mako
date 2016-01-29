@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css')}">
     <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/showdown.js')}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/showdown/dist/showdown.js')}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/showdown-youtube.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js')}"></script>
     <%
       timeago_locale_baseurl = 'osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js'
@@ -24,6 +25,7 @@
     <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/shared.js')}"></script>
     <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js')}"></script>
+
 <%
 from osmtm.models import DBSession, TaskComment
 login_url= request.route_path('login', _query=[('came_from', request.url)])
