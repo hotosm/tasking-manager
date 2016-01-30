@@ -10,3 +10,6 @@
 [submodule "osmtm/static/js/lib/leaflet-control-osm-geocoder"]
 	path = osmtm/static/js/lib/leaflet-control-osm-geocoder
 	url = https://github.com/k4r573n/leaflet-control-osm-geocoder.git
+[submodule "osmtm/static/js/lib/showdown"]
+	path = osmtm/static/js/lib/showdown
+	url = https://github.com/showdownjs/showdown.git

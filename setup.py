@@ -37,6 +37,7 @@ requires = [
     'pygments',
     'gitversion',
     'APScheduler==3.0.3',
+    'python-oembed == 0.2.1',
 ]
 
 setup(name='osmtm',
