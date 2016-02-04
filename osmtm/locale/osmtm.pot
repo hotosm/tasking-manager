@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.12.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-18 12:56+0100\n"
+"POT-Creation-Date: 2016-02-04 21:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.2.0\n"
 
-#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:121
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:123
 #: osmtm/templates/home.mako:93
 msgid "About the Tasking Manager"
 msgstr ""
@@ -88,15 +88,15 @@ msgstr ""
 msgid "Version"
 msgstr ""
 
-#: osmtm/templates/base.mako:51
+#: osmtm/templates/base.mako:53
 msgid "About"
 msgstr ""
 
-#: osmtm/templates/base.mako:63
+#: osmtm/templates/base.mako:65
 msgid "login to OpenStreetMap"
 msgstr ""
 
-#: osmtm/templates/base.mako:115
+#: osmtm/templates/base.mako:117
 msgid "Fork the code on ${github_link}."
 msgstr ""
 
