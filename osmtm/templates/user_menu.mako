@@ -4,7 +4,7 @@
 %>
 <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">
   ${user.username}
-  ${unread_badge(unread)}
+  <span class="pulse">${unread_badge(unread)}</span>
   <b class="caret"></b></a>
   <ul role="menu" class="dropdown-menu">
     <li><a href="${request.route_path('user', username=user.username)}">${_('Your page')}</a></li>

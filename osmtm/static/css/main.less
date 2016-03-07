@@ -74,13 +74,19 @@ h1 {
     .box-shadow(0, 0, 2px, 2px, rgba(0, 0, 0, 0.15));
 }
 
-.messages sup .badge {
-    font-size: 0.9em;
-    padding: 0;
-    padding-left: 4px;
-    padding-right: 4px;
-    .border-radius(4px);
+@keyframes pulse {
+    0%   {background-color: gray;}
+    50%  {background-color: orange;}
+    100% {background-color: gray;}
 }
+
+.pulse .badge {
+    background-color: gray;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: 3;
+}
+
 
 #home {
     .updated-at, .created-by {
