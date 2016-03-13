@@ -267,24 +267,29 @@ def send_message(subject, from_, to_, msg):
 
 
 def send_invalidation_message(request, task, user):
+    """Sends message to contributors of invalidated tasks."""
     comment = request.params.get('comment', '')
 
     states = sorted(task.states, key=lambda state: state.date, reverse=True)
 
-    to = None
+    recipients = set()
+
     for state in states:
-        if state.state == TaskState.state_done:
-            to = state.user
-            break
+        if (state.state == TaskState.state_validated or
+                state.state == TaskState.state_done):
+            recipients.add(state.user)
 
     from_ = user
-    if from_ != to:
-        _ = request.translate
-        href = request.route_path('project', project=task.project_id)
-        href = href + '#task/%s' % task.id
-        link = '<a href="%s">#%d</a>' % (href, task.id)
-        subject = _('Task ${link} invalidated', mapping={'link': link})
-        send_message(subject, from_, to, comment)
+
+    while recipients:
+        to = recipients.pop()
+        if from_ != to:
+            _ = request.translate
+            href = request.route_path('project', project=task.project_id)
+            href = href + '#task/%s' % task.id
+            link = '<a href="%s">#%d</a>' % (href, task.id)
+            subject = _('Task ${link} invalidated', mapping={'link': link})
+            send_message(subject, from_, to, comment)
 
 
 @view_config(route_name='task_validate', renderer="json")
