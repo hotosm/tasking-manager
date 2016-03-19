@@ -1,3 +1,4 @@
+<%namespace file="helpers.mako" name="helpers"/>
 <%
 from osmtm.mako_filters import markdown_filter
 %>
@@ -16,13 +17,10 @@ from osmtm.mako_filters import markdown_filter
   % endif
 </p>
 % endif
-% if project.private:
-<p class="text-muted">
-  <span class="glyphicon glyphicon-lock"></span>
-  ${_('Access to this project is limited')}
-</p>
-% endif
 <p>${project.description | markdown_filter, n}</p>
+<p>
+  ${helpers.display_project_info(project=project)}
+</p>
 <p class="text-center">
   <a class="btn btn-success btn-lg instructions">
     <span class="glyphicon glyphicon-share-alt"></span>&nbsp;

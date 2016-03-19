@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 <%namespace file="custom.mako" name="custom"/>
+<%namespace file="helpers.mako" name="helpers"/>
 <%inherit file="base.mako"/>
 <%block name="header">
 </%block>
@@ -112,7 +113,6 @@ sorts = [('priority', 'asc', _('High priority first')),
     from osmtm.mako_filters import markdown_filter
     if request.locale_name:
         project.locale = request.locale_name
-    priority = priorities[project.priority]
 
     if project.status == project.status_archived:
         status = 'Archived'
@@ -168,20 +168,7 @@ sorts = [('priority', 'asc', _('High priority first')),
   </div>
   ${project.short_description | markdown_filter, n}
   <div class="clear"></div>
-  <small class="text-muted">
-    % if project.private:
-    <span class="glyphicon glyphicon-lock"
-          title="${_('Access to this project is limited')}"></span> -
-    % endif
-    % if project.author:
-    <span>${_('Created by')} <a href="${request.route_path('user',username=project.author.username)}">${project.author.username}</a></span> -
-    % endif
-    <span>${_('Updated')} <span class="timeago" title="${project.last_update}Z"></span></span> -
-    <span>${_('Priority:')} ${priority}</span>
-    % if status:
-    - <span>${_(status)}</span>
-    % endif
-  </small>
+  ${helpers.display_project_info(project=project)}
 </div>
 </%def>
 
