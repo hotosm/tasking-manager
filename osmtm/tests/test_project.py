@@ -556,7 +556,8 @@ class TestProjectFunctional(BaseTestCase):
 
     def test_project__draft_not_allowed(self):
         import transaction
-        from osmtm.models import Project, DBSession
+        from . import USER1_ID
+        from osmtm.models import User, Project, DBSession
         project_id = self.create_project()
 
         project = DBSession.query(Project).get(project_id)
@@ -566,6 +567,16 @@ class TestProjectFunctional(BaseTestCase):
         transaction.commit()
 
         headers_user1 = self.login_as_user1()
+        self.testapp.get('/project/%d' % project_id,
+                         status=403,
+                         headers=headers_user1)
+
+        user1 = DBSession.query(User).get(USER1_ID)
+        project = DBSession.query(Project).get(project_id)
+        project.allowed_users.append(user1)
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
         self.testapp.get('/project/%d' % project_id,
                          status=403,
                          headers=headers_user1)
