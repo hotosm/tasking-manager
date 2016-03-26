@@ -109,6 +109,6 @@ query = queryprefix + querymiddle + querysuffix
 query = urllib.quote_plus(query.encode('utf8'))
 %>
 <small>
-  <a href="http://overpass-turbo.eu/map.html?Q=${query}" rel="tooltip" data-original-title="${_('See the changes in this area using the overpass-turbo API.')}"><span class="glyphicon glyphicon-share-alt"></span> ${_('overpass-turbo')}</a>
+  <a href="http://overpass-turbo.eu/map.html?Q=${query}" rel="tooltip" data-original-title="${_('See the changes in this area using overpass turbo.')}"><span class="glyphicon glyphicon-share-alt"></span> ${_('overpass turbo')}</a>
 </small>
 </%def>

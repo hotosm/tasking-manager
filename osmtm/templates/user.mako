@@ -125,6 +125,6 @@ query = u'<osm-script output="json" timeout="25"><union><query type="node"><user
 query = urllib.quote_plus(query.encode('utf8'))
 %>
 <small>
-  <a href="http://overpass-turbo.eu/map.html?Q=${query}" ><span class="glyphicon glyphicon-share-alt"></span> overpass-turbo</a>
+  <a href="http://overpass-turbo.eu/map.html?Q=${query}" ><span class="glyphicon glyphicon-share-alt"></span> overpass turbo</a>
 </small>
 </%def>
