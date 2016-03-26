@@ -34,16 +34,22 @@ class RootFactory(object):
         if request.matchdict and 'project' in request.matchdict:
             project_id = request.matchdict['project']
             project = DBSession.query(Project).get(project_id)
-            if project is not None and \
-                    (project.private or
-                     project.status == Project.status_draft):
-                acl = [
-                    (Allow, 'project:' + project_id, 'project_show'),
-                    (Allow, 'group:admin', 'project_show'),
-                    (Allow, 'group:project_manager', 'project_show'),
-                    (Deny, Everyone, 'project_show'),
-                ]
-                self.__acl__ = acl + list(self.__acl__)
+            if project is not None:
+                if project.status == Project.status_draft:
+                    acl = [
+                        (Allow, 'group:admin', 'project_show'),
+                        (Allow, 'group:project_manager', 'project_show'),
+                        (Deny, Everyone, 'project_show'),
+                    ]
+                    self.__acl__ = acl + list(self.__acl__)
+                elif project.private:
+                    acl = [
+                        (Allow, 'project:' + project_id, 'project_show'),
+                        (Allow, 'group:admin', 'project_show'),
+                        (Allow, 'group:project_manager', 'project_show'),
+                        (Deny, Everyone, 'project_show'),
+                    ]
+                    self.__acl__ = acl + list(self.__acl__)
         if request.matchdict and 'message' in request.matchdict:
             message_id = request.matchdict['message']
             message = DBSession.query(Message).get(message_id)
