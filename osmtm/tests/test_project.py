@@ -537,6 +537,27 @@ class TestProjectFunctional(BaseTestCase):
         self.testapp.get('/project/%d/stats' % project_id,
                          status=200, xhr=True)
 
+    def test_project__archive_allowed(self):
+        import transaction
+        from osmtm.models import Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+        project.status = Project.status_archived
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        headers_pm = self.login_as_project_manager()
+        self.testapp.get('/project/%d' % project_id,
+                         status=200,
+                         headers=headers_pm)
+
+        headers_admin = self.login_as_admin()
+        self.testapp.get('/project/%d' % project_id,
+                         status=200,
+                         headers=headers_admin)
+
     def test_project__private_not_allowed(self):
         import transaction
         from osmtm.models import Project, DBSession
@@ -562,6 +583,33 @@ class TestProjectFunctional(BaseTestCase):
 
         project = DBSession.query(Project).get(project_id)
         project.status = Project.status_draft
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        headers_user1 = self.login_as_user1()
+        self.testapp.get('/project/%d' % project_id,
+                         status=403,
+                         headers=headers_user1)
+
+        user1 = DBSession.query(User).get(USER1_ID)
+        project = DBSession.query(Project).get(project_id)
+        project.allowed_users.append(user1)
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+        self.testapp.get('/project/%d' % project_id,
+                         status=403,
+                         headers=headers_user1)
+
+    def test_project__archive_not_allowed(self):
+        import transaction
+        from . import USER1_ID
+        from osmtm.models import User, Project, DBSession
+        project_id = self.create_project()
+
+        project = DBSession.query(Project).get(project_id)
+        project.status = Project.status_archived
         DBSession.add(project)
         DBSession.flush()
         transaction.commit()
