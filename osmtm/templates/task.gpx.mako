@@ -4,7 +4,7 @@ import datetime
 timestamp = datetime.datetime.utcnow()
 timestamp = timestamp.isoformat()
 %>
-<gpx xmlns="http://www.topografix.com/GPX/1/1">
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HOT Tasking Manager">
 <metadata>
   <link href="https://github.com/hotosm/osm-tasking-manager2">
     <text>HOT Tasking Manager</text>
