@@ -572,7 +572,7 @@ def get_contributors(project):
     for user, tasks in itertools.groupby(tasks, key=lambda t: t.username):
         if user not in contributors:
             contributors[user] = {}
-        contributors[user]['done'] = [task[0] for task in tasks]
+        contributors[user]['done'] = list(set([task[0] for task in tasks]))
 
     assigned = DBSession.query(Task.id, User.username) \
         .join(Task.assigned_to) \
@@ -585,7 +585,7 @@ def get_contributors(project):
                                          key=lambda t: t.username):
         if user not in contributors:
             contributors[user] = {}
-        contributors[user]['assigned'] = [task[0] for task in tasks]
+        contributors[user]['assigned'] = list(set([task[0] for task in tasks]))
 
     return contributors
 
