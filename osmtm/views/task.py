@@ -30,6 +30,7 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.expression import (
     not_,
     and_,
+    or_,
 )
 
 from pyramid.security import authenticated_userid
@@ -367,9 +368,11 @@ def get_assigned_tasks(project_id, user):
 
 
 def find_matching_task(project_id, filter):
+    state_filter = or_(Task.cur_state.has(state=TaskState.state_ready),
+                       Task.cur_state.has(state=TaskState.state_invalidated))
     query = DBSession.query(Task) \
         .filter_by(project_id=project_id) \
-        .filter(Task.cur_state.has(state=TaskState.state_ready)) \
+        .filter(state_filter) \
         .filter(not_(Task.cur_lock.has(lock=True)))
 
     query = query.filter(filter)
