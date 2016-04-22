@@ -2,14 +2,26 @@
   OSM Tasking Manager
 </%def>
 
-<%def  name="main_page_new_to_mapping_info()">
-  <h4>${_('New to Mapping?')}</h4>
-  ${_('Just jump over to <a target="_blank" href="http://www.openstreetmap.org">OpenStreetMap</a>, create an account, and then visit <a target="_blank" href="http://learnosm.org/en/beginner/id-editor">this tutorial</a>. Then come back here to help map for people on the ground!')|n}
+<%def  name="about_tasking_manager_intro()">
+    ${_('OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping. The purpose of the tool is to divide up a mapping job into smaller tasks that can be completed rapidly. It shows which areas need to be mapped and which areas need the mapping validated.<br /><br />This approach facilitates the distribution of tasks to the various mappers in a context of emergency. It also permits to control the progress and the homogeneity of the work done (ie. Elements to cover, specific tags to use, etc.).')|n}
 </%def>
 
-<%def  name="main_page_community_info()">
-  <h4>${_('Questions About Tasks, Mapping or HOT?')}</h4>
-  ${_('If you have any questions about a project, a task or mapping in general please ask on our mailing list: <a href="https://lists.openstreetmap.org/listinfo/hot">HOT E-Mail List</a><br /><br />Or visit us in our IRC Chat Channel, just select #hot from the pop down channel list:<br /><a href="http://irc.openstreetmap.org/">OSM HOT IRC Channel #hot</a><br /><br />General inquries and comments are welcomed at: <a href="mailto:info@hotosm.org" target="_top">info@hotosm.org</a>')|n}
+
+<%def  name="main_page_right_panel()">
+    <h3>${_('About the Tasking Manager')}</h3>
+    <p>
+    ${about_tasking_manager_intro()}
+    </p>
+    <hr />
+    <p>
+    <h4>${_('New to Mapping?')}</h4>
+    ${_('Just jump over to <a target="_blank" href="http://www.openstreetmap.org">OpenStreetMap</a>, create an account, and then visit <a target="_blank" href="http://learnosm.org/en/beginner/id-editor">this tutorial</a>. Then come back here to help map for people on the ground!')|n}
+    </p>
+    <hr>
+    <p>
+    <h4>${_('Questions About Tasks, Mapping or HOT?')}</h4>
+    ${_('If you have any questions about a project, a task or mapping in general please ask on our mailing list: <a href="https://lists.openstreetmap.org/listinfo/hot">HOT E-Mail List</a><br /><br />Or visit us in our IRC Chat Channel, just select #hot from the pop down channel list:<br /><a href="http://irc.openstreetmap.org/">OSM HOT IRC Channel #hot</a><br /><br />General inquries and comments are welcomed at: <a href="mailto:info@hotosm.org" target="_top">info@hotosm.org</a>')|n}
+    </p>
 </%def>
 
 <%def  name="footer_contact_text()">
