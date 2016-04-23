@@ -362,6 +362,8 @@ class Task(Base):
             'state': self.cur_state.state if self.cur_state else 0,
             'locked': self.lock_date is not None
         }
+        if self.difficulty:
+            properties['difficulty'] = self.difficulty
         if self.x and self.y and self.zoom:
             properties['x'] = self.x
             properties['y'] = self.y
