@@ -23,11 +23,12 @@
 <script src="${request.static_url('osmtm:static/js/lib/leaflet-control-osm-geocoder/Control.OSMGeocoder.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
 <script src="${request.static_url('osmtm:static/js/lib/leaflet-omnivore.min.js')}"></script>
+<script src="${request.static_url('osmtm:static/js/lib/shapefile-js/dist/shp.min.js')}"></script>
 <script>
   var drawAreaOfInterestI18n = "${_('Draw the area of interest')}";
   var droppedFileCouldntBeLoadedI18n = "${_('Dropped file could not be loaded')}";
   var droppedFileWasUnreadable = "${_('Dropped file was unreadable')}";
-  var pleaseProvideGeojsonOrKmlFile = "${_('Please provide a .geojson or a .kml file')}";
+  var pleaseProvideGeojsonOrKmlFileI18n = "${_('Please provide a .geojson, .kml, or zipped .shp file')}";
 <%
     link = '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     text = _(u'Map data © ${osm_link} contributors', mapping={'osm_link': link})
@@ -59,8 +60,8 @@
     <input type="file" val="" name="import" class="hidden" />
 <%
     link = '<a id="import" data-role="button" class="btn btn-default" rel="tooltip" title="%s">%s</a>' \
-           % (_('Provide a .geojson or .kml file.'), _('Import'))
-    text = _('${import_link} a <em>GeoJSON</em> or <em>KML</em> file.', mapping={'import_link': link})
+           % (_('Provide a .geojson, .kml, or zipped .shp file.'), _('Import'))
+    text = _('${import_link} a <em>GeoJSON</em>, <em>KML</em>, or <em>zipped SHP</em> file.', mapping={'import_link': link})
 %>
     ${text|n}
     <span class="help-block">
@@ -179,7 +180,7 @@
 <%
     text = _('A new project will be created with ${number} tasks.', mapping={'number': '<strong id="arbitrary_geometries_count"></strong>'})
 %>
-    ${text|n}    
+    ${text|n}
     <div class="form-actions pull-right">
       <a class="btn btn-default step3-back">
         <span class="glyphicon glyphicon-chevron-left"></span>

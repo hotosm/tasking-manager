@@ -13,3 +13,6 @@
 [submodule "osmtm/static/js/lib/showdown"]
 	path = osmtm/static/js/lib/showdown
 	url = https://github.com/showdownjs/showdown.git
+[submodule "osmtm/static/js/lib/shapefile-js"]
+	path = osmtm/static/js/lib/shapefile-js
+	url = https://github.com/calvinmetcalf/shapefile-js.git
