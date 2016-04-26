@@ -116,6 +116,9 @@ def get_projects(request, items_per_page):
             # IN-predicate  with emty sequence can be expensive
             filter = and_(False == True)  # noqa
 
+    if (request.params.get('show_archived', '') != 'on'):
+        filter = and_(Project.status != Project.status_archived, filter)
+
     sort_by = 'project.%s' % request.params.get('sort_by', 'priority')
     direction = request.params.get('direction', 'asc')
     direction_func = getattr(sqlalchemy, direction, None)
