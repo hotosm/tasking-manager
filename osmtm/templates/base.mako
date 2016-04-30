@@ -8,7 +8,7 @@
     <link rel="shortcut icon" href="${request.static_url('osmtm:static/img/favicon.ico')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css')}">
     <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css')}">
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.7.2.min.js')}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.12.3.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/showdown/dist/showdown.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/showdown-youtube.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js')}"></script>
