@@ -72,6 +72,47 @@
     </div>
   </div>
 </div>
+<!-- Message Modal -->
+<div class="modal fade" id="messageAllModal" tabindex="-1" role="dialog" aria-labelledby="messageAll">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">${_('Message all contributors')}</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          ${_("This will send a Tasking Manager message to every contributor of the current project.")}
+        </p>
+        <p class="text-warning">
+          ${_("Please use this feature conservatively.")}
+        </p>
+        <hr>
+        <p class="form-group">
+          <input id="message_all_subject" class="input form-control" placeholder="${_('Subject')}"/>
+        </p>
+        <p>
+          <textarea id="message_all_message" name="message_all_message" class="form-control" placeholder="${_('Message')}" rows="6"></textarea>
+          <p class="help-block">
+            ${_('This message does not automatically translate, so you may want to include your own translations.')}
+          </p>
+        </p>
+        <p class="errors text-danger"></p>
+      </div>
+      <div class="modal-footer">
+        <div class="text-right">
+          <a class="btn btn-default" data-dismiss="modal" aria-label="Close">
+            ${_('Cancel')}
+          </a>
+          <a class="btn btn-primary btn-message-all">
+             ${_('Message all contributors')}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   var converter = new showdown.Converter({extensions: ['youtube']});
   var project_id = ${project.id};
@@ -448,6 +489,15 @@ geometry = loads(str(project.area.geometry.data))
   </div>
   <p id="invalidateAllSuccess">
   </p>
+</div>
+<div class="form-group">
+  <label>${_('Message all contributors')}</label>
+  <br>
+  <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#messageAllModal">
+    <span class="glyphicon glyphicon-envelope"></span>&nbsp;
+    ${_('Message all contributors')}
+  </button>
+  <p id="messageAllSuccess"></p>
 </div>
 </%block>
 <%block name="markdown_link">

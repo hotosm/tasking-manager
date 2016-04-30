@@ -868,3 +868,71 @@ class TestProjectFunctional(BaseTestCase):
                                 params=params, headers=headers,
                                 xhr=True, status=200)
         self.assertTrue('error' in res.json)
+
+    def test_project_message_all(self):
+        from osmtm.models import DBSession, Message, Project
+        project_id = self.create_project()
+        project = DBSession.query(Project).get(project_id)
+        tasks = project.tasks
+        headers_manager = self.login_as_project_manager()
+        headers_user1 = self.login_as_user1()
+        headers_user2 = self.login_as_user2()
+
+        self.testapp.get('/project/%d/task/%d/lock' % (project_id,
+                                                       tasks[0].id),
+                         headers=headers_user1, status=200, xhr=True)
+
+        self.testapp.get('/project/%d/task/%d/done' % (project_id,
+                                                       tasks[0].id),
+                         headers=headers_user1, status=200, xhr=True)
+
+        self.testapp.get('/project/%d/task/%d/lock' % (project_id,
+                                                       tasks[1].id),
+                         headers=headers_user2, status=200, xhr=True)
+
+        self.testapp.get('/project/%d/task/%d/done' % (project_id,
+                                                       tasks[1].id),
+                         headers=headers_user2, status=200, xhr=True)
+
+        params = {}
+        resp = self.testapp.post('/project/%d/message_all' % project_id,
+                                 headers=headers_manager, status=200,
+                                 xhr=True, params=params)
+        self.assertTrue('error' in resp.json)
+
+        params = {
+             'subject': 'Follow up project posted.',
+             'message': 'Please help us with this! \
+                         Por favor, nos ayude con esto!'
+        }
+        resp = self.testapp.post('/project/%d/message_all' % project_id,
+                                 headers=headers_manager, status=200,
+                                 xhr=True, params=params)
+        self.assertFalse('error' in resp.json)
+
+        messages = DBSession.query(Message)
+
+        msg_to_user1 = messages.filter(Message.to_user_id ==
+                                       self.user1_id,
+                                       Message.from_user_id ==
+                                       self.project_manager_user_id).all()
+
+        msg_to_user2 = messages.filter(Message.to_user_id ==
+                                       self.user2_id,
+                                       Message.from_user_id ==
+                                       self.project_manager_user_id).all()
+
+        self.assertEqual(len(msg_to_user1), 1)
+        self.assertEqual([msg.subject for msg in msg_to_user1],
+                         ['Project #%d: Follow up project posted.' %
+                          project_id])
+        self.assertEqual([msg.message for msg in msg_to_user1],
+                         ['Please help us with this! \
+                         Por favor, nos ayude con esto!'])
+        self.assertEqual(len(msg_to_user2), 1)
+        self.assertEqual([msg.subject for msg in msg_to_user2],
+                         ['Project #%d: Follow up project posted.' %
+                         project_id])
+        self.assertEqual([msg.message for msg in msg_to_user2],
+                         ['Please help us with this! \
+                         Por favor, nos ayude con esto!'])

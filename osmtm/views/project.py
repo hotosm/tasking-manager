@@ -48,13 +48,15 @@ from geojson import (
 import datetime
 import itertools
 
-from .task import get_locked_task, add_comment
+from .task import get_locked_task, add_comment, send_message
 
 from ..utils import (
     parse_geojson,
     convert_to_multipolygon,
     get_tiles_in_geom,
 )
+
+from user import username_to_userid
 
 import logging
 log = logging.getLogger(__name__)
@@ -533,6 +535,41 @@ def project_invalidate_all(request):
     else:
         msg = _('%d tasks invalidated' % tasks_affected)
     DBSession.flush()
+    return dict(success=True, msg=msg)
+
+
+@view_config(route_name='project_message_all', renderer='json',
+             permission='project_edit')
+def project_message_all(request):
+    _ = request.translate
+
+    if not request.POST.get('message', None) or \
+            not request.POST.get('subject', None):
+        return {
+            'error': True,
+            'error_msg': _('A subject and message are required.')
+        }
+
+    id = request.matchdict['project']
+    project = DBSession.query(Project).get(id)
+    user_id = authenticated_userid(request)
+    user = DBSession.query(User).get(user_id)
+    recipients = get_contributors(project)
+
+    subject = _('Project #') + str(id) + ': ' + request.POST['subject']
+
+    for recipient in recipients:
+        userid = username_to_userid(recipient)
+        to = DBSession.query(User).get(userid)
+        send_message(subject, user, to, request.POST['message'])
+    DBSession.flush()
+
+    num = len(recipients)
+    if num == 0:
+        msg = _('No users to message.')
+    else:
+        msg = _('Message sent to %i users.' % num)
+
     return dict(success=True, msg=msg)
 
 

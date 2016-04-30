@@ -222,7 +222,36 @@ function invalidateAll(e) {
   });
 }
 
+function messageAll(e) {
+  e.preventDefault();
+  var data = {
+    'subject': $('#message_all_subject').val(),
+    'message': $('#message_all_message').val()
+  };
+  var url = base_url + "project/" + project_id + "/message_all";
+  var $modal = $('#messageAllModal');
+  var $errors = $modal.find('.errors');
+  $errors.text('');
+  var $success = $('#messageAllSuccess');
+  $success.text('');
+  $.post(url, data, function(data) {
+    if (data.success) {
+      $modal.modal('hide');
+      $success.text(data.msg);
+      $success.prepend('<span class="glyphicon glyphicon-ok"></span> ');
+      setTimeout(function() {
+        $success.fadeOut();
+      }, 5000);
+    } else {
+      var error = data.error_msg;
+      $errors.text(error);
+      $errors.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+    }
+  });
+}
+
 $(document).ready(function() {
   osmtm.project.edit.priority_areas.init();
   $(document).on('click', '.btn-invalidate-all', invalidateAll);
+  $(document).on('click', '.btn-message-all', messageAll);
 });

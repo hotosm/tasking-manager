@@ -125,6 +125,9 @@ class TestTaskFunctional(BaseTestCase):
 
     def test_task_comment__with_mention(self):
         from osmtm.models import Message, DBSession
+        messages_bef = DBSession.query(Message) \
+                                .filter(Message.to_user_id == self.user2_id) \
+                                .all()
         headers = self.login_as_user1()
         res = self.testapp.get('/project/1/task/3/comment', status=200,
                                headers=headers,
@@ -134,9 +137,10 @@ class TestTaskFunctional(BaseTestCase):
                                xhr=True)
         self.assertTrue(res.json['success'])
 
-        messages = DBSession.query(Message) \
-                            .filter(Message.to_user_id == self.user2_id).all()
-        self.assertEqual(len(messages), 1)
+        messages_aft = DBSession.query(Message) \
+                                .filter(Message.to_user_id == self.user2_id) \
+                                .all()
+        self.assertEqual(len(messages_aft), (len(messages_bef) + 1))
 
         res = self.testapp.get('/project/1/task/3', status=200, xhr=True)
         # confirm that the convert_mention filter is correctly called
