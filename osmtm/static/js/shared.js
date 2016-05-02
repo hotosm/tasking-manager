@@ -42,6 +42,14 @@ $().ready(function() {
         $('[data-toggle="popover"]').popover('hide');
       }
     });
+
+    // prepare the unread messages notification popover
+    $('.navbar .username .badge').popover({
+      placement: 'bottom',
+      content: unreadMsgsI18n,
+      trigger: 'manual',
+      template: '<div class="popover text-danger unread"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>'
+    });
 });
 
 function hideTooltips() {
@@ -104,3 +112,48 @@ $.fn.slide = function(type) {
   }
   return this;
 };
+
+var checkMessageTimeout;
+var lastMessageCheck = (new Date()).getTime();
+
+function checkForMessages() {
+  window.clearTimeout(checkMessageTimeout);
+  checkMessageTimeout = window.setTimeout(checkForMessages, 30 * 1000);
+
+  var now = (new Date()).getTime();
+  var interval = now - lastMessageCheck;
+  $.ajax({
+    url: base_url + "user/messages/check",
+    data: {
+      interval: interval
+    },
+    success: function(data) {
+      // check for new message until last check
+      if (data.new_message) {
+        // don't alert if the focus is on the current window
+        // popover is enough
+        if (!document.hasFocus || !document.hasFocus()) {
+          // we use alert here to make sure the focus is on tasking manager
+          alert(unreadMsgsI18n);
+        }
+      }
+      // check for any unread message
+      if (data.unread) {
+        window.setTimeout(function() {
+          notifyUnread(data.unread);
+        }, 2000);
+      }
+    },
+    dataType: "json"}
+  );
+  lastMessageCheck = now;
+}
+
+// Update the unread badge and show popover
+function notifyUnread(unreadMsgs) {
+  $('.unread.badge').text(unreadMsgs);
+  $('.navbar .username .badge').popover('show').next().velocity('callout.shake');
+  $('.navbar .username').click(function() {
+    $('.navbar .username .badge').popover('hide');
+  });
+}

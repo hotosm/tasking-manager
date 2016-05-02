@@ -128,6 +128,7 @@ def main(global_config, **settings):
     config.add_route('users', '/users')
     config.add_route('users_json', '/users.json')
     config.add_route('user_messages', '/user/messages')
+    config.add_route('user_messages_check', '/user/messages/check')
     config.add_route('user', '/user/{username}')
     config.add_route('user_admin', '/user/{id:\d+}/admin')
     config.add_route('user_project_manager', '/user/{id:\d+}/project_manager')

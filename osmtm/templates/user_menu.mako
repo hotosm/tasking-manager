@@ -1,16 +1,15 @@
 <%page />
-<%
-  unread = user.unread_messages
-%>
-<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">
-  ${user.username}
-  <span class="pulse">${unread_badge(unread)}</span>
-  <b class="caret"></b></a>
+<li class="dropdown">
+  <a class="username" href="#" data-toggle="dropdown" class="dropdown-toggle">
+    ${user.username}
+    <span class="unread badge"></span>
+    <b class="caret"></b>
+  </a>
   <ul role="menu" class="dropdown-menu">
     <li><a href="${request.route_path('user', username=user.username)}">${_('Your page')}</a></li>
     <li>
       <a href="${request.route_path('user_messages')}">${_('Messages')}
-      ${unread_badge(unread)}
+        <span class="unread badge"></span>
       </a>
     </li>
     <li><a href="${request.route_path('logout')}">${_('logout')}</a></li>
@@ -31,8 +30,7 @@
   </ul>
 </li>
 
-<%def name="unread_badge(unread)">
-  % if len(unread) > 0:
-  <span class="badge">${len(unread)}</span>
-  % endif
-</%def>
+<script>
+  // automaticaly checks for new unread messages
+  checkForMessages();
+</script>
