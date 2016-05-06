@@ -320,8 +320,12 @@ geometry = loads(str(project.area.geometry.data))
           ${textarea_with_preview(inputname='per_task_instructions')}
 
           <span class="help-block col-md-9">
+          % if project.zoom:
             ${_('Put here anything that can be useful to users while taking a task. {x}, {y} and {z} will be replaced by the corresponding parameters for each task.')}<br />
             ${_('For example:')}<em> ${_('" This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM')}"</em>
+          % else:
+            ${_('Put here anything that can be useful to users while taking a task. If you have added extra properties within the GeoJSON of the task, they can be referenced by surrounding them in curly braces. For eg. if you have a property called "import_url" in your GeoJSON, you can reference it like:')}<em> ${_('" This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url={import_url}) to load the data into JOSM')}"</em>
+          % endif
           </span>
         </div>
       </div>

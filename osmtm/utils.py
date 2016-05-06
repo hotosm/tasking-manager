@@ -65,10 +65,12 @@ def load_local_settings(settings):
 
 
 def parse_feature(feature):
-    if isinstance(feature.geometry, geojson.geometry.Polygon) or \
-       isinstance(feature.geometry, geojson.geometry.MultiPolygon):
-        return shapely.geometry.asShape(feature.geometry)
-    return None
+    if isinstance(feature.geometry, (geojson.geometry.Polygon,
+                                     geojson.geometry.MultiPolygon)):
+        feature.geometry = shapely.geometry.asShape(feature.geometry)
+        return feature
+    else:
+        return None
 
 
 def parse_geojson(input):
@@ -80,27 +82,27 @@ def parse_geojson(input):
         raise ValueError("GeoJSON file doesn't contain any feature.")
 # need translation
 
-    geoms = filter(lambda x: x is not None,
-                   map(parse_feature, collection.features))
+    shapely_features = filter(lambda x: x is not None,
+                              map(parse_feature, collection.features))
 
-    if len(geoms) == 0:
+    if len(shapely_features) == 0:
         raise ValueError("GeoJSON file doesn't contain any polygon nor " +
                          "multipolygon.")
 # need translation
 
-    return geoms
+    return shapely_features
 
 
 # converts a list of (multi)polygon geometries to one single multipolygon
-def convert_to_multipolygon(geoms):
+def convert_to_multipolygon(features):
     from shapely.geometry import MultiPolygon
 
     rings = []
-    for geom in geoms:
-        if isinstance(geom, MultiPolygon):
-            rings = rings + [geom for geom in geom.geoms]
+    for feature in features:
+        if isinstance(feature.geometry, MultiPolygon):
+            rings = rings + [geom for geom in feature.geometry.geoms]
         else:
-            rings = rings + [geom]
+            rings = rings + [feature.geometry]
 
     geometry = MultiPolygon(rings)
 

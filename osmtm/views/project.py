@@ -207,8 +207,8 @@ def project_grid_simulate(request):
     geometry = request.params['geometry']
     tile_size = int(request.params['tile_size'])
 
-    geoms = parse_geojson(geometry)
-    multipolygon = convert_to_multipolygon(geoms)
+    features = parse_geojson(geometry)
+    multipolygon = convert_to_multipolygon(features)
 
     geometry = shape.from_shape(multipolygon, 4326)
 
@@ -284,10 +284,10 @@ def project_edit(request):
         priority_areas = request.params.get('priority_areas', '')
 
         if priority_areas != '':
-            geoms = parse_geojson(priority_areas)
+            features = parse_geojson(priority_areas)
 
-            for geom in geoms:
-                geom = 'SRID=4326;%s' % geom.wkt
+            for feature in features:
+                geom = 'SRID=4326;%s' % feature.geometry.wkt
                 project.priority_areas.append(PriorityArea(geom))
 
         DBSession.add(project)

@@ -81,6 +81,19 @@ class TestProjectFunctional(BaseTestCase):
         project = DBSession.query(Project).order_by(Project.id.desc()).first()
         self.assertEqual(len(project.tasks), 4)
 
+    def test_project_new_grid_extra_instructions(self):
+        from osmtm.models import DBSession, Project
+        headers = self.login_as_admin()
+        self.testapp.get('/project/new/grid', headers=headers,
+                         params={
+                             'form.submitted': True,
+                             'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[2.28515625,46.37725420510028],[3.076171875,45.9511496866914],[3.69140625,46.52863469527167],[2.28515625,46.37725420510028]]]}}]}',  # noqa
+                             'tile_size': -2
+                         },
+                         status=302)
+        project = DBSession.query(Project).order_by(Project.id.desc()).first()
+        self.assertEqual(project.tasks[0].get_extra_instructions(), '')
+
     def test_project_grid_simulate(self):
         headers = self.login_as_admin()
         res = self.testapp.get('/project/grid_simulate', headers=headers,
@@ -139,6 +152,55 @@ class TestProjectFunctional(BaseTestCase):
 
         project = DBSession.query(Project).order_by(Project.id.desc()).first()
         self.assertEqual(len(project.tasks), 3)
+
+    def test_project_new_arbitrary_extra_properties(self):
+        from osmtm.models import DBSession, Project
+        import json
+        import transaction
+
+        headers = self.login_as_admin()
+        self.testapp.post('/project/new/arbitrary',
+                          headers=headers,
+                          params={
+                              'form.submitted': True,
+                              'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"test1": "val1", "test2": "val2"},"geometry":{"type":"Polygon","coordinates":[[[4.39453125,19.559790136497398],[4.04296875,21.37124437061832],[7.6025390625,22.917922936146045],[8.96484375,20.05593126519445],[5.625,18.93746442964186],[4.39453125,19.559790136497398]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.3623046875,17.09879223767869],[3.0322265625,18.687878686034196],[6.0205078125,18.271086109608877],[6.2841796875,16.972741019999035],[5.3173828125,16.509832826905846],[4.482421875,17.056784609942554],[2.900390625,16.088042220148807],[1.3623046875,17.09879223767869]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.0986328125,19.849393958422805],[1.7578125,21.53484700204879],[3.7353515625,20.46818922264095],[3.33984375,18.979025953255267],[0.439453125,19.394067895396628],[1.0986328125,19.849393958422805]]]}}]}'  # noqa
+                          },
+                          status=302)
+        project = DBSession.query(Project).order_by(Project.id.desc()).first()
+        task1 = project.tasks[0]
+        self.assertEqual(json.loads(task1.extra_properties)['test1'], 'val1')
+        self.assertEqual(json.loads(task1.extra_properties)['test2'], 'val2')
+        project.per_task_instructions = 'replace {test1} and {test2}'
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+        project = DBSession.query(Project).order_by(Project.id.desc()).first()
+        task1 = project.tasks[0]
+        self.assertEqual(task1.get_extra_instructions(),
+                         'replace val1 and val2')
+
+    def test_project_new_arbitrary_no_extra_properties(self):
+        from osmtm.models import DBSession, Project
+        import transaction
+
+        headers = self.login_as_admin()
+        self.testapp.post('/project/new/arbitrary',
+                          headers=headers,
+                          params={
+                              'form.submitted': True,
+                              'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[4.39453125,19.559790136497398],[4.04296875,21.37124437061832],[7.6025390625,22.917922936146045],[8.96484375,20.05593126519445],[5.625,18.93746442964186],[4.39453125,19.559790136497398]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.3623046875,17.09879223767869],[3.0322265625,18.687878686034196],[6.0205078125,18.271086109608877],[6.2841796875,16.972741019999035],[5.3173828125,16.509832826905846],[4.482421875,17.056784609942554],[2.900390625,16.088042220148807],[1.3623046875,17.09879223767869]]]}},{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[1.0986328125,19.849393958422805],[1.7578125,21.53484700204879],[3.7353515625,20.46818922264095],[3.33984375,18.979025953255267],[0.439453125,19.394067895396628],[1.0986328125,19.849393958422805]]]}}]}'  # noqa
+                          },
+                          status=302)
+        project = DBSession.query(Project).order_by(Project.id.desc()).first()
+        task1 = project.tasks[0]
+        self.assertEqual(task1.extra_properties, '{}')
+        project.per_task_instructions = 'test'
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+        project = DBSession.query(Project).order_by(Project.id.desc()).first()
+        task1 = project.tasks[0]
+        self.assertEqual(task1.get_extra_instructions(), 'test')
 
     def test_project_edit_forbidden(self):
         headers = self.login_as_user1()
