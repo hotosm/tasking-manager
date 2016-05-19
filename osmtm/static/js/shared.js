@@ -128,6 +128,10 @@ function checkForMessages() {
       interval: interval
     },
     success: function(data) {
+      // check for any unread message
+      if (data.unread) {
+        notifyUnread(data.unread);
+      }
       // check for new message until last check
       if (data.new_message) {
         // don't alert if the focus is on the current window
@@ -136,12 +140,6 @@ function checkForMessages() {
           // we use alert here to make sure the focus is on tasking manager
           alert(unreadMsgsI18n);
         }
-      }
-      // check for any unread message
-      if (data.unread) {
-        window.setTimeout(function() {
-          notifyUnread(data.unread);
-        }, 2000);
       }
     },
     dataType: "json"}
