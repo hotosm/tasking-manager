@@ -17,9 +17,10 @@
       try:
         timeago_locale = request.static_url(timeago_locale_baseurl % request.locale_name.replace('_', '-'))
       except IOError:
-        timeago_locale = request.static_url(timeago_locale_baseurl % request.locale_name[:2])
-      except IOError:
-        timeago_locale = request.static_url(timeago_locale_baseurl % 'en')
+        try:
+          timeago_locale = request.static_url(timeago_locale_baseurl % request.locale_name[:2])
+        except IOError:
+          timeago_locale = request.static_url(timeago_locale_baseurl % 'en')
     %>
     <script src="${timeago_locale}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
