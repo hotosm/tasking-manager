@@ -1,0 +1,1359 @@
+# English translations for osmtm.
+# Copyright (C) 2016 ORGANIZATION
+# This file is distributed under the same license as the osmtm project.
+# 
+# Translators:
+# Chamal Nanayakkara, 2016
+# Kulendra Janaka <kulendra@gmail.com>, 2016
+# maheshika karunarathna <karunarathna.maheshika@yahoo.com>, 2016
+# Maning Sambale <emmanuel.sambale@gmail.com>, 2016
+# Nimalika Fernando <nimalikaf@gmail.com>, 2016
+# Ramindu Deshapriya <rasade88@gmail.com>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: osm-tasking-manager2\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2016-02-04 21:31+0100\n"
+"PO-Revision-Date: 2016-05-21 08:09+0000\n"
+"Last-Translator: Ramindu Deshapriya <rasade88@gmail.com>\n"
+"Language-Team: Sinhala (http://www.transifex.com/hotosm/osm-tasking-manager2/language/si/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.2.0\n"
+"Language: si\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:123
+#: osmtm/templates/home.mako:93
+msgid "About the Tasking Manager"
+msgstr "මෙම කාර්යය කළමනාකරු ගැන"
+
+#: osmtm/templates/about.mako:12 osmtm/templates/home.mako:95
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated. <br />This approach facilitates the distribution of tasks to the "
+"various mappers in a context of emergency. It also permits to control the "
+"progress and the homogeneity of the work done (ie. Elements to cover, "
+"specific tags to use, etc.)."
+msgstr "ඕ .එස්.එම් කාර්යය කලමණාකරු යනු,මානුශීය ඕ එස් එම් කණ්ඩායම මගින් නිර්මාණය කරන ලද සිතියම් මෙවලමකි.මෙම සිතියම්කරන මෙවලමේ අරමුණ වන්නේ සිතියම් ක්‍රියාවලිය වඩා ඉක්මනින් සම්පූර්ණ කිරීම සදහා සිතියම කුඩා කොටස් වලට බෙදා දැක්වීමයි.සිතියම්ගත කල යුතු ප්‍රදේශ හා එහි වලන්ගු බව පරීක්ෂා කිරීම එයින් නිරූපණය කෙරේ.හදිසි අවස්ථාවන්හිදී නොයෙක් සිතියම්ගත කරන්නන් අතර කොටස් බෙදා දීමට මෙම ප්‍රවේශය උපක්‍රමයක් වේ.එමගින් සිතියම්ගත කිරීමේදී නැවත නැවතත් එකම කිරීමෙන් වැලැක්වේ."
+
+#: osmtm/templates/about.mako:14
+msgid "Sponsorship and Funding"
+msgstr "අනුග්‍රාහකත්වය සහ මූල්‍ය දායකත්වය"
+
+#: osmtm/templates/about.mako:15
+msgid ""
+"OSM Tasking Manager was designed and built for the <a "
+"href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
+msgstr "ඕ.එස්.එම් කාර්යය කලමණාකරු , සැලසුම්කර නිපදවන ලද්දේ, <a href=\"http://hot.openstreetmap.org\"> මානුෂීය ඕපන් ස්ට්‍රීට් මැප් සාමුහිකය</a> වෙනුවෙනි."
+
+#: osmtm/templates/about.mako:17
+msgid "With the invaluable help from:"
+msgstr "අනර්ඝ දායකත්වය තුලින්"
+
+#: osmtm/templates/about.mako:45
+msgid "Getting Started"
+msgstr "ආරම්භය "
+
+#: osmtm/templates/about.mako:47
+msgid "Some resources to help you start using the Tasking Manager:"
+msgstr "කාර්යය කළමනාකරු භාවිතා කිරීම සඳහා ප්‍රයෝජනවත් මූලාශ්‍ර කිහිපයක්:"
+
+#: osmtm/templates/about.mako:54
+msgid "Open Source"
+msgstr "විවෘත කේත "
+
+#: osmtm/templates/about.mako:56
+msgid ""
+"OSM Tasking Manager is an open source software.<br>Feel free to report "
+"issues and contribute."
+msgstr "ඕ.එස්.එම් කාර්යය කලමණාකරු යනු විවෘත කේත මෘදුකාංගයකි.වැරදි සහගත තැන් පෙන්වාදීමටත්, දායකත්වය ලබා දීමටත් ඔබටත් පුළුවන."
+
+#: osmtm/templates/about.mako:58
+msgid ""
+"The <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application "
+"code</a> is available on github"
+msgstr "මෙම<a href=\"http://github.com/hotosm/osm-tasking-manager2\"> යෙදවුම් කේතය</a> ගිට් හබ් වෙතින් ලබා ගත හැක."
+
+#: osmtm/templates/about.mako:60
+msgid ""
+"Lead developer: Pierre GIRAUD (<a "
+"href=\"//www.camptocamp.com\">Camptocamp</a>)"
+msgstr "ප්‍රධාන නිමවුම්කරු : පිඅරි ගිරෝඩ්(<a href=\"//www.camptocamp.com\">Camptocamp</a>)"
+
+#: osmtm/templates/about.mako:61
+msgid ""
+"with the help of <a href=\"https://github.com/hotosm/osm-tasking-"
+"manager2/graphs/contributors\">other contributors</a>."
+msgstr "<a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">අනෙකුත් දායකයන්ගේ</a> උපකාර සමග"
+
+#: osmtm/templates/about.mako:70
+msgid "Version"
+msgstr "අනුවාදය "
+
+#: osmtm/templates/base.mako:53
+msgid "About"
+msgstr "මේ පිළිබඳව "
+
+#: osmtm/templates/base.mako:65
+msgid "login to OpenStreetMap"
+msgstr "ඕපන් ස්ට්‍රීට් මැප් වෙත පිවිසෙන්න"
+
+#: osmtm/templates/base.mako:117
+msgid "Fork the code on ${github_link}."
+msgstr "මෙහි කේතය ${github_link} තුලින් ලබාගත හැක. "
+
+#: osmtm/templates/custom.mako:6
+msgid "New to Mapping?"
+msgstr "සිතියම්ගත කිරීමට නවකයෙක් ද? "
+
+#: osmtm/templates/custom.mako:7
+msgid ""
+"Just jump over to <a target=\"_blank\" "
+"href=\"http://www.openstreetmap.org\">OpenStreetMap</a>, create an account, "
+"and then visit <a target=\"_blank\" href=\"http://learnosm.org/en/beginner"
+"/id-editor\">this tutorial</a>. Then come back here to help map for people "
+"on the ground!"
+msgstr "<a target=\"_blank\" href=\"http://www.openstreetmap.org\"> ඕපන් ස්ට්‍රීට් මැප් </a>වෙත පිවිස, පළමුව ඔබට ගිණුමක් අරඹා,  දෙවනුව <a target=\"_blank\" href=\"http://learnosm.org/en/beginner/id-editor\">මෙම නිබන්ධනය </a>කියවා බලන්න. පසුව නැවත පැමිණ උදව් ඇවසි මිනිසුන් වෙනුවෙන් සිතියම් සකසන්නට උපකාර කරන්න!."
+
+#: osmtm/templates/custom.mako:11
+msgid "Questions About Tasks, Mapping or HOT?"
+msgstr "කාර්යය පිළිබදව,සිතියම් සැකසීම පිළිබදව හෝ මානුෂීය ඕපන් ස්ට්‍රීට් මැප් සාමුහිකය  පිළිබදව ගැටළු තිබේද?"
+
+#: osmtm/templates/custom.mako:12
+msgid ""
+"If you have any questions about a project, a task or mapping in general "
+"please ask on our mailing list: <a "
+"href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a><br"
+" /><br />Or visit us in our IRC Chat Channel, just select #hot from the pop "
+"down channel list:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT "
+"IRC Channel #hot</a><br /><br />General inquries and comments are welcomed "
+"at: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
+msgstr "ඔබට ව්‍යාපෘතියක්, කාර්යයක් හෝ සිතියම්ගත කිරීම සම්බන්ධයෙන් යම්කිසි ප්‍රශ්නයක් වෙතොත් අපගේ mailing list එක තුලින් විමසන්න: <a href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a><br /><br />නැතහොත් අපගේ IRC චැට් එක තුලට සම්බන්ධ වී, නාලිකා ලැයිස්තුවෙන් #hot  යන නාලිකාව තෝරා ගන්න: <br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel #hot</a><br /><br />වෙනත් ප්‍රශ්න හෝ අදහස් ඇත්නම් අපගේ ඊමේල් ලිපිනය වෙත එවන්න:  <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
+
+#: osmtm/templates/custom.mako:16
+msgid "Email HOT at"
+msgstr "මානුෂීය ඕපන් ස්ට්‍රීට් මැප් සාමුහිකය වෙත විද්‍යුත් තැපැල් පතක් යවන්න"
+
+#: osmtm/templates/custom.mako:17
+msgid "Follow HOT on"
+msgstr "මානුෂීය ඕපන් ස්ට්‍රීට් මැප් සාමුහිකය අනුගමනය කරන්න"
+
+#: osmtm/templates/custom.mako:18
+msgid "Like HOT on"
+msgstr "මානුෂීය ඕපන් ස්ට්‍රීට් මැප් සාමුහිකය වෙත කැමැත්ත පලකරන්න"
+
+#: osmtm/templates/custom.mako:100
+msgid "Please donate!"
+msgstr "කරුණාකර ආධාර කරන්න "
+
+#: osmtm/templates/home.mako:9
+msgid "urgent"
+msgstr "හදිසි "
+
+#: osmtm/templates/home.mako:9
+msgid "high"
+msgstr "වැඩි "
+
+#: osmtm/templates/home.mako:9
+msgid "medium"
+msgstr "මධ්‍යම "
+
+#: osmtm/templates/home.mako:9
+msgid "low"
+msgstr "අඩු "
+
+#: osmtm/templates/home.mako:11
+msgid "High priority first"
+msgstr "වැඩි ප්‍රමුඛත්වය මුලින් "
+
+#: osmtm/templates/home.mako:12
+msgid "Creation date"
+msgstr "නිර්මාණය කළ දිනය "
+
+#: osmtm/templates/home.mako:13
+msgid "Last update"
+msgstr "යාවත්කාලීන කළ දිනය "
+
+#: osmtm/templates/home.mako:17 osmtm/templates/user.mako:92
+msgid "Projects"
+msgstr "ව්‍යාපෘති "
+
+#: osmtm/templates/home.mako:43
+msgid "Search"
+msgstr "සොයන්න "
+
+#: osmtm/templates/home.mako:49
+msgid "Sort by:"
+msgstr "තෝරන්න:"
+
+#: osmtm/templates/home.mako:75
+msgid "Your projects"
+msgstr "ඔබේ ව්‍යපෘති "
+
+#: osmtm/templates/home.mako:133
+msgid "${locked} user is currently working on this project"
+msgid_plural "${locked} users are currently working on this project"
+msgstr[0] "${locked} පරිශීලකයෙකු මෙම ව්‍යාපෘතියේ කටයුතු කරමින් සිටී "
+msgstr[1] "පරිශීලකයන් ${locked} මෙම ව්‍යාපෘතියේ කටයුතු කරමින් සිටිති "
+
+#: osmtm/templates/home.mako:174 osmtm/templates/project.description.mako:22
+msgid "Access to this project is limited"
+msgstr "මෙම ව්‍යාපෘතියට ප්‍රවේශය සීමා කර ඇත "
+
+#: osmtm/templates/home.mako:177
+msgid "Created by"
+msgstr "නිර්මාණය කරන ලද්දේ "
+
+#: osmtm/templates/home.mako:179
+msgid "Updated"
+msgstr "යාවත්කාලීනයි "
+
+#: osmtm/templates/home.mako:180
+msgid "Priority:"
+msgstr "ප්‍රමුඛත්වය"
+
+#: osmtm/templates/imagery.mako:24
+msgid "imagery url available only after accepting the license"
+msgstr "බලපත්‍රය පිළිගත් පසුව පමණක්, රූපමය සිතියම් වල URL දිස්වනු ඇත"
+
+#: osmtm/templates/imagery.mako:35
+msgid "${license} license agreement"
+msgstr "${license} බලපත්‍ර එකඟත්වය "
+
+#: osmtm/templates/imagery.mako:36
+msgid "Access to this imagery is limited by the ${license_agreement_link}."
+msgstr "මෙම රූපමය සිතියම පරිශීලනය ${license_agreement_link} අනුව සීමා කර ඇත."
+
+#: osmtm/templates/imagery.mako:43
+msgid "You have already acknowledged the terms of this license."
+msgstr "ඔබ මෙම බලපත්‍රයේ කොන්දේසි දැනටමත් පිළිගෙන ඇත "
+
+#: osmtm/templates/imagery.mako:46
+msgid "review and acknowledge"
+msgstr "සමාලෝචනය කර පිළිගැනීම "
+
+#: osmtm/templates/imagery.mako:47
+msgid "You need to ${review_and_acknowledge_link} the agreement."
+msgstr "ඔබ විසින් ගිවිසුම ${review_and_acknowledge_link} අවශ්‍ය වේ."
+
+#: osmtm/templates/imagery.mako:53
+msgid "You need to accept the license first"
+msgstr "ඔබ මුලින් බලපත්‍රය පිළිගත යුතුය "
+
+#: osmtm/templates/license.edit.mako:4
+msgid "Edit License"
+msgstr "බලපත්‍රය වෙනස් කරන්න "
+
+#: osmtm/templates/license.edit.mako:10
+msgid "Name"
+msgstr "නම "
+
+#: osmtm/templates/license.edit.mako:12
+msgid "A name for the license (provider, for example)"
+msgstr "බලපත්‍රය සඳහා නමක් (උදා: බලපත්‍රය සපයන්නා)"
+
+#: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:91
+#: osmtm/templates/project.edit.mako:226 osmtm/templates/project.mako:49
+msgid "Description"
+msgstr "විස්තරය "
+
+#: osmtm/templates/license.edit.mako:17
+msgid "The license terms"
+msgstr "බලපත්‍ර කොන්දේසි "
+
+#: osmtm/templates/license.edit.mako:20
+msgid "Plain Text"
+msgstr "සාමාන්‍ය අකුරු "
+
+#: osmtm/templates/license.edit.mako:22
+msgid "A short version of the terms"
+msgstr "කොන්දේසි කෙටියෙන් "
+
+#: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:128
+msgid "Save the modifications"
+msgstr "වෙනස් කිරීම් ඉතිරි කරන්න "
+
+#: osmtm/templates/license.edit.mako:29
+msgid "Create the new license"
+msgstr "නව බලපත්‍රය නිර්මාණය කරන්න "
+
+#: osmtm/templates/license.edit.mako:32
+msgid "Delete"
+msgstr "මකන්න "
+
+#: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:127
+msgid "Cancel"
+msgstr "අවලංගු කරන්න "
+
+#: osmtm/templates/license.edit.mako:40
+msgid "Are you sure you want to delete this license?"
+msgstr "මෙම බලපත්‍රය මකා දැමිය යුතු බවට ඔබට විශ්වාසද?"
+
+#: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
+msgid "Licenses"
+msgstr "බලපත්‍ර "
+
+#: osmtm/templates/license.mako:10
+msgid "${license_name} License Acknowledgement"
+msgstr "${license_name} බලපත්‍ර කුවිතාන්සිය"
+
+#: osmtm/templates/license.mako:11
+msgid ""
+"Access via this site to imagery identified as <em>\"${license_name}\"</em> "
+"is subject to the following usage terms:"
+msgstr "මෙම පිටුව හරහා  <em>\"${license_name}\"</em>ලෙස හදුනාගත් රූපමය සිතියම පරිශීලනය, පහත සදහන් භාවිතා කොන්දේසි වලට යටත් වේ."
+
+#: osmtm/templates/license.mako:24 osmtm/views/license.py:41
+msgid "I AGREE"
+msgstr "මම එකඟ වෙමි "
+
+#: osmtm/templates/license.mako:25
+msgid "No, thank you"
+msgstr "නැහැ, ස්තූතියි "
+
+#: osmtm/templates/licenses.mako:16
+msgid "edit"
+msgstr "වෙනස් කරන්න "
+
+#: osmtm/templates/licenses.mako:23
+msgid "Create new license"
+msgstr "නව බලපත්‍රයක් නිර්මාණය කරන්න "
+
+#: osmtm/templates/message.mako:3 osmtm/templates/message.mako:18
+#: osmtm/templates/user.messages.mako:4 osmtm/templates/user_menu.mako:12
+msgid "Messages"
+msgstr "පණිවුඩ "
+
+#: osmtm/templates/message.mako:26
+msgid "From:"
+msgstr "වෙතින්:"
+
+#: osmtm/templates/project.assigned_tasks.mako:6
+msgid "You have tasks assigned:"
+msgstr "ඔබට කාර්යයන් පවරා ඇත:"
+
+#: osmtm/templates/project.description.mako:8
+msgid "This project is not published yet."
+msgstr "මෙම ව්‍යාපෘතිය තවම ප්‍රකාශනයට පත් කර නොමැත "
+
+#: osmtm/templates/project.description.mako:11
+msgid "Publish"
+msgstr "ප්‍රකාශනයට පත් කරන්න "
+
+#: osmtm/templates/project.description.mako:15
+msgid "This project was archived."
+msgstr "මෙම ව්‍යාපෘතිය සංරක්ෂණය කර ඇත "
+
+#: osmtm/templates/project.description.mako:29
+#: osmtm/templates/project.edit.mako:92 osmtm/templates/project.mako:50
+msgid "Instructions"
+msgstr "උපදෙස් "
+
+#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:469
+#: osmtm/templates/project.mako:21
+msgid "Edit"
+msgstr "වෙනස් කරන්න "
+
+#: osmtm/templates/project.edit.mako:46
+msgid "Are you sure?"
+msgstr "ඔබට මෙය කිරීමට විශ්වාසද?"
+
+#: osmtm/templates/project.edit.mako:50
+msgid ""
+"This will mark all tasks currently marked as 'done' as invalid. Please use "
+"this only if you are sure of what you are doing."
+msgstr "මෙමගින් සම්පූර්ණ යැයි ලකුණු කර ඇති සියළු කාර්යයන් අවලංගු ලෙස ලකුණු කෙරෙනු ඇත. එසේ කිරීමට අවශ්‍ය නම් පමණක් මෙය භාවිතා කරන්න."
+
+#: osmtm/templates/project.edit.mako:53
+msgid ""
+"Please leave a comment. It will be displayed in all the invalidated tasks."
+msgstr "කරුනාකර අදහස් දැක්වීමක් කරන්න.එය අදාල කාර්යය තුල ප්‍රදර්ශනය වනු ඇත."
+
+#: osmtm/templates/project.edit.mako:56
+msgid "This will be sent as the invalidation comment to users."
+msgstr "මෙය අවලංගු කිරීමට අදාල අදහස ලෙස පරිශීලකයන් වෙත යැවෙනු ඇත "
+
+#: osmtm/templates/project.edit.mako:59
+msgid "Please type in the project number id of the repository to confirm."
+msgstr "සනාථ කිරීම සඳහා දත්ත ගබඩාවේ ව්‍යපෘති අංකය ඇතුලත් කරන්න "
+
+#: osmtm/templates/project.edit.mako:68
+msgid "Invalidate all done tasks"
+msgstr "සියලු සම්පූර්ණ කටයුතු අවලංගු කරන්න "
+
+#: osmtm/templates/project.edit.mako:93
+msgid "Area"
+msgstr "ප්‍රදේශ "
+
+#: osmtm/templates/project.edit.mako:94
+#: osmtm/templates/project.instructions.mako:36
+msgid "Imagery"
+msgstr "රූප "
+
+#: osmtm/templates/project.edit.mako:95
+msgid "Priority Areas"
+msgstr "ප්‍රමුඛත්වය සහිත ප්‍රදේශ "
+
+#: osmtm/templates/project.edit.mako:96
+msgid "Allowed Users"
+msgstr "අවසරලත්  පරිශීලකයන් "
+
+#: osmtm/templates/project.edit.mako:97
+msgid "Misc"
+msgstr "විවිධ "
+
+#: osmtm/templates/project.edit.mako:141
+msgid "Status"
+msgstr "තත්වය "
+
+#: osmtm/templates/project.edit.mako:146 osmtm/templates/project.mako:10
+msgid "Archived"
+msgstr "සංරක්ෂණය කර ඇත "
+
+#: osmtm/templates/project.edit.mako:147
+msgid "Published"
+msgstr "ප්‍රකාශයට පත් කර ඇත "
+
+#: osmtm/templates/project.edit.mako:148 osmtm/templates/project.mako:8
+msgid "Draft"
+msgstr "කෙටුම්පත "
+
+#: osmtm/templates/project.edit.mako:161
+msgid "Priority"
+msgstr "ප්‍රමුඛත්වය "
+
+#: osmtm/templates/project.edit.mako:177
+msgid "Name of the project"
+msgstr "ව්‍යාපෘතියේ නම "
+
+#: osmtm/templates/project.edit.mako:201
+msgid "Short Description"
+msgstr "කෙටි විස්තරය "
+
+#: osmtm/templates/project.edit.mako:236
+#: osmtm/templates/project.instructions.mako:7
+msgid "Entities to Map"
+msgstr "සිතියම්ගත කලයුතු දෑ "
+
+#: osmtm/templates/project.edit.mako:239
+msgid "primary roads, secondary roads, buildings"
+msgstr "ප්‍රධාන මාර්ග, අතුරු මාර්ග, ගොඩනැගිලි "
+
+#: osmtm/templates/project.edit.mako:243
+msgid "The list of entities to map."
+msgstr "සිතියම්ගත කලයුතු දෑ ලැයිස්තුව "
+
+#: osmtm/templates/project.edit.mako:247
+#: osmtm/templates/project.instructions.mako:19
+msgid "Changeset Comment"
+msgstr "වෙනස්කම් සමූහය පිලිබඳ අදහස "
+
+#: osmtm/templates/project.edit.mako:253
+msgid ""
+"Default comments added to uploaded changeset comment field. Users should "
+"also be encouraged add text describing what they mapped."
+msgstr "උඩුගත කළ වෙනස්කම් සමූහ පිලිබඳ අදහස් වාර්තාවට පෙර සැකසූ අදහස් ඇතුලත් කරන ලදී. තමන් සිතියම්ගත කළ දෑ  පිළිබඳව විස්තර එකතු කිරීමට ද පරිශීලකයන් උනන්දු කළ යුතුය. "
+
+#: osmtm/templates/project.edit.mako:254
+msgid "Example defaults:"
+msgstr "පෙර සැකසූ උදාහරණ: "
+
+#: osmtm/templates/project.edit.mako:255
+msgid ""
+"Hashtags are sometimes used for analysis later, but should be human "
+"informative and not overused, #group #event for example."
+msgstr "ඇතැම් අවස්ථා වලදී විශ්ලේෂණ සඳහා හෑෂ් ටැග් භාවිතා වන නමුත්, අනවශ්‍ය ලෙස භාවිතයෙන් වැළකිය යුතු අතර පුද්ගලයන්ට පහසුවෙන් තේරුම් ගත හැකි විය යුතුය, උදාහරණ ලෙස #group #event. "
+
+#: osmtm/templates/project.edit.mako:264
+msgid "Detailed Instructions"
+msgstr "සවිස්තරාත්මක උපදෙස් "
+
+#: osmtm/templates/project.edit.mako:277
+msgid "Per Task Instructions (optional)"
+msgstr "කාර්යයට විශේෂිත උපදෙස් (අත්‍යාවශ්‍ය නොවේ)"
+
+#: osmtm/templates/project.edit.mako:282
+msgid ""
+"Put here anything that can be useful to users while taking a task. {x}, {y} "
+"and {z} will be replaced by the corresponding parameters for each task."
+msgstr "කාර්යයක් ගැනීමේදී පරිශීලකයන්ට උපකාරී වන ඕනෑම තොරතුරක් මෙහි සඳහන් කරන්න. {x}, {y} සහ {z} වෙනුවට නියමිත කාර්යයට අදාල විස්තර ආදේශ වනු ඇත. "
+
+#: osmtm/templates/project.edit.mako:283
+msgid "For example:"
+msgstr "උදාහරණයක් "
+
+#: osmtm/templates/project.edit.mako:283
+msgid ""
+"\" This task involves loading extra data. Click "
+"[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
+" to load the data into JOSM"
+msgstr "මෙම කාර්යය සඳහා අමතර දත්ත ලබා දිය යුතුය. ජේ.ඕ.එස්.එම් වෙත දත්ත ලබා දීම සඳහා [මෙය](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) ඔබන්න "
+
+#: osmtm/templates/project.edit.mako:294
+msgid "Area modifications are not available yet."
+msgstr "ප්‍රදේශ වෙනස් කිරීම් තවම සිදු කල නොහැක \n "
+
+#: osmtm/templates/project.edit.mako:303
+msgid "${count_of} priority area(s)"
+msgstr "ප්‍රමුඛතා ප්‍රදේශයන් ගණන ${count_of} යි "
+
+#: osmtm/templates/project.edit.mako:306
+msgid ""
+"If you want mappers to work on the highest priority areas first, draw one or"
+" more polygons within the project area."
+msgstr "සිතියම්කරුවන්ව වැඩි ප්‍රමුඛතාවක් ඇති ප්‍රදේශ වලට මුලින් යෙදවීමට ඔබට අවශ්‍ය නම්, බහුඅස්ර එකක් හෝ කිහිපයක් ඇඳීමෙන් ව්‍යපෘති ප්‍රදේශය සලකුණු කරන්න."
+
+#: osmtm/templates/project.edit.mako:323
+msgid "URL to service"
+msgstr "සේවා ලිපිනය (URL)"
+
+#: osmtm/templates/project.edit.mako:326
+msgid "Note:"
+msgstr "සටහන්:"
+
+#: osmtm/templates/project.edit.mako:326
+msgid ""
+"Follow this format for TMS urls.<br>tms[22]:http://hiu-"
+"maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+msgstr "ටී.එම්.එස් ලිපිනයන් සඳහා මෙම ආකෘතිය අනුගමනය කරන්න.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+
+#: osmtm/templates/project.edit.mako:332
+msgid "Required License"
+msgstr "අවශ්‍ය කරන බලපත්‍රය "
+
+#: osmtm/templates/project.edit.mako:358
+msgid "Private"
+msgstr "පෞද්ගලික "
+
+#: osmtm/templates/project.edit.mako:361
+msgid ""
+"Private means that only a given list of users can access this project. In "
+"order for the user's name to be available to add to the Allowed Users - they"
+" first must visit the URL for your instance of OSMTM and Authorize access to"
+" their OpenStreetMap account. After they've done this, their username should"
+" be available for the administrator to add."
+msgstr "පෞද්ගලික යනුවෙන් අදහස් කරන්නේ සීමිත පරිශීලකයන් පිරිසකට පමණක් මෙම ව්‍යාපෘතියට ඇතුළු වීමට අවසර ඇති බවයි. අවසරලත් පරිශීලකයන් ලැයිස්තුවට පරිශේලකයෙකු එකතු කිරීම සඳහා - ඔවුන් මුලින්ම ඔබගේ ඕ.එස්.එම්.ටී.එම් විශේෂයෙහි URL ලිපිනය වෙත ගොස් ඔවුන්ගේ ඕපන් ස්ට්‍රීට් මැප් ගිණුම භාවිතා කිරීමට අවසර ලබා දිය යුතුය. මෙය සිදු වූ පසු ඔවුන්ගේ නම් ලැයිස්තුවට එකතු කිරීම සඳහා පරිපාලකට දිස්වනු ඇත."
+
+#: osmtm/templates/project.edit.mako:366
+msgid "Allowed users"
+msgstr "අවසරලත් පරිශීලකයන් "
+
+#: osmtm/templates/project.edit.mako:389
+msgid "Type a username"
+msgstr "පරිශීලක නමක් ඇතුලත් කරන්න "
+
+#: osmtm/templates/project.edit.mako:392
+msgid "Add user"
+msgstr "පරිශීලකයෙකු එකතු කරන්න "
+
+#: osmtm/templates/project.edit.mako:410
+msgid "Project due date"
+msgstr "ව්‍යාපෘතිය නියමිත දිනය "
+
+#: osmtm/templates/project.edit.mako:418
+msgid "The date after which the project will automatically be archived."
+msgstr "මෙම දිනට පසු ව්‍යාපෘතිය ස්වයංක්‍රීයව සංරක්ෂණය වේ "
+
+#: osmtm/templates/project.edit.mako:424
+msgid "JOSM Preset"
+msgstr "ජේ.ඕ.එස්.එම් යොමුව"
+
+#: osmtm/templates/project.edit.mako:429
+msgid "A JOSM Preset has already been added to this project."
+msgstr "ජේ.ඕ.එස්.එම් යොමුව දැනටමත් වයාපෘතියට එකතු කර ඇත"
+
+#: osmtm/templates/project.edit.mako:435
+msgid "Invalidation"
+msgstr "අවලංගු කිරීම "
+
+#: osmtm/templates/project.edit.mako:438
+msgid "Invalidate All Tasks"
+msgstr "සියලු කටයුතු අවලංගු කරන්න "
+
+#: osmtm/templates/project.edit.mako:442
+msgid ""
+"Click this button if project instructions have changed, or if for some "
+"reason you need to invalidate all done tasks in a single step."
+msgstr "ව්‍යපෘති උපදෙස් වෙනස් වී ඇත්නම් හෝ කිසියම් හේතුවකට සියලුම සම්පූර්ණ ලෙස සටහන් කළ කාර්යයන් එක වර අවලංගු කිරීමට ඔබට අවශ්‍ය නම් මෙම බොත්තම ඔබන්න."
+
+#: osmtm/templates/project.edit.mako:446
+msgid "WARNING: This cannot be undone."
+msgstr "අවධානයයි: මෙම ක්‍රියාව නැවත අහෝසි කල නොහැක "
+
+#: osmtm/templates/project.edit.mako:455
+msgid "Tip:"
+msgstr "තොරතුරක්:"
+
+#: osmtm/templates/project.edit.mako:456
+msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
+msgstr "ඔබට <a href class=\"markdown\">markdown</a> භාවිතා කළ හැක. (HTML භාවිතා කළ නොහැක)"
+
+#: osmtm/templates/project.edit.mako:472
+msgid "Preview"
+msgstr "පෙරදසුන "
+
+#: osmtm/templates/project.instructions.mako:12
+msgid "The list of elements we ask you to map"
+msgstr "අපි ඔබෙන් සිතියම්ගත කරන ලෙස ඉල්ලන දෑ "
+
+#: osmtm/templates/project.instructions.mako:24
+msgid ""
+"The default comment entered when uploading data to the OSM database. Please "
+"add to the default comment a description of what you actually mapped."
+msgstr "ඕ.එස්.එම් දත්ත ගබඩාවට දත්ත ඇතුලත් කිරීමේදී භාවිතා වන පෙර සැකසූ අදහස. කරුණාකර මෙයට ඔබ සිතියම්ගත කළ දෑ පිලිබඳ යමක් එකතු කරන්න."
+
+#: osmtm/templates/project.instructions.mako:31
+msgid ""
+"When saving your work, please leave the default comment but add what you "
+"actually mapped, for example \"added buildings and a residential road\"."
+msgstr "ඔබේ දායකත්වයන් ඉතිරි කිරීමේදී, පෙර සැකසූ අදහස ඉවත් නොකර එහි අගට ඔබ සිතියම්ගත කළ  දෑ පිළිබඳව යමක් එකතු කරන්න. උදාහරණයක් ලෙස \"නව ගොඩනැගිලි සහ මාර්ගයක් එකතු කරන ලදී\". "
+
+#: osmtm/templates/project.instructions.mako:46
+msgid "preset"
+msgstr "පෙර සැකසුම "
+
+#: osmtm/templates/project.instructions.mako:47
+msgid "Using JOSM? Please use the dedicated ${preset_link}."
+msgstr "ජේ.ඕ.එස්.එම් භාවිතා කරනවා ද? කරුණාකර මෙයට විශේෂිත වූ ${preset_link} භාවිතා කරන්න."
+
+#: osmtm/templates/project.instructions.mako:58
+msgid "Start contributing"
+msgstr "දායක වන්නට පටන් ගන්න "
+
+#: osmtm/templates/project.mako:17
+msgid "Export"
+msgstr "අපනයනය කරන්න "
+
+#: osmtm/templates/project.mako:51
+msgid "Contribute"
+msgstr "දායක වන්න "
+
+#: osmtm/templates/project.mako:52
+msgid "Activity"
+msgstr "ක්‍රියාකාරකම් "
+
+#: osmtm/templates/project.mako:53
+msgid "Stats"
+msgstr "සංඛ්‍යා ලේඛන "
+
+#: osmtm/templates/project.mako:65
+msgid "Loading"
+msgstr "පූර්නය කිරීම"
+
+#: osmtm/templates/project.mako:105
+msgid "Task doesn't exist."
+msgstr "කාර්යය / යොමුව පවතින්නෙ නැත"
+
+#: osmtm/templates/project.mako:106
+msgid "an error occured"
+msgstr "දොෂයක් මතු වීම"
+
+#: osmtm/templates/project.mako:107
+msgid ""
+"JOSM remote control did not respond. Do you have JOSM running and configured"
+" to be controlled remotely?"
+msgstr "ජේ.ඕ.එස්.එම් දුරස්ථ පාලකයෙන් ප්‍රතිචාරයක් නොමැත. ඔබ ජේ.ඕ.එස්.එම් ක්‍රියාත්මක කර හා දුරස්ථ ලෙස පාලනය කිරීමට සකස් කර තිබේ ද? "
+
+#: osmtm/templates/project.mako:109
+msgid "Something wrong happened"
+msgstr "යම් දොෂයක් මතු වී ඇත"
+
+#: osmtm/templates/project.mako:110
+msgid "Please login first"
+msgstr "කරුණාකර පලමුව එ තුලට පිවිසීම සිදුකරන්න"
+
+#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:33
+msgid "Map data © ${osm_link} contributors"
+msgstr "සිතියම් තොරතුරු © ${osm_link} දායකයන්"
+
+#: osmtm/templates/project.mako:116
+msgid "Cur. worked on "
+msgstr "Cur. ක්‍රියාත්මක වේ"
+
+#: osmtm/templates/project.mako:117
+msgid "Ready"
+msgstr "සූදානම් "
+
+#: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:52
+#: osmtm/templates/task.status.mako:12
+msgid "Invalidated"
+msgstr "අවලංගුයි "
+
+#: osmtm/templates/project.mako:117 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/task.status.mako:10
+msgid "Done"
+msgstr "සම්පුර්ණයි "
+
+#: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:54
+#: osmtm/templates/task.status.mako:14
+msgid "Validated"
+msgstr "වලංගුයි "
+
+#: osmtm/templates/project.mako:119
+msgid "You must leave a comment."
+msgstr "ඔබ අදහසක් සටහන් කල යුතුම වේ"
+
+#: osmtm/templates/project.mako:120
+msgid "High priority"
+msgstr "ප්‍රමුඛතාවය වැඩි "
+
+#: osmtm/templates/project.new.mako:4
+msgid "Project New"
+msgstr "නව වයාපෘතිය"
+
+#: osmtm/templates/project.new.mako:27
+msgid "Draw the area of interest"
+msgstr "කැමති ප්‍රදේශය සිතියම්ගත කරන්න"
+
+#: osmtm/templates/project.new.mako:28
+msgid "Dropped file could not be loaded"
+msgstr "දැමූ ලිපිගොනුව පූර්ණය කිරීමට නොහැකි විය "
+
+#: osmtm/templates/project.new.mako:29
+msgid "Dropped file was unreadable"
+msgstr "දැමූ ලිපිගොනුව කියවීමට නොහැක"
+
+#: osmtm/templates/project.new.mako:30
+msgid "Please provide a .geojson or a .kml file"
+msgstr "කරුණාකර .geojson  හො .kml   ගොනුවක් නිර්මාණය කරන්න"
+
+#: osmtm/templates/project.new.mako:44 osmtm/templates/project.new.mako:84
+#: osmtm/templates/project.new.mako:133 osmtm/templates/project.new.mako:176
+msgid "Step ${number}"
+msgstr "අදියර "
+
+#: osmtm/templates/project.new.mako:49
+msgid "Draw"
+msgstr "අඳින්න "
+
+#: osmtm/templates/project.new.mako:50
+msgid "${draw_link} the area of interest on the map."
+msgstr "සිතියමේ අවශ්‍ය ප්‍රදේශය ${draw_link}."
+
+#: osmtm/templates/project.new.mako:55 osmtm/templates/task.empty.mako:21
+msgid "or"
+msgstr "හෝ "
+
+#: osmtm/templates/project.new.mako:62
+msgid "Provide a .geojson or .kml file."
+msgstr ".geojson හෝ .kml ගොනුවක් ලබා දෙන්න"
+
+#: osmtm/templates/project.new.mako:62
+msgid "Import"
+msgstr "ආනයනය කරන්න "
+
+#: osmtm/templates/project.new.mako:63
+msgid "${import_link} a <em>GeoJSON</em> or <em>KML</em> file."
+msgstr "<em>GeoJSON</em> හෝ <em>KML</em> ලිපිගොනුවක් ${import_link}."
+
+#: osmtm/templates/project.new.mako:68
+msgid "Want to use an <em>.osm</em> file instead?"
+msgstr "මේ වෙනුවට <em>.osm</em> ලිපිගොනුවක් භාවිතා කිරීමට අවශ්‍යද? "
+
+#: osmtm/templates/project.new.mako:71
+msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
+msgstr "ඔබට ${geojson_link} භාවිතා කර එය <em>GeoJSON</em> ආකාරයට හැරවීමට හැක."
+
+#: osmtm/templates/project.new.mako:85
+msgid "${step_number}  - Type of project"
+msgstr "${පියවර_ අන්කය} - වයාපෘති වර්ගය"
+
+#: osmtm/templates/project.new.mako:92
+msgid "Square Grid"
+msgstr "කොටු දැල "
+
+#: osmtm/templates/project.new.mako:96
+msgid ""
+"Area of interest is automatically split into grid cells. Each one is a task."
+msgstr "තෝරා ගත් ප්‍රදේශය ස්වයන්ක්‍රීයව කොටු දැල් කොටස් බවට පත්වනු ඇත.එකිනෙකක් වෙන වෙනම කාර්යයකි."
+
+#: osmtm/templates/project.new.mako:103
+msgid "You cannot select this option unless you import a file with polygons."
+msgstr "ගොනුව බහුඅස්‍රයක් බවට පත් නොකර ඔබට මෙම විකල්පය තෝරා ගත නොහැකිය."
+
+#: osmtm/templates/project.new.mako:106
+msgid "Arbitrary Geometries"
+msgstr "අභිමතානුකූල ජාමිතිකයන්"
+
+#: osmtm/templates/project.new.mako:110
+msgid "Each polygon represents a task."
+msgstr "සෑම බහුඅස්‍රයකින්ම කාර්යයක් නිරූපනය කෙරේ"
+
+#: osmtm/templates/project.new.mako:119 osmtm/templates/project.new.mako:156
+#: osmtm/templates/project.new.mako:186
+msgid "Back"
+msgstr "ආපසු "
+
+#: osmtm/templates/project.new.mako:121
+msgid "Next"
+msgstr "මීලඟ "
+
+#: osmtm/templates/project.new.mako:137
+msgid "Tile size"
+msgstr "කොටසෙහි ප්‍රමාණය"
+
+#: osmtm/templates/project.new.mako:145
+msgid "Computing..."
+msgstr "ගණනය කෙරෙමින් පවතී..."
+
+#: osmtm/templates/project.new.mako:149 osmtm/templates/project.new.mako:180
+msgid "A new project will be created with ${number} tasks."
+msgstr "සෑම නව ව‍යාපෘතියක්ම ${අන්කයක්} සමගින් නිර්මාණය වේ"
+
+#: osmtm/templates/project.new.mako:158 osmtm/templates/project.new.mako:188
+msgid "Create project"
+msgstr "ව්‍යාපෘතියක් නිර්මාණය කරන්න "
+
+#: osmtm/templates/project.new.mako:164
+msgid "Creating tiles, please wait..."
+msgstr "කොටසක් නිර්මාණයවේ, මදක් ඉවසන්න.."
+
+#: osmtm/templates/project.new.mako:193
+msgid "Creating project, please wait..."
+msgstr "වයාපෘතිය නිර්මාණයවේ, මදක් ඉවසන්න.."
+
+#: osmtm/templates/project.stats.mako:5
+msgid "Contributors"
+msgstr "දායක වූවන් "
+
+#: osmtm/templates/project.stats.mako:7
+msgid "Assigned"
+msgstr "පවරා ඇත "
+
+#: osmtm/templates/start.mako:4
+msgid "OSM Tasking Manager"
+msgstr "ඕ එස් එම් කාර්යය කළමනාකරු"
+
+#: osmtm/templates/start.mako:13
+msgid "Welcome, new user!"
+msgstr "ආයුබෝවන්, නව පරිශීලක! "
+
+#: osmtm/templates/start.mako:17
+msgid "You're ready to use the Tasking Manager."
+msgstr "ඔබ කාර්යය කළමනාකරු භාවිතා කිරීමට සූදානම් "
+
+#: osmtm/templates/start.mako:17
+msgid "Since you are the first user you'll be given admin rights."
+msgstr "ඔබ පළමු පරිශීලක නම්,ඔබට පරිපාලන අයීතිය ලබාදෙනු ඇත."
+
+#: osmtm/templates/start.mako:20
+msgid "Please login"
+msgstr "කරුණාකර පිවිසෙන්න"
+
+#: osmtm/templates/task.assigned.mako:18
+msgid "Assign task to someone"
+msgstr "වෙනකෙකුට කාර්යය පවරන්න"
+
+#: osmtm/templates/task.assigned.mako:25
+msgid "Filter users"
+msgstr "භාවිතා කරන්නන් තෝරා ගැනීමට"
+
+#: osmtm/templates/task.assigned.mako:42 osmtm/templates/task.locked.mako:2
+msgid "you"
+msgstr "ඔබ "
+
+#: osmtm/templates/task.assigned.mako:44
+msgid "Assigned to ${username}"
+msgstr "වෙන් කිරීම සදහා $ {භාවිත නාමය}"
+
+#: osmtm/templates/task.assigned.mako:48
+msgid "Not assigned yet"
+msgstr "තවමත් පවරා නැත "
+
+#: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:4
+msgid "Leave a comment"
+msgstr "අදහස් දැක්වීමක් කරන්න"
+
+#: osmtm/templates/task.current_locked.mako:2
+msgid "a task"
+msgstr "කාර්යයක් "
+
+#: osmtm/templates/task.current_locked.mako:3
+msgid "You already have ${task_link} locked."
+msgstr "ඔබට දැනටමත් පවතී $ {කාර්යය_සම්බන්දක} අගුලු දැමීමක්"
+
+#: osmtm/templates/task.current_locked.mako:10
+msgid "Select it again"
+msgstr "නැවත තෝරාගන්න "
+
+#: osmtm/templates/task.difficulty.mako:7
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Hard"
+msgstr "අපහසු "
+
+#: osmtm/templates/task.difficulty.mako:8
+msgid "Difficulty: hard<br>Level: advanced"
+msgstr "අපහසු : දැඩි <br> මිනුමක් : ඉහල පෙළ"
+
+#: osmtm/templates/task.difficulty.mako:11
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Medium"
+msgstr "සාමාන්‍ය "
+
+#: osmtm/templates/task.difficulty.mako:12
+msgid "Difficulty: medium<br>Level: intermediate"
+msgstr "අපහසු : මැද<br> මිනුමක් : සාමාන්‍ය"
+
+#: osmtm/templates/task.difficulty.mako:15
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Easy"
+msgstr "පහසු "
+
+#: osmtm/templates/task.difficulty.mako:16
+msgid "Difficulty: easy<br>Level: beginner"
+msgstr "අපහසු : පහසු<බ්‍ර> මිනුමක් : ආරම්භකයා"
+
+#: osmtm/templates/task.difficulty.mako:19
+msgid "Difficulty"
+msgstr "අපහසු "
+
+#: osmtm/templates/task.difficulty.mako:20
+msgid "No difficulty set yet"
+msgstr "අපහසු කොටසක් තවමත් නොමැත"
+
+#: osmtm/templates/task.difficulty.mako:46
+msgid "Unknown difficulty"
+msgstr "නොදන්නා බව අපහසුවට හේතුවය"
+
+#: osmtm/templates/task.editors.mako:8
+msgid "Edit with"
+msgstr "සන්ස්කරණය කිරීම"
+
+#: osmtm/templates/task.editors.mako:25
+msgid ".gpx file"
+msgstr ".gpx ගොනුව"
+
+#: osmtm/templates/task.editors.mako:30
+msgid ""
+"Tip: Download the following ${task_gpx_link} and load it in JOSM in order to"
+" see the current task boundary"
+msgstr "තොරතුරක්: දැනට ඇති කාර්යය සීමාවන් නිරීක්‍ෂණය කිරීමට මෙම ${task_gpx_link} බාගත කර ජේ.ඕ.එස්.එම් තුලට ඇතුලත් කරන්න. "
+
+#: osmtm/templates/task.empty.mako:15
+msgid "Select a task on the map"
+msgstr "සිතියමේ කාර්යයක් තෝරාගන්න "
+
+#: osmtm/templates/task.empty.mako:27
+msgid "Take a task at random"
+msgstr "අහඹු ලෙස කාර්යයක් තෝරාගන්න "
+
+#: osmtm/templates/task.freecomment.mako:7
+msgid "Comment"
+msgstr "අදහස "
+
+#: osmtm/templates/task.history.mako:38
+msgid "${user} marked ${tasklink} as <b>done</b>"
+msgstr "${user} විසින් ${tasklink} කාර්ය(ය) සම්පූර්ණ බව ලකුණු කරන ලදී."
+
+#: osmtm/templates/task.history.mako:41
+msgid "${user} <b>invalidated</b> ${tasklink}"
+msgstr "${user} විසින් ${tasklink} <b>අවලංගු</b> කරන ලදී "
+
+#: osmtm/templates/task.history.mako:44
+msgid "${user} <b>validated</b> ${tasklink}"
+msgstr "${user} විසින් ${tasklink} <b>වලංගු</b> කරන ලදී "
+
+#: osmtm/templates/task.history.mako:50
+msgid "Marked as done"
+msgstr "සම්පූර්ණ ලෙසට සටහන් කර ඇත "
+
+#: osmtm/templates/task.history.mako:50 osmtm/templates/task.history.mako:52
+#: osmtm/templates/task.history.mako:54 osmtm/templates/task.history.mako:58
+#: osmtm/templates/task.history.mako:63
+msgid "by"
+msgstr "විසින් "
+
+#: osmtm/templates/task.history.mako:58 osmtm/templates/task.status.mako:6
+msgid "Locked"
+msgstr "අගුලු යොදා ඇත "
+
+#: osmtm/templates/task.history.mako:60
+msgid "Unlocked"
+msgstr "අගුලු ඉවත් කර ඇත "
+
+#: osmtm/templates/task.history.mako:63
+msgid "Comment left"
+msgstr "අදහසක් සටහන් කර ඇත "
+
+#: osmtm/templates/task.history.mako:77
+msgid "Nothing has happened yet."
+msgstr "මෙතෙක් කිසිවක් සිදු වී නොමැත "
+
+#: osmtm/templates/task.instructions.mako:3
+msgid "Extra Instructions"
+msgstr "වැඩිදුර උපදෙස් "
+
+#: osmtm/templates/task.locked.mako:4
+msgid "Locked by ${username}"
+msgstr "${username} විසින් අගුලු දමා ඇත "
+
+#: osmtm/templates/task.locked.mako:14
+#: osmtm/templates/task.state.ready.mako:15
+msgid "Stop mapping"
+msgstr "සිතියම්ගත කිරීම නවතන්න "
+
+#: osmtm/templates/task.locked.mako:16
+msgid ""
+"If you do not complete or release this task in time, it will be "
+"automatically unlocked"
+msgstr "ඔබ විසින් නියමිත කාලය තුලදී මෙම කාර්යය සම්පූර්ණ කර හෝ අත්හැර නොතිබුණහොත් ස්වයංක්‍රීයව එහි අගුලු ඉවත් වනු ඇත "
+
+#: osmtm/templates/task.locked.mako:18
+msgid "min. left"
+msgstr "ඉතිරි විනාඩි "
+
+#: osmtm/templates/task.mako:19
+msgid "Clear selection"
+msgstr "තෝරාගැනීම ඉවත් කරන්න "
+
+#: osmtm/templates/task.mako:23
+msgid "Task #${number}"
+msgstr "කාර්යය #${number}"
+
+#: osmtm/templates/task.mako:68
+msgid "See the changesets in the OSM database for this area."
+msgstr "ඕ.එස්.එම් දත්ත ගබඩාවේ මෙම ප්‍රදේශයට අදාල වෙනස්කම් සමූහයන් නිරීක්‍ෂණය කරන්න."
+
+#: osmtm/templates/task.mako:69
+msgid "OSM changesets"
+msgstr "ඕ.එස්.එම් වෙනස්කම් සමූහයන් "
+
+#: osmtm/templates/task.mako:112
+msgid "See the changes in this area using the overpass-turbo API."
+msgstr "මෙම ප්‍රදේශයට අදාල වෙනස්කම් ඔව්ර්පාස් ටර්බෝ මෙවලම ආධාරයෙන් නිරීක්‍ෂණය කරන්න."
+
+#: osmtm/templates/task.mako:112
+msgid "overpass-turbo"
+msgstr "overpass-turbo"
+
+#: osmtm/templates/task.split.mako:3
+msgid "Task is too big?"
+msgstr "කාර්යය ලොකු වැඩි ද?"
+
+#: osmtm/templates/task.split.mako:9
+msgid "You cannot split this task more."
+msgstr "මෙම කාර්යය තවදුරටත් බෙදිය නොහැක "
+
+#: osmtm/templates/task.split.mako:13
+msgid "Are you sure you want to split this task?"
+msgstr "ඔබට නිසැකවම කාර්යය කොටස් වලට බෙදීමට අවශ්‍යද?"
+
+#: osmtm/templates/task.split.mako:15
+msgid "Split"
+msgstr "බෙදාගන්න "
+
+#: osmtm/templates/task.state.done.mako:4
+msgid "Invalidate this task if you consider it needs more work."
+msgstr "එහි කළ යුතු දේ බොහෝ බව හැගෙනවා නම් එම කාර්යය අවලන්ගු කරන්න."
+
+#: osmtm/templates/task.state.done.mako:12
+msgid "Unlock"
+msgstr "අගුල අරින්න"
+
+#: osmtm/templates/task.state.done.mako:18
+msgid "Invalidate"
+msgstr "අවලන්ගු කරන්න"
+
+#: osmtm/templates/task.state.done.mako:22
+msgid "Validate this task if you consider that the work is complete."
+msgstr "කාර්යය සම්පූර්ණ බව හැගෙනවා නම් එහි වලන්ගු බව තහවුරු කරන්න."
+
+#: osmtm/templates/task.state.done.mako:27
+msgid "You cannot validate a task that you have personally marked as done."
+msgstr "ඔබ විසින් නිම කළ කොටසෙහි වලන්ගු බව ඔබටම තහවුරු කළ නොහැකිය."
+
+#: osmtm/templates/task.state.done.mako:43
+msgid "Validate"
+msgstr "වලන්ගු කිරීම"
+
+#: osmtm/templates/task.state.ready.mako:4
+msgid ""
+"Stop working on this task and unlock it. You may resume work on it again "
+"later."
+msgstr "කාර්යයෙහි යෙදී අවසන් වූ පසු අගුල නැවතත් අරින්න.ඔබට නැවතත් එය ආරම්භ කළ හැකිවේ."
+
+#: osmtm/templates/task.state.ready.mako:5
+msgid "Submit for review when all instructions are completed."
+msgstr "සියලු කාර්යයන් සම්පූර්ණ වූ පසු සමාලෝචනය සඳහා ඉදිරිපත් කරන්න "
+
+#: osmtm/templates/task.state.ready.mako:22
+msgid "Mark task as done"
+msgstr "කාර්යය සම්පූර්ණ ලෙස සටහන් කරන්න "
+
+#: osmtm/templates/task.unlocked.mako:13
+msgid "Lock this task to tell others that you are currently working on it."
+msgstr "මෙම කාර්යයේ ඔබ නියුතු බව අන් යට දැනුම් දීම සඳහා අගුලු යොදන්න."
+
+#: osmtm/templates/task.unlocked.mako:17
+msgid "Start mapping"
+msgstr "සිතියම්ගත කිරීම අරඹන්න "
+
+#: osmtm/templates/task.unlocked.mako:21
+msgid ""
+"Lock this task to tell others that you are currently reviewing it. Validate "
+"that this task has been mapped correctly and completely."
+msgstr "මෙම කාර්යය ඔබ සමාලෝචනය කරමින් සිටින බව අන් යට දැන්වීම සඳහා අගුලු යොදන්න. කාර්යය නිවැරදිව හා පැහැදිලිව සිතියම්ගත කර ඇත්නම් වලංගු කරන්න. "
+
+#: osmtm/templates/task.unlocked.mako:26
+msgid "Review the work"
+msgstr "කාර්යයන් සමාලෝචනය කරන්න "
+
+#: osmtm/templates/user.mako:3 osmtm/templates/user.mako:5
+msgid "User profile"
+msgstr "පරිශීලක පිටුව "
+
+#: osmtm/templates/user.mako:20
+msgid "User: ${username}"
+msgstr "පරිශීලක: ${username}"
+
+#: osmtm/templates/user.mako:24
+msgid "This is <b>You</b>!"
+msgstr "මේ <b>ඔබයි</b>!"
+
+#: osmtm/templates/user.mako:28
+msgid "OSM User Profile"
+msgstr "ඕ.එස්.එම් පරිශීලක පිටුව "
+
+#: osmtm/templates/user.mako:29
+msgid "OSM Profile"
+msgstr "ඕ.එස්.එම් පරිශීලක පිටුව "
+
+#: osmtm/templates/user.mako:35
+msgid "This user joined OSM "
+msgstr "මෙම පරිශීලකයා ඕ.එස්.එම් සමග සම්බන්ධ විය "
+
+#: osmtm/templates/user.mako:43
+msgid "OSM User Changeset History"
+msgstr "ඕ.එස්.එම් පරිශීලක වෙනස්කම් සමූහයන්ගේ ඉතිහාසය "
+
+#: osmtm/templates/user.mako:44
+msgid "OSM Edit History"
+msgstr "ඕ.එස්.එම් වෙනස්කම් ඉතිහාසය "
+
+#: osmtm/templates/user.mako:50
+msgid "This user has submitted ${changes} total changesets."
+msgstr "මෙම පරිශීලකයා සමස්ථ වෙනස්කම් සමූහයන් ${changes} ක් ඉදිරිපත් කර ඇත."
+
+#: osmtm/templates/user.mako:60
+msgid "This user is an administrator."
+msgstr "මෙම පරිශීලකයා පරිපාලකයෙකි "
+
+#: osmtm/templates/user.mako:62 osmtm/templates/user.mako:78
+msgid "Remove privileges"
+msgstr "වරප්‍රසාද ඉවත් කරන්න "
+
+#: osmtm/templates/user.mako:67
+msgid "Set as administrator"
+msgstr "පරිපාලකයෙකු ලෙස යොදවන්න "
+
+#: osmtm/templates/user.mako:76
+msgid "This user is a project manager."
+msgstr "මෙම පරිශීලකයා ව්‍යපෘති කළමනාකරුවෙකි "
+
+#: osmtm/templates/user.mako:83
+msgid "Set as project manager"
+msgstr "ව්‍යපෘති කළමනාකරුවෙකු ලෙස යොදවන්න "
+
+#: osmtm/templates/user.mako:94
+msgid "This user contributed to the following projects:"
+msgstr "මෙම පරිශීලකයා පහත ව්‍යපෘති සඳහා දායක වී ඇත:"
+
+#: osmtm/templates/user.mako:99
+msgid "Project Details"
+msgstr "ව්‍යපෘති විස්තර "
+
+#: osmtm/templates/user.mako:103
+msgid "${count} tiles"
+msgstr "${count} කැට"
+
+#: osmtm/templates/user.mako:110
+msgid "User hasn't contributed yet."
+msgstr "මෙම පරිශීලකයා තවම දායක වී නැත "
+
+#: osmtm/templates/user.messages.mako:14
+msgid "From"
+msgstr "වෙතින් "
+
+#: osmtm/templates/user.messages.mako:15
+msgid "Subject"
+msgstr "විෂයය  "
+
+#: osmtm/templates/user_menu.mako:10
+msgid "Your page"
+msgstr "ඔබේ පිටුව "
+
+#: osmtm/templates/user_menu.mako:16
+msgid "logout"
+msgstr "පිටවෙන්න "
+
+#: osmtm/templates/user_menu.mako:19
+msgid "Users list"
+msgstr "පරිශීලක ලැයිස්තුව "
+
+#: osmtm/templates/user_menu.mako:23
+msgid "Manage licenses"
+msgstr "බලපත්‍ර කළමනාකරණය "
+
+#: osmtm/templates/user_menu.mako:28
+msgid "Create a new project"
+msgstr "නව ව්‍යාපෘතියක් නිර්මාණය කරන්න "
+
+#: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
+#: osmtm/templates/users.mako:30
+msgid "Users"
+msgstr "පරිශීලකයන් "
+
+#: osmtm/templates/users.mako:31
+msgid "Keys:"
+msgstr "යතුරු: "
+
+#: osmtm/templates/users.mako:33
+msgid "Administrator"
+msgstr "පරිපාලක "
+
+#: osmtm/templates/users.mako:34
+msgid "Project Manager"
+msgstr "ව්‍යපෘති කළමනාකරු "
+
+#: osmtm/views/license.py:58
+msgid "License doesn't exist!"
+msgstr "බලපත්‍රයක් නැත! "
+
+#: osmtm/views/license.py:62
+msgid "License removed!"
+msgstr "බලපත්‍රය ඉවත් කරන ලදී! "
+
+#: osmtm/views/license.py:84
+msgid "License created!"
+msgstr "බලපත්‍රය නිර්මාණය කරන ලදී! "
+
+#: osmtm/views/license.py:86
+msgid "License updated!"
+msgstr "බලපත්‍රය යාවත්කාලීන කරන ලදී! "
+
+#: osmtm/views/project.py:72
+msgid "Sorry, this project doesn't  exist"
+msgstr "සමාවන්න, මෙවන් ව්‍යාපෘතියක් නැත "
+
+#: osmtm/views/project.py:140 osmtm/views/project.py:184
+msgid "Untitled project"
+msgstr "නිර්නාමික ව්‍යාපෘතිය "
+
+#: osmtm/views/project.py:163
+msgid "Project #${project_id} created successfully"
+msgstr "ව්‍යාපෘතිය #${project_id} සාර්ථකව නිර්මාණය කරන ලදී"
+
+#: osmtm/views/project.py:169 osmtm/views/project.py:194
+#, python-format
+msgid "Sorry, could not create the project. <br />%s"
+msgstr "සමාවන්න, ව්‍යාපෘතිය නිර්මාණය කිරීමට නොහැකි විය. <br />%s"
+
+#: osmtm/views/project.py:188
+msgid "Successfully imported ${n} geometries"
+msgstr "ජ්‍යාමිතීන් ${n} ක් සාර්ථකව ආනයනය කරන ලදී "
+
+#: osmtm/views/project.py:505
+msgid "A comment is required."
+msgstr "මේ සඳහා අදහසක් ඇතුලත් කිරීම අනිවාර්ය වේ."
+
+#: osmtm/views/project.py:513
+msgid "Please type the project id in the box to confirm"
+msgstr "සනාථ කිරීම සඳහා කොටුව තුල ව්‍යපෘති අංකය ඇතුලත් කරන්න "
+
+#: osmtm/views/project.py:532
+msgid "No done tasks to invalidate."
+msgstr "වලංගු කිරීමට සම්පූර්ණ වූ කාර්යයන් කිසිවක් නැත."
+
+#: osmtm/views/project.py:534
+#, python-format
+msgid "%d tasks invalidated"
+msgstr "%d කාර්යයන් අවලංගු කරන ලදී"
+
+#: osmtm/views/task.py:83
+msgid "Cannot update task. Record lock for update."
+msgstr "කාර්යය යාවත්කාලීන කළ නොහැක. යාවත්කාලීන කිරීම සඳහා වාර්ථාව අගුලු යොදවා ඇත. "
+
+#: osmtm/views/task.py:88
+msgid "This task doesn't exist."
+msgstr "මෙවන් කාර්යයක් නැත. "
+
+#: osmtm/views/task.py:96
+msgid "You need to lock the task first."
+msgstr "පළමුව කාර්යයට අගුලු යෙදවිය යුතුය."
+
+#: osmtm/views/task.py:164
+msgid "Task marked as done. Thanks for your contribution"
+msgstr "කාර්යය සම්පූර්ණ ලෙසට සටහන් කරන ලදී. ඔබගේ දායකත්වයට ස්තූතියි."
+
+#: osmtm/views/task.py:183
+msgid "Task already locked."
+msgstr "කාර්යයට දැනටමත් අගුලු යොදවා ඇත."
+
+#: osmtm/views/task.py:189
+msgid "Task assigned to someone else."
+msgstr "කාර්යය වෙනත් අයෙකුට පවරා ඇත."
+
+#: osmtm/views/task.py:194
+msgid "Task locked. You can start mapping."
+msgstr "කාර්යයට අගුලු යොදවන ලදී. ඔබට සිතියම්ගත කිරීම ආරම්භ කළ හැක."
+
+#: osmtm/views/task.py:211
+msgid "Task unlocked."
+msgstr "කාර්යයේ අගුලු ඉවත් කරන ලදී. "
+
+#: osmtm/views/task.py:223
+msgid "Comment added."
+msgstr "අදහස එකතු කරන ලදී. "
+
+#: osmtm/views/task.py:260
+msgid "You were mentioned in a comment - Task ${link}"
+msgstr "අදහසක ඔබේ නම සඳහන් විය - කාර්යය ${link}"
+
+#: osmtm/views/task.py:286
+msgid "Task ${link} invalidated"
+msgstr "${link} කාර්යය අවලංගු කර ඇත "
+
+#: osmtm/views/task.py:301
+msgid "Task validated."
+msgstr "කාර්යය වලංගු කර ඇත."
+
+#: osmtm/views/task.py:304
+msgid "Task invalidated."
+msgstr "කාර්යය අවලංගු කර ඇත."
+
+#: osmtm/views/task.py:431
+msgid "Random task... none available! Sorry."
+msgstr "අහඹු ලෙස තෝරාගැනීමට කාර්යයන් කිසිවක් නැත! සමාවන්න. "
+
+#: osmtm/views/task.py:444
+msgid "You cannot assign an already locked task"
+msgstr "දැනටමත් අගුලු යොදා ඇති කාර්යයක් පවරා ගැනීමට ඔබට නොහැක. "
+
+#: osmtm/views/task.py:454
+msgid "Task assigned."
+msgstr "කාර්යය පවරන ලදී."
+
+#: osmtm/views/task.py:468
+msgid "Task assignment removed"
+msgstr "කාර්යය පැවරීම ඉවත් කරන ලදී"
+
+#: osmtm/views/task.py:500
+msgid "Task difficulty changed."
+msgstr "කාර්යයේ දුෂ්කරතාවය වෙනස් කරන ලදී"
+
+#: osmtm/views/task.py:513
+msgid "Task difficulty removed"
+msgstr "කාර්යයේ දුෂ්කරතාවය ඉවත් කරන ලදී"
+
+#: osmtm/views/user.py:78
+msgid "You probably don't want to remove your privileges"
+msgstr "ඔබේ වරප්‍රසාද ඉවත් කිරීමට ඔබට සැබවින්ම උවමනාවක් තිබේ ද? "
+
+#: osmtm/views/user.py:109
+msgid "Sorry, this user doesn't  exist"
+msgstr "සමාවන්න, මෙවන් පරිශීලකයෙකු නැත "
