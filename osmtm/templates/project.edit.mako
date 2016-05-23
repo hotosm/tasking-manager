@@ -16,9 +16,10 @@
   try:
     bootstrap_locale = request.static_url(bootstrap_locale_baseurl % request.locale_name.replace('_', '-'))
   except IOError:
-    bootstrap_locale = request.static_url(bootstrap_locale_baseurl % request.locale_name[:2])
-  except IOError:
-    bootstrap_locale = request.static_url(bootstrap_locale_baseurl % 'en')
+    try:
+      bootstrap_locale = request.static_url(bootstrap_locale_baseurl % request.locale_name[:2])
+    except IOError:
+      bootstrap_locale = request.static_url(bootstrap_locale_baseurl % 'en')
 %>
 <script type="text/javascript" src="${bootstrap_locale}"></script>
 
