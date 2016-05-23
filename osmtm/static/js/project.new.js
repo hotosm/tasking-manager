@@ -8,6 +8,7 @@ osmtm.project_new = (function() {
 
   function createMap() {
     map = L.map('leaflet').setView([0, 0], 1);
+    L.control.scale().addTo(map);
     // create the tile layer with correct attribution
     var osmUrl='//tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png';
     var osmAttrib=osmAttribI18n;
