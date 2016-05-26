@@ -287,6 +287,8 @@ class Task(Base):
     difficulty_hard = 3
     difficulty = Column(Integer)
 
+    parent_id = Column(Integer)
+
     cur_lock = relationship(
         TaskLock,
         primaryjoin=lambda: and_(

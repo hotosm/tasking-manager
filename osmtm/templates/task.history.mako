@@ -52,6 +52,8 @@ from osmtm.mako_filters import (
           <span><i class="glyphicon glyphicon-thumbs-down text-danger"></i> <b>${_('Invalidated')}</b> ${_('by')} ${user_link | n}</span>
         % elif step.state == step.state_validated:
           <span><i class="glyphicon glyphicon-thumbs-up text-success"></i> <b>${_('Validated')}</b> ${_('by')} ${user_link | n}</span>
+        % elif step.state == step.state_removed:
+          <span><i class="glyphicon icon-split"></i> ${_('<b>Split</b> by ${link}', mapping={'link': user_link}) | n}</span>
         % endif
       % elif isinstance(step, TaskLock):
         % if step.lock:
