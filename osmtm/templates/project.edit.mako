@@ -346,7 +346,10 @@ geometry = loads(str(project.area.geometry.data))
 <div class="row">
   <div class="col-md-4">
     <label>
-      ${_('${count_of} priority area(s)', mapping={'count_of': len(project.priority_areas)})}
+      <%
+        count = len(project.priority_areas)
+      %>
+      ${ngettext('${count} priority area', '${count} priority areas', count, mapping={'count': count})}
     </label>
     <div class="help-block">
     ${_('If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area.')}

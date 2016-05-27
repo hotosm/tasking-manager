@@ -177,6 +177,7 @@ def project_new_grid(request):
              permission="project_edit")
 def project_new_arbitrary(request):
     _ = request.translate
+    ngettext = request.plural_translate
 
     user_id = authenticated_userid(request)
     user = DBSession.query(User).get(user_id)
@@ -187,9 +188,12 @@ def project_new_arbitrary(request):
             user
         )
         count = project.import_from_geojson(request.POST['geometry'])
-        request.session.flash(_("Successfully imported ${n} geometries",
-                              mapping={'n': count}),
-                              'success')
+        request.session.flash(
+            ngettext('Successfully imported ${n} geometry',
+                     'Successfully imported ${n} geometries',
+                     count,
+                     mapping={'n': count}),
+            'success')
         return HTTPFound(location=route_path('project_edit', request,
                          project=project.id))
     except Exception, e:
@@ -542,6 +546,7 @@ def project_invalidate_all(request):
              permission='project_edit')
 def project_message_all(request):
     _ = request.translate
+    ngettext = request.plural_translate
 
     if not request.POST.get('message', None) or \
             not request.POST.get('subject', None):
@@ -568,7 +573,11 @@ def project_message_all(request):
     if num == 0:
         msg = _('No users to message.')
     else:
-        msg = _('Message sent to %i users.' % num)
+        msg = ngettext(
+            'Message sent to ${num} user.',
+            'Message sent to ${num} users.',
+            num,
+            mapping={'num': num})
 
     return dict(success=True, msg=msg)
 
