@@ -259,3 +259,7 @@ Example `.transifexrc` file:
   * `tx pull -l fr,hr`
 * compile language files
   * `./env/bin/python setup.py compile_catalog`
+
+## API
+
+The tasking manager exposes some of its functionality via a RESTful API. It is documented on the following page: https://github.com/hotosm/osm-tasking-manager2/wiki/API.
