@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osmtm 2.13.dev0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-05-27 17:29+0200\n"
+"POT-Creation-Date: 2016-05-28 13:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -537,7 +537,7 @@ msgstr ""
 
 #: osmtm/templates/project.edit.mako:326
 msgid ""
-"\" This task involves loading extra data. Click "
+"This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
 " to load the data into JOSM"
 msgstr ""
@@ -552,7 +552,7 @@ msgstr ""
 
 #: osmtm/templates/project.edit.mako:328
 msgid ""
-"\" This task involves loading extra data. Click "
+"This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url={import_url}) to load "
 "the data into JOSM"
 msgstr ""
@@ -1304,7 +1304,7 @@ msgstr ""
 msgid "Sorry, this project doesn't  exist"
 msgstr ""
 
-#: osmtm/views/project.py:142 osmtm/views/project.py:186
+#: osmtm/views/project.py:142 osmtm/views/project.py:187
 msgid "Untitled project"
 msgstr ""
 
@@ -1312,47 +1312,49 @@ msgstr ""
 msgid "Project #${project_id} created successfully"
 msgstr ""
 
-#: osmtm/views/project.py:171 osmtm/views/project.py:199
+#: osmtm/views/project.py:171 osmtm/views/project.py:200
 #, python-format
 msgid "Sorry, could not create the project. <br />%s"
 msgstr ""
 
-#: osmtm/views/project.py:191
+#: osmtm/views/project.py:192
 msgid "Successfully imported ${n} geometry"
 msgid_plural "Successfully imported ${n} geometries"
 msgstr[0] ""
 msgstr[1] ""
 
-#: osmtm/views/project.py:510
+#: osmtm/views/project.py:512
 msgid "A comment is required."
 msgstr ""
 
-#: osmtm/views/project.py:518
+#: osmtm/views/project.py:520
 msgid "Please type the project id in the box to confirm"
 msgstr ""
 
-#: osmtm/views/project.py:537
+#: osmtm/views/project.py:539
 msgid "No done tasks to invalidate."
 msgstr ""
 
-#: osmtm/views/project.py:539
+#: osmtm/views/project.py:541
 #, python-format
-msgid "%d tasks invalidated"
-msgstr ""
+msgid "%d task invalidated"
+msgid_plural "%d tasks invalidated"
+msgstr[0] ""
+msgstr[1] ""
 
-#: osmtm/views/project.py:554
+#: osmtm/views/project.py:558
 msgid "A subject and message are required."
 msgstr ""
 
-#: osmtm/views/project.py:563
+#: osmtm/views/project.py:567
 msgid "Project #"
 msgstr ""
 
-#: osmtm/views/project.py:573
+#: osmtm/views/project.py:577
 msgid "No users to message."
 msgstr ""
 
-#: osmtm/views/project.py:575
+#: osmtm/views/project.py:579
 msgid "Message sent to ${num} user."
 msgid_plural "Message sent to ${num} users."
 msgstr[0] ""
