@@ -503,6 +503,7 @@ def project_preset(request):
              permission='project_edit')
 def project_invalidate_all(request):
     _ = request.translate
+    ngettext = request.plural_translate
 
     # If user has not entered a comment, return error
     if not request.POST.get('comment', None):
@@ -537,7 +538,9 @@ def project_invalidate_all(request):
     if tasks_affected == 0:
         msg = _('No done tasks to invalidate.')
     else:
-        msg = _('%d tasks invalidated' % tasks_affected)
+        msg = ngettext('%d task invalidated',
+                       '%d tasks invalidated',
+                       tasks_affected) % tasks_affected
     DBSession.flush()
     return dict(success=True, msg=msg)
 
