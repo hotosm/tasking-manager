@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
-# Ramya Ragupathy <ramya@mapbox.com>, 2016
+# Pierre GIRAUD <pierre.giraud@gmail.com>, 2016
+# Ramya <ramya@mapbox.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-02-04 21:31+0100\n"
-"PO-Revision-Date: 2016-05-20 04:19+0000\n"
-"Last-Translator: Maning Sambale <emmanuel.sambale@gmail.com>\n"
+"POT-Creation-Date: 2016-05-28 13:21+0200\n"
+"PO-Revision-Date: 2016-05-28 12:15+0000\n"
+"Last-Translator: Pierre GIRAUD <pierre.giraud@gmail.com>\n"
 "Language-Team: Tamil (http://www.transifex.com/hotosm/osm-tasking-manager2/language/ta/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,198 +20,225 @@ msgstr ""
 "Language: ta\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: osmtm/templates/about.mako:10 osmtm/templates/base.mako:123
-#: osmtm/templates/home.mako:93
+#: osmtm/templates/about.mako:11 osmtm/templates/base.mako:122
+#: osmtm/templates/custom.mako:16
 msgid "About the Tasking Manager"
 msgstr "Tasking Manager-ஐ பற்றி"
 
-#: osmtm/templates/about.mako:12 osmtm/templates/home.mako:95
-msgid ""
-"OSM Tasking Manager is a mapping tool designed and built for the "
-"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
-"divide up a mapping job into smaller tasks that can be completed rapidly. It"
-" shows which areas need to be mapped and which areas need the mapping "
-"validated. <br />This approach facilitates the distribution of tasks to the "
-"various mappers in a context of emergency. It also permits to control the "
-"progress and the homogeneity of the work done (ie. Elements to cover, "
-"specific tags to use, etc.)."
-msgstr "OSM Tasking Manager என்பது Humanitarian OSM Team-இன் குழு முயற்சி மேப்பிங்-க்காக வடிவமைத்து, உருவாக்கப்பட்ட ஒரு மேப்பிங் கருவியாகும். ஒரு மேப்பிங் பணியை விரைந்து முடிக்கும் விதமாக அதை சிறு சிறு பணிகளாக பிரித்தளிப்பதே இந்த கருவியின் நோக்கமாகும். எந்தெந்த பகுதிகளில் மேப்பிங் தேவை என்பைதயும், எவற்றில் மேப்பிங் பணி ஆய்வு செய்யப்பட வேண்டும் என்பதையும் இக்கருவி காட்டுகின்றது. <br /> இந்த அணுகுமுறையின் காரணமாக, அவசர நிலையில் ஒரு பணியை பல்வேறு மேப்பர்களிடம் பகிர்ந்தளிப்பது எளிதாகிறது. அது மட்டுமின்றி ஒரு பணித்திட்டத்தின் முன்னேற்றத்தைக் கண்காணிக்கவும், மற்றும் சீரான முறையில் பணியை (மேப்பிங் செய்யப்பட வேண்டியவை, குறிப்பிட்ட  tag பயன்பாடு) மேற்கொள்ளவும் உதவுகிறது."
-
-#: osmtm/templates/about.mako:14
+#: osmtm/templates/about.mako:15
 msgid "Sponsorship and Funding"
 msgstr "ஆதரவாளர்கள் மற்றும் நிதி வரவு"
 
-#: osmtm/templates/about.mako:15
+#: osmtm/templates/about.mako:16
 msgid ""
 "OSM Tasking Manager was designed and built for the <a "
 "href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
 msgstr "OSM Tasking Manager, <a href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a> குழுவிற்காக வடிவமைத்து, உருவாக்கப்பட்டதாகும்."
 
-#: osmtm/templates/about.mako:17
+#: osmtm/templates/about.mako:18
 msgid "With the invaluable help from:"
 msgstr "இவர்களுடைய அருமதிப்புள்ள உதவியுடன்:"
 
-#: osmtm/templates/about.mako:45
+#: osmtm/templates/about.mako:46
 msgid "Getting Started"
 msgstr "தொடங்குதல்"
 
-#: osmtm/templates/about.mako:47
+#: osmtm/templates/about.mako:48
 msgid "Some resources to help you start using the Tasking Manager:"
 msgstr "Tasking Manager-ஐ நீங்கள் பயன்படுத்த தொடங்குவதற்கான சில வழிவகைகள்:"
 
-#: osmtm/templates/about.mako:54
+#: osmtm/templates/about.mako:55
 msgid "Open Source"
 msgstr "Open Source"
 
-#: osmtm/templates/about.mako:56
+#: osmtm/templates/about.mako:57
 msgid ""
 "OSM Tasking Manager is an open source software.<br>Feel free to report "
 "issues and contribute."
 msgstr "OSM Tasking Manager ஒரு open source மென்பொருள்.<br> இதில் உள்ள பிரச்சனைகளை குறித்து அறிவிக்கவோ, அல்லது பொதுவாக இந்த மென்பொருளுக்கு பங்களிப்பு செய்யவோ தயங்காதீர்கள்."
 
-#: osmtm/templates/about.mako:58
+#: osmtm/templates/about.mako:59
 msgid ""
 "The <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application "
 "code</a> is available on github"
 msgstr "இந்த <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application code</a> is available on github"
 
-#: osmtm/templates/about.mako:60
+#: osmtm/templates/about.mako:61
 msgid ""
 "Lead developer: Pierre GIRAUD (<a "
 "href=\"//www.camptocamp.com\">Camptocamp</a>)"
 msgstr "முதன்மை மென்பொருளாளர்: பியரி கிராட்(<a href=\"//www.camptocamp.com\">Camptocamp</a>)"
 
-#: osmtm/templates/about.mako:61
+#: osmtm/templates/about.mako:62
 msgid ""
 "with the help of <a href=\"https://github.com/hotosm/osm-tasking-"
 "manager2/graphs/contributors\">other contributors</a>."
 msgstr "<a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">மற்ற பங்களிப்பாளர்களின்</a> உதவியுடன்."
 
-#: osmtm/templates/about.mako:70
+#: osmtm/templates/about.mako:71
 msgid "Version"
 msgstr "பதிப்பு"
 
-#: osmtm/templates/base.mako:53
+#: osmtm/templates/base.mako:43
+msgid "You have unread messages"
+msgstr ""
+
+#: osmtm/templates/base.mako:57
 msgid "About"
 msgstr "மேலும் தெரிந்து கொள்ள"
 
-#: osmtm/templates/base.mako:65
+#: osmtm/templates/base.mako:64
 msgid "login to OpenStreetMap"
 msgstr "OpenStreetMap-இல் உள் நுழையவும்"
 
-#: osmtm/templates/base.mako:117
+#: osmtm/templates/base.mako:116
 msgid "Fork the code on ${github_link}."
 msgstr "இந்த மென்பொருள் code-ஐ  ${github_link} -இல் இருந்து கிளை பிரித்து கொள்ளவும்."
 
-#: osmtm/templates/custom.mako:6
+#: osmtm/templates/custom.mako:7
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated."
+msgstr "OSM Tasking Manager என்பது Humanitarian OSM Team-இன் குழு முயற்சி மேப்பிங்-க்காக வடிவமைத்து, உருவாக்கப்பட்ட ஒரு மேப்பிங் கருவியாகும். ஒரு மேப்பிங் பணியை விரைந்து முடிக்கும் விதமாக அதை சிறு சிறு பணிகளாக பிரித்தளிப்பதே இந்த கருவியின் நோக்கமாகும். எந்தெந்த பகுதிகளில் மேப்பிங் தேவை என்பைதயும், எவற்றில் மேப்பிங் பணி ஆய்வு செய்யப்பட வேண்டும் என்பதையும் இக்கருவி காட்டுகின்றது."
+
+#: osmtm/templates/custom.mako:10
+msgid ""
+"This approach facilitates the distribution of tasks to the various mappers "
+"in a context of emergency. It also permits control of the progress and the "
+"homogeneity of the work done (e.g. elements to cover, specific tags to use, "
+"etc.)."
+msgstr "இந்த அணுகுமுறையின் காரணமாக, அவசர நிலையில் ஒரு பணியை பல்வேறு மேப்பர்களிடம் பகிர்ந்தளிப்பது எளிதாகிறது. அது மட்டுமின்றி ஒரு பணித்திட்டத்தின் முன்னேற்றத்தைக் கண்காணிக்கவும், மற்றும் சீரான முறையில் பணியை (மேப்பிங் செய்யப்பட வேண்டியவை, குறிப்பிட்ட  tag பயன்பாடு) மேற்கொள்ளவும் உதவுகிறது."
+
+#: osmtm/templates/custom.mako:19
 msgid "New to Mapping?"
 msgstr "மேப் செய்வதற்கு புதியவரா நீங்கள்?"
 
-#: osmtm/templates/custom.mako:7
+#: osmtm/templates/custom.mako:21
 msgid ""
 "Just jump over to <a target=\"_blank\" "
 "href=\"http://www.openstreetmap.org\">OpenStreetMap</a>, create an account, "
-"and then visit <a target=\"_blank\" href=\"http://learnosm.org/en/beginner"
-"/id-editor\">this tutorial</a>. Then come back here to help map for people "
-"on the ground!"
-msgstr "<a target=\"_blank\" href=\"http://www.openstreetmap.org\">OpenStreetMap</a> பக்கத்திற்கு சென்று, புது கணக்கை தொடங்கிய பின்னர்,  <a target=\"_blank\" href=\"http://learnosm.org/en/beginner/id-editor\">இந்த பயிற்சி பக்கத்திற்கு</a> செல்லவும். அதற்குப்பின் மறுபடி இங்கு வந்து மேப் செய்து மக்களுக்கு உதவுங்கள்!"
+"and then visit the LearnOSM tutorials on the <a target=\"_blank\" "
+"href=\"http://learnosm.org/en/coordination/tasking-manager/\">Tasking "
+"Manager</a> and the <a target=\"_blank\" "
+"href=\"http://learnosm.org/en/beginner/id-editor\">iD editor</a>. "
+"Alternatively check out the <a target=\"_blank\" "
+"href=\"http://mapgive.state.gov\">MapGive website</a> which also provides "
+"information on the Tasking Manager and mapping. Once you have read up on how"
+" to map, come back here to help map for people on the ground!"
+msgstr ""
 
-#: osmtm/templates/custom.mako:11
+#: osmtm/templates/custom.mako:24
 msgid "Questions About Tasks, Mapping or HOT?"
 msgstr "பணிகள், மேப்பிங்,  அல்லது  HOT குறித்து ஏதேனும் கேள்விகளா?"
 
-#: osmtm/templates/custom.mako:12
+#: osmtm/templates/custom.mako:26
 msgid ""
 "If you have any questions about a project, a task or mapping in general "
 "please ask on our mailing list: <a "
-"href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a><br"
-" /><br />Or visit us in our IRC Chat Channel, just select #hot from the pop "
-"down channel list:<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT "
-"IRC Channel #hot</a><br /><br />General inquries and comments are welcomed "
-"at: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>"
-msgstr "பணித்திட்டம், குறிப்பிட்ட பணி அல்லது பொதுவாக மேப்பிங் குறித்து உங்களுக்கு ஏதேனும் சந்தேகங்கள் இருந்தால்,  எங்களுடைய அஞ்சல் பட்டியலில் <a href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a> கேளுங்கள். <br /><br /> அல்லது எங்கள்  IRC Chat Channel-ஆன  #hot வாயிலாக தொடர்பு கொள்ளுங்கள்.<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel #hot</a><br /><br /> பொதுவான விசாரணைகள் மற்றும் கருத்துகள்  <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a> என்ற முகவரியில் வரவேற்க்கப்படுகின்றன."
+"href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a>."
+msgstr "பணித்திட்டம், குறிப்பிட்ட பணி அல்லது பொதுவாக மேப்பிங் குறித்து உங்களுக்கு ஏதேனும் சந்தேகங்கள் இருந்தால்,  எங்களுடைய அஞ்சல் பட்டியலில் <a href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a> கேளுங்கள்."
 
-#: osmtm/templates/custom.mako:16
+#: osmtm/templates/custom.mako:29
+msgid ""
+"Or visit us in our IRC Chat Channel, just select #hot from the pop down "
+"channel list: <a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel "
+"#hot</a>."
+msgstr "அல்லது எங்கள்  IRC Chat Channel-ஆன  #hot வாயிலாக தொடர்பு கொள்ளுங்கள்.<br /><a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel #hot</a>."
+
+#: osmtm/templates/custom.mako:32
+msgid ""
+"General inquries and comments are welcomed at: <a "
+"href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>."
+msgstr "பொதுவான விசாரணைகள் மற்றும் கருத்துகள்  <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a> என்ற முகவரியில் வரவேற்க்கப்படுகின்றன."
+
+#: osmtm/templates/custom.mako:37
 msgid "Email HOT at"
 msgstr "HOT-க்கு ஈமெயில் அனுப்ப"
 
-#: osmtm/templates/custom.mako:17
+#: osmtm/templates/custom.mako:38
 msgid "Follow HOT on"
 msgstr " HOT -ஐ பின் தொடர"
 
-#: osmtm/templates/custom.mako:18
+#: osmtm/templates/custom.mako:39
 msgid "Like HOT on"
 msgstr "HOT-ஐ  விரும்ப"
 
-#: osmtm/templates/custom.mako:100
+#: osmtm/templates/custom.mako:121
 msgid "Please donate!"
 msgstr "தயவுசெய்து நன்கொடை அளிக்கவும்!"
 
-#: osmtm/templates/home.mako:9
+#: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
 msgid "urgent"
 msgstr "விரைவு நிலை"
 
-#: osmtm/templates/home.mako:9
+#: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
 msgid "high"
 msgstr "அதிகம்"
 
-#: osmtm/templates/home.mako:9
+#: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
 msgid "medium"
 msgstr "இடைநிலை"
 
-#: osmtm/templates/home.mako:9
+#: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
 msgid "low"
 msgstr "குறைவு"
 
-#: osmtm/templates/home.mako:11
+#: osmtm/templates/helpers.mako:8
+msgid "Access to this project is limited"
+msgstr "இந்த project-க்கான நுழைவுரிமை வரையறுக்கப் பட்டுள்ளது"
+
+#: osmtm/templates/helpers.mako:11
+msgid "Created by"
+msgstr "இவரால் உருவாக்கப்பட்டது"
+
+#: osmtm/templates/helpers.mako:13
+msgid "Updated"
+msgstr "புதுப்பிக்கப்பட்டது"
+
+#: osmtm/templates/helpers.mako:14
+msgid "Priority:"
+msgstr "முன்னுரிமை:"
+
+#: osmtm/templates/home.mako:12
 msgid "High priority first"
 msgstr "அதிக முன்னுரிமை கொண்டது முதலில்"
 
-#: osmtm/templates/home.mako:12
+#: osmtm/templates/home.mako:13
 msgid "Creation date"
 msgstr "உருவாக்கப்பட்ட நாள்"
 
-#: osmtm/templates/home.mako:13
+#: osmtm/templates/home.mako:14
 msgid "Last update"
 msgstr "கடைசியாக புதுப்பிக்கப்பட்டது"
 
-#: osmtm/templates/home.mako:17 osmtm/templates/user.mako:92
+#: osmtm/templates/home.mako:18 osmtm/templates/user.mako:92
 msgid "Projects"
 msgstr "திட்டங்கள்"
 
-#: osmtm/templates/home.mako:43
+#: osmtm/templates/home.mako:44
 msgid "Search"
 msgstr "தேடுக"
 
-#: osmtm/templates/home.mako:49
+#: osmtm/templates/home.mako:50
 msgid "Sort by:"
 msgstr "இதனால் வரிசைப்படுத்து:"
 
-#: osmtm/templates/home.mako:75
+#: osmtm/templates/home.mako:76
 msgid "Your projects"
 msgstr "உங்கள் திட்டங்கள்"
 
-#: osmtm/templates/home.mako:133
+#: osmtm/templates/home.mako:84
+msgid "Include archived projects"
+msgstr ""
+
+#: osmtm/templates/home.mako:131
 msgid "${locked} user is currently working on this project"
 msgid_plural "${locked} users are currently working on this project"
 msgstr[0] "${locked} பயனாளர்கள் இந்தப் பணிதிட்டத்தில் தற்போது பணி செய்து கொண்டிருக்கிறார்கள்."
 msgstr[1] "${locked} பயனாளர்கள் இந்தப் பணிதிட்டத்தில் தற்போது பணி செய்து கொண்டிருக்கிறார்கள்."
-
-#: osmtm/templates/home.mako:174 osmtm/templates/project.description.mako:22
-msgid "Access to this project is limited"
-msgstr "இந்த project-க்கான நுழைவுரிமை வரையறுக்கப் பட்டுள்ளது"
-
-#: osmtm/templates/home.mako:177
-msgid "Created by"
-msgstr "இவரால் உருவாக்கப்பட்டது"
-
-#: osmtm/templates/home.mako:179
-msgid "Updated"
-msgstr "புதுப்பிக்கப்பட்டது"
-
-#: osmtm/templates/home.mako:180
-msgid "Priority:"
-msgstr "முன்னுரிமை:"
 
 #: osmtm/templates/imagery.mako:24
 msgid "imagery url available only after accepting the license"
@@ -252,8 +280,8 @@ msgstr "பெயர்"
 msgid "A name for the license (provider, for example)"
 msgstr "உரிமத்திற்கான பெயர்( உதாரணமாக, வழங்குநர் பெயர்)"
 
-#: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:91
-#: osmtm/templates/project.edit.mako:226 osmtm/templates/project.mako:49
+#: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:133
+#: osmtm/templates/project.edit.mako:268 osmtm/templates/project.mako:49
 msgid "Description"
 msgstr "விவரணை"
 
@@ -269,7 +297,7 @@ msgstr "சாதாரண எழுத்து"
 msgid "A short version of the terms"
 msgstr "நியதிகளின் குறும்பதிப்பு"
 
-#: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:128
+#: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:170
 msgid "Save the modifications"
 msgstr "திருத்தங்களை சேமிக்கவும்"
 
@@ -281,7 +309,8 @@ msgstr "புது உரிமத்தை உருவாக்கு"
 msgid "Delete"
 msgstr "நீக்கு"
 
-#: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:127
+#: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:106
+#: osmtm/templates/project.edit.mako:169
 msgid "Cancel"
 msgstr "இரத்து செய்"
 
@@ -320,7 +349,7 @@ msgid "Create new license"
 msgstr "புது உரிமத்தை உருவாக்கு"
 
 #: osmtm/templates/message.mako:3 osmtm/templates/message.mako:18
-#: osmtm/templates/user.messages.mako:4 osmtm/templates/user_menu.mako:12
+#: osmtm/templates/user.messages.mako:4 osmtm/templates/user_menu.mako:11
 msgid "Messages"
 msgstr "செய்திகள்"
 
@@ -332,200 +361,246 @@ msgstr "அனுப்புநர்"
 msgid "You have tasks assigned:"
 msgstr "உங்களுக்குப் பணிகள் ஒதுக்கப்பட்டுள்ளன:"
 
-#: osmtm/templates/project.description.mako:8
+#: osmtm/templates/project.description.mako:9
 msgid "This project is not published yet."
 msgstr "இந்தப் பணித்திட்டம் இன்னும் வெளியிடப்படவில்லை."
 
-#: osmtm/templates/project.description.mako:11
+#: osmtm/templates/project.description.mako:12
 msgid "Publish"
 msgstr "வெளியிடு"
 
-#: osmtm/templates/project.description.mako:15
+#: osmtm/templates/project.description.mako:16
 msgid "This project was archived."
 msgstr "இந்த திட்டப்பணி காப்பகப்படுத்தப் பட்டது."
 
-#: osmtm/templates/project.description.mako:29
-#: osmtm/templates/project.edit.mako:92 osmtm/templates/project.mako:50
+#: osmtm/templates/project.description.mako:27
+#: osmtm/templates/project.edit.mako:134 osmtm/templates/project.mako:50
 msgid "Instructions"
 msgstr "வழிமுறைகள்"
 
-#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:469
+#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:527
 #: osmtm/templates/project.mako:21
 msgid "Edit"
 msgstr "திருத்து"
 
-#: osmtm/templates/project.edit.mako:46
+#: osmtm/templates/project.edit.mako:47
 msgid "Are you sure?"
 msgstr "உறுதியாகவா?"
 
-#: osmtm/templates/project.edit.mako:50
+#: osmtm/templates/project.edit.mako:51
 msgid ""
 "This will mark all tasks currently marked as 'done' as invalid. Please use "
 "this only if you are sure of what you are doing."
 msgstr "தற்போது நிறைவடைந்ததாக குறிக்கப்பட்டுள்ள அனைத்து பணிகளையும் இது நிராகரித்து விடும். தயவுசெய்து, தாங்கள் செய்யும் செயலை நிச்சயமாக உணர்ந்தால் மட்டுமே இதை பயன்படுத்துங்கள்."
 
-#: osmtm/templates/project.edit.mako:53
+#: osmtm/templates/project.edit.mako:54
 msgid ""
 "Please leave a comment. It will be displayed in all the invalidated tasks."
 msgstr "தயவுசெய்து கருத்திடுக. நிராகரிக்கப்பட்ட அனைத்து பணிகளிலும் இந்த கருத்து காட்டப்படும்."
 
-#: osmtm/templates/project.edit.mako:56
+#: osmtm/templates/project.edit.mako:57
 msgid "This will be sent as the invalidation comment to users."
 msgstr "இது பணி நிராகரிக்கப்பட்டதற்கான கருத்தாக பயனாளரை சென்றைடையும்"
 
-#: osmtm/templates/project.edit.mako:59
+#: osmtm/templates/project.edit.mako:60
 msgid "Please type in the project number id of the repository to confirm."
 msgstr "உறுதிப்படுத்த repository-இன் பணித்திட்ட id-ஐ தட்டச்சு செய்யவும்."
 
-#: osmtm/templates/project.edit.mako:68
+#: osmtm/templates/project.edit.mako:69
 msgid "Invalidate all done tasks"
 msgstr "நிறைவடைந்ததாக குறிக்கப்பட்டுள்ள அனைத்து பணிகளையும் நிராகரிக்கவும்"
 
-#: osmtm/templates/project.edit.mako:93
+#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.edit.mako:109
+#: osmtm/templates/project.edit.mako:502 osmtm/templates/project.edit.mako:506
+msgid "Message all contributors"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:86
+msgid ""
+"This will send a Tasking Manager message to every contributor of the current"
+" project."
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:89
+msgid "Please use this feature conservatively."
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:93 osmtm/templates/user.messages.mako:15
+msgid "Subject"
+msgstr "பிரதான பொருள்"
+
+#: osmtm/templates/project.edit.mako:96
+msgid "Message"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:98
+msgid ""
+"This message does not automatically translate, so you may want to include "
+"your own translations."
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:135
 msgid "Area"
 msgstr "பரப்பளவு"
 
-#: osmtm/templates/project.edit.mako:94
+#: osmtm/templates/project.edit.mako:136
 #: osmtm/templates/project.instructions.mako:36
 msgid "Imagery"
 msgstr "படங்கள்"
 
-#: osmtm/templates/project.edit.mako:95
+#: osmtm/templates/project.edit.mako:137
 msgid "Priority Areas"
 msgstr "முன்னுரிமை அளிக்க வேண்டிய பகுதிகள்"
 
-#: osmtm/templates/project.edit.mako:96
+#: osmtm/templates/project.edit.mako:138
 msgid "Allowed Users"
 msgstr "அனுமதிக்கப்பட்ட பயனாளர்கள்"
 
-#: osmtm/templates/project.edit.mako:97
+#: osmtm/templates/project.edit.mako:139
 msgid "Misc"
 msgstr "இதர"
 
-#: osmtm/templates/project.edit.mako:141
+#: osmtm/templates/project.edit.mako:183
 msgid "Status"
 msgstr "நிலை"
 
-#: osmtm/templates/project.edit.mako:146 osmtm/templates/project.mako:10
+#: osmtm/templates/project.edit.mako:188 osmtm/templates/project.mako:10
 msgid "Archived"
 msgstr "காப்பகப்படுத்தப்பட்டது"
 
-#: osmtm/templates/project.edit.mako:147
+#: osmtm/templates/project.edit.mako:189
 msgid "Published"
 msgstr "வெளியிடப்பட்டது"
 
-#: osmtm/templates/project.edit.mako:148 osmtm/templates/project.mako:8
+#: osmtm/templates/project.edit.mako:190 osmtm/templates/project.mako:8
 msgid "Draft"
 msgstr "வரைவு"
 
-#: osmtm/templates/project.edit.mako:161
+#: osmtm/templates/project.edit.mako:203
 msgid "Priority"
 msgstr "முன்னுரிமை"
 
-#: osmtm/templates/project.edit.mako:177
+#: osmtm/templates/project.edit.mako:219
 msgid "Name of the project"
 msgstr "பணித்திட்டத்தின் பெயர்"
 
-#: osmtm/templates/project.edit.mako:201
+#: osmtm/templates/project.edit.mako:243
 msgid "Short Description"
 msgstr "சுருக்கமான விவரணை"
 
-#: osmtm/templates/project.edit.mako:236
+#: osmtm/templates/project.edit.mako:278
 #: osmtm/templates/project.instructions.mako:7
 msgid "Entities to Map"
 msgstr "மேப் செய்ய வேண்டியவைகள்"
 
-#: osmtm/templates/project.edit.mako:239
+#: osmtm/templates/project.edit.mako:281
 msgid "primary roads, secondary roads, buildings"
 msgstr "முதன்மை சாலைகள், இரண்டாம் நிலை சாலைகள், கட்டிடங்கள்"
 
-#: osmtm/templates/project.edit.mako:243
+#: osmtm/templates/project.edit.mako:285
 msgid "The list of entities to map."
 msgstr "மேப் செய்ய வேண்டியவைகளின் தொகுப்பு"
 
-#: osmtm/templates/project.edit.mako:247
+#: osmtm/templates/project.edit.mako:289
 #: osmtm/templates/project.instructions.mako:19
 msgid "Changeset Comment"
 msgstr "Changeset கருத்து"
 
-#: osmtm/templates/project.edit.mako:253
+#: osmtm/templates/project.edit.mako:295
 msgid ""
 "Default comments added to uploaded changeset comment field. Users should "
 "also be encouraged add text describing what they mapped."
 msgstr "முன்நிரப்பப்பட்ட கருத்துகள்,  changeset கருத்து பட்டியில் நிரப்பப்பட்டு upload செய்யப்பட்டுள்ளது . பயனாளர்கள், தாங்கள் மேப் செய்தது குறித்து கருத்துகளை நிரப்புமாறு ஊக்குவிக்கப்பட வேண்டும்."
 
-#: osmtm/templates/project.edit.mako:254
+#: osmtm/templates/project.edit.mako:296
 msgid "Example defaults:"
 msgstr "எ.கா முன் நிரப்பும் கருத்துகள்"
 
-#: osmtm/templates/project.edit.mako:255
+#: osmtm/templates/project.edit.mako:297
 msgid ""
 "Hashtags are sometimes used for analysis later, but should be human "
 "informative and not overused, #group #event for example."
 msgstr "ஹாஷ்டேக்குகள் சில நேரங்களில் ஆய்வுகாக பின்னர் பயன்படுத்தப்படுகிறது, ஆனால் இவை மனிதர்களுக்கு புரியும் விதமாகவும், அதிக அளவு பயன்படுத்தப்படாமலும் இருக்க வேண்டும். உதாரணமாக #group #event போன்றவை."
 
-#: osmtm/templates/project.edit.mako:264
+#: osmtm/templates/project.edit.mako:306
 msgid "Detailed Instructions"
 msgstr "விரிவான வழிமுறைகள்"
 
-#: osmtm/templates/project.edit.mako:277
+#: osmtm/templates/project.edit.mako:319
 msgid "Per Task Instructions (optional)"
 msgstr "ஒவ்வொரு பணிக்குமான வழிமுறைகள் (தேவைப்பட்டால்)"
 
-#: osmtm/templates/project.edit.mako:282
+#: osmtm/templates/project.edit.mako:325
 msgid ""
 "Put here anything that can be useful to users while taking a task. {x}, {y} "
 "and {z} will be replaced by the corresponding parameters for each task."
 msgstr "ஒரு பணியை தேர்வு செய்யும் போது எதெல்லாம் உபயோகப்படுமோ அவை அனைத்தையும் இங்கே சேருங்கள். {x}, {y} மற்றும் {z}  ஆகியவை ஒவ்வொரு பணிக்கும் ஏற்றவாறு அதற்கு தொடர்புடைய மதிப்புகளால் நிரப்பி கொள்ளப்படும். "
 
-#: osmtm/templates/project.edit.mako:283
+#: osmtm/templates/project.edit.mako:326
 msgid "For example:"
 msgstr "உதாரணமாக"
 
-#: osmtm/templates/project.edit.mako:283
+#: osmtm/templates/project.edit.mako:326
 msgid ""
-"\" This task involves loading extra data. Click "
+"This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
 " to load the data into JOSM"
-msgstr "இந்தப் பணி-க்காக நீங்கள் இன்னும் அதிக விவரங்களை தரவிறக்கம் செய்ய வேண்டும். இந்த விவரங்களை JOSM-இல் காண [இங்கே](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)  சொடுக்கவும்."
+msgstr "இந்தப் பணி-க்காக நீங்கள் இன்னும் அதிக விவரங்களை தரவிறக்கம் செய்ய வேண்டும். இந்த விவரங்களை JOSM-இல் காண [இங்கே](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) சொடுக்கவும்."
 
-#: osmtm/templates/project.edit.mako:294
+#: osmtm/templates/project.edit.mako:328
+msgid ""
+"Put here anything that can be useful to users while taking a task. If you "
+"have added extra properties within the GeoJSON of the task, they can be "
+"referenced by surrounding them in curly braces. For eg. if you have a "
+"property called \"import_url\" in your GeoJSON, you can reference it like:"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:328
+msgid ""
+"This task involves loading extra data. Click "
+"[here](http://localhost:8111/import?new_layer=true&url={import_url}) to load"
+" the data into JOSM"
+msgstr ""
+
+#: osmtm/templates/project.edit.mako:340
 msgid "Area modifications are not available yet."
 msgstr "பரப்பளவை மாற்றியமைக்கும் வசதி இன்னும் சேர்க்கப்படவில்லை."
 
-#: osmtm/templates/project.edit.mako:303
-msgid "${count_of} priority area(s)"
-msgstr "${count_of} முன்னுரிமை பகுதி(கள்)"
+#: osmtm/templates/project.edit.mako:352
+msgid "${count} priority area"
+msgid_plural "${count} priority areas"
+msgstr[0] ""
+msgstr[1] ""
 
-#: osmtm/templates/project.edit.mako:306
+#: osmtm/templates/project.edit.mako:355
 msgid ""
 "If you want mappers to work on the highest priority areas first, draw one or"
 " more polygons within the project area."
 msgstr "அதிக முன்னுரிமை உள்ள பகுதிகளில் பயனாளர்கள் முதலில் மேப் செய்வதை நீங்கள விரும்பினால், பணித்திட்ட பரப்பளவில் ஒன்று அல்லது அதற்கும் மேற்பட்ட வடிவங்களை வரையவும்."
 
-#: osmtm/templates/project.edit.mako:323
+#: osmtm/templates/project.edit.mako:372
 msgid "URL to service"
 msgstr "சேவைக்கான URL"
 
-#: osmtm/templates/project.edit.mako:326
+#: osmtm/templates/project.edit.mako:375
 msgid "Note:"
 msgstr "குறிப்பு:"
 
-#: osmtm/templates/project.edit.mako:326
+#: osmtm/templates/project.edit.mako:375
 msgid ""
 "Follow this format for TMS urls.<br>tms[22]:http://hiu-"
 "maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
 msgstr "TMS url -களுக்கு இந்த வடிவத்தை பின் பற்றவும்.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
 
-#: osmtm/templates/project.edit.mako:332
+#: osmtm/templates/project.edit.mako:381
 msgid "Required License"
 msgstr "தேவையான உரிமம்"
 
-#: osmtm/templates/project.edit.mako:358
+#: osmtm/templates/project.edit.mako:407
 msgid "Private"
 msgstr "தனிப்பயனுக்கானது"
 
-#: osmtm/templates/project.edit.mako:361
+#: osmtm/templates/project.edit.mako:410
 msgid ""
 "Private means that only a given list of users can access this project. In "
 "order for the user's name to be available to add to the Allowed Users - they"
@@ -534,61 +609,61 @@ msgid ""
 " be available for the administrator to add."
 msgstr "தனிப்பயன் என்றால் ஒரு குறிப்பிட்ட தொகுப்பில் உள்ள பயனாளர்கள் மட்டுமே இந்த பணித்திட்டத்தை உபயோகித்து மேப் செய்ய இயலும். தங்கள் பெயர்,  அனுமதிக்கப்பட்ட பயனாளர் பட்டியலில் இடம் பெற விரும்புவோர் முதலில் தங்கள் பகுதிக்கான OSMTM பக்கத்தை அணுகி, அதிலிருந்து OpenStreetMap கணக்கை உபயோகிக்க அங்கீகரிக்க வேண்டும். அவர்கள் இதை செய்த பின், அந்த பயனாளரின் பெயரை நிர்வாகியால் சேர்க்க இயலும்."
 
-#: osmtm/templates/project.edit.mako:366
+#: osmtm/templates/project.edit.mako:415
 msgid "Allowed users"
 msgstr "அனுமதிக்கப்பட்ட பயனாளர்கள்"
 
-#: osmtm/templates/project.edit.mako:389
+#: osmtm/templates/project.edit.mako:438
 msgid "Type a username"
 msgstr "பயனர் பெயர் தட்டச்சவும்"
 
-#: osmtm/templates/project.edit.mako:392
+#: osmtm/templates/project.edit.mako:441
 msgid "Add user"
 msgstr "பயனாளரை சேர்க்கவும்"
 
-#: osmtm/templates/project.edit.mako:410
+#: osmtm/templates/project.edit.mako:459
 msgid "Project due date"
 msgstr "பணித்திட்டம் முடிவடைய வேண்டிய நாள்"
 
-#: osmtm/templates/project.edit.mako:418
+#: osmtm/templates/project.edit.mako:467
 msgid "The date after which the project will automatically be archived."
 msgstr "தானாகவே இந்த பணித்திட்டம் காப்பகப்படுத்தப்பட வேண்டிய தேதி."
 
-#: osmtm/templates/project.edit.mako:424
+#: osmtm/templates/project.edit.mako:473
 msgid "JOSM Preset"
 msgstr "JOSM Preset"
 
-#: osmtm/templates/project.edit.mako:429
+#: osmtm/templates/project.edit.mako:478
 msgid "A JOSM Preset has already been added to this project."
 msgstr "ஏற்கனவே ஒரு JOSM Preset இந்த பணித்திட்டத்தில் சேர்க்கப்பட்டுள்ளது."
 
-#: osmtm/templates/project.edit.mako:435
+#: osmtm/templates/project.edit.mako:484
 msgid "Invalidation"
 msgstr "பணியை நிராகரிப்பு"
 
-#: osmtm/templates/project.edit.mako:438
+#: osmtm/templates/project.edit.mako:487
 msgid "Invalidate All Tasks"
 msgstr "அனைத்து பணிகளையும் நிராகரிக்கவும்"
 
-#: osmtm/templates/project.edit.mako:442
+#: osmtm/templates/project.edit.mako:491
 msgid ""
 "Click this button if project instructions have changed, or if for some "
 "reason you need to invalidate all done tasks in a single step."
 msgstr "பணித்திட்ட வழிமுறைகள் மாற்றப்பட்டிருந்தால்அல்லது ஏதேனும் காரணத்துக்காக நீங்கள் அனைத்து நிறைவடைந்த பணிகளையும் ஒரே செயலின் மூலமாக நிராகரிக்க விரும்பினால் மட்டுமே இந்த பொத்தானை தெரிவு செய்யவும்"
 
-#: osmtm/templates/project.edit.mako:446
+#: osmtm/templates/project.edit.mako:495
 msgid "WARNING: This cannot be undone."
 msgstr "எச்சரிக்கை: இந்த செயலை மறுசீரமைக்க இயலாது."
 
-#: osmtm/templates/project.edit.mako:455
+#: osmtm/templates/project.edit.mako:513
 msgid "Tip:"
 msgstr "சிறுகுறிப்பு:"
 
-#: osmtm/templates/project.edit.mako:456
+#: osmtm/templates/project.edit.mako:514
 msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
 msgstr "நீங்கள்  <a href class=\"markdown\">Markdown</a>-ஐ பயன்படுத்தலாம். (HTML-க்கு அனுமதி இல்லை)"
 
-#: osmtm/templates/project.edit.mako:472
+#: osmtm/templates/project.edit.mako:530
 msgid "Preview"
 msgstr "முன்னோட்டம்"
 
@@ -662,7 +737,7 @@ msgstr "ஏதோ தவறு நேர்ந்துவிட்டது"
 msgid "Please login first"
 msgstr "முதலில் உங்கள் கணக்கைக் கொண்டு உள் நுழையவும்"
 
-#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:33
+#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:34
 msgid "Map data © ${osm_link} contributors"
 msgstr "வரைபட தகவல் © ${osm_link} பங்களிப்பாளர்கள்"
 
@@ -701,114 +776,116 @@ msgstr "அதிக முன்னுரிமை"
 msgid "Project New"
 msgstr "புதிய பணித்திட்டம்"
 
-#: osmtm/templates/project.new.mako:27
+#: osmtm/templates/project.new.mako:28
 msgid "Draw the area of interest"
 msgstr "உங்களுக்கு விருப்ப பகுதியை வரையவும்"
 
-#: osmtm/templates/project.new.mako:28
+#: osmtm/templates/project.new.mako:29
 msgid "Dropped file could not be loaded"
 msgstr "நீங்கள் அளித்த கோப்பை படிக்க இயலவில்லை"
 
-#: osmtm/templates/project.new.mako:29
+#: osmtm/templates/project.new.mako:30
 msgid "Dropped file was unreadable"
 msgstr "நீங்கள் அளித்த கோப்பை படிக்க இயலவில்லை"
 
-#: osmtm/templates/project.new.mako:30
-msgid "Please provide a .geojson or a .kml file"
-msgstr " .geojson அல்லது .kml கோப்பை-ஐக் கொடுக்கவும் ."
+#: osmtm/templates/project.new.mako:31
+msgid "Please provide a .geojson, .kml, or zipped .shp file"
+msgstr ""
 
-#: osmtm/templates/project.new.mako:44 osmtm/templates/project.new.mako:84
-#: osmtm/templates/project.new.mako:133 osmtm/templates/project.new.mako:176
+#: osmtm/templates/project.new.mako:45 osmtm/templates/project.new.mako:85
+#: osmtm/templates/project.new.mako:134 osmtm/templates/project.new.mako:177
 msgid "Step ${number}"
 msgstr "படி ${number}"
 
-#: osmtm/templates/project.new.mako:49
+#: osmtm/templates/project.new.mako:50
 msgid "Draw"
 msgstr "வரையவும்"
 
-#: osmtm/templates/project.new.mako:50
+#: osmtm/templates/project.new.mako:51
 msgid "${draw_link} the area of interest on the map."
 msgstr "நீங்கள் விரும்பிய பகுதியை மேப்-இல் வரையவும் ${draw_link}."
 
-#: osmtm/templates/project.new.mako:55 osmtm/templates/task.empty.mako:21
+#: osmtm/templates/project.new.mako:56 osmtm/templates/task.empty.mako:21
 msgid "or"
 msgstr "அல்லது"
 
-#: osmtm/templates/project.new.mako:62
-msgid "Provide a .geojson or .kml file."
-msgstr " .geojson அல்லது .kml கோப்பை-ஐக் கொடுக்கவும் ."
+#: osmtm/templates/project.new.mako:63
+msgid "Provide a .geojson, .kml, or zipped .shp file."
+msgstr ""
 
-#: osmtm/templates/project.new.mako:62
+#: osmtm/templates/project.new.mako:63
 msgid "Import"
 msgstr "இறக்குமதி செய்யவும்"
 
-#: osmtm/templates/project.new.mako:63
-msgid "${import_link} a <em>GeoJSON</em> or <em>KML</em> file."
-msgstr "<em>GeoJSON</em> அல்லது <em>KML</em> கோப்பை இறக்குமதி செய்யவும் ${import_link}."
+#: osmtm/templates/project.new.mako:64
+msgid ""
+"${import_link} a <em>GeoJSON</em>, <em>KML</em>, or <em>zipped SHP</em> "
+"file."
+msgstr ""
 
-#: osmtm/templates/project.new.mako:68
+#: osmtm/templates/project.new.mako:69
 msgid "Want to use an <em>.osm</em> file instead?"
 msgstr "மாற்றாக <em>.osm</em> கோப்பை பயன்படுத்த விரும்புகிறீர்களா?"
 
-#: osmtm/templates/project.new.mako:71
+#: osmtm/templates/project.new.mako:72
 msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
 msgstr "நீங்கள் ${geojson_link} -ஐ பயன்படுத்தி இதை <em>GeoJSON</em> - ஆக உருமாற்றலாம்."
 
-#: osmtm/templates/project.new.mako:85
+#: osmtm/templates/project.new.mako:86
 msgid "${step_number}  - Type of project"
 msgstr "${step_number} - பணித்திட்ட வகை"
 
-#: osmtm/templates/project.new.mako:92
+#: osmtm/templates/project.new.mako:93
 msgid "Square Grid"
 msgstr "பணிச்சதுரம்"
 
-#: osmtm/templates/project.new.mako:96
+#: osmtm/templates/project.new.mako:97
 msgid ""
 "Area of interest is automatically split into grid cells. Each one is a task."
 msgstr "நீங்கள் விரும்பிய பகுதி, தானாகவே சிறு சதுர கட்டங்களாக பிரிக்கப்பட்டுள்ளது. ஒவ்வொரு சதுரமும் ஒரு பணியாகும்."
 
-#: osmtm/templates/project.new.mako:103
+#: osmtm/templates/project.new.mako:104
 msgid "You cannot select this option unless you import a file with polygons."
 msgstr "வடிவங்கள் கொண்ட கோப்பினை இறக்குமதி செய்யாமல், உங்களால் இந்த விருப்பத்தை தேர்வு செய்ய இயலாது."
 
-#: osmtm/templates/project.new.mako:106
+#: osmtm/templates/project.new.mako:107
 msgid "Arbitrary Geometries"
 msgstr "விதிகட்டற்ற வடிவகணிதங்கள்"
 
-#: osmtm/templates/project.new.mako:110
+#: osmtm/templates/project.new.mako:111
 msgid "Each polygon represents a task."
 msgstr "ஒவ்வொரு வடிவும் ஒரு பணியை குறிக்கின்றது."
 
-#: osmtm/templates/project.new.mako:119 osmtm/templates/project.new.mako:156
-#: osmtm/templates/project.new.mako:186
+#: osmtm/templates/project.new.mako:120 osmtm/templates/project.new.mako:157
+#: osmtm/templates/project.new.mako:187
 msgid "Back"
 msgstr "பின்னே செல்லவும்"
 
-#: osmtm/templates/project.new.mako:121
+#: osmtm/templates/project.new.mako:122
 msgid "Next"
 msgstr "அடுத்து"
 
-#: osmtm/templates/project.new.mako:137
+#: osmtm/templates/project.new.mako:138
 msgid "Tile size"
 msgstr "Tile அளவு"
 
-#: osmtm/templates/project.new.mako:145
+#: osmtm/templates/project.new.mako:146
 msgid "Computing..."
 msgstr "கணித்து கொண்டுள்ளது..."
 
-#: osmtm/templates/project.new.mako:149 osmtm/templates/project.new.mako:180
+#: osmtm/templates/project.new.mako:150 osmtm/templates/project.new.mako:181
 msgid "A new project will be created with ${number} tasks."
 msgstr "${number} பணிகள் கொண்ட புது திட்டப்பணி உருவாக்கப்படும்."
 
-#: osmtm/templates/project.new.mako:158 osmtm/templates/project.new.mako:188
+#: osmtm/templates/project.new.mako:159 osmtm/templates/project.new.mako:189
 msgid "Create project"
 msgstr "புது திட்டப்பணியை உருவாக்கவும்"
 
-#: osmtm/templates/project.new.mako:164
+#: osmtm/templates/project.new.mako:165
 msgid "Creating tiles, please wait..."
 msgstr "Tile-கள் உருவாக்கப்பட்டு கொண்டிருக்கின்றன, தயவு செய்து காத்திருக்கவும்..."
 
-#: osmtm/templates/project.new.mako:193
+#: osmtm/templates/project.new.mako:194
 msgid "Creating project, please wait..."
 msgstr "பணித்திட்டம் உருவாக்கப்பட்டு கொண்டிருக்கிறது, தயவு செய்து காத்திருக்கவும்..."
 
@@ -958,24 +1035,28 @@ msgid "Marked as done"
 msgstr "நிறைவடைந்ததாக குறிக்கவும்"
 
 #: osmtm/templates/task.history.mako:50 osmtm/templates/task.history.mako:52
-#: osmtm/templates/task.history.mako:54 osmtm/templates/task.history.mako:58
-#: osmtm/templates/task.history.mako:63
+#: osmtm/templates/task.history.mako:54 osmtm/templates/task.history.mako:60
+#: osmtm/templates/task.history.mako:65
 msgid "by"
 msgstr "ஆல்"
 
-#: osmtm/templates/task.history.mako:58 osmtm/templates/task.status.mako:6
+#: osmtm/templates/task.history.mako:56
+msgid "<b>Split</b> by ${link}"
+msgstr ""
+
+#: osmtm/templates/task.history.mako:60 osmtm/templates/task.status.mako:6
 msgid "Locked"
 msgstr "பணி ஒதுக்கப்பட்டது"
 
-#: osmtm/templates/task.history.mako:60
+#: osmtm/templates/task.history.mako:62
 msgid "Unlocked"
 msgstr "ஒதுக்கப்பட்ட பணி விலக்கப்பட்டது"
 
-#: osmtm/templates/task.history.mako:63
+#: osmtm/templates/task.history.mako:65
 msgid "Comment left"
 msgstr "கருத்திடப்பட்டது"
 
-#: osmtm/templates/task.history.mako:77
+#: osmtm/templates/task.history.mako:79
 msgid "Nothing has happened yet."
 msgstr "இதுவரை எதுவும் நடக்கவில்லை"
 
@@ -1019,12 +1100,12 @@ msgid "OSM changesets"
 msgstr "OSM changesets"
 
 #: osmtm/templates/task.mako:112
-msgid "See the changes in this area using the overpass-turbo API."
-msgstr "இந்த பரப்பளவில் ஏற்பட்ட மாற்றங்களை overpass-turbo API கொண்டு காண்க"
+msgid "See the changes in this area using overpass turbo."
+msgstr ""
 
 #: osmtm/templates/task.mako:112
-msgid "overpass-turbo"
-msgstr "overpass-turbo"
+msgid "overpass turbo"
+msgstr ""
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -1131,8 +1212,10 @@ msgid "OSM Edit History"
 msgstr "OSM திருத்த வரலாறு"
 
 #: osmtm/templates/user.mako:50
-msgid "This user has submitted ${changes} total changesets."
-msgstr "இந்தப் பயனாளர் மொத்தம்  ${changes} changesets சமர்ப்பித்துள்ளார். "
+msgid "This user has submitted ${changes} total changeset."
+msgid_plural "This user has submitted ${changes} total changesets."
+msgstr[0] ""
+msgstr[1] ""
 
 #: osmtm/templates/user.mako:60
 msgid "This user is an administrator."
@@ -1162,11 +1245,13 @@ msgstr "இந்தப் பயனாளர் கீழ்கண்ட பண
 msgid "Project Details"
 msgstr "பணித்திட்ட விவரங்கள்"
 
-#: osmtm/templates/user.mako:103
-msgid "${count} tiles"
-msgstr "${count} tiles"
+#: osmtm/templates/user.mako:102
+msgid "${count} tile"
+msgid_plural "${count} tiles"
+msgstr[0] ""
+msgstr[1] ""
 
-#: osmtm/templates/user.mako:110
+#: osmtm/templates/user.mako:108
 msgid "User hasn't contributed yet."
 msgstr "பயனாளர் இதுவரை எந்தப் பங்களிப்பும் செய்யவில்லை."
 
@@ -1174,27 +1259,23 @@ msgstr "பயனாளர் இதுவரை எந்தப் பங்க
 msgid "From"
 msgstr "அனுப்புநர்"
 
-#: osmtm/templates/user.messages.mako:15
-msgid "Subject"
-msgstr "பிரதான பொருள்"
-
-#: osmtm/templates/user_menu.mako:10
+#: osmtm/templates/user_menu.mako:9
 msgid "Your page"
 msgstr "உங்கள் பக்கம்"
 
-#: osmtm/templates/user_menu.mako:16
+#: osmtm/templates/user_menu.mako:15
 msgid "logout"
 msgstr "வெளியேறு"
 
-#: osmtm/templates/user_menu.mako:19
+#: osmtm/templates/user_menu.mako:18
 msgid "Users list"
 msgstr "பயனாளர் தொகுப்பு"
 
-#: osmtm/templates/user_menu.mako:23
+#: osmtm/templates/user_menu.mako:22
 msgid "Manage licenses"
 msgstr "உரிமங்களை நிர்வகிக்கவும்"
 
-#: osmtm/templates/user_menu.mako:28
+#: osmtm/templates/user_menu.mako:27
 msgid "Create a new project"
 msgstr "புது பணித்திட்டத்தை உருவாக்கவும்"
 
@@ -1231,117 +1312,139 @@ msgstr "உரிமம் உருவாக்கப்பட்டது!"
 msgid "License updated!"
 msgstr "உரிமம் புதுப்பிக்கப்பட்டது!"
 
-#: osmtm/views/project.py:72
+#: osmtm/views/project.py:74
 msgid "Sorry, this project doesn't  exist"
 msgstr "மன்னிக்கவும், இந்த பணித்திட்டம் உபயோகத்தில் இல்லை"
 
-#: osmtm/views/project.py:140 osmtm/views/project.py:184
+#: osmtm/views/project.py:142 osmtm/views/project.py:187
 msgid "Untitled project"
 msgstr "பெயரிடப்படா பணித்திட்டம்"
 
-#: osmtm/views/project.py:163
+#: osmtm/views/project.py:165
 msgid "Project #${project_id} created successfully"
 msgstr "பணித்திட்டம் #${project_id} வெற்றிகரமாக உருவாக்கப்பட்டது"
 
-#: osmtm/views/project.py:169 osmtm/views/project.py:194
+#: osmtm/views/project.py:171 osmtm/views/project.py:200
 #, python-format
 msgid "Sorry, could not create the project. <br />%s"
 msgstr "மன்னிக்கவும்,  திட்டப்பணியை உருவாக்க இயலவில்லை. <br />%s"
 
-#: osmtm/views/project.py:188
-msgid "Successfully imported ${n} geometries"
-msgstr "${n} வடிவகணிதங்கள் இறக்குமதி செய்யப்பட்டன"
+#: osmtm/views/project.py:192
+msgid "Successfully imported ${n} geometry"
+msgid_plural "Successfully imported ${n} geometries"
+msgstr[0] ""
+msgstr[1] ""
 
-#: osmtm/views/project.py:505
+#: osmtm/views/project.py:512
 msgid "A comment is required."
 msgstr "கருத்து கண்டிப்பாக தேவை."
 
-#: osmtm/views/project.py:513
+#: osmtm/views/project.py:520
 msgid "Please type the project id in the box to confirm"
 msgstr "இதை உறுதிப்படுத்த தயவுசெய்து பணித்திட்டத்தின்  id-ஐ பெட்டியில் தட்டச்சு செய்யவும்."
 
-#: osmtm/views/project.py:532
+#: osmtm/views/project.py:539
 msgid "No done tasks to invalidate."
 msgstr "நிராகரிப்பதற்கு நிறைவடைந்த பணிகள் ஒன்றுமில்லை."
 
-#: osmtm/views/project.py:534
+#: osmtm/views/project.py:541
 #, python-format
-msgid "%d tasks invalidated"
-msgstr "%d பணிகள் நிராகரிக்கப்பட்டன."
+msgid "%d task invalidated"
+msgid_plural "%d tasks invalidated"
+msgstr[0] ""
+msgstr[1] ""
 
-#: osmtm/views/task.py:83
+#: osmtm/views/project.py:558
+msgid "A subject and message are required."
+msgstr ""
+
+#: osmtm/views/project.py:567
+msgid "Project #"
+msgstr ""
+
+#: osmtm/views/project.py:577
+msgid "No users to message."
+msgstr ""
+
+#: osmtm/views/project.py:579
+msgid "Message sent to ${num} user."
+msgid_plural "Message sent to ${num} users."
+msgstr[0] ""
+msgstr[1] ""
+
+#: osmtm/views/task.py:85
 msgid "Cannot update task. Record lock for update."
 msgstr "பணியை புதுப்பிக்க இயலாது. Lock-ஐ பதிவு செய்து புதுப்பிக்கவும்."
 
-#: osmtm/views/task.py:88
+#: osmtm/views/task.py:90
 msgid "This task doesn't exist."
 msgstr "இந்தப் பணி உபயோகத்தில் இல்லை"
 
-#: osmtm/views/task.py:96
+#: osmtm/views/task.py:98
 msgid "You need to lock the task first."
 msgstr "உங்களுக்கான பணியை முதலில் ஒதுக்கி கொள்ள வேண்டும்."
 
-#: osmtm/views/task.py:164
+#: osmtm/views/task.py:192
 msgid "Task marked as done. Thanks for your contribution"
 msgstr "பணி நிறைவடைந்ததாக குறிக்கப்பட்டுள்ளது. உங்கள் பங்களிப்புக்கு நன்றி"
 
-#: osmtm/views/task.py:183
+#: osmtm/views/task.py:211
 msgid "Task already locked."
 msgstr "பணி வேறொருவருக்கு ஒதுக்கப்பட்டுள்ளது."
 
-#: osmtm/views/task.py:189
+#: osmtm/views/task.py:217
 msgid "Task assigned to someone else."
 msgstr "பணி வேறொருவருக்கு ஒதுக்கப்பட்டுள்ளது."
 
-#: osmtm/views/task.py:194
+#: osmtm/views/task.py:222
 msgid "Task locked. You can start mapping."
 msgstr "பணி உங்களுக்காக ஒதுக்கப்பட்டுள்ளது. நீங்கள் மேப் செய்ய தொடங்கலாம்."
 
-#: osmtm/views/task.py:211
+#: osmtm/views/task.py:239
 msgid "Task unlocked."
 msgstr "ஒதுக்கப்பட்ட பணி விலக்கப்பட்டது"
 
-#: osmtm/views/task.py:223
+#: osmtm/views/task.py:251
 msgid "Comment added."
 msgstr "கருத்து சேர்க்கப்பட்டது"
 
-#: osmtm/views/task.py:260
+#: osmtm/views/task.py:288
 msgid "You were mentioned in a comment - Task ${link}"
 msgstr "பணி  ${link} - கருத்து பகுதியில் உங்கள் பெயர் குறிப்பிடப் பட்டுள்ளது"
 
-#: osmtm/views/task.py:286
+#: osmtm/views/task.py:319
 msgid "Task ${link} invalidated"
 msgstr "பணி  ${link} நிராகரிக்கப்பட்டது"
 
-#: osmtm/views/task.py:301
+#: osmtm/views/task.py:334
 msgid "Task validated."
 msgstr "பணி ஏற்றுக்கொள்ளப்பட்டது"
 
-#: osmtm/views/task.py:304
+#: osmtm/views/task.py:337
 msgid "Task invalidated."
 msgstr "பணி நிராகரிக்கப்பட்டது"
 
-#: osmtm/views/task.py:431
+#: osmtm/views/task.py:467
 msgid "Random task... none available! Sorry."
 msgstr "மன்னிக்கவும்,\nஒதுக்குவதற்கு எந்தப் பணியும் இல்லை!"
 
-#: osmtm/views/task.py:444
+#: osmtm/views/task.py:480
 msgid "You cannot assign an already locked task"
 msgstr "வேறொருவருக்கு ஒதுக்கப்பட்டுள்ள பணியை உங்களுக்கு ஒதுக்கிக் கொள்ள இயலாது"
 
-#: osmtm/views/task.py:454
+#: osmtm/views/task.py:490
 msgid "Task assigned."
 msgstr "பணி ஒதுக்கப்பட்டுள்ளது"
 
-#: osmtm/views/task.py:468
+#: osmtm/views/task.py:504
 msgid "Task assignment removed"
 msgstr "ஒதுக்கப்பட்ட பணி விலக்கப்பட்டது"
 
-#: osmtm/views/task.py:500
+#: osmtm/views/task.py:536
 msgid "Task difficulty changed."
 msgstr "பணி சிரம நிலை மாற்றப்பட்டுள்ளது"
 
-#: osmtm/views/task.py:513
+#: osmtm/views/task.py:549
 msgid "Task difficulty removed"
 msgstr "பணி சிரம நிலை நீக்கப்பட்டது"
 
