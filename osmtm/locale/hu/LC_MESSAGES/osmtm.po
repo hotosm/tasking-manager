@@ -1,0 +1,1458 @@
+# English translations for osmtm.
+# Copyright (C) 2016 ORGANIZATION
+# This file is distributed under the same license as the osmtm project.
+# 
+# Translators:
+# Balázs Úr <urbalazs@gmail.com>, 2015
+# Báthory Péter <bathory86p@gmail.com>, 2015-2016
+# Bihari Kristóf <bihari.kristof@gmail.com>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: osm-tasking-manager2\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2016-05-28 13:21+0200\n"
+"PO-Revision-Date: 2016-06-08 22:12+0000\n"
+"Last-Translator: Báthory Péter <bathory86p@gmail.com>\n"
+"Language-Team: Hungarian (http://www.transifex.com/hotosm/osm-tasking-manager2/language/hu/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.2.0\n"
+"Language: hu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: osmtm/templates/about.mako:11 osmtm/templates/base.mako:122
+#: osmtm/templates/custom.mako:16
+msgid "About the Tasking Manager"
+msgstr "A Tasking Managerről"
+
+#: osmtm/templates/about.mako:15
+msgid "Sponsorship and Funding"
+msgstr "Szponzorálás, támogatás"
+
+#: osmtm/templates/about.mako:16
+msgid ""
+"OSM Tasking Manager was designed and built for the <a "
+"href=\"http://hot.openstreetmap.org\">Humanitarian OpenStreetMap Team</a>."
+msgstr "Az OSM Tasking Manager a <a href=\"http://hot.openstreetmap.org\">Humanitárius OpenStreetMap Csapat</a> számára készült."
+
+#: osmtm/templates/about.mako:18
+msgid "With the invaluable help from:"
+msgstr "Az ő nélkülözhetetlen segítségükkel:"
+
+#: osmtm/templates/about.mako:46
+msgid "Getting Started"
+msgstr "Első lépések"
+
+#: osmtm/templates/about.mako:48
+msgid "Some resources to help you start using the Tasking Manager:"
+msgstr "Hasznos segédletek a Tasking Manager használatához:"
+
+#: osmtm/templates/about.mako:55
+msgid "Open Source"
+msgstr "Nyílt forráskód"
+
+#: osmtm/templates/about.mako:57
+msgid ""
+"OSM Tasking Manager is an open source software.<br>Feel free to report "
+"issues and contribute."
+msgstr "Az OSM Tasking Manager nyílt forráskódú szoftver.<br>Bátran jelezd a problémákat és működj közre a fejlesztésben."
+
+#: osmtm/templates/about.mako:59
+msgid ""
+"The <a href=\"http://github.com/hotosm/osm-tasking-manager2\">application "
+"code</a> is available on github"
+msgstr "Az <a href=\"http://github.com/hotosm/osm-tasking-manager2\">alkalmazás forráskódja</a> elérhető a githubon"
+
+#: osmtm/templates/about.mako:61
+msgid ""
+"Lead developer: Pierre GIRAUD (<a "
+"href=\"//www.camptocamp.com\">Camptocamp</a>)"
+msgstr "Vezető fejlesztő: Pierre GIRAUD (<a href=\"//www.camptocamp.com\">Camptocamp</a>)"
+
+#: osmtm/templates/about.mako:62
+msgid ""
+"with the help of <a href=\"https://github.com/hotosm/osm-tasking-"
+"manager2/graphs/contributors\">other contributors</a>."
+msgstr "a <a href=\"https://github.com/hotosm/osm-tasking-manager2/graphs/contributors\">többi közreműködő</a> segítségével."
+
+#: osmtm/templates/about.mako:71
+msgid "Version"
+msgstr "Verzió"
+
+#: osmtm/templates/base.mako:43
+msgid "You have unread messages"
+msgstr "Olvasatlan üzeneted van"
+
+#: osmtm/templates/base.mako:57
+msgid "About"
+msgstr "Névjegy"
+
+#: osmtm/templates/base.mako:64
+msgid "login to OpenStreetMap"
+msgstr "OpenStreetMap bejelentkezés"
+
+#: osmtm/templates/base.mako:116
+msgid "Fork the code on ${github_link}."
+msgstr "Forkold a forrást: ${github_link}."
+
+#: osmtm/templates/custom.mako:7
+msgid ""
+"OSM Tasking Manager is a mapping tool designed and built for the "
+"Humanitarian OSM Team collaborative mapping. The purpose of the tool is to "
+"divide up a mapping job into smaller tasks that can be completed rapidly. It"
+" shows which areas need to be mapped and which areas need the mapping "
+"validated."
+msgstr "Az OSM Tasking Manager egy térképező eszköz, ami a Humanitárius OpenStreetMap Csapat kollaboratív térképezéséhez készült. Az eszköz célja a térképezési munka kisebb, gyorsan elvégezhető feladatokra osztása. Mutatja, mely területek várnak még feltérképezésre és hol kell a térképezést ellenőrizni."
+
+#: osmtm/templates/custom.mako:10
+msgid ""
+"This approach facilitates the distribution of tasks to the various mappers "
+"in a context of emergency. It also permits control of the progress and the "
+"homogeneity of the work done (e.g. elements to cover, specific tags to use, "
+"etc.)."
+msgstr "Ez a megközelítés megkönnyíti a feladatok elosztását a szerkesztők között egy rendkívüli helyzetben. Lehetővé teszi továbbá az előrehaladás követését és javítja az elvégzett munka homogenitását (pl. feltérképezendő objektumok, használandó címkékt, stb.)"
+
+#: osmtm/templates/custom.mako:19
+msgid "New to Mapping?"
+msgstr "Még nem térképeztél?"
+
+#: osmtm/templates/custom.mako:21
+msgid ""
+"Just jump over to <a target=\"_blank\" "
+"href=\"http://www.openstreetmap.org\">OpenStreetMap</a>, create an account, "
+"and then visit the LearnOSM tutorials on the <a target=\"_blank\" "
+"href=\"http://learnosm.org/en/coordination/tasking-manager/\">Tasking "
+"Manager</a> and the <a target=\"_blank\" "
+"href=\"http://learnosm.org/en/beginner/id-editor\">iD editor</a>. "
+"Alternatively check out the <a target=\"_blank\" "
+"href=\"http://mapgive.state.gov\">MapGive website</a> which also provides "
+"information on the Tasking Manager and mapping. Once you have read up on how"
+" to map, come back here to help map for people on the ground!"
+msgstr "Ugorj át az <a target=\"_blank\" href=\"http://www.openstreetmap.org\">OpenStreetMapre</a>, regisztrálj és olvasd el LearnOSM útmutatóit a <a target=\"_blank\" href=\"http://learnosm.org/en/coordination/tasking-manager/\">Tasking Managerről</a> és az <a target=\"_blank\" href=\"http://learnosm.org/en/beginner/id-editor\">iD editorról</a>. A <a target=\"_blank\" href=\"http://mapgive.state.gov\">MapGive</a> oldalán is találsz leírást a Tasking Managerről és a térképezésről. Ha elolvastad, hogyan kell térképezni, gyere vissza és segíts térképet készíteni a terepen lévőknek!"
+
+#: osmtm/templates/custom.mako:24
+msgid "Questions About Tasks, Mapping or HOT?"
+msgstr "Kérdések a feladatokról, a térképezésről vagy a HOT-ról?"
+
+#: osmtm/templates/custom.mako:26
+msgid ""
+"If you have any questions about a project, a task or mapping in general "
+"please ask on our mailing list: <a "
+"href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a>."
+msgstr "Ha kérdésed van egy projekttel kapcsolatban, egy feladatról, vagy általában a térképezésről, kérdezz bátran a levelező listánkon: <a href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT Levelező Lista</a>."
+
+#: osmtm/templates/custom.mako:29
+msgid ""
+"Or visit us in our IRC Chat Channel, just select #hot from the pop down "
+"channel list: <a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel "
+"#hot</a>."
+msgstr "Vagy látogasd meg az IRC csatornánkat, keresd a #hot csatornát a legördülőben:  <a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC csatorna #hot</a>."
+
+#: osmtm/templates/custom.mako:32
+msgid ""
+"General inquries and comments are welcomed at: <a "
+"href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>."
+msgstr "Általános érdeklődést és megjegyzéseket szevesen fogadunk: <a href=\"mailto:info@hotosm.org\" target=\"_top\">info@hotosm.org</a>."
+
+#: osmtm/templates/custom.mako:37
+msgid "Email HOT at"
+msgstr "Email a HOT-nak:"
+
+#: osmtm/templates/custom.mako:38
+msgid "Follow HOT on"
+msgstr "Kövesd a HOT-ot:"
+
+#: osmtm/templates/custom.mako:39
+msgid "Like HOT on"
+msgstr "Lájkold a HOT-ot:"
+
+#: osmtm/templates/custom.mako:121
+msgid "Please donate!"
+msgstr "Kérjük adományozz!"
+
+#: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
+msgid "urgent"
+msgstr "sürgős"
+
+#: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
+msgid "high"
+msgstr "magas"
+
+#: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
+msgid "medium"
+msgstr "közepes"
+
+#: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
+msgid "low"
+msgstr "alacsony"
+
+#: osmtm/templates/helpers.mako:8
+msgid "Access to this project is limited"
+msgstr "Ehhez a projekthez korlátozva van a hozzáférés"
+
+#: osmtm/templates/helpers.mako:11
+msgid "Created by"
+msgstr "Létrehozta"
+
+#: osmtm/templates/helpers.mako:13
+msgid "Updated"
+msgstr "Frissítve"
+
+#: osmtm/templates/helpers.mako:14
+msgid "Priority:"
+msgstr "Prioritás:"
+
+#: osmtm/templates/home.mako:12
+msgid "High priority first"
+msgstr "Magas prioritású elöl"
+
+#: osmtm/templates/home.mako:13
+msgid "Creation date"
+msgstr "Létrehozás dátuma"
+
+#: osmtm/templates/home.mako:14
+msgid "Last update"
+msgstr "Utolsó frissítés"
+
+#: osmtm/templates/home.mako:18 osmtm/templates/user.mako:92
+msgid "Projects"
+msgstr "Projektek"
+
+#: osmtm/templates/home.mako:44
+msgid "Search"
+msgstr "Keresés"
+
+#: osmtm/templates/home.mako:50
+msgid "Sort by:"
+msgstr "Keresés:"
+
+#: osmtm/templates/home.mako:76
+msgid "Your projects"
+msgstr "A te projektjeid"
+
+#: osmtm/templates/home.mako:84
+msgid "Include archived projects"
+msgstr "Belevéve az archív projekteket"
+
+#: osmtm/templates/home.mako:131
+msgid "${locked} user is currently working on this project"
+msgid_plural "${locked} users are currently working on this project"
+msgstr[0] "${locked} felhasználó dolgozik jelenleg ezen a projekten"
+msgstr[1] "${locked} felhasználó dolgozik jelenleg ezen a projekten"
+
+#: osmtm/templates/imagery.mako:24
+msgid "imagery url available only after accepting the license"
+msgstr "a legifelvétel URL-je a licenc elfogadás után lesz elérhető"
+
+#: osmtm/templates/imagery.mako:35
+msgid "${license} license agreement"
+msgstr "${license} licencszerződés"
+
+#: osmtm/templates/imagery.mako:36
+msgid "Access to this imagery is limited by the ${license_agreement_link}."
+msgstr "A képhez történő hozzáférést a következő licencszerződés korlátozza: ${license_agreement_link}."
+
+#: osmtm/templates/imagery.mako:43
+msgid "You have already acknowledged the terms of this license."
+msgstr "Már elfogadtad a licencfeltételeket."
+
+#: osmtm/templates/imagery.mako:46
+msgid "review and acknowledge"
+msgstr "Nézd át és fogadd el"
+
+#: osmtm/templates/imagery.mako:47
+msgid "You need to ${review_and_acknowledge_link} the agreement."
+msgstr "${review_and_acknowledge_link} a feltételeket."
+
+#: osmtm/templates/imagery.mako:53
+msgid "You need to accept the license first"
+msgstr "Először el kell fogadnod a licencfeltételeket"
+
+#: osmtm/templates/license.edit.mako:4
+msgid "Edit License"
+msgstr "Licenc szerkesztése"
+
+#: osmtm/templates/license.edit.mako:10
+msgid "Name"
+msgstr "Név"
+
+#: osmtm/templates/license.edit.mako:12
+msgid "A name for the license (provider, for example)"
+msgstr "A licenc neve (például szolgáltató)"
+
+#: osmtm/templates/license.edit.mako:15 osmtm/templates/project.edit.mako:133
+#: osmtm/templates/project.edit.mako:268 osmtm/templates/project.mako:49
+msgid "Description"
+msgstr "Leírás"
+
+#: osmtm/templates/license.edit.mako:17
+msgid "The license terms"
+msgstr "A licencfeltételek"
+
+#: osmtm/templates/license.edit.mako:20
+msgid "Plain Text"
+msgstr "Egyszerű szöveg"
+
+#: osmtm/templates/license.edit.mako:22
+msgid "A short version of the terms"
+msgstr "A feltételek rövid változata"
+
+#: osmtm/templates/license.edit.mako:27 osmtm/templates/project.edit.mako:170
+msgid "Save the modifications"
+msgstr "Módosítások elmentése"
+
+#: osmtm/templates/license.edit.mako:29
+msgid "Create the new license"
+msgstr "Az új licenc létrehozása"
+
+#: osmtm/templates/license.edit.mako:32
+msgid "Delete"
+msgstr "Törlés"
+
+#: osmtm/templates/license.edit.mako:34 osmtm/templates/project.edit.mako:106
+#: osmtm/templates/project.edit.mako:169
+msgid "Cancel"
+msgstr "Mégse"
+
+#: osmtm/templates/license.edit.mako:40
+msgid "Are you sure you want to delete this license?"
+msgstr "Biztosan törölni akarod ezt a licencet?"
+
+#: osmtm/templates/license.mako:4 osmtm/templates/licenses.mako:4
+msgid "Licenses"
+msgstr "Licencek"
+
+#: osmtm/templates/license.mako:10
+msgid "${license_name} License Acknowledgement"
+msgstr "${license_name} Licenc elismerés"
+
+#: osmtm/templates/license.mako:11
+msgid ""
+"Access via this site to imagery identified as <em>\"${license_name}\"</em> "
+"is subject to the following usage terms:"
+msgstr "A légifelvétél ezen az oldalon <em>\"${license_name}\"</em> licenc alatt érhető el az alábbi feltételek szerint:"
+
+#: osmtm/templates/license.mako:24 osmtm/views/license.py:41
+msgid "I AGREE"
+msgstr "ELFOGADOM"
+
+#: osmtm/templates/license.mako:25
+msgid "No, thank you"
+msgstr "Köszönöm, nem"
+
+#: osmtm/templates/licenses.mako:16
+msgid "edit"
+msgstr "szerkesztés"
+
+#: osmtm/templates/licenses.mako:23
+msgid "Create new license"
+msgstr "Új licenc létrehozása"
+
+#: osmtm/templates/message.mako:3 osmtm/templates/message.mako:18
+#: osmtm/templates/user.messages.mako:4 osmtm/templates/user_menu.mako:11
+msgid "Messages"
+msgstr "Üzenetek"
+
+#: osmtm/templates/message.mako:26
+msgid "From:"
+msgstr "Feladó:"
+
+#: osmtm/templates/project.assigned_tasks.mako:6
+msgid "You have tasks assigned:"
+msgstr "Kijelölt feladataid vannak:"
+
+#: osmtm/templates/project.description.mako:9
+msgid "This project is not published yet."
+msgstr "Ez a projekt még nem lett publikálva."
+
+#: osmtm/templates/project.description.mako:12
+msgid "Publish"
+msgstr "Publikálás"
+
+#: osmtm/templates/project.description.mako:16
+msgid "This project was archived."
+msgstr "Ez a projekt archiválva lett."
+
+#: osmtm/templates/project.description.mako:27
+#: osmtm/templates/project.edit.mako:134 osmtm/templates/project.mako:50
+msgid "Instructions"
+msgstr "Utasítások"
+
+#: osmtm/templates/project.edit.mako:4 osmtm/templates/project.edit.mako:527
+#: osmtm/templates/project.mako:21
+msgid "Edit"
+msgstr "Szerkesztés"
+
+#: osmtm/templates/project.edit.mako:47
+msgid "Are you sure?"
+msgstr "Biztos vagy benne?"
+
+#: osmtm/templates/project.edit.mako:51
+msgid ""
+"This will mark all tasks currently marked as 'done' as invalid. Please use "
+"this only if you are sure of what you are doing."
+msgstr "Ez az összes, már „kész”-nek jelölt feladatot érvényteleníti. Kérlek, csak akkor használd, ha tudod, mit csinálsz."
+
+#: osmtm/templates/project.edit.mako:54
+msgid ""
+"Please leave a comment. It will be displayed in all the invalidated tasks."
+msgstr "Kérlek, hagyj üzenetet. Ez lesz látható az összes érvénytelenített feladaton."
+
+#: osmtm/templates/project.edit.mako:57
+msgid "This will be sent as the invalidation comment to users."
+msgstr "Ez lesz érvénytelenítési megjegyzésként elküldve a felhasználóknak."
+
+#: osmtm/templates/project.edit.mako:60
+msgid "Please type in the project number id of the repository to confirm."
+msgstr "Kérlek, add meg a tároló projekt szám azonosítóját a megerősítéshez."
+
+#: osmtm/templates/project.edit.mako:69
+msgid "Invalidate all done tasks"
+msgstr "Az összes elkészült feladat érvénytelenítése"
+
+#: osmtm/templates/project.edit.mako:82 osmtm/templates/project.edit.mako:109
+#: osmtm/templates/project.edit.mako:502 osmtm/templates/project.edit.mako:506
+msgid "Message all contributors"
+msgstr "Üzenet az összes közreműködőnek"
+
+#: osmtm/templates/project.edit.mako:86
+msgid ""
+"This will send a Tasking Manager message to every contributor of the current"
+" project."
+msgstr "Egy Tasking Manager üzenetet küld az aktuális projekt összes közreműködőjének."
+
+#: osmtm/templates/project.edit.mako:89
+msgid "Please use this feature conservatively."
+msgstr "Kérlek használd ezt a lehetőséget óvatosan."
+
+#: osmtm/templates/project.edit.mako:93 osmtm/templates/user.messages.mako:15
+msgid "Subject"
+msgstr "Tárgy"
+
+#: osmtm/templates/project.edit.mako:96
+msgid "Message"
+msgstr "Üzenet"
+
+#: osmtm/templates/project.edit.mako:98
+msgid ""
+"This message does not automatically translate, so you may want to include "
+"your own translations."
+msgstr "Ez az üzenet nem lesz automatikusan lefordítva, ezért beleírhatod a saját fordításaidat."
+
+#: osmtm/templates/project.edit.mako:135
+msgid "Area"
+msgstr "Terület"
+
+#: osmtm/templates/project.edit.mako:136
+#: osmtm/templates/project.instructions.mako:36
+msgid "Imagery"
+msgstr "Légifelvétel"
+
+#: osmtm/templates/project.edit.mako:137
+msgid "Priority Areas"
+msgstr "Prioritásos területek"
+
+#: osmtm/templates/project.edit.mako:138
+msgid "Allowed Users"
+msgstr "Engedélyezett felhasználók"
+
+#: osmtm/templates/project.edit.mako:139
+msgid "Misc"
+msgstr "Egyéb"
+
+#: osmtm/templates/project.edit.mako:183
+msgid "Status"
+msgstr "Állapot"
+
+#: osmtm/templates/project.edit.mako:188 osmtm/templates/project.mako:10
+msgid "Archived"
+msgstr "Archivált"
+
+#: osmtm/templates/project.edit.mako:189
+msgid "Published"
+msgstr "Publikált"
+
+#: osmtm/templates/project.edit.mako:190 osmtm/templates/project.mako:8
+msgid "Draft"
+msgstr "Vázlat"
+
+#: osmtm/templates/project.edit.mako:203
+msgid "Priority"
+msgstr "Prioritás"
+
+#: osmtm/templates/project.edit.mako:219
+msgid "Name of the project"
+msgstr "Projekt neve"
+
+#: osmtm/templates/project.edit.mako:243
+msgid "Short Description"
+msgstr "Rövid leírás"
+
+#: osmtm/templates/project.edit.mako:278
+#: osmtm/templates/project.instructions.mako:7
+msgid "Entities to Map"
+msgstr "Térképezendő objektumok"
+
+#: osmtm/templates/project.edit.mako:281
+msgid "primary roads, secondary roads, buildings"
+msgstr "fő- és mellékutak, épületek"
+
+#: osmtm/templates/project.edit.mako:285
+msgid "The list of entities to map."
+msgstr "A térképezendő objektumok listája."
+
+#: osmtm/templates/project.edit.mako:289
+#: osmtm/templates/project.instructions.mako:19
+msgid "Changeset Comment"
+msgstr "Módosításcsomag megjegyzés"
+
+#: osmtm/templates/project.edit.mako:295
+msgid ""
+"Default comments added to uploaded changeset comment field. Users should "
+"also be encouraged add text describing what they mapped."
+msgstr "Egy alapértelmezett megjegyzés lett megadva a módosításcsomag megjegyzés mezőjében. A felhasználókat ösztönözni kell, hogy írják hozzá, mit térképeztek."
+
+#: osmtm/templates/project.edit.mako:296
+msgid "Example defaults:"
+msgstr "Példa alapértelmezések:"
+
+#: osmtm/templates/project.edit.mako:297
+msgid ""
+"Hashtags are sometimes used for analysis later, but should be human "
+"informative and not overused, #group #event for example."
+msgstr "A hashtagek általában későbbi elemzések céljából használatosak, de emberek számára is értelmesek kell legyenek és nem agyonhasználtak, pl. #csoport, #esemény."
+
+#: osmtm/templates/project.edit.mako:306
+msgid "Detailed Instructions"
+msgstr "Részletes útmutató"
+
+#: osmtm/templates/project.edit.mako:319
+msgid "Per Task Instructions (optional)"
+msgstr "Feladatonkénti utasítások (opcionális)"
+
+#: osmtm/templates/project.edit.mako:325
+msgid ""
+"Put here anything that can be useful to users while taking a task. {x}, {y} "
+"and {z} will be replaced by the corresponding parameters for each task."
+msgstr "Adj meg itt mindent, ami hasznos lehet a felhasználónak a feladat végzése során. {x}, {y} és {z} be lesznek helyettesítve az egyes feladatok megfelelő paramétereivel."
+
+#: osmtm/templates/project.edit.mako:326
+msgid "For example:"
+msgstr "Például:"
+
+#: osmtm/templates/project.edit.mako:326
+msgid ""
+"This task involves loading extra data. Click "
+"[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
+" to load the data into JOSM"
+msgstr "Ez a feladat további adatok betöltésével jár. Kattints [ide](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm), hogy az adatok betöltődjenek a JOSM szerkesztőbe"
+
+#: osmtm/templates/project.edit.mako:328
+msgid ""
+"Put here anything that can be useful to users while taking a task. If you "
+"have added extra properties within the GeoJSON of the task, they can be "
+"referenced by surrounding them in curly braces. For eg. if you have a "
+"property called \"import_url\" in your GeoJSON, you can reference it like:"
+msgstr "Írj ide mindent, ami hasznos lehet a felhasználónak egy feladat elvégzéséhez. Ha a GeoJSON fájlban extra tulajdonságok voltak, hivatkozhatsz rájuk a tulajdonság nevét kapcsos zárójelbe rakva. Pl. ha van egy „import_url” tulajdonságod a GeoJSON-ben, így hivatkozhatsz rá:"
+
+#: osmtm/templates/project.edit.mako:328
+msgid ""
+"This task involves loading extra data. Click "
+"[here](http://localhost:8111/import?new_layer=true&url={import_url}) to load"
+" the data into JOSM"
+msgstr "Ez a feladat további adatok betöltésével jár. Kattints [ide](http://localhost:8111/import?new_layer=true&url={import_url}), hogy az adatok betöltődjenek a JOSM szerkesztőbe"
+
+#: osmtm/templates/project.edit.mako:340
+msgid "Area modifications are not available yet."
+msgstr "Területmódosítás most nem elérhető."
+
+#: osmtm/templates/project.edit.mako:352
+msgid "${count} priority area"
+msgid_plural "${count} priority areas"
+msgstr[0] "${count} prioritásos terület"
+msgstr[1] "${count} prioritásos terület"
+
+#: osmtm/templates/project.edit.mako:355
+msgid ""
+"If you want mappers to work on the highest priority areas first, draw one or"
+" more polygons within the project area."
+msgstr "Ha szeretnéd, hogy a térképezők először a magas prioritású területeken dolgozzanak,  rajzolj egy vagy több poligont a projekt területén belülre."
+
+#: osmtm/templates/project.edit.mako:372
+msgid "URL to service"
+msgstr "A szolgáltatás URL-je"
+
+#: osmtm/templates/project.edit.mako:375
+msgid "Note:"
+msgstr "Megjegyzés:"
+
+#: osmtm/templates/project.edit.mako:375
+msgid ""
+"Follow this format for TMS urls.<br>tms[22]:http://hiu-"
+"maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+msgstr "TMS URL-ekhez köved ezt a formátumot.<br>tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+
+#: osmtm/templates/project.edit.mako:381
+msgid "Required License"
+msgstr "Szükséges licenc"
+
+#: osmtm/templates/project.edit.mako:407
+msgid "Private"
+msgstr "Privát"
+
+#: osmtm/templates/project.edit.mako:410
+msgid ""
+"Private means that only a given list of users can access this project. In "
+"order for the user's name to be available to add to the Allowed Users - they"
+" first must visit the URL for your instance of OSMTM and Authorize access to"
+" their OpenStreetMap account. After they've done this, their username should"
+" be available for the administrator to add."
+msgstr "A privát projekteket csak a megadott felhasználók érhetik el. Ahhoz, hogy a felhasználók hozzáadhatóvá váljanak az Engedélyezett felhasználókhoz - először el kell látogassanak a te OSMTM-edre és engedélyezniük kell a hozzáférést az OpenStreetMap fiókjukhoz. Miután ezt megtették, a felhasználónevük elérhető lesz az adminisztrátorok számára."
+
+#: osmtm/templates/project.edit.mako:415
+msgid "Allowed users"
+msgstr "Engedélyezett felhasználók"
+
+#: osmtm/templates/project.edit.mako:438
+msgid "Type a username"
+msgstr "Adj meg egy felhasználónevet"
+
+#: osmtm/templates/project.edit.mako:441
+msgid "Add user"
+msgstr "Felhasználó hozzáadása"
+
+#: osmtm/templates/project.edit.mako:459
+msgid "Project due date"
+msgstr "Projekt lejárati idő"
+
+#: osmtm/templates/project.edit.mako:467
+msgid "The date after which the project will automatically be archived."
+msgstr "A dátum, ami után a projekt automatikusan archiválódik."
+
+#: osmtm/templates/project.edit.mako:473
+msgid "JOSM Preset"
+msgstr "JOSM Címkekészlet"
+
+#: osmtm/templates/project.edit.mako:478
+msgid "A JOSM Preset has already been added to this project."
+msgstr "A projekthez JOSM Címkekészlet is tartozik."
+
+#: osmtm/templates/project.edit.mako:484
+msgid "Invalidation"
+msgstr "Érvénytelenítés"
+
+#: osmtm/templates/project.edit.mako:487
+msgid "Invalidate All Tasks"
+msgstr "Minden feladat érvénytelenítése"
+
+#: osmtm/templates/project.edit.mako:491
+msgid ""
+"Click this button if project instructions have changed, or if for some "
+"reason you need to invalidate all done tasks in a single step."
+msgstr "Kattint a gombra, ha a projekt utasításai megváltoztak, vagy valami okból egyszerre kell érvénytelenítened az összes feladatot."
+
+#: osmtm/templates/project.edit.mako:495
+msgid "WARNING: This cannot be undone."
+msgstr "FIGYELMEZTETÉS: Ez nem vonható vissza."
+
+#: osmtm/templates/project.edit.mako:513
+msgid "Tip:"
+msgstr "Tipp:"
+
+#: osmtm/templates/project.edit.mako:514
+msgid "You can use <a href class=\"markdown\">Markdown</a>. (HTML is not allowed)"
+msgstr "Használhatsz <a href class=\"markdown\">Markdown</a> nyelvet. (A HTML nem engedélyezett)"
+
+#: osmtm/templates/project.edit.mako:530
+msgid "Preview"
+msgstr "Előnézet"
+
+#: osmtm/templates/project.instructions.mako:12
+msgid "The list of elements we ask you to map"
+msgstr "Azon objektumok listája, amiknek a térképezésére kérünk téged"
+
+#: osmtm/templates/project.instructions.mako:24
+msgid ""
+"The default comment entered when uploading data to the OSM database. Please "
+"add to the default comment a description of what you actually mapped."
+msgstr "Az alapértelmezett megjegyzés az OSM adatbázisba feltöltésnél. Kérlek, adj az alapéretelmezett megjegyzéshez egy leírást arról, hogy mit térképeztél."
+
+#: osmtm/templates/project.instructions.mako:31
+msgid ""
+"When saving your work, please leave the default comment but add what you "
+"actually mapped, for example \"added buildings and a residential road\"."
+msgstr "Amikor elmented a munkádat, kérlek hagyd meg az alapértelmezett megjegyzést, de írd hozzá, mit térképeztél. Pl „épületek és lakóutak felrajzolva”."
+
+#: osmtm/templates/project.instructions.mako:46
+msgid "preset"
+msgstr "címkekészletet"
+
+#: osmtm/templates/project.instructions.mako:47
+msgid "Using JOSM? Please use the dedicated ${preset_link}."
+msgstr "JOSM-mel dolgozol? Kérlek, használd az ajánlott ${preset_link}."
+
+#: osmtm/templates/project.instructions.mako:58
+msgid "Start contributing"
+msgstr "Közreműködés megkezdése"
+
+#: osmtm/templates/project.mako:17
+msgid "Export"
+msgstr "Exportálás"
+
+#: osmtm/templates/project.mako:51
+msgid "Contribute"
+msgstr "Közreműködés"
+
+#: osmtm/templates/project.mako:52
+msgid "Activity"
+msgstr "Aktivitás"
+
+#: osmtm/templates/project.mako:53
+msgid "Stats"
+msgstr "Statisztikák"
+
+#: osmtm/templates/project.mako:65
+msgid "Loading"
+msgstr "Betöltés"
+
+#: osmtm/templates/project.mako:105
+msgid "Task doesn't exist."
+msgstr "Nincs ilyen feladat."
+
+#: osmtm/templates/project.mako:106
+msgid "an error occured"
+msgstr "hiba történt"
+
+#: osmtm/templates/project.mako:107
+msgid ""
+"JOSM remote control did not respond. Do you have JOSM running and configured"
+" to be controlled remotely?"
+msgstr "A JOSM távirányító nem válaszol. Fut a JOSM és engedélyezve van benne a távirányítás?"
+
+#: osmtm/templates/project.mako:109
+msgid "Something wrong happened"
+msgstr "Valami baj történt"
+
+#: osmtm/templates/project.mako:110
+msgid "Please login first"
+msgstr "Előbb kérlek jelentkezz be"
+
+#: osmtm/templates/project.mako:113 osmtm/templates/project.new.mako:34
+msgid "Map data © ${osm_link} contributors"
+msgstr "Térképadatok © ${osm_link} közreműködők"
+
+#: osmtm/templates/project.mako:116
+msgid "Cur. worked on "
+msgstr "Dolgoznak rajta"
+
+#: osmtm/templates/project.mako:117
+msgid "Ready"
+msgstr "Kész"
+
+#: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:52
+#: osmtm/templates/task.status.mako:12
+msgid "Invalidated"
+msgstr "Érvénytelenített"
+
+#: osmtm/templates/project.mako:117 osmtm/templates/project.stats.mako:6
+#: osmtm/templates/task.status.mako:10
+msgid "Done"
+msgstr "Kész"
+
+#: osmtm/templates/project.mako:117 osmtm/templates/task.history.mako:54
+#: osmtm/templates/task.status.mako:14
+msgid "Validated"
+msgstr "Érvényesített"
+
+#: osmtm/templates/project.mako:119
+msgid "You must leave a comment."
+msgstr "Hagyj megjegyzést!"
+
+#: osmtm/templates/project.mako:120
+msgid "High priority"
+msgstr "Magas prioritás"
+
+#: osmtm/templates/project.new.mako:4
+msgid "Project New"
+msgstr "Új projekt"
+
+#: osmtm/templates/project.new.mako:28
+msgid "Draw the area of interest"
+msgstr "Rajzold meg az érintett területet"
+
+#: osmtm/templates/project.new.mako:29
+msgid "Dropped file could not be loaded"
+msgstr "Az ide dobott fájl nem lehet betölteni"
+
+#: osmtm/templates/project.new.mako:30
+msgid "Dropped file was unreadable"
+msgstr "Az ide dobott fájl nem olvasható"
+
+#: osmtm/templates/project.new.mako:31
+msgid "Please provide a .geojson, .kml, or zipped .shp file"
+msgstr "Kérlek adj egy .geojson, .kml, vagy tömörített .shp fájlt"
+
+#: osmtm/templates/project.new.mako:45 osmtm/templates/project.new.mako:85
+#: osmtm/templates/project.new.mako:134 osmtm/templates/project.new.mako:177
+msgid "Step ${number}"
+msgstr "${number}. lépés"
+
+#: osmtm/templates/project.new.mako:50
+msgid "Draw"
+msgstr "Rajzold meg"
+
+#: osmtm/templates/project.new.mako:51
+msgid "${draw_link} the area of interest on the map."
+msgstr "${draw_link} az érintett területet a térképen."
+
+#: osmtm/templates/project.new.mako:56 osmtm/templates/task.empty.mako:21
+msgid "or"
+msgstr "vagy"
+
+#: osmtm/templates/project.new.mako:63
+msgid "Provide a .geojson, .kml, or zipped .shp file."
+msgstr "Adj egy .geojson, .kml, vagy tömörített .shp fájlt."
+
+#: osmtm/templates/project.new.mako:63
+msgid "Import"
+msgstr "Importálj"
+
+#: osmtm/templates/project.new.mako:64
+msgid ""
+"${import_link} a <em>GeoJSON</em>, <em>KML</em>, or <em>zipped SHP</em> "
+"file."
+msgstr "${import_link} egy <em>GeoJSON</em>, <em>KML</em>, vagy <em>tömörített SHP</em> fájlt."
+
+#: osmtm/templates/project.new.mako:69
+msgid "Want to use an <em>.osm</em> file instead?"
+msgstr "Szeretnél inkább egy <em>.osm</em> fájlt használni?"
+
+#: osmtm/templates/project.new.mako:72
+msgid "You can use ${geojson_link} to convert it to <em>GeoJSON</em>."
+msgstr "A <em>GeoJSON</em>-be konvertáláshoz használhatod a ${geojson_link}  szolgáltatást."
+
+#: osmtm/templates/project.new.mako:86
+msgid "${step_number}  - Type of project"
+msgstr "${step_number}  - Projekt típusa"
+
+#: osmtm/templates/project.new.mako:93
+msgid "Square Grid"
+msgstr "Négyzetrács"
+
+#: osmtm/templates/project.new.mako:97
+msgid ""
+"Area of interest is automatically split into grid cells. Each one is a task."
+msgstr "Az érintett terület automatikusan fel lett osztva cellákká. Mindegyik egy feladat."
+
+#: osmtm/templates/project.new.mako:104
+msgid "You cannot select this option unless you import a file with polygons."
+msgstr "Nem választhatod ezt a lehetőséget, ha nem importálsz poligonokat tartalmazó fájlt."
+
+#: osmtm/templates/project.new.mako:107
+msgid "Arbitrary Geometries"
+msgstr "Tetszőleges geometriák"
+
+#: osmtm/templates/project.new.mako:111
+msgid "Each polygon represents a task."
+msgstr "Minden sokszög egy feladatot ábrázol."
+
+#: osmtm/templates/project.new.mako:120 osmtm/templates/project.new.mako:157
+#: osmtm/templates/project.new.mako:187
+msgid "Back"
+msgstr "Előző"
+
+#: osmtm/templates/project.new.mako:122
+msgid "Next"
+msgstr "Következő"
+
+#: osmtm/templates/project.new.mako:138
+msgid "Tile size"
+msgstr "Csempeméret"
+
+#: osmtm/templates/project.new.mako:146
+msgid "Computing..."
+msgstr "Számítás…"
+
+#: osmtm/templates/project.new.mako:150 osmtm/templates/project.new.mako:181
+msgid "A new project will be created with ${number} tasks."
+msgstr "Egy új projekt lesz létrehozva ${number} feladattal."
+
+#: osmtm/templates/project.new.mako:159 osmtm/templates/project.new.mako:189
+msgid "Create project"
+msgstr "Projekt létrehozása"
+
+#: osmtm/templates/project.new.mako:165
+msgid "Creating tiles, please wait..."
+msgstr "Csempék létrehozása, kérlek várj…"
+
+#: osmtm/templates/project.new.mako:194
+msgid "Creating project, please wait..."
+msgstr "Projekt létrehozása, kérlek várj…"
+
+#: osmtm/templates/project.stats.mako:5
+msgid "Contributors"
+msgstr "Közreműködők"
+
+#: osmtm/templates/project.stats.mako:7
+msgid "Assigned"
+msgstr "Kiosztva"
+
+#: osmtm/templates/start.mako:4
+msgid "OSM Tasking Manager"
+msgstr "OSM Tasking Manager"
+
+#: osmtm/templates/start.mako:13
+msgid "Welcome, new user!"
+msgstr "Üdvözlünk, új felhasználó!"
+
+#: osmtm/templates/start.mako:17
+msgid "You're ready to use the Tasking Manager."
+msgstr "Készen állsz a Tasking Manager használatára."
+
+#: osmtm/templates/start.mako:17
+msgid "Since you are the first user you'll be given admin rights."
+msgstr "Mivel te vagy az első felhasználó, adminisztrátori jogosultságot kapsz."
+
+#: osmtm/templates/start.mako:20
+msgid "Please login"
+msgstr "Kérlek, jelentkezz be"
+
+#: osmtm/templates/task.assigned.mako:18
+msgid "Assign task to someone"
+msgstr "Feladat hozzárendelése valakihez"
+
+#: osmtm/templates/task.assigned.mako:25
+msgid "Filter users"
+msgstr "Felhasználók szűrése"
+
+#: osmtm/templates/task.assigned.mako:42 osmtm/templates/task.locked.mako:2
+msgid "you"
+msgstr "te"
+
+#: osmtm/templates/task.assigned.mako:44
+msgid "Assigned to ${username}"
+msgstr "${username} felhasználóhoz rendelve"
+
+#: osmtm/templates/task.assigned.mako:48
+msgid "Not assigned yet"
+msgstr "Még nincs kiosztva"
+
+#: osmtm/templates/task.comment.mako:2 osmtm/templates/task.freecomment.mako:4
+msgid "Leave a comment"
+msgstr "Hagyj megjegyzést!"
+
+#: osmtm/templates/task.current_locked.mako:2
+msgid "a task"
+msgstr "egy feladatot"
+
+#: osmtm/templates/task.current_locked.mako:3
+msgid "You already have ${task_link} locked."
+msgstr "Már zároltál ${task_link}"
+
+#: osmtm/templates/task.current_locked.mako:10
+msgid "Select it again"
+msgstr "Válaszd ki újra"
+
+#: osmtm/templates/task.difficulty.mako:7
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Hard"
+msgstr "Nehéz"
+
+#: osmtm/templates/task.difficulty.mako:8
+msgid "Difficulty: hard<br>Level: advanced"
+msgstr "Nehézség: nehéz<br>Szint: tapasztat"
+
+#: osmtm/templates/task.difficulty.mako:11
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Medium"
+msgstr "Közepes"
+
+#: osmtm/templates/task.difficulty.mako:12
+msgid "Difficulty: medium<br>Level: intermediate"
+msgstr "Nehézség: közepes<br>Szint: haladó"
+
+#: osmtm/templates/task.difficulty.mako:15
+#: osmtm/templates/task.difficulty.mako:50
+msgid "Easy"
+msgstr "Könnyű"
+
+#: osmtm/templates/task.difficulty.mako:16
+msgid "Difficulty: easy<br>Level: beginner"
+msgstr "Nehézség: könnyű<br>Szint: kezdő"
+
+#: osmtm/templates/task.difficulty.mako:19
+msgid "Difficulty"
+msgstr "Nehézség"
+
+#: osmtm/templates/task.difficulty.mako:20
+msgid "No difficulty set yet"
+msgstr "Még nincs nehézség beállítva"
+
+#: osmtm/templates/task.difficulty.mako:46
+msgid "Unknown difficulty"
+msgstr "Ismeretlen nehézség"
+
+#: osmtm/templates/task.editors.mako:8
+msgid "Edit with"
+msgstr "Szerkesztés ezzel"
+
+#: osmtm/templates/task.editors.mako:25
+msgid ".gpx file"
+msgstr ".gpx fájlt"
+
+#: osmtm/templates/task.editors.mako:30
+msgid ""
+"Tip: Download the following ${task_gpx_link} and load it in JOSM in order to"
+" see the current task boundary"
+msgstr "Tipp: Töltsd le ezt a ${task_gpx_link}, majd nyisd meg JOSM-ben, hogy lásd a terület határát"
+
+#: osmtm/templates/task.empty.mako:15
+msgid "Select a task on the map"
+msgstr "Feladat kiválasztása a térképen"
+
+#: osmtm/templates/task.empty.mako:27
+msgid "Take a task at random"
+msgstr "Feladat választása találomra"
+
+#: osmtm/templates/task.freecomment.mako:7
+msgid "Comment"
+msgstr "Megjegyzés"
+
+#: osmtm/templates/task.history.mako:38
+msgid "${user} marked ${tasklink} as <b>done</b>"
+msgstr "${tasklink} feladatot ${user} <b>késznek</b> jelölte"
+
+#: osmtm/templates/task.history.mako:41
+msgid "${user} <b>invalidated</b> ${tasklink}"
+msgstr "${tasklink} feladatot ${user} <b>érvénytelenítette</b>"
+
+#: osmtm/templates/task.history.mako:44
+msgid "${user} <b>validated</b> ${tasklink}"
+msgstr "${tasklink} feladatot ${user} <b>érvényesítette</b>"
+
+#: osmtm/templates/task.history.mako:50
+msgid "Marked as done"
+msgstr "Késznek jelölte:"
+
+#: osmtm/templates/task.history.mako:50 osmtm/templates/task.history.mako:52
+#: osmtm/templates/task.history.mako:54 osmtm/templates/task.history.mako:60
+#: osmtm/templates/task.history.mako:65
+msgid "by"
+msgstr " -"
+
+#: osmtm/templates/task.history.mako:56
+msgid "<b>Split</b> by ${link}"
+msgstr "<b>Felosztotta:</b> ${link}"
+
+#: osmtm/templates/task.history.mako:60 osmtm/templates/task.status.mako:6
+msgid "Locked"
+msgstr "Zárolva"
+
+#: osmtm/templates/task.history.mako:62
+msgid "Unlocked"
+msgstr "Feloldva"
+
+#: osmtm/templates/task.history.mako:65
+msgid "Comment left"
+msgstr "Megjegyzést hagyott:"
+
+#: osmtm/templates/task.history.mako:79
+msgid "Nothing has happened yet."
+msgstr "Még nem történt semmi."
+
+#: osmtm/templates/task.instructions.mako:3
+msgid "Extra Instructions"
+msgstr "További utasítások"
+
+#: osmtm/templates/task.locked.mako:4
+msgid "Locked by ${username}"
+msgstr "Zárolta: ${username}"
+
+#: osmtm/templates/task.locked.mako:14
+#: osmtm/templates/task.state.ready.mako:15
+msgid "Stop mapping"
+msgstr "Térképezés abbahagyása"
+
+#: osmtm/templates/task.locked.mako:16
+msgid ""
+"If you do not complete or release this task in time, it will be "
+"automatically unlocked"
+msgstr "Ha nem fejezed be, vagy oldod fel a feladatot időben, a zárolás automatikusan feloldódik"
+
+#: osmtm/templates/task.locked.mako:18
+msgid "min. left"
+msgstr "perc van hátra"
+
+#: osmtm/templates/task.mako:19
+msgid "Clear selection"
+msgstr "Kiválasztás törlése"
+
+#: osmtm/templates/task.mako:23
+msgid "Task #${number}"
+msgstr "#${number} feladat"
+
+#: osmtm/templates/task.mako:68
+msgid "See the changesets in the OSM database for this area."
+msgstr "A terület módosításcsomagjainak megtekintése az OSM adatbázisban."
+
+#: osmtm/templates/task.mako:69
+msgid "OSM changesets"
+msgstr "OSM módosításcsomagok"
+
+#: osmtm/templates/task.mako:112
+msgid "See the changes in this area using overpass turbo."
+msgstr "A terület változtatásainak megtekintése overpass turbo segítségével."
+
+#: osmtm/templates/task.mako:112
+msgid "overpass turbo"
+msgstr "overpass turbo"
+
+#: osmtm/templates/task.split.mako:3
+msgid "Task is too big?"
+msgstr "Túl nagy a feladat?"
+
+#: osmtm/templates/task.split.mako:9
+msgid "You cannot split this task more."
+msgstr "Nem oszthatod a feladatot kisebb részekre."
+
+#: osmtm/templates/task.split.mako:13
+msgid "Are you sure you want to split this task?"
+msgstr "Biztosan kisebb részekre osztod a feladatot?"
+
+#: osmtm/templates/task.split.mako:15
+msgid "Split"
+msgstr "Felosztás"
+
+#: osmtm/templates/task.state.done.mako:4
+msgid "Invalidate this task if you consider it needs more work."
+msgstr "Érvénytelenítsd a feladatot, ha úgy ítéled meg, hogy további munkát igényel."
+
+#: osmtm/templates/task.state.done.mako:12
+msgid "Unlock"
+msgstr "Feloldás"
+
+#: osmtm/templates/task.state.done.mako:18
+msgid "Invalidate"
+msgstr "Érvénytelenítés"
+
+#: osmtm/templates/task.state.done.mako:22
+msgid "Validate this task if you consider that the work is complete."
+msgstr "Érvényesítsd a feladatot, ha a munkát késznek ítéled meg."
+
+#: osmtm/templates/task.state.done.mako:27
+msgid "You cannot validate a task that you have personally marked as done."
+msgstr "Te nem érvényesítheted a feladatot, mert te jelölted késznek."
+
+#: osmtm/templates/task.state.done.mako:43
+msgid "Validate"
+msgstr "Érvényesítés"
+
+#: osmtm/templates/task.state.ready.mako:4
+msgid ""
+"Stop working on this task and unlock it. You may resume work on it again "
+"later."
+msgstr "Munka befejezése a feladaton és zárolás feloldása. Később bármikor folytathatod rajta a munkát."
+
+#: osmtm/templates/task.state.ready.mako:5
+msgid "Submit for review when all instructions are completed."
+msgstr "Beküldés átnézésre, ha minden utasítást végrehajtottál."
+
+#: osmtm/templates/task.state.ready.mako:22
+msgid "Mark task as done"
+msgstr "Feladat késznek jelölése"
+
+#: osmtm/templates/task.unlocked.mako:13
+msgid "Lock this task to tell others that you are currently working on it."
+msgstr "Zárold a feladatot, jelezve másoknak, hogy épp dolgozol rajta."
+
+#: osmtm/templates/task.unlocked.mako:17
+msgid "Start mapping"
+msgstr "Térképezés megkezdése"
+
+#: osmtm/templates/task.unlocked.mako:21
+msgid ""
+"Lock this task to tell others that you are currently reviewing it. Validate "
+"that this task has been mapped correctly and completely."
+msgstr "Zárold a feladatot, jelezve másoknak, hogy épp átnézed. Ellenőrizd, hogy a feladat helyesen és teljesen lett feltérképezve."
+
+#: osmtm/templates/task.unlocked.mako:26
+msgid "Review the work"
+msgstr "A munka átnézése"
+
+#: osmtm/templates/user.mako:3 osmtm/templates/user.mako:5
+msgid "User profile"
+msgstr "Felhasználói fiók"
+
+#: osmtm/templates/user.mako:20
+msgid "User: ${username}"
+msgstr "Felhasználó: ${username}"
+
+#: osmtm/templates/user.mako:24
+msgid "This is <b>You</b>!"
+msgstr "Ez <b>te</b> vagy!"
+
+#: osmtm/templates/user.mako:28
+msgid "OSM User Profile"
+msgstr "OSM felhasználói profil"
+
+#: osmtm/templates/user.mako:29
+msgid "OSM Profile"
+msgstr "OSM profil"
+
+#: osmtm/templates/user.mako:35
+msgid "This user joined OSM "
+msgstr "Ez a felhasználó csatlakozott az OSM-hez"
+
+#: osmtm/templates/user.mako:43
+msgid "OSM User Changeset History"
+msgstr "OSM felhasználói módosításcsomag előzmények"
+
+#: osmtm/templates/user.mako:44
+msgid "OSM Edit History"
+msgstr "OSM szerkesztési előzmények"
+
+#: osmtm/templates/user.mako:50
+msgid "This user has submitted ${changes} total changeset."
+msgid_plural "This user has submitted ${changes} total changesets."
+msgstr[0] "Ez a felhasználó összesen ${changes} módosításcsomagot küldött be."
+msgstr[1] "Ez a felhasználó összesen ${changes} módosításcsomagot küldött be."
+
+#: osmtm/templates/user.mako:60
+msgid "This user is an administrator."
+msgstr "Ez a felhasználó adminisztrátor."
+
+#: osmtm/templates/user.mako:62 osmtm/templates/user.mako:78
+msgid "Remove privileges"
+msgstr "Jogosultságok megvonása."
+
+#: osmtm/templates/user.mako:67
+msgid "Set as administrator"
+msgstr "Kinevezés adminisztrátornak"
+
+#: osmtm/templates/user.mako:76
+msgid "This user is a project manager."
+msgstr "Ez a felhasználó projektmenedzser."
+
+#: osmtm/templates/user.mako:83
+msgid "Set as project manager"
+msgstr "Kinevezés projektmenedzsernek"
+
+#: osmtm/templates/user.mako:94
+msgid "This user contributed to the following projects:"
+msgstr "Ez a felhasználó a következő projektekben működött közre:"
+
+#: osmtm/templates/user.mako:99
+msgid "Project Details"
+msgstr "Projekt részletei"
+
+#: osmtm/templates/user.mako:102
+msgid "${count} tile"
+msgid_plural "${count} tiles"
+msgstr[0] "${count} csempe"
+msgstr[1] "${count} csempe"
+
+#: osmtm/templates/user.mako:108
+msgid "User hasn't contributed yet."
+msgstr "A felhasználó még nem járult hozzá."
+
+#: osmtm/templates/user.messages.mako:14
+msgid "From"
+msgstr "Feladó"
+
+#: osmtm/templates/user_menu.mako:9
+msgid "Your page"
+msgstr "A te oldalad"
+
+#: osmtm/templates/user_menu.mako:15
+msgid "logout"
+msgstr "kilépés"
+
+#: osmtm/templates/user_menu.mako:18
+msgid "Users list"
+msgstr "Felhasználólista"
+
+#: osmtm/templates/user_menu.mako:22
+msgid "Manage licenses"
+msgstr "Licencek kezelése"
+
+#: osmtm/templates/user_menu.mako:27
+msgid "Create a new project"
+msgstr "Új projekt létrehozása"
+
+#: osmtm/templates/users.mako:3 osmtm/templates/users.mako:5
+#: osmtm/templates/users.mako:30
+msgid "Users"
+msgstr "Felhasználók"
+
+#: osmtm/templates/users.mako:31
+msgid "Keys:"
+msgstr "Kulcsok:"
+
+#: osmtm/templates/users.mako:33
+msgid "Administrator"
+msgstr "Adminisztrátor"
+
+#: osmtm/templates/users.mako:34
+msgid "Project Manager"
+msgstr "Projektmenedzser"
+
+#: osmtm/views/license.py:58
+msgid "License doesn't exist!"
+msgstr "A licenc nem létezik!"
+
+#: osmtm/views/license.py:62
+msgid "License removed!"
+msgstr "A licenc eltávolítva!"
+
+#: osmtm/views/license.py:84
+msgid "License created!"
+msgstr "A licenc létrehozva!"
+
+#: osmtm/views/license.py:86
+msgid "License updated!"
+msgstr "A licenc frissítve!"
+
+#: osmtm/views/project.py:74
+msgid "Sorry, this project doesn't  exist"
+msgstr "Ez a projekt sajnos nem létezik"
+
+#: osmtm/views/project.py:142 osmtm/views/project.py:187
+msgid "Untitled project"
+msgstr "Névtelen projekt"
+
+#: osmtm/views/project.py:165
+msgid "Project #${project_id} created successfully"
+msgstr "A(z) #${project_id} projekt sikeresen létrejött"
+
+#: osmtm/views/project.py:171 osmtm/views/project.py:200
+#, python-format
+msgid "Sorry, could not create the project. <br />%s"
+msgstr "Sajnálom, nem hozható létre a projekt. <br />%s"
+
+#: osmtm/views/project.py:192
+msgid "Successfully imported ${n} geometry"
+msgid_plural "Successfully imported ${n} geometries"
+msgstr[0] "${n} geometria sikeresen importálva"
+msgstr[1] "${n} geometria sikeresen importálva"
+
+#: osmtm/views/project.py:512
+msgid "A comment is required."
+msgstr "Megjegyzés szükséges."
+
+#: osmtm/views/project.py:520
+msgid "Please type the project id in the box to confirm"
+msgstr "Gépeld be a dobozba a projekt azonosítóját a megerősítéshez"
+
+#: osmtm/views/project.py:539
+msgid "No done tasks to invalidate."
+msgstr "Nincs elkészült feladat az érvénytelenítéshez."
+
+#: osmtm/views/project.py:541
+#, python-format
+msgid "%d task invalidated"
+msgid_plural "%d tasks invalidated"
+msgstr[0] "%d feladat érvénytelenítve"
+msgstr[1] "%d feladat érvénytelenítve"
+
+#: osmtm/views/project.py:558
+msgid "A subject and message are required."
+msgstr "Tárgy és üzenet megadása kötelező."
+
+#: osmtm/views/project.py:567
+msgid "Project #"
+msgstr "Projekt #"
+
+#: osmtm/views/project.py:577
+msgid "No users to message."
+msgstr "Nincs felhasználó, akinek üzenhetnél."
+
+#: osmtm/views/project.py:579
+msgid "Message sent to ${num} user."
+msgid_plural "Message sent to ${num} users."
+msgstr[0] "Üzenet elküldve ${num} felhasználónak."
+msgstr[1] "Üzenet elküldve ${num} felhasználónak."
+
+#: osmtm/views/task.py:85
+msgid "Cannot update task. Record lock for update."
+msgstr "Nem lehet frissíteni a feladatot. Rögzítsd a zárat a frissítésnél."
+
+#: osmtm/views/task.py:90
+msgid "This task doesn't exist."
+msgstr "Ez a feladat nem létezik."
+
+#: osmtm/views/task.py:98
+msgid "You need to lock the task first."
+msgstr "Először zárolnod kell a feladatot."
+
+#: osmtm/views/task.py:192
+msgid "Task marked as done. Thanks for your contribution"
+msgstr "A feladat késznek jelölve. Köszönjük a közreműködésedet"
+
+#: osmtm/views/task.py:211
+msgid "Task already locked."
+msgstr "Már zárolt feladat."
+
+#: osmtm/views/task.py:217
+msgid "Task assigned to someone else."
+msgstr "Feladat valaki másnak kiosztva."
+
+#: osmtm/views/task.py:222
+msgid "Task locked. You can start mapping."
+msgstr "Feladat zárolva. Elkezdheted a térképezést."
+
+#: osmtm/views/task.py:239
+msgid "Task unlocked."
+msgstr "Feladat feloldva."
+
+#: osmtm/views/task.py:251
+msgid "Comment added."
+msgstr "Hozzászólás hozzáadva."
+
+#: osmtm/views/task.py:288
+msgid "You were mentioned in a comment - Task ${link}"
+msgstr "Megemlítettek egy hozzászólásban - Feladat: ${link}"
+
+#: osmtm/views/task.py:319
+msgid "Task ${link} invalidated"
+msgstr "A ${link} feladat érvénytelenítve"
+
+#: osmtm/views/task.py:334
+msgid "Task validated."
+msgstr "Feladat érvényesítve."
+
+#: osmtm/views/task.py:337
+msgid "Task invalidated."
+msgstr "Feladat érvénytelenítve."
+
+#: osmtm/views/task.py:467
+msgid "Random task... none available! Sorry."
+msgstr "Feladat találomra... hát, az most nincs, sajnos."
+
+#: osmtm/views/task.py:480
+msgid "You cannot assign an already locked task"
+msgstr "Nem oszthatsz ki egy már zárolt feladatot."
+
+#: osmtm/views/task.py:490
+msgid "Task assigned."
+msgstr "Feladat kiosztva."
+
+#: osmtm/views/task.py:504
+msgid "Task assignment removed"
+msgstr "Feladatkiosztás visszavonva."
+
+#: osmtm/views/task.py:536
+msgid "Task difficulty changed."
+msgstr "A feladat nehézsége megváltozott."
+
+#: osmtm/views/task.py:549
+msgid "Task difficulty removed"
+msgstr "A feladat nehézsége eltávolítva"
+
+#: osmtm/views/user.py:78
+msgid "You probably don't want to remove your privileges"
+msgstr "A saját jogosultságaidtól aligha szeretnél megválni"
+
+#: osmtm/views/user.py:109
+msgid "Sorry, this user doesn't  exist"
+msgstr "Ez a felhasználó sajnos nem létezik"
