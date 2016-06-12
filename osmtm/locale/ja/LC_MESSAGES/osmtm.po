@@ -5,15 +5,16 @@
 # Translators:
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016
 # mapconcierge <mapconcierge@gmail.com>, 2015
-# nyampire <nyampire@gmail.com>, 2014-2015
+# Satoshi IIDA <nyampire@gmail.com>, 2014-2015
 # Pierre GIRAUD <pierre.giraud@gmail.com>, 2016
+# Satoshi IIDA <nyampire@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-05-28 13:21+0200\n"
-"PO-Revision-Date: 2016-05-28 12:14+0000\n"
-"Last-Translator: Pierre GIRAUD <pierre.giraud@gmail.com>\n"
+"PO-Revision-Date: 2016-06-03 10:15+0000\n"
+"Last-Translator: Satoshi IIDA <nyampire@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/hotosm/osm-tasking-manager2/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -83,7 +84,7 @@ msgstr "バージョン"
 
 #: osmtm/templates/base.mako:43
 msgid "You have unread messages"
-msgstr ""
+msgstr "未読メッセージあり"
 
 #: osmtm/templates/base.mako:57
 msgid "About"
@@ -130,7 +131,7 @@ msgid ""
 "href=\"http://mapgive.state.gov\">MapGive website</a> which also provides "
 "information on the Tasking Manager and mapping. Once you have read up on how"
 " to map, come back here to help map for people on the ground!"
-msgstr ""
+msgstr "<a target=\"_blank\" href=\"http://www.openstreetmap.org\">OpenStreetMap</a>のサイトを開き、アカウントを作成して、まずは<a target=\"_blank\" href=\"http://learnosm.org/en/coordination/tasking-manager/\">Tasking Manager</a>と<a target=\"_blank\" href=\"http://learnosm.org/en/beginner/id-editor\">iDエディタ</a>のチュートリアルを読んでください。その他、<a target=\"_blank\" href=\"http://mapgive.state.gov\">MapGive website</a>のサイトでも、Tasking Managerとマッピングについての情報が提供されています。読み終わったらまたこの場所に戻ってきて、現地の活動を支えるマッピングを開始しましょう！"
 
 #: osmtm/templates/custom.mako:24
 msgid "Questions About Tasks, Mapping or HOT?"
@@ -234,7 +235,7 @@ msgstr "あなたのプロジェクト"
 
 #: osmtm/templates/home.mako:84
 msgid "Include archived projects"
-msgstr ""
+msgstr "アーカイブ済みプロジェクトも含む"
 
 #: osmtm/templates/home.mako:131
 msgid "${locked} user is currently working on this project"
@@ -414,17 +415,17 @@ msgstr "すべてのタスクを差し戻す"
 #: osmtm/templates/project.edit.mako:82 osmtm/templates/project.edit.mako:109
 #: osmtm/templates/project.edit.mako:502 osmtm/templates/project.edit.mako:506
 msgid "Message all contributors"
-msgstr ""
+msgstr "全参加者へメッセージ"
 
 #: osmtm/templates/project.edit.mako:86
 msgid ""
 "This will send a Tasking Manager message to every contributor of the current"
 " project."
-msgstr ""
+msgstr "本プロジェクトの参加者全員にTasking Managerメッセージを送付します。"
 
 #: osmtm/templates/project.edit.mako:89
 msgid "Please use this feature conservatively."
-msgstr ""
+msgstr "この機能の利用は慎重に行ってください。"
 
 #: osmtm/templates/project.edit.mako:93 osmtm/templates/user.messages.mako:15
 msgid "Subject"
@@ -432,13 +433,13 @@ msgstr "対象"
 
 #: osmtm/templates/project.edit.mako:96
 msgid "Message"
-msgstr ""
+msgstr "メッセージ"
 
 #: osmtm/templates/project.edit.mako:98
 msgid ""
 "This message does not automatically translate, so you may want to include "
 "your own translations."
-msgstr ""
+msgstr "このメッセージは自動翻訳の対象ではありません。そのため、メッセージの翻訳は自身で行ってください。"
 
 #: osmtm/templates/project.edit.mako:135
 msgid "Area"
@@ -554,14 +555,14 @@ msgid ""
 "have added extra properties within the GeoJSON of the task, they can be "
 "referenced by surrounding them in curly braces. For eg. if you have a "
 "property called \"import_url\" in your GeoJSON, you can reference it like:"
-msgstr ""
+msgstr "タスクを実施するにあたって参考となる事柄を記載します。もしタスクのGeoJSONに属性を加えた場合、周辺部のタスクの範囲に影響が発生します。例えば、GeoJSONに \"import_url\" という属性を加えた場合、リファレンスは以下のように行います: "
 
 #: osmtm/templates/project.edit.mako:328
 msgid ""
 "This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url={import_url}) to load"
 " the data into JOSM"
-msgstr ""
+msgstr "このタスクでは追加のデータ読み込みが必要です。[こちら](http://localhost:8111/import?new_layer=true&url={import_url}) をクリックして、JOSMにデータを読み込ませてください。"
 
 #: osmtm/templates/project.edit.mako:340
 msgid "Area modifications are not available yet."
@@ -570,7 +571,7 @@ msgstr "エリア修正はまだ未実装です。"
 #: osmtm/templates/project.edit.mako:352
 msgid "${count} priority area"
 msgid_plural "${count} priority areas"
-msgstr[0] ""
+msgstr[0] "優先中の ${count} エリア"
 
 #: osmtm/templates/project.edit.mako:355
 msgid ""
@@ -790,7 +791,7 @@ msgstr "ドロップされたファイルを読むことができません"
 
 #: osmtm/templates/project.new.mako:31
 msgid "Please provide a .geojson, .kml, or zipped .shp file"
-msgstr ""
+msgstr ".geojson、.kml、あるいは圧縮した .shpファイルを使用してください。"
 
 #: osmtm/templates/project.new.mako:45 osmtm/templates/project.new.mako:85
 #: osmtm/templates/project.new.mako:134 osmtm/templates/project.new.mako:177
@@ -811,7 +812,7 @@ msgstr "or"
 
 #: osmtm/templates/project.new.mako:63
 msgid "Provide a .geojson, .kml, or zipped .shp file."
-msgstr ""
+msgstr ".geojson、.kml、あるいは圧縮した .shpファイルを使用してください。"
 
 #: osmtm/templates/project.new.mako:63
 msgid "Import"
@@ -821,7 +822,7 @@ msgstr "インポート"
 msgid ""
 "${import_link} a <em>GeoJSON</em>, <em>KML</em>, or <em>zipped SHP</em> "
 "file."
-msgstr ""
+msgstr "${import_link}  <em>GeoJSON</em>、<em>KML</em>、<em>圧縮した SHP</em>ファイル。"
 
 #: osmtm/templates/project.new.mako:69
 msgid "Want to use an <em>.osm</em> file instead?"
@@ -1042,7 +1043,7 @@ msgstr "by"
 
 #: osmtm/templates/task.history.mako:56
 msgid "<b>Split</b> by ${link}"
-msgstr ""
+msgstr "${link} で <b>分割</b>"
 
 #: osmtm/templates/task.history.mako:60 osmtm/templates/task.status.mako:6
 msgid "Locked"
@@ -1101,11 +1102,11 @@ msgstr "OSM変更セット"
 
 #: osmtm/templates/task.mako:112
 msgid "See the changes in this area using overpass turbo."
-msgstr ""
+msgstr "overpass turboでこのエリアの変更箇所を確認。"
 
 #: osmtm/templates/task.mako:112
 msgid "overpass turbo"
-msgstr ""
+msgstr "overpass turbo"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -1214,7 +1215,7 @@ msgstr "OSM編集履歴"
 #: osmtm/templates/user.mako:50
 msgid "This user has submitted ${changes} total changeset."
 msgid_plural "This user has submitted ${changes} total changesets."
-msgstr[0] ""
+msgstr[0] "このユーザは合計 ${changes} つの変更セットを実施しています。"
 
 #: osmtm/templates/user.mako:60
 msgid "This user is an administrator."
@@ -1247,7 +1248,7 @@ msgstr "プロジェクトの詳細"
 #: osmtm/templates/user.mako:102
 msgid "${count} tile"
 msgid_plural "${count} tiles"
-msgstr[0] ""
+msgstr[0] "${count} タイル"
 
 #: osmtm/templates/user.mako:108
 msgid "User hasn't contributed yet."
@@ -1330,7 +1331,7 @@ msgstr "プロジェクトの作成ができませんでした。<br />%s"
 #: osmtm/views/project.py:192
 msgid "Successfully imported ${n} geometry"
 msgid_plural "Successfully imported ${n} geometries"
-msgstr[0] ""
+msgstr[0] "${n} つのジオメトリのインポートに成功しました。"
 
 #: osmtm/views/project.py:512
 msgid "A comment is required."
@@ -1348,24 +1349,24 @@ msgstr "差し戻し対象のタスクがありません。"
 #, python-format
 msgid "%d task invalidated"
 msgid_plural "%d tasks invalidated"
-msgstr[0] ""
+msgstr[0] "%d つのタスクが差し戻されました"
 
 #: osmtm/views/project.py:558
 msgid "A subject and message are required."
-msgstr ""
+msgstr "タイトルかメッセージを入力してください"
 
 #: osmtm/views/project.py:567
 msgid "Project #"
-msgstr ""
+msgstr "プロジェクト #"
 
 #: osmtm/views/project.py:577
 msgid "No users to message."
-msgstr ""
+msgstr "メッセージ対象者なし"
 
 #: osmtm/views/project.py:579
 msgid "Message sent to ${num} user."
 msgid_plural "Message sent to ${num} users."
-msgstr[0] ""
+msgstr[0] "${num} ユーザにメッセージを送付しました。"
 
 #: osmtm/views/task.py:85
 msgid "Cannot update task. Record lock for update."

@@ -5,13 +5,14 @@
 # Translators:
 # andersar <anders@anker-rasch.no>, 2015
 # Erik Johannessen <moffedille@gmail.com>, 2016
+# Øystein Bjørndal, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-05-28 13:21+0200\n"
-"PO-Revision-Date: 2016-05-28 12:04+0000\n"
-"Last-Translator: Pierre GIRAUD <pierre.giraud@gmail.com>\n"
+"PO-Revision-Date: 2016-06-10 06:28+0000\n"
+"Last-Translator: Erik Johannessen <moffedille@gmail.com>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/hotosm/osm-tasking-manager2/language/nb/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -114,7 +115,7 @@ msgstr "Denne tilnærmingen hjelper med å distribuere oppgaver til de forskjell
 
 #: osmtm/templates/custom.mako:19
 msgid "New to Mapping?"
-msgstr ""
+msgstr "Ny til kartlegging?"
 
 #: osmtm/templates/custom.mako:21
 msgid ""
@@ -128,7 +129,7 @@ msgid ""
 "href=\"http://mapgive.state.gov\">MapGive website</a> which also provides "
 "information on the Tasking Manager and mapping. Once you have read up on how"
 " to map, come back here to help map for people on the ground!"
-msgstr ""
+msgstr "Bare gå til <a target=\"_blank\" href=\"http://www.openstreetmap.org\">OpenStreetMap</a>, lag deg en konto og besøk LearnOSM veilledningen på <a target=\"_blank\" href=\"http://learnosm.org/en/coordination/tasking-manager/\">Tasking Manager</a> og  <a target=\"_blank\" href=\"http://learnosm.org/en/beginner/id-editor\">iD editor</a>. \nAlternativt, se på <a target=\"_blank\" href=\"http://mapgive.state.gov\">MapGive website</a> som også gir informasjon om Tasking Manager og kartlegging. Når du har lest opp på hvordan man kartlegger, kom tilbake her for å hjelpe folk på bakken!"
 
 #: osmtm/templates/custom.mako:24
 msgid "Questions About Tasks, Mapping or HOT?"
@@ -139,14 +140,14 @@ msgid ""
 "If you have any questions about a project, a task or mapping in general "
 "please ask on our mailing list: <a "
 "href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a>."
-msgstr ""
+msgstr "Har du spørsmål om et prosjekt, en oppgave eller generelt om kartlegging kan du spørre på vår epost-liste: <a href=\"https://lists.openstreetmap.org/listinfo/hot\">HOT E-Mail List</a>."
 
 #: osmtm/templates/custom.mako:29
 msgid ""
 "Or visit us in our IRC Chat Channel, just select #hot from the pop down "
 "channel list: <a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel "
 "#hot</a>."
-msgstr ""
+msgstr "Eller besøk vår IRC kanal, bare velg #hot fra menyen <a href=\"http://irc.openstreetmap.org/\">OSM HOT IRC Channel #hot</a>."
 
 #: osmtm/templates/custom.mako:32
 msgid ""
@@ -168,7 +169,7 @@ msgstr "Lik HOT på"
 
 #: osmtm/templates/custom.mako:121
 msgid "Please donate!"
-msgstr ""
+msgstr "Vennligst doner!"
 
 #: osmtm/templates/helpers.mako:3 osmtm/templates/home.mako:10
 msgid "urgent"
@@ -385,13 +386,13 @@ msgstr "Rediger"
 
 #: osmtm/templates/project.edit.mako:47
 msgid "Are you sure?"
-msgstr ""
+msgstr "Er du sikker?"
 
 #: osmtm/templates/project.edit.mako:51
 msgid ""
 "This will mark all tasks currently marked as 'done' as invalid. Please use "
 "this only if you are sure of what you are doing."
-msgstr ""
+msgstr "Dette vil markere alle oppgavene som er markert som 'ferdig' som ugyldige. Vennligst bruk denne kun hvis du er sikker på at du vet hva du gjør."
 
 #: osmtm/templates/project.edit.mako:54
 msgid ""
@@ -400,7 +401,7 @@ msgstr "Vennligst skriv en kommentar. Den vil bli vist for alle ikke validerte o
 
 #: osmtm/templates/project.edit.mako:57
 msgid "This will be sent as the invalidation comment to users."
-msgstr ""
+msgstr "Dette vil bli sent som en ugyldighets-kommentar til brukerne"
 
 #: osmtm/templates/project.edit.mako:60
 msgid "Please type in the project number id of the repository to confirm."
@@ -408,7 +409,7 @@ msgstr ""
 
 #: osmtm/templates/project.edit.mako:69
 msgid "Invalidate all done tasks"
-msgstr ""
+msgstr "Ugyldigjør alle ferdige oppgaver"
 
 #: osmtm/templates/project.edit.mako:82 osmtm/templates/project.edit.mako:109
 #: osmtm/templates/project.edit.mako:502 osmtm/templates/project.edit.mako:506
@@ -419,11 +420,11 @@ msgstr "Send melding til alle bidragsytere"
 msgid ""
 "This will send a Tasking Manager message to every contributor of the current"
 " project."
-msgstr ""
+msgstr "Dette vil sende en \"Tasking Manager\" beskjed til alle bidragsyterne til prosjektet."
 
 #: osmtm/templates/project.edit.mako:89
 msgid "Please use this feature conservatively."
-msgstr ""
+msgstr "Vennligst bruk denne funksjonene med omhu."
 
 #: osmtm/templates/project.edit.mako:93 osmtm/templates/user.messages.mako:15
 msgid "Subject"
@@ -437,7 +438,7 @@ msgstr "Melding"
 msgid ""
 "This message does not automatically translate, so you may want to include "
 "your own translations."
-msgstr ""
+msgstr "Denne beskjeden blir ikke automatisk oversatt, så du ønsker kanskje å inkludere din egen oversettelse."
 
 #: osmtm/templates/project.edit.mako:135
 msgid "Area"
@@ -545,7 +546,7 @@ msgid ""
 "This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm)"
 " to load the data into JOSM"
-msgstr ""
+msgstr "Denne oppgaven involverer lasting av mer data. Trykk [her](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) for å laste mer data inn i JOSM"
 
 #: osmtm/templates/project.edit.mako:328
 msgid ""
@@ -560,7 +561,7 @@ msgid ""
 "This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url={import_url}) to load"
 " the data into JOSM"
-msgstr ""
+msgstr "Denne oppgaven involverer lasting av ekstra data. Trykk [her](http://localhost:8111/import?new_layer=true&url={import_url}) for å laste data inn i JOSM"
 
 #: osmtm/templates/project.edit.mako:340
 msgid "Area modifications are not available yet."
@@ -569,8 +570,8 @@ msgstr "Endringene i området er ikke tilgjengelige enda."
 #: osmtm/templates/project.edit.mako:352
 msgid "${count} priority area"
 msgid_plural "${count} priority areas"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "${count} prioritert område"
+msgstr[1] "${count} prioriterte områder"
 
 #: osmtm/templates/project.edit.mako:355
 msgid ""
@@ -681,7 +682,7 @@ msgstr ""
 msgid ""
 "When saving your work, please leave the default comment but add what you "
 "actually mapped, for example \"added buildings and a residential road\"."
-msgstr ""
+msgstr "La den opprinnelige kommentaren være når du lagrer arbeidet ditt, men legg til en beskrivelse av hva du kartla. For eksempel: \"added buildings and a residential road\"."
 
 #: osmtm/templates/project.instructions.mako:46
 msgid "preset"
@@ -790,7 +791,7 @@ msgstr "Sluppet fil var ikke lesbar"
 
 #: osmtm/templates/project.new.mako:31
 msgid "Please provide a .geojson, .kml, or zipped .shp file"
-msgstr ""
+msgstr "Vennligst benytt en .geojson, .kml eller zipped .shp fil"
 
 #: osmtm/templates/project.new.mako:45 osmtm/templates/project.new.mako:85
 #: osmtm/templates/project.new.mako:134 osmtm/templates/project.new.mako:177
@@ -811,7 +812,7 @@ msgstr "eller"
 
 #: osmtm/templates/project.new.mako:63
 msgid "Provide a .geojson, .kml, or zipped .shp file."
-msgstr ""
+msgstr "Last inn en .geojson, .kml eller zipped .shp fil."
 
 #: osmtm/templates/project.new.mako:63
 msgid "Import"
@@ -821,7 +822,7 @@ msgstr "Importer"
 msgid ""
 "${import_link} a <em>GeoJSON</em>, <em>KML</em>, or <em>zipped SHP</em> "
 "file."
-msgstr ""
+msgstr "${import_link} en <em>GeoJSON</em>, <em>KML</em> eller <em>zipped SHP</em> fil."
 
 #: osmtm/templates/project.new.mako:69
 msgid "Want to use an <em>.osm</em> file instead?"
@@ -1071,7 +1072,7 @@ msgstr "Låst av ${username}"
 #: osmtm/templates/task.locked.mako:14
 #: osmtm/templates/task.state.ready.mako:15
 msgid "Stop mapping"
-msgstr ""
+msgstr "Stopp kartlegging"
 
 #: osmtm/templates/task.locked.mako:16
 msgid ""
@@ -1101,11 +1102,11 @@ msgstr "OSM changesets"
 
 #: osmtm/templates/task.mako:112
 msgid "See the changes in this area using overpass turbo."
-msgstr ""
+msgstr "Se endringene i dette området med overpass turbo."
 
 #: osmtm/templates/task.mako:112
 msgid "overpass turbo"
-msgstr ""
+msgstr "overpass turbo"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -1214,8 +1215,8 @@ msgstr "OSM redigeringshistorie"
 #: osmtm/templates/user.mako:50
 msgid "This user has submitted ${changes} total changeset."
 msgid_plural "This user has submitted ${changes} total changesets."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Denne brukeren har levert inn totalt ${changes} changeset."
+msgstr[1] "Denne brukeren har levert inn totalt ${changes} antall changesets."
 
 #: osmtm/templates/user.mako:60
 msgid "This user is an administrator."
@@ -1248,8 +1249,8 @@ msgstr "Prosjektdetaljer"
 #: osmtm/templates/user.mako:102
 msgid "${count} tile"
 msgid_plural "${count} tiles"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "${count} rute"
+msgstr[1] "${count} ruter"
 
 #: osmtm/templates/user.mako:108
 msgid "User hasn't contributed yet."
@@ -1332,8 +1333,8 @@ msgstr "Beklager, kunne ikke opprette prosjektet. <br />%s"
 #: osmtm/views/project.py:192
 msgid "Successfully imported ${n} geometry"
 msgid_plural "Successfully imported ${n} geometries"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Import av ${n} geometri var vellykket"
+msgstr[1] "Import av ${n} geometrier var vellykket"
 
 #: osmtm/views/project.py:512
 msgid "A comment is required."
@@ -1364,13 +1365,13 @@ msgstr "Prosjekt #"
 
 #: osmtm/views/project.py:577
 msgid "No users to message."
-msgstr ""
+msgstr "Ingen brukere å sende melding til."
 
 #: osmtm/views/project.py:579
 msgid "Message sent to ${num} user."
 msgid_plural "Message sent to ${num} users."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Melding sendt til ${num} bruker."
+msgstr[1] "Melding sendt til ${num} brukere."
 
 #: osmtm/views/task.py:85
 msgid "Cannot update task. Record lock for update."
