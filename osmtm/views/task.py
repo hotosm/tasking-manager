@@ -142,9 +142,11 @@ def task_xhr(request):
     states = DBSession.query(TaskState).filter(filter) \
         .order_by(TaskState.date).all()
 
-    filter = and_(TaskLock.task_id.in_(ancestors),
-                  TaskLock.project_id == project_id,
-                  TaskLock.lock is not None)
+    filter = and_(
+        TaskLock.task_id.in_(ancestors),
+        TaskLock.project_id == project_id,
+        TaskLock.lock != None  # noqa
+    )
     locks = DBSession.query(TaskLock).filter(filter) \
         .order_by(TaskLock.date).all()
 

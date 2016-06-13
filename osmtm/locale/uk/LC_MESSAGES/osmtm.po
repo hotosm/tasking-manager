@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the osmtm project.
 # 
 # Translators:
-# andygol, 2014-2015
+# andygol, 2014-2016
 # Eduard, 2015
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016
 # Pierre GIRAUD <pierre.giraud@gmail.com>, 2016
@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-05-28 13:21+0200\n"
-"PO-Revision-Date: 2016-05-28 12:15+0000\n"
-"Last-Translator: Pierre GIRAUD <pierre.giraud@gmail.com>\n"
+"PO-Revision-Date: 2016-05-31 12:41+0000\n"
+"Last-Translator: andygol\n"
 "Language-Team: Ukrainian (http://www.transifex.com/hotosm/osm-tasking-manager2/language/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,7 +29,7 @@ msgstr "Про Менеджер Завдань"
 
 #: osmtm/templates/about.mako:15
 msgid "Sponsorship and Funding"
-msgstr "Спонсорство та фінансування"
+msgstr "Спонсори та фінансова підтримка"
 
 #: osmtm/templates/about.mako:16
 msgid ""
@@ -83,7 +83,7 @@ msgstr "Версія"
 
 #: osmtm/templates/base.mako:43
 msgid "You have unread messages"
-msgstr ""
+msgstr "У вас є непрочитані повідомлення"
 
 #: osmtm/templates/base.mako:57
 msgid "About"
@@ -130,7 +130,7 @@ msgid ""
 "href=\"http://mapgive.state.gov\">MapGive website</a> which also provides "
 "information on the Tasking Manager and mapping. Once you have read up on how"
 " to map, come back here to help map for people on the ground!"
-msgstr ""
+msgstr "Перейдіть на <a target=\"_blank\" href=\"http://www.openstreetmap.org\">OpenStreetMap</a>, створіть обліковий запис, дізнайтесь на LearnOSM як працювати з <a target=\"_blank\" href=\"http://learnosm.org/en/coordination/tasking-manager/\">Менеджером завдань</a> та <a target=\"_blank\" href=\"http://learnosm.org/en/beginner/id-editor\">редактором iD</a>. Або відвідайте сайт <a target=\"_blank\" href=\"http://mapgive.state.gov\">MapGive</a>, який також містить інформацію про роботу з Менеджером завдань та нанесення обʼєктів на мапу. Як тільки ви дізнаєтесь як мапити, повертайтесь сюди, щоб допомгти створити мапу для інших, кому вона вкрай потрібна!"
 
 #: osmtm/templates/custom.mako:24
 msgid "Questions About Tasks, Mapping or HOT?"
@@ -234,7 +234,7 @@ msgstr "Ваші проекти"
 
 #: osmtm/templates/home.mako:84
 msgid "Include archived projects"
-msgstr ""
+msgstr "Додати проекти з архіву"
 
 #: osmtm/templates/home.mako:131
 msgid "${locked} user is currently working on this project"
@@ -416,17 +416,17 @@ msgstr "Відхилити всі виконані завдання"
 #: osmtm/templates/project.edit.mako:82 osmtm/templates/project.edit.mako:109
 #: osmtm/templates/project.edit.mako:502 osmtm/templates/project.edit.mako:506
 msgid "Message all contributors"
-msgstr ""
+msgstr "Повідомити всіх учасників"
 
 #: osmtm/templates/project.edit.mako:86
 msgid ""
 "This will send a Tasking Manager message to every contributor of the current"
 " project."
-msgstr ""
+msgstr "Таким чином ви можете надіслади повідомлення в Менеджері завдань всім учасникам поточного проекта."
 
 #: osmtm/templates/project.edit.mako:89
 msgid "Please use this feature conservatively."
-msgstr ""
+msgstr "Будь ласка, не зловживайте цією можливістю."
 
 #: osmtm/templates/project.edit.mako:93 osmtm/templates/user.messages.mako:15
 msgid "Subject"
@@ -434,13 +434,13 @@ msgstr "Тема"
 
 #: osmtm/templates/project.edit.mako:96
 msgid "Message"
-msgstr ""
+msgstr "Повідомлення"
 
 #: osmtm/templates/project.edit.mako:98
 msgid ""
 "This message does not automatically translate, so you may want to include "
 "your own translations."
-msgstr ""
+msgstr "Повідомлення не перекладаються автоматично, тож ви можете додати власний переклад."
 
 #: osmtm/templates/project.edit.mako:135
 msgid "Area"
@@ -469,7 +469,7 @@ msgstr "Стан"
 
 #: osmtm/templates/project.edit.mako:188 osmtm/templates/project.mako:10
 msgid "Archived"
-msgstr "В архіві"
+msgstr "Архів"
 
 #: osmtm/templates/project.edit.mako:189
 msgid "Published"
@@ -556,14 +556,14 @@ msgid ""
 "have added extra properties within the GeoJSON of the task, they can be "
 "referenced by surrounding them in curly braces. For eg. if you have a "
 "property called \"import_url\" in your GeoJSON, you can reference it like:"
-msgstr ""
+msgstr "Додайте будь-що, що може стати в нагоді учасникам під час виконання цього завдання. Якщо ви додаєте додаткові властивості за допомогою GeoJSON для цього завдання, на них можна посилатись, додаючи їх у фігурні дужки. Наприклад: якщо у вас є атрибут \"imported_url\" в вашому GeoJSON, ви можете зазначити його наступним чином:"
 
 #: osmtm/templates/project.edit.mako:328
 msgid ""
 "This task involves loading extra data. Click "
 "[here](http://localhost:8111/import?new_layer=true&url={import_url}) to load"
 " the data into JOSM"
-msgstr ""
+msgstr "Це завдання потребує завантаження додаткових даних. Тицніть [тут](http://localhost:8111/import?new_layer=true&url={import_url}) щоб завантажити дані в JOSM"
 
 #: osmtm/templates/project.edit.mako:340
 msgid "Area modifications are not available yet."
@@ -572,9 +572,9 @@ msgstr "Редагування областей поки недоступне."
 #: osmtm/templates/project.edit.mako:352
 msgid "${count} priority area"
 msgid_plural "${count} priority areas"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "${count} пріоритетна ділянка"
+msgstr[1] "${count} пріоритетні ділянки"
+msgstr[2] "${count} пріоритетних ділянок"
 
 #: osmtm/templates/project.edit.mako:355
 msgid ""
@@ -794,7 +794,7 @@ msgstr "Неможливо прочитати доданий файл"
 
 #: osmtm/templates/project.new.mako:31
 msgid "Please provide a .geojson, .kml, or zipped .shp file"
-msgstr ""
+msgstr "Будь ласка, вкажіть файл .geojson, .kml або файл .shp, заархівований zip"
 
 #: osmtm/templates/project.new.mako:45 osmtm/templates/project.new.mako:85
 #: osmtm/templates/project.new.mako:134 osmtm/templates/project.new.mako:177
@@ -815,7 +815,7 @@ msgstr "або"
 
 #: osmtm/templates/project.new.mako:63
 msgid "Provide a .geojson, .kml, or zipped .shp file."
-msgstr ""
+msgstr "Вкажіть файл .geojson, .kml або файл .shp, заархівований zip."
 
 #: osmtm/templates/project.new.mako:63
 msgid "Import"
@@ -825,7 +825,7 @@ msgstr "Імпорт"
 msgid ""
 "${import_link} a <em>GeoJSON</em>, <em>KML</em>, or <em>zipped SHP</em> "
 "file."
-msgstr ""
+msgstr "${import_link} <em>GeoJSON</em>, <em>KML</em> або <em>заархівований SHP</em> файл."
 
 #: osmtm/templates/project.new.mako:69
 msgid "Want to use an <em>.osm</em> file instead?"
@@ -1046,7 +1046,7 @@ msgstr "користувачем"
 
 #: osmtm/templates/task.history.mako:56
 msgid "<b>Split</b> by ${link}"
-msgstr ""
+msgstr "<b>Розділив</b> ${link}"
 
 #: osmtm/templates/task.history.mako:60 osmtm/templates/task.status.mako:6
 msgid "Locked"
@@ -1105,11 +1105,11 @@ msgstr "Набір змін OSM"
 
 #: osmtm/templates/task.mako:112
 msgid "See the changes in this area using overpass turbo."
-msgstr ""
+msgstr "Переглянути зміни в цій області, використовуючи overpass-turbo."
 
 #: osmtm/templates/task.mako:112
 msgid "overpass turbo"
-msgstr ""
+msgstr "overpass turbo"
 
 #: osmtm/templates/task.split.mako:3
 msgid "Task is too big?"
@@ -1218,9 +1218,9 @@ msgstr "Історія змін OSM"
 #: osmtm/templates/user.mako:50
 msgid "This user has submitted ${changes} total changeset."
 msgid_plural "This user has submitted ${changes} total changesets."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Цей користувач надіслав усього ${changes} набор змін."
+msgstr[1] "Цей користувач надіслав усього ${changes} набори змін."
+msgstr[2] "Цей користувач надіслав усього ${changes} наборів змін."
 
 #: osmtm/templates/user.mako:60
 msgid "This user is an administrator."
@@ -1253,9 +1253,9 @@ msgstr "Подробиці проекту"
 #: osmtm/templates/user.mako:102
 msgid "${count} tile"
 msgid_plural "${count} tiles"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "${count} квадрат"
+msgstr[1] "${count} квадрати"
+msgstr[2] "${count} квадратів"
 
 #: osmtm/templates/user.mako:108
 msgid "User hasn't contributed yet."
@@ -1338,9 +1338,9 @@ msgstr "Вибачте, неможливо створити проект. <br />
 #: osmtm/views/project.py:192
 msgid "Successfully imported ${n} geometry"
 msgid_plural "Successfully imported ${n} geometries"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Імпортовано ${n} геометрія"
+msgstr[1] "Імпортовано ${n} геометрії"
+msgstr[2] "Імпортовано ${n} геометрій"
 
 #: osmtm/views/project.py:512
 msgid "A comment is required."
@@ -1358,28 +1358,28 @@ msgstr "Відсутні виконанні завдання для відхил
 #, python-format
 msgid "%d task invalidated"
 msgid_plural "%d tasks invalidated"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d завдання відхилено"
+msgstr[1] "%d завдання відхилено"
+msgstr[2] "%d завдань відхилено"
 
 #: osmtm/views/project.py:558
 msgid "A subject and message are required."
-msgstr ""
+msgstr "Тема та повідомлення є обовʼязковими."
 
 #: osmtm/views/project.py:567
 msgid "Project #"
-msgstr ""
+msgstr "Проект №"
 
 #: osmtm/views/project.py:577
 msgid "No users to message."
-msgstr ""
+msgstr "Немає одержувачів повідомлення. "
 
 #: osmtm/views/project.py:579
 msgid "Message sent to ${num} user."
 msgid_plural "Message sent to ${num} users."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Повідомлення надіслане ${num} користувачу."
+msgstr[1] "Повідомлення надіслане ${num} користувачам."
+msgstr[2] "Повідомлення надіслане ${num} користувачам."
 
 #: osmtm/views/task.py:85
 msgid "Cannot update task. Record lock for update."

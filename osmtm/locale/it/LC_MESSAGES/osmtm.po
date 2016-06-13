@@ -9,14 +9,15 @@
 # Stefano <sabas88@gmail.com>, 2015
 # Stefano <sabas88@gmail.com>, 2014-2015
 # Sebastiano Pistore <olatusrooc@virgilio.it>, 2016
+# Stefano <sabas88@gmail.com>, 2016
 # tony fregoli <antonio@fregoli.it>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-tasking-manager2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-05-28 13:21+0200\n"
-"PO-Revision-Date: 2016-05-28 12:16+0000\n"
-"Last-Translator: Pierre GIRAUD <pierre.giraud@gmail.com>\n"
+"PO-Revision-Date: 2016-06-09 07:38+0000\n"
+"Last-Translator: Stefano <sabas88@gmail.com>\n"
 "Language-Team: Italian (http://www.transifex.com/hotosm/osm-tasking-manager2/language/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -133,7 +134,7 @@ msgid ""
 "href=\"http://mapgive.state.gov\">MapGive website</a> which also provides "
 "information on the Tasking Manager and mapping. Once you have read up on how"
 " to map, come back here to help map for people on the ground!"
-msgstr ""
+msgstr "Basta andare sul sito di <a target=\"_blank\" href=\"http//www.openstreetmap.org\">OpenStreetMap</a>, creare un account e poi visitare i tutorial di LearnOSM riguardante il <a target=\"_blank\" href=\"http://learnosm.org/it/coordination/tasking-manager/\">Tasking Manager</a>. In alternativa dai una occhiata al <a target=\"_blank\" href=\"http://mapgive.openstreetmap.it/\">sito di MapGive</a>, che fornisce informazioni sul Tasking Manager e sulla mappatura. Una volta che ti sei informato su come mappare, torna qui per aiutare le persone che sono sul territorio!"
 
 #: osmtm/templates/custom.mako:24
 msgid "Questions About Tasks, Mapping or HOT?"
@@ -436,7 +437,7 @@ msgstr "Oggetto"
 
 #: osmtm/templates/project.edit.mako:96
 msgid "Message"
-msgstr ""
+msgstr "Messaggio"
 
 #: osmtm/templates/project.edit.mako:98
 msgid ""
@@ -654,7 +655,7 @@ msgstr "Annulla tutti i compiti"
 msgid ""
 "Click this button if project instructions have changed, or if for some "
 "reason you need to invalidate all done tasks in a single step."
-msgstr ""
+msgstr "Clicca su questo bottone se le istruzioni del progetto sono cambiate, o se per qualche ragione devi invalidare tutti i task già fatti in una volta sola."
 
 #: osmtm/templates/project.edit.mako:495
 msgid "WARNING: This cannot be undone."
