@@ -132,7 +132,7 @@ To run the tests, use the following command:
 ## Application deployment
 
 1. pull latest updates from the repository: `git pull origin`
-1. update the submodules: `git submodule update`
+1. update the submodules: `git submodule update --init`
 1. update/install python modules: `./env/bin/pip install -r requirements.txt`
 1. create database dump: `pg_dump -Fc -f osmtm2_latest.dmp database_name`
 1. run database migrations: `alembic upgrade head`
