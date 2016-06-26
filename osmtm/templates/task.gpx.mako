@@ -3,6 +3,7 @@
 import datetime
 timestamp = datetime.datetime.utcnow()
 timestamp = timestamp.isoformat()
+stay_inside_msg = _('Do not edit outside of this box!')
 %>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HOT Tasking Manager">
 <metadata>
@@ -12,7 +13,7 @@ timestamp = timestamp.isoformat()
   <time>${timestamp}</time>
 </metadata>
 <trk>
-  <name>Task for project ${project_id}</name>
+  <name>${_('Task for project ${project}.', mapping={'project': project_id}) | n} ${stay_inside_msg}</name>
   % for polygon in multipolygon:
   <trkseg>
     % for point in polygon.exterior.coords:
@@ -21,4 +22,9 @@ timestamp = timestamp.isoformat()
   </trkseg>
   % endfor
 </trk>
+% for polygon in multipolygon:
+  % for point in polygon.exterior.coords:
+    <wpt lon="${point[0]}" lat="${point[1]}"><name>${stay_inside_msg}</name></wpt>
+  % endfor
+%endfor
 </gpx>
