@@ -27,7 +27,7 @@
 <script>
   var drawAreaOfInterestI18n = "${_('Draw the area of interest')}";
   var droppedFileCouldntBeLoadedI18n = "${_('Dropped file could not be loaded')}";
-  var droppedFileWasUnreadable = "${_('Dropped file was unreadable')}";
+  var droppedFileWasUnreadableI18n = "${_('Dropped file was unreadable')}";
   var pleaseProvideGeojsonOrKmlFileI18n = "${_('Please provide a .geojson, .kml, or zipped .shp file')}";
 <%
     link = '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
