@@ -135,7 +135,7 @@ To run the tests, use the following command:
 1. update the submodules: `git submodule update --init`
 1. update/install python modules: `./env/bin/pip install -r requirements.txt`
 1. create database dump: `pg_dump -Fc -f osmtm2_latest.dmp database_name`
-1. run database migrations: `alembic upgrade head`
+1. run database migrations: `./env/bin/alembic upgrade head`
 1. compile messages: `./env/bin/python setup.py compile_catalog`
 1. restart application server
 
