@@ -242,12 +242,12 @@ osmtm.project = (function() {
             $('#task').fadeIn();
             setPreferedEditor();
           } else if (request.status == '404'){
-            $('#task_error_msg').html("Task doesn't exist.").show()
+            $('#task_error_msg').html(taskDoesntExist).show()
             .delay(3000)
             .fadeOut();
             clearSelection();
           } else {
-            alert("an error occured");
+            alert(anErrorOccuredI18n);
           }
           checkForUpdates();
         }
@@ -428,7 +428,7 @@ osmtm.project = (function() {
         url: url,
         complete: function(t) {
           if (t.status != 200) {
-            alert("JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?");
+            alert(josmRcDidNotRespondI18n);
           } else {
             if (typeof imagery_url != "undefined" && imagery_url !== '') {
               $.ajax({
