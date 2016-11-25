@@ -104,6 +104,7 @@ class ST_SetSRID(GenericFunction):
     name = 'ST_SetSRID'
     type = Geometry
 
+
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 make_translatable()
@@ -155,6 +156,7 @@ class User(Base):
             "is_admin": self.is_admin,
             "is_project_manager": self.is_project_manager
         }
+
 
 # task states
 READY = 0
@@ -433,6 +435,7 @@ def area_after_insert(mapper, connection, target):
         values(centroid=ST_Centroid(target.geometry))
     )
 
+
 project_allowed_users = Table(
     'project_allowed_users',
     Base.metadata,
@@ -448,6 +451,7 @@ class PriorityArea(Base):
 
     def __init__(self, geometry):
         self.geometry = geometry
+
 
 project_priority_areas = Table(
     'project_priority_areas',
@@ -713,5 +717,6 @@ class ExtendedJSONEncoder(JSONEncoder):
             return obj.isoformat(' ')
 
         return JSONEncoder.default(self, obj)
+
 
 dumps = functools.partial(_dumps, cls=ExtendedJSONEncoder)
