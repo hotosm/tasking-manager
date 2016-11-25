@@ -55,6 +55,7 @@ For example:
     [app:main]
     sqlalchemy.url = postgresql://www-data:PASSWORD@localhost/osmtm
     default_comment_prefix = #yourinstancename-project
+    check_expiration_interval = 60
 
 Note: you can also put your local settings file anywhere else on your
 file system, and then create a `LOCAL_SETTINGS_PATH` environment variable
@@ -64,6 +65,7 @@ Currently, these are the settings you can over-ride:
 
  - `sqlalchemy.url`: Postgres URL to use for database connection
  - `default_comment_prefix`: Default prefix to use for changeset comments, defaults to `#hotosm-project`
+ - `check_expiration_interval`: The interval at which the database should be checked for expired tasks, in seconds. Defaults to `5` seconds.
 
 ### Populate the database
 
