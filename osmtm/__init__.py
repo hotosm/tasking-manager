@@ -156,7 +156,10 @@ def main(global_config, **settings):
     bleach.ALLOWED_TAGS.append(u'p')
     bleach.ALLOWED_TAGS.append(u'pre')
 
-    check_expiration_interval = int(settings.get('check_expiration_interval', 5))
+    check_expiration_interval = int(
+        settings.get('check_expiration_interval', 5)
+    )
+
     scheduler.add_job(check_task_expiration, 'interval',
                       seconds=check_expiration_interval,
                       replace_existing=True)
