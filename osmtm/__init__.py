@@ -55,7 +55,6 @@ def main(global_config, **settings):
 
     # enable exception logger
     config.include('pyramid_exclog')
-
     session_factory = UnencryptedCookieSessionFactoryConfig('itsasecret')
     config.set_session_factory(session_factory)
 
@@ -157,7 +156,12 @@ def main(global_config, **settings):
     bleach.ALLOWED_TAGS.append(u'p')
     bleach.ALLOWED_TAGS.append(u'pre')
 
-    scheduler.add_job(check_task_expiration, 'interval', seconds=5,
+    check_expiration_interval = int(
+        settings.get('check_expiration_interval', 5)
+    )
+
+    scheduler.add_job(check_task_expiration, 'interval',
+                      seconds=check_expiration_interval,
                       replace_existing=True)
 
     return config.make_wsgi_app()
