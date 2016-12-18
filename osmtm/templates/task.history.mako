@@ -9,6 +9,8 @@ from osmtm.mako_filters import (
     convert_mentions,
     markdown_filter,
 )
+
+import bleach
 %>
 <%page args="section='task'"/>
 % for index, step in enumerate(history):
@@ -21,9 +23,9 @@ from osmtm.mako_filters import (
 
     contributor = None
     if hasattr(step, 'user') and step.user is not None:
-      contributor = step.user.username
+      contributor = bleach.clean(step.user.username)
     elif hasattr(step, 'author') and step.author is not None:
-      contributor = step.author.username
+      contributor = bleach.clean(step.author.username)
     if contributor is not None:
       user_link = '<a href="' + request.route_path('user',username= contributor) + '">' + contributor + '</a>'
     else:
