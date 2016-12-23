@@ -11,8 +11,10 @@ from ..models import (
     Task,
     TaskState,
     TaskLock,
+    Label,
     License,
 )
+
 from pyramid.security import authenticated_userid
 
 from pyramid.i18n import (
@@ -21,10 +23,11 @@ from pyramid.i18n import (
 from sqlalchemy.orm import (
     joinedload,
 )
-from sqlalchemy.sql.expression import (
+
+from sqlalchemy import (
     or_,
-    and_,
     not_,
+    and_,
     func,
 )
 
@@ -238,8 +241,9 @@ def project_edit(request):
     project = DBSession.query(Project).get(id)
 
     licenses = DBSession.query(License).all()
-    if 'form.submitted' in request.params:
+    labels = DBSession.query(Label).all()
 
+    if 'form.submitted' in request.params:
         for locale, translation in project.translations.iteritems():
             with project.force_locale(locale):
                 for field in ['name', 'short_description', 'description',
@@ -258,6 +262,15 @@ def project_edit(request):
             license_id = int(request.params['license_id'])
             license = DBSession.query(License).get(license_id)
             project.license = license
+
+        project.labels = []
+        labels = [x for x in request.params if 'label_' in x]
+        if len(labels) != 0:
+            for t in labels:
+                if request.params[t] != "":
+                    label_id = int(t[6:])
+                    label = DBSession.query(Label).get(label_id)
+                    project.labels.append(label)
 
         if 'private' in request.params and \
                 request.params['private'] == 'on':
@@ -310,7 +323,7 @@ def project_edit(request):
         features.append(Feature(geometry=shape.to_shape(area.geometry)))
 
     return dict(page_id='project_edit', project=project, licenses=licenses,
-                translations=translations,
+                translations=translations, labels=labels,
                 priority_areas=FeatureCollection(features))
 
 

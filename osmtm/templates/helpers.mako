@@ -17,3 +17,47 @@
     % endif
   </small>
 </%def>
+
+<%def name="display_label(label)">
+  <%
+    from osmtm.mako_filters import contrast
+  %>
+  <%
+    import re
+    label_id = label.name
+    if re.findall(ur'\s', label_id):
+      label_id = '\"' + label_id + '\"'
+  %>
+  <a class="label label-default"
+     style="background-color: ${label.color};color: ${label.color|contrast}"
+     href="${request.route_url('home', _query={'labels': label_id})}">${label.name}</a>
+</%def>
+
+<%def name="locale_chooser(inputname)">
+  <div class="btn-group pull-right" id="locale_chooser_${inputname}">
+    % for locale, translation in translations:
+    <a href
+      class="btn btn-default btn-xs ${'active' if locale == 'en' else ''}"
+      data-locale="${locale}">
+      <span class="${'text-muted' if getattr(translation, inputname) == '' else ''}">
+        ${locale}
+      </span>
+    </a>
+    % endfor
+  </div>
+  <script>
+    $('#locale_chooser_${inputname} a').on('click', function() {
+      $(this).addClass('active');
+      $(this).siblings().removeClass('active');
+      var locale = $(this).attr('data-locale');
+      $(this).parents('.form-group').find('.tab-pane').each(function(index, item) {
+        if ($(item).attr('data-locale') == locale) {
+          $(item).addClass('active');
+        } else {
+          $(item).removeClass('active');
+        }
+      });
+      return false;
+    });
+  </script>
+</%def>

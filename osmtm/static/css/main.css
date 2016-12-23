@@ -4660,7 +4660,73 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 /* @import "../bootstrap/less/breadcrumbs.less"; */
 /* @import "../bootstrap/less/pagination.less"; */
 /* @import "../bootstrap/less/pager.less"; */
-/* @import "../bootstrap/less/labels.less"; */
+.label {
+  display: inline;
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  font-weight: bold;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+}
+a.label:hover,
+a.label:focus {
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+.label:empty {
+  display: none;
+}
+.btn .label {
+  position: relative;
+  top: -1px;
+}
+.label-default {
+  background-color: #777777;
+}
+.label-default[href]:hover,
+.label-default[href]:focus {
+  background-color: #5e5e5e;
+}
+.label-primary {
+  background-color: #337ab7;
+}
+.label-primary[href]:hover,
+.label-primary[href]:focus {
+  background-color: #286090;
+}
+.label-success {
+  background-color: #5cb85c;
+}
+.label-success[href]:hover,
+.label-success[href]:focus {
+  background-color: #449d44;
+}
+.label-info {
+  background-color: #5bc0de;
+}
+.label-info[href]:hover,
+.label-info[href]:focus {
+  background-color: #31b0d5;
+}
+.label-warning {
+  background-color: #f0ad4e;
+}
+.label-warning[href]:hover,
+.label-warning[href]:focus {
+  background-color: #ec971f;
+}
+.label-danger {
+  background-color: #d9534f;
+}
+.label-danger[href]:hover,
+.label-danger[href]:focus {
+  background-color: #c9302c;
+}
 .badge {
   display: inline-block;
   min-width: 10px;
@@ -6255,10 +6321,9 @@ h1 {
 #home .archived,
 #home .draft {
   background: url(../img/closed_back.gif) transparent;
-  border-color: #efefef;
 }
-#home .archived a,
-#home .draft a {
+#home .archived h4 a,
+#home .draft h4 a {
   color: grey;
 }
 #home ul.project-stats {
@@ -6729,4 +6794,18 @@ h1 {
   transform: scaleX(-1);
   filter: FlipH;
   -ms-filter: "FlipH";
+}
+.list-underline > li:first-child {
+  border-top: 1px solid #dfdfdf;
+}
+.list-underline > li {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #dfdfdf;
+}
+.navbar-no-margin {
+  margin: 0;
+}
+.dropdown-colorselector > .dropdown-menu {
+  min-width: 226px !important;
 }

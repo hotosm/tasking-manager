@@ -38,6 +38,7 @@ requires = [
     'gitversion',
     'APScheduler==3.0.3',
     'python-oembed == 0.2.1',
+    'colour==0.1.2',
 ]
 
 setup(name='osmtm',

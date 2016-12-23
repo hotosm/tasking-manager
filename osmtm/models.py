@@ -483,6 +483,12 @@ project_priority_areas = Table(
 )
 
 
+project_labels_table = Table(
+    'project_labels', Base.metadata,
+    Column('project', Integer, ForeignKey('project.id')),
+    Column('label', Integer, ForeignKey('label.id')))
+
+
 # A project corresponds to a given mapping job to do on a given area
 # Example 1: trace the major roads
 # Example 2: trace the buildings
@@ -541,6 +547,8 @@ class Project(Base, Translatable):
 
     # whether the validation should require the validator role or not
     requires_validator_role = Column(Boolean, default=False)
+
+    labels = relationship("Label", secondary=project_labels_table)
 
     def __init__(self, name, user=None):
         self.name = name
@@ -732,6 +740,25 @@ class Message(Base):
         self.from_user = from_
         self.to_user = to
         self.message = message
+
+
+class Label(Base, Translatable):
+    __tablename__ = 'label'
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode, nullable=False)
+    color = Column(Unicode)
+    projects = relationship("Project", secondary=project_labels_table)
+
+    locale = 'en'
+
+    def __init__(self):
+        pass
+
+
+class LabelTranslation(translation_base(Label)):
+    __tablename__ = 'label_translation'
+
+    description = Column(Unicode, default=u'')
 
 
 class ExtendedJSONEncoder(JSONEncoder):

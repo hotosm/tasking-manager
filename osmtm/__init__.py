@@ -129,6 +129,11 @@ def main(global_config, **settings):
     config.add_route('task_users',
                      '/project/{project:\d+}/task/{task:\d+}/users')
 
+    config.add_route('labels', '/labels')
+    config.add_route('label_new', '/label/new')
+    config.add_route('label_edit', '/label/{label:\d+}/edit')
+    config.add_route('label_delete', '/label/{label:\d+}/delete')
+
     config.add_route('users', '/users')
     config.add_route('users_json', '/users.json')
     config.add_route('user_messages', '/user/messages')
