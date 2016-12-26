@@ -84,7 +84,7 @@ var gpx_url = window.location.origin +
 % if user is not None and \
     project.imagery is not None and project.imagery != 'None' and \
     (project.license in user.accepted_licenses or not project.license):
-var imagery_url = "${project.imagery}";
+var imagery_url = "${project.imagery|n}";
 % endif
 var changeset_comment = "${quote(project.changeset_comment.encode('utf8'), '')}";
 osmtm.project.initAtWho();
