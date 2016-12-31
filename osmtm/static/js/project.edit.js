@@ -35,7 +35,8 @@ $(document).ready(function() {
     {
       name: 'states',
       displayKey: 'value',
-      source: substringMatcher(users)
+      source: substringMatcher(users),
+      limit: 40
     }).on({
       'typeahead:selected': function(e, suggestion, name) {
         window.setTimeout(function() {
