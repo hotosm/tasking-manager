@@ -28,7 +28,13 @@ from xml.dom import minidom
 
 @view_config(route_name='users', renderer='users.mako')
 def users(request):
-    users = DBSession.query(User).order_by(User.role.desc(), User.username)
+
+    users = DBSession.query(User).order_by(User.username)
+
+    roles = [int(role) for role in request.params.getall('role')]
+    if len(roles):
+        for role in roles:
+            users = users.filter(User.role.op('&')(role) != 0)
 
     page = int(request.params.get('page', 1))
     page_url = PageURL_WebOb(request)
