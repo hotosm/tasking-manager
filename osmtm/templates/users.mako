@@ -8,6 +8,10 @@
 <div class="container" ng-app="users">
   <div class="row" ng-controller="usersCrtl">
     <div class="col-md-8">
+      <div class="form-group">
+        <input type="text" id="user_search"
+        placeholder="${_('Search')}" class="form-control">
+      </div>
       ${paginate()}
       <ul>
         % if paginator.items:
@@ -37,6 +41,26 @@
     </div>
   </div>
 </div>
+<script>
+new autoComplete({
+  'selector'  : document.getElementById('user_search'),
+  'minChars'  : 1,
+  'source'    : function(term, suggest) {
+    term = term.toLowerCase();
+    $.getJSON(
+      base_url + 'users.json',
+      {q: term},
+      function(users) {
+        suggest(users);
+      }
+    );
+  },
+  'onSelect' : function(e, term, item) {
+    window.location.href = base_url + 'user/' + term;
+    e.preventDefault();
+  }
+});
+</script>
 </%block>
 
 <%def name="paginate()">
@@ -52,3 +76,8 @@
   </div>
 </div>
 </%def>
+
+<%block name="extrascripts">
+<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/JavaScript-AutoComplete/auto-complete.css')}">
+<script src="${request.static_url('osmtm:static/js/lib/JavaScript-AutoComplete/auto-complete.js')}"></script>
+</%block>

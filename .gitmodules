@@ -16,3 +16,6 @@
 [submodule "osmtm/static/js/lib/shapefile-js"]
 	path = osmtm/static/js/lib/shapefile-js
 	url = https://github.com/calvinmetcalf/shapefile-js.git
+[submodule "osmtm/static/js/lib/JavaScript-AutoComplete"]
+	path = osmtm/static/js/lib/JavaScript-AutoComplete
+	url = https://github.com/Pixabay/JavaScript-autoComplete.git

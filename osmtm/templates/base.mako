@@ -42,6 +42,7 @@ comments = []
         var markdown_ref_url = "${request.static_url('osmtm:static/html/markdown_quick_ref.html')}";
         var unreadMsgsI18n = "${_('You have unread messages')}";
     </script>
+    <%block name="extrascripts"></%block>
 
   </head>
   <body id="${page_id}">
