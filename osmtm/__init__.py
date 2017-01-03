@@ -143,6 +143,8 @@ def main(global_config, **settings):
 
     config.add_route('message_read', '/message/read/{message:\d+}')
 
+    config.add_route('markdown_ref', '/markdown_ref')
+
     config.add_translation_dirs('osmtm:locale')
     config.set_locale_negotiator('osmtm.i18n.custom_locale_negotiator')
 

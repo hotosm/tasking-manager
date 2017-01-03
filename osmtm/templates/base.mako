@@ -39,7 +39,7 @@ comments = []
 %>
     <script>
         var base_url = "${request.route_path('home')}";
-        var markdown_ref_url = "${request.static_url('osmtm:static/html/markdown_quick_ref.html')}";
+        var markdown_ref_url = "${request.route_path('markdown_ref')}";
         var unreadMsgsI18n = "${_('You have unread messages')}";
     </script>
 

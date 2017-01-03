@@ -157,6 +157,11 @@ def user_prefered_language(request):
     return dict()
 
 
+@view_config(route_name="markdown_ref", renderer="markdown_ref.mako")
+def markdown_reference(request):
+    return dict(page_id="markdown_ref")
+
+
 @view_config(context='pyramid.httpexceptions.HTTPUnauthorized')
 def unauthorized(request):
     if request.is_xhr:

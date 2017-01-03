@@ -32,3 +32,6 @@ class TestViewsFunctional(BaseTestCase):
         self.testapp.get('/user/prefered_language/the_language', status=200,
                          xhr=True)
         self.assertEqual(self.testapp.cookies['_LOCALE_'], 'the_language')
+
+    def test_markdown_ref(self):
+        self.testapp.get('/markdown_ref', status=200)
