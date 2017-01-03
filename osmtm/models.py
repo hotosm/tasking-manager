@@ -126,7 +126,7 @@ class User(Base):
     username = Column(Unicode)
     role_admin = ADMIN
     role_project_manager = PROJECT_MANAGER
-    role = Column(Integer)
+    role = Column(Integer, default=0)
 
     accepted_licenses = relationship("License", secondary=users_licenses_table)
     private_projects = relationship("Project",
@@ -144,11 +144,11 @@ class User(Base):
 
     @hybrid_property
     def is_admin(self):
-        return self.role is self.role_admin
+        return self.role & self.role_admin
 
     @hybrid_property
     def is_project_manager(self):
-        return self.role is self.role_project_manager
+        return self.role & self.role_project_manager
 
     def as_dict(self):
         return {

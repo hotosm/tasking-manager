@@ -1,7 +1,7 @@
 <script type="text/javascript">
   var assigned_to = "${task.assigned_to.username if task.assigned_to else ''}";
 </script>
-% if user and (user.is_project_manager or user.is_admin):
+% if user and user.is_project_manager:
   <div>
     ${assigned_to_container()}
     % if not task.cur_lock or not task.cur_lock.lock:

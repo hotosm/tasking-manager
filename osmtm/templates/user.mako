@@ -70,18 +70,16 @@ else:
       </p>
 
       <p>
-      % if not contributor.is_admin:
-        % if contributor.is_project_manager:
+      % if contributor.is_project_manager:
+        <i class="glyphicon glyphicon-star user-project-manager"></i>
+        ${_("This user is a project manager.")}
+        % if user is not None and user.is_admin and user != contributor:
+          <a href="${request.route_path('user_project_manager', id=contributor.id)}">${_('Remove privileges')}</a>
+        % endif
+      % else:
+        % if user is not None and user.is_admin:
           <i class="glyphicon glyphicon-star user-project-manager"></i>
-          ${_("This user is a project manager.")}
-          % if user is not None and user.is_admin and user != contributor:
-            <a href="${request.route_path('user_project_manager', id=contributor.id)}">${_('Remove privileges')}</a>
-          % endif
-        % else:
-          % if user is not None and user.is_admin:
-            <i class="glyphicon glyphicon-star user-project-manager"></i>
-            <a href="${request.route_path('user_project_manager', id=contributor.id)}">${_('Set as project manager')}</a>
-          % endif
+          <a href="${request.route_path('user_project_manager', id=contributor.id)}">${_('Set as project manager')}</a>
         % endif
       % endif
       </p>

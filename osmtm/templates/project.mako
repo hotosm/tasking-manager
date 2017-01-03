@@ -9,7 +9,7 @@
   % elif project.status == project.status_archived:
    (${_('Archived')})
   % endif
-  % if user and (user.is_admin or user.is_project_manager):
+  % if user and user.is_project_manager:
     <a class="btn btn-link btn-sm pull-right"
        href="${request.route_path('project_tasks_json', project=project.id)}"
        target="_blank">
