@@ -365,7 +365,6 @@ def check_for_updates(request):
         .filter(
             TaskState.project_id == id,
             TaskState.date > date,
-            TaskState.state != TaskState.state_ready
         ) \
         .all()
     for state in states:

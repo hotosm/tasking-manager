@@ -20,8 +20,12 @@
               <a href="user/${user.username}">${user.username}</a>
                 % if user.is_admin:
                   <i class="glyphicon glyphicon-star user-admin"></i>
-                % elif user.is_project_manager:
+                % endif
+                % if user.is_project_manager:
                   <i class="glyphicon glyphicon-star user-project-manager"></i>
+                % endif
+                % if user.is_validator:
+                  <i class="glyphicon glyphicon-ok"></i>
                 % endif
             </li>
           % endfor

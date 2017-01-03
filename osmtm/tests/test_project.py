@@ -489,7 +489,7 @@ class TestProjectFunctional(BaseTestCase):
                                },
                                status=200)
         self.assertTrue(res.json['update'])
-        self.assertEqual(len(res.json['updated']), 7)
+        self.assertEqual(len(res.json['updated']), 11)
 
     def test_project_user_add__not_allowed(self):
         project_id = self.create_project()

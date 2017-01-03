@@ -234,6 +234,68 @@ class TestTaskFunctional(BaseTestCase):
                          headers=headers,
                          xhr=True)
 
+    def test_task_cancel_done(self):
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/3/lock',
+                         headers=headers,
+                         xhr=True)
+        self.testapp.get('/project/1/task/3/done', status=200,
+                         headers=headers,
+                         xhr=True)
+
+        ''' User is proposed to cancel the work on the task he just marked
+            as done '''
+        resp = self.testapp.get('/project/1/task/3', headers=headers, xhr=True)
+        self.assertTrue('cancel_done' in resp.body)
+
+        ''' Other users are not proposed to continue '''
+        headers = self.login_as_user2()
+        resp = self.testapp.get('/project/1/task/3', headers=headers, xhr=True)
+        self.assertFalse('cancel_done' in resp.body)
+
+        ''' If task has been locked by an other user, we should receive an
+            error '''
+        headers = self.login_as_user2()
+        self.testapp.get('/project/1/task/3/lock', headers=headers, xhr=True)
+        headers = self.login_as_user1()
+        resp = self.testapp.get('/project/1/task/3/cancel_done', status=200,
+                                params={'comment': 'mistake'},
+                                headers=headers,
+                                xhr=True)
+        self.assertFalse(resp.json['success'])
+        headers = self.login_as_user2()
+        self.testapp.get('/project/1/task/3/unlock', status=200,
+                         headers=headers,
+                         xhr=True)
+
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/3/cancel_done', status=200,
+                         params={'comment': 'mistake'},
+                         headers=headers,
+                         xhr=True)
+
+    def test_task_cancel_done__not_last_contributor(self):
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/3/lock', headers=headers, xhr=True)
+        self.testapp.get('/project/1/task/3/done', headers=headers, xhr=True)
+
+        headers = self.login_as_user2()
+        self.testapp.get('/project/1/task/3/lock', headers=headers, xhr=True)
+        resp = self.testapp.get('/project/1/task/3/validate',
+                                params={'invalidate': True},
+                                headers=headers,
+                                xhr=True)
+        self.testapp.get('/project/1/task/3/lock', headers=headers, xhr=True)
+        self.testapp.get('/project/1/task/3/done', headers=headers, xhr=True)
+
+        ''' User contributed on the task but someone else marked it as done by
+            then '''
+        headers = self.login_as_user1()
+        resp = self.testapp.get('/project/1/task/3/cancel_done',
+                                headers=headers,
+                                xhr=True)
+        self.assertFalse(resp.json['success'])
+
     def test_task_split(self):
         headers = self.login_as_user1()
         self.testapp.get('/project/1/task/6/lock',

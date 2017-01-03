@@ -83,6 +83,21 @@ else:
         % endif
       % endif
       </p>
+
+      <p>
+      % if contributor.is_validator:
+        <i class="glyphicon glyphicon-ok"></i>
+        ${_("This user is a validator.")}
+        % if user is not None and (user.is_admin or user.is_project_manager) and user != contributor:
+          <a href="${request.route_path('user_validator', id=contributor.id)}">${_('Remove privileges')}</a>
+        % endif
+      % else:
+        % if user is not None and (user.is_admin or user.is_project_manager):
+          <i class="glyphicon glyphicon-ok"></i>
+          <a href="${request.route_path('user_validator', id=contributor.id)}">${_('Set as validator')}</a>
+        % endif
+      % endif
+      </p>
     </div>
   </div>
   <div class="row">

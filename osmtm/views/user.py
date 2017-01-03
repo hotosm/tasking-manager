@@ -82,6 +82,18 @@ def user_project_manager(request):
                                          username=user.username))
 
 
+@view_config(route_name='user_validator', permission="user_edit")
+def user_validator(request):
+    id = request.matchdict['id']
+    user = DBSession.query(User).get(id)
+
+    user.role ^= User.role_validator
+    DBSession.flush()
+
+    return HTTPFound(location=route_path("user", request,
+                                         username=user.username))
+
+
 @view_config(route_name='user', renderer='user.mako')
 def user(request):
 

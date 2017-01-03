@@ -118,6 +118,7 @@ users_licenses_table = Table(
 # user roles
 ADMIN = 1
 PROJECT_MANAGER = 2
+VALIDATOR = 4
 
 
 class User(Base):
@@ -126,6 +127,7 @@ class User(Base):
     username = Column(Unicode)
     role_admin = ADMIN
     role_project_manager = PROJECT_MANAGER
+    role_validator = VALIDATOR
     role = Column(Integer, default=0)
 
     accepted_licenses = relationship("License", secondary=users_licenses_table)
@@ -150,12 +152,17 @@ class User(Base):
     def is_project_manager(self):
         return self.role & self.role_project_manager
 
+    @hybrid_property
+    def is_validator(self):
+        return self.role & self.role_validator
+
     def as_dict(self):
         return {
             "id": self.id,
             "username": self.username,
             "is_admin": self.is_admin,
-            "is_project_manager": self.is_project_manager
+            "is_project_manager": self.is_project_manager,
+            "is_validator": self.is_validator,
         }
 
 
