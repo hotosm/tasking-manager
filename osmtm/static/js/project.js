@@ -322,6 +322,8 @@ osmtm.project = (function() {
 
     if ($(this).hasClass('disabled')) {
       return false;
+    } else {
+      $(this).addClass('disabled'); // give an indication of activity
     }
 
     var params = {};
@@ -559,7 +561,9 @@ osmtm.project = (function() {
 
     hideTooltips();
     var formData = $(form).serializeObject();
-    var submitName = $("button[type=submit][clicked=true]").attr("name");
+    var submitButton = $("button[type=submit][clicked=true]");
+    submitButton.addClass('disabled');
+    var submitName = submitButton.attr("name");
 
     // require a comment for invalidation
     if (submitName == 'invalidate' && !formData.comment.trim()) {
