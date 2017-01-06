@@ -14,18 +14,6 @@ class TestViewsFunctional(BaseTestCase):
         # user should appear as authenticated
         self.assertFalse('login to OpenStreetMap' in res.body)
 
-    def test_users_json(self):
-        res = self.testapp.get('/users.json', status=200)
-        self.assertEqual(len(res.json), 5)
-
-    def test_users_json__query(self):
-        res = self.testapp.get('/users.json',
-                               params={
-                                   'q': 'er1'
-                               },
-                               status=200)
-        self.assertEqual(len(res.json), 1)
-
     def test_user_messages__not_authenticated(self):
         self.testapp.get('/user/messages', status=302)
 

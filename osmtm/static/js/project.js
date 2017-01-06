@@ -29,9 +29,13 @@ osmtm.project = (function() {
     limit: 10,
     callbacks: {
       remoteFilter: function(query, callback) {
-        $.getJSON(base_url + 'users.json', {q: query}, function(data) {
-          callback(data);
-        });
+        $.getJSON(
+          base_url + 'project/' + project_id + '/task/' + task_id + '/users',
+          {q: query},
+          function(data) {
+            callback(data);
+          }
+        );
       },
       beforeInsert: function(value)  {
         // username contains a space

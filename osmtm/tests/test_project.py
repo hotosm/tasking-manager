@@ -754,6 +754,36 @@ class TestProjectFunctional(BaseTestCase):
                                status=200, xhr=True)
         self.assertEqual(res.json[0], u'user1')
 
+    def test_project_task_users(self):
+        import transaction
+        from osmtm.models import Task, TaskState, TaskLock, User, DBSession
+        from . import USER1_ID, USER2_ID
+
+        project_id = self.create_project()
+
+        ''' No contributions, users sorted alphabetically '''
+        res = self.testapp.get('/project/%d/task/2/users' % project_id,
+                               status=200, xhr=True)
+        self.assertEqual(res.json[0], u'admin_user')
+
+        task_id = 2
+        task = DBSession.query(Task).get((project_id, task_id))
+
+        user1 = DBSession.query(User).get(USER1_ID)
+        task.states.append(TaskState(state=TaskState.state_done, user=user1))
+
+        user2 = DBSession.query(User).get(USER2_ID)
+        task.locks.append(TaskLock(lock=True, user=user2))
+
+        DBSession.add(task)
+        transaction.commit()
+
+        ''' Contributors and then lockers should appear first '''
+        res = self.testapp.get('/project/%d/task/2/users' % project_id,
+                               status=200, xhr=True)
+        self.assertEqual(res.json[0], u'user1')
+        self.assertEqual(res.json[1], u'user2')
+
     def test_project_users__private_project(self):
         import transaction
         from osmtm.models import Project, DBSession

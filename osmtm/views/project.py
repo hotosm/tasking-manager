@@ -432,6 +432,8 @@ def project_user_delete(request):
 
 @view_config(route_name='project_users', renderer='json',
              permission="project_show")
+@view_config(route_name='task_users', renderer='json',
+             permission="project_show")
 def project_users(request):
     ''' get the list of users for a given project.
         Returns list of allowed users if project is private.
@@ -443,6 +445,39 @@ def project_users(request):
 
     query = request.params.get('q', '')
     query_filter = User.username.ilike(u"%" + query + "%")
+
+    r = []
+    if 'task' in request.matchdict:
+        task_id = request.matchdict['task']
+        ''' list of users who contributed to the current task '''
+        filter = and_(
+            TaskState.project_id == project.id,
+            TaskState.task_id == task_id
+        )
+
+        contributors = DBSession.query(User) \
+            .join(TaskState) \
+            .filter(filter) \
+            .order_by(TaskState.date.desc()) \
+            .all()
+
+        for user in contributors:
+            r.append(user.username)
+
+        ''' list of users who contributed to the current task '''
+        filter = and_(
+            TaskLock.project_id == project.id,
+            TaskLock.task_id == task_id
+        )
+
+        lockers = DBSession.query(User) \
+            .join(TaskLock) \
+            .filter(filter) \
+            .order_by(TaskLock.date.desc()) \
+            .all()
+        for user in lockers:
+            if user.username not in r:
+                r.append(user.username)
 
     ''' list of users with assigned tasks '''
     t = DBSession.query(
@@ -461,9 +496,9 @@ def project_users(request):
         .order_by(t.c.date.desc()) \
         .all()
 
-    r = []
     for user in assigned:
-        r.append(user.username)
+        if user.username not in r:
+            r.append(user.username)
 
     if project.private:
         ''' complete list with allowed users '''
