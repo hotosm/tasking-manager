@@ -73,6 +73,9 @@ import bleach
 
     <p class="text-muted">
       <em title="${step.date}Z" class="timeago"></em>
+      % if isinstance(step, TaskLock) and step.duration:
+      for ${step.duration}
+      % endif
     </p>
     </div>
 % endfor
