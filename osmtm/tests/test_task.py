@@ -234,6 +234,45 @@ class TestTaskFunctional(BaseTestCase):
                          headers=headers,
                          xhr=True)
 
+    def test_task_validate_roles(self):
+        import transaction
+        from osmtm.models import Project, DBSession
+
+        headers = self.login_as_user1()
+        self.testapp.get('/project/1/task/8/lock', headers=headers, xhr=True)
+        self.testapp.get('/project/1/task/8/done', headers=headers, xhr=True)
+
+        headers = self.login_as_validator()
+        resp = self.testapp.get('/project/1/task/8', headers=headers, xhr=True)
+        self.assertTrue('Review the work' in resp.body)
+
+        headers = self.login_as_user2()
+        resp = self.testapp.get('/project/1/task/8', headers=headers, xhr=True)
+        self.assertTrue('Review the work' in resp.body)
+
+        project = DBSession.query(Project).get(1)
+        project.requires_validator_role = True
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        headers = self.login_as_validator()
+        resp = self.testapp.get('/project/1/task/8', headers=headers, xhr=True)
+        self.assertTrue('Review the work' in resp.body)
+
+        headers = self.login_as_user2()
+        resp = self.testapp.get('/project/1/task/8', headers=headers, xhr=True)
+        self.assertFalse('Review the work' in resp.body)
+        resp = self.testapp.get('/project/1/task/8/lock',
+                                headers=headers, xhr=True)
+        self.assertFalse(resp.json['success'])
+
+        project = DBSession.query(Project).get(1)
+        project.requires_validator_role = False
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
     def test_task_cancel_done(self):
         headers = self.login_as_user1()
         self.testapp.get('/project/1/task/3/lock',

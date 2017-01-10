@@ -265,6 +265,10 @@ def project_edit(request):
         else:
             project.private = False
 
+        project.requires_validator_role = \
+            ('requires_validator_role' in request.params and
+             request.params['requires_validator_role'] == 'on')
+
         project.status = request.params['status']
         project.priority = request.params['priority']
 

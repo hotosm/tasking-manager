@@ -536,6 +536,9 @@ class Project(Base, Translatable):
     priority_areas = relationship(PriorityArea,
                                   secondary=project_priority_areas)
 
+    # whether the validation should require the validator role or not
+    requires_validator_role = Column(Boolean, default=False)
+
     def __init__(self, name, user=None):
         self.name = name
         self.author = user

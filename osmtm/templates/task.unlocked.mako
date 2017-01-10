@@ -30,7 +30,7 @@ from osmtm.models import TaskState
     </form>
     <hr>
     % endif
-    % if user and user.is_validator:
+    % if user and (not task.project.requires_validator_role or user.is_validator):
     <p>
     <a id="lock" href="${request.route_path('task_lock', task=task.id, project=task.project_id)}"
        rel="tooltip"

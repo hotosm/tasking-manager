@@ -26,6 +26,7 @@ USER1_ID = 1
 USER2_ID = 2
 ADMIN_USER_ID = 3
 PROJECT_MANAGER_USER_ID = 4
+VALIDATOR_ID = 5
 
 translation_manager.options.update({
     'locales': ['en', 'fr'],
@@ -61,6 +62,10 @@ def populate_db():
     user.role = User.role_project_manager
     DBSession.add(user)
 
+    user = User(VALIDATOR_ID, u'user_validator')
+    user.role = User.role_validator
+    DBSession.add(user)
+
     license = License()
     license.name = u'LicenseBar'
     license.description = u'the_description_for_license_bar'
@@ -90,6 +95,7 @@ class BaseTestCase(unittest.TestCase):
     user2_id = USER2_ID
     admin_user_id = ADMIN_USER_ID
     project_manager_user_id = PROJECT_MANAGER_USER_ID
+    validator_user_id = VALIDATOR_ID
 
     def setUp(self):
         from osmtm import main
@@ -123,6 +129,9 @@ class BaseTestCase(unittest.TestCase):
 
     def login_as_user2(self):
         return self.__remember(self.user2_id)
+
+    def login_as_validator(self):
+        return self.__remember(self.validator_user_id)
 
     def login_as_user(self, user_id):
         return self.__remember(user_id)

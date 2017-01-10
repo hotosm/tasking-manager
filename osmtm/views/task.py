@@ -218,6 +218,15 @@ def lock(request):
                     task=dict(id=task.id),
                     error_msg=_("Task assigned to someone else."))
 
+    if task.cur_state and \
+       task.cur_state.state == TaskState.state_done and \
+       task.project.requires_validator_role and \
+       user.role & user.role_validator == 0:
+        return dict(success=False,
+                    task=dict(id=task.id),
+                    error_msg=_("You don't have enough permissions to review"
+                                "the work."))
+
     task.locks.append(TaskLock(user=user, lock=True))
     DBSession.add(task)
     return dict(success=True, task=dict(id=task.id),

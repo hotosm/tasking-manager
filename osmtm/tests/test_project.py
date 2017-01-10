@@ -763,7 +763,7 @@ class TestProjectFunctional(BaseTestCase):
 
         res = self.testapp.get('/project/%d/users' % project_id,
                                status=200, xhr=True)
-        self.assertEqual(len(res.json), 4)
+        self.assertEqual(len(res.json), 5)
 
         res = self.testapp.get('/project/%d/users?q=pro' % project_id,
                                status=200, xhr=True)
