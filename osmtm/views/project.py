@@ -22,6 +22,7 @@ from sqlalchemy.orm import (
     joinedload,
 )
 from sqlalchemy.sql.expression import (
+    or_,
     and_,
     not_,
     func,
@@ -343,35 +344,20 @@ def check_for_updates(request):
     interval = request.GET['interval']
     date = datetime.datetime.utcnow() \
         - datetime.timedelta(0, 0, 0, int(interval))
-    updated = []
 
-    tasks = DBSession.query(Task) \
-                     .filter(Task.project_id == id, Task.date > date) \
-                     .all()
-    for task in tasks:
-        updated.append(task.to_feature())
-
-    tasks_lock = DBSession.query(TaskLock) \
-        .filter(
-            TaskLock.project_id == id,
-            TaskLock.date > date,
-            TaskLock.lock != None  # noqa
-        ) \
-        .all()
-    for lock in tasks_lock:
-        updated.append(lock.task.to_feature())
-
-    states = DBSession.query(TaskState) \
-        .filter(
-            TaskState.project_id == id,
-            TaskState.date > date,
-        ) \
-        .all()
-    for state in states:
-        updated.append(state.task.to_feature())
+    updated = DBSession.query(Task) \
+                       .join(TaskState) \
+                       .join(TaskLock) \
+                       .filter(Task.project_id == id) \
+                       .filter(or_(Task.date > date,
+                                   TaskState.date > date,
+                                   TaskLock.date > date)) \
+                       .options(joinedload(Task.cur_state)) \
+                       .options(joinedload(Task.cur_lock)) \
+                       .all()
 
     if len(updated) > 0:
-        return dict(update=True, updated=updated)
+        return dict(update=True, updated=[t.to_feature() for t in updated])
     return dict(update=False)
 
 
