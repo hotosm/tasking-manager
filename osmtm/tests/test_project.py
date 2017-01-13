@@ -170,7 +170,7 @@ class TestProjectFunctional(BaseTestCase):
         task1 = project.tasks[0]
         self.assertEqual(json.loads(task1.extra_properties)['test1'], 'val1')
         self.assertEqual(json.loads(task1.extra_properties)['test2'], 'val2')
-        project.per_task_instructions = 'replace {test1} and {test2}'
+        project.per_task_instructions = u'replace {test1} and {test2}'
         DBSession.add(project)
         DBSession.flush()
         transaction.commit()
@@ -194,7 +194,7 @@ class TestProjectFunctional(BaseTestCase):
         project = DBSession.query(Project).order_by(Project.id.desc()).first()
         task1 = project.tasks[0]
         self.assertEqual(task1.extra_properties, '{}')
-        project.per_task_instructions = 'test'
+        project.per_task_instructions = u'test'
         DBSession.add(project)
         DBSession.flush()
         transaction.commit()
