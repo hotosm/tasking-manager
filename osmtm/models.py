@@ -63,6 +63,7 @@ from .utils import (
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import datetime
+import re
 
 from json import (
     JSONEncoder,
@@ -383,7 +384,14 @@ class Task(Base):
         )
 
     def get_extra_instructions(self):
+
         instructions = self.project.per_task_instructions
+
+        def replace_colon(matchobj):
+            return matchobj.group(0).replace(':', '_')
+
+        instructions = re.sub('\{([^}]*)\}', replace_colon, instructions)
+
         properties = {}
         if self.x:
             properties['x'] = str(self.x)
@@ -392,7 +400,11 @@ class Task(Base):
         if self.zoom:
             properties['z'] = str(self.zoom)
         if self.extra_properties:
-            properties.update(_loads(self.extra_properties))
+            extra_properties = _loads(self.extra_properties)
+            for key in extra_properties:
+                properties.update({
+                    key.replace(':', '_'): extra_properties[key]
+                })
         return instructions.format(**properties)
 
 

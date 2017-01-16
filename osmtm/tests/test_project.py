@@ -202,6 +202,31 @@ class TestProjectFunctional(BaseTestCase):
         task1 = project.tasks[0]
         self.assertEqual(task1.get_extra_instructions(), 'test')
 
+    def test_project_new_arbitrary_extra_properties_with_colon(self):
+        from osmtm.models import DBSession, Project
+        import transaction
+
+        headers = self.login_as_admin()
+        self.testapp.post('/project/new/arbitrary',
+                          headers=headers,
+                          params={
+                              'form.submitted': True,
+                              'geometry': '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"foo:bar": "val1"},"geometry":{"type":"Polygon","coordinates":[[[4.39,19.55],[4.04,21.37],[7.60,22.91],[8.96,20.05],[5.62,18.93],[4.39,19.55]]]}}]}'  # noqa
+                          },
+                          status=302)
+
+        project = DBSession.query(Project).order_by(Project.id.desc()).first()
+        project_id = project.id
+        task1 = project.tasks[0]
+        project.per_task_instructions = u'replace {foo:bar}'
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+        project = DBSession.query(Project).get(project_id)
+        task1 = project.tasks[0]
+        self.assertEqual(task1.get_extra_instructions(),
+                         'replace val1')
+
     def test_project_edit_forbidden(self):
         headers = self.login_as_user1()
         self.testapp.get('/project/999/edit', headers=headers, status=403)
