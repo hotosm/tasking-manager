@@ -147,8 +147,16 @@ def task_xhr(request):
         TaskLock.project_id == project_id,
         TaskLock.lock != None  # noqa
     )
-    locks = DBSession.query(TaskLock).filter(filter) \
-        .order_by(TaskLock.date).all()
+    locks_query = DBSession.query(TaskLock).filter(filter) \
+        .order_by(TaskLock.date)
+    # store the locks in order to be able to remove the unlocks after duration
+    # computation without removing them from database
+    locks = [lock for lock in locks_query]
+    for index, lock in enumerate(locks):
+        if not lock.lock:
+            prev_lock = locks[index - 1]
+            prev_lock.duration = lock.date - prev_lock.date
+            locks.remove(lock)
 
     filter = and_(TaskComment.task_id.in_(ancestors),
                   TaskComment.project_id == project_id)

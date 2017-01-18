@@ -73,6 +73,11 @@ import bleach
 
     <p class="text-muted">
       <em title="${step.date}Z" class="timeago"></em>
+      % if isinstance(step, TaskLock) and step.duration:
+      ## TRANSLATORS: as in 'locked x minutes ago for x minutes'
+      <em>${_('for')}</em>
+      <em title="${step.duration}" class="duration"></em>
+      % endif
     </p>
     </div>
 % endfor
@@ -81,4 +86,7 @@ import bleach
 <div>${_('Nothing has happened yet.')}</div>
 % endif
 
-<script>$('.timeago').timeago()</script>
+<script>
+$('.timeago').timeago();
+$('.duration').duration();
+</script>

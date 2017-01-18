@@ -204,6 +204,9 @@ class TaskLock(Base):
     user_id = Column(BigInteger, ForeignKey('users.id'))
     user = relationship(User)
     date = Column(DateTime, default=datetime.datetime.utcnow)
+    # duration of the lock once the task is unlocked
+    # relevant only for records with lock == true
+    duration = 0
 
     __table_args__ = (ForeignKeyConstraint([task_id, project_id],
                                            ['task.id', 'task.project_id']),

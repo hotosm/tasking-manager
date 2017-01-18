@@ -13,18 +13,22 @@
     <script src="${request.static_url('osmtm:static/js/lib/velocity.ui.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/showdown/dist/showdown.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/showdown-youtube.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-timeago/jquery.timeago.js')}"></script>
+    <script src="${request.static_url('osmtm:static/js/lib/moment/min/moment.min.js')}"></script>
     <%
-      timeago_locale_baseurl = 'osmtm:static/js/lib/jquery-timeago/locales/jquery.timeago.%s.js'
+      moment_locale_baseurl = 'osmtm:static/js/lib/moment/locale/%s.js'
       try:
-        timeago_locale = request.static_url(timeago_locale_baseurl % request.locale_name.replace('_', '-'))
+        moment_locale = request.static_url(moment_locale_baseurl % request.locale_name.replace('_', '-'))
       except IOError:
         try:
-          timeago_locale = request.static_url(timeago_locale_baseurl % request.locale_name[:2])
-        except IOError:
-          timeago_locale = request.static_url(timeago_locale_baseurl % 'en')
+          moment_locale = request.static_url(moment_locale_baseurl % request.locale_name[:2])
+        except:
+          moment_locale = None
     %>
-    <script src="${timeago_locale}"></script>
+    % if moment_locale:
+    <script src="${moment_locale}"></script>
+    % endif
+    <script src="${request.static_url('osmtm:static/js/timeago.js')}"></script>
+    <script src="${request.static_url('osmtm:static/js/duration.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js')}"></script>
     <script src="${request.static_url('osmtm:static/js/shared.js')}"></script>
