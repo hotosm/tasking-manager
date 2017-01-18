@@ -127,6 +127,7 @@ def main(global_config, **settings):
                      '/project/{project:\d+}/task/{task:\d+}/users')
 
     config.add_route('users', '/users')
+    config.add_route('users_json', '/users.json')
     config.add_route('user_messages', '/user/messages')
     config.add_route('user_messages_check', '/user/messages/check')
     config.add_route('user', '/user/{username}')
