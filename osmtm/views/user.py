@@ -37,17 +37,6 @@ def users(request):
     return dict(page_id="users", paginator=paginator)
 
 
-@view_config(route_name='users_json', renderer='json')
-def users_json(request):
-    query = DBSession.query(User).order_by(User.username)
-
-    if 'q' in request.params:
-        q = request.params.get('q')
-        query = query.filter(User.username.ilike('%' + q + '%')).limit(10)
-
-    return [u.username for u in query.all()]
-
-
 @view_config(route_name='user_messages', http_cache=0,
              renderer='user.messages.mako')
 def user_messages(request):

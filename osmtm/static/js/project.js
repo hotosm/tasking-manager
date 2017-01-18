@@ -27,8 +27,16 @@ osmtm.project = (function() {
     tpl: "<li data-value='${name}'>${name}</li>",
     show_the_at: true,
     limit: 10,
-    data: base_url + 'users.json',
     callbacks: {
+      remoteFilter: function(query, callback) {
+        $.getJSON(
+          base_url + 'project/' + project_id + '/task/' + task_id + '/users',
+          {q: query},
+          function(data) {
+            callback(data);
+          }
+        );
+      },
       beforeInsert: function(value)  {
         // username contains a space
         if (value.match((/ /))) {
