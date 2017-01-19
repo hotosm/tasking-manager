@@ -16,7 +16,7 @@ class TestViewsFunctional(BaseTestCase):
 
     def test_users_json(self):
         res = self.testapp.get('/users.json', status=200)
-        self.assertEqual(len(res.json), 6)
+        self.assertEqual(len(res.json), 7)
 
     def test_users_json__query(self):
         res = self.testapp.get('/users.json',

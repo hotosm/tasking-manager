@@ -763,7 +763,7 @@ class TestProjectFunctional(BaseTestCase):
 
         res = self.testapp.get('/project/%d/users' % project_id,
                                status=200, xhr=True)
-        self.assertEqual(len(res.json), 5)
+        self.assertEqual(len(res.json), 6)
 
         res = self.testapp.get('/project/%d/users?q=pro' % project_id,
                                status=200, xhr=True)
@@ -1063,3 +1063,29 @@ class TestProjectFunctional(BaseTestCase):
                                })
         projects = res.html.select('.project')
         self.assertEqual(len(projects), 0)
+
+    def test_project__experienced_mapper(self):
+        import transaction
+        from osmtm.models import DBSession, Project
+        project_id = self.create_project()
+        project = DBSession.query(Project).get(project_id)
+        project.requires_experienced_mapper_role = True
+        DBSession.add(project)
+        DBSession.flush()
+        transaction.commit()
+
+        project = DBSession.query(Project).get(project_id)
+        tasks = project.tasks
+        headers_user1 = self.login_as_user1()
+        from osmtm.tests import EXPERIENCED_MAPPER_ID
+        headers_exp_map = self.login_as_user(EXPERIENCED_MAPPER_ID)
+
+        res = self.testapp.get('/project/%d/task/%d' % (project_id,
+                                                        tasks[0].id),
+                               headers=headers_user1, status=200, xhr=True)
+        self.assertTrue('experienced mapper' in res.body)
+
+        res = self.testapp.get('/project/%d/task/%d' % (project_id,
+                                                        tasks[0].id),
+                               headers=headers_exp_map, status=200, xhr=True)
+        self.assertFalse('experienced mapper' in res.body)

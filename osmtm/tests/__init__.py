@@ -28,6 +28,7 @@ USER2_ID = 2
 ADMIN_USER_ID = 3
 PROJECT_MANAGER_USER_ID = 4
 VALIDATOR_ID = 5
+EXPERIENCED_MAPPER_ID = 6
 
 translation_manager.options.update({
     'locales': ['en', 'fr'],
@@ -65,6 +66,10 @@ def populate_db():
 
     user = User(VALIDATOR_ID, u'user_validator')
     user.role = User.role_validator
+    DBSession.add(user)
+
+    user = User(EXPERIENCED_MAPPER_ID, u'user_experienced_mapper')
+    user.role = User.role_experienced_mapper
     DBSession.add(user)
 
     license = License()

@@ -282,6 +282,10 @@ def project_edit(request):
             ('requires_validator_role' in request.params and
              request.params['requires_validator_role'] == 'on')
 
+        project.requires_experienced_mapper_role = \
+            ('requires_experienced_mapper_role' in request.params and
+             request.params['requires_experienced_mapper_role'] == 'on')
+
         project.status = request.params['status']
         project.priority = request.params['priority']
 

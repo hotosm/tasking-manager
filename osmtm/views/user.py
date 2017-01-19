@@ -100,6 +100,18 @@ def user_validator(request):
                                          username=user.username))
 
 
+@view_config(route_name='user_experienced_mapper', permission="user_edit")
+def user_experienced_mapper(request):
+    id = request.matchdict['id']
+    user = DBSession.query(User).get(id)
+
+    user.role ^= User.role_experienced_mapper
+    DBSession.flush()
+
+    return HTTPFound(location=route_path("user", request,
+                                         username=user.username))
+
+
 @view_config(route_name='user', renderer='user.mako')
 def user(request):
 

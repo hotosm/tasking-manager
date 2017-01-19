@@ -142,6 +142,8 @@ def main(global_config, **settings):
     config.add_route('user_admin', '/user/{id:\d+}/admin')
     config.add_route('user_project_manager', '/user/{id:\d+}/project_manager')
     config.add_route('user_validator', '/user/{id:\d+}/validator')
+    config.add_route('user_experienced_mapper',
+                     '/user/{id:\d+}/experienced_mapper')
     config.add_route('user_prefered_editor',
                      '/user/prefered_editor/{editor}', xhr=True)
     config.add_route('user_prefered_language',

@@ -119,6 +119,7 @@ users_licenses_table = Table(
 ADMIN = 1
 PROJECT_MANAGER = 2
 VALIDATOR = 4
+EXPERIENCED_MAPPER = 8
 
 
 class User(Base):
@@ -128,6 +129,7 @@ class User(Base):
     role_admin = ADMIN
     role_project_manager = PROJECT_MANAGER
     role_validator = VALIDATOR
+    role_experienced_mapper = EXPERIENCED_MAPPER
     role = Column(Integer, default=0)
 
     accepted_licenses = relationship("License", secondary=users_licenses_table)
@@ -156,6 +158,10 @@ class User(Base):
     def is_validator(self):
         return self.role & self.role_validator
 
+    @hybrid_property
+    def is_experienced_mapper(self):
+        return self.role & self.role_experienced_mapper
+
     def as_dict(self):
         return {
             "id": self.id,
@@ -163,6 +169,7 @@ class User(Base):
             "is_admin": self.is_admin,
             "is_project_manager": self.is_project_manager,
             "is_validator": self.is_validator,
+            "is_experienced_mapper": self.is_experienced_mapper,
         }
 
 
@@ -549,6 +556,9 @@ class Project(Base, Translatable):
     requires_validator_role = Column(Boolean, default=False)
 
     labels = relationship("Label", secondary=project_labels_table)
+
+    # whether the validation should require the validator role or not
+    requires_experienced_mapper_role = Column(Boolean, default=False)
 
     def __init__(self, name, user=None):
         self.name = name
