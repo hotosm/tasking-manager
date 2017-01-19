@@ -38,7 +38,7 @@ def home(request):
     check_project_expiration()
 
     # no user in the DB yet
-    if DBSession.query(User).filter(User.role == User.role_admin) \
+    if DBSession.query(User).filter(User.role.op('&')(User.role_admin) == 1) \
                 .count() == 0:   # pragma: no cover
         request.override_renderer = 'start.mako'
         return dict(page_id="start")
@@ -72,14 +72,14 @@ def get_projects(request, items_per_page):
 
     if not user:
         filter = Project.private == False  # noqa
-    elif not user.is_admin and not user.is_project_manager:
+    elif not user.is_project_manager:
         query = query.outerjoin(Project.allowed_users)
         filter = or_(Project.private == False,  # noqa
                      User.id == user_id)
     else:
         filter = True  # make it work with an and_ filter
 
-    if not user or (not user.is_admin and not user.is_project_manager):
+    if not user or not user.is_project_manager:
         filter = and_(Project.status == Project.status_published, filter)
 
     if 'search' in request.params:

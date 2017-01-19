@@ -21,7 +21,7 @@ else:
 endif
 %>
 % if task.difficulty is not None or \
-  (user and (user.is_project_manager or user.is_admin)):
+  (user and user.is_project_manager):
 <em class="text-${style}"
     rel="tooltip"
     data-html="true"
@@ -30,7 +30,7 @@ endif
 ${difficulty}
 </em>
 % endif
-% if user and (user.is_project_manager or user.is_admin):
+% if user and user.is_project_manager:
 <span class="dropdown">
   <a class="btn btn-xs"
     data-toggle="dropdown"

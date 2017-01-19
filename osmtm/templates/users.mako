@@ -20,8 +20,12 @@
               <a href="user/${user.username}">${user.username}</a>
                 % if user.is_admin:
                   <i class="glyphicon glyphicon-star user-admin"></i>
-                % elif user.is_project_manager:
+                % endif
+                % if user.is_project_manager:
                   <i class="glyphicon glyphicon-star user-project-manager"></i>
+                % endif
+                % if user.is_validator:
+                  <i class="glyphicon glyphicon-ok"></i>
                 % endif
             </li>
           % endfor
@@ -33,10 +37,31 @@
       <small>
         <p>${paginator.item_count} ${_('Users')}</p>
         ${_('Keys:')}
-        <ul>
-          <li><i class="glyphicon glyphicon-star user-admin"></i> ${_('Administrator')}</li>
-          <li><i class="glyphicon glyphicon-star user-project-manager"></i> ${_('Project Manager')}</li>
-        </ul>
+        <form>
+          <ul class="list-unstyled">
+            <li>
+              <label>
+                <input type="checkbox" name="role" value="1" ${'checked' if u'1' in request.params.getall('role') else ''}>
+                <i class="glyphicon glyphicon-star user-admin"></i>
+                ${_('Administrator')}
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox" name="role" value="2" ${'checked' if u'2' in request.params.getall('role') else ''}>
+                <i class="glyphicon glyphicon-star user-project-manager"></i>
+                ${_('Project Manager')}
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox" name="role" value="4" ${'checked' if u'4' in request.params.getall('role') else ''}>
+                <i class="glyphicon glyphicon-ok"></i>
+                ${_('Validator')}
+              </label>
+            </li>
+          </ul>
+        </form>
       </small>
     </div>
   </div>
@@ -59,6 +84,9 @@ new autoComplete({
     window.location.href = base_url + 'user/' + term;
     e.preventDefault();
   }
+});
+$('input[name=role]').change(function() {
+  $('form').submit();
 });
 </script>
 </%block>

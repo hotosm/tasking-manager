@@ -76,7 +76,7 @@ sorts = [('priority', 'asc', _('High priority first')),
                 onclick="this.form.submit();"> ${_('Your projects')}
             </label>
           </div>
-            % if user.is_admin or user.is_project_manager:
+            % if user.is_project_manager:
             <div class="checkbox input-sm pull-right">
               <label>
                 <input type="checkbox" name="show_archived"

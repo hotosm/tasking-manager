@@ -118,6 +118,7 @@ users_licenses_table = Table(
 # user roles
 ADMIN = 1
 PROJECT_MANAGER = 2
+VALIDATOR = 4
 
 
 class User(Base):
@@ -126,7 +127,8 @@ class User(Base):
     username = Column(Unicode)
     role_admin = ADMIN
     role_project_manager = PROJECT_MANAGER
-    role = Column(Integer)
+    role_validator = VALIDATOR
+    role = Column(Integer, default=0)
 
     accepted_licenses = relationship("License", secondary=users_licenses_table)
     private_projects = relationship("Project",
@@ -144,18 +146,23 @@ class User(Base):
 
     @hybrid_property
     def is_admin(self):
-        return self.role is self.role_admin
+        return self.role & self.role_admin
 
     @hybrid_property
     def is_project_manager(self):
-        return self.role is self.role_project_manager
+        return self.role & self.role_project_manager
+
+    @hybrid_property
+    def is_validator(self):
+        return self.role & self.role_validator
 
     def as_dict(self):
         return {
             "id": self.id,
             "username": self.username,
             "is_admin": self.is_admin,
-            "is_project_manager": self.is_project_manager
+            "is_project_manager": self.is_project_manager,
+            "is_validator": self.is_validator,
         }
 
 
@@ -531,6 +538,9 @@ class Project(Base, Translatable):
 
     priority_areas = relationship(PriorityArea,
                                   secondary=project_priority_areas)
+
+    # whether the validation should require the validator role or not
+    requires_validator_role = Column(Boolean, default=False)
 
     def __init__(self, name, user=None):
         self.name = name

@@ -460,7 +460,7 @@ class TestProjectFunctional(BaseTestCase):
                                },
                                status=200)
         self.assertTrue(res.json['update'])
-        self.assertEqual(len(res.json['updated']), 3)
+        self.assertEqual(len(res.json['updated']), 1)
 
     def test_project_check_for_updates_2(self):
         import time
@@ -489,7 +489,7 @@ class TestProjectFunctional(BaseTestCase):
                                },
                                status=200)
         self.assertTrue(res.json['update'])
-        self.assertEqual(len(res.json['updated']), 7)
+        self.assertEqual(len(res.json['updated']), 5)
 
     def test_project_user_add__not_allowed(self):
         project_id = self.create_project()
@@ -763,7 +763,7 @@ class TestProjectFunctional(BaseTestCase):
 
         res = self.testapp.get('/project/%d/users' % project_id,
                                status=200, xhr=True)
-        self.assertEqual(len(res.json), 4)
+        self.assertEqual(len(res.json), 5)
 
         res = self.testapp.get('/project/%d/users?q=pro' % project_id,
                                status=200, xhr=True)

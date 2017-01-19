@@ -21,7 +21,7 @@ done = task.cur_state and task.cur_state.state == TaskState.state_done
 <%
 tooltip = _("Validate this task if you consider that the work is complete.")
 %>
-      % if user == task.states[0].user and not (user.is_admin or user.is_project_manager):
+% if user == task.states[0].user and not (user.is_admin or user.is_project_manager):
 <%
 selfvalidatestate = """ type="button" disabled """
 selfvalidatetext = _("You cannot validate a task that you have personally marked as done.")

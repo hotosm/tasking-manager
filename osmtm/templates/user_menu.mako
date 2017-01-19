@@ -22,7 +22,7 @@
       <a href="${request.route_path('licenses')}">${_('Manage licenses')}</a>
     </li>
     % endif
-    % if user.is_admin or user.is_project_manager:
+    % if user.is_project_manager:
     <li>
       <a href="${request.route_path('project_new')}">${_('Create a new project')}</a>
     </li>

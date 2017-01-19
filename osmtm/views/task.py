@@ -198,7 +198,7 @@ def done(request):
     DBSession.flush()
 
     _ = request.translate
-    return dict(success=True,
+    return dict(success=True, task=dict(id=task.id),
                 msg=_("Task marked as done. Thanks for your contribution"))
 
 
@@ -225,6 +225,15 @@ def lock(request):
         return dict(success=False,
                     task=dict(id=task.id),
                     error_msg=_("Task assigned to someone else."))
+
+    if task.cur_state and \
+       task.cur_state.state == TaskState.state_done and \
+       task.project.requires_validator_role and \
+       user.role & user.role_validator == 0:
+        return dict(success=False,
+                    task=dict(id=task.id),
+                    error_msg=_("You don't have enough permissions to review"
+                                "the work."))
 
     task.locks.append(TaskLock(user=user, lock=True))
     DBSession.add(task)
@@ -355,6 +364,33 @@ def validate(request):
     DBSession.flush()
 
     return dict(success=True, msg=msg)
+
+
+@view_config(route_name='task_cancel_done', renderer='json')
+def cancel_done(request):
+    _ = request.translate
+
+    user = __get_user(request)
+    task = __get_task(request, lock_for_update=True)
+
+    ''' Ensure that task is not currently locked by someone else '''
+    if task.cur_lock.lock:
+        return dict(success=False, msg=_("Task is locked by someone else"),
+                    task=dict(id=task.id))
+
+    ''' Only the last contributor of the task can cancel '''
+    if task.cur_state.user != user:
+        return dict(success=False, task=dict(id=task.id))
+
+    ''' Change the done state to ready '''
+    ''' We could remove the done state but then the map doesn't reload
+        automatically '''
+    task.cur_state.date = datetime.datetime.utcnow()
+    task.cur_state.state = TaskState.state_ready
+    DBSession.add(task)
+    DBSession.flush()
+
+    return dict(success=True, task=dict(id=task.id))
 
 
 @view_config(route_name='task_split', renderer='json')
