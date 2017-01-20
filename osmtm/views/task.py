@@ -233,7 +233,7 @@ def lock(request):
         return dict(success=False,
                     task=dict(id=task.id),
                     error_msg=_("You don't have enough permissions to review"
-                                "the work."))
+                                " the work."))
 
     task.locks.append(TaskLock(user=user, lock=True))
     DBSession.add(task)
