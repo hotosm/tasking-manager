@@ -6,103 +6,133 @@
 </%block>
 <%block name="content">
 <%
+from osmtm.mako_filters import markdown_filter
+%>
+<%
 base_url = request.route_path('home')
 priorities = [_('urgent'), _('high'), _('medium'), _('low')]
-
-sorts = [('priority', 'asc', _('High priority first')),
-         ('created', 'desc', _('Creation date')),
-         ('last_update', 'desc', _('Last update'))]
 %>
+<%
+  total = ngettext('${total} project', '${total} projects', paginator.item_count, mapping={'total': paginator.item_count})
+%>
+<form role="form"
+    action="${request.current_route_url()}"
+    method="GET">
+  <input type="hidden" name="sort_by"
+         value="${request.params.get('sort_by', 'priority')}">
+  <input type="hidden" name="direction"
+       value="${request.params.get('direction', 'asc')}">
 <div class="container">
-  <div class="col-md-6">
+  <div class="col-md-8">
     <h3>${_('Projects')}</h3>
-    <%
-        qs = dict(request.GET)
-
-        sort_by = qs.get('sort_by', 'priority')
-        direction = qs.get('direction', 'asc')
-        button_text = ''
-        for sort in sorts:
-            if sort[0] == sort_by and sort[1] == direction:
-                button_text = sort[2]
-        endfor
-    %>
-    <form class="form-inline" role="form"
-          action="${request.current_route_url()}"
-          method="GET">
-
-      <div class="row">
-        <div class="col-md-12">
-          <input type="hidden" name="sort_by"
-                 value="${request.params.get('sort_by', 'priority')}">
-          <input type="hidden" name="direction"
-                 value="${request.params.get('direction', 'asc')}">
-
-          <div class="form-group left-inner-addon">
-            <i class="glyphicon glyphicon-search text-muted"></i>
-            <input type="search" class="form-control input-sm"
-                   name="search" placeholder="${_('Search')}"
-                   value="${request.params.get('search', '')}">
-          </div>
-          <div class="btn-group pull-right">
-            <button type="button" class="btn btn-default btn-sm dropdown-toggle"
-                    data-toggle="dropdown">
-              ${_('Sort by:')} <strong>${button_text}</strong>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              % for sort in sorts:
-                <%
-                  qs['sort_by'] = sort[0]
-                  qs['direction'] = sort[1]
-                %>
-                <li>
-                  <a href="${request.current_route_url(_query=qs.items())}">
-                    ${sort[2]}
-                  </a>
-                </li>
-              % endfor
-            </ul>
-          </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group left-inner-addon">
+          <i class="glyphicon glyphicon-search text-muted"></i>
+          <input type="search" class="form-control"
+                 name="search" placeholder="${_('Search')}"
+                 value="${request.params.get('search', '')}">
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          % if user and user.username:
-          <div class="checkbox input-sm pull-right">
-            <label>
-              <input type="checkbox" name="my_projects"
-                ${'checked' if request.params.get('my_projects') == 'on' else ''}
-                onclick="this.form.submit();"> ${_('Your projects')}
-            </label>
-          </div>
-            % if user.is_project_manager:
-            <div class="checkbox input-sm pull-right">
-              <label>
-                <input type="checkbox" name="show_archived"
-                  ${'checked' if request.params.get('show_archived') == 'on' else ''}
-                  onclick="this.form.submit();"> ${_('Include archived projects')}
-              </label>
-            </div>
-            % endif
-          % else:
-          <br>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+
+        % if 'my_projects' in dict(request.GET) or 'show_archived' in dict(request.GET):
+          <small>
+          ${_('Filters:')}
+          </small>
+
+          % if 'my_projects' in dict(request.GET):
+            <%
+              qs = dict(request.GET)
+              qs.pop('my_projects')
+            %>
+            <a class="label label-default"
+               href="${request.route_url('home', _query=qs.items())}">${_('Your projects')} &times;</a>
+            </a>
           % endif
-        </div>
+
+          % if 'show_archived' in dict(request.GET):
+            <%
+              qs = dict(request.GET)
+              qs.pop('show_archived')
+            %>
+            <a class="label label-default"
+               href="${request.route_url('home', _query=qs.items())}">${_('Include archived projects')} &times;</a>
+            </a>
+          % endif
+          <br>
+        % endif
+
+        % if 'labels' in dict(request.GET) and request.GET['labels']:
+          <small>
+          ${_('Labels:')}
+          </small>
+          % for label in labels:
+          <%
+          import re
+          from osmtm.mako_filters import contrast
+          qs = dict(request.GET)
+
+          label_id = label.name
+          if re.findall(ur'\s', label_id):
+            label_id = '\"' + label_id + '\"'
+          if 'labels' in qs:
+            qs['labels'] = qs['labels'].replace(label_id, '').strip()
+          %>
+          % if label.name in query_labels:
+          <a class="label label-default"
+             style="background-color: ${label.color};color: ${label.color|contrast}"
+             href="${request.route_url('home', _query=qs.items())}">${label.name} &times;</a>
+          % endif
+          % endfor
+        % endif
       </div>
-    </form>
+    </div>
+    <div class="navbar navbar-no-margin">
+      <strong class="navbar-text">
+        ${total}
+      </strong>
+      <div class="navbar-right navbar-form">
+        ${other_filters()}
+        ${label_filter()}
+        ${sort_filter()}
+        &nbsp;
+      </div>
+    </div>
     % if paginator.items:
         % for project in paginator.items:
           ${project_block(project=project, base_url=base_url,
                           priorities=priorities)}
         % endfor
-        ${paginate()}
     % endif
+    ${paginate()}
   </div>
-  <div class="col-md-6">
+  <div class="col-md-4">
+    % for label in labels:
+      <%
+        if request.locale_name:
+          label.locale = request.locale_name
+      %>
+      % if label.name in query_labels and label.description:
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              ${helpers.display_label(label)}
+            </span>
+            </h3>
+          </div>
+          <div class="panel-body">
+            ${label.description | markdown_filter, n}
+          </div>
+        </div>
+      % endif
+    % endfor
     ${custom.main_page_right_panel()}
   </div>
 </div>
+</form>
 </%block>
 
 <%def name="project_block(project, base_url, priorities)">
@@ -166,7 +196,12 @@ sorts = [('priority', 'asc', _('High priority first')),
   </div>
   ${project.short_description | markdown_filter, n}
   <div class="clear"></div>
+  % for label in project.labels:
+  ${helpers.display_label(label)}
+  % endfor
+  <br>
   ${helpers.display_project_info(project=project)}
+  <br>
 </div>
 </%def>
 
@@ -181,5 +216,144 @@ sorts = [('priority', 'asc', _('High priority first')),
                       curpage_attr=curpage_attr,
                       dotdot_attr=dotdot_attr)}
   </div>
+</div>
+</%def>
+
+<%def name="other_filters()">
+% if user and user.username:
+<div class="btn-group">
+  <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+          data-toggle="dropdown">
+    ${_('Filters')}
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <%
+      qs = dict(request.GET)
+      checked = 'my_projects' in qs
+      if not checked:
+        qs['my_projects'] = 'on'
+      else:
+        qs.pop('my_projects', None)
+      %>
+      <a href="${request.current_route_url(_query=qs.items())}">
+        <i class="glyphicon glyphicon-ok"
+          % if not checked:
+          style="visibility:hidden"
+          % endif
+          ></i>
+        ${_('Your projects')}
+      </a>
+    </li>
+    % if user.is_project_manager:
+    <li>
+      <%
+      qs = dict(request.GET)
+      checked = 'show_archived' in qs
+      if not checked:
+        qs['show_archived'] = 'on'
+      else:
+        qs.pop('show_archived', None)
+      %>
+      <a href="${request.current_route_url(_query=qs.items())}">
+        <i class="glyphicon glyphicon-ok"
+          % if not checked:
+          style="visibility:hidden"
+          % endif
+          ></i>
+        ${_('Include archived projects')}
+      </a>
+    </li>
+    % endif
+  </ul>
+</div>
+% endif
+</%def>
+
+<%def name="sort_filter()">
+<%
+sorts = [('priority', 'asc', _('High priority first')),
+         ('created', 'desc', _('Creation date')),
+         ('last_update', 'desc', _('Last update'))]
+%>
+<%
+  qs = dict(request.GET)
+  sort_by = qs.get('sort_by', 'priority')
+  direction = qs.get('direction', 'asc')
+  button_text = ''
+  for sort in sorts:
+      if sort[0] == sort_by and sort[1] == direction:
+          button_text = sort[2]
+  endfor
+%>
+<div class="btn-group">
+  <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+          data-toggle="dropdown">
+    ${_('Sort by:')} <strong>${button_text}</strong>
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    % for sort in sorts:
+    <%
+    qs = dict(request.GET)
+    qs['sort_by'] = sort[0]
+    qs['direction'] = sort[1]
+    %>
+    <li>
+      <a href="${request.current_route_url(_query=qs.items())}">
+        <i class="glyphicon glyphicon-ok"
+          % if sort[0] != sort_by or sort[1] != direction:
+          style="visibility:hidden"
+          % endif
+          ></i>
+        ${sort[2]}
+      </a>
+    </li>
+    % endfor
+  </ul>
+</div>
+</%def>
+
+<%def name="label_filter()">
+<%
+  from osmtm.mako_filters import contrast
+%>
+<div class="btn-group">
+  <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+          data-toggle="dropdown">
+    ${_('Labels')}
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    % for label in labels:
+    <%
+    import re
+    qs = dict(request.GET)
+    label_id = label.name
+    if re.findall(ur'\s', label_id):
+      label_id = '\"' + label_id + '\"'
+    label_filter = qs.get('labels', '')
+    found = False
+    if label_id in label_filter:
+      found = True
+      qs['labels'] = qs['labels'].replace(label_id, '').strip()
+    else:
+      qs['labels'] = (label_filter + ' ' + label_id).strip()
+    %>
+    <li>
+      <a href="${request.current_route_url(_query=qs.items())}">
+        <i class="glyphicon glyphicon-ok"
+          % if not found:
+          style="visibility:hidden"
+          % endif
+          ></i>
+        <span class="label" style="background-color: ${label.color}; color: ${label.color|contrast}">
+        ${label.name}
+        </span>
+      </a>
+    </li>
+    % endfor
+  </ul>
 </div>
 </%def>

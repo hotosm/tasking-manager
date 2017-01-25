@@ -91,9 +91,8 @@ h1 {
     }
     .archived, .draft {
       background: url(../img/closed_back.gif) transparent;
-      border-color: #efefef;
 
-      a {
+      h4 a {
         color: grey;
       }
     }
@@ -591,4 +590,23 @@ h1 {
   transform: scaleX(-1);
   filter: FlipH;
   -ms-filter: "FlipH";
+}
+
+.list-underline {
+  > li:first-child {
+    border-top: 1px solid #dfdfdf;
+  }
+  > li {
+    padding-top: @padding-small-vertical;
+    padding-bottom: @padding-small-vertical;
+    border-bottom: 1px solid #dfdfdf;
+  }
+}
+
+.navbar-no-margin {
+  margin: 0;
+}
+
+.dropdown-colorselector>.dropdown-menu {
+  min-width: 226px !important;
 }

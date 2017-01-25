@@ -4,9 +4,9 @@ from pyramid.httpexceptions import HTTPFound, HTTPUnauthorized
 import re
 import sqlalchemy
 from sqlalchemy import (
-    desc,
     or_,
     and_,
+    desc,
 )
 
 from ..models import (
@@ -14,6 +14,7 @@ from ..models import (
     Project,
     ProjectTranslation,
     User,
+    Label,
     TaskLock,
 )
 
@@ -45,7 +46,10 @@ def home(request):
 
     paginator = get_projects(request, 10)
 
-    return dict(page_id="home", paginator=paginator)
+    labels = DBSession.query(Label).all()
+    query_labels = extract_labels(request.params.get('labels', ''))
+    return dict(page_id="home", paginator=paginator, labels=labels,
+                query_labels=query_labels)
 
 
 @view_config(route_name='home_json', renderer='json')
@@ -56,6 +60,18 @@ def home_json(request):
     paginator = get_projects(request, 100)
     request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
     return FeatureCollection([project.to_feature() for project in paginator])
+
+
+def extract_labels(s):
+    label_regex = r"\"([^\"]+)\"|'([^']+)'|(\S+)"
+    matches = re.finditer(label_regex, s)
+
+    labels = []
+    for num, match in enumerate(matches):
+        '''We don't want the first group of the match since it's the full
+           text'''
+        labels.append([g for g in match.groups() if g is not None][0])
+    return labels
 
 
 def get_projects(request, items_per_page):
@@ -82,7 +98,20 @@ def get_projects(request, items_per_page):
     if not user or not user.is_project_manager:
         filter = and_(Project.status == Project.status_published, filter)
 
-    if 'search' in request.params:
+    if 'labels' in request.params:
+        labels = extract_labels(request.params.get('labels', ''))
+
+        if len(labels) > 0:
+            ids = DBSession.query(Project.id) \
+                      .filter(and_(*[Project.labels.any(name=label)
+                                     for label in labels])).all()
+            if len(ids) > 0:
+                filter = and_(Project.id.in_(ids), filter)
+            else:
+                # IN-predicate  with emty sequence can be expensive
+                filter = and_(False == True, filter)  # noqa
+
+    if request.params.get('search', '') != '':
         s = request.params.get('search')
         PT = ProjectTranslation
         search_filter = or_(PT.name.ilike('%%%s%%' % s),
@@ -102,7 +131,11 @@ def get_projects(request, items_per_page):
         ids = DBSession.query(ProjectTranslation.id) \
                        .filter(search_filter) \
                        .all()
-        filter = and_(Project.id.in_(ids), filter)
+        if len(ids) > 0:
+            filter = and_(Project.id.in_(ids), filter)
+        else:
+            # IN-predicate  with emty sequence can be expensive
+            filter = and_(False == True, filter)  # noqa
 
     # filter projects on which the current user worked on
     if request.params.get('my_projects', '') == 'on':

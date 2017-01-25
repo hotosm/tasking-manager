@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 <%inherit file="base.mako"/>
+<%namespace file="helpers.mako" name="helpers"/>
 <%block name="header">
 <h1>${project.id} - ${project.name} - ${_('Edit')}</h1>
 </%block>
@@ -136,6 +137,7 @@ geometry = loads(str(project.area.geometry.data))
           <li><a href="#imagery" data-toggle="tab">${_('Imagery')}</a></li>
           <li><a id="priority_areas_tab" href="#priority_areas" data-toggle="tab">${_('Priority Areas')}</a></li>
           <li><a href="#permissions" data-toggle="tab">${_('Permissions')}</a></li>
+          <li><a href="#labels" data-toggle="tab">${_('Labels')}</a></li>
           <li><a href="#misc" data-toggle="tab">${_('Misc')}</a></li>
         </ul>
         <div class="tab-content">
@@ -156,6 +158,9 @@ geometry = loads(str(project.area.geometry.data))
           </div>
           <div class="tab-pane" id="permissions">
             ${permissions()}
+          </div>
+          <div class="tab-pane" id="labels">
+            ${labels_()}
           </div>
           <div class="tab-pane" id="misc">
             ${misc()}
@@ -218,7 +223,7 @@ geometry = loads(str(project.area.geometry.data))
         <div class="form-group">
           <label for="id_name" class="control-label">${_('Name of the project')}
           </label>
-          ${locale_chooser(inputname='name')}
+          ${helpers.locale_chooser(inputname='name')}
           <div class="tab-content">
             % for locale, translation in translations:
             <div id="tab_name_${locale}"
@@ -242,7 +247,7 @@ geometry = loads(str(project.area.geometry.data))
           <label for="id_short_description" class="control-label">
             ${_('Short Description')}
           </label>
-          ${locale_chooser(inputname='short_description')}
+          ${helpers.locale_chooser(inputname='short_description')}
           <div class="tab-content">
             % for locale, translation in translations:
               <div id="short_description_${locale}"
@@ -469,6 +474,30 @@ geometry = loads(str(project.area.geometry.data))
 </script>
 </%block>
 
+<%block name="labels_">
+<%
+  from osmtm.mako_filters import contrast
+%>
+<div class="form-group">
+    % for l in labels:
+    <%
+    checked = ""
+    if project.labels is not None and l in project.labels:
+      checked = "checked"
+    %>
+    <div class="checkbox">
+        <label>
+          <input type="checkbox" name="label_${l.id}" ${checked}>
+          <span class="label"
+                style="background-color: ${l.color}; color:${l.color|contrast};">
+            ${l.name}
+          </span>
+        </label>
+    </div>
+    % endfor
+</div>
+</%block>
+
 <%block name="misc">
 <div class="form-group">
   <div class="input-group">
@@ -534,7 +563,7 @@ geometry = loads(str(project.area.geometry.data))
 
 <%def name="textarea_with_preview(inputname, size=None)">
   <div class="tab-content">
-    ${locale_chooser(inputname=inputname)}
+    ${helpers.locale_chooser(inputname=inputname)}
     % for locale, translation in translations:
     <div id="tab_${inputname}_${locale}"
          data-locale="${locale}"
@@ -573,33 +602,4 @@ geometry = loads(str(project.area.geometry.data))
     % endfor
   </div>
   ${markdown_link()}
-</%def>
-
-<%def name="locale_chooser(inputname)">
-  <div class="btn-group pull-right" id="locale_chooser_${inputname}">
-    % for locale, translation in translations:
-    <a href
-      class="btn btn-default btn-xs ${'active' if locale == 'en' else ''}"
-      data-locale="${locale}">
-      <span class="${'text-muted' if getattr(translation, inputname) == '' else ''}">
-        ${locale}
-      </span>
-    </a>
-    % endfor
-  </div>
-  <script>
-    $('#locale_chooser_${inputname} a').on('click', function() {
-      $(this).addClass('active');
-      $(this).siblings().removeClass('active');
-      var locale = $(this).attr('data-locale');
-      $(this).parents('.form-group').find('.tab-pane').each(function(index, item) {
-        if ($(item).attr('data-locale') == locale) {
-          $(item).addClass('active');
-        } else {
-          $(item).removeClass('active');
-        }
-      });
-      return false;
-    });
-  </script>
 </%def>

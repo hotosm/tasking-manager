@@ -19,3 +19,6 @@
 [submodule "osmtm/static/js/lib/moment"]
 	path = osmtm/static/js/lib/moment
 	url = https://github.com/moment/moment.git
+[submodule "osmtm/static/js/lib/colorselector"]
+	path = osmtm/static/js/lib/colorselector
+	url = https://github.com/flaute/bootstrap-colorselector.git

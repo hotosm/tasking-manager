@@ -37,3 +37,16 @@ def convert_mentions(request):
         return re.sub(p, repl, text)
 
     return d
+
+
+def contrast(color):
+    from colour import Color
+    '''Returns better constrast color between white and black for the given
+       color
+    '''
+    color = Color(color)
+    if (color.red * 256 * 0.299 + color.green * 256 * 0.587 +
+       color.blue * 256 * 0.114) > 186:
+        return 'black'
+    else:
+        return 'white'

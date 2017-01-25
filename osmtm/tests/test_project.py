@@ -814,7 +814,6 @@ class TestProjectFunctional(BaseTestCase):
         from osmtm.models import Project, DBSession
         project_id = self.create_project()
         project = DBSession.query(Project).get(project_id)
-        project.name = u'private_project'
         project.private = True
         DBSession.add(project)
         DBSession.flush()
@@ -1005,3 +1004,62 @@ class TestProjectFunctional(BaseTestCase):
         self.assertEqual([msg.message for msg in msg_to_user2],
                          ['Please help us with this! \
                          Por favor, nos ayude con esto!'])
+
+    def test_home__search(self):
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'search': 'lorem'
+                               })
+        projects = res.html.select('.project')
+        self.assertEqual(len(projects), 1)
+
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'search': 'foo'
+                               })
+        projects = res.html.select('.project')
+        self.assertEqual(len(projects), 0)
+
+    def test_home__search_label(self):
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'labels': 'foo'
+                               })
+        projects = res.html.select('.project')
+        self.assertEqual(len(projects), 0)
+
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'labels': 'bar'
+                               })
+        projects = res.html.select('.project')
+        self.assertEqual(len(projects), 1)
+
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'search': 'lorem',
+                                   'labels': 'bar'
+                               })
+        projects = res.html.select('.project')
+        self.assertEqual(len(projects), 1)
+
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'labels': '"dude label"'
+                               })
+        projects = res.html.select('.project')
+        self.assertEqual(len(projects), 1)
+
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'labels': 'bar "dude label"'
+                               })
+        projects = res.html.select('.project')
+        self.assertEqual(len(projects), 1)
+
+        res = self.testapp.get('/', status=200,
+                               params={
+                                   'labels': 'bar foo'
+                               })
+        projects = res.html.select('.project')
+        self.assertEqual(len(projects), 0)
