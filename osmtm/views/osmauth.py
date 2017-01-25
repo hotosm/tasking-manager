@@ -94,7 +94,8 @@ def oauth_callback(request):  # pragma: no cover
             check_user_name(user)
 
         # there's no admin in the database yet, let's create one
-        if DBSession.query(User).filter(User.role != User.role_admin) \
+        if DBSession.query(User) \
+                    .filter(User.role.op('&')(User.role_admin) == 1) \
                     .count() == 0:
             user = DBSession.query(User).get(id)
             user.role = User.role_admin + User.role_project_manager
