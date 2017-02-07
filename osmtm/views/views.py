@@ -89,9 +89,8 @@ def get_projects(request, items_per_page):
     if not user:
         filter = Project.private == False  # noqa
     elif not user.is_project_manager:
-        query = query.outerjoin(Project.allowed_users)
         filter = or_(Project.private == False,  # noqa
-                     User.id == user_id)
+                     Project.allowed_users.any(User.id == user_id))
     else:
         filter = True  # make it work with an and_ filter
 
