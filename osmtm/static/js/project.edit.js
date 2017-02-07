@@ -2,56 +2,40 @@ $(document).ready(function() {
     $('.nav-tabs a:first').tab('show');
     $('.nav.languages li:first-of-type a').tab('show');
     $('.input-group.date').datepicker({language: locale_name});
-  var substringMatcher = function(strs) {
-    return function findMatches(q, cb) {
-      var matches, substrRegex;
 
-      // an array that will be populated with substring matches
-      matches = [];
+  var users = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.whitespace,
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: [],
+    remote: {
+      url: base_url + 'users.json?q=%QUERY',
+      wildcard: '%QUERY'
+    }
+  });
 
-      // regex used to determine if a string contains the substring `q`
-      substrRegex = new RegExp(q, 'i');
-
-      // iterate through the pool of strings and for any string that
-      // contains the substring `q`, add it to the `matches` array
-      $.each(strs, function(i, str) {
-        if (substrRegex.test(str)) {
-          // the typeahead jQuery plugin expects suggestions to a
-          // JavaScript object, refer to typeahead docs for more info
-          matches.push({ value: str });
-        }
-      });
-
-      cb(matches);
-    };
-  };
-
-  $.getJSON(base_url + 'users.json', function(users) {
-    $('#adduser').typeahead({
-      hint: true,
-      highlight: true,
-      minLength: 1
+  $('#adduser').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+  {
+    name: 'states',
+    limit: 40,
+    source: users
+  }).on({
+    'typeahead:selected': function(e, suggestion, name) {
+      window.setTimeout(function() {
+        $('#do_add_user').removeClass('disabled');
+      }, 200);
     },
-    {
-      name: 'states',
-      displayKey: 'value',
-      source: substringMatcher(users),
-      limit: 40
-    }).on({
-      'typeahead:selected': function(e, suggestion, name) {
-        window.setTimeout(function() {
-          $('#do_add_user').removeClass('disabled');
-        }, 200);
-      },
-      'typeahead:autocompleted': function(e, suggestion, name) {
-        window.setTimeout(function() {
-          $('#do_add_user').removeClass('disabled');
-        }, 200);
-      },
-      'keyup': function(e) {
-        $('#do_add_user').addClass('disabled');
-      }
-    });
+    'typeahead:autocompleted': function(e, suggestion, name) {
+      window.setTimeout(function() {
+        $('#do_add_user').removeClass('disabled');
+      }, 200);
+    },
+    'keyup': function(e) {
+      $('#do_add_user').addClass('disabled');
+    }
   });
 });
 
