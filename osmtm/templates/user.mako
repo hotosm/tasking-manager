@@ -98,6 +98,21 @@ else:
         % endif
       % endif
       </p>
+
+      <p>
+      % if contributor.is_experienced_mapper:
+        <i class="glyphicon glyphicon-ok"></i>
+        ${_("This user is an experienced mapper.")}
+        % if user is not None and (user.is_admin or user.is_project_manager) and user != contributor:
+          <a href="${request.route_path('user_experienced_mapper', id=contributor.id)}">${_('Remove privileges')}</a>
+        % endif
+      % else:
+        % if user is not None and (user.is_admin or user.is_project_manager):
+          <i class="glyphicon glyphicon-ok"></i>
+          <a href="${request.route_path('user_experienced_mapper', id=contributor.id)}">${_('Set as experienced mapper')}</a>
+        % endif
+      % endif
+      </p>
     </div>
   </div>
   <div class="row">

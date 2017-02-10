@@ -27,6 +27,9 @@
                 % if user.is_validator:
                   <i class="glyphicon glyphicon-ok"></i>
                 % endif
+                % if user.is_experienced_mapper:
+                  <i class="glyphicon glyphicon-star"></i>
+                % endif
             </li>
           % endfor
         % endif
@@ -58,6 +61,13 @@
                 <input type="checkbox" name="role" value="4" ${'checked' if u'4' in request.params.getall('role') else ''}>
                 <i class="glyphicon glyphicon-ok"></i>
                 ${_('Validator')}
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox" name="role" value="8" ${'checked' if u'8' in request.params.getall('role') else ''}>
+                <i class="glyphicon glyphicon-star"></i>
+                ${_('Experienced mapper')}
               </label>
             </li>
           </ul>

@@ -466,6 +466,23 @@ geometry = loads(str(project.area.geometry.data))
     </div>
   </div>
 </div>
+<hr>
+<div class="row">
+  <div class="input-group">
+    <div class="checkbox">
+      <label>
+        <%
+          checked = 'checked' if project.requires_experienced_mapper_role else ''
+        %>
+        <input type="checkbox" name="requires_experienced_mapper_role" ${checked}>
+        ${_('Only experienced mappers can contribute')}
+      </label>
+      <div class="help-block">
+        ${_("If checked, only users with the 'experienced mapper role' will be able to contribute to the current project. If not, anyone can.")}
+      </div>
+    </div>
+  </div>
+</div>
 <%
   from osmtm.models import dumps
 %>
