@@ -1,4 +1,6 @@
 import bleach
+import subprocess
+import os
 from pyramid.config import Configurator
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
@@ -27,11 +29,19 @@ scheduler = BackgroundScheduler()
 scheduler.start()
 
 
+try:
+    version = subprocess.check_output(['git', 'describe', '--always'],
+                                      cwd=os.path.dirname(__file__))
+except Exception as e:
+    version = 'N/A'
+
+
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     settings['mako.directories'] = 'osmtm:templates'
     load_local_settings(settings)
+    settings.update({'version': version})
 
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
