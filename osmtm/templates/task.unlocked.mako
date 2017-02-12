@@ -32,7 +32,7 @@ author = task.project.author.username if task.project.author else ''
     %>
     <p>
       ${_('You need to be an **experienced mapper** to contribute to this project.')|markdown_filter}
-      ${_("You think you are an **experienced mapper**? Click [this link](${link}) to send a message to the author to ask him form permissions to work on this project.",
+      ${_("You think you are an **experienced mapper**? Click [this link](${link}) to send a message to the author to ask him for permissions to work on this project.",
         mapping={'link': link})| markdown_filter, n}
     </p>
     <hr>
