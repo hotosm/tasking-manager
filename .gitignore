@@ -1,0 +1,21 @@
+#Pycharm
+.idea/
+
+# Dev artifacts
+client/node_modules/
+shippable/
+
+# Ignore dist folder as this contains the minimized build for deploy
+server/web/static/dist
+server/web/static/dist/
+
+# Ignore local logs
+logs/
+
+#python
+venv/
+*pyc
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/
+
