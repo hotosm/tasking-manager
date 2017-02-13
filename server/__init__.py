@@ -14,7 +14,7 @@ def bootstrap_app():
     set_config()
 
     initialise_logger()
-    app.logger.info('British Library App Starting Up, Environment = {0}'.format(get_current_environment()))
+    app.logger.info('HOT Tasking Manager App Starting Up, Environment = {0}'.format(get_current_environment()))
 
     app.logger.debug('Initialising Blueprints')
     from .web import main as main_blueprint
