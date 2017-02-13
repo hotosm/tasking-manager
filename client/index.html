@@ -1,10 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="taskingManager">
 <head>
     <meta charset="UTF-8">
     <title>HOT Tasking Manager</title>
+    <base href="/">
 </head>
 <body>
-    <h1>Hello HOT</h1>
+
+    <!-- Main content and injected views -->
+    <div id="tm-container" ng-view>
+    </div>
+
+    <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.2/angular.min.js -->
+    <script src="node_modules/angular/angular.js"></script>
+    <!-- /build -->
+
+    <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.2/angular-route.min.js -->
+    <script src="node_modules/angular-route/angular-route.js"></script>
+    <!-- /build -->
+
+    <!-- build:js app/taskingmanager.min.js -->
+    <script src="app/taskingmanager.app.js"></script>
+    <!-- /build -->
+
 </body>
 </html>
