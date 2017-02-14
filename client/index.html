@@ -4,24 +4,72 @@
     <meta charset="UTF-8">
     <title>HOT Tasking Manager</title>
     <base href="/">
+
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700"/>
+
+    <!-- build:css assets/styles/css/main.min.css -->
+    <link href="assets/styles/css/main.css" rel="stylesheet">
+    <!-- /build -->
+
 </head>
 <body>
 
-    <!-- Main content and injected views -->
-    <div id="tm-container" ng-view>
+<!-- header -->
+<header class="page__header" role="banner">
+    <div class="inner">
+        <div class="page__headline">
+            <h1 class="page__title">
+                <a href="/" title="Visit homepage">
+                    HOT Tasking Manager
+                </a>
+            </h1>
+        </div>
+        <nav class="page__prime-nav" role="navigation">
+            <h2 class="toggle-menu">
+                <a title="Show/hide menu"></a>
+            </h2>
+            <div class="menu-wrapper">
+                <ul class="global-menu" id="global-menu">
+                    <li>
+                        <a href="/about" title="Visit about" class="global-menu-item">
+                            <span>About</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/learn" title="Visit learn" class="global-menu-item">
+                            <span>Learn</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/contribute" title="Visit contribute" class="global-menu-item">
+                            <span>Contribute</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="button button--primary" role="button"><span>Login</span></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </div>
+</header>
+<!--/ header -->
 
-    <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.2/angular.min.js -->
-    <script src="node_modules/angular/angular.js"></script>
-    <!-- /build -->
+<!-- Main content and injected views -->
+<div id="tm-container" ng-view>
+</div>
 
-    <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.2/angular-route.min.js -->
-    <script src="node_modules/angular-route/angular-route.js"></script>
-    <!-- /build -->
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.2/angular.min.js -->
+<script src="node_modules/angular/angular.js"></script>
+<!-- /build -->
 
-    <!-- build:js app/taskingmanager.min.js -->
-    <script src="app/taskingmanager.app.js"></script>
-    <!-- /build -->
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.2/angular-route.min.js -->
+<script src="node_modules/angular-route/angular-route.js"></script>
+<!-- /build -->
+
+<!-- build:js app/taskingmanager.min.js -->
+<script src="app/taskingmanager.app.js"></script>
+<!-- /build -->
 
 </body>
 </html>

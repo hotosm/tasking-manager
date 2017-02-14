@@ -3,6 +3,7 @@
 
 # Dev artifacts
 client/node_modules/
+client/assets/styles/css
 shippable/
 
 # Ignore dist folder as this contains the minimized build for deploy
