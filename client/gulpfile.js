@@ -1,8 +1,11 @@
 var gulp = require('gulp'),
     browserSync = require('browser-sync'),
+    concat = require('gulp-concat'),
     del = require('del'),
     modRewrite = require('connect-modrewrite'),
-    runSequence = require('run-sequence');
+    processhtml = require('gulp-processhtml'),
+    runSequence = require('run-sequence'),
+    uglify = require('gulp-uglify');
 
 // paths object holds references to location of all assets
 var paths = {
@@ -10,7 +13,6 @@ var paths = {
     html: ['./**/*.html', '!node_modules/**/*.html'],
     images: ['assets/img/**/*']
 };
-
 
 gulp.task('browser-sync', function () {
     /** Runs the web app currently under development and watches the filesystem for changes */
@@ -40,15 +42,29 @@ gulp.task('clean', function() {
     return del(['../server/web/static/dist/*'], {force: true});
 });
 
+gulp.task('uglify', function() {
+    /**
+     * Process scripts and concatenate them into one output file, note that output of uglify MUST be piped back
+     * to dist, otherwise minified js won't be saved
+     */
+    gulp.src(paths.scripts)
+        .pipe(concat('taskingmanager.min.js'))
+        .pipe(gulp.dest('../server/web/static/dist/app'))
+        .pipe(uglify())
+        .pipe(gulp.dest('../server/web/static/dist/app'))
+});
+
 gulp.task('processhtml', function () {
     /** Replace refs to dev files with minified versions or versions on CDNs */
     return gulp.src(paths.html)
+               .pipe(processhtml())
                .pipe(gulp.dest('../server/web/static/dist'));
 });
 
-/** Build task for STAGING env - will minify the app and copy it to the dist folder ready to deploy */
+/** Build task for will minify the app and copy it to the dist folder ready to deploy */
 gulp.task('build', function(callback) {
     runSequence('clean',
+                'uglify',
                 'processhtml',
                 callback);
 
