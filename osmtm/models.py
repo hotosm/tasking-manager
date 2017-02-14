@@ -309,6 +309,9 @@ class Task(Base):
 
     parent_id = Column(Integer)
 
+    # Note to developers
+    # If you change this relationship please allow modify `get_task` method
+    # in `project.py`
     cur_lock = relationship(
         TaskLock,
         primaryjoin=lambda: and_(
@@ -324,6 +327,9 @@ class Task(Base):
         uselist=False
     )
 
+    # Note to developers
+    # If you change this relationship please allow modify `get_task` method
+    # in `project.py`
     cur_state = relationship(
         TaskState,
         primaryjoin=lambda: and_(
