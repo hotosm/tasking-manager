@@ -61,7 +61,7 @@ gulp.task('processhtml', function () {
                .pipe(gulp.dest('../server/web/static/dist'));
 });
 
-/** Build task for STAGING env - will minify the app and copy it to the dist folder ready to deploy */
+/** Build task for will minify the app and copy it to the dist folder ready to deploy */
 gulp.task('build', function(callback) {
     runSequence('clean',
                 'uglify',

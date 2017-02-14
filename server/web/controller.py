@@ -12,6 +12,16 @@ def assets(path):
     return send_from_directory(main.static_folder, 'assets/' + path)
 
 
+@main.route('/app/<path:path>')
+def app(path):
+    """
+    Route for returning any files contained in the app dir, typically javascript
+    :param path: Path to the file the browser is requesting
+    :return: The file
+    """
+    return send_from_directory(main.static_folder, 'app/' + path)
+
+
 @main.route('/api-docs')
 def api():
     """
