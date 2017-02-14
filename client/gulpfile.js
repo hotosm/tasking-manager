@@ -48,7 +48,7 @@ gulp.task('uglify', function() {
      * to dist, otherwise minified js won't be saved
      */
     gulp.src(paths.scripts)
-        .pipe(concat('britishlibrary.min.js'))
+        .pipe(concat('taskingmanager.min.js'))
         .pipe(gulp.dest('../server/web/static/dist/app'))
         .pipe(uglify())
         .pipe(gulp.dest('../server/web/static/dist/app'))
