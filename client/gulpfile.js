@@ -86,7 +86,7 @@ gulp.task('compile-sass', function () {
 
 gulp.task('sass:watch', function () {
     /** Watches the sass files **/
-    gulp.watch('assets/styles/sass/*.scss', ['sass']);
+    gulp.watch('assets/styles/sass/*.scss', ['compile-sass']);
 });
 
 /** Build task for will minify the app and copy it to the dist folder ready to deploy */
