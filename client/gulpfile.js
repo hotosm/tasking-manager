@@ -48,7 +48,7 @@ gulp.task('minify-css', function() {
     /** Minify all CSS and output to dist - Docs for CSSNano are here https://github.com/ben-eb/cssnano */
 
     return gulp.src(paths.styles)
-        .pipe(concat('main.min.css'))
+        .pipe(concat('taskingmanager.min.css'))
         .pipe(gulp.dest('../server/web/static/dist/assets/styles/css'))
         .pipe(cssnano())
         .pipe(gulp.dest('../server/web/static/dist/assets/styles/css'));
@@ -73,9 +73,9 @@ gulp.task('processhtml', function () {
         .pipe(gulp.dest('../server/web/static/dist'));
 });
 
-gulp.task('sass', function () {
+gulp.task('compile-sass', function () {
     /** Creates a CSS file from the SCSS files */
-    return gulp.src('assets/styles/sass/main.scss')
+    return gulp.src('assets/styles/sass/taskingmanager.scss')
         .pipe(sass({
             outputStyle: 'expanded', 
             precision: 10,
@@ -92,11 +92,11 @@ gulp.task('sass:watch', function () {
 /** Build task for will minify the app and copy it to the dist folder ready to deploy */
 gulp.task('build', function(callback) {
     runSequence('clean',
-                'sass',
+                'compile-sass',
                 'minify-css',
                 'uglify',
                 'processhtml',
                 callback);
 });
 
-gulp.task('run', ['sass', 'browser-sync', 'sass:watch']);
+gulp.task('run', ['compile-sass', 'browser-sync', 'sass:watch']);
