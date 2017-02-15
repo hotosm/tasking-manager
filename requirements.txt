@@ -1,6 +1,7 @@
 click==6.7
 Flask==0.12
 Flask-Script==2.0.5
+gunicorn==19.6.0
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23
