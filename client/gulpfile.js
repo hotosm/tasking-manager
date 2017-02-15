@@ -1,16 +1,19 @@
 var gulp = require('gulp'),
     browserSync = require('browser-sync'),
     concat = require('gulp-concat'),
+    cssnano = require('gulp-cssnano'),
     del = require('del'),
     modRewrite = require('connect-modrewrite'),
     processhtml = require('gulp-processhtml'),
     runSequence = require('run-sequence'),
+    sass = require('gulp-sass');
     uglify = require('gulp-uglify');
 
 // paths object holds references to location of all assets
 var paths = {
     scripts: ['app/**/*.js'],
     html: ['./**/*.html', '!node_modules/**/*.html'],
+    styles: ['assets/styles/css/*.css'],
     images: ['assets/img/**/*']
 };
 
@@ -19,8 +22,8 @@ gulp.task('browser-sync', function () {
 
     // Specify list of files to watch for changes, apparently reload method doesn't work on Windows */
 	var filesToWatch = [
-        './*.html',
-        './*.js'
+        './**/*.html',
+        './**/*.js'
    ];
 
     // Create a rewrite rule that redirects to index.html to let Angular handle the routing
@@ -38,8 +41,17 @@ gulp.task('browser-sync', function () {
 
 gulp.task('clean', function() {
     /** Clean up dist folder before adding deployment files */
-
     return del(['../server/web/static/dist/*'], {force: true});
+});
+
+gulp.task('minify-css', function() {
+    /** Minify all CSS and output to dist - Docs for CSSNano are here https://github.com/ben-eb/cssnano */
+
+    return gulp.src(paths.styles)
+        .pipe(concat('taskingmanager.min.css'))
+        .pipe(gulp.dest('../server/web/static/dist/assets/styles/css'))
+        .pipe(cssnano())
+        .pipe(gulp.dest('../server/web/static/dist/assets/styles/css'));
 });
 
 gulp.task('uglify', function() {
@@ -57,17 +69,34 @@ gulp.task('uglify', function() {
 gulp.task('processhtml', function () {
     /** Replace refs to dev files with minified versions or versions on CDNs */
     return gulp.src(paths.html)
-               .pipe(processhtml())
-               .pipe(gulp.dest('../server/web/static/dist'));
+        .pipe(processhtml())
+        .pipe(gulp.dest('../server/web/static/dist'));
+});
+
+gulp.task('compile-sass', function () {
+    /** Creates a CSS file from the SCSS files */
+    return gulp.src('assets/styles/sass/taskingmanager.scss')
+        .pipe(sass({
+            outputStyle: 'expanded', 
+            precision: 10,
+            includePaths: require('node-bourbon').with('node_modules/jeet/scss', require('oam-design-system/gulp-addons').scssPath)}
+        ).on('error', sass.logError))
+        .pipe(gulp.dest('assets/styles/css/'));
+});
+
+gulp.task('sass:watch', function () {
+    /** Watches the sass files **/
+    gulp.watch('assets/styles/sass/*.scss', ['compile-sass']);
 });
 
 /** Build task for will minify the app and copy it to the dist folder ready to deploy */
 gulp.task('build', function(callback) {
     runSequence('clean',
+                'compile-sass',
+                'minify-css',
                 'uglify',
                 'processhtml',
                 callback);
-
 });
 
-gulp.task('run', ['browser-sync']);
+gulp.task('run', ['compile-sass', 'browser-sync', 'sass:watch']);
