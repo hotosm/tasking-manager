@@ -6,5 +6,11 @@ python:
     - "3.5"
 
 build:
+    pre_ci_boot:
+        image_name: python
+        image_tag: 3.6
+        pull: true
+        options: "-e HOME=/root --privileged=True"
+
     ci:
         - python --version
