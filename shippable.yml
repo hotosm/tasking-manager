@@ -1,0 +1,10 @@
+# language setting
+language: python
+
+# version numbers
+python:
+    - "3.6"
+
+build:
+    ci:
+        - python --version
