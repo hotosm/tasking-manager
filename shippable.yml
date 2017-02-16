@@ -14,10 +14,14 @@ build:
         options: "-e HOME=/root --privileged=True"
 
     ci:
+        # Install latest LTS node
         - apt-get update
-        - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -  # Ensure we pull latest LTS node
+        - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
         - apt-get install nodejs
         - node --version
+
+        # Install NPM packages and build client from gulpfile
+        - cd client
         - npm install
         - ./node_modules/.bin/gulp build
 
