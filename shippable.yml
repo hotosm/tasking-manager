@@ -18,5 +18,7 @@ build:
         - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -  # Ensure we pull latest LTS node
         - apt-get install nodejs
         - node --version
+        - npm install
+        - ./node_modules/.bin/gulp build
 
         - python --version
