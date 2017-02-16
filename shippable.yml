@@ -26,7 +26,6 @@ build:
         - ./node_modules/.bin/gulp build
 
         - python --version
-        - deactivate
         - python3 -m venv ./venv_aws
         - ./venv_aws/bin/activate
         - pip install -r requirements.aws.txt
