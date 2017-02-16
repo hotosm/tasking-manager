@@ -5,6 +5,9 @@ language: python
 python:
     - "3.5"
 
+env:
+    - secure: PjCTHdC1E/tZkN+kL15okF5j3NFerFBKK3nU7OI9pFHYW8rO2JA5UyhjTbgYzdBvTAhUodBRmy8d82jAqHj2zHSCG0FEq9ehEresLruHm3rhSKFVG9vJSda47Qzm01zo8HTd73lnuq4buMp/fVAlvaKSa7zux90Sx+6xqxrUWeIsEuqxapVaeAouLOXkHrII/ERHJ89UEgJAkn777dWIodJWEXZiWHcMI2to+z19k95ZPSeNL5Q8yaA2r63walA7VewYdCdBNthXNqwI9lCsgOoFZNMREbPhnkszAaNUhm14bi/epU4Z/pvgBvoquAjl697r4r65iEnKGIIHZYAknQ==
+
 build:
     # Use the python 3.6 docker container to build the application
     pre_ci_boot:
@@ -24,14 +27,10 @@ build:
         - cd client
         - npm install
         - ./node_modules/.bin/gulp build
-
         - cd ..
-        - python --version
-        - python -m venv ./venv_aws
-        - . ./venv_aws/bin/activate
-        - pip install -r requirements.aws.txt
 
+        - python --version
 
     on_success:
         # Run deploy script to manage deploy to appropriate environment
-        - . ./bin/linux/deploy.sh
+        - . ./bin/linux/shippable_deploy.sh
