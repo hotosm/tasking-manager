@@ -25,11 +25,11 @@ build:
         - npm install
         - ./node_modules/.bin/gulp build
 
+        - cd ..
         - python --version
         - python -m venv ./venv_aws
         - . ./venv_aws/bin/activate
-        - ls
-        # - pip install -r requirements.aws.txt
+        - pip install -r requirements.aws.txt
 
 
     on_success:
