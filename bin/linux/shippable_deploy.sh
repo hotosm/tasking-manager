@@ -13,8 +13,7 @@ echo Running HOT Tasking Manager Deploy, current branch is $BRANCH
 VERSION=v.0.0.$BUILD_NUMBER-$BRANCH
 
 
-python -m venv ./venv_aws
-. ./venv_aws/bin/activate
+
 pip install -r requirements.aws.txt
 printf '1\nn\n' | eb init hot-tasking-manager --region eu-west-1
 eb use tasking-manager-staging
