@@ -27,7 +27,7 @@ build:
 
         - python --version
         - python -m venv ./venv_aws
-        - sudo ./venv_aws/bin/activate
+        - . ./venv_aws/bin/activate
         - pip install -r requirements.aws.txt
 
 
