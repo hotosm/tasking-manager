@@ -1,0 +1,12 @@
+/* OpenLayers override */
+.ol-zoom button {
+  background-color: $secondary-color;
+}
+
+.ol-attribution button{
+  background-color: $secondary-color;
+}
+
+.ol-control button, .ol-control button:focus, .ol-control button:hover {
+    background-color: $secondary-color;
+}

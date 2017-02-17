@@ -23,6 +23,7 @@
     "jeet": "^7.1.0",
     "node-bourbon": "^4.2.8",
     "oam-design-system": "git+https://github.com/hotosm/oam-design-system.git",
+    "openlayers": "^4.0.1",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
