@@ -1,8 +1,15 @@
+aniso8601==1.2.0
 click==6.7
 Flask==0.12
+Flask-RESTful==0.3.5
 Flask-Script==2.0.5
+flask-swagger==0.2.13
 gunicorn==19.6.0
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23
+python-dateutil==2.6.0
+pytz==2016.10
+PyYAML==3.12
+six==1.10.0
 Werkzeug==0.11.15
