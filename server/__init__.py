@@ -1,6 +1,7 @@
 import logging
 import os
 from flask import Flask
+from flask_restful import Api
 from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
@@ -19,9 +20,10 @@ def bootstrap_app():
     app.logger.debug('Initialising Blueprints')
     from .web import main as main_blueprint
     from .web import swagger as swagger_blueprint
-
     app.register_blueprint(main_blueprint)
     app.register_blueprint(swagger_blueprint)
+
+    init_flask_restful_routes()
 
     return app
 
@@ -62,3 +64,18 @@ def initialise_logger():
 
     app.logger.addHandler(file_handler)
     app.logger.setLevel(log_level)
+
+
+def init_flask_restful_routes():
+    """
+    Define the routes the API exposes using Flask-Restful.  See docs here
+    http://flask-restful-cn.readthedocs.org/en/0.3.5/quickstart.html#endpoints
+    """
+    app.logger.debug('Initialising API Routes')
+    api = Api(app, default_mediatype='application/json')
+
+    from server.api.health_check import HealthCheck
+    from server.api.swagger_docs import SwaggerDocs
+
+    api.add_resource(HealthCheck, '/api/health-check')
+    api.add_resource(SwaggerDocs, '/api/docs')

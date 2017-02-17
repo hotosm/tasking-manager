@@ -17,6 +17,6 @@ logs/
 venv/
 *pyc
 
-# Elastic Beanstalk Files
+# AWS
 .elasticbeanstalk/
-
+venv_aws/
