@@ -7,46 +7,21 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', [createProjectController]);
+        .controller('createProjectController', ['mapService', 'drawService', createProjectController]);
 
-    function createProjectController() {
+    function createProjectController(mapService, drawService) {
         var vm = this;
         vm.currentStep = '';
+        vm.AOIRequired = true;
 
         activate();
 
         function activate() {
             vm.currentStep = 'area';
-            
-            // TODO: move to map service
-            var map = new ol.Map({
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM()
-                    })
-                ],
-                target: 'map',
-                view: new ol.View({
-                    center: [0, 0],
-                    zoom: 2
-                })
-            });
 
-            var geocoder = new Geocoder('nominatim', {
-                provider: 'osm',
-                lang: 'en',
-                placeholder: 'Search for ...',
-                targetType: 'glass-button',
-                limit: 5,
-                keepOpen: true,
-                preventDefault: true
-            });
-            map.addControl(geocoder);
-
-            geocoder.on('addresschosen', function(evt){
-                map.getView().setCenter(evt.coordinate);
-                map.getView().setZoom(12);
-            });
+            mapService.createOSMMap('map');
+            drawService.initDrawTools();
+            addGeocoder();
         }
 
         /**
@@ -54,7 +29,20 @@
          * @param step
          */
         vm.setStep = function(step){
-            vm.currentStep = step;
+            if (step === 'tasks'){
+                var numberOfFeatures = drawService.getNumberOfFeatures();
+                if (numberOfFeatures > 0){
+                    vm.AOIRequired = false;
+                    vm.currentStep = step;
+                    drawService.setDrawPolygonActive(false);
+                }
+                else {
+                    vm.AOIRequired = true;
+                }
+            }
+            else {
+                vm.currentStep = step;
+            }
         };
 
         /**
@@ -88,10 +76,43 @@
                 showStep = false;
             }
             return showStep;
-        }
+        };
 
+        /**
+         * Draw Area of Interest
+         */
+        vm.drawAOI = function(){
+            if (!drawService.getDrawPolygonActive()){
+                drawService.setDrawPolygonActive(true);
+            }
+        };
+
+        /**
+         * Adds a geocoder control to the map
+         * It is using an OpenLayers plugin control
+         * For more info and options, please see https://github.com/jonataswalker/ol3-geocoder
+         */
         function addGeocoder(){
 
+            // Initialise the geocoder
+            var geocoder = new Geocoder('nominatim', {
+                provider: 'osm',
+                lang: 'en',
+                placeholder: 'Search for ...',
+                targetType: 'glass-button',
+                limit: 5,
+                keepOpen: true,
+                preventDefault: true
+            });
+            mapService.getOSMMap().addControl(geocoder);
+
+            // By setting the preventDefault to false when initialising the Geocoder, you can add your own event
+            // handler which has been done here.
+            geocoder.on('addresschosen', function(evt){
+                map.getView().setCenter(evt.coordinate);
+                // It is assumed that most people will search for cities. Zoom level 12 seems most appropriate
+                map.getView().setZoom(12);
+            });
         }
     }
 })();
