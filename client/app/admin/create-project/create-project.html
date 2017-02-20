@@ -1,0 +1,147 @@
+<div class="inner">
+    <section class="section">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Create project
+                </h1>
+            </div>
+        </header>
+        <div class="section__create-project">
+            <ul class="progress-indicator">
+                <li ng-class="createProjectCtrl.showStep('area') ? 'completed' : ''">
+                    <span class="bubble"></span>Step 1
+                </li>
+                 <li ng-class="createProjectCtrl.showStep('tasks') ? 'completed' : ''">
+                    <span class="bubble"></span>Step 2
+                </li>
+                <li ng-class="createProjectCtrl.showStep('templates') ? 'completed' : ''">
+                    <span class="bubble"></span>Step 3
+                </li>
+                 <li ng-class="createProjectCtrl.showStep('review') ? 'completed' : ''">
+                    <span class="bubble"></span>Step 4
+                </li>
+            </ul>
+            <div class="sidebar">
+                <div ng-show="createProjectCtrl.currentStep === 'area'" class="content">
+                    <h2>Step 1: define area</h2>
+                    <form class="form">
+                        <div>
+                            <p>Draw the area of interest on the map.</p>
+                            <button class="button button--secondary" type="button"><span>Draw</span></button>
+                        </div>
+                        <hr />
+                        <div>
+                            <p>Import a GeoJSON, KML, or zipped SHP file.</p>
+                            <button class="button button--secondary" type="button"><span>Import</span></button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <p>Want to use an .osm file instead? You can use <a href="http://geojson.io" target="_blank">GeoJSON.io</a>
+                        to convert it to GeoJSON.</p>
+                    <div class="navigation-steps">
+                        <div class="button-group button-group--horizontal" role="group">
+                            <button class="button button--achromic" type="button">
+                                <span>Previous</span>
+                            </button>
+                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.setStep('tasks')">
+                                <span>Next</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="createProjectCtrl.currentStep === 'tasks'" class="content">
+                    <h2>Step 2: define tasks</h2>
+                    <form class="form">
+                        <div class="form__group">
+                            <label class="form__option form__option--custom-radio">
+                                <input type="radio" name="form-custom-radio" id="form-custom-radio-1" value="Radio 1"
+                                       checked/>
+                                <span class="form__option__text">Square grid</span>
+                                <span class="form__option__ui"></span>
+                            </label>
+                            <label class="form__option form__option--custom-radio">
+                                <input type="radio" name="form-custom-radio" id="form-custom-radio-2" value="Radio 2"/>
+                                <span class="form__option__text">Arbitrary</span>
+                                <span class="form__option__ui"></span>
+                            </label>
+                        </div>
+                        <div>
+                            <p>Task size:</p>
+                            <div class="button-group button-group--horizontal" role="group">
+                                <button class="button button--achromic" type="button"><span>?</span></button>
+                                <button class="button button--achromic button--active" type="button"><span>?</span></button>
+                                <button class="button button--achromic" type="button"><span>?</span></button>
+                                <button class="button button--achromic" type="button"><span>?</span></button>
+                                <button class="button button--achromic" type="button"><span>?</span></button>
+                            </div>
+                        </div>
+                    </form>
+                    <hr/>
+                    <div class="navigation-steps">
+                        <div class="button-group button-group--horizontal" role="group">
+                            <button class="button button--achromic button" type="button"
+                                    ng-click="createProjectCtrl.setStep('area')">
+                                <span>Previous</span>
+                            </button>
+                            <button class="button button--achromic" type="button"
+                                    ng-click="createProjectCtrl.setStep('templates')">
+                                <span>Next</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="createProjectCtrl.currentStep === 'templates'" class="content">
+                    <h2>Step 3: set templates</h2>
+                    <form class="form">
+                        <div class="form__group">
+                            <label class="form__option form__option--custom-checkbox">
+                                <input type="checkbox" name="form-custom-checkbox" id="form-custom-checkbox-1"
+                                       value="Checkbox 1"/>
+                                <span class="form__option__text">Roads</span>
+                                <span class="form__option__ui"></span>
+                            </label>
+                            <label class="form__option form__option--custom-checkbox">
+                                <input type="checkbox" name="form-custom-checkbox" value="form-custom-checkbox-2"/>
+                                <span class="form__option__text">Buildings</span>
+                                <span class="form__option__ui"></span>
+                            </label>
+                            <label class="form__option form__option--custom-checkbox">
+                                <input type="checkbox" name="form-custom-checkbox" value="form-custom-checkbox-3"/>
+                                <span class="form__option__text">Waterways</span>
+                                <span class="form__option__ui"></span>
+                            </label>
+                        </div>
+                    </form>
+                    <hr/>
+                    <div class="navigation-steps">
+                        <div class="button-group button-group--horizontal" role="group">
+                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setStep('tasks')">
+                                <span>Previous</span>
+                            </button>
+                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.setStep('review')">
+                                <span>Next</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="createProjectCtrl.currentStep === 'review'" class="content">
+                    <h2>Step 4: review</h2>
+                    TODO
+                    <hr/>
+                    <div class="navigation-steps">
+                        <div class="button-group button-group--horizontal" role="group">
+                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setStep('templates')">
+                                <span>Previous</span>
+                            </button>
+                            <button class="button button--primary" type="button">
+                                <span>Create</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="map" class="map-container"></div>
+        </div>
+    </section>
+</div>

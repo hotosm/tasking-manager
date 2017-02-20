@@ -2,10 +2,17 @@
 <html lang="en" ng-app="taskingManager">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HOT Tasking Manager</title>
     <base href="/">
 
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700"/>
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700"/>
+
+    <!-- build:css https://cdnjs.cloudflare.com/ajax/libs/ol3/4.0.1/ol.css -->
+    <link href="node_modules/openlayers/dist/ol-debug.css" rel="stylesheet">
+    <!-- /build -->
 
     <!-- build:css assets/styles/css/taskingmanager.min.css -->
     <link href="assets/styles/css/taskingmanager.css" rel="stylesheet">
@@ -13,6 +20,7 @@
 
 </head>
 <body>
+
 
 <!-- header -->
 <header class="page__header" role="banner">
@@ -26,9 +34,9 @@
         </div>
         <nav class="page__prime-nav" role="navigation">
             <h2 class="toggle-menu">
-                <a title="Show/hide menu"></a>
+                <a title="Show/hide menu" ng-modal="showMenu" ng-click="showMenu = !showMenu"></a>
             </h2>
-            <div class="menu-wrapper">
+            <div class="menu-wrapper" ng-class="showMenu ? 'menu-wrapper menu-wrapper--open' : 'menu-wrapper'">
                 <ul class="global-menu" id="global-menu">
                     <li>
                         <a href="/about" title="Visit about" class="global-menu-item">
@@ -56,11 +64,24 @@
 <!--/ header -->
 
 <!-- Main content and injected views -->
-<div id="tm-container" ng-view>
+<div class="page__body" id="tm-container" ng-view>
 </div>
+
+<footer class="page__footer">
+    <div class="left">
+        Aliquam feugiat consequat lectus. Donec ex orci, euismod auctor purus sit amet, lacinia faucibus elit.
+    </div>
+    <div class="right">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </div>
+</footer>
 
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.2/angular.min.js -->
 <script src="node_modules/angular/angular.js"></script>
+<!-- /build -->
+
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/ol3/4.0.1/ol.js -->
+<script src="node_modules/openlayers/dist/ol-debug.js"></script>
 <!-- /build -->
 
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.2/angular-route.min.js -->
@@ -69,6 +90,7 @@
 
 <!-- build:js app/taskingmanager.min.js -->
 <script src="app/taskingmanager.app.js"></script>
+<script src="app/admin/create-project/create-project.controller.js"></script>
 <!-- /build -->
 
 </body>
