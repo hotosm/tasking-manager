@@ -7,30 +7,20 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', [createProjectController]);
+        .controller('createProjectController', ['mapService', 'drawService', createProjectController]);
 
-    function createProjectController() {
+    function createProjectController(mapService, drawService) {
         var vm = this;
         vm.currentStep = '';
+        vm.AOIRequired = true;
 
         activate();
 
         function activate() {
             vm.currentStep = 'area';
-            
-            // TODO: move to map service
-            var map = new ol.Map({
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM()
-                    })
-                ],
-                target: 'map',
-                view: new ol.View({
-                    center: [0, 0],
-                    zoom: 2
-                })
-            });
+       
+            mapService.createOSMMap('map');
+            drawService.initDrawTools();
         }
 
         /**
@@ -38,7 +28,20 @@
          * @param step
          */
         vm.setStep = function(step){
-            vm.currentStep = step;
+            if (step === 'tasks'){
+                var numberOfFeatures = drawService.getNumberOfFeatures();
+                if (numberOfFeatures > 0){
+                    vm.AOIRequired = false;
+                    vm.currentStep = step;
+                    drawService.setDrawPolygonActive(false);
+                }
+                else {
+                    vm.AOIRequired = true;
+                }
+            }
+            else {
+                vm.currentStep = step;
+            }
         };
 
         /**
@@ -72,6 +75,15 @@
                 showStep = false;
             }
             return showStep;
+        };
+
+        /**
+         * Draw Area of Interest
+         */
+        vm.drawAOI = function(){
+            if (!drawService.getDrawPolygonActive()){
+                drawService.setDrawPolygonActive(true);
+            }
         }
     }
 })();

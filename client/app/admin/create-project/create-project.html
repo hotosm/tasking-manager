@@ -28,7 +28,7 @@
                     <form class="form">
                         <div>
                             <p>Draw the area of interest on the map.</p>
-                            <button class="button button--secondary" type="button"><span>Draw</span></button>
+                            <button class="button button--secondary" type="button" ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
                         </div>
                         <hr />
                         <div>
@@ -41,10 +41,7 @@
                         to convert it to GeoJSON.</p>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic" type="button">
-                                <span>Previous</span>
-                            </button>
-                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.setStep('tasks')">
+                            <button class="button button--achromic pull-right" type="button" ng-click="createProjectCtrl.setStep('tasks')">
                                 <span>Next</span>
                             </button>
                         </div>
