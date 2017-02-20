@@ -94,6 +94,8 @@
          */
         function addGeocoder(){
 
+            var map =  mapService.getOSMMap();
+
             // Initialise the geocoder
             var geocoder = new Geocoder('nominatim', {
                 provider: 'osm',
@@ -104,7 +106,7 @@
                 keepOpen: true,
                 preventDefault: true
             });
-            mapService.getOSMMap().addControl(geocoder);
+            map.addControl(geocoder);
 
             // By setting the preventDefault to false when initialising the Geocoder, you can add your own event
             // handler which has been done here.
