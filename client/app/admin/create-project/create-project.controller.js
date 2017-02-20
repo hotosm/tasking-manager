@@ -31,6 +31,22 @@
                     zoom: 2
                 })
             });
+
+            var geocoder = new Geocoder('nominatim', {
+                provider: 'osm',
+                lang: 'en',
+                placeholder: 'Search for ...',
+                targetType: 'glass-button',
+                limit: 5,
+                keepOpen: true,
+                preventDefault: true
+            });
+            map.addControl(geocoder);
+
+            geocoder.on('addresschosen', function(evt){
+                map.getView().setCenter(evt.coordinate);
+                map.getView().setZoom(12);
+            });
         }
 
         /**
@@ -72,6 +88,10 @@
                 showStep = false;
             }
             return showStep;
+        }
+
+        function addGeocoder(){
+
         }
     }
 })();
