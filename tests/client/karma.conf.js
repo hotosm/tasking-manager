@@ -1,11 +1,10 @@
 // Karma configuration
-// Generated on Mon Feb 20 2017 14:22:47 GMT+0000 (GMT Standard Time)
 
 module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '../../client),
+    basePath: '../../client',
 
 
     // frameworks to use
@@ -15,6 +14,10 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/angular/angular.js',
+      'node_modules/angular-route/angular-route.js',
+      'node_modules/angular-mocks/angular-mocks.js',
+      'node_modules/openlayers/dist/ol-debug.js',
       'app/*.js',
       'app/**/*.js',
       '../tests/client/unit/**/*.js'
@@ -22,21 +25,19 @@ module.exports = function(config) {
 
 
     // list of files to exclude
-    exclude: [
-    ],
+    exclude: [],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
-
-
+    preprocessors: {},
+    
+    
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['progress'],
-
+    
 
     // web server port
     port: 9876,
@@ -52,7 +53,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // start these browsers
