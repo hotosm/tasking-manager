@@ -18,9 +18,10 @@
 
         function activate() {
             vm.currentStep = 'area';
-       
+
             mapService.createOSMMap('map');
             drawService.initDrawTools();
+            addGeocoder();
         }
 
         /**
@@ -84,6 +85,36 @@
             if (!drawService.getDrawPolygonActive()){
                 drawService.setDrawPolygonActive(true);
             }
+        };
+
+        /**
+         * Adds a geocoder control to the map
+         * It is using an OpenLayers plugin control
+         * For more info and options, please see https://github.com/jonataswalker/ol3-geocoder
+         */
+        function addGeocoder(){
+
+            var map =  mapService.getOSMMap();
+
+            // Initialise the geocoder
+            var geocoder = new Geocoder('nominatim', {
+                provider: 'osm',
+                lang: 'en',
+                placeholder: 'Search for ...',
+                targetType: 'glass-button',
+                limit: 5,
+                keepOpen: true,
+                preventDefault: true
+            });
+            map.addControl(geocoder);
+
+            // By setting the preventDefault to false when initialising the Geocoder, you can add your own event
+            // handler which has been done here.
+            geocoder.on('addresschosen', function(evt){
+                map.getView().setCenter(evt.coordinate);
+                // It is assumed that most people will search for cities. Zoom level 12 seems most appropriate
+                map.getView().setZoom(12);
+            });
         }
     }
 })();
