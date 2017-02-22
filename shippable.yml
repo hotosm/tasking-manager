@@ -29,6 +29,14 @@ build:
         - ./node_modules/.bin/gulp build
         - cd ..
 
+        # Required to display test results in Shippable GUI
+        - mkdir -p shippable/testresults
+
+        # JS Unit Tests
+        - cd tests/client
+        - ../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --browsers PhantomJS --reporters junit
+        - cd ../..
+
         - python --version
 
     on_success:

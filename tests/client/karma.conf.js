@@ -18,6 +18,7 @@ module.exports = function(config) {
       'node_modules/angular-route/angular-route.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/openlayers/dist/ol-debug.js',
+      'node_modules/ol3-geocoder/build/ol3-geocoder-debug.js',
       'app/*.js',
       'app/**/*.js',
       '../tests/client/unit/**/*.js'
@@ -37,6 +38,14 @@ module.exports = function(config) {
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['progress'],
+
+
+    // Junit Reporter can be used to output test info for CI system, see homepage for config
+    // https://github.com/karma-runner/karma-junit-reporter
+    junitReporter: {
+      outputDir: '../shippable/testresults',
+      useBrowserName: true
+    },
     
 
     // web server port
