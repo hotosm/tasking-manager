@@ -13,7 +13,8 @@ class ProjectStatus(Enum):
 
 
 class Project(db.Model):
-    __tablename__ = 'project'
+    __tablename__ = 'projects'
+
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)

@@ -1,11 +1,13 @@
 import logging
 import os
 from flask import Flask
+from flask_migrate import Migrate
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from logging.handlers import RotatingFileHandler
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 # Import all models so that they are registered with SQLAlchemy
 from server.models import *  # noqa
@@ -27,6 +29,7 @@ def create_app(env=None):
     app.logger.info(f'HOT Tasking Manager App Starting Up, Environment = {env}')
 
     db.init_app(app)
+    migrate.init_app(app, db)
 
     app.logger.debug('Initialising Blueprints')
     from .web import main as main_blueprint

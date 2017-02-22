@@ -1,19 +1,12 @@
+from flask_migrate import MigrateCommand
 from flask_script import Manager
-from server import create_app, db
+from server import create_app
 
 # Initialise the flask app object
 manager = Manager(create_app)
 
-
-@manager.command
-def createdb(drop_first=False):
-    """
-    Creates an empty Database from all SQLAlchemy models
-    :param drop_first: CAUTION - set to True and all tables will be dropped prior to creation
-    """
-    if drop_first:
-        db.drop_all()
-    db.create_all()
+# Enable db migrations to be run via the command line
+manager.add_command('db', MigrateCommand)
 
 
 if __name__ == '__main__':
