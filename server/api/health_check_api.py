@@ -1,7 +1,7 @@
 from flask_restful import Resource
 
 
-class HealthCheck(Resource):
+class HealthCheckAPI(Resource):
     """
     /health-check
     """

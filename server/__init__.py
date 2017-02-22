@@ -71,8 +71,8 @@ def init_flask_restful_routes(app):
     app.logger.debug('Initialising API Routes')
     api = Api(app, default_mediatype='application/json')
 
-    from server.api.health_check import HealthCheck
-    from server.api.swagger_docs import SwaggerDocs
+    from server.api.health_check_api import HealthCheckAPI
+    from server.api.swagger_docs_api import SwaggerDocsAPI
 
-    api.add_resource(HealthCheck, '/api/health-check')
-    api.add_resource(SwaggerDocs, '/api/docs')
+    api.add_resource(HealthCheckAPI, '/api/health-check')
+    api.add_resource(SwaggerDocsAPI, '/api/docs')
