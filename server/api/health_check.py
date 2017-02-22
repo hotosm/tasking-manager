@@ -1,4 +1,5 @@
 from flask_restful import Resource
+from server import db
 
 
 class HealthCheck(Resource):
@@ -18,4 +19,5 @@ class HealthCheck(Resource):
           200:
             description: Service is Healthy
         """
+        db.create_all()
         return {"status": "healthy"}, 200

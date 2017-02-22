@@ -3,13 +3,17 @@ click==6.7
 Flask==0.12
 Flask-RESTful==0.3.5
 Flask-Script==2.0.5
+Flask-SQLAlchemy==2.1
 flask-swagger==0.2.13
 gunicorn==19.6.0
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23
+peewee==2.8.5
+psycopg2==2.6.2
 python-dateutil==2.6.0
 pytz==2016.10
 PyYAML==3.12
 six==1.10.0
+SQLAlchemy==1.1.5
 Werkzeug==0.11.15

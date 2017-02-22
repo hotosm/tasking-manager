@@ -2,20 +2,28 @@ import logging
 import os
 from flask import Flask
 from flask_restful import Api
+from flask_sqlalchemy import SQLAlchemy
 from logging.handlers import RotatingFileHandler
 
-app = Flask(__name__)
+db = SQLAlchemy()
 
 
-def bootstrap_app():
+def create_app(env=None):
     """
     Bootstrap function to initialise the Flask app and config
     :return: Initialised Flask app
     """
-    set_config()
+    app = Flask(__name__)
 
-    initialise_logger()
-    app.logger.info('HOT Tasking Manager App Starting Up, Environment = {0}'.format(get_current_environment()))
+    if env is None:
+        env = os.getenv('TASKING_MANAGER_ENV', 'Dev')  # default to Dev if config environment var not set
+
+    app.config.from_object(f'server.config.{env}Config')
+
+    initialise_logger(app)
+    app.logger.info(f'HOT Tasking Manager App Starting Up, Environment = {env}')
+
+    db.init_app(app)
 
     app.logger.debug('Initialising Blueprints')
     from .web import main as main_blueprint
@@ -23,29 +31,12 @@ def bootstrap_app():
     app.register_blueprint(main_blueprint)
     app.register_blueprint(swagger_blueprint)
 
-    init_flask_restful_routes()
+    init_flask_restful_routes(app)
 
     return app
 
 
-def get_current_environment():
-    """
-    Gets the currently running environment from the OS Env Var
-    :return: Current environment
-    """
-    env = os.getenv('TASKING_MANAGER_ENV', 'Dev')  # default to Dev if config environment var not set
-    return env.capitalize()
-
-
-def set_config():
-    """
-    Sets the config for the current environment
-    """
-    env = get_current_environment()
-    app.config.from_object('server.config.{0}Config'.format(env))
-
-
-def initialise_logger():
+def initialise_logger(app):
     """
     Read environment config then initialise a 2MB rotating log.  Prod Log Level can be reduced to help diagnose Prod
     only issues.
@@ -66,7 +57,7 @@ def initialise_logger():
     app.logger.setLevel(log_level)
 
 
-def init_flask_restful_routes():
+def init_flask_restful_routes(app):
     """
     Define the routes the API exposes using Flask-Restful.  See docs here
     http://flask-restful-cn.readthedocs.org/en/0.3.5/quickstart.html#endpoints

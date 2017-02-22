@@ -1,8 +1,16 @@
-from flask_script import Manager
-from server import bootstrap_app
+from flask_script import Manager, Command
+from server import create_app, db
 
-application = bootstrap_app()  # Initialise the flask app.
-manager = Manager(application)
+#application = create_app()  # Initialise the flask app.
+manager = Manager(create_app)
+
+
+@manager.command
+def createdb(drop_first=False):
+    """Creates the database."""
+    if drop_first:
+        db.drop_all()
+    db.create_all()
 
 
 if __name__ == '__main__':
