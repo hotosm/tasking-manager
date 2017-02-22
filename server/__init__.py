@@ -7,6 +7,9 @@ from logging.handlers import RotatingFileHandler
 
 db = SQLAlchemy()
 
+# Import all models so that they are registered with SQLAlchemy
+from server.models import *  # noqa
+
 
 def create_app(env=None):
     """

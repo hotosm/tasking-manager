@@ -7,10 +7,7 @@ class EnvironmentConfig:
     Base class for config that is shared between environments
     """
     LOG_LEVEL = logging.ERROR
-
-
-    # SQLALCHEMY_DATABASE_URI = os.environ.get(
-    #     'DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'db.sqlite'))
+    SQLALCHEMY_DATABASE_URI = os.environ['TASKING_MANAGER_URI']
 
 
 class StagingConfig(EnvironmentConfig):
