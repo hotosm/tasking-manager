@@ -91,8 +91,7 @@ gulp.task('sass:watch', function () {
 });
 
 gulp.task('create-config-dev', function (){
-    /** Creates a config file for Angular with the relevant environment variables for development
-     * */
+    /** Creates a config file for Angular with the relevant environment variables for development */
    return gulp.src('taskingmanager.config.json')
        .pipe(config('taskingmanager.config', {environment: 'development'}))
        .pipe(gulp.dest('app'))
