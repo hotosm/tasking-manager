@@ -30,8 +30,10 @@ class Project(db.Model):
     __tablename__ = 'projects'
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT)
     area_id = db.Column(db.Integer, db.ForeignKey('areas.id'))
+    area = db.relationship(Area)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 

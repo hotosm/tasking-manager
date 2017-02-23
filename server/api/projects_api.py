@@ -18,4 +18,6 @@ class ProjectsAPI(Resource):
           200:
             description: Project added
         """
+
+
         return {"status": "healthy"}, 200
