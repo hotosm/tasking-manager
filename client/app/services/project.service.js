@@ -3,15 +3,15 @@
 
     angular
         .module('taskingManager')
-        .service('gridService', [gridService]);
+        .service('projectService', [projectService]);
 
     /**
-     * @fileoverview This file provides a task service.
-     * It generates the tasks squares using Turf.js (spatial analysis)
-     * The task square grid matches up with OSM's grid.
+     * @fileoverview This file provides a project service.
+     * It generates the task grid for the project using Turf.js (spatial analysis)
+     * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function gridService() {
+    function projectService() {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -26,19 +26,19 @@
         var MAPPROJECTION = 'EPSG: 3857';
 
         var service = {
-            getTaskFeaturesInAOIFeature: getTaskFeaturesInAOIFeature
+            getTaskGrid: getTaskGrid
         };
 
         return service;
 
         /**
-         * Creates task features for a polygon feature.
+         * Creates a task grid with features for a polygon feature.
          * It snaps to the OSM grid
          * @param areaOfInterest (ol.Feature) - this should be a polygon
          * @param zoom
          * @returns {Array} of Features
          */
-        function getTaskFeaturesInAOIFeature(areaOfInterest, zoom) {
+        function getTaskGrid(areaOfInterest, zoom) {
 
             var extent = areaOfInterest.getGeometry().getExtent();
 
@@ -74,7 +74,7 @@
                         dataProjection: TARGETPROJECTION,
                         featureProjection: MAPPROJECTION
                     });
-                    // Check if the generated task feature intersects with the are of interest
+                    // Check if the generated task feature intersects with the area of interest
                     var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
                     // Add the task feature to the array if it intersects
                     if (intersection) {

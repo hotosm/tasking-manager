@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['mapService', 'drawService', 'gridService', createProjectController]);
+        .controller('createProjectController', ['mapService', 'drawService', 'projectService', createProjectController]);
 
-    function createProjectController(mapService, drawService, gridService) {
+    function createProjectController(mapService, drawService, projectService) {
         var vm = this;
         vm.currentStep = '';
         vm.AOIRequired = true;
@@ -88,20 +88,20 @@
         };
 
         /**
-         * Create a grid
+         * Create a task grid
          */
-        vm.createGrid = function(){
+        vm.createTaskGrid = function(){
             // Get the zoom level
             var zoom = mapService.getOSMMap().getView().getZoom();
 
-             // Get the AOI in GeoJSON
+             // Get the AOI
             var areaOfInterest = drawService.getFeatures();
 
-            // Call the grid service to generate tiles 
+            // Get the task grid from the project service 
             var sizeOfTasks = 3; // TODO: define the task sizes. This generates 'medium' tasks as in TM2
-            var taskGeometries = gridService.getTaskFeaturesInAOIFeature(areaOfInterest[0], zoom + sizeOfTasks);
+            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoom + sizeOfTasks);
             
-            // Add the task geometries
+            // Add the task features to the map
             drawService.addFeatures(taskGeometries);
         };
 
