@@ -2,7 +2,15 @@
 
 (function () {
 
-    angular.module('taskingManager', ['ngRoute'])
+    angular.module('taskingManager', ['ngRoute', 'taskingmanager.config'])
+
+        /**
+         * Factory that returns the configuration settings for the current environment
+         */
+        .factory('configService', ['EnvironmentConfig', function (EnvironmentConfig) {
+            var config = EnvironmentConfig;
+            return config;
+        }])
 
         .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
 
