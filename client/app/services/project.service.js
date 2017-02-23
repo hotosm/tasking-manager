@@ -86,7 +86,7 @@
         }
 
         /**
-         * Returns a task feature with a polygon geometry defining the task
+         * Returns a task feature with a polygon geometry defining the task area
          * @param step
          * @param x
          * @param y
