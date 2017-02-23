@@ -3,7 +3,7 @@ from flask_restful import Resource
 
 class HealthCheckAPI(Resource):
     """
-    /health-check
+    /api/health-check
     """
 
     def get(self):
