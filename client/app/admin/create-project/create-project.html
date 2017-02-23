@@ -50,19 +50,10 @@
                 <div ng-show="createProjectCtrl.currentStep === 'tasks'" class="content">
                     <h2>Step 2: define tasks</h2>
                     <form class="form">
-                        <div class="form__group">
-                            <label class="form__option form__option--custom-radio">
-                                <input type="radio" name="form-custom-radio" id="form-custom-radio-1" value="Radio 1"
-                                       checked/>
-                                <span class="form__option__text">Square grid</span>
-                                <span class="form__option__ui"></span>
-                            </label>
-                            <label class="form__option form__option--custom-radio">
-                                <input type="radio" name="form-custom-radio" id="form-custom-radio-2" value="Radio 2"/>
-                                <span class="form__option__text">Arbitrary</span>
-                                <span class="form__option__ui"></span>
-                            </label>
-                        </div>
+                         <div class="button-group button-group--horizontal" role="group">
+                             <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createGrid()"><span>Square grid</span></button>
+                             <button class="button button--achromic" type="button"><span>Arbitrary</span></button>
+                         </div>
                         <div>
                             <p>Task size:</p>
                             <div class="button-group button-group--horizontal" role="group">

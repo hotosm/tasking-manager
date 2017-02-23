@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['mapService', 'drawService', createProjectController]);
+        .controller('createProjectController', ['mapService', 'drawService', 'gridService', createProjectController]);
 
-    function createProjectController(mapService, drawService) {
+    function createProjectController(mapService, drawService, gridService) {
         var vm = this;
         vm.currentStep = '';
         vm.AOIRequired = true;
@@ -21,7 +21,7 @@
 
             mapService.createOSMMap('map');
             drawService.initDrawTools();
-            addGeocoder();
+            addGeocoder_();
         }
 
         /**
@@ -30,7 +30,7 @@
          */
         vm.setStep = function(step){
             if (step === 'tasks'){
-                var numberOfFeatures = drawService.getNumberOfFeatures();
+                var numberOfFeatures = drawService.getFeatures().length;
                 if (numberOfFeatures > 0){
                     vm.AOIRequired = false;
                     vm.currentStep = step;
@@ -88,11 +88,30 @@
         };
 
         /**
+         * Create a grid
+         */
+        vm.createGrid = function(){
+            // Get the zoom level
+            var zoom = mapService.getOSMMap().getView().getZoom();
+
+             // Get the AOI in GeoJSON
+            var areaOfInterest = drawService.getFeatures();
+
+            // Call the grid service to generate tiles 
+            var sizeOfTasks = 3; // TODO: define the task sizes. This generates 'medium' tasks as in TM2
+            var taskGeometries = gridService.getTaskFeaturesInAOIFeature(areaOfInterest[0], zoom + sizeOfTasks);
+            
+            // Add the task geometries
+            drawService.addFeatures(taskGeometries);
+        };
+
+        /**
          * Adds a geocoder control to the map
          * It is using an OpenLayers plugin control
          * For more info and options, please see https://github.com/jonataswalker/ol3-geocoder
+         * @private
          */
-        function addGeocoder(){
+        function addGeocoder_(){
 
             var map =  mapService.getOSMMap();
 
