@@ -11,13 +11,28 @@ class ProjectsAPI(Resource):
         Inserts a project into database
         ---
         tags:
-          - projects
+            - projects
         produces:
-          - application/json
+            - application/json
+        parameters:
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                  type: object
+                  properties:
+                      name:
+                          type: string
+                          default: HOT Project
+                      area:
+                          type: object
+                          properties:
+                              name:
+                                  type: string
+                                  default: Project Area
         responses:
-          200:
-            description: Project added
+          201:
+            description: Draft project created
         """
-
-
         return {"status": "healthy"}, 200
