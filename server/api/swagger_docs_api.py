@@ -3,7 +3,7 @@ from flask_restful import Resource
 from flask_swagger import swagger
 
 
-class SwaggerDocs(Resource):
+class SwaggerDocsAPI(Resource):
     """
     This Resource provides a simple endpoint for flask-swagger to generate the API docs,
     https://github.com/gangverk/flask-swagger

@@ -1,4 +1,5 @@
 import logging
+import os
 
 
 class EnvironmentConfig:
@@ -6,6 +7,7 @@ class EnvironmentConfig:
     Base class for config that is shared between environments
     """
     LOG_LEVEL = logging.ERROR
+    SQLALCHEMY_DATABASE_URI = os.environ['TASKING_MANAGER_URI']
 
 
 class StagingConfig(EnvironmentConfig):
