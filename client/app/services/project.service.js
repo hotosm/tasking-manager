@@ -35,10 +35,10 @@
          * Creates a task grid with features for a polygon feature.
          * It snaps to the OSM grid
          * @param areaOfInterest (ol.Feature) - this should be a polygon
-         * @param zoom
+         * @param zoomLevel
          * @returns {Array} of Features
          */
-        function getTaskGrid(areaOfInterest, zoom) {
+        function getTaskGrid(areaOfInterest, zoomLevel) {
 
             var extent = areaOfInterest.getGeometry().getExtent();
 
@@ -56,7 +56,7 @@
             var ymax = extent[3];
 
             // task size (in meters) at the required zoom level
-            var step = MAX / (Math.pow(2, (zoom - 1)));
+            var step = MAX / (Math.pow(2, (zoomLevel - 1)));
 
             // Calculate the min and max task indices at the required zoom level to cover the whole area of interest
             var xminstep = parseInt(Math.floor((xmin + MAX) / step));

@@ -92,14 +92,14 @@
          */
         vm.createTaskGrid = function(){
             // Get the zoom level
-            var zoom = mapService.getOSMMap().getView().getZoom();
+            var zoomLevel = mapService.getOSMMap().getView().getZoom();
 
              // Get the AOI
             var areaOfInterest = drawService.getFeatures();
 
             // Get the task grid from the project service 
             var sizeOfTasks = 3; // TODO: define the task sizes. This generates 'medium' tasks as in TM2
-            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoom + sizeOfTasks);
+            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoomLevel + sizeOfTasks);
             
             // Add the task features to the map
             drawService.addFeatures(taskGeometries);
