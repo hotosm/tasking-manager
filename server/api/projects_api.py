@@ -1,4 +1,5 @@
-from flask_restful import Resource
+from flask_restful import Resource, request
+from server.services.project_service import ProjectService
 
 
 class ProjectsAPI(Resource):
@@ -35,4 +36,6 @@ class ProjectsAPI(Resource):
           201:
             description: Draft project created
         """
+        project_service = ProjectService()
+        project_service.create_draft_project(request.get_json())
         return {"status": "healthy"}, 200

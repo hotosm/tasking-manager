@@ -22,6 +22,13 @@ class Area(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
 
+    def __init__(self, *initial_data, **kwargs):
+        for dictionary in initial_data:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
 
 class Project(db.Model):
     """
@@ -35,6 +42,20 @@ class Project(db.Model):
     area_id = db.Column(db.Integer, db.ForeignKey('areas.id'))
     area = db.relationship(Area)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, *initial_data, **kwargs):
+        for dictionary in initial_data:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+    def save(self):
+
+        iain = self
+        db.session.add(self)
+        db.session.commit()
+
 
 
     # def create(self, data):
