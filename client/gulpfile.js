@@ -98,7 +98,7 @@ gulp.task('create-config-dev', function (){
 });
 
 gulp.task('create-config-build', function (){
-    /** Creates a config file for Angular with the relevant environment variables for development */
+    /** Creates a config file for Angular with the relevant environment variables for staging/production */
    return gulp.src('taskingmanager.config.json')
        .pipe(config('taskingmanager.config', {environment: 'build'}))
        .pipe(gulp.dest('app'))
