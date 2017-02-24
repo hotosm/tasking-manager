@@ -25,7 +25,7 @@
         }
 
         /**
-         * Set the current step
+         * Set the current step in the process of creating a project
          * @param step
          */
         vm.setStep = function(step){

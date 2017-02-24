@@ -58,7 +58,7 @@
             // task size (in meters) at the required zoom level
             var step = MAX / (Math.pow(2, (zoom - 1)));
 
-            // Create the
+            // Calculate the min and max task indices at the required zoom level to cover the whole area of interest
             var xminstep = parseInt(Math.floor((xmin + MAX) / step));
             var xmaxstep = parseInt(Math.ceil((xmax + MAX) / step));
             var yminstep = parseInt(Math.floor((ymin + MAX) / step));
@@ -87,9 +87,9 @@
 
         /**
          * Returns a task feature with a polygon geometry defining the task area
-         * @param step
-         * @param x
-         * @param y
+         * @param step (task size in meters)
+         * @param x (x task index)
+         * @param y (y task index)
          * @returns {ol.Feature}
          * @private
          */
