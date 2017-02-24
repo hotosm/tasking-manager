@@ -23,6 +23,7 @@ class AreaOfInterest(db.Model):
     name = db.Column(db.String(50))
 
     def __init__(self, *initial_data, **kwargs):
+        # TODO - prob move to base class, leave while we build up models
         for dictionary in initial_data:
             for key in dictionary:
                 setattr(self, key, dictionary[key])
@@ -44,6 +45,7 @@ class Project(db.Model):
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, *initial_data, **kwargs):
+        # TODO - prob move to base class, leave while we build up models
         for dictionary in initial_data:
             for key in dictionary:
                 setattr(self, key, dictionary[key])
