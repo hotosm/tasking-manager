@@ -49,6 +49,7 @@ The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests, that
 ```
 
 ## Server Development
+### Running Locally
 If you plan to do server development you can run the app using python
 
 ```
