@@ -114,15 +114,24 @@
         function validateAOI(features){
 
             var validationResult = {
-                valid:true,
-                message:''
+                valid: true,
+                message: ''
             }
 
-            // check there are features present
-            if (features.length == 0){
+            // check we have a non empty array of things
+            if (!features || !features.length || features.length == 0){
                 validationResult.valid = false;
                 validationResult.message = 'NO_FEATURES';
                 return validationResult;
+            }
+
+            //check we have an array of ol.Feature objects
+            for (var i = 0; i < features.length; i++) {
+                if (!(features[i] instanceof ol.Feature)) {
+                    validationResult.valid = false;
+                    validationResult.message = 'UNKNOWN_OBJECT_CLASS';
+                    return validationResult;
+                }
             }
 
             // check for self-intersections
