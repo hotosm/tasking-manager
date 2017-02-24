@@ -32,9 +32,9 @@
         vm.setWizardStep = function(wizardStep){
             if (wizardStep === 'tasks'){
 
-                var aoiValidationObj = projectService.validateAOI(drawService.getFeatures());
-                vm.AOIValid = aoiValidationObj.valid;
-                vm.AOIValidationMessage = aoiValidationObj.message;
+                var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
+                vm.AOIValid = aoiValidationResult.valid;
+                vm.AOIValidationMessage = aoiValidationResult.message;
 
                 if(vm.AOIValid){
                     vm.currentStep = wizardStep;

@@ -113,15 +113,16 @@
          */
         function validateAOI(features){
 
-            var validationObj = {valid:true,message:''}
+            var validationResult = {
+                valid:true,
+                message:''
+            }
 
             // check there are features present
-            var numberOfFeatures = features.length;
-            if (numberOfFeatures == 0){
-                console.log('no features');
-                validationObj.valid = false;
-                validationObj.message = 'No features';
-                return validationObj;
+            if (features.length == 0){
+                validationResult.valid = false;
+                validationResult.message = 'NO_FEATURES';
+                return validationResult;
             }
 
             // check for self-intersections
@@ -132,19 +133,13 @@
                     featureProjection: MAPPROJECTION
                 });
                 if (turf.kinks(features_as_gj).features.length > 0) {
-                    console.log('self intersections');
-                    validationObj.valid = false;
-                    validationObj.message = 'Self intersections';
-                    return validationObj;
+                    validationResult.valid = false;
+                    validationResult.message = 'SELF_INTERSECTIONS';
+                    return validationResult;
                 }
             }
 
-            return validationObj;
-
-
-
-
-
+            return validationResult;
         }
     }
 })();
