@@ -21,6 +21,7 @@ class AreaOfInterest(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    test = db.Geo
 
     def __init__(self, *initial_data, **kwargs):
         # TODO - prob move to base class, leave while we build up models
