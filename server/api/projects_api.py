@@ -26,7 +26,7 @@ class ProjectsAPI(Resource):
                       name:
                           type: string
                           default: HOT Project
-                      area:
+                      area_of_interest:
                           type: object
                           properties:
                               name:

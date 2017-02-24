@@ -5,10 +5,6 @@ class ProjectService:
 
     def create_draft_project(self, data):
 
-        area = AreaOfInterest(data['area'])
-        project = Project(data, area=area)
+        area_of_interest = AreaOfInterest(data['area_of_interest'])
+        project = Project(data, area_of_interest=area_of_interest)
         project.save()
-        iain = project
-
-
-

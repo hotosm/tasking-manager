@@ -21,7 +21,6 @@ class AreaOfInterest(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    test = db.Geo
 
     def __init__(self, *initial_data, **kwargs):
         # TODO - prob move to base class, leave while we build up models
@@ -41,8 +40,8 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value)
-    area_id = db.Column(db.Integer, db.ForeignKey('areas.id'))
-    area = db.relationship(AreaOfInterest)
+    aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
+    area_of_interest = db.relationship(AreaOfInterest)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, *initial_data, **kwargs):
