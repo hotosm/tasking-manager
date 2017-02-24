@@ -13,11 +13,11 @@ class ProjectStatus(Enum):
     DRAFT = 2
 
 
-class Area(db.Model):
+class AreaOfInterest(db.Model):
     """
     Describes the Area of Interest (AOI) that the project manager defined when creating a project
     """
-    __tablename__ = 'areas'
+    __tablename__ = 'areas_of_interest'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
@@ -40,7 +40,7 @@ class Project(db.Model):
     name = db.Column(db.String(256))
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value)
     area_id = db.Column(db.Integer, db.ForeignKey('areas.id'))
-    area = db.relationship(Area)
+    area = db.relationship(AreaOfInterest)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, *initial_data, **kwargs):
@@ -51,18 +51,9 @@ class Project(db.Model):
             setattr(self, key, kwargs[key])
 
     def save(self):
-
-        iain = self
+        """
+        Saves the current model state to the DB
+        """
+        # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
         db.session.commit()
-
-
-
-    # def create(self, data):
-    #     project = Project()
-    #     project
-    #
-    #
-    #
-    # def as_dict(self):
-    #     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
