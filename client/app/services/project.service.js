@@ -35,7 +35,7 @@
          * Creates a task grid with features for a polygon feature.
          * It snaps to the OSM grid
          * @param areaOfInterest (ol.Feature) - this should be a polygon
-         * @param zoomLevel
+         * @param zoomLevel - The currently selected OSM zoom level
          * @returns {Array} of Features
          */
         function getTaskGrid(areaOfInterest, zoomLevel) {
