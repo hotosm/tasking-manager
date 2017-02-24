@@ -25,15 +25,15 @@
         }
 
         /**
-         * Set the current step in the process of creating a project
-         * @param step
+         * Set the current wizard step in the process of creating a project
+         * @param wizardStep the step in the wizard the user wants to go to
          */
-        vm.setStep = function(step){
-            if (step === 'tasks'){
+        vm.setWizardStep = function(wizardStep){
+            if (wizardStep === 'tasks'){
                 var numberOfFeatures = drawService.getFeatures().length;
                 if (numberOfFeatures > 0){
                     vm.AOIRequired = false;
-                    vm.currentStep = step;
+                    vm.currentStep = wizardStep;
                     drawService.setDrawPolygonActive(false);
                 }
                 else {
@@ -41,7 +41,7 @@
                 }
             }
             else {
-                vm.currentStep = step;
+                vm.currentStep = wizardStep;
             }
         };
 
@@ -50,24 +50,24 @@
          * @param step
          * @returns {boolean}
          */
-        vm.showStep = function(step){
+        vm.showWizardStep = function(wizardStep){
             var showStep = false;
-            if (step === 'area'){
+            if (wizardStep === 'area'){
                 if (vm.currentStep === 'area' || vm.currentStep === 'tasks' || vm.currentStep === 'templates' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
-            else if (step === 'tasks'){
+            else if (wizardStep === 'tasks'){
                 if ( vm.currentStep === 'tasks' || vm.currentStep === 'templates' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
-            else if (step === 'templates'){
+            else if (wizardStep === 'templates'){
                 if (vm.currentStep === 'templates' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
-            else if (step === 'review'){
+            else if (wizardStep === 'review'){
                 if (vm.currentStep === 'review'){
                     showStep = true;
                 }
