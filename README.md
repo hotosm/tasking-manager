@@ -1,7 +1,7 @@
 # HOT tasking-manager
 
 ## Intro
-The app is split into Client (AngularJS) and Server (Python) structure.  Each can be developed independently of each other
+The app is split into a Client (AngularJS) and Server (Python) structure.  Each can be developed independently of each other
 
 ## Installing
 ### Dependencies
@@ -10,7 +10,7 @@ Before you can run/develop locally you must have the following installed on your
 * Python 3.6 - [Python 3.6 install here](https://www.python.org/downloads/)
 * NodeJS LTS v6+ [NodeJS LTS install here](https://nodejs.org/en/)
 
-###  Developemnt Environment
+###  Development Environment
 All developers should follow these steps to create a dev environment:
 
 #### Setting up the Server
@@ -20,7 +20,7 @@ All developers should follow these steps to create a dev environment:
     * Linux/Mac:
         * ```. ./venv/bin/activate```
     * Windows:
-        * ```. .\venv\scripts\activate```
+        * ```.\venv\scripts\activate```
 * Install all dependencies:
     * ```pip install -r requirements.txt```
 * TODO - Describe connecting to Postgres
@@ -43,8 +43,13 @@ gulp run
 ### Running Unit Tests
 The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests, that you can run using [Karma](https://karma-runner.github.io/1.0/index.html) as follows
 
-#### Server Development
-If you plan to do server developemnt you can run the app using python
+```
+ cd client
+ karma start ..\tests\client\karma.conf.js
+```
+
+## Server Development
+If you plan to do server development you can run the app using python
 
 ```
 python manage.py runserver -d
