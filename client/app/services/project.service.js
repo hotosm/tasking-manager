@@ -26,7 +26,8 @@
         var MAPPROJECTION = 'EPSG: 3857';
 
         var service = {
-            getTaskGrid: getTaskGrid
+            getTaskGrid: getTaskGrid,
+            validateAOI: validateAOI
         };
 
         return service;
@@ -103,6 +104,47 @@
                 geometry: polygon
             });
             return feature;
+        }
+
+        /**
+         * Validate a candidate AOI.
+         * @param features to be validated {*|ol.Collection.<ol.Feature>|Array.<ol.Feature>}
+         * @returns {{valid: boolean, message: string}}
+         */
+        function validateAOI(features){
+
+            var validationObj = {valid:true,message:''}
+
+            // check there are features present
+            var numberOfFeatures = features.length;
+            if (numberOfFeatures == 0){
+                console.log('no features');
+                validationObj.valid = false;
+                validationObj.message = 'No features';
+                return validationObj;
+            }
+
+            // check for self-intersections
+            var format = new ol.format.GeoJSON();
+            for (var i = 0; i < features.length; i++) {
+                var features_as_gj = format.writeFeatureObject(features[i], {
+                    dataProjection: TARGETPROJECTION,
+                    featureProjection: MAPPROJECTION
+                });
+                if (turf.kinks(features_as_gj).features.length > 0) {
+                    console.log('self intersections');
+                    validationObj.valid = false;
+                    validationObj.message = 'Self intersections';
+                    return validationObj;
+                }
+            }
+
+            return validationObj;
+
+
+
+
+
         }
     }
 })();

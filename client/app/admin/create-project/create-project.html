@@ -29,6 +29,12 @@
                         <div>
                             <p>Draw the area of interest on the map.</p>
                             <button class="button button--secondary" type="button" ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
+                                <div id="drawn-aoi-validation">
+                                    <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'No features'">No area of interest has been drawn.
+                                    </span>
+                                    <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'Self intersections'">The area of interest contains self intersections.
+                                    </span>
+                                </div>
                         </div>
                         <hr />
                         <div>

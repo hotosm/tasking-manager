@@ -12,7 +12,8 @@
     function createProjectController(mapService, drawService, projectService) {
         var vm = this;
         vm.currentStep = '';
-        vm.AOIRequired = true;
+        vm.AOIValid = true;
+        vm.AOIValidationMessage = '';
 
         activate();
 
@@ -30,14 +31,14 @@
          */
         vm.setWizardStep = function(wizardStep){
             if (wizardStep === 'tasks'){
-                var numberOfFeatures = drawService.getFeatures().length;
-                if (numberOfFeatures > 0){
-                    vm.AOIRequired = false;
+
+                var aoiValidationObj = projectService.validateAOI(drawService.getFeatures());
+                vm.AOIValid = aoiValidationObj.valid;
+                vm.AOIValidationMessage = aoiValidationObj.message;
+
+                if(vm.AOIValid){
                     vm.currentStep = wizardStep;
                     drawService.setDrawPolygonActive(false);
-                }
-                else {
-                    vm.AOIRequired = true;
                 }
             }
             else {
@@ -99,7 +100,7 @@
 
             // Get the task grid from the project service 
             var sizeOfTasks = 3; // TODO: define the task sizes. This generates 'medium' tasks as in TM2
-            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoomLevel + sizeOfTasks);
+            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoomLevel + sizeOfTasks); // TODO: may need to fix areaOfInterest[0] as it may need to work for multipart polgons
             
             // Add the task features to the map
             drawService.addFeatures(taskGeometries);
