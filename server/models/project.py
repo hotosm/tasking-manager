@@ -38,7 +38,7 @@ class Project(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
-    status = db.Column(db.Integer, default=ProjectStatus.DRAFT)
+    status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value)
     area_id = db.Column(db.Integer, db.ForeignKey('areas.id'))
     area = db.relationship(Area)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
