@@ -21,7 +21,8 @@
             getDrawPolygonActive: getDrawPolygonActive,
             setDrawPolygonActive: setDrawPolygonActive,
             removeAllFeatures: removeAllFeatures,
-            getNumberOfFeatures: getNumberOfFeatures
+            getFeatures: getFeatures,
+            addFeatures: addFeatures
         };
 
         return service;
@@ -96,12 +97,19 @@
         }
 
         /**
-         * Get the number of features on the source
-         * TODO: this might have to move to its own vector/source service when the import gets implemented
-         * @returns {Number}
+         * Return the features on the source
+         * @returns {*|ol.Collection.<ol.Feature>|Array.<ol.Feature>}
          */
-        function getNumberOfFeatures(){
-            return source.getFeatures().length;
+        function getFeatures(){
+            return source.getFeatures();
+        }
+
+        /**
+         * Adds features to the map
+         * @param features
+         */
+        function addFeatures(features){
+            source.addFeatures(features);
         }
     }
 })();
