@@ -99,4 +99,9 @@ gulp.task('build', function(callback) {
                 callback);
 });
 
-gulp.task('run', ['compile-sass', 'browser-sync', 'sass:watch']);
+gulp.task('run', function(callback){
+    runSequence('compile-sass',
+                'browser-sync',
+                'sass:watch',
+                callback);
+});
