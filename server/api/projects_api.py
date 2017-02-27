@@ -29,9 +29,16 @@ class ProjectsAPI(Resource):
                       area_of_interest:
                           type: object
                           properties:
-                              name:
-                                  type: string
-                                  default: Project Area
+                              geometry:
+                                  type: object
+                                  properties:
+                                      type:
+                                          type: string
+                                          default: FeatureCollection
+                                      features:
+                                          type: array
+                                          items
+
         responses:
           201:
             description: Draft project created

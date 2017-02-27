@@ -1,4 +1,5 @@
 import datetime
+from geoalchemy2 import Geometry
 from enum import Enum
 from server import db
 
@@ -20,7 +21,8 @@ class AreaOfInterest(db.Model):
     __tablename__ = 'areas_of_interest'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
+    centroid = db.Column(Geometry('POINT', srid=4326))
 
     def __init__(self, *initial_data, **kwargs):
         # TODO - prob move to base class, leave while we build up models
