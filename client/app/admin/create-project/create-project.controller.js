@@ -13,6 +13,10 @@
         var vm = this;
         vm.currentStep = '';
         vm.AOIRequired = true;
+        vm.AOI = null;
+        vm.DEFAULT_ZOOM_LEVEL_OFFSET = 2;
+        vm.sizeOfTasks = 0;
+        vm.numberOfTasks = 0;
 
         activate();
 
@@ -29,7 +33,11 @@
          * @param wizardStep the step in the wizard the user wants to go to
          */
         vm.setWizardStep = function(wizardStep){
+            if (wizardStep === 'area'){
+                drawService.removeAllFeatures();
+            }
             if (wizardStep === 'tasks'){
+                vm.AOI = drawService.getFeatures();
                 var numberOfFeatures = drawService.getFeatures().length;
                 if (numberOfFeatures > 0){
                     vm.AOIRequired = false;
@@ -90,19 +98,27 @@
         /**
          * Create a task grid
          */
-        vm.createTaskGrid = function(){
+        vm.createTaskGrid = function(zoomLevelOffset){
+
             // Get the zoom level
-            var zoomLevel = mapService.getOSMMap().getView().getZoom();
+            var zoomLevel = mapService.getOSMMap().getView().getZoom() + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
 
              // Get the AOI
-            var areaOfInterest = drawService.getFeatures();
+            var areaOfInterest = vm.AOI;
 
-            // Get the task grid from the project service 
-            var sizeOfTasks = 3; // TODO: define the task sizes. This generates 'medium' tasks as in TM2
-            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoomLevel + sizeOfTasks);
+            // Get the task grid from the project service
+            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoomLevel + zoomLevelOffset);
             
             // Add the task features to the map
             drawService.addFeatures(taskGeometries);
+
+            // Get the number of tasks in project
+            vm.numberOfTasks = taskGeometries.length;
+
+            // Get the size of the tasks - all task squares are the same size so pick the first one
+            // TODO: only do this when using a square grid
+            vm.sizeOfTasks = projectService.getTaskSize(taskGeometries);
+
         };
 
         /**

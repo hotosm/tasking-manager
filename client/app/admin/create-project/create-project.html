@@ -51,19 +51,9 @@
                     <h2>Step 2: define tasks</h2>
                     <form class="form">
                          <div class="button-group button-group--horizontal" role="group">
-                             <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid()"><span>Square grid</span></button>
+                             <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid(0)"><span>Square grid</span></button>
                              <button class="button button--achromic" type="button"><span>Arbitrary</span></button>
                          </div>
-                        <div>
-                            <p>Task size:</p>
-                            <div class="button-group button-group--horizontal" role="group">
-                                <button class="button button--achromic" type="button"><span>?</span></button>
-                                <button class="button button--achromic button--active" type="button"><span>?</span></button>
-                                <button class="button button--achromic" type="button"><span>?</span></button>
-                                <button class="button button--achromic" type="button"><span>?</span></button>
-                                <button class="button button--achromic" type="button"><span>?</span></button>
-                            </div>
-                        </div>
                     </form>
                     <hr/>
                     <div class="navigation-steps">
@@ -80,27 +70,19 @@
                     </div>
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'templates'" class="content">
-                    <h2>Step 3: set templates</h2>
-                    <form class="form">
-                        <div class="form__group">
-                            <label class="form__option form__option--custom-checkbox">
-                                <input type="checkbox" name="form-custom-checkbox" id="form-custom-checkbox-1"
-                                       value="Checkbox 1"/>
-                                <span class="form__option__text">Roads</span>
-                                <span class="form__option__ui"></span>
-                            </label>
-                            <label class="form__option form__option--custom-checkbox">
-                                <input type="checkbox" name="form-custom-checkbox" value="form-custom-checkbox-2"/>
-                                <span class="form__option__text">Buildings</span>
-                                <span class="form__option__ui"></span>
-                            </label>
-                            <label class="form__option form__option--custom-checkbox">
-                                <input type="checkbox" name="form-custom-checkbox" value="form-custom-checkbox-3"/>
-                                <span class="form__option__text">Waterways</span>
-                                <span class="form__option__ui"></span>
-                            </label>
+                    <h2>Step 3: set task sizes</h2>
+                         <div>
+                            <p>Task size:</p>
+                            <div class="button-group button-group--horizontal" role="group">
+                                <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid(-2)">XL</button>
+                                <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid(-1)">L</button>
+                                <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid(0)">M</button>
+                                <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid(1)">S</button>
+                                <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid(2)">XS</button>
+                            </div>
+                             <p>A new project will be created with {{ createProjectCtrl.numberOfTasks }} tasks.</p>
+                             <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks }}<sup>2</sup>.</p>
                         </div>
-                    </form>
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">

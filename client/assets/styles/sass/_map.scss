@@ -3,10 +3,14 @@
   background-color: $secondary-color;
 }
 
-.ol-attribution button{
+.ol-attribution button {
   background-color: $secondary-color;
 }
 
 .ol-control button, .ol-control button:focus, .ol-control button:hover {
-    background-color: $secondary-color;
+  background-color: $secondary-color;
+}
+
+.ol-scale-line {
+  background-color: $secondary-color;
 }

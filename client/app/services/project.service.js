@@ -16,17 +16,20 @@
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
 
-        // X/Y axis limit
-        var MAX = MAXRESOLUTION * 256 / 2;
+        // X/Y axis offset
+        var AXIS_OFFSET = MAXRESOLUTION * 256 / 2;
 
         // Target projection for Turf.js
         var TARGETPROJECTION = 'EPSG:4326';
 
         // Map projection in OpenLayers
-        var MAPPROJECTION = 'EPSG: 3857';
+        var MAPPROJECTION = 'EPSG:3857';
+
+        var taskGrid = null;
 
         var service = {
-            getTaskGrid: getTaskGrid
+            getTaskGrid: getTaskGrid,
+            getTaskSize: getTaskSize
         };
 
         return service;
@@ -56,13 +59,13 @@
             var ymax = extent[3];
 
             // task size (in meters) at the required zoom level
-            var step = MAX / (Math.pow(2, (zoomLevel - 1)));
+            var step = AXIS_OFFSET / (Math.pow(2, (zoomLevel - 1)));
 
             // Calculate the min and max task indices at the required zoom level to cover the whole area of interest
-            var xminstep = parseInt(Math.floor((xmin + MAX) / step));
-            var xmaxstep = parseInt(Math.ceil((xmax + MAX) / step));
-            var yminstep = parseInt(Math.floor((ymin + MAX) / step));
-            var ymaxstep = parseInt(Math.ceil((ymax + MAX) / step));
+            var xminstep = parseInt(Math.floor((xmin + AXIS_OFFSET) / step));
+            var xmaxstep = parseInt(Math.ceil((xmax + AXIS_OFFSET) / step));
+            var yminstep = parseInt(Math.floor((ymin + AXIS_OFFSET) / step));
+            var ymaxstep = parseInt(Math.ceil((ymax + AXIS_OFFSET) / step));
 
             // Generate an array of task features
             var taskFeatures = [];
@@ -82,7 +85,31 @@
                     }
                 }
             }
+            // Store the task features in the service
+            taskGrid = taskFeatures;
             return taskFeatures;
+        }
+
+        /**
+         * Get the task size in square meters or kilometers
+         * Use Turf.js to calculate the area of one of the task sizes
+         * @param taskGrid
+         * @returns {*}
+         */
+        function getTaskSize(taskGrid){
+            // Write the feature as GeoJSON and transform to the projection Turf.js needs
+            var format = new ol.format.GeoJSON();
+            var taskGeoJSON = format.writeFeature(taskGrid[0], {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
+            var taskSize = turf.area(JSON.parse(taskGeoJSON));
+            if (taskSize >= 1000000){
+                return Math.round(taskSize / 1000000) + ' km';
+            }
+            else {
+                return Math.round(taskSize) + ' m';
+            }
         }
 
         /**
@@ -94,10 +121,10 @@
          * @private
          */
         function createTaskFeature_(step, x, y) {
-            var xmin = x * step - MAX;
-            var ymin = y * step - MAX;
-            var xmax = (x + 1) * step - MAX;
-            var ymax = (y + 1) * step - MAX;
+            var xmin = x * step - AXIS_OFFSET;
+            var ymin = y * step - AXIS_OFFSET;
+            var xmax = (x + 1) * step - AXIS_OFFSET;
+            var ymax = (y + 1) * step - AXIS_OFFSET;
             var polygon = new ol.geom.Polygon.fromExtent([xmin, ymin, xmax, ymax]);
             var feature = new ol.Feature({
                 geometry: polygon
