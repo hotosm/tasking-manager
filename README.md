@@ -11,7 +11,8 @@ Before you can run/develop locally you must have the following installed on your
 * NodeJS LTS v6+ [NodeJS LTS install here](https://nodejs.org/en/)
 
 ###  Development Environment
-All developers should follow these steps to create a dev environment:
+All developers should follow these steps to create a dev environment. A [FAQ is available here](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ) if you hit any problems.
+
 
 #### Setting up the Server
 * Create a Python Virtual Environment, using Python 3.6:
