@@ -23,7 +23,11 @@ All developers should follow these steps to create a dev environment:
         * ```.\venv\scripts\activate```
 * Install all dependencies:
     * ```pip install -r requirements.txt```
-* TODO - Describe connecting to Postgres
+* Set environment variable to point to appropriate postgres database instance with HOT schema set up.  You will need to modify the sample connection string with username, password etc:
+    * Linux/Mac:
+        * ```export TASKING_MANAGER_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
+    * Windows (may require you to restart your dev env to pick up the variable):
+        * ```setx TASKING_MANAGER_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
     
 #### Build the Client
 * Install Gulp.  [Gulp](http://gulpjs.com/) is used to automate the Client build and needs to be installed globally:
