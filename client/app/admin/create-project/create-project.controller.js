@@ -25,6 +25,7 @@
 
             mapService.createOSMMap('map');
             drawService.initDrawTools();
+            projectService.init();
             addGeocoder_();
         }
 
@@ -36,16 +37,24 @@
             if (wizardStep === 'area'){
                 drawService.removeAllFeatures();
             }
-            if (wizardStep === 'tasks'){
+            if (wizardStep === 'tasks') {
                 vm.AOI = drawService.getFeatures();
                 var numberOfFeatures = drawService.getFeatures().length;
-                if (numberOfFeatures > 0){
+                if (numberOfFeatures > 0) {
                     vm.AOIRequired = false;
                     vm.currentStep = wizardStep;
                     drawService.setDrawPolygonActive(false);
+                    // Remove existing task grid
+                    projectService.removeTaskGrid();
                 }
                 else {
                     vm.AOIRequired = true;
+                }
+            }
+            if (wizardStep === 'taskSize'){
+                var grid = projectService.getTaskGrid();
+                if (grid){
+                    vm.currentStep = wizardStep;
                 }
             }
             else {
@@ -61,17 +70,17 @@
         vm.showWizardStep = function(wizardStep){
             var showStep = false;
             if (wizardStep === 'area'){
-                if (vm.currentStep === 'area' || vm.currentStep === 'tasks' || vm.currentStep === 'templates' || vm.currentStep === 'review'){
+                if (vm.currentStep === 'area' || vm.currentStep === 'tasks' || vm.currentStep === 'taskSize' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
             else if (wizardStep === 'tasks'){
-                if ( vm.currentStep === 'tasks' || vm.currentStep === 'templates' || vm.currentStep === 'review'){
+                if ( vm.currentStep === 'tasks' || vm.currentStep === 'taskSize' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
-            else if (wizardStep === 'templates'){
-                if (vm.currentStep === 'templates' || vm.currentStep === 'review'){
+            else if (wizardStep === 'taskSize'){
+                if (vm.currentStep === 'taskSize' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
@@ -100,24 +109,24 @@
          */
         vm.createTaskGrid = function(zoomLevelOffset){
 
+            // Remove existing task grid
+            projectService.removeTaskGrid();
+
             // Get the zoom level
             var zoomLevel = mapService.getOSMMap().getView().getZoom() + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
 
              // Get the AOI
             var areaOfInterest = vm.AOI;
 
-            // Get the task grid from the project service
-            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoomLevel + zoomLevelOffset);
-            
-            // Add the task features to the map
-            drawService.addFeatures(taskGeometries);
+            // Create a task grid
+            projectService.createTaskGrid(areaOfInterest[0], zoomLevel + zoomLevelOffset);
 
             // Get the number of tasks in project
-            vm.numberOfTasks = taskGeometries.length;
+            vm.numberOfTasks = projectService.getNumberOfTasks();
 
             // Get the size of the tasks - all task squares are the same size so pick the first one
             // TODO: only do this when using a square grid
-            vm.sizeOfTasks = projectService.getTaskSize(taskGeometries);
+            vm.sizeOfTasks = projectService.getTaskSize();
 
         };
 

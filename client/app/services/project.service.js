@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', [projectService]);
+        .service('projectService', ['mapService', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -11,7 +11,7 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService() {
+    function projectService(mapService) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -25,23 +25,53 @@
         // Map projection in OpenLayers
         var MAPPROJECTION = 'EPSG:3857';
 
+        var map = null;
         var taskGrid = null;
+        var projectServiceDefined = null;
+        
+        // OpenLayers source for the task grid
+        var taskGridSource = null;
 
         var service = {
+            init: init,
+            createTaskGrid: createTaskGrid,
             getTaskGrid: getTaskGrid,
-            getTaskSize: getTaskSize
+            removeTaskGrid: removeTaskGrid,
+            getTaskSize: getTaskSize,
+            getNumberOfTasks: getNumberOfTasks
         };
 
         return service;
+        
+        /**
+         * Initialise the draw tools
+         */
+        function init() {
+            if (!projectServiceDefined) {
+                map = mapService.getOSMMap();
+                addVectorLayer();
+                projectServiceDefined = true;
+            }
+        }
+
+        /**
+         * Adds a vector layer to the map which is needed for the draw tool
+         */
+        function addVectorLayer(){
+            taskGridSource = new ol.source.Vector();
+            var vector = new ol.layer.Vector({
+                source: taskGridSource
+            });
+            map.addLayer(vector);
+        }
 
         /**
          * Creates a task grid with features for a polygon feature.
          * It snaps to the OSM grid
          * @param areaOfInterest (ol.Feature) - this should be a polygon
          * @param zoomLevel - the OSM zoom level the task squares will align with
-         * @returns {Array} of Features
          */
-        function getTaskGrid(areaOfInterest, zoomLevel) {
+        function createTaskGrid(areaOfInterest, zoomLevel) {
 
             var extent = areaOfInterest.getGeometry().getExtent();
 
@@ -87,16 +117,32 @@
             }
             // Store the task features in the service
             taskGrid = taskFeatures;
-            return taskFeatures;
+            // Add the task grid features to the vector layer on the map
+            taskGridSource.addFeatures(taskGrid);
+        }
+
+        /**
+         * Return the task grid
+         * @returns {*}
+         */
+        function getTaskGrid(){
+            return taskGrid;
+        }
+
+        /**
+         * Remove the task grid from the map 
+         */
+        function removeTaskGrid(){
+            taskGridSource.clear();
+            taskGrid = null;
         }
 
         /**
          * Get the task size in square meters or kilometers
          * Use Turf.js to calculate the area of one of the task sizes
-         * @param taskGrid
-         * @returns {*}
+         * @returns {string} the size of the task
          */
-        function getTaskSize(taskGrid){
+        function getTaskSize(){
             // Write the feature as GeoJSON and transform to the projection Turf.js needs
             var format = new ol.format.GeoJSON();
             var taskGeoJSON = format.writeFeature(taskGrid[0], {
@@ -110,6 +156,18 @@
             else {
                 return Math.round(taskSize) + ' m';
             }
+        }
+
+        /**
+         * Return the number of tasks in the task grid
+         * @returns {number} of tasks in the task grid
+         */
+        function getNumberOfTasks(){
+            var numberOfTasks = 0;
+            if (taskGrid){
+                numberOfTasks = taskGrid.length;
+            }
+            return numberOfTasks;
         }
 
         /**

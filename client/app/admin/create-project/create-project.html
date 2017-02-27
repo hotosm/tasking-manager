@@ -15,7 +15,7 @@
                  <li ng-class="createProjectCtrl.showWizardStep('tasks') ? 'completed' : ''">
                     <span class="bubble"></span>Step 2
                 </li>
-                <li ng-class="createProjectCtrl.showWizardStep('templates') ? 'completed' : ''">
+                <li ng-class="createProjectCtrl.showWizardStep('taskSize') ? 'completed' : ''">
                     <span class="bubble"></span>Step 3
                 </li>
                  <li ng-class="createProjectCtrl.showWizardStep('review') ? 'completed' : ''">
@@ -63,13 +63,13 @@
                                 <span>Previous</span>
                             </button>
                             <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.setWizardStep('templates')">
+                                    ng-click="createProjectCtrl.setWizardStep('taskSize')">
                                 <span>Next</span>
                             </button>
                         </div>
                     </div>
                 </div>
-                <div ng-show="createProjectCtrl.currentStep === 'templates'" class="content">
+                <div ng-show="createProjectCtrl.currentStep === 'taskSize'" class="content">
                     <h2>Step 3: set task sizes</h2>
                          <div>
                             <p>Task size:</p>
@@ -101,7 +101,7 @@
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setWizardStep('templates')">
+                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setWizardStep('taskSize')">
                                 <span>Previous</span>
                             </button>
                             <button class="button button--primary" type="button">
