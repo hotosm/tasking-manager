@@ -115,4 +115,10 @@ gulp.task('build', function(callback) {
                 callback);
 });
 
-gulp.task('run', ['create-config-dev', 'compile-sass', 'browser-sync', 'sass:watch']);
+gulp.task('run', function(callback){
+    runSequence('create-config-dev',
+                'compile-sass',
+                'browser-sync',
+                'sass:watch',
+                callback);
+});

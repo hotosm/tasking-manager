@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['mapService', 'drawService', createProjectController]);
+        .controller('createProjectController', ['mapService', 'drawService', 'projectService', createProjectController]);
 
-    function createProjectController(mapService, drawService) {
+    function createProjectController(mapService, drawService, projectService) {
         var vm = this;
         vm.currentStep = '';
         vm.AOIRequired = true;
@@ -21,19 +21,19 @@
 
             mapService.createOSMMap('map');
             drawService.initDrawTools();
-            addGeocoder();
+            addGeocoder_();
         }
 
         /**
-         * Set the current step
-         * @param step
+         * Set the current wizard step in the process of creating a project
+         * @param wizardStep the step in the wizard the user wants to go to
          */
-        vm.setStep = function(step){
-            if (step === 'tasks'){
-                var numberOfFeatures = drawService.getNumberOfFeatures();
+        vm.setWizardStep = function(wizardStep){
+            if (wizardStep === 'tasks'){
+                var numberOfFeatures = drawService.getFeatures().length;
                 if (numberOfFeatures > 0){
                     vm.AOIRequired = false;
-                    vm.currentStep = step;
+                    vm.currentStep = wizardStep;
                     drawService.setDrawPolygonActive(false);
                 }
                 else {
@@ -41,7 +41,7 @@
                 }
             }
             else {
-                vm.currentStep = step;
+                vm.currentStep = wizardStep;
             }
         };
 
@@ -50,24 +50,24 @@
          * @param step
          * @returns {boolean}
          */
-        vm.showStep = function(step){
+        vm.showWizardStep = function(wizardStep){
             var showStep = false;
-            if (step === 'area'){
+            if (wizardStep === 'area'){
                 if (vm.currentStep === 'area' || vm.currentStep === 'tasks' || vm.currentStep === 'templates' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
-            else if (step === 'tasks'){
+            else if (wizardStep === 'tasks'){
                 if ( vm.currentStep === 'tasks' || vm.currentStep === 'templates' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
-            else if (step === 'templates'){
+            else if (wizardStep === 'templates'){
                 if (vm.currentStep === 'templates' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
-            else if (step === 'review'){
+            else if (wizardStep === 'review'){
                 if (vm.currentStep === 'review'){
                     showStep = true;
                 }
@@ -88,11 +88,30 @@
         };
 
         /**
+         * Create a task grid
+         */
+        vm.createTaskGrid = function(){
+            // Get the zoom level
+            var zoomLevel = mapService.getOSMMap().getView().getZoom();
+
+             // Get the AOI
+            var areaOfInterest = drawService.getFeatures();
+
+            // Get the task grid from the project service 
+            var sizeOfTasks = 3; // TODO: define the task sizes. This generates 'medium' tasks as in TM2
+            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoomLevel + sizeOfTasks);
+            
+            // Add the task features to the map
+            drawService.addFeatures(taskGeometries);
+        };
+
+        /**
          * Adds a geocoder control to the map
          * It is using an OpenLayers plugin control
          * For more info and options, please see https://github.com/jonataswalker/ol3-geocoder
+         * @private
          */
-        function addGeocoder(){
+        function addGeocoder_(){
 
             var map =  mapService.getOSMMap();
 

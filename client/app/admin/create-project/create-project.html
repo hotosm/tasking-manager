@@ -9,16 +9,16 @@
         </header>
         <div class="section__create-project">
             <ul class="progress-indicator">
-                <li ng-class="createProjectCtrl.showStep('area') ? 'completed' : ''">
+                <li ng-class="createProjectCtrl.showWizardStep('area') ? 'completed' : ''">
                     <span class="bubble"></span>Step 1
                 </li>
-                 <li ng-class="createProjectCtrl.showStep('tasks') ? 'completed' : ''">
+                 <li ng-class="createProjectCtrl.showWizardStep('tasks') ? 'completed' : ''">
                     <span class="bubble"></span>Step 2
                 </li>
-                <li ng-class="createProjectCtrl.showStep('templates') ? 'completed' : ''">
+                <li ng-class="createProjectCtrl.showWizardStep('templates') ? 'completed' : ''">
                     <span class="bubble"></span>Step 3
                 </li>
-                 <li ng-class="createProjectCtrl.showStep('review') ? 'completed' : ''">
+                 <li ng-class="createProjectCtrl.showWizardStep('review') ? 'completed' : ''">
                     <span class="bubble"></span>Step 4
                 </li>
             </ul>
@@ -41,7 +41,7 @@
                         to convert it to GeoJSON.</p>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic pull-right" type="button" ng-click="createProjectCtrl.setStep('tasks')">
+                            <button class="button button--achromic pull-right" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">
                                 <span>Next</span>
                             </button>
                         </div>
@@ -50,19 +50,10 @@
                 <div ng-show="createProjectCtrl.currentStep === 'tasks'" class="content">
                     <h2>Step 2: define tasks</h2>
                     <form class="form">
-                        <div class="form__group">
-                            <label class="form__option form__option--custom-radio">
-                                <input type="radio" name="form-custom-radio" id="form-custom-radio-1" value="Radio 1"
-                                       checked/>
-                                <span class="form__option__text">Square grid</span>
-                                <span class="form__option__ui"></span>
-                            </label>
-                            <label class="form__option form__option--custom-radio">
-                                <input type="radio" name="form-custom-radio" id="form-custom-radio-2" value="Radio 2"/>
-                                <span class="form__option__text">Arbitrary</span>
-                                <span class="form__option__ui"></span>
-                            </label>
-                        </div>
+                         <div class="button-group button-group--horizontal" role="group">
+                             <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid()"><span>Square grid</span></button>
+                             <button class="button button--achromic" type="button"><span>Arbitrary</span></button>
+                         </div>
                         <div>
                             <p>Task size:</p>
                             <div class="button-group button-group--horizontal" role="group">
@@ -78,11 +69,11 @@
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--achromic button" type="button"
-                                    ng-click="createProjectCtrl.setStep('area')">
+                                    ng-click="createProjectCtrl.setWizardStep('area')">
                                 <span>Previous</span>
                             </button>
                             <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.setStep('templates')">
+                                    ng-click="createProjectCtrl.setWizardStep('templates')">
                                 <span>Next</span>
                             </button>
                         </div>
@@ -113,10 +104,10 @@
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setStep('tasks')">
+                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">
                                 <span>Previous</span>
                             </button>
-                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.setStep('review')">
+                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.setWizardStep('review')">
                                 <span>Next</span>
                             </button>
                         </div>
@@ -128,7 +119,7 @@
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setStep('templates')">
+                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setWizardStep('templates')">
                                 <span>Previous</span>
                             </button>
                             <button class="button button--primary" type="button">
