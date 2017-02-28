@@ -17,16 +17,16 @@ class ProjectsAPI(Resource):
             - application/json
         definitions:
             - schema:
-                id: Point
+                id: Multipolygon
                 properties:
                     type:
                         type: string
-                        default: Point
+                        default: MultiPolygon
                     coordinates:
                         type: array
                         items:
                             type: number
-                            default: [100.1, 0.1]
+                            default: [[[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
         parameters:
             - in: body
               name: body
@@ -40,9 +40,9 @@ class ProjectsAPI(Resource):
                       areaOfInterest:
                           schema:
                               properties:
-                                  centroid:
+                                  geometryGeoJSON:
                                       schema:
-                                          $ref: "#/definitions/Point"
+                                          $ref: "#/definitions/Multipolygon"
 
 
         responses:

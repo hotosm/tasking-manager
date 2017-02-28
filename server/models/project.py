@@ -21,6 +21,7 @@ class AreaOfInterest(db.Model):
     __tablename__ = 'areas_of_interest'
 
     id = db.Column(db.Integer, primary_key=True)
+    geometryGeoJSON = None  # This field used to temporarily store GeoJson
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     centroid = db.Column(Geometry('POINT', srid=4326))
 
