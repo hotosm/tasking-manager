@@ -14,6 +14,8 @@
 
         // Wizard variables
         vm.currentStep = '';
+        vm.taskGrid = false;
+        vm.taskArbitrary = false;
 
         // AOI variables
         vm.AOIRequired = true;
@@ -29,9 +31,6 @@
         vm.DEFAULT_ZOOM_LEVEL_OFFSET = 2;
         vm.initialZoomLevelForTaskGridCreation = 0;
         vm.userZoomLevelOffset = 0;
-        
-        vm.taskGrid = false;
-        vm.taskArbitrary = false;
 
         activate();
 
@@ -146,7 +145,7 @@
             // Get the number of tasks in project
             vm.numberOfTasks = projectService.getNumberOfTasks();
 
-            // Get the size of the tasks - all task squares are the same size so pick the first one
+            // Get the size of the tasks 
             // TODO: only do this when using a square grid
             vm.sizeOfTasks = projectService.getTaskSize();
         };

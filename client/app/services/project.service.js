@@ -139,6 +139,8 @@
 
         /**
          * Get the task size in square kilometers
+         * Only use this when using a task grid. It takes the first task in the array to calculate the task size
+         * so for arbitrary  tasks it wouldn't be representative.
          * Use Turf.js to calculate the area of one of the task sizes
          * @returns {number} the size of the task
          */
