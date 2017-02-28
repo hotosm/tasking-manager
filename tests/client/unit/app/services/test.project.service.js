@@ -9,9 +9,6 @@ describe('project.service', function () {
         inject(function (_projectService_) {
             projectService = _projectService_;
         });
-
-        // Mock the task grid source
-        projectService.taskGridSource = new ol.source.Vector();
     });
 
     it('should be created successfully', function () {
