@@ -55,7 +55,7 @@ describe('project.service', function () {
         expect(taskGrid.length).toBe(23);
     });
 
-    it('should return a VALID result', function(){
+    it('should return a VALID result when validating an array of non self intersecting features', function(){
         //Arrange
         var polygon = new ol.geom.Polygon([[
             [-440959.40412809426,7584157.594433298],
@@ -79,7 +79,7 @@ describe('project.service', function () {
         })
     });
 
-    it('should return an INVALID NO_FEATURES result', function(){
+    it('should return an INVALID NO_FEATURES result when validating an empty array', function(){
         //Arrange
         var features = [];
 
@@ -93,7 +93,7 @@ describe('project.service', function () {
         })
     });
 
-    it('should return an INVALID NO_FEATURES result', function(){
+    it('should return an INVALID NO_FEATURES result when validating a null object', function(){
         //Arrange
         var features = null;
 
@@ -107,7 +107,7 @@ describe('project.service', function () {
         })
     });
 
-    it('should return an INVALID NO_FEATURES result', function(){
+    it('should return an INVALID NO_FEATURES result when validating an unexpected object class', function(){
         //Arrange
         var car = {
             make: 'ford',
@@ -124,7 +124,7 @@ describe('project.service', function () {
         })
     });
 
-    it('should return an INVALID UNKNOWN_OBJECT_CLASS result', function(){
+    it('should return an INVALID UNKNOWN_OBJECT_CLASS result when validating an array containing an unexpected object class', function(){
         //Arrange
         var car = {
             make: 'ford',
@@ -143,9 +143,40 @@ describe('project.service', function () {
         })
     });
 
+    it('should return an INVALID SELF_INTERSECTION result when validating an array containing a self intersecting feature', function(){
 
+        var polygon1 = new ol.geom.Polygon([[
+            [0,0],
+            [1,1],
+            [-1,1],
+            [0,1],
+            [0,0]
+        ]]);
+        var feature1 = new ol.Feature({
+            geometry: polygon1
+        });
 
+        var polygon2 = new ol.geom.Polygon([[
+            [0,0],
+            [1,1],
+            [-1,1],
+            [0,1],
+            [0,0]
+        ]]);
+        var feature2 = new ol.Feature({
+            geometry: polygon2
+        });
 
+        var features = [feature1, feature2];
 
+        //Act
+        var result = projectService.validateAOI(features);
+
+        //Assert
+        expect(result).toEqual({
+            valid: false,
+            message: 'SELF_INTERSECTIONS'
+        })
+    });
 });
 
