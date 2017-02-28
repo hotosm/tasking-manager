@@ -138,9 +138,9 @@
         }
 
         /**
-         * Get the task size in square meters or kilometers
+         * Get the task size in square kilometers
          * Use Turf.js to calculate the area of one of the task sizes
-         * @returns {string} the size of the task
+         * @returns {number} the size of the task
          */
         function getTaskSize(){
             // Write the feature as GeoJSON and transform to the projection Turf.js needs
@@ -149,13 +149,7 @@
                 dataProjection: TARGETPROJECTION,
                 featureProjection: MAPPROJECTION
             });
-            var taskSize = turf.area(JSON.parse(taskGeoJSON));
-            if (taskSize >= 1000000){
-                return Math.round(taskSize / 1000000) + ' km';
-            }
-            else {
-                return Math.round(taskSize) + ' m';
-            }
+            return turf.area(JSON.parse(taskGeoJSON)) / 1000000;
         }
 
         /**

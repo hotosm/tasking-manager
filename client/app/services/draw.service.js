@@ -22,7 +22,7 @@
             setDrawPolygonActive: setDrawPolygonActive,
             removeAllFeatures: removeAllFeatures,
             getFeatures: getFeatures,
-            addFeatures: addFeatures
+            zoomToExtent: zoomToExtent
         };
 
         return service;
@@ -35,7 +35,7 @@
                 map = mapService.getOSMMap();
                 addVectorLayer();
                 initDrawPolygonInteraction();
-                addDrawStartEventListeners();
+                addDrawEventListeners();
                 drawToolsDefined = true;
             }
         }
@@ -90,7 +90,7 @@
          * Add event listeners to the draw interaction
          * They listen out for the drawstart event which gets fired when the user starts drawing a feature
          */
-        function addDrawStartEventListeners(){
+        function addDrawEventListeners(){
             drawPolygon.on('drawstart', function(){
                 removeAllFeatures();
             });
@@ -105,11 +105,10 @@
         }
 
         /**
-         * Adds features to the map
-         * @param features
+         * Zoom to the OpenLayers draw source's extent
          */
-        function addFeatures(features){
-            source.addFeatures(features);
+        function zoomToExtent(){
+            map.getView().fit(source.getExtent());
         }
     }
 })();
