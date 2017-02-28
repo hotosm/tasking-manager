@@ -141,6 +141,7 @@
 
             // Create a task grid
             projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+            projectService.addTaskGridToMap();
 
             // Get the number of tasks in project
             vm.numberOfTasks = projectService.getNumberOfTasks();

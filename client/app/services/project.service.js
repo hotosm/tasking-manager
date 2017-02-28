@@ -38,7 +38,8 @@
             getTaskGrid: getTaskGrid,
             removeTaskGrid: removeTaskGrid,
             getTaskSize: getTaskSize,
-            getNumberOfTasks: getNumberOfTasks
+            getNumberOfTasks: getNumberOfTasks,
+            addTaskGridToMap: addTaskGridToMap
         };
 
         return service;
@@ -117,8 +118,6 @@
             }
             // Store the task features in the service
             taskGrid = taskFeatures;
-            // Add the task grid features to the vector layer on the map
-            taskGridSource.addFeatures(taskGrid);
         }
 
         /**
@@ -164,6 +163,14 @@
                 numberOfTasks = taskGrid.length;
             }
             return numberOfTasks;
+        }
+
+        /**
+         * Add the task grid to the map
+         */
+        function addTaskGridToMap(){
+            // Add the task grid features to the vector layer on the map
+            taskGridSource.addFeatures(taskGrid);
         }
 
         /**

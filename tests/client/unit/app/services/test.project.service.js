@@ -9,6 +9,9 @@ describe('project.service', function () {
         inject(function (_projectService_) {
             projectService = _projectService_;
         });
+
+        // Mock the task grid source
+        projectService.taskGridSource = new ol.source.Vector();
     });
 
     it('should be created successfully', function () {
@@ -29,7 +32,8 @@ describe('project.service', function () {
         var zoom = 18;
 
         // Act
-        var taskGrid = projectService.getTaskGrid(AOI, zoom);
+        projectService.createTaskGrid(AOI, zoom);
+        var taskGrid = projectService.getTaskGrid();
 
         // Assert
         expect(taskGrid.length).toBe(10);
@@ -49,7 +53,8 @@ describe('project.service', function () {
         var zoom = 19;
 
         // Act
-        var taskGrid = projectService.getTaskGrid(AOI, zoom);
+        projectService.createTaskGrid(AOI, zoom);
+        var taskGrid = projectService.getTaskGrid();
 
         // Assert
         expect(taskGrid.length).toBe(23);
