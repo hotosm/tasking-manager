@@ -20,3 +20,6 @@ venv/
 # AWS
 .elasticbeanstalk/
 venv_aws/
+
+# Mac
+.DS_Store
