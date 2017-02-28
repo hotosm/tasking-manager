@@ -18,7 +18,8 @@
         vm.taskArbitrary = false;
 
         // AOI variables
-        vm.AOIRequired = true;
+        vm.AOIValid = true;
+        vm.AOIValidationMessage = '';
         vm.AOI = null;
 
         // Creating grid variables
@@ -55,11 +56,13 @@
                 projectService.removeTaskGrid();
                 vm.currentStep = wizardStep;
             }
-            else if (wizardStep === 'tasks') {
-                vm.AOI = drawService.getFeatures();
-                var numberOfFeatures = drawService.getFeatures().length;
-                if (numberOfFeatures > 0) {
-                    vm.AOIRequired = false;
+            else if (wizardStep === 'tasks'){
+
+                var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
+                vm.AOIValid = aoiValidationResult.valid;
+                vm.AOIValidationMessage = aoiValidationResult.message;
+
+                if (vm.AOIValid) {
                     drawService.setDrawPolygonActive(false);
                     drawService.zoomToExtent();
                     // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
@@ -67,10 +70,8 @@
                         + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
                     // Reset the user zoom level offset
                     vm.userZoomLevelOffset = 0;
+                    vm.AOI = drawService.getFeatures();
                     vm.currentStep = wizardStep;
-                }
-                else {
-                    vm.AOIRequired = true;
                 }
             }
             else if (wizardStep === 'taskSize'){
@@ -140,6 +141,7 @@
             var areaOfInterest = vm.AOI;
 
             // Create a task grid
+            // TODO: may need to fix areaOfInterest[0] as it may need to work for multipolygons
             projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
             projectService.addTaskGridToMap();
 
