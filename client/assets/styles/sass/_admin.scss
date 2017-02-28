@@ -1,0 +1,52 @@
+/* ==========================================================================
+   Create project
+   ========================================================================== */
+
+.create-project {
+  height: 35rem;
+  padding: 30px;
+
+  .sidebar {
+    float: left;
+    height: inherit;
+    overflow-y: auto;
+
+    .content {
+      height: 100%;
+      overflow-y: auto;
+      padding: 5px 20px 5px 5px;
+    }
+
+    .navigation-steps {
+      .button-group {
+        width: 100%;
+        button {
+          width: 50%;
+        }
+      }
+    }
+
+    @include span(5/12);
+
+    @include media(medium-up) {
+      @include span(4/12);
+    }
+
+    @include media(large-up) {
+      @include span(3/12);
+    }
+  }
+  .map-container {
+    float: left;
+    height: inherit;
+    @include span(7/12);
+
+    @include media(medium-up) {
+      @include span(8/12);
+    }
+
+    @include media(large-up) {
+      @include span(9/12);
+    }
+  }
+}

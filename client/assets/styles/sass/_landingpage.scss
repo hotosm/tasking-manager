@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Get involved
+   ========================================================================== */
+.get-involved-container {
+
+  padding: ($global-spacing * 2);
+  box-shadow: inset 0 1px 0 0 $base-alpha-color;
+  @include span(12/12);
+
+  .description {
+    @include span(4/12);
+    padding: 1rem;
+    @include media(medium-down) {
+      @include stack();
+    }
+  }
+  .action {
+    @include span(4/12);
+    padding: 1rem;
+    @include media(medium-down) {
+      @include stack();
+    }
+  }
+}
+
+/* ==========================================================================
+   Field stories
+   ========================================================================== */
+
+.field-stories-container {
+  padding: ($global-spacing * 2);
+  text-align: center !important;
+  @include span(12/12);
+}
+
+.field-stories {
+  &__cards {
+    text-align: left;
+    list-style: none;
+    padding-bottom: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: top;
+    align-items: center;
+  }
+
+  &__card {
+    margin: 1rem;
+    width: 312px;
+    height: 400px;
+  }
+
+  &__content {
+    padding: 1rem;
+  }
+}
+
+#story-2 {
+  display: none;
+  @include media(medium-up) {
+    display: block;
+  }
+}
+
+#story-3 {
+  display: none;
+  @include media(xlarge-up) {
+    display: block;
+  }
+}
