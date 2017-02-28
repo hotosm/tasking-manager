@@ -15,29 +15,35 @@ class ProjectsAPI(Resource):
             - projects
         produces:
             - application/json
+        definitions:
+            - schema:
+                id: Point
+                properties:
+                    type:
+                        type: string
+                        default: Point
+                    coordinates:
+                        type: array
+                        items:
+                            type: number
+                            default: [100.1, 0.1]
         parameters:
             - in: body
               name: body
               required: true
               description: JSON object for creating draft project
               schema:
-                  type: object
                   properties:
                       name:
                           type: string
                           default: HOT Project
-                      area_of_interest:
-                          type: object
-                          properties:
-                              geometry:
-                                  type: object
-                                  properties:
-                                      type:
-                                          type: string
-                                          default: FeatureCollection
-                                      features:
-                                          type: array
-                                          items
+                      areaOfInterest:
+                          schema:
+                              properties:
+                                  centroid:
+                                      schema:
+                                          $ref: "#/definitions/Point"
+
 
         responses:
           201:
