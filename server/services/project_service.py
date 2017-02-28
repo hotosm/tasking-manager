@@ -1,22 +1,23 @@
-import json
-import geojson
 from flask import current_app
-from server.models.project import AreaOfInterest, Project
+from server.models.project import AreaOfInterest, Project, InvalidGeoJson
 
 
 class ProjectService:
 
-    def create_draft_project(self, data):
-
+    def create_draft_project(self, data, aoi_geometry_geojson):
+        """
+        Validates and then persists draft projects in the DB
+        :param data:
+        :param aoi_geometry_geojson: AOI Geometry as a geoJSON string
+        :return:
+        """
+        # TODO - prob unpack the data object in the API
         current_app.logger.debug('Create draft project')
 
-        area_of_interest = AreaOfInterest(data['areaOfInterest'])
-        jim = geojson.loads(json.dumps(area_of_interest.geometryGeoJSON))
-        geojson.is_valid(jim)
+        try:
+            area_of_interest = AreaOfInterest(aoi_geometry_geojson)
+        except InvalidGeoJson as e:
+            raise e
 
-        area_of_interest.geometryGeoJSON = geojson.dumps(jim)
-
-        area_of_interest.set_geometry_from_geojson()
-
-        project = Project(data, area_of_interest=area_of_interest)
-        project.save()
+        draft_project = Project(data, area_of_interest=area_of_interest)
+        draft_project.create()
