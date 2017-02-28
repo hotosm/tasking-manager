@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', [projectService]);
+        .service('projectService', ['$http', '$q', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -11,7 +11,7 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService() {
+    function projectService($http, $q) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -27,7 +27,8 @@
 
         var service = {
             getTaskGrid: getTaskGrid,
-            validateAOI: validateAOI
+            validateAOI: validateAOI,
+            createProject: createProject
         };
 
         return service;
@@ -100,8 +101,10 @@
             var xmax = (x + 1) * step - MAX;
             var ymax = (y + 1) * step - MAX;
             var polygon = new ol.geom.Polygon.fromExtent([xmin, ymin, xmax, ymax]);
+            var multiPolygon = new ol.geom.MultiPolygon();
+            multiPolygon.appendPolygon(polygon);
             var feature = new ol.Feature({
-                geometry: polygon
+                geometry: multiPolygon
             });
             return feature;
         }
@@ -149,6 +152,42 @@
             }
 
             return validationResult;
+        }
+
+        /**
+         * Creates a project by calling the API with the AOI and task grid
+         * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
+         */
+        function createProject(){
+
+            // TODO: Something like this
+            // TODO: get the AOI. Store in project service when user goes to step 2?
+            //console.log(taskGrid);
+            //var geoJSON = format.writeFeaturesObject(taskGrid, {
+            //    dataProjection: TARGETPROJECTION,
+            //    featureProjection: MAPPROJECTION
+            //});
+            //console.log(geoJSON);
+
+            var newProject = {};
+            
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + 'project/create',
+                data: newProject,
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response);
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
         }
     }
 })();
