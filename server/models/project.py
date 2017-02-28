@@ -1,7 +1,18 @@
 import datetime
 from geoalchemy2 import Geometry
+from geoalchemy2.functions import GenericFunction
 from enum import Enum
 from server import db
+
+
+class ST_SetSRID(GenericFunction):
+    name = 'ST_SetSRID'
+    type = Geometry
+
+
+class ST_GeomFromGeoJSON(GenericFunction):
+    name = 'ST_GeomFromGeoJSON'
+    type = Geometry
 
 
 class ProjectStatus(Enum):
@@ -32,6 +43,10 @@ class AreaOfInterest(db.Model):
                 setattr(self, key, dictionary[key])
         for key in kwargs:
             setattr(self, key, kwargs[key])
+
+    def set_geometry_from_geojson(self):
+        self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(self.geometryGeoJSON), 4326)
+
 
 
 class Project(db.Model):
