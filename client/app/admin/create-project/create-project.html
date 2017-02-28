@@ -60,7 +60,7 @@
                     <form class="form">
                          <div class="button-group button-group--horizontal" role="group">
                              <button class="button button--achromic" type="button"
-                                     ng-class="createProjectCtrl.taskGrid ? 'button--active': ''"
+                                     ng-class="createProjectCtrl.isTaskGrid ? 'button--active': ''"
                                      ng-click="createProjectCtrl.createTaskGrid()">
                                  Square grid
                              </button>
@@ -91,21 +91,22 @@
                             <button class="button button--achromic" type="button"
                                     ng-click="createProjectCtrl.changeSizeTaskGrid(-1)">Larger
                             </button>
-                            <button ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.maxNumberOfTasks ? 'disabled' : ''"
+                            <button ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
                                     class="button button--achromic" type="button"
-                                    ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.maxNumberOfTasks"
+                                    ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                                     ng-click="createProjectCtrl.changeSizeTaskGrid(1)">Smaller
                             </button>
                         </div>
                         <hr/>
                         <p>A new project will be created with {{ createProjectCtrl.numberOfTasks }} tasks.</p>
                         <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks | number : 2 }} km<sup>2</sup>.</p>
-                        <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.maxNumberOfTasks"
+                        <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                              class="alert alert--warning" role="alert">
-                          <p><strong>Warning:</strong> You can't create this project with smaller tasks.
-                            Please consider consider splitting the project into multiple projects.</p>
+                          <p><strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required
+                              please make the area of interest smaller.
+                          </p>
                         </div>
-                        <div ng-show="createProjectCtrl.sizeOfTasks > createProjectCtrl.maxSizeOfTasks"
+                        <div ng-show="createProjectCtrl.sizeOfTasks > createProjectCtrl.MAX_SIZE_OF_TASKS"
                              class="alert alert--warning" role="alert">
                           <p><strong>Warning:</strong> It is recommended to keep the size of the tasks small.
                               Please review the size of the tasks and/or consider creating multiple

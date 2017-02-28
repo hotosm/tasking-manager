@@ -14,19 +14,19 @@
 
         // Wizard variables
         vm.currentStep = '';
-        vm.taskGrid = false;
-        vm.taskArbitrary = false;
+        vm.isTaskGrid = false;
+        vm.isTaskArbitrary = false;
 
         // AOI variables
         vm.AOIValid = true;
         vm.AOIValidationMessage = '';
         vm.AOI = null;
 
-        // Creating grid variables
+        // Grid variables
         vm.sizeOfTasks = 0; 
-        vm.maxSizeOfTasks = 1000; //in square kilometers
+        vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
-        vm.maxNumberOfTasks = 1500;
+        vm.MAX_NUMBER_OF_TASKS = 1500;
 
         // Variables for the zoom level used for creating the grid
         vm.DEFAULT_ZOOM_LEVEL_OFFSET = 2;
@@ -50,8 +50,8 @@
          */
         vm.setWizardStep = function(wizardStep){
             if (wizardStep === 'area'){
-                vm.taskGrid = false;
-                vm.taskArbitrary = false;
+                vm.isTaskGrid = false;
+                vm.isTaskArbitrary = false;
                 drawService.removeAllFeatures();
                 projectService.removeTaskGrid();
                 vm.currentStep = wizardStep;
@@ -70,7 +70,6 @@
                         + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
                     // Reset the user zoom level offset
                     vm.userZoomLevelOffset = 0;
-                    vm.AOI = drawService.getFeatures();
                     vm.currentStep = wizardStep;
                 }
             }
@@ -132,13 +131,13 @@
          */
         vm.createTaskGrid = function(){
             
-            vm.taskGrid = true;
+            vm.isTaskGrid = true;
             
             // Remove existing task grid
             projectService.removeTaskGrid();
 
              // Get the AOI
-            var areaOfInterest = vm.AOI;
+            var areaOfInterest = drawService.getFeatures();
 
             // Create a task grid
             // TODO: may need to fix areaOfInterest[0] as it may need to work for multipolygons
