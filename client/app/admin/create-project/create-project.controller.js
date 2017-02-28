@@ -49,6 +49,8 @@
          */
         vm.setWizardStep = function(wizardStep){
             if (wizardStep === 'area'){
+                vm.taskGrid = false;
+                vm.taskArbitrary = false;
                 drawService.removeAllFeatures();
                 projectService.removeTaskGrid();
                 vm.currentStep = wizardStep;
@@ -58,7 +60,6 @@
                 var numberOfFeatures = drawService.getFeatures().length;
                 if (numberOfFeatures > 0) {
                     vm.AOIRequired = false;
-                    vm.currentStep = wizardStep;
                     drawService.setDrawPolygonActive(false);
                     drawService.zoomToExtent();
                     // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
@@ -66,8 +67,7 @@
                         + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
                     // Reset the user zoom level offset
                     vm.userZoomLevelOffset = 0;
-                    // Remove existing task grid
-                    projectService.removeTaskGrid();
+                    vm.currentStep = wizardStep;
                 }
                 else {
                     vm.AOIRequired = true;
