@@ -25,6 +25,9 @@
          * @param targetElement
          */
         function createOSMMap(targetElement){
+            
+            var scaleLineControl = new ol.control.ScaleLine();
+
             map = new ol.Map({
                 layers: [
                     new ol.layer.Tile({
@@ -37,6 +40,8 @@
                     zoom: 2
                 })
             });
+
+            map.addControl(scaleLineControl);
         }
 
         /**

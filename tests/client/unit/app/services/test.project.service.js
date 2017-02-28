@@ -29,7 +29,8 @@ describe('project.service', function () {
         var zoom = 18;
 
         // Act
-        var taskGrid = projectService.getTaskGrid(AOI, zoom);
+        projectService.createTaskGrid(AOI, zoom);
+        var taskGrid = projectService.getTaskGrid();
 
         // Assert
         expect(taskGrid.length).toBe(10);
@@ -49,7 +50,8 @@ describe('project.service', function () {
         var zoom = 19;
 
         // Act
-        var taskGrid = projectService.getTaskGrid(AOI, zoom);
+        projectService.createTaskGrid(AOI, zoom);
+        var taskGrid = projectService.getTaskGrid();
 
         // Assert
         expect(taskGrid.length).toBe(23);
