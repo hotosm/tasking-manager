@@ -1,0 +1,12 @@
+{
+  "development": {
+    "EnvironmentConfig":{
+      "tmAPI": "/api"
+    }
+  },
+  "release": {
+    "EnvironmentConfig":{
+      "tmAPI": "/api"
+    }
+  }
+}

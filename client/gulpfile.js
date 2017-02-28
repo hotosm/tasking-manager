@@ -1,6 +1,7 @@
 var gulp = require('gulp'),
     browserSync = require('browser-sync'),
     concat = require('gulp-concat'),
+    config = require('gulp-ng-config'),
     cssnano = require('gulp-cssnano'),
     del = require('del'),
     modRewrite = require('connect-modrewrite'),
@@ -89,9 +90,24 @@ gulp.task('sass:watch', function () {
     gulp.watch('assets/styles/sass/*.scss', ['compile-sass']);
 });
 
+gulp.task('create-dev-config', function (){
+    /** Creates a config file for Angular with the relevant environment variables for development */
+   return gulp.src('taskingmanager.config.json')
+       .pipe(config('taskingmanager.config', {environment: 'development'}))
+       .pipe(gulp.dest('app'))
+});
+
+gulp.task('create-release-config', function (){
+    /** Creates a config file for Angular with the relevant environment variables for release */
+   return gulp.src('taskingmanager.config.json')
+       .pipe(config('taskingmanager.config', {environment: 'release'}))
+       .pipe(gulp.dest('app'))
+});
+
 /** Build task for will minify the app and copy it to the dist folder ready to deploy */
 gulp.task('build', function(callback) {
     runSequence('clean',
+                'create-release-config',
                 'compile-sass',
                 'minify-css',
                 'uglify',
@@ -100,7 +116,8 @@ gulp.task('build', function(callback) {
 });
 
 gulp.task('run', function(callback){
-    runSequence('compile-sass',
+    runSequence('create-dev-config',
+                'compile-sass',
                 'browser-sync',
                 'sass:watch',
                 callback);
