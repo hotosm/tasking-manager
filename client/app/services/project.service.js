@@ -26,7 +26,8 @@
         var MAPPROJECTION = 'EPSG: 3857';
 
         var service = {
-            getTaskGrid: getTaskGrid
+            getTaskGrid: getTaskGrid,
+            validateAOI: validateAOI
         };
 
         return service;
@@ -103,6 +104,51 @@
                 geometry: polygon
             });
             return feature;
+        }
+
+        /**
+         * Validate a candidate AOI.
+         * @param features to be validated {*|ol.Collection.<ol.Feature>|Array.<ol.Feature>}
+         * @returns {{valid: boolean, message: string}}
+         */
+        function validateAOI(features){
+
+            var validationResult = {
+                valid: true,
+                message: ''
+            }
+
+            // check we have a non empty array of things
+            if (!features || !features.length || features.length == 0){
+                validationResult.valid = false;
+                validationResult.message = 'NO_FEATURES';
+                return validationResult;
+            }
+
+            //check we have an array of ol.Feature objects
+            for (var i = 0; i < features.length; i++) {
+                if (!(features[i] instanceof ol.Feature)) {
+                    validationResult.valid = false;
+                    validationResult.message = 'UNKNOWN_OBJECT_CLASS';
+                    return validationResult;
+                }
+            }
+
+            // check for self-intersections
+            var format = new ol.format.GeoJSON();
+            for (var i = 0; i < features.length; i++) {
+                var features_as_gj = format.writeFeatureObject(features[i], {
+                    dataProjection: TARGETPROJECTION,
+                    featureProjection: MAPPROJECTION
+                });
+                if (turf.kinks(features_as_gj).features.length > 0) {
+                    validationResult.valid = false;
+                    validationResult.message = 'SELF_INTERSECTIONS';
+                    return validationResult;
+                }
+            }
+
+            return validationResult;
         }
     }
 })();
