@@ -11,9 +11,27 @@
 
     function createProjectController(mapService, drawService, projectService) {
         var vm = this;
+
+        // Wizard variables
         vm.currentStep = '';
+        vm.isTaskGrid = false;
+        vm.isTaskArbitrary = false;
+
+        // AOI variables
         vm.AOIValid = true;
         vm.AOIValidationMessage = '';
+        vm.AOI = null;
+
+        // Grid variables
+        vm.sizeOfTasks = 0; 
+        vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
+        vm.numberOfTasks = 0;
+        vm.MAX_NUMBER_OF_TASKS = 1500;
+
+        // Variables for the zoom level used for creating the grid
+        vm.DEFAULT_ZOOM_LEVEL_OFFSET = 2;
+        vm.initialZoomLevelForTaskGridCreation = 0;
+        vm.userZoomLevelOffset = 0;
 
         activate();
 
@@ -22,6 +40,7 @@
 
             mapService.createOSMMap('map');
             drawService.initDrawTools();
+            projectService.init();
             addGeocoder_();
         }
 
@@ -30,15 +49,34 @@
          * @param wizardStep the step in the wizard the user wants to go to
          */
         vm.setWizardStep = function(wizardStep){
-            if (wizardStep === 'tasks'){
+            if (wizardStep === 'area'){
+                vm.isTaskGrid = false;
+                vm.isTaskArbitrary = false;
+                drawService.removeAllFeatures();
+                projectService.removeTaskGrid();
+                vm.currentStep = wizardStep;
+            }
+            else if (wizardStep === 'tasks'){
 
                 var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
                 vm.AOIValid = aoiValidationResult.valid;
                 vm.AOIValidationMessage = aoiValidationResult.message;
 
-                if(vm.AOIValid){
-                    vm.currentStep = wizardStep;
+                if (vm.AOIValid) {
                     drawService.setDrawPolygonActive(false);
+                    drawService.zoomToExtent();
+                    // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
+                    vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
+                        + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
+                    // Reset the user zoom level offset
+                    vm.userZoomLevelOffset = 0;
+                    vm.currentStep = wizardStep;
+                }
+            }
+            else if (wizardStep === 'taskSize'){
+                var grid = projectService.getTaskGrid();
+                if (grid){
+                    vm.currentStep = wizardStep;
                 }
             }
             else {
@@ -54,17 +92,17 @@
         vm.showWizardStep = function(wizardStep){
             var showStep = false;
             if (wizardStep === 'area'){
-                if (vm.currentStep === 'area' || vm.currentStep === 'tasks' || vm.currentStep === 'templates' || vm.currentStep === 'review'){
+                if (vm.currentStep === 'area' || vm.currentStep === 'tasks' || vm.currentStep === 'taskSize' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
             else if (wizardStep === 'tasks'){
-                if ( vm.currentStep === 'tasks' || vm.currentStep === 'templates' || vm.currentStep === 'review'){
+                if ( vm.currentStep === 'tasks' || vm.currentStep === 'taskSize' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
-            else if (wizardStep === 'templates'){
-                if (vm.currentStep === 'templates' || vm.currentStep === 'review'){
+            else if (wizardStep === 'taskSize'){
+                if (vm.currentStep === 'taskSize' || vm.currentStep === 'review'){
                     showStep = true;
                 }
             }
@@ -92,18 +130,35 @@
          * Create a task grid
          */
         vm.createTaskGrid = function(){
-            // Get the zoom level
-            var zoomLevel = mapService.getOSMMap().getView().getZoom();
+            
+            vm.isTaskGrid = true;
+            
+            // Remove existing task grid
+            projectService.removeTaskGrid();
 
              // Get the AOI
             var areaOfInterest = drawService.getFeatures();
 
-            // Get the task grid from the project service 
-            var sizeOfTasks = 3; // TODO: define the task sizes. This generates 'medium' tasks as in TM2
-            var taskGeometries = projectService.getTaskGrid(areaOfInterest[0], zoomLevel + sizeOfTasks); // TODO: may need to fix areaOfInterest[0] as it may need to work for multipart polgons
-            
-            // Add the task features to the map
-            drawService.addFeatures(taskGeometries);
+            // Create a task grid
+            // TODO: may need to fix areaOfInterest[0] as it may need to work for multipolygons
+            projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+            projectService.addTaskGridToMap();
+
+            // Get the number of tasks in project
+            vm.numberOfTasks = projectService.getNumberOfTasks();
+
+            // Get the size of the tasks 
+            // TODO: only do this when using a square grid
+            vm.sizeOfTasks = projectService.getTaskSize();
+        };
+
+        /**
+         * Change the size of the tasks in the grid by increasing or decreasing the zoom level
+         * @param zoomLevelOffset
+         */
+        vm.changeSizeTaskGrid = function(zoomLevelOffset){
+            vm.userZoomLevelOffset += zoomLevelOffset;
+            vm.createTaskGrid();
         };
 
         /**

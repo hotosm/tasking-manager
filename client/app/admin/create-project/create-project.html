@@ -15,7 +15,7 @@
                  <li ng-class="createProjectCtrl.showWizardStep('tasks') ? 'completed' : ''">
                     <span class="bubble"></span>Step 2
                 </li>
-                <li ng-class="createProjectCtrl.showWizardStep('templates') ? 'completed' : ''">
+                <li ng-class="createProjectCtrl.showWizardStep('taskSize') ? 'completed' : ''">
                     <span class="bubble"></span>Step 3
                 </li>
                  <li ng-class="createProjectCtrl.showWizardStep('review') ? 'completed' : ''">
@@ -28,18 +28,20 @@
                     <form class="form">
                         <div>
                             <p>Draw the area of interest on the map.</p>
-                            <button class="button button--secondary" type="button" ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
-                                <div id="drawn-aoi-validation">
-                                    <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">No area of interest has been drawn.
-                                    </span>
-                                    <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">The area of interest contains self intersections.
-                                    </span>
-                                </div>
+                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
+                            <div id="drawn-aoi-validation">
+                                <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
+                                    No area of interest has been drawn.
+                                </span>
+                                <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
+                                    The area of interest contains self intersections.
+                                </span>
+                            </div>
                         </div>
                         <hr />
                         <div>
                             <p>Import a GeoJSON, KML, or zipped SHP file.</p>
-                            <button class="button button--secondary" type="button"><span>Import</span></button>
+                            <button class="button button--achromic" type="button"><span>Import</span></button>
                         </div>
                     </form>
                     <hr/>
@@ -47,7 +49,7 @@
                         to convert it to GeoJSON.</p>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic pull-right" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">
+                            <button class="button button--secondary pull-right" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">
                                 <span>Next</span>
                             </button>
                         </div>
@@ -57,63 +59,68 @@
                     <h2>Step 2: define tasks</h2>
                     <form class="form">
                          <div class="button-group button-group--horizontal" role="group">
-                             <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createTaskGrid()"><span>Square grid</span></button>
-                             <button class="button button--achromic" type="button"><span>Arbitrary</span></button>
+                             <button class="button button--achromic" type="button"
+                                     ng-class="createProjectCtrl.isTaskGrid ? 'button--active': ''"
+                                     ng-click="createProjectCtrl.createTaskGrid()">
+                                 Square grid
+                             </button>
+                             <button class="button button--achromic" type="button">
+                                 Arbitrary
+                             </button>
                          </div>
-                        <div>
-                            <p>Task size:</p>
-                            <div class="button-group button-group--horizontal" role="group">
-                                <button class="button button--achromic" type="button"><span>?</span></button>
-                                <button class="button button--achromic button--active" type="button"><span>?</span></button>
-                                <button class="button button--achromic" type="button"><span>?</span></button>
-                                <button class="button button--achromic" type="button"><span>?</span></button>
-                                <button class="button button--achromic" type="button"><span>?</span></button>
-                            </div>
-                        </div>
                     </form>
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic button" type="button"
+                            <button class="button button--secondary button" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('area')">
                                 <span>Previous</span>
                             </button>
-                            <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.setWizardStep('templates')">
+                            <button class="button button--secondary" type="button"
+                                    ng-click="createProjectCtrl.setWizardStep('taskSize')">
                                 <span>Next</span>
                             </button>
                         </div>
                     </div>
                 </div>
-                <div ng-show="createProjectCtrl.currentStep === 'templates'" class="content">
-                    <h2>Step 3: set templates</h2>
-                    <form class="form">
-                        <div class="form__group">
-                            <label class="form__option form__option--custom-checkbox">
-                                <input type="checkbox" name="form-custom-checkbox" id="form-custom-checkbox-1"
-                                       value="Checkbox 1"/>
-                                <span class="form__option__text">Roads</span>
-                                <span class="form__option__ui"></span>
-                            </label>
-                            <label class="form__option form__option--custom-checkbox">
-                                <input type="checkbox" name="form-custom-checkbox" value="form-custom-checkbox-2"/>
-                                <span class="form__option__text">Buildings</span>
-                                <span class="form__option__ui"></span>
-                            </label>
-                            <label class="form__option form__option--custom-checkbox">
-                                <input type="checkbox" name="form-custom-checkbox" value="form-custom-checkbox-3"/>
-                                <span class="form__option__text">Waterways</span>
-                                <span class="form__option__ui"></span>
-                            </label>
+                <div ng-show="createProjectCtrl.currentStep === 'taskSize'" class="content">
+                    <h2>Step 3: set task sizes</h2>
+                    <div>
+                        <p>Task size:</p>
+                        <div class="button-group button-group--horizontal" role="group">
+                            <button class="button button--achromic" type="button"
+                                    ng-click="createProjectCtrl.changeSizeTaskGrid(-1)">Larger
+                            </button>
+                            <button ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
+                                    class="button button--achromic" type="button"
+                                    ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
+                                    ng-click="createProjectCtrl.changeSizeTaskGrid(1)">Smaller
+                            </button>
                         </div>
-                    </form>
+                        <hr/>
+                        <p>A new project will be created with {{ createProjectCtrl.numberOfTasks }} tasks.</p>
+                        <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks | number : 2 }} km<sup>2</sup>.</p>
+                        <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
+                             class="alert alert--warning" role="alert">
+                          <p><strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required
+                              please make the area of interest smaller.
+                          </p>
+                        </div>
+                        <div ng-show="createProjectCtrl.sizeOfTasks > createProjectCtrl.MAX_SIZE_OF_TASKS"
+                             class="alert alert--warning" role="alert">
+                          <p><strong>Warning:</strong> It is recommended to keep the size of the tasks small.
+                              Please review the size of the tasks and/or consider creating multiple
+                              projects.
+                          </p>
+                        </div>
+                    </div>
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">
+                            <button class="button button--secondary" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">
                                 <span>Previous</span>
                             </button>
-                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.setWizardStep('review')">
+                            <button class="button button--secondary" type="button" ng-click="createProjectCtrl.setWizardStep('review')">
                                 <span>Next</span>
                             </button>
                         </div>
@@ -125,7 +132,7 @@
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic button" type="button" ng-click="createProjectCtrl.setWizardStep('templates')">
+                            <button class="button button--secondary button" type="button" ng-click="createProjectCtrl.setWizardStep('taskSize')">
                                 <span>Previous</span>
                             </button>
                             <button class="button button--primary" type="button">
