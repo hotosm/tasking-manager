@@ -100,7 +100,7 @@ gulp.task('create-dev-config', function (){
 gulp.task('create-release-config', function (){
     /** Creates a config file for Angular with the relevant environment variables for release */
    return gulp.src('taskingmanager.config.json')
-       .pipe(config('taskingmanager.config', {environment: 'build'}))
+       .pipe(config('taskingmanager.config', {environment: 'release'}))
        .pipe(gulp.dest('app'))
 });
 
