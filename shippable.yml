@@ -43,7 +43,7 @@ build:
         - pip install -r requirements.txt
 
         # Run Python tests
-        nosetests ./tests/server/unit --with-xunit --xunit-file ./shippable/testresults/unitresults.xml --with-coverage --cover-erase --cover-package=./server
+        - nosetests ./tests/server/unit --with-xunit --xunit-file ./shippable/testresults/unitresults.xml --with-coverage --cover-erase --cover-package=./server
 
 
     on_success:
