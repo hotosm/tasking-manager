@@ -4,7 +4,7 @@
     angular
         .module('taskingManager')
         .service('projectService', ['$http', '$q', 'mapService', projectService]);
-    
+
     /**
      * @fileoverview This file provides a project service.
      * It generates the task grid for the project using Turf.js (spatial analysis)
@@ -248,16 +248,16 @@
          */
         function createProject(){
 
-            // TODO: Something like this
             // TODO: get the AOI. Store in project service when user goes to step 2?
-            //console.log(taskGrid);
-            //var geoJSON = format.writeFeaturesObject(taskGrid, {
-            //    dataProjection: TARGETPROJECTION,
-            //    featureProjection: MAPPROJECTION
-            //});
-            //console.log(geoJSON);
+            var taskGridGeoJSON = format.writeFeaturesObject(taskGrid, {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
 
-            var newProject = {};
+            var newProject = {
+                aoi: null, // TODO
+                tasks: taskGridGeoJSON
+            };
             
             // Returns a promise
             return $http({
