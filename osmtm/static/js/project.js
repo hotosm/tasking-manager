@@ -542,7 +542,7 @@ osmtm.project = (function() {
   function setPreferedEditor() {
     if (osmtm.prefered_editor !== '') {
       $('#prefered_editor').text($('#' + osmtm.prefered_editor + ' a').text());
-      $('#josm_task_boundary_tip').toggle(osmtm.prefered_editor == 'josm');
+      // $('#josm_task_boundary_tip').toggle(osmtm.prefered_editor == 'josm');
     }
   }
 
