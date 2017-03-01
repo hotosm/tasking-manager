@@ -44,7 +44,7 @@ build:
 
         # Run Python tests
         - nosetests ./tests/server/unit --with-xunit --xunit-file ./shippable/testresults/unitresults.xml --with-coverage --cover-erase --cover-package=./server
-
+        - coverage xml -o shippable/codecoverage/coverage.xml
 
     on_success:
         # Run deploy script to manage deploy to appropriate environment
