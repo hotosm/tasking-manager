@@ -60,7 +60,7 @@ class AreaOfInterest(db.Model):
             valid_geojson = geojson.dumps(aoi_geometry)
             self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         else:
-            raise InvalidGeoJson(f'Invalid MultiPolygon - {is_valid_geojson[message]}')
+            raise InvalidGeoJson(f"Invalid MultiPolygon - {is_valid_geojson['message']}")
 
 
 class Project(db.Model):
