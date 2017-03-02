@@ -12,17 +12,15 @@
     function createProjectController($scope, mapService, drawService, projectService) {
         var vm = this;
 
-        // Wizard variables
+        // Wizard 
         vm.currentStep = '';
         vm.isTaskGrid = false;
         vm.isTaskArbitrary = false;
 
-        // AOI variables
-        vm.AOIValid = true;
-        vm.AOIValidationMessage = '';
+        // AOI 
         vm.AOI = null;
 
-        // Grid variables
+        // Grid v
         vm.sizeOfTasks = 0; 
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
@@ -34,7 +32,7 @@
         vm.userZoomLevelOffset = 0;
 
         // Validation
-        vm.AOIValid = false;
+        vm.isAOIValid = false;
         vm.AOIValidationMessage = '';
         vm.isSplitPolygonValid = true;
         vm.splitPolygonValidationMessage = '';
@@ -64,10 +62,10 @@
             }
             else if (wizardStep === 'tasks'){
                 var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
-                vm.AOIValid = aoiValidationResult.valid;
+                vm.isAOIValid = aoiValidationResult.valid;
                 vm.AOIValidationMessage = aoiValidationResult.message;
 
-                if (vm.AOIValid) {
+                if (vm.isAOIValid) {
                     drawService.setDrawPolygonActive(false);
                     drawService.zoomToExtent();
                     // Use the current zoom level + a standard offset to determine the default task grid size for the AOI

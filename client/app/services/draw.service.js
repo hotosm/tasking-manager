@@ -7,7 +7,7 @@
 
     angular
         .module('taskingManager')
-        .service('drawService', ['mapService','projectService', drawService]);
+        .service('drawService', ['mapService', drawService]);
 
     function drawService(mapService) {
 
