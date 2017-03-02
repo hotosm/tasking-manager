@@ -29,7 +29,8 @@ describe('project.service', function () {
         var zoom = 18;
 
         // Act
-        projectService.createTaskGrid(AOI, zoom);
+        var grid = projectService.createTaskGrid(AOI, zoom);
+        projectService.setTaskGrid(grid);
         var taskGrid = projectService.getTaskGrid();
 
         // Assert
@@ -50,7 +51,8 @@ describe('project.service', function () {
         var zoom = 19;
 
         // Act
-        projectService.createTaskGrid(AOI, zoom);
+        var grid = projectService.createTaskGrid(AOI, zoom);
+        projectService.setTaskGrid(grid);
         var taskGrid = projectService.getTaskGrid();
 
         // Assert
@@ -145,25 +147,25 @@ describe('project.service', function () {
         })
     });
 
-    it('should return an INVALID SELF_INTERSECTION result when validating an array containing a self intersecting feature', function(){
+    it('should return an INVALID SELF_INTERSECTION result when validating an array containing self intersecting polygon features', function () {
 
         var polygon1 = new ol.geom.Polygon([[
-            [0,0],
-            [1,1],
-            [-1,1],
-            [0,1],
-            [0,0]
+            [0, 0],
+            [1, 1],
+            [-1, 1],
+            [0, 1],
+            [0, 0]
         ]]);
         var feature1 = new ol.Feature({
             geometry: polygon1
         });
 
         var polygon2 = new ol.geom.Polygon([[
-            [0,0],
-            [1,1],
-            [-1,1],
-            [0,1],
-            [0,0]
+            [0, 0],
+            [1, 1],
+            [-1, 1],
+            [0, 1],
+            [0, 0]
         ]]);
         var feature2 = new ol.Feature({
             geometry: polygon2
@@ -178,6 +180,56 @@ describe('project.service', function () {
         expect(result).toEqual({
             valid: false,
             message: 'SELF_INTERSECTIONS'
+        })
+    });
+
+     it('should return an INVALID SELF_INTERSECTION result when validating a multipolygon containing a self intersection', function(){
+
+         var multipolygon = new ol.geom.MultiPolygon([[[
+             [0, 0],
+             [1, 1],
+             [-1, 1],
+             [0, 1],
+             [0, 0]
+         ]]]);
+         var feature = new ol.Feature({
+             geometry: multipolygon
+         });
+
+         var features = [feature];
+
+         //Act
+         var result = projectService.validateAOI(features);
+
+        //Assert
+        expect(result).toEqual({
+            valid: false,
+            message: 'SELF_INTERSECTIONS'
+        })
+    });
+
+     it('should return an VALID result when validating a multipolygon containing no self intersections', function(){
+
+         var multipolygon = new ol.geom.MultiPolygon([[[
+             [0, 0],
+             [1, 1],
+             [-1, 1],
+             [-1, 0],
+             [0, 0]
+         ]]]);
+         var feature = new ol.Feature({
+             geometry: multipolygon
+         });
+
+         var features = [feature];
+
+         //Act
+         var result = projectService.validateAOI(features);
+
+        //Assert
+        expect(result).toEqual({
+            valid: true,
+            message: ''
         })
     });
 });
