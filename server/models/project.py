@@ -47,6 +47,26 @@ class Task(db.Model):
     zoom = db.Column(db.Integer, nullable=False)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
 
+    def __init__(self, task_id, task_multipolygon):
+
+        if type(task_multipolygon) is not geojson.MultiPolygon:
+            raise InvalidGeoJson('Task must be a MultiPolygon')
+
+        # TODO make a util
+        is_valid_geojson = geojson.is_valid(task_multipolygon)
+        if is_valid_geojson['valid'] == 'no':
+            raise InvalidGeoJson(f"Invalid MultiPolygon - {is_valid_geojson['message']}")
+
+        self.id = task_id
+        self.x = task_multipolygon.properties['x']
+        self.y = task_multipolygon.properties['y']
+        self.zoom = task_multipolygon.properties['zoom']
+
+        task_geojson = geojson.dumps(task_multipolygon)
+        self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
+
+        iain = 1
+
 
 
 class AreaOfInterest(db.Model):
@@ -71,12 +91,12 @@ class AreaOfInterest(db.Model):
             raise InvalidGeoJson('Area Of Interest geometry must be a MultiPolygon')
 
         is_valid_geojson = geojson.is_valid(aoi_geometry)
-
-        if is_valid_geojson['valid'] == 'yes':
-            valid_geojson = geojson.dumps(aoi_geometry)
-            self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
-        else:
+        if is_valid_geojson['valid'] == 'no':
             raise InvalidGeoJson(f"Invalid MultiPolygon - {is_valid_geojson['message']}")
+
+        valid_geojson = geojson.dumps(aoi_geometry)
+        self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
+
 
 
 class Project(db.Model):
@@ -93,13 +113,9 @@ class Project(db.Model):
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, *initial_data, **kwargs):
-        # TODO - prob move to base class, leave while we build up models
-        for dictionary in initial_data:
-            for key in dictionary:
-                setattr(self, key, dictionary[key])
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
+    def __init__(self, name, aoi):
+        self.name = name
+        self.area_of_interest = aoi
 
     def create(self):
         """

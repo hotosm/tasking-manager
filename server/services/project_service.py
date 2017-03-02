@@ -1,5 +1,6 @@
+import geojson
 from flask import current_app
-from server.models.project import AreaOfInterest, Project, InvalidGeoJson
+from server.models.project import AreaOfInterest, Project, InvalidGeoJson, Task
 
 
 class ProjectService:
@@ -9,6 +10,7 @@ class ProjectService:
         Validates and then persists draft projects in the DB
         :param data:
         :param aoi_geometry_geojson: AOI Geometry as a geoJSON string
+        :raises InvalidGeoJson
         :return:
         """
         # TODO - prob unpack the data object in the API
@@ -19,6 +21,16 @@ class ProjectService:
         except InvalidGeoJson as e:
             raise e
 
-        draft_project = Project(data, area_of_interest=area_of_interest)
+        draft_project = Project('Iain Test', area_of_interest)
+
+        tasks = geojson.loads(tasks_geojson)
+        # TODO - raise exception
+        is_valid_geojson = geojson.is_valid(tasks)
+
+        task_id = 1
+        for task in tasks['features']:
+            new_task = Task(task_id, task)
+            draft_project.tasks.append(new_task)
+            task_id += 1
 
         draft_project.create()
