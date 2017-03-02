@@ -28,6 +28,17 @@ class ProjectsAPI(Resource):
                         items:
                             type: number
                             default: [[[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
+            - schema:
+                id: Iain
+                properties:
+                    type:
+                        type: string
+                        default: MultiPolygon
+                    coordinates:
+                        type: array
+                        items:
+                            type: number
+                            default: [[[-7.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
         parameters:
             - in: body
               name: body
@@ -40,12 +51,7 @@ class ProjectsAPI(Resource):
                           default: HOT Project
                       areaOfInterest:
                           schema:
-                              properties:
-                                  geometryGeoJSON:
-                                      schema:
-                                          $ref: "#/definitions/Multipolygon"
-
-
+                              $ref: "#/definitions/Multipolygon"
         responses:
             201:
                 description: Draft project created
@@ -55,7 +61,7 @@ class ProjectsAPI(Resource):
         try:
             # TODO this a little clunky but avoids DTO object, however DTOs may be cleaner - will decide later
             data = request.get_json()
-            aoi_geometry_geojson = json.dumps(data['areaOfInterest']['geometryGeoJSON'])
+            aoi_geometry_geojson = json.dumps(data['areaOfInterest'])
         except KeyError as e:
             return {"error": f'Key {str(e)} not found in JSON, note parser is case sensitive'}, 400
 
