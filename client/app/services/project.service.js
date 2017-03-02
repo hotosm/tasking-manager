@@ -252,14 +252,14 @@
             }
 
             // check for self-intersections
-            for (var j = 0; j < features.length; j++) {
-                if (features[j].getGeometry() instanceof ol.geom.MultiPolygon){
+            for (var featureCount = 0; featureCount < features.length; featureCount++) {
+                if (features[featureCount].getGeometry() instanceof ol.geom.MultiPolygon){
                     // it should only have one polygon per multipolygon at the moment
-                    var polygonsInFeatures = features[j].getGeometry().getPolygons();
+                    var polygonsInFeatures = features[featureCount].getGeometry().getPolygons();
                     var hasSelfIntersections;
-                    for (var k = 0; k < polygonsInFeatures.length; k++){
+                    for (var polyCount = 0; polyCount < polygonsInFeatures.length; polyCount++){
                         var feature = new ol.Feature({
-                            geometry: polygonsInFeatures[k]
+                            geometry: polygonsInFeatures[polyCount]
                         });
                         var selfIntersect = checkFeatureSelfIntersections_(feature);
                         if (selfIntersect){
@@ -275,14 +275,13 @@
                     }
                 }
                 else {
-                    var hasSelfIntersections = checkFeatureSelfIntersections_(features[j]);
+                    var hasSelfIntersections = checkFeatureSelfIntersections_(features[featureCount]);
                     if (hasSelfIntersections){
                         validationResult.valid = false;
                         validationResult.message = 'SELF_INTERSECTIONS';
                         return validationResult;
                     }
                 }
-
             }
             return validationResult;
         }

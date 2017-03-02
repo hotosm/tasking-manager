@@ -20,7 +20,7 @@
         // AOI 
         vm.AOI = null;
 
-        // Grid v
+        // Grid
         vm.sizeOfTasks = 0; 
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
