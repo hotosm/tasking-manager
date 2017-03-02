@@ -4,7 +4,7 @@ from server.models.project import AreaOfInterest, Project, InvalidGeoJson
 
 class ProjectService:
 
-    def create_draft_project(self, data, aoi_geometry_geojson):
+    def create_draft_project(self, data, aoi_geometry_geojson, tasks_geojson):
         """
         Validates and then persists draft projects in the DB
         :param data:
@@ -20,4 +20,5 @@ class ProjectService:
             raise e
 
         draft_project = Project(data, area_of_interest=area_of_interest)
+
         draft_project.create()

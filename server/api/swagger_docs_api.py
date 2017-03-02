@@ -11,9 +11,10 @@ class SwaggerDocsAPI(Resource):
 
     def get(self):
         """
-        Generates Swagger UI readable YAML.  Definitions that are shared with multiple APIs are defined here
-        :return: Swagger UI JSON object
+        Generates Swagger UI readable JSON
         ---
+        tags:
+          - docs
         definitions:
             - schema:
                 id: GeoJsonMultiPolygon

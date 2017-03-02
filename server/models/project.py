@@ -33,6 +33,22 @@ class ProjectStatus(Enum):
     DRAFT = 2
 
 
+class Task(db.Model):
+    """
+    Describes an individual mapping Task
+    """
+    __tablename__ = "tasks"
+
+    # Table has composite PK on (id and project_id)
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, primary_key=True)
+    x = db.Column(db.Integer, nullable=False)
+    y = db.Column(db.Integer, nullable=False)
+    zoom = db.Column(db.Integer, nullable=False)
+    geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
+
+
+
 class AreaOfInterest(db.Model):
     """
     Describes the Area of Interest (AOI) that the project manager defined when creating a project
@@ -46,7 +62,7 @@ class AreaOfInterest(db.Model):
     def __init__(self, aoi_geometry_geojson):
         """
         AOI Constructor
-        :param aoi_geometry: AOI GeoJson
+        :param aoi_geometry_geojson: AOI GeoJson
         :raises InvalidGeoJson
         """
         aoi_geometry = geojson.loads(aoi_geometry_geojson)
@@ -74,6 +90,7 @@ class Project(db.Model):
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     area_of_interest = db.relationship(AreaOfInterest)
+    tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, *initial_data, **kwargs):

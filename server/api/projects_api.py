@@ -50,12 +50,13 @@ class ProjectsAPI(Resource):
             # TODO this a little clunky but avoids DTO object, however DTOs may be cleaner - will decide later
             data = request.get_json()
             aoi_geometry_geojson = json.dumps(data['areaOfInterest'])
+            tasks_geojson = json.dumps(data['tasks'])
         except KeyError as e:
             return {"error": f'Key {str(e)} not found in JSON, note parser is case sensitive'}, 400
 
         try:
             project_service = ProjectService()
-            project_service.create_draft_project(data, aoi_geometry_geojson)
+            project_service.create_draft_project(data, aoi_geometry_geojson, tasks_geojson)
             return {"status": "success"}, 201
         except InvalidGeoJson as e:
             return {"error": f'{str(e)}'}, 400
