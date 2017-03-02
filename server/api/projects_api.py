@@ -18,7 +18,7 @@ class ProjectsAPI(Resource):
             - application/json
         definitions:
             - schema:
-                id: Multipolygon
+                id: GeoJsonMultiPolygon
                 properties:
                     type:
                         type: string
@@ -29,7 +29,7 @@ class ProjectsAPI(Resource):
                             type: number
                             default: [[[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
             - schema:
-                id: Iain
+                id: GeoJsonMultiPolygonWithProperties
                 properties:
                     type:
                         type: string
@@ -39,6 +39,18 @@ class ProjectsAPI(Resource):
                         items:
                             type: number
                             default: [[[-7.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
+                    properties:
+                        type: object
+                        properties:
+                            x:
+                                type: integer
+                                default: 2402
+                            y:
+                                type: integer
+                                default: 1736
+                            zoom:
+                                type: integer
+                                default: 12
         parameters:
             - in: body
               name: body
@@ -51,7 +63,18 @@ class ProjectsAPI(Resource):
                           default: HOT Project
                       areaOfInterest:
                           schema:
-                              $ref: "#/definitions/Multipolygon"
+                              $ref: "#/definitions/GeoJsonMultiPolygon"
+                      tasks:
+                          schema:
+                              properties:
+                                  type:
+                                      type: string
+                                      default: FeatureCollection
+                                  features:
+                                      type: array
+                                      items:
+                                          schema:
+                                              $ref: "#/definitions/GeoJsonMultiPolygonWithProperties"
         responses:
             201:
                 description: Draft project created
