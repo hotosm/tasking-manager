@@ -29,7 +29,6 @@
         var taskGrid = null;
         var aoi = null;
         var projectServiceDefined = null;
-        var zoomLevel = 0;
         
         // OpenLayers source for the task grid
         var taskGridSource = null;
