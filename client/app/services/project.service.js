@@ -92,10 +92,10 @@
                 featureProjection: MAPPROJECTION
             });
 
-            var xmin = extent[0];
-            var ymin = extent[1];
-            var xmax = extent[2];
-            var ymax = extent[3];
+            var xmin = Math.ceil(extent[0]);
+            var ymin = Math.ceil(extent[1]);
+            var xmax = Math.floor(extent[2]);
+            var ymax = Math.floor(extent[3]);
 
             // task size (in meters) at the required zoom level
             var step = AXIS_OFFSET / (Math.pow(2, (zoomLevel - 1)));
@@ -129,8 +129,6 @@
                     }
                 }
             }
-            // Store the task features in the service
-            //taskGrid = taskFeatures;
             return taskFeatures;
         }
 
