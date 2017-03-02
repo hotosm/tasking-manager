@@ -63,7 +63,6 @@
                 vm.currentStep = wizardStep;
             }
             else if (wizardStep === 'tasks'){
-
                 var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
                 vm.AOIValid = aoiValidationResult.valid;
                 vm.AOIValidationMessage = aoiValidationResult.message;
