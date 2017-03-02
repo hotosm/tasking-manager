@@ -16,7 +16,7 @@
   </p>
   <br/>
   <p>
-    <img src="${request.static_url('osmtm:static/img/choose_on_map.png')}">
+    <img src="${request.static_path('osmtm:static/img/choose_on_map.png')}">
   </p>
     ${_('or')}
   </p>

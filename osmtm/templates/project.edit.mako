@@ -5,9 +5,9 @@
 <h1>${project.id} - ${project.name} - ${_('Edit')}</h1>
 </%block>
 <%block name="content">
-<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/datepicker3.css')}">
-<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/angular.min.js')}"></script>
-<script type="text/javascript" src="${request.static_url('osmtm:static/js/lib/bootstrap-datepicker.js')}"></script>
+<link rel="stylesheet" href="${request.static_path('osmtm:static/js/lib/datepicker3.css')}">
+<script type="text/javascript" src="${request.static_path('osmtm:static/js/lib/angular.min.js')}"></script>
+<script type="text/javascript" src="${request.static_path('osmtm:static/js/lib/bootstrap-datepicker.js')}"></script>
 <script>
     var locale_name = "${request.locale_name}";
 </script>
@@ -15,18 +15,18 @@
 <%
   bootstrap_locale_baseurl = 'osmtm:static/js/lib/locales/bootstrap-datepicker.%s.js'
   try:
-    bootstrap_locale = request.static_url(bootstrap_locale_baseurl % request.locale_name.replace('_', '-'))
+    bootstrap_locale = request.static_path(bootstrap_locale_baseurl % request.locale_name.replace('_', '-'))
   except IOError:
     try:
-      bootstrap_locale = request.static_url(bootstrap_locale_baseurl % request.locale_name[:2])
+      bootstrap_locale = request.static_path(bootstrap_locale_baseurl % request.locale_name[:2])
     except IOError:
-      bootstrap_locale = request.static_url(bootstrap_locale_baseurl % 'en')
+      bootstrap_locale = request.static_path(bootstrap_locale_baseurl % 'en')
 %>
 <script type="text/javascript" src="${bootstrap_locale}"></script>
 
-<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
-<script src="${request.static_url('osmtm:static/js/lib/leaflet.js')}"></script>
-<script src="${request.static_url('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
+<link rel="stylesheet" href="${request.static_path('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.css')}"/>
+<script src="${request.static_path('osmtm:static/js/lib/leaflet.js')}"></script>
+<script src="${request.static_path('osmtm:static/js/lib/Leaflet.draw/dist/leaflet.draw.js')}"></script>
 <div id="markdown_cheat_sheet" class="modal fade">
   <div class="modal-dialog">
   <div class="modal-content">
@@ -176,8 +176,8 @@ geometry = loads(str(project.area.geometry.data))
       </div>
     </div>
   </form>
-  <script type="text/javascript" src="${request.static_url('osmtm:static/js/project.edit.js')}"></script>
-  <script src="${request.static_url('osmtm:static/js/lib/typeahead.bundle.js')}"></script>
+  <script type="text/javascript" src="${request.static_path('osmtm:static/js/project.edit.js')}"></script>
+  <script src="${request.static_path('osmtm:static/js/lib/typeahead.bundle.js')}"></script>
 </div>
 </%block>
 <%block name="description">

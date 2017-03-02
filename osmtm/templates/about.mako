@@ -14,7 +14,7 @@
       </p>
       <h3>${_('Sponsorship and Funding')}</h3>
       <p>${_('OSM Tasking Manager was designed and built for the <a href="http://hot.openstreetmap.org">Humanitarian OpenStreetMap Team</a>.') |n}
-      <img src="${request.static_url('osmtm:static/img/hot.png')}" />
+      <img src="${request.static_path('osmtm:static/img/hot.png')}" />
       <p>${_('With the invaluable help from:') | n}<p>
       <ul>
         <li>
@@ -35,11 +35,11 @@
       </ul>
       </p>
       <p>
-        <img src="${request.static_url('osmtm:static/img/aifdr.png')}" />
-        <img src="${request.static_url('osmtm:static/img/usaid.png')}" />
-        <img src="${request.static_url('osmtm:static/img/gfdrr.png')}" />
-        <img src="${request.static_url('osmtm:static/img/redcross.png')}" />
-        <img src="${request.static_url('osmtm:static/img/gwu.png')}" />
+        <img src="${request.static_path('osmtm:static/img/aifdr.png')}" />
+        <img src="${request.static_path('osmtm:static/img/usaid.png')}" />
+        <img src="${request.static_path('osmtm:static/img/gfdrr.png')}" />
+        <img src="${request.static_path('osmtm:static/img/redcross.png')}" />
+        <img src="${request.static_path('osmtm:static/img/gwu.png')}" />
       </p>
     </div>
     <div class="col-md-5">
