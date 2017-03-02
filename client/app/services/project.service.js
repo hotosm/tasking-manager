@@ -27,7 +27,9 @@
 
         var map = null;
         var taskGrid = null;
+        var aoi = null;
         var projectServiceDefined = null;
+        var zoomLevel = 0;
         
         // OpenLayers source for the task grid
         var taskGridSource = null;
@@ -36,12 +38,14 @@
             init: init,
             createTaskGrid: createTaskGrid,
             getTaskGrid: getTaskGrid,
+            setTaskGrid: setTaskGrid,
             removeTaskGrid: removeTaskGrid,
             getTaskSize: getTaskSize,
             getNumberOfTasks: getNumberOfTasks,
             addTaskGridToMap: addTaskGridToMap,
-            validateAOI: validateAOI
-
+            setAOI: setAOI,
+            validateAOI: validateAOI,
+            splitTasks: splitTasks
         };
 
         return service;
@@ -75,6 +79,8 @@
          * @param zoomLevel - the OSM zoom level the task squares will align with
          */
         function createTaskGrid(areaOfInterest, zoomLevel) {
+
+            var zoomLevel = zoomLevel;
 
             var extent = areaOfInterest.getGeometry().getExtent();
 
@@ -114,12 +120,18 @@
                     var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
                     // Add the task feature to the array if it intersects
                     if (intersection) {
+                        taskFeature.setProperties({
+                            'x': x,
+                            'y': y,
+                            'zoom': zoomLevel
+                        });
                         taskFeatures.push(taskFeature);
                     }
                 }
             }
             // Store the task features in the service
-            taskGrid = taskFeatures;
+            //taskGrid = taskFeatures;
+            return taskFeatures;
         }
 
         /**
@@ -128,6 +140,14 @@
          */
         function getTaskGrid(){
             return taskGrid;
+        }
+
+        /**
+         * Sets the task grid
+         * @param grid
+         */
+        function setTaskGrid(grid){
+            taskGrid = grid;
         }
 
         /**
@@ -195,6 +215,14 @@
             return feature;
         }
 
+        /** 
+         * Set the AOI
+         * @param areaOfInterest
+         */
+        function setAOI(areaOfInterest){
+            aoi = areaOfInterest;
+        }
+
         /**
          * Validate a candidate AOI.
          * @param features to be validated {*|ol.Collection.<ol.Feature>|Array.<ol.Feature>}
@@ -205,7 +233,7 @@
             var validationResult = {
                 valid: true,
                 message: ''
-            }
+            };
 
             // check we have a non empty array of things
             if (!features || !features.length || features.length == 0){
@@ -225,8 +253,8 @@
 
             // check for self-intersections
             var format = new ol.format.GeoJSON();
-            for (var i = 0; i < features.length; i++) {
-                var features_as_gj = format.writeFeatureObject(features[i], {
+            for (var j = 0; j < features.length; j++) {
+                var features_as_gj = format.writeFeatureObject(features[j], {
                     dataProjection: TARGETPROJECTION,
                     featureProjection: MAPPROJECTION
                 });
@@ -238,6 +266,60 @@
             }
 
             return validationResult;
+        }
+
+        /**
+         * Splits the tasks into four for every task that intersects the drawn polygon
+         * and updates the task grid.
+         * @param drawnPolygon
+         */
+        function splitTasks(drawnPolygon){
+
+            var format = new ol.format.GeoJSON();
+
+            // Write the polygon as GeoJSON and transform to the projection Turf.js needs
+            var drawnPolygonGeoJSON = format.writeFeatureObject(drawnPolygon, {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
+            
+            var newTaskGrid = [];
+            for (var i = 0; i < taskGrid.length; i++){
+                // Write the feature as GeoJSON and transform to the projection Turf.js needs
+                var taskGeoJSON = format.writeFeatureObject(taskGrid[i], {
+                    dataProjection: TARGETPROJECTION,
+                    featureProjection: MAPPROJECTION
+                });
+                // Check if the task intersects with the drawn polygon
+                var intersection = turf.intersect(drawnPolygonGeoJSON, taskGeoJSON);
+                // If the task doesn't intersect with the drawn polygon, copy the existing task into the new task grid
+                if (!intersection) {
+                    newTaskGrid.push(taskGrid[i]);
+                }
+                // If the task does intersect, get the split tasks and add these to the new task grid
+                else {
+                    var grid = getSplitTasks(taskGrid[i]);
+                    for (var j = 0; j < grid.length; j++){
+                        newTaskGrid.push(grid[j]);
+                    }
+                }
+            }
+            // Remove the old task grid and add the new one to the map
+            removeTaskGrid();
+            setTaskGrid(newTaskGrid);
+            addTaskGridToMap();
+        }
+
+        /**
+         * Get the split tasks for a single task
+         * @param task
+         * @returns {*}
+         */
+        function getSplitTasks(task){
+            // For smaller tasks, increase the zoom level by 1
+            var zoomLevel = task.getProperties().zoom + 1;
+            var grid = createTaskGrid(task, zoomLevel);
+            return grid;
         }
     }
 })();

@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['mapService', 'drawService', 'projectService', createProjectController]);
+        .controller('createProjectController', ['$scope', 'mapService', 'drawService', 'projectService', createProjectController]);
 
-    function createProjectController(mapService, drawService, projectService) {
+    function createProjectController($scope, mapService, drawService, projectService) {
         var vm = this;
 
         // Wizard variables
@@ -64,6 +64,7 @@
 
                 if (vm.AOIValid) {
                     drawService.setDrawPolygonActive(false);
+                    console.log("zoomToExtent");
                     drawService.zoomToExtent();
                     // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
                     vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
@@ -80,6 +81,7 @@
                 }
             }
             else {
+                console.log(projectService.getTaskGrid());
                 vm.currentStep = wizardStep;
             }
         };
@@ -136,12 +138,14 @@
             // Remove existing task grid
             projectService.removeTaskGrid();
 
-             // Get the AOI
+             // Get and set the AOI
             var areaOfInterest = drawService.getFeatures();
+            projectService.setAOI(areaOfInterest);
 
             // Create a task grid
             // TODO: may need to fix areaOfInterest[0] as it may need to work for multipolygons
-            projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+            var taskGrid = projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+            projectService.setTaskGrid(taskGrid);
             projectService.addTaskGridToMap();
 
             // Get the number of tasks in project
@@ -159,6 +163,41 @@
         vm.changeSizeTaskGrid = function(zoomLevelOffset){
             vm.userZoomLevelOffset += zoomLevelOffset;
             vm.createTaskGrid();
+        };
+
+        /**
+         * TODO
+         */
+        vm.drawAreaToSplit = function(){
+            var map =  mapService.getOSMMap();
+            var source = new ol.source.Vector();
+            var vector = new ol.layer.Vector({
+                source: source
+            });
+            map.addLayer(vector);
+
+            // Draw and select interaction - Polygon
+            var drawAndSelectPolygon = new ol.interaction.Draw({
+                type: "Polygon"
+            });
+            drawAndSelectPolygon.setActive(true);
+            map.addInteraction(drawAndSelectPolygon);
+
+            drawAndSelectPolygon.on('drawend', function(event){
+                var aoiValidationResult = projectService.validateAOI(event.feature);
+                vm.isSplitPolygonValid = aoiValidationResult.valid;
+                vm.splitPolygonValidationMessage = aoiValidationResult.message;
+                console.log(vm.isSplitPolygonValid);
+
+                projectService.splitTasks(event.feature);
+
+                // Get the number of tasks in project
+                // Start an Angular digest cycle manually to update the view
+                $scope.$apply(function(){
+                    vm.numberOfTasks = projectService.getNumberOfTasks();
+                }); 
+                drawAndSelectPolygon.setActive(false);
+            });
         };
 
         /**

@@ -1,13 +1,14 @@
 'use strict';
 
 describe('create-project.controller', function () {
-    var createProjectController = null;
+    var createProjectController, scope = null;
 
     beforeEach(function () {
         module('taskingManager');
 
-        inject(function ($controller) {
-            createProjectController = $controller('createProjectController');
+        inject(function ($controller, $rootScope) {
+            scope = $rootScope.$new();
+            createProjectController = $controller('createProjectController', {$scope: scope});
         });
     });
 
