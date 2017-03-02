@@ -29,7 +29,7 @@
                         <div>
                             <p>Draw the area of interest on the map.</p>
                             <button class="button button--achromic" type="button" ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
-                            <div id="drawn-aoi-validation">
+                            <div>
                                 <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
                                     No area of interest has been drawn.
                                 </span>
@@ -99,8 +99,13 @@
                         </div>
                         <p>Split a specific area into smaller tasks by drawing an area:</p>
                         <button class="button button--achromic" type="button"
-                                ng-click="createProjectCtrl.drawAreaToSplit()">Split area
+                                ng-click="createProjectCtrl.drawAndSplitArea()">Split area
                         </button>
+                         <div>
+                             <span class="error" ng-show="createProjectCtrl.splitPolygonValidationMessage == 'SELF_INTERSECTIONS'">
+                                 The drawn polygon contains self intersections.
+                             </span>
+                         </div>
                         <hr/>
                         <p>A new project will be created with {{ createProjectCtrl.numberOfTasks }} tasks.</p>
                         <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks | number : 2 }} km<sup>2</sup>.</p>

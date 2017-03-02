@@ -33,6 +33,12 @@
         vm.initialZoomLevelForTaskGridCreation = 0;
         vm.userZoomLevelOffset = 0;
 
+        // Validation
+        vm.AOIValid = false;
+        vm.AOIValidationMessage = '';
+        vm.isSplitPolygonValid = true;
+        vm.splitPolygonValidationMessage = '';
+
         activate();
 
         function activate() {
@@ -64,7 +70,6 @@
 
                 if (vm.AOIValid) {
                     drawService.setDrawPolygonActive(false);
-                    console.log("zoomToExtent");
                     drawService.zoomToExtent();
                     // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
                     vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
@@ -81,7 +86,6 @@
                 }
             }
             else {
-                console.log(projectService.getTaskGrid());
                 vm.currentStep = wizardStep;
             }
         };
@@ -166,15 +170,12 @@
         };
 
         /**
-         * TODO
+         *  Lets the user draw an area (polygon).
+         *  After drawing it, the polygon is validated before splitting the intersecting
+         *  tasks into smaller tasks
          */
-        vm.drawAreaToSplit = function(){
-            var map =  mapService.getOSMMap();
-            var source = new ol.source.Vector();
-            var vector = new ol.layer.Vector({
-                source: source
-            });
-            map.addLayer(vector);
+        vm.drawAndSplitArea = function () {
+            var map = mapService.getOSMMap();
 
             // Draw and select interaction - Polygon
             var drawAndSelectPolygon = new ol.interaction.Draw({
@@ -183,20 +184,20 @@
             drawAndSelectPolygon.setActive(true);
             map.addInteraction(drawAndSelectPolygon);
 
-            drawAndSelectPolygon.on('drawend', function(event){
-                var aoiValidationResult = projectService.validateAOI(event.feature);
-                vm.isSplitPolygonValid = aoiValidationResult.valid;
-                vm.splitPolygonValidationMessage = aoiValidationResult.message;
-                console.log(vm.isSplitPolygonValid);
-
-                projectService.splitTasks(event.feature);
-
-                // Get the number of tasks in project
+            // After drawing the polygon, validate it and split if valid
+            drawAndSelectPolygon.on('drawend', function (event) {
+                var aoiValidationResult = projectService.validateAOI([event.feature]);
                 // Start an Angular digest cycle manually to update the view
-                $scope.$apply(function(){
-                    vm.numberOfTasks = projectService.getNumberOfTasks();
-                }); 
-                drawAndSelectPolygon.setActive(false);
+                $scope.$apply(function () {
+                    vm.isSplitPolygonValid = aoiValidationResult.valid;
+                    vm.splitPolygonValidationMessage = aoiValidationResult.message;
+                    if (vm.isSplitPolygonValid) {
+                        projectService.splitTasks(event.feature);
+                        // Get the number of tasks in project
+                        vm.numberOfTasks = projectService.getNumberOfTasks();
+                        drawAndSelectPolygon.setActive(false);
+                    }
+                });
             });
         };
 

@@ -209,8 +209,10 @@
             var xmax = (x + 1) * step - AXIS_OFFSET;
             var ymax = (y + 1) * step - AXIS_OFFSET;
             var polygon = new ol.geom.Polygon.fromExtent([xmin, ymin, xmax, ymax]);
+            var multiPolygon = new ol.geom.MultiPolygon();
+            multiPolygon.appendPolygon(polygon);
             var feature = new ol.Feature({
-                geometry: polygon
+                geometry: multiPolygon
             });
             return feature;
         }
@@ -225,6 +227,7 @@
 
         /**
          * Validate a candidate AOI.
+         * Supports Polygons and MultiPolygons
          * @param features to be validated {*|ol.Collection.<ol.Feature>|Array.<ol.Feature>}
          * @returns {{valid: boolean, message: string}}
          */
@@ -252,19 +255,38 @@
             }
 
             // check for self-intersections
-            var format = new ol.format.GeoJSON();
             for (var j = 0; j < features.length; j++) {
-                var features_as_gj = format.writeFeatureObject(features[j], {
-                    dataProjection: TARGETPROJECTION,
-                    featureProjection: MAPPROJECTION
-                });
-                if (turf.kinks(features_as_gj).features.length > 0) {
-                    validationResult.valid = false;
-                    validationResult.message = 'SELF_INTERSECTIONS';
-                    return validationResult;
+                if (features[j].getGeometry() instanceof ol.geom.MultiPolygon){
+                    // it should only have one polygon per multipolygon at the moment
+                    var polygonsInFeatures = features[j].getGeometry().getPolygons();
+                    var hasSelfIntersections;
+                    for (var k = 0; k < polygonsInFeatures.length; k++){
+                        var feature = new ol.Feature({
+                            geometry: polygonsInFeatures[k]
+                        });
+                        var selfIntersect = checkFeatureSelfIntersections_(feature);
+                        if (selfIntersect){
+                            hasSelfIntersections = true;
+                            // If only one self intersection exists, return as having self intersections
+                            break;
+                        }
+                    }
+                    if (hasSelfIntersections){
+                        validationResult.valid = false;
+                        validationResult.message = 'SELF_INTERSECTIONS';
+                        return validationResult;
+                    }
                 }
-            }
+                else {
+                    var hasSelfIntersections = checkFeatureSelfIntersections_(features[j]);
+                    if (hasSelfIntersections){
+                        validationResult.valid = false;
+                        validationResult.message = 'SELF_INTERSECTIONS';
+                        return validationResult;
+                    }
+                }
 
+            }
             return validationResult;
         }
 
@@ -320,6 +342,25 @@
             var zoomLevel = task.getProperties().zoom + 1;
             var grid = createTaskGrid(task, zoomLevel);
             return grid;
+        }
+        
+         /**
+         * Check an individual feature for self intersections with Turf.js
+         * Only supports Polygons
+         * @param feature - has to be a Polygon
+         * @returns {boolean}
+         */
+        function checkFeatureSelfIntersections_(feature){
+            var format = new ol.format.GeoJSON();
+            var hasSelfIntersections = false;
+            var feature_as_gj = format.writeFeatureObject(feature, {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
+            if (turf.kinks(feature_as_gj).features.length > 0) {
+                hasSelfIntersections = true;
+            }
+            return hasSelfIntersections;
         }
     }
 })();

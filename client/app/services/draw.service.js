@@ -57,7 +57,7 @@
             // Draw interactions - Polygon
             drawPolygon = new ol.interaction.Draw({
                 source: source,
-                type: "Polygon"
+                type: "MultiPolygon"
             });
             drawPolygon.setActive(false);
             map.addInteraction(drawPolygon);
