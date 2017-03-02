@@ -9,3 +9,7 @@
 .error {
   color: $danger-color;
 }
+
+input[type="file"] {
+    display: none;
+}
