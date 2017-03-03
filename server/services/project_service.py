@@ -22,14 +22,28 @@ class ProjectService:
         except InvalidData as e:
             raise e
 
+        self._attach_tasks_to_project(draft_project, tasks_geojson)
+
+        draft_project.create()
+
+    def _attach_tasks_to_project(self, draft_project, tasks_geojson):
+        """
+
+        :param project:
+        :param tasks:
+        :return:
+        """
         tasks = geojson.loads(tasks_geojson)
-        # TODO - raise exception
+
+        if type(tasks) is not geojson.FeatureCollection:
+            raise InvalidGeoJson('Tasks: Invalid GeoJson must be FeatureCollection')
+
         is_valid_geojson = geojson.is_valid(tasks)
+        if is_valid_geojson['valid'] == 'no':
+            raise InvalidGeoJson(f"Tasks: Invalid FeatureCollection - {is_valid_geojson['message']}")
 
         task_id = 1
         for task in tasks['features']:
             new_task = Task(task_id, task)
             draft_project.tasks.append(new_task)
             task_id += 1
-
-        draft_project.create()

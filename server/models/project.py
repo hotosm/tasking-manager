@@ -64,7 +64,6 @@ class Task(db.Model):
         if type(task_multipolygon) is not geojson.MultiPolygon:
             raise InvalidGeoJson('Task: Geometry must be a MultiPolygon')
 
-        # TODO make a util
         is_valid_geojson = geojson.is_valid(task_multipolygon)
         if is_valid_geojson['valid'] == 'no':
             raise InvalidGeoJson(f"Task: Invalid MultiPolygon - {is_valid_geojson['message']}")
@@ -133,6 +132,7 @@ class Project(db.Model):
 
         self.name = project_name
         self.area_of_interest = aoi
+        self.status = ProjectStatus.DRAFT.value
 
     def create(self):
         """

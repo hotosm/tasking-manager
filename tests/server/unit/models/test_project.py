@@ -1,6 +1,6 @@
 import geojson
 import unittest
-from server.models.project import AreaOfInterest, InvalidGeoJson
+from server.models.project import AreaOfInterest, InvalidGeoJson, InvalidData, Project
 
 
 class TestProject(unittest.TestCase):
@@ -21,3 +21,9 @@ class TestProject(unittest.TestCase):
         with self.assertRaises(InvalidGeoJson):
             # Only geometries of type MultiPolygon are valid
             AreaOfInterest(geojson.dumps(bad_multipolygon))
+
+    def test_cant_create_project_with_empty_project_name(self):
+        # Act / Assert
+        with self.assertRaises(InvalidData):
+            # Only geometries of type MultiPolygon are valid
+            Project('', 'aoi')
