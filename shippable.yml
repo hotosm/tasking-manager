@@ -7,7 +7,6 @@ python:
 
 env:
     - secure: PjCTHdC1E/tZkN+kL15okF5j3NFerFBKK3nU7OI9pFHYW8rO2JA5UyhjTbgYzdBvTAhUodBRmy8d82jAqHj2zHSCG0FEq9ehEresLruHm3rhSKFVG9vJSda47Qzm01zo8HTd73lnuq4buMp/fVAlvaKSa7zux90Sx+6xqxrUWeIsEuqxapVaeAouLOXkHrII/ERHJ89UEgJAkn777dWIodJWEXZiWHcMI2to+z19k95ZPSeNL5Q8yaA2r63walA7VewYdCdBNthXNqwI9lCsgOoFZNMREbPhnkszAaNUhm14bi/epU4Z/pvgBvoquAjl697r4r65iEnKGIIHZYAknQ==
-    - CI_BUILD=Shippable
 
 build:
     # Use the python 3.6 docker container to build the application
