@@ -28,10 +28,10 @@ class ProjectService:
 
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
         """
-
-        :param project:
-        :param tasks:
-        :return:
+        Validates then iterates over the array of tasks and attach them to the draft project
+        :param draft_project: Draft project in scope
+        :param tasks_geojson: GeoJSON feature collection of mapping tasks
+        :raises InvalidGeoJson
         """
         tasks = geojson.loads(tasks_geojson)
 
