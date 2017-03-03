@@ -368,11 +368,13 @@
             
             var format = new ol.format.GeoJSON();
 
+            // Write the feature as a GeoJSON object and transform to the projection the API needs
             var areaOfInterestGeoJSON = format.writeFeaturesObject(aoi, {
                 dataProjection: TARGETPROJECTION,
                 featureProjection: MAPPROJECTION
             });
-            
+
+            // Write the features as a GeoJSON object and transform to the projection the API needs
             var taskGridGeoJSON = format.writeFeaturesObject(taskGrid, {
                 dataProjection: TARGETPROJECTION,
                 featureProjection: MAPPROJECTION
