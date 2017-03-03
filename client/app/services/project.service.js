@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', ['$http', '$q', 'mapService', projectService]);
+        .service('projectService', ['$http', '$q', 'mapService','configService', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -11,7 +11,7 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService($http, $q, mapService) {
+    function projectService($http, $q, mapService, configService) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -361,26 +361,34 @@
         }
 
         /**
-         * Creates a project by calling the API with the AOI and task grid
+         * Creates a project by calling the API with the AOI, a task grid and a project name
          * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
          */
         function createProject(){
+            
+            var format = new ol.format.GeoJSON();
 
-            // TODO: get the AOI. Store in project service when user goes to step 2?
+            var areaOfInterestGeoJSON = format.writeFeaturesObject(aoi, {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
+            
             var taskGridGeoJSON = format.writeFeaturesObject(taskGrid, {
                 dataProjection: TARGETPROJECTION,
                 featureProjection: MAPPROJECTION
             });
 
+            // Get the geometry of the area of interest. It should only have one feature.
             var newProject = {
-                aoi: null, // TODO
+                areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
+                projectName: 'TEST',
                 tasks: taskGridGeoJSON
             };
             
             // Returns a promise
             return $http({
-                method: 'POST',
-                url: configService.tmAPI + 'project/create',
+                method: 'PUT',
+                url: configService.tmAPI + '/v1/project',
                 data: newProject,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
@@ -389,7 +397,7 @@
                 // this callback will be called asynchronously
                 // when the response is available
                 return (response);
-            }, function errorCallback(response) {
+            }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject("error");
