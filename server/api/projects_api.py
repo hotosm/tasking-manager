@@ -1,5 +1,5 @@
 import json
-from flask_restful import Resource, request
+from flask_restful import Resource, request, current_app
 from server.services.project_service import ProjectService, InvalidGeoJson
 
 
@@ -23,7 +23,7 @@ class ProjectsAPI(Resource):
               description: JSON object for creating draft project
               schema:
                   properties:
-                      name:
+                      projectName:
                           type: string
                           default: HOT Project
                       areaOfInterest:
@@ -42,21 +42,36 @@ class ProjectsAPI(Resource):
                                               $ref: "#/definitions/GeoJsonMultiPolygonWithProperties"
         responses:
             201:
-                description: Draft project created
+                description: Draft project created successfully
             400:
                 description: Client Error - Invalid Request
+            500:
+                description: Internal Server Error
         """
         try:
             # TODO this a little clunky but avoids DTO object, however DTOs may be cleaner - will decide later
             data = request.get_json()
+            project_name = data['projectName']
             aoi_geometry_geojson = json.dumps(data['areaOfInterest'])
             tasks_geojson = json.dumps(data['tasks'])
         except KeyError as e:
-            return {"error": f'Key {str(e)} not found in JSON, note parser is case sensitive'}, 400
+            error_msg = f'Key {str(e)} not found in JSON, note parser is case sensitive'
+            current_app.logger.error(error_msg)
+            return {"error": error_msg}, 400
+
+        # Check that none of the required fields are empty
+        if '' in [project_name, aoi_geometry_geojson, tasks_geojson]:
+            error_msg = 'Empty required field detected'
+            current_app.logger.error(error_msg)
+            return {"error": error_msg}, 400
 
         try:
             project_service = ProjectService()
-            project_service.create_draft_project(data, aoi_geometry_geojson, tasks_geojson)
+            project_service.create_draft_project(project_name, aoi_geometry_geojson, tasks_geojson)
             return {"status": "success"}, 201
         except InvalidGeoJson as e:
             return {"error": f'{str(e)}'}, 400
+        except Exception as e:
+            error_msg = f'Project Creation - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

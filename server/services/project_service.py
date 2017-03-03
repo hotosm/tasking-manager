@@ -1,27 +1,26 @@
 import geojson
-from flask import current_app
-from server.models.project import AreaOfInterest, Project, InvalidGeoJson, Task
+from server.models.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData
 
 
 class ProjectService:
 
-    def create_draft_project(self, data, aoi_geometry_geojson, tasks_geojson):
+    def create_draft_project(self, project_name, aoi_geojson, tasks_geojson):
         """
         Validates and then persists draft projects in the DB
-        :param data:
-        :param aoi_geometry_geojson: AOI Geometry as a geoJSON string
+        :param project_name: Name the Project Manager has given the project
+        :param aoi_geojson: Area Of Interest Geometry as a geoJSON multipolygon
+        :param tasks_geojson: All tasks associated with the project as a geoJSON feature collection
         :raises InvalidGeoJson
-        :return:
         """
-        # TODO - prob unpack the data object in the API
-        current_app.logger.debug('Create draft project')
-
         try:
-            area_of_interest = AreaOfInterest(aoi_geometry_geojson)
+            area_of_interest = AreaOfInterest(aoi_geojson)
         except InvalidGeoJson as e:
             raise e
 
-        draft_project = Project('Iain Test', area_of_interest)
+        try:
+            draft_project = Project(project_name, area_of_interest)
+        except InvalidData as e:
+            raise e
 
         tasks = geojson.loads(tasks_geojson)
         # TODO - raise exception
