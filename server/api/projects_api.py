@@ -39,7 +39,7 @@ class ProjectsAPI(Resource):
                                       type: array
                                       items:
                                           schema:
-                                              $ref: "#/definitions/GeoJsonMultiPolygonWithProperties"
+                                              $ref: "#/definitions/GeoJsonFeature"
         responses:
             201:
                 description: Draft project created successfully

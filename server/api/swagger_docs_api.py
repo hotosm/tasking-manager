@@ -50,6 +50,15 @@ class SwaggerDocsAPI(Resource):
                             zoom:
                                 type: integer
                                 default: 12
+            - schema:
+                id: GeoJsonFeature
+                properties:
+                    type:
+                        type: string
+                        default: Feature
+                    geometry:
+                        schema:
+                              $ref: "#/definitions/GeoJsonMultiPolygonWithProperties"
         """
         swag = swagger(current_app)
         swag['info']['title'] = "HOT Tasking Manager API"

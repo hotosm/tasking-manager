@@ -44,6 +44,6 @@ class ProjectService:
 
         task_id = 1
         for task in tasks['features']:
-            new_task = Task(task_id, task)
+            new_task = Task(task_id, task.geometry)
             draft_project.tasks.append(new_task)
             task_id += 1

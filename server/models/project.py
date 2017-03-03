@@ -141,3 +141,11 @@ class Project(db.Model):
         # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
         db.session.commit()
+
+    def delete(self):
+        """
+        Deletes the current model from the DB
+        """
+        # TODO check cascade
+        db.session.delete(self)
+        db.session.commit()
