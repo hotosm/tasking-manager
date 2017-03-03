@@ -17,9 +17,10 @@ class TestProject(unittest.TestCase):
 
     def test_cant_add_taks_if_feature_collection_invalid(self):
         # Arrange
-        invalid_feature = '{"features": [{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],' \
-            '[-3.8122, 56.098], [-4.0237]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12},' \
-            '"type": "MultiPolygon"}], "type": "FeatureCollection"}'
+        invalid_feature = '{"features": [{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],' \
+            '[-3.8122, 56.098], [-4.0237]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12}, "type":' \
+            '"MultiPolygon"}, "type": "Feature"}], "type": "FeatureCollection"}'
+
         test_project_service = ProjectService()
 
         # Act
@@ -28,9 +29,9 @@ class TestProject(unittest.TestCase):
 
     def test_valid_geo_json_attaches_task_to_project(self):
         # Arrange
-        valid_feature = '{"features": [{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],' \
-            '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12},' \
-            '"type": "MultiPolygon"}], "type": "FeatureCollection"}'
+        valid_feature = '{"features": [{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],' \
+            '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12}, "type":' \
+            '"MultiPolygon"}, "type": "Feature"}], "type": "FeatureCollection"}'
 
         test_project_service = ProjectService()
         test_project = Project('Test', MagicMock())

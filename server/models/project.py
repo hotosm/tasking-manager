@@ -146,5 +146,6 @@ class Project(db.Model):
         """
         Deletes the current model from the DB
         """
+        # TODO check cascade
         db.session.delete(self)
         db.session.commit()
