@@ -6,6 +6,9 @@ client/node_modules/
 client/assets/styles/css
 shippable/
 
+# Ignore generated config
+client/app/taskingmanager.config.js
+
 # Ignore dist folder as this contains the minimized build for deploy
 server/web/static/dist
 server/web/static/dist/
@@ -20,3 +23,6 @@ venv/
 # AWS
 .elasticbeanstalk/
 venv_aws/
+
+# Mac
+.DS_Store

@@ -35,7 +35,6 @@
                 map = mapService.getOSMMap();
                 addVectorLayer();
                 initDrawPolygonInteraction();
-                addDrawEventListeners();
                 drawToolsDefined = true;
             }
         }
@@ -62,6 +61,10 @@
             });
             drawPolygon.setActive(false);
             map.addInteraction(drawPolygon);
+
+            drawPolygon.on('drawstart', function(){
+                removeAllFeatures();
+            });
         }
 
         /**
@@ -73,13 +76,6 @@
         }
 
         /**
-         * Removes all the features from the OpenLayers map by removing all the features from the source
-         */
-        function removeAllFeatures() {
-            source.clear();
-        }
-
-        /**
          * Sets the drawing OpenLayers interaction (tools for drawing) to active/inactive
          */
         function setDrawPolygonActive(boolean){
@@ -87,13 +83,10 @@
         }
 
         /**
-         * Add event listeners to the draw interaction
-         * They listen out for the drawstart event which gets fired when the user starts drawing a feature
+         * Removes all the features from the OpenLayers map by removing all the features from the source
          */
-        function addDrawEventListeners(){
-            drawPolygon.on('drawstart', function(){
-                removeAllFeatures();
-            });
+        function removeAllFeatures() {
+            source.clear();
         }
 
         /**

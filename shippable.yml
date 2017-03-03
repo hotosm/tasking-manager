@@ -31,14 +31,30 @@ build:
 
         # Required to display test results in Shippable GUI
         - mkdir -p shippable/testresults
+        - mkdir -p shippable/codecoverage
 
         # JS Unit Tests
         - cd tests/client
         - ../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --browsers PhantomJS --reporters junit
         - cd ../..
 
+        # Install Python dependencies
         - python --version
+        - pip install -r requirements.txt
+
+        # Run Python tests
+        - nosetests ./tests/server/unit --with-xunit --xunit-file ./shippable/testresults/unitresults.xml --with-coverage --cover-erase --cover-package=./server
+        - coverage xml -o shippable/codecoverage/coverage.xml
 
     on_success:
         # Run deploy script to manage deploy to appropriate environment
         - . ./bin/linux/shippable_deploy.sh
+
+integrations:
+    notifications:
+        - integrationName: email
+          type: email
+          recipients:
+              - iain.hunter@thinkwhere.com
+              - linda.alblas@thinkwhere.com
+              - ian.feeney@thinkwhere.com

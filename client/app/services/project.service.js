@@ -27,6 +27,7 @@
 
         var map = null;
         var taskGrid = null;
+        var aoi = null;
         var projectServiceDefined = null;
         
         // OpenLayers source for the task grid
@@ -37,11 +38,14 @@
             createTaskGrid: createTaskGrid,
             getTaskGrid: getTaskGrid,
             validateAOI: validateAOI,
+            setTaskGrid: setTaskGrid,
             removeTaskGrid: removeTaskGrid,
             getTaskSize: getTaskSize,
             getNumberOfTasks: getNumberOfTasks,
             addTaskGridToMap: addTaskGridToMap,
-            createProject: createProject
+            createProject: createProject,
+            setAOI: setAOI,
+            splitTasks: splitTasks
         };
 
         return service;
@@ -76,6 +80,8 @@
          */
         function createTaskGrid(areaOfInterest, zoomLevel) {
 
+            var zoomLevel = zoomLevel;
+
             var extent = areaOfInterest.getGeometry().getExtent();
 
             var format = new ol.format.GeoJSON();
@@ -86,10 +92,10 @@
                 featureProjection: MAPPROJECTION
             });
 
-            var xmin = extent[0];
-            var ymin = extent[1];
-            var xmax = extent[2];
-            var ymax = extent[3];
+            var xmin = Math.ceil(extent[0]);
+            var ymin = Math.ceil(extent[1]);
+            var xmax = Math.floor(extent[2]);
+            var ymax = Math.floor(extent[3]);
 
             // task size (in meters) at the required zoom level
             var step = AXIS_OFFSET / (Math.pow(2, (zoomLevel - 1)));
@@ -114,12 +120,16 @@
                     var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
                     // Add the task feature to the array if it intersects
                     if (intersection) {
+                        taskFeature.setProperties({
+                            'x': x,
+                            'y': y,
+                            'zoom': zoomLevel
+                        });
                         taskFeatures.push(taskFeature);
                     }
                 }
             }
-            // Store the task features in the service
-            taskGrid = taskFeatures;
+            return taskFeatures;
         }
 
         /**
@@ -128,6 +138,14 @@
          */
         function getTaskGrid(){
             return taskGrid;
+        }
+
+        /**
+         * Sets the task grid
+         * @param grid
+         */
+        function setTaskGrid(grid){
+            taskGrid = grid;
         }
 
         /**
@@ -197,8 +215,17 @@
             return feature;
         }
 
+        /** 
+         * Set the AOI
+         * @param areaOfInterest
+         */
+        function setAOI(areaOfInterest){
+            aoi = areaOfInterest;
+        }
+
         /**
          * Validate a candidate AOI.
+         * Supports Polygons and MultiPolygons
          * @param features to be validated {*|ol.Collection.<ol.Feature>|Array.<ol.Feature>}
          * @returns {{valid: boolean, message: string}}
          */
@@ -207,7 +234,7 @@
             var validationResult = {
                 valid: true,
                 message: ''
-            }
+            };
 
             // check we have a non empty array of things
             if (!features || !features.length || features.length == 0){
@@ -226,20 +253,111 @@
             }
 
             // check for self-intersections
+            for (var featureCount = 0; featureCount < features.length; featureCount++) {
+                if (features[featureCount].getGeometry() instanceof ol.geom.MultiPolygon){
+                    // it should only have one polygon per multipolygon at the moment
+                    var polygonsInFeatures = features[featureCount].getGeometry().getPolygons();
+                    var hasSelfIntersections;
+                    for (var polyCount = 0; polyCount < polygonsInFeatures.length; polyCount++){
+                        var feature = new ol.Feature({
+                            geometry: polygonsInFeatures[polyCount]
+                        });
+                        var selfIntersect = checkFeatureSelfIntersections_(feature);
+                        if (selfIntersect){
+                            hasSelfIntersections = true;
+                            // If only one self intersection exists, return as having self intersections
+                            break;
+                        }
+                    }
+                    if (hasSelfIntersections){
+                        validationResult.valid = false;
+                        validationResult.message = 'SELF_INTERSECTIONS';
+                        return validationResult;
+                    }
+                }
+                else {
+                    var hasSelfIntersections = checkFeatureSelfIntersections_(features[featureCount]);
+                    if (hasSelfIntersections){
+                        validationResult.valid = false;
+                        validationResult.message = 'SELF_INTERSECTIONS';
+                        return validationResult;
+                    }
+                }
+            }
+            return validationResult;
+        }
+
+        /**
+         * Splits the tasks into four for every task that intersects the drawn polygon
+         * and updates the task grid.
+         * @param drawnPolygon
+         */
+        function splitTasks(drawnPolygon){
+
             var format = new ol.format.GeoJSON();
-            for (var i = 0; i < features.length; i++) {
-                var features_as_gj = format.writeFeatureObject(features[i], {
+
+            // Write the polygon as GeoJSON and transform to the projection Turf.js needs
+            var drawnPolygonGeoJSON = format.writeFeatureObject(drawnPolygon, {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
+            
+            var newTaskGrid = [];
+            for (var i = 0; i < taskGrid.length; i++){
+                // Write the feature as GeoJSON and transform to the projection Turf.js needs
+                var taskGeoJSON = format.writeFeatureObject(taskGrid[i], {
                     dataProjection: TARGETPROJECTION,
                     featureProjection: MAPPROJECTION
                 });
-                if (turf.kinks(features_as_gj).features.length > 0) {
-                    validationResult.valid = false;
-                    validationResult.message = 'SELF_INTERSECTIONS';
-                    return validationResult;
+                // Check if the task intersects with the drawn polygon
+                var intersection = turf.intersect(drawnPolygonGeoJSON, taskGeoJSON);
+                // If the task doesn't intersect with the drawn polygon, copy the existing task into the new task grid
+                if (!intersection) {
+                    newTaskGrid.push(taskGrid[i]);
+                }
+                // If the task does intersect, get the split tasks and add these to the new task grid
+                else {
+                    var grid = getSplitTasks(taskGrid[i]);
+                    for (var j = 0; j < grid.length; j++){
+                        newTaskGrid.push(grid[j]);
+                    }
                 }
             }
+            // Remove the old task grid and add the new one to the map
+            removeTaskGrid();
+            setTaskGrid(newTaskGrid);
+            addTaskGridToMap();
+        }
 
-            return validationResult;
+        /**
+         * Get the split tasks for a single task
+         * @param task
+         * @returns {*}
+         */
+        function getSplitTasks(task){
+            // For smaller tasks, increase the zoom level by 1
+            var zoomLevel = task.getProperties().zoom + 1;
+            var grid = createTaskGrid(task, zoomLevel);
+            return grid;
+        }
+        
+         /**
+         * Check an individual feature for self intersections with Turf.js
+         * Only supports Polygons
+         * @param feature - has to be a Polygon
+         * @returns {boolean}
+         */
+        function checkFeatureSelfIntersections_(feature){
+            var format = new ol.format.GeoJSON();
+            var hasSelfIntersections = false;
+            var feature_as_gj = format.writeFeatureObject(feature, {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
+            if (turf.kinks(feature_as_gj).features.length > 0) {
+                hasSelfIntersections = true;
+            }
+            return hasSelfIntersections;
         }
 
         /**

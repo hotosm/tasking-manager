@@ -11,8 +11,45 @@ class SwaggerDocsAPI(Resource):
 
     def get(self):
         """
-        Generates Swagger UI readable YAML.  No need to document this API, as it's internal to the app
-        :return: Swagger UI JSON object
+        Generates Swagger UI readable JSON
+        ---
+        tags:
+          - docs
+        definitions:
+            - schema:
+                id: GeoJsonMultiPolygon
+                properties:
+                    type:
+                        type: string
+                        default: MultiPolygon
+                    coordinates:
+                        type: array
+                        items:
+                            type: number
+                            default: [[[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
+            - schema:
+                id: GeoJsonMultiPolygonWithProperties
+                properties:
+                    type:
+                        type: string
+                        default: MultiPolygon
+                    coordinates:
+                        type: array
+                        items:
+                            type: number
+                            default: [[[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
+                    properties:
+                        type: object
+                        properties:
+                            x:
+                                type: integer
+                                default: 2402
+                            y:
+                                type: integer
+                                default: 1736
+                            zoom:
+                                type: integer
+                                default: 12
         """
         swag = swagger(current_app)
         swag['info']['title'] = "HOT Tasking Manager API"
