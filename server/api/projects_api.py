@@ -75,3 +75,21 @@ class ProjectsAPI(Resource):
             error_msg = f'Project Creation - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+    def get(self):
+        """
+        Retrieves the specified Tasking-Manager project
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - name: projectId
+              in: path
+              description: The username for resending the activation email
+            required: true
+            type: string
+            default: Thinkwhere
+        """
+        pass
