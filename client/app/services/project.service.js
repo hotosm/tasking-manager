@@ -43,8 +43,10 @@
             getNumberOfTasks: getNumberOfTasks,
             addTaskGridToMap: addTaskGridToMap,
             setAOI: setAOI,
+            getAOI: getAOI,
             validateAOI: validateAOI,
-            splitTasks: splitTasks
+            splitTasks: splitTasks,
+            zoomToExtent: zoomToExtent
         };
 
         return service;
@@ -81,12 +83,23 @@
 
             var zoomLevel = zoomLevel;
 
+            console.log(areaOfInterest);
+            // Geometry is MultiPolygon
             var extent = areaOfInterest.getGeometry().getExtent();
-
+           
             var format = new ol.format.GeoJSON();
 
+            var polygons = areaOfInterest.getGeometry().getPolygons();
+            var features = [];
+            for (var i = 0; i < polygons.length; i++){
+                var polygonFeature = new ol.Feature({
+                    geometry: polygons[i]
+                });
+                features.push(polygonFeature);
+            }
+
             // Convert feature to GeoJSON for Turf.js to process
-            var areaOfInterestGeoJSON = format.writeFeature(areaOfInterest, {
+            var areaOfInterestGeoJSON = format.writeFeaturesObject(features, {
                 dataProjection: TARGETPROJECTION,
                 featureProjection: MAPPROJECTION
             });
@@ -104,7 +117,7 @@
             var xmaxstep = parseInt(Math.ceil((xmax + AXIS_OFFSET) / step));
             var yminstep = parseInt(Math.floor((ymin + AXIS_OFFSET) / step));
             var ymaxstep = parseInt(Math.ceil((ymax + AXIS_OFFSET) / step));
-
+            
             // Generate an array of task features
             var taskFeatures = [];
             for (var x = xminstep; x < xmaxstep; x++) {
@@ -116,18 +129,25 @@
                         featureProjection: MAPPROJECTION
                     });
                     // Check if the generated task feature intersects with the area of interest
-                    var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
-                    // Add the task feature to the array if it intersects
-                    if (intersection) {
-                        taskFeature.setProperties({
-                            'x': x,
-                            'y': y,
-                            'zoom': zoomLevel
-                        });
-                        taskFeatures.push(taskFeature);
+                    // Loop over the polygons within the multipolygon
+                    console.log(areaOfInterestGeoJSON);
+                    for (var polygonNumber = 0; polygonNumber < areaOfInterestGeoJSON.features.length; polygonNumber++){
+                        console.log("looping!");
+                        var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), areaOfInterestGeoJSON.features[polygonNumber]);
+                        // Add the task feature to the array if it intersects
+                        if (intersection) {
+                            taskFeature.setProperties({
+                                'x': x,
+                                'y': y,
+                                'zoom': zoomLevel
+                            });
+                            taskFeatures.push(taskFeature);
+                            break;
+                        }
                     }
                 }
             }
+            console.log(taskFeatures);
             return taskFeatures;
         }
 
@@ -220,6 +240,14 @@
          */
         function setAOI(areaOfInterest){
             aoi = areaOfInterest;
+        }
+
+        /**
+         * Get the AOI
+         * @returns {*}
+         */
+        function getAOI(){
+            return aoi;
         }
 
         /**
@@ -357,6 +385,13 @@
                 hasSelfIntersections = true;
             }
             return hasSelfIntersections;
+        }
+
+        /**
+         * TODO: review if this should live here?
+         */
+        function zoomToExtent() {
+            map.getView().fit(taskGridSource.getExtent());
         }
     }
 })();

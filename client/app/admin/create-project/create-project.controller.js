@@ -14,13 +14,15 @@
 
         // Wizard 
         vm.currentStep = '';
-        vm.isTaskGrid = false;
-        vm.isTaskArbitrary = false;
 
         // AOI 
         vm.AOI = null;
+        vm.isDrawnAOI = false;
+        vm.isImportedAOI = false;
 
         // Grid
+        vm.isTaskGrid = false;
+        vm.isTaskArbitrary = false;
         vm.sizeOfTasks = 0; 
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
@@ -61,18 +63,27 @@
                 vm.currentStep = wizardStep;
             }
             else if (wizardStep === 'tasks'){
-                var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
-                vm.isAOIValid = aoiValidationResult.valid;
-                vm.AOIValidationMessage = aoiValidationResult.message;
+                if (vm.isDrawnAOI) {
+                    var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
+                    vm.isAOIValid = aoiValidationResult.valid;
+                    vm.AOIValidationMessage = aoiValidationResult.message;
 
-                if (vm.isAOIValid) {
-                    drawService.setDrawPolygonActive(false);
-                    drawService.zoomToExtent();
+                    if (vm.isAOIValid) {
+                        drawService.setDrawPolygonActive(false);
+                        drawService.zoomToExtent();
+                        // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
+                        vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
+                            + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
+                        // Reset the user zoom level offset
+                        vm.userZoomLevelOffset = 0;
+                        vm.currentStep = wizardStep;
+                    }
+                }
+                if (vm.isImportedAOI){
+                    // TODO: validate AOI
                     // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
                     vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
                         + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
-                    // Reset the user zoom level offset
-                    vm.userZoomLevelOffset = 0;
                     vm.currentStep = wizardStep;
                 }
             }
@@ -126,6 +137,8 @@
         vm.drawAOI = function(){
             if (!drawService.getDrawPolygonActive()){
                 drawService.setDrawPolygonActive(true);
+                vm.isDrawnAOI = true;
+                vm.isImportedAOI = false;
             }
         };
 
@@ -141,11 +154,19 @@
 
              // Get and set the AOI
             var areaOfInterest = drawService.getFeatures();
-            projectService.setAOI(areaOfInterest);
+
+            var importedAOI = projectService.getAOI();
 
             // Create a task grid
             // TODO: may need to fix areaOfInterest[0] as it may need to work for multipolygons
-            var taskGrid = projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+            if (vm.isDrawnAOI){
+                console.log("is drawn AOI");
+                var taskGrid = projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+            }
+            if (vm.isImportedAOI){
+                console.log("is imported AOI");
+                var taskGrid = projectService.createTaskGrid(importedAOI, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);    
+            }
             projectService.setTaskGrid(taskGrid);
             projectService.addTaskGridToMap();
 
@@ -154,7 +175,7 @@
 
             // Get the size of the tasks 
             // TODO: only do this when using a square grid
-            vm.sizeOfTasks = projectService.getTaskSize();
+            //vm.sizeOfTasks = projectService.getTaskSize();
         };
 
         /**
@@ -165,21 +186,42 @@
             vm.userZoomLevelOffset += zoomLevelOffset;
             vm.createTaskGrid();
         };
-        
-        // upload on file select or drop
-    vm.upload = function (file) {
-        Upload.upload({
-            url: 'upload/url',
-            data: {file: file, 'username': $scope.username}
-        }).then(function (resp) {
-            console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-        }, function (resp) {
-            console.log('Error status: ' + resp.status);
-        }, function (evt) {
-            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
-        });
-    };
+
+        /**
+         * Import a GeoJSON file and add it as
+         * @param file
+         */
+        vm.import = function (file) {
+            if (file) {
+                projectService.removeTaskGrid();
+                var fileReader = new FileReader();
+                fileReader.onloadend = function (e) {
+                    var data = e.target.result;
+                    var format = new ol.format.GeoJSON;
+                    var dataFeatures = format.readFeatures(data, {
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: 'EPSG:3857'
+                    });
+                    var multiPolygon = new ol.geom.MultiPolygon;
+                    for (var i = 0; i < dataFeatures.length; i++){
+                        multiPolygon.appendPolygon(dataFeatures[i].getGeometry());
+                    }
+                    var feature = new ol.Feature({
+                        geometry: multiPolygon
+                    });
+                    // TODO: convert to MultiPolygon
+                    // Get and set the AOI
+                    vm.isImportedAOI = true;
+                    vm.isDrawnAOI = false;
+                    projectService.setAOI(feature);
+                    projectService.setTaskGrid(dataFeatures);
+                    projectService.addTaskGridToMap();
+                    projectService.zoomToExtent();
+
+                };
+                fileReader.readAsText(file);
+            }
+        };
 
         /**
          *  Lets the user draw an area (polygon).
