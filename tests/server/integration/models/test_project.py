@@ -10,10 +10,10 @@ class TestProject(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('CI_BUILD', 'Local')
+        env = os.getenv('SHIPPABLE', 'false')
 
         # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
-        if env == 'Shippable':
+        if env == 'true':
             cls.skip_tests = True
 
     def setUp(self):
