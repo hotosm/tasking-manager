@@ -28,16 +28,14 @@ class SwaggerDocsAPI(Resource):
                             type: number
                             default: [[[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
             - schema:
-                id: GeoJsonMultiPolygonWithProperties
+                id: GeoJsonFeature
                 properties:
                     type:
                         type: string
-                        default: MultiPolygon
-                    coordinates:
-                        type: array
-                        items:
-                            type: number
-                            default: [[[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
+                        default: Feature
+                    geometry:
+                        schema:
+                              $ref: "#/definitions/GeoJsonMultiPolygon"
                     properties:
                         type: object
                         properties:
@@ -50,15 +48,6 @@ class SwaggerDocsAPI(Resource):
                             zoom:
                                 type: integer
                                 default: 12
-            - schema:
-                id: GeoJsonFeature
-                properties:
-                    type:
-                        type: string
-                        default: Feature
-                    geometry:
-                        schema:
-                              $ref: "#/definitions/GeoJsonMultiPolygonWithProperties"
         """
         swag = swagger(current_app)
         swag['info']['title'] = "HOT Tasking Manager API"
