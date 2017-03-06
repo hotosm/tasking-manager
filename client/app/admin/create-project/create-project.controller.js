@@ -188,7 +188,7 @@
         };
 
         /**
-         * Import a GeoJSON file and add it as
+         * Import a GeoJSON, KML or Shapefile and add it to the map
          * @param file
          */
         vm.import = function (file) {
@@ -198,26 +198,17 @@
                 fileReader.onloadend = function (e) {
                     var data = e.target.result;
                     var format = new ol.format.GeoJSON;
-                    var dataFeatures = format.readFeatures(data, {
+                    var uploadedFeatures = format.readFeatures(data, {
                         dataProjection: 'EPSG:4326',
                         featureProjection: 'EPSG:3857'
                     });
-                    var multiPolygon = new ol.geom.MultiPolygon;
-                    for (var i = 0; i < dataFeatures.length; i++){
-                        multiPolygon.appendPolygon(dataFeatures[i].getGeometry());
-                    }
-                    var feature = new ol.Feature({
-                        geometry: multiPolygon
-                    });
-                    // TODO: convert to MultiPolygon
                     // Get and set the AOI
                     vm.isImportedAOI = true;
                     vm.isDrawnAOI = false;
-                    projectService.setAOI(feature);
-                    projectService.setTaskGrid(dataFeatures);
-                    projectService.addTaskGridToMap();
+                    projectService.setAOI(uploadedFeatures);
+                    //projectService.zoomToAOI();
+                    // TODO: show AOI on map
                     projectService.zoomToExtent();
-
                 };
                 fileReader.readAsText(file);
             }

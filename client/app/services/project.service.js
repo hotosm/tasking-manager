@@ -45,8 +45,7 @@
             setAOI: setAOI,
             getAOI: getAOI,
             validateAOI: validateAOI,
-            splitTasks: splitTasks,
-            zoomToExtent: zoomToExtent
+            splitTasks: splitTasks
         };
 
         return service;
@@ -222,6 +221,7 @@
          */
         function setAOI(areaOfInterest){
             aoi = areaOfInterest;
+            
         }
 
         /**
@@ -367,13 +367,6 @@
                 hasSelfIntersections = true;
             }
             return hasSelfIntersections;
-        }
-
-        /**
-         * TODO: review if this should live here?
-         */
-        function zoomToExtent() {
-            map.getView().fit(taskGridSource.getExtent());
         }
     }
 })();
