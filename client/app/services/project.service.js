@@ -364,7 +364,7 @@
          * Creates a project by calling the API with the AOI, a task grid and a project name
          * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
          */
-        function createProject(){
+        function createProject(projectName){
             
             var format = new ol.format.GeoJSON();
 
@@ -383,7 +383,7 @@
             // Get the geometry of the area of interest. It should only have one feature.
             var newProject = {
                 areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
-                projectName: 'TEST',
+                projectName: projectName,
                 tasks: taskGridGeoJSON
             };
             
