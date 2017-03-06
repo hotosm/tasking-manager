@@ -87,9 +87,9 @@ class ProjectsAPI(Resource):
         parameters:
             - name: projectId
               in: path
-              description: The username for resending the activation email
-            required: true
-            type: string
-            default: Thinkwhere
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         """
         pass
