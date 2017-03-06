@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', ['mapService', projectService]);
+        .service('projectService', ['$http', '$q', 'mapService','configService', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -11,7 +11,7 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService(mapService) {
+    function projectService($http, $q, mapService, configService) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -37,14 +37,15 @@
             init: init,
             createTaskGrid: createTaskGrid,
             getTaskGrid: getTaskGrid,
+            validateAOI: validateAOI,
             setTaskGrid: setTaskGrid,
             removeTaskGrid: removeTaskGrid,
             getTaskSize: getTaskSize,
             getNumberOfTasks: getNumberOfTasks,
             addTaskGridToMap: addTaskGridToMap,
+            createProject: createProject,
             setAOI: setAOI,
             getAOI: getAOI,
-            validateAOI: validateAOI,
             splitTasks: splitTasks
         };
 
@@ -367,6 +368,52 @@
                 hasSelfIntersections = true;
             }
             return hasSelfIntersections;
+        }
+
+        /**
+         * Creates a project by calling the API with the AOI, a task grid and a project name
+         * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
+         */
+        function createProject(projectName){
+            
+            var format = new ol.format.GeoJSON();
+
+            // Write the feature as a GeoJSON object and transform to the projection the API needs
+            var areaOfInterestGeoJSON = format.writeFeaturesObject(aoi, {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
+
+            // Write the features as a GeoJSON object and transform to the projection the API needs
+            var taskGridGeoJSON = format.writeFeaturesObject(taskGrid, {
+                dataProjection: TARGETPROJECTION,
+                featureProjection: MAPPROJECTION
+            });
+
+            // Get the geometry of the area of interest. It should only have one feature.
+            var newProject = {
+                areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
+                projectName: projectName,
+                tasks: taskGridGeoJSON
+            };
+            
+            // Returns a promise
+            return $http({
+                method: 'PUT',
+                url: configService.tmAPI + '/v1/project',
+                data: newProject,
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
         }
     }
 })();

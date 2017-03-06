@@ -14,6 +14,10 @@
 
         // Wizard 
         vm.currentStep = '';
+        vm.isTaskGrid = false;
+        vm.isTaskArbitrary = false;
+        vm.projectName = '';
+        vm.projectNameForm = {};
 
         // AOI 
         vm.AOI = null;
@@ -39,6 +43,8 @@
         vm.isSplitPolygonValid = true;
         vm.splitPolygonValidationMessage = '';
         vm.isimportError = false;
+        vm.createProjectFail = false;
+        vm.createProjectSuccess = false;
 
         activate();
 
@@ -93,6 +99,10 @@
                 if (grid){
                     vm.currentStep = wizardStep;
                 }
+            }
+            else if (wizardStep === 'review'){
+                vm.createProjectFailed = false;
+                vm.currentStep = wizardStep;
             }
             else {
                 vm.currentStep = wizardStep;
@@ -302,6 +312,30 @@
                     }
                 });
             });
+        };
+
+        /**
+         * Create a new project with a project name
+         */
+        vm.createProject = function(){
+            vm.createProjectFail = false;
+            vm.createProjectSuccess = false;
+            if (vm.projectNameForm.$valid){
+                var resultsPromise = projectService.createProject(vm.projectName);
+                resultsPromise.then(function (data) {
+                    // Project created successfully
+                    // TODO: go to project edit page
+                    vm.createProjectFail = false;
+                    vm.createProjectSuccess = true;
+                }, function(){
+                    // Project not created successfully
+                    vm.createProjectFail = true;
+                    vm.createProjectSuccess = false;
+                });
+            }
+            else {
+                vm.projectNameForm.submitted = true;
+            }
         };
 
         /**

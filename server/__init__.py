@@ -1,6 +1,7 @@
 import logging
 import os
 from flask import Flask
+from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
@@ -38,6 +39,8 @@ def create_app(env=None):
     app.register_blueprint(swagger_blueprint)
 
     init_flask_restful_routes(app)
+
+    CORS(app)  # Enables CORS on all API routes, meaning API is callable from anywhere
 
     return app
 
@@ -77,4 +80,4 @@ def init_flask_restful_routes(app):
 
     api.add_resource(SwaggerDocsAPI, '/api/docs')
     api.add_resource(HealthCheckAPI, '/api/health-check')
-    api.add_resource(ProjectsAPI,    '/api/projects')
+    api.add_resource(ProjectsAPI,    '/api/v1/project')

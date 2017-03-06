@@ -20,6 +20,7 @@ module.exports = function(config) {
       'node_modules/openlayers/dist/ol-debug.js',
       'node_modules/ol3-geocoder/build/ol3-geocoder-debug.js',
       'node_modules/turf/turf.js',
+      'node_modules/ng-file-upload/dist/ng-file-upload.js',
       'app/*.js',
       'app/**/*.js',
       '../tests/client/unit/**/*.js'

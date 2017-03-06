@@ -142,14 +142,35 @@
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'review'" class="content">
                     <h2>Step 4: review</h2>
-                    TODO
+                    <form class="form" name="createProjectCtrl.projectNameForm">
+                        <div class="form__group">
+                            <label class="form__label" for="projectName">Project name</label>
+                            <input type="text" class="form__control form__control--medium" id="projectName" name="projectName"
+                                   ng-class="{ 'ng-touched': createProjectCtrl.projectNameForm.submitted }" required
+                                   ng-model="createProjectCtrl.projectName"
+                            />
+                        </div>
+                        <div role="alert">
+                            <span class="error"
+                                  ng-show="createProjectCtrl.projectNameForm.submitted && createProjectCtrl.projectNameForm.projectName.$error.required">
+                                Required
+                            </span>
+                            <span class="error"
+                                  ng-show="createProjectCtrl.createProjectFail">
+                                There was an error creating your project. Please try again.
+                            </span>
+                            <span ng-show="createProjectCtrl.createProjectSuccess">
+                                Your project was created successfully.
+                            </span>
+                        </div>
+                    </form>
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--secondary button" type="button" ng-click="createProjectCtrl.setWizardStep('taskSize')">
                                 <span>Previous</span>
                             </button>
-                            <button class="button button--primary" type="button">
+                            <button class="button button--primary" type="button" ng-click="createProjectCtrl.createProject()">
                                 <span>Create</span>
                             </button>
                         </div>
