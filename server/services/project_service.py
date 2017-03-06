@@ -31,7 +31,7 @@ class ProjectService:
         Validates then iterates over the array of tasks and attach them to the draft project
         :param draft_project: Draft project in scope
         :param tasks_geojson: GeoJSON feature collection of mapping tasks
-        :raises InvalidGeoJson
+        :raises InvalidGeoJson, InvalidData
         """
         tasks = geojson.loads(tasks_geojson)
 
@@ -43,7 +43,11 @@ class ProjectService:
             raise InvalidGeoJson(f"Tasks: Invalid FeatureCollection - {is_valid_geojson['message']}")
 
         task_id = 1
-        for task in tasks['features']:
-            new_task = Task(task_id, task)
-            draft_project.tasks.append(new_task)
+        for feature in tasks['features']:
+            try:
+                task = Task(task_id, feature)
+            except (InvalidData, InvalidGeoJson) as e:
+                raise e
+
+            draft_project.tasks.append(task)
             task_id += 1

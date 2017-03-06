@@ -34,14 +34,16 @@ class TestProject(unittest.TestCase):
         # Arrange
         multipoly_geojson = '{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],' \
             '[-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12}, "type": "MultiPolygon"}'
-        multipoly = geojson.loads(multipoly_geojson)
+
+        task_feature = geojson.loads('{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'
+                                     '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "type": "MultiPolygon"},'
+                                     '"properties": {"x": 2402, "y": 1736, "zoom": 12}, "type": "Feature"}')
 
         test_aoi = AreaOfInterest(multipoly_geojson)
         test_project = Project('Test', test_aoi)
-        test_project.tasks.append(Task(1, multipoly))
+        test_project.tasks.append(Task(1, task_feature))
 
         test_project.create()
         self.assertIsNotNone(test_project.id, 'ID should be set if project successfully persisted')
 
         test_project.delete()  # Tidy up, by removing test project
-
