@@ -26,6 +26,12 @@ class ProjectService:
 
         draft_project.create()
 
+    def get_project_by_id(self, project_id):
+        project = Project.query.get(project_id)
+
+        bill = project.to_dict()
+        abi = bill
+
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
         """
         Validates then iterates over the array of tasks and attach them to the draft project

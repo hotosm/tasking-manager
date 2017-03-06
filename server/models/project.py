@@ -1,9 +1,9 @@
 import datetime
 import geojson
+import geoalchemy2.functions as func
 from enum import Enum
 from flask import current_app
 from geoalchemy2 import Geometry
-from geoalchemy2.functions import GenericFunction
 from server import db
 
 
@@ -25,14 +25,17 @@ class InvalidData(Exception):
             current_app.logger.error(message)
 
 
-class ST_SetSRID(GenericFunction):
+class ST_SetSRID(func.GenericFunction):
     name = 'ST_SetSRID'
     type = Geometry
 
 
-class ST_GeomFromGeoJSON(GenericFunction):
+class ST_GeomFromGeoJSON(func.GenericFunction):
     name = 'ST_GeomFromGeoJSON'
     type = Geometry
+
+
+
 
 
 class ProjectStatus(Enum):
@@ -118,6 +121,12 @@ class AreaOfInterest(db.Model):
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
 
+    def get_geometry_as_geojson(self):
+        """
+        Helper function to return geometry column as geoJSON
+        """
+        return db.session.query(self.geometry.ST_AsGeoJSON()).one()
+
 
 class Project(db.Model):
     """
@@ -154,6 +163,15 @@ class Project(db.Model):
         # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
         db.session.commit()
+
+    @property
+    def to_dict(self):
+        project_dto = dict(projectId=self.id)
+
+        project_dto['areaOfInterest'] = self.area_of_interest.get_geometry_as_geojson()
+
+        return project_dto
+
 
     def delete(self):
         """

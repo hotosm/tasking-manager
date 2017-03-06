@@ -76,7 +76,7 @@ class ProjectsAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-    def get(self):
+    def get(self, project_id):
         """
         Retrieves the specified Tasking-Manager project
         ---
@@ -85,11 +85,12 @@ class ProjectsAPI(Resource):
         produces:
             - application/json
         parameters:
-            - name: projectId
+            - name: project_id
               in: path
               description: The unique project ID
               required: true
               type: integer
               default: 1
         """
-        pass
+        project_service = ProjectService()
+        project_service.get_project_by_id(project_id)
