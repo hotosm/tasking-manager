@@ -1,15 +1,15 @@
 (function () {
     'use strict';
     /**
-     * @fileoverview This file provides a draw service using OpenLayers.
+     * @fileoverview This file provides a AOI service using OpenLayers to draw an AOI or add features as an AOI.
      * This service depends on an OL map to be defined
      */
 
     angular
         .module('taskingManager')
-        .service('drawService', ['mapService', drawService]);
+        .service('aoiService', ['mapService', aoiService]);
 
-    function drawService(mapService) {
+    function aoiService(mapService) {
 
         var map = null;
         var drawToolsDefined = false;
@@ -22,6 +22,7 @@
             setDrawPolygonActive: setDrawPolygonActive,
             removeAllFeatures: removeAllFeatures,
             getFeatures: getFeatures,
+            setFeatures: setFeatures,
             zoomToExtent: zoomToExtent
         };
 
@@ -95,6 +96,14 @@
          */
         function getFeatures(){
             return source.getFeatures();
+        }
+
+        /**
+         * Sets the AOI features by adding it to the soruce
+         * @param aoiFeatures
+         */
+        function setFeatures(aoiFeatures){
+            source.addFeatures(aoiFeatures);
         }
 
         /**

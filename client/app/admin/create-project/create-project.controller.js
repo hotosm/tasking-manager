@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', 'mapService', 'drawService', 'projectService', createProjectController]);
+        .controller('createProjectController', ['$scope', 'mapService', 'aoiService', 'projectService', createProjectController]);
 
-    function createProjectController($scope, mapService, drawService, projectService) {
+    function createProjectController($scope, mapService, aoiService, projectService) {
         var vm = this;
 
         // Wizard 
@@ -38,6 +38,7 @@
         vm.AOIValidationMessage = '';
         vm.isSplitPolygonValid = true;
         vm.splitPolygonValidationMessage = '';
+        vm.isimportError = false;
 
         activate();
 
@@ -45,7 +46,7 @@
             vm.currentStep = 'area';
 
             mapService.createOSMMap('map');
-            drawService.initDrawTools();
+            aoiService.initDrawTools();
             projectService.init();
             addGeocoder_();
         }
@@ -58,19 +59,19 @@
             if (wizardStep === 'area'){
                 vm.isTaskGrid = false;
                 vm.isTaskArbitrary = false;
-                drawService.removeAllFeatures();
+                aoiService.removeAllFeatures();
                 projectService.removeTaskGrid();
                 vm.currentStep = wizardStep;
             }
             else if (wizardStep === 'tasks'){
                 if (vm.isDrawnAOI) {
-                    var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
+                    var aoiValidationResult = projectService.validateAOI(aoiService.getFeatures());
                     vm.isAOIValid = aoiValidationResult.valid;
                     vm.AOIValidationMessage = aoiValidationResult.message;
 
                     if (vm.isAOIValid) {
-                        drawService.setDrawPolygonActive(false);
-                        drawService.zoomToExtent();
+                        aoiService.setDrawPolygonActive(false);
+                        aoiService.zoomToExtent();
                         // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
                         vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
                             + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
@@ -135,8 +136,8 @@
          * Draw Area of Interest
          */
         vm.drawAOI = function(){
-            if (!drawService.getDrawPolygonActive()){
-                drawService.setDrawPolygonActive(true);
+            if (!aoiService.getDrawPolygonActive()){
+                aoiService.setDrawPolygonActive(true);
                 vm.isDrawnAOI = true;
                 vm.isImportedAOI = false;
             }
@@ -153,29 +154,25 @@
             projectService.removeTaskGrid();
 
              // Get and set the AOI
-            var areaOfInterest = drawService.getFeatures();
-
-            var importedAOI = projectService.getAOI();
+            var areaOfInterest = aoiService.getFeatures();
 
             // Create a task grid
             // TODO: may need to fix areaOfInterest[0] as it may need to work for multipolygons
             if (vm.isDrawnAOI){
-                console.log("is drawn AOI");
                 var taskGrid = projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+                projectService.setTaskGrid(taskGrid);
+                projectService.addTaskGridToMap();
             }
             if (vm.isImportedAOI){
-                console.log("is imported AOI");
-                var taskGrid = projectService.createTaskGrid(importedAOI, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);    
+                // TODO: create task grid from imported AOI
             }
-            projectService.setTaskGrid(taskGrid);
-            projectService.addTaskGridToMap();
 
             // Get the number of tasks in project
             vm.numberOfTasks = projectService.getNumberOfTasks();
 
             // Get the size of the tasks 
             // TODO: only do this when using a square grid
-            //vm.sizeOfTasks = projectService.getTaskSize();
+            vm.sizeOfTasks = projectService.getTaskSize();
         };
 
         /**
@@ -189,30 +186,92 @@
 
         /**
          * Import a GeoJSON, KML or Shapefile and add it to the map
+         * TODO: add more error handling
          * @param file
          */
         vm.import = function (file) {
+            vm.isImportError = false;
             if (file) {
-                projectService.removeTaskGrid();
+                aoiService.removeAllFeatures();
                 var fileReader = new FileReader();
                 fileReader.onloadend = function (e) {
                     var data = e.target.result;
-                    var format = new ol.format.GeoJSON;
-                    var uploadedFeatures = format.readFeatures(data, {
-                        dataProjection: 'EPSG:4326',
-                        featureProjection: 'EPSG:3857'
-                    });
-                    // Get and set the AOI
-                    vm.isImportedAOI = true;
-                    vm.isDrawnAOI = false;
-                    projectService.setAOI(uploadedFeatures);
-                    //projectService.zoomToAOI();
-                    // TODO: show AOI on map
-                    projectService.zoomToExtent();
+                    var uploadedFeatures = null;
+                    if (file.name.substr(-4) === 'json') {
+                        uploadedFeatures = getFeaturesFromGeoJSON_(data);
+                        setImportedAOI_(uploadedFeatures);
+                    }
+                    else if (file.name.substr(-3) === 'kml') {
+                        uploadedFeatures = getFeaturesFromKML_(data);
+                        setImportedAOI_(uploadedFeatures);
+                    }
+                    else if (file.name.substr(-3) === 'zip') {
+                        shp(data).then(function(geojson){
+                            var uploadedFeatures = getFeaturesFromGeoJSON_(geojson);
+                            setImportedAOI_(uploadedFeatures);
+                        });
+                    }
                 };
-                fileReader.readAsText(file);
+                if (file.name.substr(-4) === 'json') {
+                    fileReader.readAsText(file);
+                }
+                else if (file.name.substr(-3) === 'kml') {
+                    fileReader.readAsText(file);
+                }
+                else if (file.name.substr(-3) === 'zip') {
+                    fileReader.readAsArrayBuffer(file);
+                }
+                else {
+                    vm.isImportError = true;
+                }
             }
         };
+
+        /**
+         * Set the AOI to the imported AOI
+         * @param features
+         * @private
+         */
+        function setImportedAOI_(features){
+            vm.isImportedAOI = true;
+            vm.isDrawnAOI = false;
+            projectService.setAOI(features);
+            aoiService.setFeatures(features);
+            aoiService.zoomToExtent();
+        }
+
+        /**
+         * Get OL features from GeoJSON
+         * @param data
+         * @returns {Array.<ol.Feature>}
+         * @private
+         */
+        function getFeaturesFromGeoJSON_(data){
+            var format = new ol.format.GeoJSON();
+            var features = format.readFeatures(data, {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:3857'
+            });
+            return features;
+        }
+
+        /**
+         * Get OL features from GeoJSON
+         * @param data
+         * @returns {Array.<ol.Feature>}
+         * @private
+         */
+        function getFeaturesFromKML_(data){
+            var format = new ol.format.KML({
+                extractStyles: false,
+                showPointNames: false
+            });
+            var features = format.readFeatures(data, {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:3857'
+            });
+            return features;
+        }
 
         /**
          *  Lets the user draw an area (polygon).

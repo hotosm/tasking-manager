@@ -42,6 +42,11 @@
                         <div>
                             <p>Import a GeoJSON, KML, or zipped SHP file.</p>
                             <div class="button button--achromic" ngf-select="createProjectCtrl.import($file)">Import</div>
+                            <div>
+                                <span class="error" ng-show="createProjectCtrl.isImportError">
+                                    Please provide a valid GeoJSON, KML or zipped Shapefile.
+                                </span>
+                            </div>
                         </div>
                     </form>
                     <hr/>
