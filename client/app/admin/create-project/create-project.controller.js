@@ -162,17 +162,16 @@
                 var taskGrid = projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
                 projectService.setTaskGrid(taskGrid);
                 projectService.addTaskGridToMap();
+
+                // Get the number of tasks in project
+                vm.numberOfTasks = projectService.getNumberOfTasks();
+
+                // Get the size of the tasks
+                vm.sizeOfTasks = projectService.getTaskSize();
             }
             if (vm.isImportedAOI){
                 // TODO: create task grid from imported AOI
             }
-
-            // Get the number of tasks in project
-            vm.numberOfTasks = projectService.getNumberOfTasks();
-
-            // Get the size of the tasks 
-            // TODO: only do this when using a square grid
-            vm.sizeOfTasks = projectService.getTaskSize();
         };
 
         /**
