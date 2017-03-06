@@ -1,6 +1,6 @@
 import json
 from flask_restful import Resource, request, current_app
-from server.services.project_service import ProjectService, InvalidGeoJson
+from server.services.project_service import ProjectService, InvalidGeoJson, InvalidData
 
 
 class ProjectsAPI(Resource):
@@ -69,7 +69,7 @@ class ProjectsAPI(Resource):
             project_service = ProjectService()
             project_service.create_draft_project(project_name, aoi_geometry_geojson, tasks_geojson)
             return {"status": "success"}, 201
-        except InvalidGeoJson as e:
+        except (InvalidGeoJson, InvalidData) as e:
             return {"error": f'{str(e)}'}, 400
         except Exception as e:
             error_msg = f'Project Creation - unhandled error: {str(e)}'

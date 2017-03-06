@@ -59,21 +59,34 @@ class Task(db.Model):
     zoom = db.Column(db.Integer, nullable=False)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
 
-    def __init__(self, task_id, task_multipolygon):
+    def __init__(self, task_id, task_feature):
+        """
+        Task constructor
+        :param task_id: Unique ID for the task
+        :param task_feature: A geoJSON feature object
+        :raises InvalidGeoJson, InvalidData
+        """
+        if type(task_feature) is not geojson.Feature:
+            raise InvalidGeoJson('Task: Invalid GeoJson should be a feature')
 
-        if type(task_multipolygon) is not geojson.MultiPolygon:
+        task_geometry = task_feature.geometry
+
+        if type(task_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson('Task: Geometry must be a MultiPolygon')
 
-        is_valid_geojson = geojson.is_valid(task_multipolygon)
+        is_valid_geojson = geojson.is_valid(task_geometry)
         if is_valid_geojson['valid'] == 'no':
             raise InvalidGeoJson(f"Task: Invalid MultiPolygon - {is_valid_geojson['message']}")
 
-        self.id = task_id
-        self.x = task_multipolygon.properties['x']
-        self.y = task_multipolygon.properties['y']
-        self.zoom = task_multipolygon.properties['zoom']
+        try:
+            self.x = task_feature.properties['x']
+            self.y = task_feature.properties['y']
+            self.zoom = task_feature.properties['zoom']
+        except KeyError as e:
+            raise InvalidData(f'Task: Expected property not found: {str(e)}')
 
-        task_geojson = geojson.dumps(task_multipolygon)
+        self.id = task_id
+        task_geojson = geojson.dumps(task_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
 
 
