@@ -83,23 +83,12 @@
 
             var zoomLevel = zoomLevel;
 
-            console.log(areaOfInterest);
-            // Geometry is MultiPolygon
             var extent = areaOfInterest.getGeometry().getExtent();
-           
+
             var format = new ol.format.GeoJSON();
 
-            var polygons = areaOfInterest.getGeometry().getPolygons();
-            var features = [];
-            for (var i = 0; i < polygons.length; i++){
-                var polygonFeature = new ol.Feature({
-                    geometry: polygons[i]
-                });
-                features.push(polygonFeature);
-            }
-
             // Convert feature to GeoJSON for Turf.js to process
-            var areaOfInterestGeoJSON = format.writeFeaturesObject(features, {
+            var areaOfInterestGeoJSON = format.writeFeature(areaOfInterest, {
                 dataProjection: TARGETPROJECTION,
                 featureProjection: MAPPROJECTION
             });
@@ -117,7 +106,7 @@
             var xmaxstep = parseInt(Math.ceil((xmax + AXIS_OFFSET) / step));
             var yminstep = parseInt(Math.floor((ymin + AXIS_OFFSET) / step));
             var ymaxstep = parseInt(Math.ceil((ymax + AXIS_OFFSET) / step));
-            
+
             // Generate an array of task features
             var taskFeatures = [];
             for (var x = xminstep; x < xmaxstep; x++) {
@@ -129,25 +118,18 @@
                         featureProjection: MAPPROJECTION
                     });
                     // Check if the generated task feature intersects with the area of interest
-                    // Loop over the polygons within the multipolygon
-                    console.log(areaOfInterestGeoJSON);
-                    for (var polygonNumber = 0; polygonNumber < areaOfInterestGeoJSON.features.length; polygonNumber++){
-                        console.log("looping!");
-                        var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), areaOfInterestGeoJSON.features[polygonNumber]);
-                        // Add the task feature to the array if it intersects
-                        if (intersection) {
-                            taskFeature.setProperties({
-                                'x': x,
-                                'y': y,
-                                'zoom': zoomLevel
-                            });
-                            taskFeatures.push(taskFeature);
-                            break;
-                        }
+                    var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
+                    // Add the task feature to the array if it intersects
+                    if (intersection) {
+                        taskFeature.setProperties({
+                            'x': x,
+                            'y': y,
+                            'zoom': zoomLevel
+                        });
+                        taskFeatures.push(taskFeature);
                     }
                 }
             }
-            console.log(taskFeatures);
             return taskFeatures;
         }
 
