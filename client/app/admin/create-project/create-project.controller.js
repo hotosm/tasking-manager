@@ -203,6 +203,7 @@
          * @param file
          */
         vm.import = function (file) {
+            // Set drawing an AOI to inactive
             if (aoiService.getDrawPolygonActive()){
                 aoiService.setDrawPolygonActive(false);
             }
@@ -222,6 +223,7 @@
                         setImportedAOI_(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'zip') {
+                        // Use the Shapefile.js library to read the zipped Shapefile (with GeoJSON as output)
                         shp(data).then(function(geojson){
                             var uploadedFeatures = getFeaturesFromGeoJSON_(geojson);
                             setImportedAOI_(uploadedFeatures);
