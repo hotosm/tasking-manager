@@ -30,7 +30,7 @@ class ProjectService:
         project = Project.query.get(project_id)
 
         bill = project.to_dict()
-        abi = bill
+        return bill
 
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
         """

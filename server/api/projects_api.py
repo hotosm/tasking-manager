@@ -93,4 +93,6 @@ class ProjectsAPI(Resource):
               default: 1
         """
         project_service = ProjectService()
-        project_service.get_project_by_id(project_id)
+        project = project_service.get_project_by_id(project_id)
+
+        return project, 200

@@ -125,7 +125,10 @@ class AreaOfInterest(db.Model):
         """
         Helper function to return geometry column as geoJSON
         """
-        return db.session.query(self.geometry.ST_AsGeoJSON()).one()
+        # TODO poss read in using geoJson lib
+        geo_json = db.session.query(self.geometry.ST_AsGeoJSON()).scalar()
+        geom_type = geojson.loads(geo_json)
+        return geom_type
 
 
 class Project(db.Model):
@@ -164,7 +167,6 @@ class Project(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    @property
     def to_dict(self):
         project_dto = dict(projectId=self.id)
 
