@@ -29,6 +29,7 @@
     "karma-jasmine": "^1.1.0",
     "karma-junit-reporter": "^1.2.0",
     "karma-phantomjs-launcher": "^1.0.2",
+    "ng-file-upload": "^12.2.13",
     "node-bourbon": "^4.2.8",
     "oam-design-system": "git+https://github.com/hotosm/oam-design-system.git",
     "ol3-geocoder": "^2.5.0",

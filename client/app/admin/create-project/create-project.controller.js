@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', 'mapService', 'drawService', 'projectService', createProjectController]);
+        .controller('createProjectController', ['$scope', 'mapService', 'aoiService', 'projectService', createProjectController]);
 
-    function createProjectController($scope, mapService, drawService, projectService) {
+    function createProjectController($scope, mapService, aoiService, projectService) {
         var vm = this;
 
         // Wizard 
@@ -21,8 +21,12 @@
 
         // AOI 
         vm.AOI = null;
+        vm.isDrawnAOI = false;
+        vm.isImportedAOI = false;
 
         // Grid
+        vm.isTaskGrid = false;
+        vm.isTaskArbitrary = false;
         vm.sizeOfTasks = 0; 
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
@@ -38,7 +42,9 @@
         vm.AOIValidationMessage = '';
         vm.isSplitPolygonValid = true;
         vm.splitPolygonValidationMessage = '';
-        vm.createProjectFailed = false;
+        vm.isimportError = false;
+        vm.createProjectFail = false;
+        vm.createProjectSuccess = false;
 
         activate();
 
@@ -46,7 +52,7 @@
             vm.currentStep = 'area';
 
             mapService.createOSMMap('map');
-            drawService.initDrawTools();
+            aoiService.initDrawTools();
             projectService.init();
             addGeocoder_();
         }
@@ -59,24 +65,37 @@
             if (wizardStep === 'area'){
                 vm.isTaskGrid = false;
                 vm.isTaskArbitrary = false;
-                drawService.removeAllFeatures();
+                aoiService.removeAllFeatures();
                 projectService.removeTaskGrid();
                 vm.currentStep = wizardStep;
             }
             else if (wizardStep === 'tasks'){
-                var aoiValidationResult = projectService.validateAOI(drawService.getFeatures());
-                vm.isAOIValid = aoiValidationResult.valid;
-                vm.AOIValidationMessage = aoiValidationResult.message;
+                if (vm.isDrawnAOI) {
+                    var aoiValidationResult = projectService.validateAOI(aoiService.getFeatures());
+                    vm.isAOIValid = aoiValidationResult.valid;
+                    vm.AOIValidationMessage = aoiValidationResult.message;
 
-                if (vm.isAOIValid) {
-                    drawService.setDrawPolygonActive(false);
-                    drawService.zoomToExtent();
+                    if (vm.isAOIValid) {
+                        aoiService.setDrawPolygonActive(false);
+                        aoiService.zoomToExtent();
+                        // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
+                        vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
+                            + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
+                        // Reset the user zoom level offset
+                        vm.userZoomLevelOffset = 0;
+                        vm.currentStep = wizardStep;
+                    }
+                }
+                if (vm.isImportedAOI){
+                    // TODO: validate AOI - depends on what API supports! Self-intersecting polygons?
+                    aoiService.setDrawPolygonActive(false);
+                    aoiService.zoomToExtent();
                     // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
                     vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
                         + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
+                    vm.currentStep = wizardStep;
                     // Reset the user zoom level offset
                     vm.userZoomLevelOffset = 0;
-                    vm.currentStep = wizardStep;
                 }
             }
             else if (wizardStep === 'taskSize'){
@@ -131,8 +150,10 @@
          * Draw Area of Interest
          */
         vm.drawAOI = function(){
-            if (!drawService.getDrawPolygonActive()){
-                drawService.setDrawPolygonActive(true);
+            if (!aoiService.getDrawPolygonActive()){
+                aoiService.setDrawPolygonActive(true);
+                vm.isDrawnAOI = true;
+                vm.isImportedAOI = false;
             }
         };
 
@@ -147,21 +168,24 @@
             projectService.removeTaskGrid();
 
              // Get and set the AOI
-            var areaOfInterest = drawService.getFeatures();
-            projectService.setAOI(areaOfInterest);
+            var areaOfInterest = aoiService.getFeatures();
 
             // Create a task grid
             // TODO: may need to fix areaOfInterest[0] as it may need to work for multipolygons
-            var taskGrid = projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
-            projectService.setTaskGrid(taskGrid);
-            projectService.addTaskGridToMap();
+            if (vm.isDrawnAOI){
+                var taskGrid = projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+                projectService.setTaskGrid(taskGrid);
+                projectService.addTaskGridToMap();
 
-            // Get the number of tasks in project
-            vm.numberOfTasks = projectService.getNumberOfTasks();
+                // Get the number of tasks in project
+                vm.numberOfTasks = projectService.getNumberOfTasks();
 
-            // Get the size of the tasks 
-            // TODO: only do this when using a square grid
-            vm.sizeOfTasks = projectService.getTaskSize();
+                // Get the size of the tasks
+                vm.sizeOfTasks = projectService.getTaskSize();
+            }
+            if (vm.isImportedAOI){
+                // TODO: create task grid from imported AOI
+            }
         };
 
         /**
@@ -172,6 +196,100 @@
             vm.userZoomLevelOffset += zoomLevelOffset;
             vm.createTaskGrid();
         };
+
+        /**
+         * Import a GeoJSON, KML or Shapefile and add it to the map
+         * TODO: add more error handling
+         * @param file
+         */
+        vm.import = function (file) {
+            // Set drawing an AOI to inactive
+            if (aoiService.getDrawPolygonActive()){
+                aoiService.setDrawPolygonActive(false);
+            }
+            vm.isImportError = false;
+            if (file) {
+                aoiService.removeAllFeatures();
+                var fileReader = new FileReader();
+                fileReader.onloadend = function (e) {
+                    var data = e.target.result;
+                    var uploadedFeatures = null;
+                    if (file.name.substr(-4) === 'json') {
+                        uploadedFeatures = getFeaturesFromGeoJSON_(data);
+                        setImportedAOI_(uploadedFeatures);
+                    }
+                    else if (file.name.substr(-3) === 'kml') {
+                        uploadedFeatures = getFeaturesFromKML_(data);
+                        setImportedAOI_(uploadedFeatures);
+                    }
+                    else if (file.name.substr(-3) === 'zip') {
+                        // Use the Shapefile.js library to read the zipped Shapefile (with GeoJSON as output)
+                        shp(data).then(function(geojson){
+                            var uploadedFeatures = getFeaturesFromGeoJSON_(geojson);
+                            setImportedAOI_(uploadedFeatures);
+                        });
+                    }
+                };
+                if (file.name.substr(-4) === 'json') {
+                    fileReader.readAsText(file);
+                }
+                else if (file.name.substr(-3) === 'kml') {
+                    fileReader.readAsText(file);
+                }
+                else if (file.name.substr(-3) === 'zip') {
+                    fileReader.readAsArrayBuffer(file);
+                }
+                else {
+                    vm.isImportError = true;
+                }
+            }
+        };
+
+        /**
+         * Set the AOI to the imported AOI
+         * @param features
+         * @private
+         */
+        function setImportedAOI_(features){
+            vm.isImportedAOI = true;
+            vm.isDrawnAOI = false;
+            projectService.setAOI(features);
+            aoiService.setFeatures(features);
+            aoiService.zoomToExtent();
+        }
+
+        /**
+         * Get OL features from GeoJSON
+         * @param data
+         * @returns {Array.<ol.Feature>}
+         * @private
+         */
+        function getFeaturesFromGeoJSON_(data){
+            var format = new ol.format.GeoJSON();
+            var features = format.readFeatures(data, {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:3857'
+            });
+            return features;
+        }
+
+        /**
+         * Get OL features from GeoJSON
+         * @param data
+         * @returns {Array.<ol.Feature>}
+         * @private
+         */
+        function getFeaturesFromKML_(data){
+            var format = new ol.format.KML({
+                extractStyles: false,
+                showPointNames: false
+            });
+            var features = format.readFeatures(data, {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:3857'
+            });
+            return features;
+        }
 
         /**
          *  Lets the user draw an area (polygon).
@@ -209,15 +327,19 @@
          * Create a new project with a project name
          */
         vm.createProject = function(){
+            vm.createProjectFail = false;
+            vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid){
                 var resultsPromise = projectService.createProject(vm.projectName);
                 resultsPromise.then(function (data) {
                     // Project created successfully
                     // TODO: go to project edit page
-                    vm.createProjectFailed = false;
+                    vm.createProjectFail = false;
+                    vm.createProjectSuccess = true;
                 }, function(){
                     // Project not created successfully
-                    vm.createProjectFailed = true;
+                    vm.createProjectFail = true;
+                    vm.createProjectSuccess = false;
                 });
             }
             else {

@@ -45,6 +45,7 @@
             addTaskGridToMap: addTaskGridToMap,
             createProject: createProject,
             setAOI: setAOI,
+            getAOI: getAOI,
             splitTasks: splitTasks
         };
 
@@ -221,6 +222,15 @@
          */
         function setAOI(areaOfInterest){
             aoi = areaOfInterest;
+            
+        }
+
+        /**
+         * Get the AOI
+         * @returns {*}
+         */
+        function getAOI(){
+            return aoi;
         }
 
         /**
