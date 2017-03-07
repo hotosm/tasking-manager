@@ -35,6 +35,9 @@ class ST_GeomFromGeoJSON(GenericFunction):
     type = Geometry
 
 
+
+
+
 class ProjectStatus(Enum):
     """
     Enum to describes all possible states of a Mapping Project
@@ -89,6 +92,19 @@ class Task(db.Model):
         task_geojson = geojson.dumps(task_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
 
+    def get_task_as_geojson_feature(self):
+        """
+        Helper function to get geometry as strongly typed geojson
+        :return: geojson.MultiPolygon
+        """
+        geometry_geojson = db.session.query(self.geometry.ST_AsGeoJSON()).scalar()
+
+        task_geometry = geojson.loads(geometry_geojson)
+        task_properties = dict(x=self.x, y=self.y, zoom=self.zoom)
+
+        feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
+        return feature
+
 
 class AreaOfInterest(db.Model):
     """
@@ -117,6 +133,15 @@ class AreaOfInterest(db.Model):
 
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
+
+    def get_geometry_as_geojson_multipolygon(self):
+        """
+        Helper function to get geometry as strongly typed geojson
+        :return: geojson.MultiPolygon
+        """
+        geometry_geojson = db.session.query(self.geometry.ST_AsGeoJSON()).scalar()
+        geom_typed = geojson.loads(geometry_geojson)
+        return geom_typed
 
 
 class Project(db.Model):
@@ -154,6 +179,22 @@ class Project(db.Model):
         # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
         db.session.commit()
+
+    def to_dto(self):
+        """
+        Translates the database model into a DTO suitable for sending back via the API
+        """
+        project_dto = dict(projectId=self.id)
+        project_dto['areaOfInterest'] = self.area_of_interest.get_geometry_as_geojson_multipolygon()
+
+        tasks_features = []
+        for task in self.tasks:
+            feature = task.get_task_as_geojson_feature()
+            tasks_features.append(feature)
+
+        project_dto['tasks'] = geojson.FeatureCollection(tasks_features)
+
+        return project_dto
 
     def delete(self):
         """

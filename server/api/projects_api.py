@@ -72,6 +72,42 @@ class ProjectsAPI(Resource):
         except (InvalidGeoJson, InvalidData) as e:
             return {"error": f'{str(e)}'}, 400
         except Exception as e:
-            error_msg = f'Project Creation - unhandled error: {str(e)}'
+            error_msg = f'Project PUT - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    def get(self, project_id):
+        """
+        Retrieves the specified Tasking-Manager project
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Project found
+            404:
+                description: Project not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            project_service = ProjectService()
+            project = project_service.get_project_by_id(project_id)
+
+            if project is None:
+                return {"Error": "Project Not Found"}, 404
+
+            return project, 200
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

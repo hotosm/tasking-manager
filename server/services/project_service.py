@@ -26,6 +26,20 @@ class ProjectService:
 
         draft_project.create()
 
+    def get_project_by_id(self, project_id):
+        """
+        Retrieve the specified project from the database
+        :param project_id: ID in scope
+        :return: project_dto suitable for serialization to JSON
+        """
+        project = Project.query.get(project_id)
+
+        if project is None:
+            return None
+
+        project_dto = project.to_dto()
+        return project_dto
+
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
         """
         Validates then iterates over the array of tasks and attach them to the draft project
