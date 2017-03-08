@@ -151,7 +151,7 @@ class Project(db.Model):
     name = db.Column(db.String(256))
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
-    area_of_interest = db.relationship(AreaOfInterest)
+    area_of_interest = db.relationship(AreaOfInterest, cascade="all")
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
@@ -200,6 +200,5 @@ class Project(db.Model):
         """
         Deletes the current model from the DB
         """
-        # TODO check cascade
         db.session.delete(self)
         db.session.commit()
