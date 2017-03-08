@@ -11,6 +11,7 @@ class ProjectService:
         :param aoi_geojson: Area Of Interest Geometry as a geoJSON multipolygon
         :param tasks_geojson: All tasks associated with the project as a geoJSON feature collection
         :raises InvalidGeoJson
+        :returns ID of new draft project
         """
         try:
             area_of_interest = AreaOfInterest(aoi_geojson)
@@ -25,6 +26,7 @@ class ProjectService:
         self._attach_tasks_to_project(draft_project, tasks_geojson)
 
         draft_project.create()
+        return draft_project.id
 
     def get_project_by_id(self, project_id):
         """
@@ -59,7 +61,7 @@ class ProjectService:
         task_id = 1
         for feature in tasks['features']:
             try:
-                task = Task(task_id, feature)
+                task = Task.from_geojson_feature(task_id, feature)
             except (InvalidData, InvalidGeoJson) as e:
                 raise e
 

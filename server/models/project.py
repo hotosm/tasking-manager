@@ -2,7 +2,7 @@ import datetime
 import geojson
 from enum import Enum
 from flask import current_app
-from geoalchemy2 import Geometry
+from geoalchemy2 import Geometry, select
 from geoalchemy2.functions import GenericFunction
 from server import db
 
@@ -62,9 +62,10 @@ class Task(db.Model):
     zoom = db.Column(db.Integer, nullable=False)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
 
-    def __init__(self, task_id, task_feature):
+    @classmethod
+    def from_geojson_feature(cls, task_id, task_feature):
         """
-        Task constructor
+        Validates and constructs a task from a GeoJson feature object
         :param task_id: Unique ID for the task
         :param task_feature: A geoJSON feature object
         :raises InvalidGeoJson, InvalidData
@@ -81,16 +82,19 @@ class Task(db.Model):
         if is_valid_geojson['valid'] == 'no':
             raise InvalidGeoJson(f"Task: Invalid MultiPolygon - {is_valid_geojson['message']}")
 
+        task = cls()  #
+
         try:
-            self.x = task_feature.properties['x']
-            self.y = task_feature.properties['y']
-            self.zoom = task_feature.properties['zoom']
+            task.x = task_feature.properties['x']
+            task.y = task_feature.properties['y']
+            task.zoom = task_feature.properties['zoom']
         except KeyError as e:
             raise InvalidData(f'Task: Expected property not found: {str(e)}')
 
-        self.id = task_id
+        task.id = task_id
         task_geojson = geojson.dumps(task_geometry)
-        self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
+        task.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
+        return task
 
     def get_task_as_geojson_feature(self):
         """
@@ -104,6 +108,11 @@ class Task(db.Model):
 
         feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
         return feature
+
+    def get_tasks_as_geojson_feature_collection(self, project_id):
+
+        tasks = self.query(Task.id, filter(Task.project_id==project_id)).all()
+        iain = tasks
 
 
 class AreaOfInterest(db.Model):
@@ -195,6 +204,9 @@ class Project(db.Model):
         project_dto['tasks'] = geojson.FeatureCollection(tasks_features)
 
         return project_dto
+
+
+
 
     def delete(self):
         """

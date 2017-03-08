@@ -47,3 +47,7 @@ class TestProject(unittest.TestCase):
         self.assertIsNotNone(test_project.id, 'ID should be set if project successfully persisted')
 
         test_project.delete()  # Tidy up, by removing test project
+
+    def test_iain(self):
+
+        test_task = Task()
