@@ -1,16 +1,17 @@
 """empty message
 
-Revision ID: 91b971be8036
+Revision ID: 45d483cb16dc
 Revises: 
-Create Date: 2017-03-02 16:30:47.473179
+Create Date: 2017-03-08 14:25:50.618066
 
 """
 from alembic import op
 import sqlalchemy as sa
 import geoalchemy2
 
+
 # revision identifiers, used by Alembic.
-revision = '91b971be8036'
+revision = '45d483cb16dc'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,6 +41,8 @@ def upgrade():
     sa.Column('y', sa.Integer(), nullable=False),
     sa.Column('zoom', sa.Integer(), nullable=False),
     sa.Column('geometry', geoalchemy2.types.Geometry(geometry_type='MULTIPOLYGON', srid=4326), nullable=True),
+    sa.Column('task_status', sa.Integer(), nullable=True),
+    sa.Column('task_locked', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
     sa.PrimaryKeyConstraint('id', 'project_id')
     )
