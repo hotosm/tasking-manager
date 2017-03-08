@@ -95,8 +95,8 @@ class Task(db.Model):
         task_geojson = geojson.dumps(task_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
 
-    @classmethod
-    def get_tasks_as_geojson_feature_collection(cls, project_id):
+    @staticmethod
+    def get_tasks_as_geojson_feature_collection(project_id):
         """
         Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID
         :param project_id: Owning project ID
@@ -192,8 +192,15 @@ class Project(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    @classmethod
-    def as_dto(cls, project_id):
+    def delete(self):
+        """
+        Deletes the current model from the DB
+        """
+        db.session.delete(self)
+        db.session.commit()
+
+    @staticmethod
+    def as_dto(project_id):
         """
         Creates a Project DTO suitable of transmitting via the API
         :param project_id: project_id in scope
@@ -210,10 +217,3 @@ class Project(db.Model):
         project_dto['tasks'] = Task.get_tasks_as_geojson_feature_collection(project_id)
 
         return project_dto
-
-    def delete(self):
-        """
-        Deletes the current model from the DB
-        """
-        db.session.delete(self)
-        db.session.commit()
