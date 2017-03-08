@@ -11,6 +11,7 @@ class InvalidGeoJson(Exception):
     """
     Custom exception to notify caller they have supplied Invalid GeoJson
     """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
@@ -20,6 +21,7 @@ class InvalidData(Exception):
     """
     Custom exception to notify caller they have supplied Invalid data to a model
     """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
@@ -33,9 +35,6 @@ class ST_SetSRID(GenericFunction):
 class ST_GeomFromGeoJSON(GenericFunction):
     name = 'ST_GeomFromGeoJSON'
     type = Geometry
-
-
-
 
 
 class ProjectStatus(Enum):
@@ -64,7 +63,7 @@ class Task(db.Model):
 
     def __init__(self, task_id, task_feature):
         """
-        Task constructor
+        Validates and constructs a task from a GeoJson feature object
         :param task_id: Unique ID for the task
         :param task_feature: A geoJSON feature object
         :raises InvalidGeoJson, InvalidData
@@ -92,18 +91,25 @@ class Task(db.Model):
         task_geojson = geojson.dumps(task_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
 
-    def get_task_as_geojson_feature(self):
+    @classmethod
+    def get_tasks_as_geojson_feature_collection(cls, project_id):
         """
-        Helper function to get geometry as strongly typed geojson
-        :return: geojson.MultiPolygon
+        Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID
+        :param project_id: Owning project ID
+        :return: geojson.FeatureCollection
         """
-        geometry_geojson = db.session.query(self.geometry.ST_AsGeoJSON()).scalar()
+        project_tasks = \
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.geometry.ST_AsGeoJSON().label('geojson')
+                             ).filter(Task.project_id == project_id).all()
 
-        task_geometry = geojson.loads(geometry_geojson)
-        task_properties = dict(x=self.x, y=self.y, zoom=self.zoom)
+        tasks_features = []
+        for task in project_tasks:
+            task_geometry = geojson.loads(task.geojson)
+            task_properties = dict(x=task.x, y=task.y, zoom=task.zoom)
+            feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
+            tasks_features.append(feature)
 
-        feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
-        return feature
+        return geojson.FeatureCollection(tasks_features)
 
 
 class AreaOfInterest(db.Model):
@@ -134,15 +140,6 @@ class AreaOfInterest(db.Model):
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
 
-    def get_geometry_as_geojson_multipolygon(self):
-        """
-        Helper function to get geometry as strongly typed geojson
-        :return: geojson.MultiPolygon
-        """
-        geometry_geojson = db.session.query(self.geometry.ST_AsGeoJSON()).scalar()
-        geom_typed = geojson.loads(geometry_geojson)
-        return geom_typed
-
 
 class Project(db.Model):
     """
@@ -154,7 +151,7 @@ class Project(db.Model):
     name = db.Column(db.String(256))
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
-    area_of_interest = db.relationship(AreaOfInterest)
+    area_of_interest = db.relationship(AreaOfInterest, cascade="all")
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
@@ -180,19 +177,22 @@ class Project(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def to_dto(self):
+    @classmethod
+    def as_dto(cls, project_id):
         """
-        Translates the database model into a DTO suitable for sending back via the API
+        Creates a Project DTO suitable of transmitting via the API
+        :param project_id: project_id in scope
+        :return: Project DTO dict
         """
-        project_dto = dict(projectId=self.id)
-        project_dto['areaOfInterest'] = self.area_of_interest.get_geometry_as_geojson_multipolygon()
+        query = db.session.query(Project.id, Project.name, AreaOfInterest.geometry.ST_AsGeoJSON()
+                                 .label('geojson')).join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
-        tasks_features = []
-        for task in self.tasks:
-            feature = task.get_task_as_geojson_feature()
-            tasks_features.append(feature)
+        if query is None:
+            return None
 
-        project_dto['tasks'] = geojson.FeatureCollection(tasks_features)
+        project_dto = dict(projectId=project_id, projectName=query.name)
+        project_dto['areaOfInterest'] = geojson.loads(query.geojson)
+        project_dto['tasks'] = Task.get_tasks_as_geojson_feature_collection(project_id)
 
         return project_dto
 
@@ -200,6 +200,5 @@ class Project(db.Model):
         """
         Deletes the current model from the DB
         """
-        # TODO check cascade
         db.session.delete(self)
         db.session.commit()
