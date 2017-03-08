@@ -85,7 +85,13 @@
             //TODO: may want to refactor this into a service at some point so that it can be resused
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
-                source: source
+                source: source,
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'red'
+                    })
+                })
+
             });
             vm.map.addLayer(vector);
 
