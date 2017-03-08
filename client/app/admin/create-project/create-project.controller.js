@@ -169,6 +169,7 @@
 
              // Get and set the AOI
             var areaOfInterest = aoiService.getFeatures();
+            projectService.setAOI(areaOfInterest);
 
             // Create a task grid
             // TODO: may need to fix areaOfInterest[0] as it may need to work for multipolygons

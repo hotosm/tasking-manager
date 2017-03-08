@@ -37,14 +37,16 @@ class ST_GeomFromGeoJSON(GenericFunction):
     type = Geometry
 
 
-class ProjectStatus(Enum):
+class TaskStatus(Enum):
     """
-    Enum to describes all possible states of a Mapping Project
+    Enum describing available Task Statuses
     """
-    # TODO add DELETE state, others??
-    ARCHIVED = 0
-    PUBLISHED = 1
-    DRAFT = 2
+    # task states
+    READY = 0
+    INVALIDATED = 1
+    DONE = 2
+    VALIDATED = 3
+    # REMOVED = -1 TODO this looks weird can it be removed
 
 
 class Task(db.Model):
@@ -60,6 +62,8 @@ class Task(db.Model):
     y = db.Column(db.Integer, nullable=False)
     zoom = db.Column(db.Integer, nullable=False)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
+    task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
+    task_locked = db.Column(db.Boolean, default=False)
 
     def __init__(self, task_id, task_feature):
         """
@@ -91,21 +95,22 @@ class Task(db.Model):
         task_geojson = geojson.dumps(task_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
 
-    @classmethod
-    def get_tasks_as_geojson_feature_collection(cls, project_id):
+    @staticmethod
+    def get_tasks_as_geojson_feature_collection(project_id):
         """
         Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID
         :param project_id: Owning project ID
         :return: geojson.FeatureCollection
         """
         project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.geometry.ST_AsGeoJSON().label('geojson')
-                             ).filter(Task.project_id == project_id).all()
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.task_locked, Task.task_status,
+                             Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
-            task_properties = dict(x=task.x, y=task.y, zoom=task.zoom)
+            task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
+                                   taskLocked=task.task_locked, taskStatus=TaskStatus(task.task_status).name)
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
             tasks_features.append(feature)
 
@@ -139,6 +144,16 @@ class AreaOfInterest(db.Model):
 
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
+
+
+class ProjectStatus(Enum):
+    """
+    Enum to describes all possible states of a Mapping Project
+    """
+    # TODO add DELETE state, others??
+    ARCHIVED = 0
+    PUBLISHED = 1
+    DRAFT = 2
 
 
 class Project(db.Model):
@@ -177,8 +192,15 @@ class Project(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    @classmethod
-    def as_dto(cls, project_id):
+    def delete(self):
+        """
+        Deletes the current model from the DB
+        """
+        db.session.delete(self)
+        db.session.commit()
+
+    @staticmethod
+    def as_dto(project_id):
         """
         Creates a Project DTO suitable of transmitting via the API
         :param project_id: project_id in scope
@@ -195,10 +217,3 @@ class Project(db.Model):
         project_dto['tasks'] = Task.get_tasks_as_geojson_feature_collection(project_id)
 
         return project_dto
-
-    def delete(self):
-        """
-        Deletes the current model from the DB
-        """
-        db.session.delete(self)
-        db.session.commit()
