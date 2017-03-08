@@ -7,15 +7,16 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', [editProjectController]);
+        .controller('editProjectController', ['$location', editProjectController]);
 
-    function editProjectController() {
+    function editProjectController($location) {
         var vm = this;
+        vm.projectName = '';
         
         activate();
 
         function activate() {
-            // TODO    
+            vm.projectName = $location.search().projectname;
         }
     }
 })();
