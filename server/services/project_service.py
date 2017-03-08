@@ -11,6 +11,7 @@ class ProjectService:
         :param aoi_geojson: Area Of Interest Geometry as a geoJSON multipolygon
         :param tasks_geojson: All tasks associated with the project as a geoJSON feature collection
         :raises InvalidGeoJson
+        :returns ID of new draft project
         """
         try:
             area_of_interest = AreaOfInterest(aoi_geojson)
@@ -25,6 +26,7 @@ class ProjectService:
         self._attach_tasks_to_project(draft_project, tasks_geojson)
 
         draft_project.create()
+        return draft_project.id
 
     def get_project_by_id(self, project_id):
         """
@@ -32,13 +34,7 @@ class ProjectService:
         :param project_id: ID in scope
         :return: project_dto suitable for serialization to JSON
         """
-        project = Project.query.get(project_id)
-
-        if project is None:
-            return None
-
-        project_dto = project.to_dto()
-        return project_dto
+        return Project.as_dto(project_id)
 
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
         """

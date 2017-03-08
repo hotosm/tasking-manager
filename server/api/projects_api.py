@@ -67,8 +67,8 @@ class ProjectsAPI(Resource):
 
         try:
             project_service = ProjectService()
-            project_service.create_draft_project(project_name, aoi_geometry_geojson, tasks_geojson)
-            return {"status": "success"}, 201
+            draft_project_id = project_service.create_draft_project(project_name, aoi_geometry_geojson, tasks_geojson)
+            return {"projectId": draft_project_id}, 201
         except (InvalidGeoJson, InvalidData) as e:
             return {"error": f'{str(e)}'}, 400
         except Exception as e:
