@@ -184,8 +184,8 @@ class Project(db.Model):
         :param project_id: project_id in scope
         :return: Project DTO dict
         """
-        query = db.session.query(Project.id, Project.name, AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')).join(
-            AreaOfInterest).filter(Project.id == project_id).one_or_none()
+        query = db.session.query(Project.id, Project.name, AreaOfInterest.geometry.ST_AsGeoJSON()
+                                 .label('geojson')).join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
         if query is None:
             return None
