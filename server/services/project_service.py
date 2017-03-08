@@ -34,13 +34,7 @@ class ProjectService:
         :param project_id: ID in scope
         :return: project_dto suitable for serialization to JSON
         """
-        project = Project.query.get(project_id)
-
-        if project is None:
-            return None
-
-        project_dto = project.to_dto()
-        return project_dto
+        return Project.as_dto(project_id)
 
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
         """
@@ -61,7 +55,7 @@ class ProjectService:
         task_id = 1
         for feature in tasks['features']:
             try:
-                task = Task.from_geojson_feature(task_id, feature)
+                task = Task(task_id, feature)
             except (InvalidData, InvalidGeoJson) as e:
                 raise e
 

@@ -50,4 +50,9 @@ class TestProject(unittest.TestCase):
 
     def test_iain(self):
 
-        test_task = Task()
+        #test_task = Task()
+        #test_task.get_tasks_as_geojson_feature_collection(17)
+
+        test = Project.to_dto(150)
+
+
