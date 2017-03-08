@@ -24,6 +24,12 @@
                     templateUrl: 'app/admin/create-project/create-project.html',
                     controller: 'createProjectController',
                     controllerAs: 'createProjectCtrl'
+                })
+            
+                .when('/admin/edit-project', {
+                    templateUrl: 'app/admin/edit-project/edit-project.html',
+                    controller: 'editProjectController',
+                    controllerAs: 'editProjectCtrl'
                 });
 
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them

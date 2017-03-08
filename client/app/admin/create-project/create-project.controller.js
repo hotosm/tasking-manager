@@ -333,9 +333,10 @@
                 var resultsPromise = projectService.createProject(vm.projectName);
                 resultsPromise.then(function (data) {
                     // Project created successfully
-                    // TODO: go to project edit page
                     vm.createProjectFail = false;
                     vm.createProjectSuccess = true;
+                    // Navigate to the edit project page 
+                    $location.path('/admin/edit-project');
                 }, function(){
                     // Project not created successfully
                     vm.createProjectFail = true;
