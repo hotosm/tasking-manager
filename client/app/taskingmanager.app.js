@@ -24,8 +24,14 @@
                     templateUrl: 'app/admin/create-project/create-project.html',
                     controller: 'createProjectController',
                     controllerAs: 'createProjectCtrl'
+                })
+            
+                .when('/project', {
+                    templateUrl: 'app/project/project.html',
+                    controller: 'projectController',
+                    controllerAs: 'projectCtrl'
                 });
-
+            
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them
             $locationProvider.html5Mode(true);
             
