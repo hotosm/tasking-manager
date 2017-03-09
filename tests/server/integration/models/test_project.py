@@ -72,5 +72,5 @@ class TestProject(unittest.TestCase):
 
         test_aoi = AreaOfInterest(multipoly_geojson)
         self.test_project = Project('Test', test_aoi)
-        self.test_project.tasks.append(Task(1, task_feature))
+        self.test_project.tasks.append(Task.from_geojson_feature(1, task_feature))
         self.test_project.create()
