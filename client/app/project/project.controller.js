@@ -3,7 +3,7 @@
     'use strict';
 
     /**
-     * Project controller which manages creating a new project
+     * Project controller which manages activating a project the UI for user task selection and contribution workflow
      */
     angular
         .module('taskingManager')
@@ -20,28 +20,17 @@
         function activate() {
             //TODO: Set up sidebar tabs
             vm.currentTab = 'description';
-
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
-
-
-            //TODO get projectId from URL, pattern /project{id}
-
             var id = $location.search().project;
             initialiseProject(id);
-
-            //TODO: set project name on header
-
-            //TODO: style the project on the map
             //TODO: put the project metadata (description instructions on disebar tabs
-
         }
 
         /**
          * Get a  project with using it's id
          */
         function initialiseProject(id){
-
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
@@ -52,7 +41,6 @@
                 // project not returned successfully
                 // TODO - may want to handle error
             });
-
         };
 
         /**
@@ -60,7 +48,7 @@
          * @param tasks
          */
         function addProjectTasksToMap(tasks){
-            //TODO: may want to refactor this into a service at some point so that it can be resused
+            //TODO: may want to refactor this into a service at some point so that it can be reused
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
                 source: source,
