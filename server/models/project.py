@@ -95,6 +95,12 @@ class Task(db.Model):
         task_geojson = geojson.dumps(task_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
 
+    def update(self):
+        """
+        Updates the DB with the current state of the Task
+        """
+        db.session.commit()
+
     @staticmethod
     def get_tasks_as_geojson_feature_collection(project_id):
         """
