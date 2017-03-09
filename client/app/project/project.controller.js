@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$location', 'mapService', 'projectService', projectController]);
+        .controller('projectController', ['$location', 'mapService', 'projectService', 'styleService', projectController]);
 
-    function projectController($location, mapService, projectService) {
+    function projectController($location, mapService, projectService, styleService) {
         var vm = this;
         vm.project = null;
         vm.map = null;
@@ -63,7 +63,8 @@
             //TODO: may want to refactor this into a service at some point so that it can be resused
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
-                source: source
+                source: source,
+                style: styleService.getTaskStyleFunction
             });
             vm.map.addLayer(vector);
 
@@ -85,13 +86,7 @@
             //TODO: may want to refactor this into a service at some point so that it can be resused
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
-                source: source,
-                style: new ol.style.Style({
-                    fill: new ol.style.Fill({
-                        color: 'red'
-                    })
-                })
-
+                source: source
             });
             vm.map.addLayer(vector);
 
