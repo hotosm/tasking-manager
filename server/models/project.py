@@ -46,6 +46,7 @@ class TaskStatus(Enum):
     INVALIDATED = 1
     DONE = 2
     VALIDATED = 3
+    BADIMAGERY = 4  # Task cannot be mapped because of clouds, fuzzy imagery
     # REMOVED = -1 TODO this looks weird can it be removed
 
 
