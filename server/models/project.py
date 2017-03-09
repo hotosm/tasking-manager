@@ -41,7 +41,6 @@ class TaskStatus(Enum):
     """
     Enum describing available Task Statuses
     """
-    # task states
     READY = 0
     INVALIDATED = 1
     DONE = 2
