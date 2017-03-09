@@ -31,6 +31,8 @@ class TaskService:
         if task.task_locked and is_locked:
             raise TaskServiceError(f'Task: {task_id} Project {project_id} is already locked')
 
+        # TODO user can only have 1 tasked locked at a time
+
         task.task_locked = is_locked
         task.update()
         return task
