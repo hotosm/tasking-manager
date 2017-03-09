@@ -48,7 +48,6 @@
             getAOI: getAOI,
             splitTasks: splitTasks,
             getProject: getProject
-
         };
 
         return service;
