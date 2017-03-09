@@ -2,7 +2,7 @@
 
 (function () {
 
-    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'taskingmanager.config'])
+    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'taskingmanager.config'])
 
         /**
          * Factory that returns the configuration settings for the current environment

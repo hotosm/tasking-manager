@@ -26,9 +26,9 @@
                 <div ng-show="createProjectCtrl.currentStep === 'area'" class="content">
                     <h2>Step 1: define area</h2>
                     <form class="form">
-                        <div>
-                            <p>Draw the area of interest on the map.</p>
+                        <div class="form__group">
                             <button class="button button--achromic" type="button" ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
+                            <p>Draw the area of interest on the map.</p>
                             <div>
                                 <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
                                     No area of interest has been drawn.
@@ -38,20 +38,21 @@
                                 </span>
                             </div>
                         </div>
-                        <hr />
-                        <div>
-                            <p>Import a GeoJSON, KML, or zipped SHP file.</p>
+                        <div class="form__group">
                             <div class="button button--achromic" ngf-select="createProjectCtrl.import($file)">Import</div>
+                            <p>Import a GeoJSON, KML, or zipped SHP file.</p>
                             <div>
                                 <span class="error" ng-show="createProjectCtrl.isImportError">
                                     Please provide a valid GeoJSON, KML or zipped Shapefile.
                                 </span>
                             </div>
                         </div>
+                        <div class="form__group">
+                            <p>Want to use an .osm file instead? You can use <a href="http://geojson.io" target="_blank">GeoJSON.io</a>
+                                to convert it to GeoJSON.</p>
+                        </div>
                     </form>
-                    <hr/>
-                    <p>Want to use an .osm file instead? You can use <a href="http://geojson.io" target="_blank">GeoJSON.io</a>
-                        to convert it to GeoJSON.</p>
+                    <hr />
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--secondary pull-right" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">

@@ -10,6 +10,7 @@
   color: $danger-color;
 }
 
-input[type="file"] {
-    display: none;
+/** Override the OSM design system form__group **/
+.form__group {
+  margin-top: $global-spacing;
 }
