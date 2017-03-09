@@ -14,9 +14,10 @@
         vm.currentSection = '';
 
         // TODO: put in object
+        vm.projectId = 0;
+        vm.projectName = '';
         vm.projectStatus = 'draft';
         vm.projectPriority = 'medium';
-        vm.projectName = '';
         vm.shortDescription = '';
         vm.description = '';
         vm.instructions = '';
@@ -26,7 +27,8 @@
 
         function activate() {
             vm.currentSection = 'description';
-            vm.projectName = $location.search().projectname;
+            vm.projectId = $location.search().id;
+            vm.projectName = $location.search().name;
             mapService.createOSMMap('map');
         }
 

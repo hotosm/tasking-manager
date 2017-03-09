@@ -336,8 +336,12 @@
                     // Project created successfully
                     vm.createProjectFail = false;
                     vm.createProjectSuccess = true;
-                    // Navigate to the edit project page 
-                    $location.path('/admin/edit-project').search({projectname: vm.projectName});
+                    // Navigate to the edit project page
+                    
+                    $location.path('/admin/edit-project').search({
+                        name: vm.projectName,
+                        id: data.projectId
+                    });
                 }, function(){
                     // Project not created successfully
                     vm.createProjectFail = true;
