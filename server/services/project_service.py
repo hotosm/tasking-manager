@@ -55,7 +55,7 @@ class ProjectService:
         task_id = 1
         for feature in tasks['features']:
             try:
-                task = Task(task_id, feature)
+                task = Task.from_geojson_feature(task_id, feature)
             except (InvalidData, InvalidGeoJson) as e:
                 raise e
 
