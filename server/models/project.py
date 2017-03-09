@@ -65,9 +65,10 @@ class Task(db.Model):
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
     task_locked = db.Column(db.Boolean, default=False)
 
-    def __init__(self, task_id, task_feature):
+    @classmethod
+    def from_geojson_feature(cls, task_id, task_feature):
         """
-        Validates and constructs a task from a GeoJson feature object
+        Constructs and validates a task from a GeoJson feature object
         :param task_id: Unique ID for the task
         :param task_feature: A geoJSON feature object
         :raises InvalidGeoJson, InvalidData
@@ -84,16 +85,35 @@ class Task(db.Model):
         if is_valid_geojson['valid'] == 'no':
             raise InvalidGeoJson(f"Task: Invalid MultiPolygon - {is_valid_geojson['message']}")
 
+        task = cls()
         try:
-            self.x = task_feature.properties['x']
-            self.y = task_feature.properties['y']
-            self.zoom = task_feature.properties['zoom']
+            task.x = task_feature.properties['x']
+            task.y = task_feature.properties['y']
+            task.zoom = task_feature.properties['zoom']
         except KeyError as e:
             raise InvalidData(f'Task: Expected property not found: {str(e)}')
 
-        self.id = task_id
+        task.id = task_id
         task_geojson = geojson.dumps(task_geometry)
-        self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
+        task.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
+
+        return task
+
+    @staticmethod
+    def get(project_id, task_id):
+        """
+        Gets specified task
+        :param project_id: project ID in scope
+        :param task_id: task ID in scope
+        :return: Task if found otherwise None
+        """
+        return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
+
+    def update(self):
+        """
+        Updates the DB with the current state of the Task
+        """
+        db.session.commit()
 
     @staticmethod
     def get_tasks_as_geojson_feature_collection(project_id):

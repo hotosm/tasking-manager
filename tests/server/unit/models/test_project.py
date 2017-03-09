@@ -34,7 +34,7 @@ class TestProject(unittest.TestCase):
         # Arrange
 
         with self.assertRaises(InvalidGeoJson):
-            Task(1, invalid_feature)
+            Task.from_geojson_feature(1, invalid_feature)
 
     def test_cant_add_task_if_feature_geometry_is_invalid(self):
         # Arrange
@@ -43,7 +43,7 @@ class TestProject(unittest.TestCase):
                                         '{"x": 2402, "y": 1736, "zoom": 12}, "type": "Feature"}')
 
         with self.assertRaises(InvalidGeoJson):
-            Task(1, invalid_feature)
+            Task.from_geojson_feature(1, invalid_feature)
 
     def test_cant_add_task_if_feature_has_missing_properties(self):
         # Arrange
@@ -53,4 +53,4 @@ class TestProject(unittest.TestCase):
                                            '"properties": {"x": 2402, "y": 1736}, "type": "Feature"}')
 
         with self.assertRaises(InvalidData):
-            Task(1, invalid_properties)
+            Task.from_geojson_feature(1, invalid_properties)
