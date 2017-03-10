@@ -1,8 +1,10 @@
+import datetime
 import geojson
+import json
 from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
-from server.models.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, current_datetime
+from server.models.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, current_datetime, json_datetime_serializer
 
 
 class TaskAction(Enum):
@@ -39,6 +41,16 @@ class TaskHistory(db.Model):
     def add_task_locked(self):
         self.action = TaskAction.LOCKED.name
 
+    @staticmethod
+    def update_task_locked_with_duration(task_id, project_id):
+        last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=TaskAction.LOCKED.name,
+                                                  action_text=None).one()
+
+        duration_task_locked = datetime.datetime.utcnow() - last_locked.action_date
+        last_locked.action_text = json.dumps(duration_task_locked, default=json_datetime_serializer)
+
+        db.session.commit()
+
     def add_comment(self, comment):
         self.action = TaskAction.COMMENT.name
         self.action_text = comment
@@ -46,8 +58,6 @@ class TaskHistory(db.Model):
     def add_state_change(self, new_state):
         self.action = TaskAction.STATE_CHANGE.name
         self.action_text = new_state.name
-
-
 
 
 class TaskStatus(Enum):

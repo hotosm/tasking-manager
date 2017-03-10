@@ -32,4 +32,12 @@ class ST_GeomFromGeoJSON(GenericFunction):
 
 def current_datetime():
     """ Return current date time    """
-    return datetime.datetime.utcnow
+    return datetime.datetime.utcnow()
+
+
+def json_datetime_serializer(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, datetime.timedelta):
+        return (datetime.datetime.min + obj).time().isoformat()
+    raise TypeError("Type not serializable")

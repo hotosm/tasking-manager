@@ -1,4 +1,3 @@
-import datetime
 import geojson
 from enum import Enum
 from geoalchemy2 import Geometry

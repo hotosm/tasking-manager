@@ -73,5 +73,7 @@ class TaskService:
             task.task_history.append(history)
             task.task_status = new_state.value
 
+        TaskHistory.update_task_locked_with_duration(task_id, project_id)
+
         task.update()
         return task
