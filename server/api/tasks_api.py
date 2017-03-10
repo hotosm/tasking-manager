@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource, current_app, request
 from server.services.task_service import TaskService, TaskServiceError
 
 
@@ -73,16 +73,44 @@ class UnlockTaskAPI(Resource):
               required: true
               type: integer
               default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for unlocking a task
+              schema:
+                  id: TaskUpdate
+                  required:
+                      - status
+                  properties:
+                      status:
+                          type: string
+                          description: The new status for the task
+                          default: DONE
+                      comment:
+                          type: string
+                          description: Optional user comment about the task
+                          default: Mapping makes me feel good!
         responses:
             200:
                 description: Task unlocked
+            400:
+                description: Client Error
             404:
                 description: Task not found
             500:
                 description: Internal Server Error
         """
         try:
-            task = TaskService.set_locked_status(task_id=task_id, project_id=project_id, is_locked=False)
+            #task = TaskService.set_locked_status(task_id=task_id, project_id=project_id, is_locked=False)
+
+            data = request.get_json()
+            status = data['status']
+            comment = data['comment']
+
+            if status == '':
+                return {"Error": "Status not supplied"}, 400
+
+            task = TaskService.unlock_task(task_id, project_id, status, comment)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404

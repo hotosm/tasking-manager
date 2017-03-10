@@ -58,6 +58,9 @@ class TaskService:
             history = TaskHistory(task_id, project_id)
             history.record_state_change(new_state)
             task.task_history.append(history)
+            task.task_status = new_state.value
 
         iain = task
+        task.update()
+        return task
 
