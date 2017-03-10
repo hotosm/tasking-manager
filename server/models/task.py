@@ -9,7 +9,9 @@ class TaskAction(Enum):
     """
     Describes the possible actions that can happen to to a task, that we'll record history for
     """
-    STATE_CHANGE = 1
+    LOCKED = 1
+    STATE_CHANGE = 2
+    COMMENT = 3
 
 
 class TaskHistory(db.Model):
@@ -34,9 +36,18 @@ class TaskHistory(db.Model):
         self.task_id = task_id
         self.project_id = project_id
 
-    def record_state_change(self, new_state):
+    def add_task_locked(self):
+        self.action = TaskAction.LOCKED.name
+
+    def add_comment(self, comment):
+        self.action = TaskAction.COMMENT.name
+        self.action_text = comment
+
+    def add_state_change(self, new_state):
         self.action = TaskAction.STATE_CHANGE.name
         self.action_text = new_state.name
+
+
 
 
 class TaskStatus(Enum):

@@ -14,9 +14,9 @@ class TaskServiceError(Exception):
 
 class TaskService:
     @staticmethod
-    def set_locked_status(task_id, project_id, is_locked):
+    def lock_task(task_id, project_id):
         """
-        Sets the task_locked status to locked or unlocked
+        Sets the task_locked status to locked so no other user can work on it
         :param task_id: Task ID in scope
         :param project_id: Project ID in scope
         :param is_locked: True for locked, False for unlocked
@@ -28,12 +28,16 @@ class TaskService:
         if task is None:
             return None
 
-        if task.task_locked and is_locked:
+        if task.task_locked:
             raise TaskServiceError(f'Task: {task_id} Project {project_id} is already locked')
 
         # TODO user can only have 1 tasked locked at a time
 
-        task.task_locked = is_locked
+        task_history = TaskHistory(task_id, project_id)
+        task_history.add_task_locked()
+        task.task_locked = True
+        task.task_history.append(task_history)
+
         task.update()
         return task
 
@@ -55,13 +59,19 @@ class TaskService:
                 f'Unknown status: {state} Valid values are {TaskStatus.BADIMAGERY.name}, {TaskStatus.DONE.name}, '
                 f'{TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}')
 
+        if comment:
+            # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
+
+            history = TaskHistory(task_id, project_id)
+            history.add_comment(comment)
+            task.task_history.append(history)
+
         if TaskStatus(task.task_status) != new_state:
             # Task state change
             history = TaskHistory(task_id, project_id)
-            history.record_state_change(new_state)
+            history.add_state_change(new_state)
             task.task_history.append(history)
             task.task_status = new_state.value
 
-        iain = task
         task.update()
         return task

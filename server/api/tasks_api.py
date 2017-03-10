@@ -36,7 +36,7 @@ class LockTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = TaskService.set_locked_status(task_id=task_id, project_id=project_id, is_locked=True)
+            task = TaskService.lock_task(task_id, project_id)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404
