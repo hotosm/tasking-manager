@@ -6,13 +6,13 @@ class TaskServiceError(Exception):
     """
     Custom Exception to notify callers an error occurred when handling Task
     """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
 
 class TaskService:
-
     @staticmethod
     def set_locked_status(task_id, project_id, is_locked):
         """
@@ -51,7 +51,9 @@ class TaskService:
         try:
             new_state = TaskStatus[state.upper()]
         except KeyError:
-            raise TaskServiceError(f'Unknown status: {state}')
+            raise TaskServiceError(
+                f'Unknown status: {state} Valid values are {TaskStatus.BADIMAGERY.name}, {TaskStatus.DONE.name}, '
+                f'{TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}')
 
         if TaskStatus(task.task_status) != new_state:
             # Task state change
@@ -63,4 +65,3 @@ class TaskService:
         iain = task
         task.update()
         return task
-

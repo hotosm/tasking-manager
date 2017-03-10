@@ -28,7 +28,7 @@ class TaskHistory(db.Model):
     action_date = db.Column(db.DateTime, nullable=False, default=current_datetime())
 
     __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id']),
-                      db.Index('idx_task_history_composite', 'task_id', 'project_id', unique=True), {})
+                      db.Index('idx_task_history_composite', 'task_id', 'project_id'), {})
 
     def __init__(self, task_id, project_id):
         self.task_id = task_id

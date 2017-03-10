@@ -101,11 +101,9 @@ class UnlockTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            #task = TaskService.set_locked_status(task_id=task_id, project_id=project_id, is_locked=False)
-
             data = request.get_json()
             status = data['status']
-            comment = data['comment']
+            comment = data['comment'] if 'comment' in data else None
 
             if status == '':
                 return {"Error": "Status not supplied"}, 400
@@ -116,6 +114,8 @@ class UnlockTaskAPI(Resource):
                 return {"Error": "Task Not Found"}, 404
 
             return {"Status": "Success"}, 200
+        except TaskServiceError as e:
+            return {"Error": str(e)}, 400
         except Exception as e:
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
