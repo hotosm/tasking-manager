@@ -14,12 +14,18 @@
         vm.project = null;
         vm.map = null;
         vm.currentTab = '';
+        vm.mappingStep = '';
+
+        //selected task
+        vm.selectedTask = null;
+        vm.isSelectTaskMappable = false;
 
         activate();
 
         function activate() {
             //TODO: Set up sidebar tabs
             vm.currentTab = 'description';
+            vm.mappingStep = 'select';
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             var id = $location.search().project;
@@ -27,17 +33,35 @@
             //TODO: put the project metadata (description instructions on disebar tabs
         }
 
+        vm.selectRandomTask = function () {
+
+            var task = getRandomMappableTask(vm.project.tasks);
+            console.log(task);
+            if(task){
+                console.log(task.properties.taskId);
+                vm.selectedTask = task;
+                vm.isSelectTaskMappable = true;
+                vm.mappingStep = 'view';
+            }
+            else {
+                vm.selectedTask = null;
+                vm.isSelectTaskMappable = false;
+                vm.mappingStep = 'none-available';
+            }
+
+        };
+
         /**
          * Get a  project with using it's id
          */
-        function initialiseProject(id){
+        function initialiseProject(id) {
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.project = data;
                 addAoiToMap(vm.project.areaOfInterest);
                 addProjectTasksToMap(vm.project.tasks);
-            }, function(){
+            }, function () {
                 // project not returned successfully
                 // TODO - may want to handle error
             });
@@ -47,7 +71,7 @@
          * Adds project tasks to map as features from geojson
          * @param tasks
          */
-        function addProjectTasksToMap(tasks){
+        function addProjectTasksToMap(tasks) {
             //TODO: may want to refactor this into a service at some point so that it can be reused
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
@@ -70,7 +94,7 @@
          * Adds the aoi feature to the map
          * @param aoi
          */
-        function addAoiToMap(aoi){
+        function addAoiToMap(aoi) {
             //TODO: may want to refactor this into a service at some point so that it can be resused
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
@@ -85,6 +109,29 @@
                 featureProjection: 'EPSG:3857'
             });
             source.addFeature(aoiFeatures);
+        }
+
+        function getRandomMappableTask(tasks) {
+
+            // get all non locked ready tasks,
+            var candidates = []
+            var candidates = tasks.features.filter(function (item) {
+                if (!item.properties.taskLocked && item.properties.taskStatus === 'READY') return item;
+            });
+            // if no ready tasks, get non locked invalid tasks
+            if (candidates.length == 0) {
+                candidates = tasks.features.filter(function (item) {
+                    if (!item.properties.taskLocked && item.properties.taskStatus === 'INVALIDATED') return item;
+                });
+            }
+
+            // if tasks were found, return a random task
+            if (candidates.length > 0) {
+                return candidates[Math.floor((Math.random() * (candidates.length - 1)))];
+            }
+
+            // if all else fails, return null
+            return null;
         }
     }
 })();

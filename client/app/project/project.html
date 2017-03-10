@@ -35,38 +35,45 @@
                     </button>
                 </div>
                 <div ng-show="projectCtrl.currentTab === 'mapping'">
-                    <div>
+                    <div ng-show="projectCtrl.mappingStep === 'select'">
                         <h3>Choose a task</h3>
                         <p>There are 2 options for choosing a task:</p>
                         <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
-                        <p><strong>Option 2: </strong>Taks a random task</p>
+                        <p><strong>Option 2: </strong>
+                            <button ng-click="projectCtrl.selectRandomTask()" class="button button--primary-unbounded">
+                                Take random task
+                            </button>
+                        </p>
                     </div>
-                    <div>
-                        <h3>Task Status: <strong>READY</strong><i class="oam-ds-icon-circle-question"></i></h3>
-                        <div>
+                    <div ng-show="projectCtrl.mappingStep === 'view'">
+                        <h3>Task Status: <strong>READY</strong></h3>
+                        <div ng-show="projectCtrl.isSelectTaskMappable">
                             <p>This task is available for mapping. Click the button below to lock the task and start
                                 mapping.</p>
                             <button class="button button--secondary">Start Mapping</button>
                         </div>
-                        <div>
+                        <div ng-hide="projectCtrl.isSelectTaskMappable">
                             <div class="alert alert--danger" role="alert">
-                                <p><strong>Danger:</strong> This task is not available for mapping. Click on the map to
+                                <p>The selected task is not available for mapping. Click on the map to
                                     select another.</p>
                             </div>
                         </div>
+                        <hr/>
                         <div>
                             <div>
-                                <h3>Advanced<button><i class="oam-ds-icon-sm-chevron-up"></i></button></h3>
+                                <h3>Advanced</h3>
                                 <div>Advanced task information and editing options</div>
                             </div>
                             <div>
                                 <h5>Details</h5>
                                 <ul>
-                                    <li><strong>ID:</strong> #45</li>
-                                    <li><strong>Status:</strong> READY</li>
-                                    <li><strong>Locked:</strong> not currently locked</li>
-                                    <li><strong>Difficulty:</strong> medium</li>
-                                    <li><strong>Assigned:</strong> not currently assigned</li>
+                                    <li><strong>ID:</strong> #{{ projectCtrl.selectedTask.properties.taskId }}</li>
+                                    <li><strong>Status:</strong> {{ projectCtrl.selectedTask.properties.taskStatus }}
+                                    </li>
+                                    <li><strong>Locked:</strong> {{ projectCtrl.selectedTask.properties.taskLocked }}
+                                    </li>
+                                    <li><strong>Difficulty:</strong> TODO</li>
+                                    <li><strong>Assigned:</strong> TODO</li>
                                 </ul>
                                 <div>
                                     <h5>History</h5>
@@ -93,12 +100,12 @@
                                     </button>
                                 </div>
                             </div>
-
                         </div>
-
-
-
-
+                    </div>
+                    <div ng-show="projectCtrl.mappingStep === 'none-available'">
+                        <div class="alert alert--danger" role="alert">
+                            <p>There are no tasks currently available for mapping.</p>
+                        </div>
                     </div>
 
                 </div>
