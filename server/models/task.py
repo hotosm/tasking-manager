@@ -2,7 +2,7 @@ import geojson
 from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
-from server.models.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID
+from server.models.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, current_datetime
 
 
 class TaskStatus(Enum):
@@ -103,3 +103,23 @@ class Task(db.Model):
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
+
+
+class TaskHistory(db.Model):
+    """
+    Describes the history associated with a task
+    """
+    __tablename__ = "task_history"
+
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, primary_key=True)
+
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.Integer, nullable=False)
+    project_id = db.Column(db.Integer, nullable=False)
+    action = db.Column(db.String, nullable=False)
+    actionText = db.Column(db.String)
+    actionDate = db.Column(db.DateTime, nullable=False, default=current_datetime)
+
+    __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id']),
+                      db.Index('idx_task_history_composite', 'task_id', 'project_id', unique=True), {})
+

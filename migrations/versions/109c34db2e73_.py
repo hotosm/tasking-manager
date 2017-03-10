@@ -1,17 +1,16 @@
 """empty message
 
-Revision ID: 45d483cb16dc
+Revision ID: 109c34db2e73
 Revises: 
-Create Date: 2017-03-08 14:25:50.618066
+Create Date: 2017-03-10 10:30:43.803906
 
 """
 from alembic import op
 import sqlalchemy as sa
 import geoalchemy2
 
-
 # revision identifiers, used by Alembic.
-revision = '45d483cb16dc'
+revision = '109c34db2e73'
 down_revision = None
 branch_labels = None
 depends_on = None
