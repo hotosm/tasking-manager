@@ -10,22 +10,97 @@
         <div class="create-project">
             <div class="sidebar">
                 <div class="button-group button-group--horizontal" role="group" aria-label="...">
-                  <button ng-click="projectCtrl.currentTab = 'description'" class="button button--achromic" type="button" ng-class="projectCtrl.currentTab == 'description'? 'button--active':''">Description</button>
-                  <button ng-click="projectCtrl.currentTab = 'instructions'" class="button button--achromic" type="button" ng-class="projectCtrl.currentTab == 'instructions'? 'button--active':''">Instructions</button>
-                  <button  ng-click="projectCtrl.currentTab = 'mapping'"class="button button--achromic" type="button" ng-class="projectCtrl.currentTab == 'mapping'? 'button--active':''">*Mapping*</button>
+                    <button ng-click="projectCtrl.currentTab = 'description'" class="button button--achromic"
+                            type="button" ng-class="projectCtrl.currentTab == 'description'? 'button--active':''">
+                        Description
+                    </button>
+                    <button ng-click="projectCtrl.currentTab = 'instructions'" class="button button--achromic"
+                            type="button" ng-class="projectCtrl.currentTab == 'instructions'? 'button--active':''">
+                        Instructions
+                    </button>
+                    <button ng-click="projectCtrl.currentTab = 'mapping'" class="button button--achromic" type="button"
+                            ng-class="projectCtrl.currentTab == 'mapping'? 'button--active':''">*Mapping*
+                    </button>
                 </div>
                 <div ng-show="projectCtrl.currentTab === 'description'">
                     <h3>Description</h3>
                     <p>some text</p>
-                    <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'instructions'">Instructions</button>
+                    <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'instructions'">
+                        Instructions
+                    </button>
                 </div>
                 <div ng-show="projectCtrl.currentTab === 'instructions'">
                     <h3>Instructions</h3>
-                    <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping</button>
+                    <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
+                    </button>
                 </div>
                 <div ng-show="projectCtrl.currentTab === 'mapping'">
-                    <h3>*Mapping*</h3>
-                    <button class="button button--secondary">Start Mapping</button>
+                    <div>
+                        <h3>Choose a task</h3>
+                        <p>There are 2 options for choosing a task:</p>
+                        <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
+                        <p><strong>Option 2: </strong>Taks a random task</p>
+                    </div>
+                    <div>
+                        <h3>Task Status: <strong>READY</strong><i class="oam-ds-icon-circle-question"></i></h3>
+                        <div>
+                            <p>This task is available for mapping. Click the button below to lock the task and start
+                                mapping.</p>
+                            <button class="button button--secondary">Start Mapping</button>
+                        </div>
+                        <div>
+                            <div class="alert alert--danger" role="alert">
+                                <p><strong>Danger:</strong> This task is not available for mapping. Click on the map to
+                                    select another.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <h3>Advanced<button><i class="oam-ds-icon-sm-chevron-up"></i></button></h3>
+                                <div>Advanced task information and editing options</div>
+                            </div>
+                            <div>
+                                <h5>Details</h5>
+                                <ul>
+                                    <li><strong>ID:</strong> #45</li>
+                                    <li><strong>Status:</strong> READY</li>
+                                    <li><strong>Locked:</strong> not currently locked</li>
+                                    <li><strong>Difficulty:</strong> medium</li>
+                                    <li><strong>Assigned:</strong> not currently assigned</li>
+                                </ul>
+                                <div>
+                                    <h5>History</h5>
+                                    <ul>
+                                        <li><strong>Comment:</strong> blah blah</li>
+                                        <li><strong>Status Change:</strong> marked done</li>
+                                        <li><strong>Locked</strong> by feenster for 2 hrs</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5>Options</h5>
+                                    <label for="form-select-1">Editor</label>
+                                    <select class="form__control form__control--small" id="form-select-1">
+                                        <option selected="true">ID Editor</option>
+                                        <option>JOSM</option>
+                                        <option>Potlach 2</option>
+                                        <option>Walking papers</option>
+                                        <option>Field papers</option>
+                                    </select>
+                                    <button class="button button--primary-unbounded">Preview task in OSM ID Editor
+                                    </button>
+                                    <button class="button button--primary-unbounded">View OSM changesets</button>
+                                    <button class="button button--primary-unbounded">View changes in overpass turbo
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+
+                    </div>
+
                 </div>
             </div>
             <div id="map" class="map-container"></div>
