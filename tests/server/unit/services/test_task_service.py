@@ -1,5 +1,5 @@
 import unittest
-from server.services.task_service import TaskService, Task, TaskServiceError
+from server.services.task_service import TaskService, Task, TaskServiceError, TaskStatus
 from unittest.mock import patch, MagicMock
 from server.services.project_service import ProjectService, InvalidGeoJson, Project
 
@@ -84,9 +84,10 @@ class TestProject(unittest.TestCase):
         # Arrange
         task_stub = Task()
         task_stub.task_locked = True
+        task_stub.task_status = TaskStatus.READY.value
         mock_task.return_value = task_stub
 
         # Act
-        test_task = TaskService.unlock_task(1, 1, 'IAIN')
+        test_task = TaskService.unlock_task(1, 1, TaskStatus.DONE.name)
 
         # Assert

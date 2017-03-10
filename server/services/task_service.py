@@ -1,5 +1,5 @@
 from flask import current_app
-from server.models.task import Task, TaskStatus
+from server.models.task import Task, TaskStatus, TaskHistory
 
 
 class TaskServiceError(Exception):
@@ -55,4 +55,9 @@ class TaskService:
 
         if TaskStatus(task.task_status) != new_state:
             # Task state change
-            pass
+            history = TaskHistory(task_id, project_id)
+            history.record_state_change(new_state)
+            task.task_history.append(history)
+
+        iain = task
+
