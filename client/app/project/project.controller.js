@@ -13,7 +13,7 @@
         var vm = this;
         vm.project = null;
         vm.map = null;
-        vm.mappingStep = '';
+        vm.currentTab = '';
 
         activate();
 
