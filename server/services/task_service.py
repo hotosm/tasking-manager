@@ -1,5 +1,5 @@
 from flask import current_app
-from server.models.project import Task
+from server.models.task import Task, TaskStatus
 
 
 class TaskServiceError(Exception):
@@ -36,3 +36,23 @@ class TaskService:
         task.task_locked = is_locked
         task.update()
         return task
+
+    @staticmethod
+    def unlock_task(task_id, project_id, state, comment=None):
+
+        task = Task.get(project_id, task_id)
+
+        if task is None:
+            return None
+
+        if not task.task_locked:
+            return task  # Task is already unlocked, so return without any further processing
+
+        try:
+            new_state = TaskStatus[state.upper()]
+        except KeyError:
+            raise TaskServiceError(f'Unknown status: {state}')
+
+        if TaskStatus(task.task_status) != new_state:
+            # Task state change
+            pass

@@ -58,7 +58,7 @@ class Project(db.Model):
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
-    created = db.Column(db.DateTime, default=current_datetime)
+    created = db.Column(db.DateTime, default=current_datetime())
 
     def __init__(self, project_name, aoi):
         """

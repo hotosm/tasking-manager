@@ -5,6 +5,40 @@ from server import db
 from server.models.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, current_datetime
 
 
+class TaskAction(Enum):
+    """
+    Describes the possible actions that can happen to to a task, that we'll record history for
+    """
+    STATE_CHANGE = 1
+
+
+class TaskHistory(db.Model):
+    """
+    Describes the history associated with a task
+    """
+    __tablename__ = "task_history"
+
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, primary_key=True)
+
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.Integer, nullable=False)
+    project_id = db.Column(db.Integer, nullable=False)
+    action = db.Column(db.String, nullable=False)
+    action_text = db.Column(db.String)
+    action_date = db.Column(db.DateTime, nullable=False, default=current_datetime())
+
+    __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id']),
+                      db.Index('idx_task_history_composite', 'task_id', 'project_id', unique=True), {})
+
+    def __init__(self, task_id, project_id):
+        self.task_id = task_id
+        self.project_id = project_id
+
+    def record_state_change(self, new_state):
+        self.action = TaskAction.STATE_CHANGE.name
+        self.action_text = new_state.name
+
+
 class TaskStatus(Enum):
     """
     Enum describing available Task Statuses
@@ -32,6 +66,7 @@ class Task(db.Model):
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
     task_locked = db.Column(db.Boolean, default=False)
+    task_history = db.relationship(TaskHistory, cascade="all")
 
     @classmethod
     def from_geojson_feature(cls, task_id, task_feature):
@@ -104,22 +139,4 @@ class Task(db.Model):
 
         return geojson.FeatureCollection(tasks_features)
 
-
-class TaskHistory(db.Model):
-    """
-    Describes the history associated with a task
-    """
-    __tablename__ = "task_history"
-
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, primary_key=True)
-
-    id = db.Column(db.Integer, primary_key=True)
-    task_id = db.Column(db.Integer, nullable=False)
-    project_id = db.Column(db.Integer, nullable=False)
-    action = db.Column(db.String, nullable=False)
-    actionText = db.Column(db.String)
-    actionDate = db.Column(db.DateTime, nullable=False, default=current_datetime)
-
-    __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id']),
-                      db.Index('idx_task_history_composite', 'task_id', 'project_id', unique=True), {})
 
