@@ -453,3 +453,7 @@
   margin-bottom: $global-spacing;
 }
 
+.section-container {
+  padding-top: 3rem;
+  box-shadow: inset 0 1px 0 0 $base-alpha-color;
+}

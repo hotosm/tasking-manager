@@ -1,0 +1,121 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Contribute
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div class="contribute-container">
+                        <div class="search">
+                            <h2>Search projects</h2>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam feugiat consequat
+                                lectus. Donec ex orci, euismod auctor purus sit amet, lacinia faucibus elit. Cum sociis
+                                natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam consequat
+                                quam in orci interdum suscipit. Nulla congue ligula eget augue ultricies, in varius elit
+                                dignissim.
+                            </p>
+                            <form class="form">
+                                <fieldset class="form__fieldset">
+                                    <div class="form__group">
+                                        <label class="form__label">Organisation</label>
+                                        <select class="form__control">
+                                            <option value="hot">HOT</option>
+                                            <option value="msf">MSF</option>
+                                            <option value="...">...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Mapping difficulty</label>
+                                        <div class="button-group button-group--horizontal" role="group"
+                                             aria-label="choose mapping difficulty">
+                                            <button class="button button--achromic button--active" type="button">
+                                                Beginner
+                                            </button>
+                                            <button class="button button--achromic" type="button">Intermediate</button>
+                                            <button class="button button--achromic" type="button">Advanced</button>
+                                        </div>
+                                    </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Tags</label>
+                                        <input type="text" class="form__control" placeholder="e.g. earthquake, Ebola"/>
+                                    </div>
+                                    <div>
+                                        <button class="button button--primary pull-right">Search</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class="search-results">
+                            <div>
+                                <a href="" ng-click="contributeCtrl.resultsView = 'grid'">
+                                    Grid view
+                                </a>
+                                <a href="" ng-click="contributeCtrl.resultsView = 'list'">
+                                    List view
+                                </a>
+                            </div>
+                            <div ng-show="contributeCtrl.resultsView === 'grid'">
+                                <div class="search-results-container">
+                                    <div class="project-result__cards">
+                                        <div class="project-result__card"
+                                             ng-repeat="project in contributeCtrl.results.slice(((contributeCtrl.currentPage-1)*contributeCtrl.itemsPerPage), ((contributeCtrl.currentPage)*contributeCtrl.itemsPerPage)) track by project.id">
+                                            <section class="panel project-result__content">
+                                                <h4>{{ project.name }}</h4>
+                                                <p>{{ project.description }}</p>
+                                                <p>Priority: {{ project.priority }}</p>
+                                                <p>Level: {{ project.level }}</p>
+                                                <a href="/project?project={{ project.id }}"
+                                                   class="button button--primary">Contribute</a>
+                                            </section>
+                                        </div>
+                                    </div>
+                                    <ul uib-pagination items-per-page="contributeCtrl.itemsPerPage"
+                                        total-items="contributeCtrl.results.length"
+                                        ng-model="contributeCtrl.currentPage"></ul>
+                                </div>
+                            </div>
+                            <div ng-show="contributeCtrl.resultsView === 'list'">
+
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Level</th>
+                                        <th><a class="table__sort table__sort--none"
+                                               title="Sort column"><span>Priority</span></a></th>
+                                        <th>Contribute</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="project in contributeCtrl.results track by project.id">
+                                        <td>{{ project.id }}</td>
+                                        <td>{{ project.name }}</td>
+                                        <td>{{ project.level }}</td>
+                                        <td>{{ project.priority }}</td>
+                                        <td><a href="/project?project={{ project.id }}" class="button button--primary">Contribute</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div>
+                        <div id="map" class="map-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>    
