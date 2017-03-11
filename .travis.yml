@@ -7,10 +7,15 @@ cache:
     - $HOME/.cache/pip
     - $HOME/build/hotosm/osm-tasking-manager2/env
 
-sudo: false
+dist: trusty
+
+addons:
+  postgresql: "9.3"
 
 before_install:
 - deactivate
+- sudo apt-get install --no-install-recommends postgresql-9.3-postgis-2.3
+
 
 install:
 - virtualenv env

@@ -33,8 +33,8 @@ To create a virtual Python environment:
 
 ### Database
 
-OSMTM requires a PostgreSQL/PostGIS database. Version 2.x of PostGIS is
-required.
+OSMTM requires a PostgreSQL/PostGIS database. Version 2.3 or higher of PostGIS
+is required.
 
 First create a database user/role named `www-data`:
 

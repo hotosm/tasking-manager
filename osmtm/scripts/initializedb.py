@@ -2,7 +2,7 @@
 
 import transaction
 
-from sqlalchemy import engine_from_config, func
+from sqlalchemy import engine_from_config
 
 
 from pyramid.paster import (
@@ -14,7 +14,6 @@ from ..models import (
     DBSession,
     Area,
     Project,
-    Task,
     License,
     Base,
 )
@@ -44,14 +43,6 @@ def main():
         'get_locale_fallback': True
     })
     configure_mappers()
-
-    postgis_version = DBSession.execute(func.postgis_version()).scalar()
-    if not postgis_version.startswith('2.'):
-        # With PostGIS 1.x the AddGeometryColumn and DropGeometryColumn
-        # management functions should be used.
-        Area.__table__.c.geometry.type.management = True
-        Area.__table__.c.centroid.type.management = True
-        Task.__table__.c.geometry.type.management = True
 
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

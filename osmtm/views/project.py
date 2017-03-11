@@ -382,7 +382,7 @@ def check_for_updates(request):
     return dict(update=False)
 
 
-@view_config(route_name="project_tasks_json", renderer='json',
+@view_config(route_name="project_tasks_json",
              permission="project_show",
              http_cache=0)
 def project_tasks_json(request):
@@ -392,18 +392,50 @@ def project_tasks_json(request):
             'attachment; filename="osmtm_tasks_%s.json"' % id
 
     request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
-    return get_tasks(id)
+    request.response.content_type = 'application/json'
+    request.response.text = get_tasks(id)
+    return request.response
 
 
 def get_tasks(id):
-    project = DBSession.query(Project).get(id)
+    json = DBSession.execute('''
+SELECT row_to_json(fc)::TEXT
+FROM (
+    SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features
+    FROM (
+      SELECT 'Feature' As type
+    , ST_AsGeoJSON(task.geometry, 5)::json As geometry
+    , task.id
+    , row_to_json((SELECT l FROM (SELECT x, y, zoom, extra_properties,
+    difficulty, state, lock as locked) As l
+      )) As properties
+      FROM task
+      LEFT OUTER JOIN task_lock AS task_lock_1
+                    ON task.id = task_lock_1.task_id
+                       AND task.project_id = task_lock_1.project_id
+                       AND task_lock_1.date = (SELECT
+                           Max(task_lock_1.date) AS max_1
+                                               FROM   task_lock AS task_lock_1
+                                               WHERE
+                           task_lock_1.task_id = task.id
+                           AND task_lock_1.project_id =
+                               task.project_id)
+      LEFT OUTER JOIN task_state AS task_state_1
+                    ON task.id = task_state_1.task_id
+                       AND task.project_id = task_state_1.project_id
+                       AND task_state_1.date = (SELECT
+                           Max(task_state_1.date) AS max_2
+                                                FROM
+                           task_state AS task_state_1
+                                                WHERE
+                           task_state_1.task_id = task.id
+                           AND task_state_1.project_id = task.project_id)
+      WHERE task.project_id = %s
+    ) As f
+)  As fc;
+    ''' % id).first()[0]
 
-    tasks = DBSession.query(Task) \
-                     .filter(Task.project_id == project.id) \
-                     .options(joinedload(Task.cur_state)) \
-                     .options(joinedload(Task.cur_lock)) \
-
-    return FeatureCollection([task.to_feature() for task in tasks])
+    return json
 
 
 @view_config(route_name="project_user_add", renderer='json',
