@@ -61,18 +61,10 @@
         ${_('Lead developer: Pierre GIRAUD (<a href="//www.camptocamp.com">Camptocamp</a>)')|n}
         ${_('with the help of <a href="https://github.com/hotosm/osm-tasking-manager2/graphs/contributors">other contributors</a>.') |n}
       </p>
-<%
-      from gitversion import determine_git_version
-      
-      try:
-          ver = determine_git_version('.')
-          url = 'https://github.com/hotosm/osm-tasking-manager2/commit/' + ver.rsplit('.',1)[1]
-          txt = '<a href="%s">%s</a>' % (url, ver)
-          vertxt = '<h3>' + _('Version') + '</h3><p>' + txt + '</p>'
-      except:
-          vertxt = ''
-%>
-      ${vertxt |n}
+      <h3>${_('Version')}</h3>
+      <p>
+        ${request.registry.settings['version']}
+      </p>
     </div>
   </div>
 </div>
