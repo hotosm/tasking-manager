@@ -2,7 +2,7 @@
 
 (function () {
 
-    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'taskingmanager.config'])
+    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'taskingmanager.config'])
 
         /**
          * Factory that returns the configuration settings for the current environment
@@ -25,7 +25,13 @@
                     controller: 'createProjectController',
                     controllerAs: 'createProjectCtrl'
                 })
-            
+                
+                .when('/admin/edit-project', {
+                    templateUrl: 'app/admin/edit-project/edit-project.html',
+                    controller: 'editProjectController',
+                    controllerAs: 'editProjectCtrl'
+                })
+
                 .when('/project', {
                     templateUrl: 'app/project/project.html',
                     controller: 'projectController',

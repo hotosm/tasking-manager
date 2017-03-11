@@ -15,12 +15,15 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'node_modules/angular/angular.js',
+      'node_modules/angular-sanitize/angular-sanitize.js',
       'node_modules/angular-route/angular-route.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/openlayers/dist/ol-debug.js',
       'node_modules/ol3-geocoder/build/ol3-geocoder-debug.js',
       'node_modules/turf/turf.js',
       'node_modules/ng-file-upload/dist/ng-file-upload.js',
+      'node_modules/showdown/dist/showdown.js',
+      'node_modules/ng-showdown/dist/ng-showdown.js',
       'app/*.js',
       'app/**/*.js',
       '../tests/client/unit/**/*.js'
