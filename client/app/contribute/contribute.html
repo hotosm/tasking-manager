@@ -24,6 +24,7 @@
                                     <div class="form__group">
                                         <label class="form__label">Organisation</label>
                                         <select class="form__control">
+                                            <option value="all">All</option>
                                             <option value="hot">HOT</option>
                                             <option value="msf">MSF</option>
                                             <option value="...">...</option>
@@ -67,8 +68,11 @@
                                             <section class="panel project-result__content">
                                                 <h4>{{ project.name }}</h4>
                                                 <p>{{ project.description }}</p>
-                                                <p>Priority: {{ project.priority }}</p>
-                                                <p>Level: {{ project.level }}</p>
+                                                <ul>
+                                                    <li>Organisation: {{ project.organisation }}</li>
+                                                    <li>Priority: {{ project.priority }}</li>
+                                                    <li>Level: {{ project.level }}</li>
+                                                </ul>
                                                 <a href="/project?project={{ project.id }}"
                                                    class="button button--primary">Contribute</a>
                                             </section>
@@ -80,12 +84,12 @@
                                 </div>
                             </div>
                             <div ng-show="contributeCtrl.resultsView === 'list'">
-
                                 <table class="table">
                                     <thead>
                                     <tr>
                                         <th>#</th>
                                         <th>Name</th>
+                                        <th>Organisation</th>
                                         <th>Level</th>
                                         <th><a class="table__sort table__sort--none"
                                                title="Sort column"><span>Priority</span></a></th>
@@ -96,6 +100,7 @@
                                     <tr ng-repeat="project in contributeCtrl.results track by project.id">
                                         <td>{{ project.id }}</td>
                                         <td>{{ project.name }}</td>
+                                        <td>{{ project.organisation }}</td>
                                         <td>{{ project.level }}</td>
                                         <td>{{ project.priority }}</td>
                                         <td><a href="/project?project={{ project.id }}" class="button button--primary">Contribute</a></td>

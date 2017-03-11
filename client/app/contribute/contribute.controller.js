@@ -32,6 +32,7 @@
             {
                 id: 2608,
                 name: 'Missing Maps - Goma, RDC - Water and Sanitation',
+                organisation: 'Multiple',
                 description: 'Ipsum lorem ipsum lorem ipsum lorem',
                 level: 'beginner',
                 priority: 'high'
@@ -39,13 +40,15 @@
             {
                 id: 2572,
                 name: 'Osun State Road Network Mapping for Vaccine Delivery Routing, Nigeria',
+                organisation: 'MSF',
                 description: 'Ipsum lorem ipsum lorem ipsum lorem',
                 level: 'beginner',
                 priority: 'medium'
             },
-             {
+            {
                 id: 2471,
                 name: 'Missing Maps - Malawi - Thyolo - Blantyre (roads)',
+                organisation: 'MSF',
                 description: 'Ipsum lorem ipsum lorem ipsum lorem',
                 level: 'beginner',
                 priority: 'low'
@@ -53,6 +56,7 @@
             {
                 id: 2609,
                 name: 'Tanzania Development Trust: Maswa district mapping project part 2',
+                organisation: 'MSF',
                 description: 'Ipsum lorem ipsum lorem ipsum lorem',
                 level: 'beginner',
                 priority: 'low'
@@ -62,10 +66,10 @@
         // Paging results
         vm.itemsPerPage = 4;
         vm.currentPage = 1;
-        
+
         // Default to grid view
-        vm.resultsView = 'grid'; 
-        
+        vm.resultsView = 'grid';
+
         activate();
 
         function activate() {
