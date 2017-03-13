@@ -27,7 +27,7 @@ class TaskAPI(Resource):
               default: 1
         responses:
             200:
-                description: Task locked
+                description: Task found
             404:
                 description: Task not found
             500:

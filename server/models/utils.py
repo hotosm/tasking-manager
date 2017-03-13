@@ -33,17 +33,12 @@ class ST_GeomFromGeoJSON(GenericFunction):
 
 def current_datetime():
     """ Return current date time """
+    # TODO test loosing brackets
     return datetime.datetime.utcnow()
 
 
-def json_datetime_serializer(obj):
-    """JSON serializer for objects not serializable by default json code"""
-
-    if isinstance(obj, datetime.datetime):
-        return obj.isoformat()
-
-
 class DateTimeEncoder(json.JSONEncoder):
+    """  Custom JSON Encoder that handles Python date/times """
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.isoformat()
