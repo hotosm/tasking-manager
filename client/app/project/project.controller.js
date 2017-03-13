@@ -7,12 +7,14 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$location', 'mapService', 'projectService', 'styleService', projectController]);
+        .controller('projectController', ['$scope', '$location', 'mapService', 'projectService', 'styleService', 'taskService', projectController]);
 
-    function projectController($scope, $location, mapService, projectService, styleService) {
+    function projectController($scope, $location, mapService, projectService, styleService, taskService) {
         var vm = this;
         vm.project = null;
         vm.map = null;
+
+        // table and view control
         vm.currentTab = '';
         vm.mappingStep = '';
 
@@ -183,12 +185,18 @@
          * @param feature
          */
         function onTaskSelection(feature) {
-            var taskStatus = feature.get('taskStatus');
-            var taskLocked = feature.get('taskLocked')
-            vm.selectedTask = feature;
+            //get id from feature
+            var taskId = feature.get('taskId');
+            var projectId = vm.project.projectId;
+            // get full task from task service call
+            var task = taskService.getTask(projectId, taskId);
+            var taskStatus = task.taskStatus;
+            var taskLocked = task.taskLocked;
+            vm.selectedTask = task;
             vm.isSelectTaskMappable = !taskLocked && (taskStatus === 'READY' || taskStatus === 'INVALIDATED');
             vm.currentTab = 'mapping';
             vm.mappingStep = 'view';
+
         }
 
 

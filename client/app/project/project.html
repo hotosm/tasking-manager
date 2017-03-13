@@ -46,7 +46,7 @@
                         </p>
                     </div>
                     <div ng-show="projectCtrl.mappingStep === 'view'">
-                        <h3>Task Status: <strong>{{ projectCtrl.selectedTask.get('taskStatus') }}</strong></h3>
+                        <h3>Task Status: <strong>{{ projectCtrl.selectedTask.taskStatus }}</strong></h3>
 
                         <div ng-show="projectCtrl.isSelectTaskMappable" class="alert alert--success" role="alert">
                             <p>This task is available for mapping.</p>
@@ -76,20 +76,22 @@
                             </div>
                             <div>
                                 <h5>Details</h5>
-                                <ul>
-                                    <li><strong>ID:</strong> #{{ projectCtrl.selectedTask.get('taskId') }}</li>
-                                    <li><strong>Status:</strong> {{ projectCtrl.selectedTask.get('taskStatus') }}
-                                    </li>
-                                    <li><strong>Locked:</strong> {{ projectCtrl.selectedTask.get('taskLocked') }}
-                                    </li>
-                                    <li><strong>Difficulty:</strong> TODO</li>
-                                    <li><strong>Assigned:</strong> TODO</li>
-                                </ul>
+
+                                <div><strong>ID:</strong> #{{ projectCtrl.selectedTask.taskId }}</div>
+                                <div><strong>Status:</strong> {{ projectCtrl.selectedTask.taskStatus }}
+                                </div>
+                                <div><strong>Locked:</strong> {{ projectCtrl.selectedTask.taskLocked }}
+                                </div>
+                                <div><strong>Difficulty:</strong> TODO</div>
+                                <div><strong>Assigned:</strong> TODO</div>
                                 <div>
                                     <h5>History</h5>
-                                    <ul>
-                                        <li>TODO</li>
-                                    </ul>
+                                    <div ng-repeat="item in projectCtrl.selectedTask.taskHistory track by $index">
+                                        <div><strong>Action: </strong> {{ item.action }}</div>
+                                        <div><strong>Date: </strong> {{ item.actionDate }}</div>
+                                        <div><strong>Text: </strong> {{ item.actionText }}</div>
+                                        <hr/>
+                                    </div>
                                 </div>
                                 <div>
                                     <h5>Options</h5>
