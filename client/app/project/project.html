@@ -46,17 +46,25 @@
                         </p>
                     </div>
                     <div ng-show="projectCtrl.mappingStep === 'view'">
-                        <h3>Task Status: <strong>READY</strong></h3>
+                        <h3>Task Status: <strong>{{ projectCtrl.selectedTask.get('taskStatus') }}</strong></h3>
                         <div ng-show="projectCtrl.isSelectTaskMappable">
                             <p>This task is available for mapping. Click the button below to lock the task and start
                                 mapping.</p>
-                            <button class="button button--secondary">Start Mapping</button>
+
                         </div>
                         <div ng-hide="projectCtrl.isSelectTaskMappable">
                             <div class="alert alert--danger" role="alert">
                                 <p>The selected task is not available for mapping. Click on the map to
                                     select another.</p>
                             </div>
+                        </div>
+                        <div>
+                            <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary">Start
+                                Mapping
+                            </button>
+                            <button class="button button--secondary" ng-click="projectCtrl.clearCurrentSelection()">Cancel
+                            </button>
+
                         </div>
                         <hr/>
                         <div>
@@ -67,10 +75,10 @@
                             <div>
                                 <h5>Details</h5>
                                 <ul>
-                                    <li><strong>ID:</strong> #{{ projectCtrl.selectedTask.properties.taskId }}</li>
-                                    <li><strong>Status:</strong> {{ projectCtrl.selectedTask.properties.taskStatus }}
+                                    <li><strong>ID:</strong> #{{ projectCtrl.selectedTask.get('taskId') }}</li>
+                                    <li><strong>Status:</strong> {{ projectCtrl.selectedTask.get('taskStatus') }}
                                     </li>
-                                    <li><strong>Locked:</strong> {{ projectCtrl.selectedTask.properties.taskLocked }}
+                                    <li><strong>Locked:</strong> {{ projectCtrl.selectedTask.get('taskLocked') }}
                                     </li>
                                     <li><strong>Difficulty:</strong> TODO</li>
                                     <li><strong>Assigned:</strong> TODO</li>
@@ -78,9 +86,7 @@
                                 <div>
                                     <h5>History</h5>
                                     <ul>
-                                        <li><strong>Comment:</strong> blah blah</li>
-                                        <li><strong>Status Change:</strong> marked done</li>
-                                        <li><strong>Locked</strong> by feenster for 2 hrs</li>
+                                        <li>TODO</li>
                                     </ul>
                                 </div>
                                 <div>

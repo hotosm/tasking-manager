@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$location', 'mapService', 'projectService', 'styleService', projectController]);
+        .controller('projectController', ['$scope', '$location', 'mapService', 'projectService', 'styleService', projectController]);
 
-    function projectController($location, mapService, projectService, styleService) {
+    function projectController($scope, $location, mapService, projectService, styleService) {
         var vm = this;
         vm.project = null;
         vm.map = null;
@@ -28,6 +28,23 @@
             vm.mappingStep = 'select';
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
+            var select = new ol.interaction.Select({
+                style: styleService.getSelectedStyleFunction
+            });
+            vm.map.addInteraction(select);
+            select.on('select', function (event) {
+
+                $scope.$apply(function () {
+                    var feature = event.selected[0];
+                    var status = feature.get('taskStatus');
+                    var isLocked = feature.get('taskLocked');
+                    vm.selectedTask = feature;
+                    vm.isSelectTaskMappable = !isLocked && status === 'READY' || status === 'INVALIDATED';
+                    vm.currentTab = 'mapping';
+                    vm.mappingStep = 'view';
+                });
+            });
+
             var id = $location.search().project;
             initialiseProject(id);
             //TODO: put the project metadata (description instructions on disebar tabs
@@ -36,12 +53,24 @@
         vm.selectRandomTask = function () {
 
             var task = getRandomMappableTask(vm.project.tasks);
-            console.log(task);
-            if(task){
+            if (task) {
                 console.log(task.properties.taskId);
                 vm.selectedTask = task;
                 vm.isSelectTaskMappable = true;
                 vm.mappingStep = 'view';
+
+                var layers = vm.map.getLayers();
+                var keys = layers.getKeys();
+                var props = layers.getProperties();
+
+
+                var format = new ol.format.GeoJSON();
+                var taskFeature = format.readFeature(task, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+                });
+                var vPadding = vm.map.getSize()[1] * 0.3;
+                vm.map.getView().fit(taskFeature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
             }
             else {
                 vm.selectedTask = null;
@@ -76,6 +105,7 @@
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
                 source: source,
+                name: 'tasks',
                 style: styleService.getTaskStyleFunction
             });
             vm.map.addLayer(vector);
@@ -98,7 +128,8 @@
             //TODO: may want to refactor this into a service at some point so that it can be resused
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
-                source: source
+                source: source,
+                name: 'aoi'
             });
             vm.map.addLayer(vector);
 
@@ -133,5 +164,25 @@
             // if all else fails, return null
             return null;
         }
+
+        function onTaskSelection(feature) {
+
+            vm.selectedTask = feature;
+            vm.isSelectTaskMappable = true;
+            vm.currentTab = 'mapping';
+            vm.mappingStep = 'view';
+
+            var vPadding = vm.map.getSize()[1] * 0.3;
+            //vm.map.getView().fit(feature.getGeometry().getExtent(),{padding: [vPadding,vPadding,vPadding,vPadding]});
+        }
+
+        vm.clearCurrentSelection = function () {
+
+            vm.selectedTask = null;
+            vm.isSelectTaskMappable = false;
+            vm.currentTab = 'mapping';
+            vm.mappingStep = 'select';
+
+        };
     }
 })();
