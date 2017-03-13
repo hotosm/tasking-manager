@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', 'mapService', 'aoiService', 'projectService', createProjectController]);
+        .controller('createProjectController', ['$scope', '$location', 'mapService', 'aoiService', 'projectService', createProjectController]);
 
-    function createProjectController($scope, mapService, aoiService, projectService) {
+    function createProjectController($scope, $location, mapService, aoiService, projectService) {
         var vm = this;
 
         // Wizard 
@@ -334,9 +334,14 @@
                 var resultsPromise = projectService.createProject(vm.projectName);
                 resultsPromise.then(function (data) {
                     // Project created successfully
-                    // TODO: go to project edit page
                     vm.createProjectFail = false;
                     vm.createProjectSuccess = true;
+                    // Navigate to the edit project page
+                    
+                    $location.path('/admin/edit-project').search({
+                        name: vm.projectName,
+                        id: data.projectId
+                    });
                 }, function(){
                     // Project not created successfully
                     vm.createProjectFail = true;
