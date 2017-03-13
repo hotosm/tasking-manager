@@ -112,7 +112,6 @@
                         <!--/ description section-->
                         <!-- instructions section -->
                         <div ng-show="editProjectCtrl.currentSection === 'instructions'">
-                            TODO: instructions template
                             <form class="form">
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
@@ -133,7 +132,23 @@
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Detailed instructions</label>
-                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.instructions"></textarea>
+                                        <div class="form__group">
+                                            <label class="form__label">Templates</label>
+                                            <p>By selecting templates, default instructions will be added to the instructions field.</p>
+                                            <label class="form__option">
+                                                <input type="checkbox" name="form-checkbox" value="roads"/>
+                                                Roads
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" name="form-checkbox" value="buildings"/>
+                                                Buildings
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" name="form-checkbox" value="waterways"/>
+                                                Waterways
+                                            </label>
+                                        </div>
+                                        <textarea class="form__control" rows="8" ng-model="editProjectCtrl.instructions"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
                                         <div ng-show="editProjectCtrl.instructions">
                                             <label class="form__label">Preview</label>
@@ -250,6 +265,30 @@
                         <div ng-show="editProjectCtrl.currentSection === 'allowedusers'">
                             <form class="form">
                                 <fieldset class="form__fieldset">
+                                     <div class="form__group">
+                                        <label class="form__label">Mapper level</label>
+                                        <div class="button-group button-group--horizontal" role="group"
+                                             aria-label="choose level mapping">
+                                            <button class="button button--achromic button--active" type="button">Beginner
+                                            </button>
+                                            <button class="button button--achromic" type="button">Intermediate
+                                            </button>
+                                            <button class="button button--achromic" type="button">Advanced
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Validator level</label>
+                                        <div class="button-group button-group--horizontal" role="group"
+                                             aria-label="choose level validation">
+                                            <button class="button button--achromic" type="button">Beginner
+                                            </button>
+                                            <button class="button button--achromic button--active" type="button">Intermediate
+                                            </button>
+                                            <button class="button button--achromic" type="button">Advanced
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div class="form__group">
                                         <label class="form__label">Private project</label>
                                         <label class="form__option">
@@ -282,14 +321,11 @@
                             <form class="form">
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
-                                        <label class="form__label">Project due date</label>
+                                        <label class="form__label">Project due date (dd/mm/yyyy)</label>
                                         <div class="form__input-group">
-                                            <input type="text" class="form__control form__control--medium">
-                                            <span class="form__input-group-button">
-                                                <button type="submit" class="button button--achromic button--medium">
-                                                    <span>Choose date</span>
-                                                </button>
-                                            </span>
+                                            <input type="date" class="form__control form__control--medium"
+                                                   placeholder="dd/mm/yyyy"
+                                                   name="dueDate">
                                         </div>
                                         <p>The date after which the project will automatically be archived.</p>
                                     </div>

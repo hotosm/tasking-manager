@@ -46,6 +46,10 @@
         vm.createProjectFail = false;
         vm.createProjectSuccess = false;
 
+        // Split tasks
+        vm.drawAndSelectPolygon = null;
+        vm.drawAndSelectPoint = null;
+
         activate();
 
         function activate() {
@@ -65,11 +69,11 @@
             if (wizardStep === 'area'){
                 vm.isTaskGrid = false;
                 vm.isTaskArbitrary = false;
-                aoiService.removeAllFeatures();
                 projectService.removeTaskGrid();
                 vm.currentStep = wizardStep;
             }
-            else if (wizardStep === 'tasks'){
+            else if (wizardStep === 'tasks') {
+                setSplitToolsActive_(false);
                 if (vm.isDrawnAOI) {
                     var aoiValidationResult = projectService.validateAOI(aoiService.getFeatures());
                     vm.isAOIValid = aoiValidationResult.valid;
@@ -105,6 +109,7 @@
                 }
             }
             else if (wizardStep === 'review'){
+                setSplitToolsActive_(false);
                 vm.createProjectFailed = false;
                 vm.currentStep = wizardStep;
             }
@@ -297,32 +302,63 @@
          *  After drawing it, the polygon is validated before splitting the intersecting
          *  tasks into smaller tasks
          */
-        vm.drawAndSplitArea = function () {
-            var map = mapService.getOSMMap();
+        vm.drawAndSplitAreaPolygon = function () {
+
+            setSplitToolsActive_(false);
 
             // Draw and select interaction - Polygon
-            var drawAndSelectPolygon = new ol.interaction.Draw({
-                type: "Polygon"
-            });
-            drawAndSelectPolygon.setActive(true);
-            map.addInteraction(drawAndSelectPolygon);
-
-            // After drawing the polygon, validate it and split if valid
-            drawAndSelectPolygon.on('drawend', function (event) {
-                var aoiValidationResult = projectService.validateAOI([event.feature]);
-                // Start an Angular digest cycle manually to update the view
-                $scope.$apply(function () {
-                    vm.isSplitPolygonValid = aoiValidationResult.valid;
-                    vm.splitPolygonValidationMessage = aoiValidationResult.message;
-                    if (vm.isSplitPolygonValid) {
-                        projectService.splitTasks(event.feature);
-                        // Get the number of tasks in project
-                        vm.numberOfTasks = projectService.getNumberOfTasks();
-                        drawAndSelectPolygon.setActive(false);
-                    }
+            if (!vm.drawAndSelectPolygon) {
+                var map = mapService.getOSMMap();
+                vm.drawAndSelectPolygon = new ol.interaction.Draw({
+                    type: "Polygon"
                 });
-            });
+                map.addInteraction(vm.drawAndSelectPolygon);
+                // After drawing the polygon, validate it and split if valid
+                vm.drawAndSelectPolygon.on('drawend', function (event) {
+                    var aoiValidationResult = projectService.validateAOI([event.feature]);
+                    // Start an Angular digest cycle manually to update the view
+                    $scope.$apply(function () {
+                        vm.isSplitPolygonValid = aoiValidationResult.valid;
+                        vm.splitPolygonValidationMessage = aoiValidationResult.message;
+                        if (vm.isSplitPolygonValid) {
+                            projectService.splitTasks(event.feature);
+                            // Get the number of tasks in project
+                            vm.numberOfTasks = projectService.getNumberOfTasks();
+                        }
+                    });
+                });
+            }
+            vm.drawAndSelectPolygon.setActive(true);
         };
+
+         /**
+         *  Lets the user draw point.
+         *  After drawing it, the point is validated before splitting the intersecting
+         *  tasks into smaller tasks
+         */
+         vm.drawAndSplitAreaPoint = function () {
+
+             setSplitToolsActive_(false);
+
+             // Draw and select interaction - Point
+             if (!vm.drawAndSelectPoint) {
+                 var map = mapService.getOSMMap();
+                 vm.drawAndSelectPoint = new ol.interaction.Draw({
+                     type: "Point"
+                 });
+                 map.addInteraction(vm.drawAndSelectPoint);
+                 // After drawing the point, split it
+                 vm.drawAndSelectPoint.on('drawend', function (event) {
+                     // Start an Angular digest cycle manually to update the view
+                     $scope.$apply(function () {
+                         projectService.splitTasks(event.feature);
+                         // Get the number of tasks in project
+                         vm.numberOfTasks = projectService.getNumberOfTasks();
+                     });
+                 });
+             }
+             vm.drawAndSelectPoint.setActive(true);
+         };
 
         /**
          * Create a new project with a project name
@@ -382,6 +418,20 @@
                 // It is assumed that most people will search for cities. Zoom level 12 seems most appropriate
                 map.getView().setZoom(12);
             });
+        }
+
+        /**
+         * Set split tools to active/inactive
+         * @param boolean
+         * @param private
+         */
+        function setSplitToolsActive_(boolean){
+            if (vm.drawAndSelectPolygon){
+                vm.drawAndSelectPolygon.setActive(boolean);
+            }
+            if (vm.drawAndSelectPoint){
+                vm.drawAndSelectPoint.setActive(boolean);
+            }
         }
     }
 })();

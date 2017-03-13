@@ -15,6 +15,8 @@
         var drawToolsDefined = false;
         var drawPolygon = null;
         var source = null;
+        var features = null;
+        var modify = null;
 
         var service = {
             initDrawTools: initDrawTools,
@@ -33,9 +35,11 @@
          */
         function initDrawTools() {
             if (!drawToolsDefined) {
+                features = new ol.Collection();
                 map = mapService.getOSMMap();
                 addVectorLayer();
                 initDrawPolygonInteraction();
+                initModifyInteraction();
                 drawToolsDefined = true;
             }
         }
@@ -44,7 +48,7 @@
          * Adds a vector layer to the map which is needed for the draw tool
          */
         function addVectorLayer(){
-            source = new ol.source.Vector();
+            source = new ol.source.Vector({features: features});
             var vector = new ol.layer.Vector({
                 source: source
             });
@@ -69,6 +73,23 @@
         }
 
         /**
+         * Initialises the modify interaction which allows users to change a drawn shape
+         */
+        function initModifyInteraction() {
+            modify = new ol.interaction.Modify({
+                features: features,
+                // the SHIFT key must be pressed to delete vertices, so
+                // that new vertices can be drawn at the same position
+                // of existing vertices
+                deleteCondition: function (event) {
+                    return ol.events.condition.shiftKeyOnly(event) &&
+                        ol.events.condition.singleClick(event);
+                }
+            });
+            map.addInteraction(modify);
+        }
+
+        /**
          * Get the draw polygon interaction
          * @returns {*|null|ol.interaction.Draw}
          */
@@ -81,6 +102,7 @@
          */
         function setDrawPolygonActive(boolean){
             drawPolygon.setActive(boolean);
+            modify.setActive(boolean);
         }
 
         /**
