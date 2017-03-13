@@ -1,4 +1,3 @@
-import json
 from flask import current_app
 from server.models.task import Task, TaskStatus, TaskHistory, TaskAction
 
@@ -16,12 +15,7 @@ class TaskServiceError(Exception):
 class TaskService:
 
     def get_task_as_dto(self, task_id, project_id):
-        """
-        Get task as DTO for transmission over API
-        :param task_id: Task ID in scope
-        :param project_id: Project ID in scope
-        :return: JSON serializable task
-        """
+        """ Get task as DTO for transmission over API """
         return Task.as_dto(task_id, project_id)
 
     def lock_task(self, task_id, project_id):
@@ -43,8 +37,7 @@ class TaskService:
         # TODO user can only have 1 tasked locked at a time
 
         self._set_task_history(task=task, action=TaskAction.LOCKED)
-        task.task_locked = True
-        task.update()
+        task.lock_task()
 
         return task
 
@@ -79,14 +72,18 @@ class TaskService:
             self._set_task_history(task=task, action=TaskAction.STATE_CHANGE, new_state=new_state)
             task.task_status = new_state.value
 
-        TaskHistory.update_task_locked_with_duration(task_id, project_id)
-        task.task_locked = False
-
-        task.update()
+        task.unlock_task()
         return task
 
     @staticmethod
     def _set_task_history(task, action, comment=None, new_state=None):
+        """
+        Sets the task history for the action that the user has just performed
+        :param task: Task in scope
+        :param action: Action the user has performed
+        :param comment: Comment user has added
+        :param new_state: New state of the task
+        """
         history = TaskHistory(task.id, task.project_id)
 
         if action == TaskAction.LOCKED:

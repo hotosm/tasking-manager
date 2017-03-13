@@ -1,10 +1,9 @@
 import datetime
 import geojson
-import json
 from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
-from server.models.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, current_datetime, json_datetime_serializer
+from server.models.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, current_datetime
 
 
 class TaskAction(Enum):
@@ -43,6 +42,12 @@ class TaskHistory(db.Model):
 
     @staticmethod
     def update_task_locked_with_duration(task_id, project_id):
+        """
+        Calculates the duration a task was locked for and sets it on the history record
+        :param task_id: Task in scope
+        :param project_id: Project ID in scope
+        :return:
+        """
         last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=TaskAction.LOCKED.name,
                                                   action_text=None).one()
 
@@ -131,10 +136,19 @@ class Task(db.Model):
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
 
     def update(self):
-        """
-        Updates the DB with the current state of the Task
-        """
+        """ Updates the DB with the current state of the Task """
         db.session.commit()
+
+    def lock_task(self):
+        """ Lock task and save in DB  """
+        self.task_locked = True
+        self.update()
+
+    def unlock_task(self):
+        """ Unlock task and ensure duration task locked is saved in History """
+        TaskHistory.update_task_locked_with_duration(self.id, self.project_id)
+        self.task_locked = False
+        self.update()
 
     @staticmethod
     def get_tasks_as_geojson_feature_collection(project_id):
@@ -172,6 +186,9 @@ class Task(db.Model):
 
         task_history = []
         for action in task.task_history:
+            if action.action_text is None:
+                continue  # Don't return any history without action text
+
             history = dict(action=action.action, actionText=action.action_text, actionDate=action.action_date)
             task_history.append(history)
 
