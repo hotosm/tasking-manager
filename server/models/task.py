@@ -38,7 +38,7 @@ class TaskHistory(db.Model):
         self.task_id = task_id
         self.project_id = project_id
 
-    def add_task_locked(self):
+    def set_task_locked_action(self):
         self.action = TaskAction.LOCKED.name
 
     @staticmethod
@@ -47,23 +47,21 @@ class TaskHistory(db.Model):
                                                   action_text=None).one()
 
         duration_task_locked = datetime.datetime.utcnow() - last_locked.action_date
-        last_locked.action_text = json.dumps(duration_task_locked, default=json_datetime_serializer)
-
+        # Cast duration to isoformat for later transmission via api
+        last_locked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
         db.session.commit()
 
-    def add_comment(self, comment):
+    def set_comment_action(self, comment):
         self.action = TaskAction.COMMENT.name
         self.action_text = comment
 
-    def add_state_change(self, new_state):
+    def set_state_change_action(self, new_state):
         self.action = TaskAction.STATE_CHANGE.name
         self.action_text = new_state.name
 
 
 class TaskStatus(Enum):
-    """
-    Enum describing available Task Statuses
-    """
+    """ Enum describing available Task Statuses """
     READY = 0
     INVALIDATED = 1
     DONE = 2
@@ -73,9 +71,8 @@ class TaskStatus(Enum):
 
 
 class Task(db.Model):
-    """
-    Describes an individual mapping Task
-    """
+    """ Describes an individual mapping Task """
+
     __tablename__ = "tasks"
 
     # Table has composite PK on (id and project_id)
