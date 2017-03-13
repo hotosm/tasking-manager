@@ -66,7 +66,7 @@ class TaskService:
             self._set_task_history(task=task, action=TaskAction.COMMENT, comment=comment)
 
         if TaskStatus(task.task_status) != new_state:
-            self._set_task_history(task=task, action=TaskAction.COMMENT, new_state=new_state)
+            self._set_task_history(task=task, action=TaskAction.STATE_CHANGE, new_state=new_state)
             task.task_status = new_state.value
 
         TaskHistory.update_task_locked_with_duration(task_id, project_id)
@@ -77,7 +77,7 @@ class TaskService:
 
     @staticmethod
     def _set_task_history(task, action, comment=None, new_state=None):
-        history = TaskHistory(task.task_id, task.project_id)
+        history = TaskHistory(task.id, task.project_id)
 
         if action == TaskAction.LOCKED:
             history.set_task_locked_action()

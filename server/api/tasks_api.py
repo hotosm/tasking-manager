@@ -36,7 +36,7 @@ class LockTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = TaskService.lock_task(task_id, project_id)
+            task = TaskService().lock_task(task_id, project_id)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404
@@ -108,7 +108,7 @@ class UnlockTaskAPI(Resource):
             if status == '':
                 return {"Error": "Status not supplied"}, 400
 
-            task = TaskService.unlock_task(task_id, project_id, status, comment)
+            task = TaskService().unlock_task(task_id, project_id, status, comment)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404

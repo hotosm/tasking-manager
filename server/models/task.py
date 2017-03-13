@@ -156,5 +156,3 @@ class Task(db.Model):
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
-
-
