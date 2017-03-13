@@ -19,7 +19,7 @@
                         Instructions
                     </button>
                     <button ng-click="projectCtrl.currentTab = 'mapping'" class="button button--achromic" type="button"
-                            ng-class="projectCtrl.currentTab == 'mapping'? 'button--active':''">*Mapping*
+                            ng-class="projectCtrl.currentTab == 'mapping'? 'button--active':''">Mapping
                     </button>
                 </div>
                 <div ng-show="projectCtrl.currentTab === 'description'">
@@ -47,25 +47,24 @@
                     </div>
                     <div ng-show="projectCtrl.mappingStep === 'view'">
                         <h3>Task Status: <strong>{{ projectCtrl.selectedTask.get('taskStatus') }}</strong></h3>
-                        <div ng-show="projectCtrl.isSelectTaskMappable">
-                            <p>This task is available for mapping. Click the button below to lock the task and start
-                                mapping.</p>
 
+                        <div ng-show="projectCtrl.isSelectTaskMappable" class="alert alert--success" role="alert">
+                            <p>This task is available for mapping.</p>
                         </div>
-                        <div ng-hide="projectCtrl.isSelectTaskMappable">
-                            <div class="alert alert--danger" role="alert">
-                                <p>The selected task is not available for mapping. Click on the map to
-                                    select another.</p>
-                            </div>
+
+                        <div ng-hide="projectCtrl.isSelectTaskMappable" class="alert alert--danger" role="alert">
+                            <p>The selected task is not available for mapping.</p>
                         </div>
+
                         <div>
                             <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary">Start
                                 Mapping
                             </button>
                             <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
-                                Select random
+                                Select another task
                             </button>
-                            <button class="button button--secondary" ng-click="projectCtrl.clearCurrentSelection()">Cancel
+                            <button class="button button--secondary" ng-click="projectCtrl.clearCurrentSelection()">
+                                Cancel
                             </button>
 
                         </div>

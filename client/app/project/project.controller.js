@@ -44,25 +44,20 @@
 
             var id = $location.search().project;
             initialiseProject(id);
-            //TODO: put the project metadata (description instructions on disebar tabs
+            //TODO: put the project metadata (description instructions on siedbar tabs
         }
 
-
         vm.selectRandomTask = function () {
-
             var task = getRandomMappableTask(vm.project.tasks);
             if (task) {
                 //iterate layers to find task layer
                 var layers = vm.map.getLayers();
                 for (var i = 0; i < layers.getLength(); i++) {
-                    var layer = layers.item(i);
-                    if (layer.get('name') === 'tasks') {
-                        console.log(layer);
-                        var feature = layer.getSource().getFeatures().filter(function (feature) {
-
+                    if (layers.item(i).get('name') === 'tasks') {
+                        var feature = layers.item(i).getSource().getFeatures().filter(function (feature) {
                             if (feature.get('taskId') === task.properties.taskId) {
-                                // TODO this might be better event handling and dispatching to it force through the
-                                // the listener code on the select interaction
+                                // TODO the next few steps might be better done with event handling and dispatching to resuse
+                                // through the listener code on the select interaction.  Need to find a way to do that
                                 select.getFeatures().clear();
                                 select.getFeatures().push(feature);
                                 onTaskSelection(feature);
@@ -70,6 +65,7 @@
                                 vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
                             }
                         });
+                        break;
                     }
                 }
             }
@@ -78,11 +74,22 @@
                 vm.isSelectTaskMappable = false;
                 vm.mappingStep = 'none-available';
             }
-
         };
 
         /**
-         * Get a  project with using it's id
+         * clears the currently selected task.  Clears down/resets the vm properties and clears the feature param in the select interaction object.
+         */
+        vm.clearCurrentSelection = function () {
+            vm.selectedTask = null;
+            vm.isSelectTaskMappable = false;
+            vm.currentTab = 'mapping';
+            vm.mappingStep = 'select';
+            select.getFeatures().clear();
+        };
+
+        /**
+         * Initilaise a project with using it's id
+         * @param id - id of the project to initialise
          */
         function initialiseProject(id) {
             var resultsPromise = projectService.getProject(id);
@@ -143,6 +150,11 @@
             source.addFeature(aoiFeatures);
         }
 
+        /**
+         * returns a randomly selected mappable task from the passed in tasks JSON object
+         * @param tasks - the set of tasks from which to find a random task
+         * @returns task if one found, null if non available
+         */
         function getRandomMappableTask(tasks) {
 
             // get all non locked ready tasks,
@@ -166,22 +178,19 @@
             return null;
         }
 
+        /**
+         * Sets up the model for currently selected feature
+         * @param feature
+         */
         function onTaskSelection(feature) {
-
+            var taskStatus = feature.get('taskStatus');
+            var taskLocked = feature.get('taskLocked')
             vm.selectedTask = feature;
-            vm.isSelectTaskMappable = true;
+            vm.isSelectTaskMappable = !taskLocked && (taskStatus === 'READY' || taskStatus === 'INVALIDATED');
             vm.currentTab = 'mapping';
             vm.mappingStep = 'view';
         }
 
-        vm.clearCurrentSelection = function () {
 
-            vm.selectedTask = null;
-            vm.isSelectTaskMappable = false;
-            vm.currentTab = 'mapping';
-            vm.mappingStep = 'select';
-            select.getFeatures().clear();
-
-        };
     }
 })();
