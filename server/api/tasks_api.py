@@ -33,9 +33,17 @@ class TaskAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        task = TaskService().get_task(task_id, project_id)
+        try:
+            task = TaskService().get_task_as_dto(task_id, project_id)
 
-        return task, 200
+            if task is None:
+                return {"Error": "Task Not Found"}, 404
+
+            return task, 200
+        except Exception as e:
+            error_msg = f'Task GET API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
 
 
 class LockTaskAPI(Resource):

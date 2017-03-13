@@ -15,10 +15,14 @@ class TaskServiceError(Exception):
 
 class TaskService:
 
-    def get_task(selft, task_id, project_id):
-        task = Task.as_dto(task_id, project_id)
-
-        return task
+    def get_task_as_dto(self, task_id, project_id):
+        """
+        Get task as DTO for transmission over API
+        :param task_id: Task ID in scope
+        :param project_id: Project ID in scope
+        :return: JSON serializable task
+        """
+        return Task.as_dto(task_id, project_id)
 
     def lock_task(self, task_id, project_id):
         """

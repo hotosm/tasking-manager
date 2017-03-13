@@ -159,13 +159,16 @@ class Task(db.Model):
 
     @staticmethod
     def as_dto(task_id, project_id):
+        """
+        Creates a Task DTO suitable for transmitting via the API
+        :param task_id: Task ID in scope
+        :param project_id: Project ID in scope
+        :return: JSON serializable Task DTO
+        """
         task = Task.get(task_id, project_id)
 
-        # TODO handle none
-
-        # action = db.Column(db.String, nullable=False)
-        # action_text = db.Column(db.String)
-        # action_date = db.Column(db.DateTime, nullable=False, default=current_datetime())
+        if task is None:
+            return None
 
         task_history = []
         for action in task.task_history:
@@ -174,7 +177,5 @@ class Task(db.Model):
 
         task_dto = dict(taskId=task.id, projectId=task.project_id, taskStatus=TaskStatus(task.task_status).name,
                         taskLocked=task.task_locked, taskHistory=task_history)
-
-        #iain = json.dumps(task_dto)
 
         return task_dto

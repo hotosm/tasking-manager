@@ -91,7 +91,7 @@ class Project(db.Model):
     @staticmethod
     def as_dto(project_id):
         """
-        Creates a Project DTO suitable of transmitting via the API
+        Creates a Project DTO suitable for transmitting via the API
         :param project_id: project_id in scope
         :return: Project DTO dict
         """
