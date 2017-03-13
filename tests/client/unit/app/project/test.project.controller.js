@@ -10,8 +10,6 @@ describe('project.controller', function () {
             scope = $rootScope.$new();
             projectController = $controller('projectController', {$scope: scope});
         });
-
-
     });
 
     it('should be created successfully', function () {
