@@ -20,6 +20,11 @@
         vm.selectedTask = null;
         vm.isSelectTaskMappable = false;
 
+        //interaction
+        var select = new ol.interaction.Select({
+            style: styleService.getSelectedStyleFunction
+        });
+
         activate();
 
         function activate() {
@@ -28,20 +33,12 @@
             vm.mappingStep = 'select';
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
-            var select = new ol.interaction.Select({
-                style: styleService.getSelectedStyleFunction
-            });
+
             vm.map.addInteraction(select);
             select.on('select', function (event) {
-
                 $scope.$apply(function () {
                     var feature = event.selected[0];
-                    var status = feature.get('taskStatus');
-                    var isLocked = feature.get('taskLocked');
-                    vm.selectedTask = feature;
-                    vm.isSelectTaskMappable = !isLocked && status === 'READY' || status === 'INVALIDATED';
-                    vm.currentTab = 'mapping';
-                    vm.mappingStep = 'view';
+                    onTaskSelection(feature);
                 });
             });
 
@@ -50,27 +47,31 @@
             //TODO: put the project metadata (description instructions on disebar tabs
         }
 
+
         vm.selectRandomTask = function () {
 
             var task = getRandomMappableTask(vm.project.tasks);
             if (task) {
-                console.log(task.properties.taskId);
-                vm.selectedTask = task;
-                vm.isSelectTaskMappable = true;
-                vm.mappingStep = 'view';
-
+                //iterate layers to find task layer
                 var layers = vm.map.getLayers();
-                var keys = layers.getKeys();
-                var props = layers.getProperties();
+                for (var i = 0; i < layers.getLength(); i++) {
+                    var layer = layers.item(i);
+                    if (layer.get('name') === 'tasks') {
+                        console.log(layer);
+                        var feature = layer.getSource().getFeatures().filter(function (feature) {
 
-
-                var format = new ol.format.GeoJSON();
-                var taskFeature = format.readFeature(task, {
-                    dataProjection: 'EPSG:4326',
-                    featureProjection: 'EPSG:3857'
-                });
-                var vPadding = vm.map.getSize()[1] * 0.3;
-                vm.map.getView().fit(taskFeature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
+                            if (feature.get('taskId') === task.properties.taskId) {
+                                // TODO this might be better event handling and dispatching to it force through the
+                                // the listener code on the select interaction
+                                select.getFeatures().clear();
+                                select.getFeatures().push(feature);
+                                onTaskSelection(feature);
+                                var vPadding = vm.map.getSize()[1] * 0.3;
+                                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
+                            }
+                        });
+                    }
+                }
             }
             else {
                 vm.selectedTask = null;
@@ -171,9 +172,6 @@
             vm.isSelectTaskMappable = true;
             vm.currentTab = 'mapping';
             vm.mappingStep = 'view';
-
-            var vPadding = vm.map.getSize()[1] * 0.3;
-            //vm.map.getView().fit(feature.getGeometry().getExtent(),{padding: [vPadding,vPadding,vPadding,vPadding]});
         }
 
         vm.clearCurrentSelection = function () {
@@ -182,6 +180,7 @@
             vm.isSelectTaskMappable = false;
             vm.currentTab = 'mapping';
             vm.mappingStep = 'select';
+            select.getFeatures().clear();
 
         };
     }

@@ -39,9 +39,9 @@
                         <h3>Choose a task</h3>
                         <p>There are 2 options for choosing a task:</p>
                         <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
-                        <p><strong>Option 2: </strong>
-                            <button ng-click="projectCtrl.selectRandomTask()" class="button button--primary-unbounded">
-                                Take random task
+                        <p><strong>Option 2: </strong>Select a random task
+                            <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                Select random
                             </button>
                         </p>
                     </div>
@@ -61,6 +61,9 @@
                         <div>
                             <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary">Start
                                 Mapping
+                            </button>
+                            <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                Select random
                             </button>
                             <button class="button button--secondary" ng-click="projectCtrl.clearCurrentSelection()">Cancel
                             </button>
