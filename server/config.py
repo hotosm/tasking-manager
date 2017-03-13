@@ -7,7 +7,6 @@ class EnvironmentConfig:
     Base class for config that is shared between environments
     """
     LOG_LEVEL = logging.ERROR
-    os.getenv('TASKING_MANAGER_ENV', 'Dev')
     SQLALCHEMY_DATABASE_URI = os.getenv(['TASKING_MANAGER_DB'], None)
 
 
