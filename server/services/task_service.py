@@ -1,3 +1,4 @@
+import json
 from flask import current_app
 from server.models.task import Task, TaskStatus, TaskHistory, TaskAction
 
@@ -14,6 +15,11 @@ class TaskServiceError(Exception):
 
 class TaskService:
 
+    def get_task(selft, task_id, project_id):
+        task = Task.as_dto(task_id, project_id)
+
+        return task
+
     def lock_task(self, task_id, project_id):
         """
         Sets the task_locked status to locked so no other user can work on it
@@ -22,7 +28,7 @@ class TaskService:
         :raises TaskServiceError
         :return: Updated task, or None if not found
         """
-        task = Task.get(project_id, task_id)
+        task = Task.get(task_id, project_id)
 
         if task is None:
             return None
@@ -46,7 +52,7 @@ class TaskService:
         :param state: The current state of the task (this could be the same as the existing state)
         :param comment: Comment user has provided about the task
         """
-        task = Task.get(project_id, task_id)
+        task = Task.get(task_id, project_id)
 
         if task is None:
             return None

@@ -1,4 +1,5 @@
 import datetime
+import json
 from flask import current_app
 from geoalchemy2 import Geometry
 from geoalchemy2.functions import GenericFunction
@@ -31,13 +32,24 @@ class ST_GeomFromGeoJSON(GenericFunction):
 
 
 def current_datetime():
-    """ Return current date time    """
+    """ Return current date time """
     return datetime.datetime.utcnow()
 
 
 def json_datetime_serializer(obj):
     """JSON serializer for objects not serializable by default json code"""
 
-    if isinstance(obj, datetime.timedelta):
-        return (datetime.datetime.min + obj).time().isoformat()
-    raise TypeError("Type not serializable")
+    if isinstance(obj, datetime.datetime):
+        return obj.isoformat()
+
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        elif isinstance(obj, datetime.date):
+            return obj.isoformat()
+        elif isinstance(obj, datetime.timedelta):
+            return (datetime.datetime.min + obj).time().isoformat()
+        else:
+            return super(DateTimeEncoder, self).default(obj)

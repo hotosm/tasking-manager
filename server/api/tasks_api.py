@@ -2,6 +2,42 @@ from flask_restful import Resource, current_app, request
 from server.services.task_service import TaskService, TaskServiceError
 
 
+class TaskAPI(Resource):
+
+    def get(self, project_id, task_id):
+        """
+        Get task details
+        ---
+        tags:
+            - tasks
+        produces:
+            - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - name: task_id
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Task locked
+            404:
+                description: Task not found
+            500:
+                description: Internal Server Error
+        """
+        task = TaskService().get_task(task_id, project_id)
+
+        return task, 200
+
+
 class LockTaskAPI(Resource):
 
     def post(self, project_id, task_id):

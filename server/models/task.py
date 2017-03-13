@@ -121,11 +121,11 @@ class Task(db.Model):
         return task
 
     @staticmethod
-    def get(project_id, task_id):
+    def get(task_id, project_id):
         """
         Gets specified task
-        :param project_id: project ID in scope
         :param task_id: task ID in scope
+        :param project_id: project ID in scope
         :return: Task if found otherwise None
         """
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
@@ -156,3 +156,25 @@ class Task(db.Model):
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
+
+    @staticmethod
+    def as_dto(task_id, project_id):
+        task = Task.get(task_id, project_id)
+
+        # TODO handle none
+
+        # action = db.Column(db.String, nullable=False)
+        # action_text = db.Column(db.String)
+        # action_date = db.Column(db.DateTime, nullable=False, default=current_datetime())
+
+        task_history = []
+        for action in task.task_history:
+            history = dict(action=action.action, actionText=action.action_text, actionDate=action.action_date)
+            task_history.append(history)
+
+        task_dto = dict(taskId=task.id, projectId=task.project_id, taskStatus=TaskStatus(task.task_status).name,
+                        taskLocked=task.task_locked, taskHistory=task_history)
+
+        #iain = json.dumps(task_dto)
+
+        return task_dto
