@@ -189,13 +189,25 @@
             var taskId = feature.get('taskId');
             var projectId = vm.project.projectId;
             // get full task from task service call
-            var task = taskService.getTask(projectId, taskId);
-            var taskStatus = task.taskStatus;
-            var taskLocked = task.taskLocked;
-            vm.selectedTask = task;
-            vm.isSelectTaskMappable = !taskLocked && (taskStatus === 'READY' || taskStatus === 'INVALIDATED');
-            vm.currentTab = 'mapping';
-            vm.mappingStep = 'view';
+            var taskPromise = taskService.getTask(projectId, taskId);
+            taskPromise.then(function (data) {
+                //task returned successfully
+                vm.selectedTask = data;
+                vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
+                vm.currentTab = 'mapping';
+                vm.mappingStep = 'view';
+            }, function () {
+                // task not returned successfully
+                // TODO - may want to handle error
+                vm.selectedTask = null;
+                vm.isSelectTaskMappable = false;
+                vm.currentTab = 'mapping';
+                vm.mappingStep = 'task-get-error';
+            });
+
+
+
+
 
         }
 

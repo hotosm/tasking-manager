@@ -46,7 +46,9 @@
                         </p>
                     </div>
                     <div ng-show="projectCtrl.mappingStep === 'view'">
-                        <h3>Task Status: <strong>{{ projectCtrl.selectedTask.taskStatus }}</strong></h3>
+                        <h3>Task #{{ projectCtrl.selectedTask.taskId }} is <strong><span
+                                ng-hide="{{ projectCtrl.selectedTask.taskLocked }}">UN</span>LOCKED</strong> and
+                            <strong>{{ projectCtrl.selectedTask.taskStatus }}</strong></h3>
 
                         <div ng-show="projectCtrl.isSelectTaskMappable" class="alert alert--success" role="alert">
                             <p>This task is available for mapping.</p>
@@ -115,6 +117,12 @@
                     <div ng-show="projectCtrl.mappingStep === 'none-available'">
                         <div class="alert alert--danger" role="alert">
                             <p>There are no tasks currently available for mapping.</p>
+                        </div>
+                    </div>
+                    <div ng-show="projectCtrl.mappingStep === 'task-get-error'">
+                        <div class="alert alert--danger" role="alert">
+                            <button class="alert__button-dismiss" title="Dismiss alert" ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span></button>
+                            <p>there was an error retreiving the task from the server.</p>
                         </div>
                     </div>
 
