@@ -1,5 +1,7 @@
 import json
 from flask_restful import Resource, request, current_app
+from schematics.exceptions import DataError
+from server.models.dtos.project_dto import ProjectDTO
 from server.services.project_service import ProjectService, InvalidGeoJson, InvalidData
 
 
@@ -10,7 +12,7 @@ class ProjectsAPI(Resource):
 
     def put(self):
         """
-        Inserts a project into database
+        Creates a tasking-manager project
         ---
         tags:
             - projects
@@ -78,7 +80,7 @@ class ProjectsAPI(Resource):
 
     def get(self, project_id):
         """
-        Retrieves the specified Tasking-Manager project
+        Retrieves a Tasking-Manager project
         ---
         tags:
             - projects
@@ -101,7 +103,67 @@ class ProjectsAPI(Resource):
         """
         try:
             project_service = ProjectService()
-            project = project_service.get_project_by_id(project_id)
+            project = project_service.get_project_as_dto(project_id)
+
+            if project is None:
+                return {"Error": "Project Not Found"}, 404
+
+            return project, 200
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    def post(self, project_id):
+        """
+        Updates a Tasking-Manager project
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                  properties:
+                      projectName:
+                          type: string
+                          default: HOT Project
+                      projectStatus:
+                          type: string
+                          default: DRAFT
+        responses:
+            200:
+                description: Project updated
+            404:
+                description: Project not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            project_dto = ProjectDTO(request.get_json())
+            project_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+
+        try:
+            project_dto = ProjectDTO(request.get_json())
+
+            project_dto.validate()
+
+            project_service = ProjectService()
+            project = project_service.update_project(project_id, project_dto)
 
             if project is None:
                 return {"Error": "Project Not Found"}, 404

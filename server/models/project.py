@@ -2,8 +2,10 @@ import geojson
 from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
+from server.models.dtos.project_dto import ProjectDTO
 from server.models.task import Task
 from server.models.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
+
 
 
 class AreaOfInterest(db.Model):
@@ -36,13 +38,19 @@ class AreaOfInterest(db.Model):
 
 
 class ProjectStatus(Enum):
-    """
-    Enum to describes all possible states of a Mapping Project
-    """
+    """ Enum to describes all possible states of a Mapping Project """
     # TODO add DELETE state, others??
     ARCHIVED = 0
     PUBLISHED = 1
     DRAFT = 2
+
+
+class ProjectPriority(Enum):
+    """ Enum to describe all possible project priority levels """
+    URGENT = 0
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
 
 
 class Project(db.Model):
@@ -53,11 +61,12 @@ class Project(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
-    status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value)
+    status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
-    created = db.Column(db.DateTime, default=timestamp)
+    created = db.Column(db.DateTime, default=timestamp, nullable=False)
+    priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
 
     def __init__(self, project_name, aoi):
         """
@@ -80,6 +89,11 @@ class Project(db.Model):
         # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
         db.session.commit()
+
+    def update(self, project_dto: ProjectDTO):
+        """ Updates project from DTO """
+        self.name = project_dto.project_name
+        self.
 
     def delete(self):
         """

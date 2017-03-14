@@ -28,13 +28,15 @@ class ProjectService:
         draft_project.create()
         return draft_project.id
 
-    def get_project_by_id(self, project_id):
-        """
-        Retrieve the specified project from the database
-        :param project_id: ID in scope
-        :return: project_dto suitable for serialization to JSON
-        """
+    def get_project_as_dto(self, project_id):
+        """ Get the project as DTO for transmission via the API """
         return Project.as_dto(project_id)
+
+    def update_project(self, project_id, project_dto):
+        project = Project.query.get(project_id)
+
+        iain = project
+
 
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
         """

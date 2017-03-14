@@ -22,6 +22,7 @@ python-dateutil==2.6.0
 python-editor==1.0.3
 pytz==2016.10
 PyYAML==3.12
+schematics==2.0.0a1
 six==1.10.0
 SQLAlchemy==1.1.5
 Werkzeug==0.11.15
