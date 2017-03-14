@@ -8,8 +8,9 @@
     angular
         .module('taskingManager')
         .controller('createProjectController', ['$scope', '$location', 'mapService', 'aoiService', 'projectService', createProjectController]);
-
+    
     function createProjectController($scope, $location, mapService, aoiService, projectService) {
+
         var vm = this;
 
         // Wizard 
