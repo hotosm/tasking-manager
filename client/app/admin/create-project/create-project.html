@@ -104,9 +104,14 @@
                             </button>
                         </div>
                         <p>Split a specific area into smaller tasks by drawing an area:</p>
-                        <button class="button button--achromic" type="button"
-                                ng-click="createProjectCtrl.drawAndSplitArea()">Split area
-                        </button>
+                        <div class="button-group button-group--horizontal" role="group">
+                            <button class="button button--achromic" type="button"
+                                    ng-click="createProjectCtrl.drawAndSplitArea()">Split area
+                            </button>
+                             <button class="button button--achromic" type="button"
+                                    ng-click="createProjectCtrl.changeSizeTaskGrid(0)">Reset
+                            </button>
+                        </div>
                          <div>
                              <span class="error" ng-show="createProjectCtrl.splitPolygonValidationMessage == 'SELF_INTERSECTIONS'">
                                  The drawn polygon contains self intersections.
@@ -178,7 +183,8 @@
                     </div>
                 </div>
             </div>
-            <div id="map" class="map-container"></div>
+            <div id="map" class="map-container">
+            </div>
         </div>
     </section>
 </div>
