@@ -112,6 +112,7 @@
                         <!--/ description section-->
                         <!-- instructions section -->
                         <div ng-show="editProjectCtrl.currentSection === 'instructions'">
+                            TODO: instructions template
                             <form class="form">
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
@@ -132,22 +133,6 @@
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Detailed instructions</label>
-                                        <div class="form__group">
-                                            <label class="form__label">Templates</label>
-                                            <p>By selecting templates, default instructions will be added to the instructions field.</p>
-                                            <label class="form__option">
-                                                <input type="checkbox" name="form-checkbox" value="roads"/>
-                                                Roads
-                                            </label>
-                                            <label class="form__option">
-                                                <input type="checkbox" name="form-checkbox" value="buildings"/>
-                                                Buildings
-                                            </label>
-                                            <label class="form__option">
-                                                <input type="checkbox" name="form-checkbox" value="waterways"/>
-                                                Waterways
-                                            </label>
-                                        </div>
                                         <textarea class="form__control" rows="8" ng-model="editProjectCtrl.instructions"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
                                         <div ng-show="editProjectCtrl.instructions">
