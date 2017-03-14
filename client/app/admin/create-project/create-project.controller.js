@@ -71,6 +71,9 @@
                 vm.isTaskArbitrary = false;
                 projectService.removeTaskGrid();
                 vm.currentStep = wizardStep;
+                if (vm.isDrawnAOI){
+                    aoiService.setDrawPolygonActive(true);
+                }
             }
             else if (wizardStep === 'tasks') {
                 setSplitToolsActive_(false);

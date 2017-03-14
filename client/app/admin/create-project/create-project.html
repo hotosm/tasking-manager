@@ -103,12 +103,14 @@
                                     ng-click="createProjectCtrl.changeSizeTaskGrid(1)">Smaller
                             </button>
                         </div>
-                        <p>Split a specific area into smaller tasks by drawing an area:</p>
+                        <p>Split a specific area into smaller tasks by drawing an area or point:</p>
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--achromic" type="button"
+                                    ng-class="createProjectCtrl.drawAndSelectPolygon.getActive() ? 'button--active' : ''"
                                     ng-click="createProjectCtrl.drawAndSplitAreaPolygon()">Split (polygon)
                             </button>
                             <button class="button button--achromic" type="button"
+                                    ng-class="createProjectCtrl.drawAndSelectPoint.getActive() ? 'button--active' : ''"
                                     ng-click="createProjectCtrl.drawAndSplitAreaPoint()">Split (point)
                             </button>
                         </div>
