@@ -31,14 +31,16 @@ class ST_GeomFromGeoJSON(GenericFunction):
     type = Geometry
 
 
-def current_datetime():
-    """ Return current date time """
-    # TODO test loosing brackets
+def timestamp():
+    """ Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""
     return datetime.datetime.utcnow()
 
 
 class DateTimeEncoder(json.JSONEncoder):
-    """  Custom JSON Encoder that handles Python date/times """
+    """
+    Custom JSON Encoder that handles Python date/times
+    HT to stackoverflow http://stackoverflow.com/a/12126976/620362
+    """
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.isoformat()
