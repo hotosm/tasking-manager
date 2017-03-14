@@ -93,7 +93,6 @@ class Project(db.Model):
     def update(self, project_dto: ProjectDTO):
         """ Updates project from DTO """
         self.name = project_dto.project_name
-        self.
 
     def delete(self):
         """
