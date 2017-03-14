@@ -45,9 +45,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a title="Edit allowed users" ng-click="editProjectCtrl.currentSection = 'allowedusers'"
-                                       class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'allowedusers' ? 'aside-menu-item--active' : ''">
-                                        Allowed users
+                                    <a title="Edit permissions" ng-click="editProjectCtrl.currentSection = 'permissions'"
+                                       class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'permissions' ? 'aside-menu-item--active' : ''">
+                                        Permissions
                                     </a>
                                 </li>
                                 <li>
@@ -158,6 +158,21 @@
                                 <fieldset class="form__fieldset">
                                     <p>Tags are used to allow users to find projects to work on and group projects.</p>
                                     <div class="form__group">
+                                        <label class="form__label">Mapper level</label>
+                                        <div class="button-group button-group--horizontal" role="group"
+                                             aria-label="choose level mapping">
+                                            <button class="button button--achromic button--active" type="button">
+                                                Beginner
+                                            </button>
+                                            <button class="button button--achromic" type="button">Intermediate
+                                            </button>
+                                            <button class="button button--achromic" type="button">Advanced
+                                            </button>
+                                        </div>
+                                        <p>Setting the level will help the mappers find suitable projects to work
+                                            on. You can enforce the level required for mapping in the permissions section.</p>
+                                    </div>
+                                    <div class="form__group">
                                         <label class="form__label">Organisation tag(s)</label>
                                         <input type="text" class="form__control" placeholder="Choose from existing tags"/>
                                     </div>
@@ -245,21 +260,25 @@
                             <div id="map" class="map-container"></div>
                         </div>
                         <!--/ priority area section -->
-                        <!-- allowed users -->
-                        <div ng-show="editProjectCtrl.currentSection === 'allowedusers'">
+                        <!-- permissions -->
+                        <div ng-show="editProjectCtrl.currentSection === 'permissions'">
                             <form class="form">
                                 <fieldset class="form__fieldset">
-                                     <div class="form__group">
+                                    <div class="form__group">
                                         <label class="form__label">Mapper level</label>
-                                        <div class="button-group button-group--horizontal" role="group"
-                                             aria-label="choose level mapping">
-                                            <button class="button button--achromic button--active" type="button">Beginner
-                                            </button>
-                                            <button class="button button--achromic" type="button">Intermediate
-                                            </button>
-                                            <button class="button button--achromic" type="button">Advanced
-                                            </button>
-                                        </div>
+                                        <label class="form__option">
+                                            <input type="checkbox"/>Only mappers with required level can map (*TODO: show level here*)
+                                        </label>
+                                        <p>If checked, only users with the experienced mapper role will be able to
+                                            contribute tot the current project. If not, anyone can.</p>
+                                    </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Validator level</label>
+                                        <label class="form__option">
+                                            <input type="checkbox"/>Only validators can validate
+                                        </label>
+                                        <p>If checked, only users with the validator role will be able to (in)validate
+                                            tasks for the current project. If not, anyone can.</p>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Private project</label>
@@ -287,7 +306,7 @@
                                 </fieldset>
                             </form>
                         </div>
-                        <!--/ allowed users -->
+                        <!--/ permissions -->
                         <!-- settings -->
                         <div ng-show="editProjectCtrl.currentSection === 'settings'">
                             <form class="form">
