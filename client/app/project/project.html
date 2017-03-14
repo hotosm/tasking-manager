@@ -9,123 +9,184 @@
         </header>
         <div class="create-project">
             <div class="sidebar">
-                <div class="button-group button-group--horizontal" role="group" aria-label="...">
-                    <button ng-click="projectCtrl.currentTab = 'description'" class="button button--achromic"
-                            type="button" ng-class="projectCtrl.currentTab == 'description'? 'button--active':''">
-                        Description
-                    </button>
-                    <button ng-click="projectCtrl.currentTab = 'instructions'" class="button button--achromic"
-                            type="button" ng-class="projectCtrl.currentTab == 'instructions'? 'button--active':''">
-                        Instructions
-                    </button>
-                    <button ng-click="projectCtrl.currentTab = 'mapping'" class="button button--achromic" type="button"
-                            ng-class="projectCtrl.currentTab == 'mapping'? 'button--active':''">Mapping
-                    </button>
-                </div>
-                <div ng-show="projectCtrl.currentTab === 'description'">
-                    <h3>Description</h3>
-                    <p>some text</p>
-                    <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'instructions'">
-                        Instructions
-                    </button>
-                </div>
-                <div ng-show="projectCtrl.currentTab === 'instructions'">
-                    <h3>Instructions</h3>
-                    <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
-                    </button>
-                </div>
-                <div ng-show="projectCtrl.currentTab === 'mapping'">
-                    <div ng-show="projectCtrl.mappingStep === 'select'">
-                        <h3>Choose a task</h3>
-                        <p>There are 2 options for choosing a task:</p>
-                        <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
-                        <p><strong>Option 2: </strong>Select a random task
-                            <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
-                                Select random
-                            </button>
-                        </p>
+                <div class="content">
+                    <div class="button-group button-group--horizontal" role="group" aria-label="...">
+                        <button ng-click="projectCtrl.currentTab = 'description'" class="button button--achromic"
+                                type="button" ng-class="projectCtrl.currentTab == 'description'? 'button--active':''">
+                            Description
+                        </button>
+                        <button ng-click="projectCtrl.currentTab = 'instructions'" class="button button--achromic"
+                                type="button" ng-class="projectCtrl.currentTab == 'instructions'? 'button--active':''">
+                            Instructions
+                        </button>
+                        <button ng-click="projectCtrl.currentTab = 'mapping'" class="button button--achromic"
+                                type="button"
+                                ng-class="projectCtrl.currentTab == 'mapping'? 'button--active':''">Mapping
+                        </button>
                     </div>
-                    <div ng-show="projectCtrl.mappingStep === 'view'">
-                        <h3>Task #{{ projectCtrl.selectedTask.taskId }} is <strong><span
-                                ng-hide="{{ projectCtrl.selectedTask.taskLocked }}">UN</span>LOCKED</strong> and
-                            <strong>{{ projectCtrl.selectedTask.taskStatus }}</strong></h3>
+                    <div ng-show="projectCtrl.currentTab === 'description'">
+                        <h3>Description</h3>
+                        <p>Lorem ipsum dolor sit amet, ius idque facete concludaturque eu, esse populo tacimates te cum.
+                            Agam mollis sit no, vis lorem laoreet adversarium ut. Tollit dolorem mandamus te mel. Cum
+                            mazim
+                            mucius neglegentur ut, vel nominati pericula constituam in. Eu cum elit rationibus, tibique
+                            suavitate inciderint pri at. Vim eu laoreet perpetua maluisset.</p>
 
-                        <div ng-show="projectCtrl.isSelectTaskMappable" class="alert alert--success" role="alert">
-                            <p>This task is available for mapping.</p>
+                        <p>Tollit ocurreret his no, utamur expetendis has id, nisl mnesarchum appellantur pri id. Laudem
+                            recusabo ex usu. Te eripuit similique rationibus mel. Et est nisl duis, ridens facilis mei
+                            cu.
+                            Aliquam recteque sit id, quem errem nostro in qui, id sea ridens melius forensibus.</p>
+
+                        <p>Blandit sensibus id nec, quo ex recusabo reprehendunt, no errem veritus quo. Erat sonet
+                            quando
+                            sea ex, unum aliquid sit ex. Qui an etiam utinam deleniti, usu ea clita molestie intellegam,
+                            et
+                            duo posse inani vocent. Brute percipit mel ad. Ea eum tollit vivendo. Veniam apeirian ei
+                            mei,
+                            pro et fierent neglegentur.</p>
+                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'instructions'">
+                            Instructions >>
+                        </button>
+                    </div>
+                    <div ng-show="projectCtrl.currentTab === 'instructions'">
+                        <h3>Instructions</h3>
+                        <p>Lorem ipsum dolor sit amet, oporteat liberavisse at nam, hinc nemore pericula eos in. Ei hinc
+                            minim has. Vix brute falli ei, his ut exerci temporibus disputationi, an vel sumo corrumpit.
+                            Eu
+                            sea exerci euismod invenire, meis mundi graeco vix cu. In vis delenit oportere dignissim,
+                            viderer aperiri ei mei, fastidii moderatius duo ex.</p>
+
+                        <p>An sea iracundia dissentiet, id inermis cotidieque nec, porro propriae dissentias ex per. At
+                            labores nominati moderatius pro, eam dolor placerat liberavisse ne, civibus apeirian
+                            convenire
+                            vis te. Id posse labore democritum vim, eos natum iudico in, ne everti omnesque rationibus
+                            cum.
+                            Cu sale brute graeci sea, ad sea verear diceret.</p>
+
+                        <p>Malis fierent eleifend usu te. Augue eruditi dissentias eum ne. Eos odio solet an. Nobis
+                            persequeris vim ad, sit exerci aliquid similique id, dico suavitate contentiones cum cu. Has
+                            no
+                            mucius civibus accusata, nam diam eirmod euripidis et, qui euismod laoreet delicata in.</p>
+                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
+                            >>
+                        </button>
+                    </div>
+                    <div ng-show="projectCtrl.currentTab === 'mapping'">
+                        <div ng-show="projectCtrl.mappingStep === 'select'">
+                            <h3>Choose a task</h3>
+                            <p>There are 2 options for choosing a task:</p>
+                            <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
+                            <p><strong>Option 2: </strong>Select a random task
+                                <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                    Select random
+                                </button>
+                            </p>
                         </div>
+                        <div ng-show="projectCtrl.mappingStep === 'view'">
 
-                        <div ng-hide="projectCtrl.isSelectTaskMappable" class="alert alert--danger" role="alert">
-                            <p>The selected task is not available for mapping.</p>
-                        </div>
+                            <h3>Task #{{ projectCtrl.selectedTask.taskId }} is
+                                <span ng-show="projectCtrl.selectedTask.taskLocked">LOCKED</span><span
+                                        ng-hide="projectCtrl.selectedTask.taskLocked"> {{ projectCtrl.selectedTask.taskStatus }} </span>
+                            </h3>
 
-                        <div>
-                            <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary">Start
-                                Mapping
-                            </button>
-                            <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
-                                Select another task
-                            </button>
-                            <button class="button button--secondary" ng-click="projectCtrl.clearCurrentSelection()">
-                                Cancel
-                            </button>
 
-                        </div>
-                        <hr/>
-                        <div>
-                            <div>
-                                <h3>Advanced</h3>
-                                <div>Advanced task information and editing options</div>
+                            <div ng-show="projectCtrl.isSelectTaskMappable" class="alert alert--success" role="alert">
+                                <p>This task is available for mapping.</p>
                             </div>
-                            <div>
-                                <h5>Details</h5>
 
-                                <div><strong>ID:</strong> #{{ projectCtrl.selectedTask.taskId }}</div>
-                                <div><strong>Status:</strong> {{ projectCtrl.selectedTask.taskStatus }}
-                                </div>
-                                <div><strong>Locked:</strong> {{ projectCtrl.selectedTask.taskLocked }}
-                                </div>
-                                <div><strong>Difficulty:</strong> TODO</div>
-                                <div><strong>Assigned:</strong> TODO</div>
+                            <div ng-hide="projectCtrl.isSelectTaskMappable" class="alert alert--danger" role="alert">
+                                <p>The selected task is not available for mapping.</p>
+                            </div>
+
+                            <div>
+                                <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary">
+                                    Start
+                                    Mapping
+                                </button>
+                                <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                    Select another task
+                                </button>
+                                <button class="button button--secondary" ng-click="projectCtrl.clearCurrentSelection()">
+                                    Cancel
+                                </button>
+
+                            </div>
+
+                            <div ng-init="showAdvanced=false" class="panel-grey-rounder-corners">
                                 <div>
-                                    <h5>History</h5>
-                                    <div ng-repeat="item in projectCtrl.selectedTask.taskHistory track by $index">
-                                        <div><strong>Action: </strong> {{ item.action }}</div>
-                                        <div><strong>Date: </strong> {{ item.actionDate }}</div>
-                                        <div><strong>Text: </strong> {{ item.actionText }}</div>
-                                        <hr/>
+                                    <h3 ng-click="showAdvanced=!showAdvanced">
+                                        Advanced
+                                        <i ng-show="!showAdvanced"
+                                           class="oam-ds-icon-sm-chevron-down"></i>
+                                        <i ng-show="showAdvanced"
+                                           class="oam-ds-icon-sm-chevron-up"></i>
+                                    </h3>
+                                    <p class="lead">Advanced task information and editing options</p>
+                                </div>
+
+                                <div ng-show="showAdvanced">
+                                    <div>
+                                        <h6 class="heading-alt">Details</h6>
+                                        <dl class="dl-horizontal">
+                                            <dt>ID</dt>
+                                            <dd>#{{ projectCtrl.selectedTask.taskId }}</dd>
+                                            <dt>Status</dt>
+                                            <dd>{{ projectCtrl.selectedTask.taskStatus }}</dd>
+                                            <dt>Locked</dt>
+                                            <dd>{{ projectCtrl.selectedTask.taskLocked }}</dd>
+                                            <dt>Difficulty</dt>
+                                            <dd>TODO</dd>
+                                            <dt>Addisgned</dt>
+                                            <dd>TODO</dd>
+                                        </dl>
+                                    </div>
+                                    <div ng-init="showHistory=false" class="panel-white-round-corners">
+                                        <h6 class="heading-alt" ng-click="showHistory=!showHistory">History <i
+                                                ng-show="!showHistory"
+                                                class="oam-ds-icon-sm-chevron-down"></i>
+                                            <i ng-show="showHistory"
+                                               class="oam-ds-icon-sm-chevron-up"></i></h6>
+                                        <div class="historyItem" ng-show="showHistory"
+                                             ng-repeat="item in projectCtrl.selectedTask.taskHistory track by $index"
+                                             ng-class-odd="odd" ng-class-even="even">
+                                            <div><strong>Action: </strong> {{ item.action }}</div>
+                                            <div><strong>Date: </strong> {{ item.actionDate }}</div>
+                                            <div><strong>Text: </strong> {{ item.actionText }}</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h6 class="heading-alt">Options</h6>git status
+                                        <label for="form-select-1">Change Editor</label>
+                                        <select class="form__control form__control--small" id="form-select-1">
+                                            <option selected="true">ID Editor</option>
+                                            <option>JOSM</option>
+                                            <option>Potlach 2</option>
+                                            <option>Walking papers</option>
+                                            <option>Field papers</option>
+                                        </select>
+                                        <button class="button button--primary-unbounded">Preview task in OSM ID Editor
+                                        </button>
+                                        <button class="button button--primary-unbounded">View OSM changesets</button>
+                                        <button class="button button--primary-unbounded">View changes in overpass turbo
+                                        </button>
                                     </div>
                                 </div>
-                                <div>
-                                    <h5>Options</h5>
-                                    <label for="form-select-1">Editor</label>
-                                    <select class="form__control form__control--small" id="form-select-1">
-                                        <option selected="true">ID Editor</option>
-                                        <option>JOSM</option>
-                                        <option>Potlach 2</option>
-                                        <option>Walking papers</option>
-                                        <option>Field papers</option>
-                                    </select>
-                                    <button class="button button--primary-unbounded">Preview task in OSM ID Editor
-                                    </button>
-                                    <button class="button button--primary-unbounded">View OSM changesets</button>
-                                    <button class="button button--primary-unbounded">View changes in overpass turbo
-                                    </button>
+                            </div>
+                            <div ng-show="projectCtrl.mappingStep === 'none-available'">
+                                <div class="alert alert--danger" role="alert">
+                                    <p>There are no tasks currently available for mapping.</p>
+                                </div>
+                            </div>
+                            <div ng-show="projectCtrl.mappingStep === 'task-get-error'">
+                                <div class="alert alert--danger" role="alert">
+                                    <button class="alert__button-dismiss" title="Dismiss alert"
+                                            ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span></button>
+                                    <p>there was an error retrieving the task from the server.</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div ng-show="projectCtrl.mappingStep === 'none-available'">
-                        <div class="alert alert--danger" role="alert">
-                            <p>There are no tasks currently available for mapping.</p>
-                        </div>
-                    </div>
-                    <div ng-show="projectCtrl.mappingStep === 'task-get-error'">
-                        <div class="alert alert--danger" role="alert">
-                            <button class="alert__button-dismiss" title="Dismiss alert" ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span></button>
-                            <p>there was an error retreiving the task from the server.</p>
-                        </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
             <div id="map" class="map-container"></div>
