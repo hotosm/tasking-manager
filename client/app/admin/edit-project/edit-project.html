@@ -112,7 +112,6 @@
                         <!--/ description section-->
                         <!-- instructions section -->
                         <div ng-show="editProjectCtrl.currentSection === 'instructions'">
-                            TODO: instructions template
                             <form class="form">
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
@@ -133,7 +132,7 @@
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Detailed instructions</label>
-                                        <textarea class="form__control" rows="8" ng-model="editProjectCtrl.instructions"></textarea>
+                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.instructions"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
                                         <div ng-show="editProjectCtrl.instructions">
                                             <label class="form__label">Preview</label>
