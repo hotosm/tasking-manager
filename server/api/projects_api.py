@@ -130,6 +130,9 @@ class ProjectsAPI(Resource):
                       projectStatus:
                           type: string
                           default: DRAFT
+                      projectPriority:
+                          type: string
+                          default: MEDIUM
         responses:
             200:
                 description: Project updated

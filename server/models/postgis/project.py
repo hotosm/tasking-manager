@@ -1,13 +1,10 @@
 import json
-from enum import Enum
-from typing import Optional
-
 import geojson
+from typing import Optional
 from geoalchemy2 import Geometry
-
 from server import db
 from server.models.dtos.project_dto import ProjectDTO
-from server.models.postgis.statuses import ProjectStatus
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority
 from server.models.postgis.task import Task
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
 
@@ -39,14 +36,6 @@ class AreaOfInterest(db.Model):
 
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
-
-
-class ProjectPriority(Enum):
-    """ Enum to describe all possible project priority levels """
-    URGENT = 0
-    HIGH = 1
-    MEDIUM = 2
-    LOW = 3
 
 
 class Project(db.Model):
@@ -90,6 +79,7 @@ class Project(db.Model):
         """ Updates project from DTO """
         self.name = project_dto.project_name
         self.status = ProjectStatus[project_dto.project_status].value
+        self.priority = ProjectPriority[project_dto.project_priority].value
         db.session.commit()
 
     def delete(self):
