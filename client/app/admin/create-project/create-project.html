@@ -103,20 +103,21 @@
                                     ng-click="createProjectCtrl.changeSizeTaskGrid(1)">Smaller
                             </button>
                         </div>
-                        <p>Split a specific area into smaller tasks by drawing an area:</p>
+
+                        <p>Split a specific area into smaller tasks by drawing an area or point:</p>
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.drawAndSplitArea()">Split area
+                                    ng-class="createProjectCtrl.drawAndSelectPolygon.getActive() ? 'button--active' : ''"
+                                    ng-click="createProjectCtrl.drawAndSplitAreaPolygon()">Split (polygon)
                             </button>
-                             <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.changeSizeTaskGrid(0)">Reset
+                            <button class="button button--achromic" type="button"
+                                    ng-class="createProjectCtrl.drawAndSelectPoint.getActive() ? 'button--active' : ''"
+                                    ng-click="createProjectCtrl.drawAndSplitAreaPoint()">Split (point)
+                            </button>
+                            <button class="button button--achromic" type="button"
+                                ng-click="createProjectCtrl.changeSizeTaskGrid(0)">Reset
                             </button>
                         </div>
-                         <div>
-                             <span class="error" ng-show="createProjectCtrl.splitPolygonValidationMessage == 'SELF_INTERSECTIONS'">
-                                 The drawn polygon contains self intersections.
-                             </span>
-                         </div>
                         <hr/>
                         <p>A new project will be created with {{ createProjectCtrl.numberOfTasks }} tasks.</p>
                         <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks | number : 2 }} km<sup>2</sup>.</p>
