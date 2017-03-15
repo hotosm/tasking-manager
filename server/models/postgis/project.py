@@ -1,11 +1,13 @@
-import geojson
 import json
 from enum import Enum
-from geoalchemy2 import Geometry
 from typing import Optional
+
+import geojson
+from geoalchemy2 import Geometry
+
 from server import db
-from server.models.statuses import ProjectStatus
 from server.models.dtos.project_dto import ProjectDTO
+from server.models.postgis.statuses import ProjectStatus
 from server.models.task import Task
 from server.models.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
 

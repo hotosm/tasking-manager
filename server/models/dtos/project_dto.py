@@ -1,7 +1,7 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
 from schematics.types import StringType, BaseType, IntType
-from server.models.statuses import ProjectStatus
+from server.models.postgis.statuses import ProjectStatus
 
 
 def is_known_project_status(value):

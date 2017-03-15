@@ -1,7 +1,7 @@
-import geojson
 import json
+import geojson
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
-from server.models.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData
+from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData
 
 
 class ProjectService:

@@ -1,6 +1,8 @@
-import geojson
 import unittest
-from server.models.project import AreaOfInterest, InvalidGeoJson, InvalidData, Project, Task
+
+import geojson
+
+from server.models.postgis.project import AreaOfInterest, InvalidGeoJson, InvalidData, Project, Task
 
 
 class TestProject(unittest.TestCase):
