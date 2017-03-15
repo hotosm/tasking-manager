@@ -3,7 +3,7 @@
 describe('style.service', function () {
     var styleService = null;
 
-    var DEAFAULT_STYLE = new ol.style.Style({
+    var DEFAULT_STYLE = new ol.style.Style({
         fill: new ol.style.Fill({
           color: [250,250,250,1]
         }),
@@ -185,7 +185,7 @@ describe('style.service', function () {
         var style = styleService.getTaskStyleFunction(taskFeature)
 
         // assert
-        expect(style).toEqual(DEAFAULT_STYLE);
+        expect(style).toEqual(DEFAULT_STYLE);
     });
 
     it('should return default style when taskLocked is null ', function () {
@@ -198,7 +198,7 @@ describe('style.service', function () {
         var style = styleService.getTaskStyleFunction(taskFeature)
 
         // assert
-        expect(style).toEqual(DEAFAULT_STYLE);
+        expect(style).toEqual(DEFAULT_STYLE);
     });
 
     it('should return default style when taskLocked is undefined ', function () {
@@ -211,7 +211,7 @@ describe('style.service', function () {
         var style = styleService.getTaskStyleFunction(taskFeature)
 
         // assert
-        expect(style).toEqual(DEAFAULT_STYLE);
+        expect(style).toEqual(DEFAULT_STYLE);
     });
 
     it('should return default style taskLocked and taskStatus are undefined', function () {
@@ -224,7 +224,7 @@ describe('style.service', function () {
         var style = styleService.getTaskStyleFunction(taskFeature)
 
         // assert
-        expect(style).toEqual(DEAFAULT_STYLE);
+        expect(style).toEqual(DEFAULT_STYLE);
     });
 
     it('should return default style taskStatus is null', function () {
@@ -237,7 +237,7 @@ describe('style.service', function () {
         var style = styleService.getTaskStyleFunction(taskFeature)
 
         // assert
-        expect(style).toEqual(DEAFAULT_STYLE);
+        expect(style).toEqual(DEFAULT_STYLE);
     });
 
     it('should return default style when taskStatus is unknown', function () {
@@ -250,7 +250,7 @@ describe('style.service', function () {
         var style = styleService.getTaskStyleFunction(taskFeature)
 
         // assert
-        expect(style).toEqual(DEAFAULT_STYLE);
+        expect(style).toEqual(DEFAULT_STYLE);
     });
 
 });

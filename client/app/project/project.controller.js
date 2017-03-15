@@ -11,7 +11,8 @@
 
     function projectController($scope, $location, mapService, projectService, styleService, taskService) {
         var vm = this;
-        vm.project = null;
+        vm.projectData = null;
+        vm.taskVectorLayer = null;
         vm.map = null;
 
         // tab and view control
@@ -52,26 +53,15 @@
          * Sets up a randomly selected task as the currently selected task
          */
         vm.selectRandomTask = function () {
-            var task = getRandomMappableTask(vm.project.tasks);
-            if (task) {
-                //iterate layers to find task layer
-                var layers = vm.map.getLayers();
-                for (var i = 0; i < layers.getLength(); i++) {
-                    if (layers.item(i).get('name') === 'tasks') {
-                        var feature = layers.item(i).getSource().getFeatures().filter(function (feature) {
-                            if (feature.get('taskId') === task.properties.taskId) {
-                                // TODO the next few steps might be better done with event handling and dispatching to resuse
-                                // through the listener code on the select interaction.  Need to find a way to do that
-                                select.getFeatures().clear();
-                                select.getFeatures().push(feature);
-                                onTaskSelection(feature);
-                                var vPadding = vm.map.getSize()[1] * 0.3;
-                                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
-                            }
-                        });
-                        break;
-                    }
-                }
+            var feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
+            if (feature) {
+                select.getFeatures().clear();
+                select.getFeatures().push(feature);
+                onTaskSelection(feature);
+                // padding to makes sure there is plenty of clear space around feature on map to keep visual
+                // context of feature location
+                var vPadding = vm.map.getSize()[1] * 0.3;
+                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
             }
             else {
                 vm.selectedTask = null;
@@ -99,9 +89,9 @@
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
-                vm.project = data;
-                addAoiToMap(vm.project.areaOfInterest);
-                addProjectTasksToMap(vm.project.tasks);
+                vm.projectData = data;
+                addAoiToMap(vm.projectData.areaOfInterest);
+                addProjectTasksToMap(vm.projectData.tasks);
             }, function () {
                 // project not returned successfully
                 // TODO - may want to handle error
@@ -115,14 +105,15 @@
         function addProjectTasksToMap(tasks) {
             //TODO: may want to refactor this into a service at some point so that it can be reused
             var source = new ol.source.Vector();
-            var vector = new ol.layer.Vector({
+            vm.taskVectorLayer = new ol.layer.Vector({
                 source: source,
                 name: 'tasks',
                 style: styleService.getTaskStyleFunction
             });
-            vm.map.addLayer(vector);
+            vm.map.addLayer(vm.taskVectorLayer);
 
             // read tasks JSON into features
+            console.log(tasks);
             var format = new ol.format.GeoJSON();
             var taskFeatures = format.readFeatures(tasks, {
                 dataProjection: 'EPSG:4326',
@@ -155,41 +146,13 @@
         }
 
         /**
-         * returns a randomly selected mappable task from the passed in tasks JSON object
-         * @param tasks - the set of tasks from which to find a random task
-         * @returns task if one found, null if none available
-         */
-        function getRandomMappableTask(tasks) {
-
-            // get all non locked ready tasks,
-            var candidates = []
-            var candidates = tasks.features.filter(function (item) {
-                if (!item.properties.taskLocked && item.properties.taskStatus === 'READY') return item;
-            });
-            // if no ready tasks, get non locked invalidated tasks
-            if (candidates.length == 0) {
-                candidates = tasks.features.filter(function (item) {
-                    if (!item.properties.taskLocked && item.properties.taskStatus === 'INVALIDATED') return item;
-                });
-            }
-
-            // if tasks were found, return a random task
-            if (candidates.length > 0) {
-                return candidates[Math.floor((Math.random() * (candidates.length - 1)))];
-            }
-
-            // if all else fails, return null
-            return null;
-        }
-
-        /**
          * Gets a task from the server and uses sets up the task returned as the currently selected task
          * @param feature
          */
         function onTaskSelection(feature) {
             //get id from feature
             var taskId = feature.get('taskId');
-            var projectId = vm.project.projectId;
+            var projectId = vm.projectData.projectId;
             // get full task from task service call
             var taskPromise = taskService.getTask(projectId, taskId);
             taskPromise.then(function (data) {
@@ -207,7 +170,5 @@
                 vm.mappingStep = 'task-get-error';
             });
         }
-
-
     }
 })();
