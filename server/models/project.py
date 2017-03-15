@@ -1,4 +1,5 @@
 import geojson
+import json
 from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
@@ -24,7 +25,7 @@ class AreaOfInterest(db.Model):
         :param aoi_geometry_geojson: AOI GeoJson
         :raises InvalidGeoJson
         """
-        aoi_geometry = geojson.loads(aoi_geometry_geojson)
+        aoi_geometry = geojson.loads(json.dumps(aoi_geometry_geojson))
 
         if type(aoi_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')

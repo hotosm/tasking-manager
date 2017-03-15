@@ -1,10 +1,12 @@
 import geojson
+import json
+from server.models.dtos.project_dto import ProjectDTO
 from server.models.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData
 
 
 class ProjectService:
 
-    def create_draft_project(self, project_name, aoi_geojson, tasks_geojson):
+    def create_draft_project(self, project_dto: ProjectDTO) -> int:
         """
         Validates and then persists draft projects in the DB
         :param project_name: Name the Project Manager has given the project
@@ -14,16 +16,16 @@ class ProjectService:
         :returns ID of new draft project
         """
         try:
-            area_of_interest = AreaOfInterest(aoi_geojson)
+            area_of_interest = AreaOfInterest(project_dto.area_of_interest)
         except InvalidGeoJson as e:
             raise e
 
         try:
-            draft_project = Project(project_name, area_of_interest)
+            draft_project = Project(project_dto.project_name, area_of_interest)
         except InvalidData as e:
             raise e
 
-        self._attach_tasks_to_project(draft_project, tasks_geojson)
+        self._attach_tasks_to_project(draft_project, project_dto.tasks)
 
         draft_project.create()
         return draft_project.id
@@ -45,7 +47,7 @@ class ProjectService:
         :param tasks_geojson: GeoJSON feature collection of mapping tasks
         :raises InvalidGeoJson, InvalidData
         """
-        tasks = geojson.loads(tasks_geojson)
+        tasks = geojson.loads(json.dumps(tasks_geojson))
 
         if type(tasks) is not geojson.FeatureCollection:
             raise InvalidGeoJson('Tasks: Invalid GeoJson must be FeatureCollection')

@@ -79,7 +79,7 @@ class ProjectsAPI(Resource):
 
         try:
             project_service = ProjectService()
-            draft_project_id = project_service.create_draft_project(project_name, aoi_geometry_geojson, tasks_geojson)
+            draft_project_id = project_service.create_draft_project(project_dto)
             return {"projectId": draft_project_id}, 201
         except (InvalidGeoJson, InvalidData) as e:
             return {"error": f'{str(e)}'}, 400
