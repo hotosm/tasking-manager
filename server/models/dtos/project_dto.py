@@ -1,23 +1,24 @@
 from schematics import Model
-from schematics.types import StringType, BaseType, IntType, BooleanType
 from schematics.exceptions import ValidationError
-from server.models.dtos.validators import is_known_project_status
+from schematics.types import StringType, BaseType, IntType
+from server.models.statuses import ProjectStatus
+
+
+def is_known_project_status(value):
+    try:
+        ProjectStatus[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown projectStatus: {value} Valid values are {ProjectStatus.DRAFT.name}, '
+                              f'{ProjectStatus.PUBLISHED.name}, {ProjectStatus.ARCHIVED.name}')
+
+
+class DraftProjectDTO(Model):
+    project_name = StringType(required=True, serialized_name='projectName')
+    area_of_interest = BaseType(required=True, serialized_name='areaOfInterest')
+    tasks = BaseType(required=True)
 
 
 class ProjectDTO(Model):
     project_id = IntType()
-    for_create = BooleanType(default=False)  # True if we're creating a project, false if we updating existing project
     project_name = StringType(required=True, serialized_name='projectName')
-    project_status = StringType(serialized_name='projectStatus', validators=[is_known_project_status])
-    area_of_interest = BaseType(serialized_name='areaOfInterest')
-    tasks = BaseType()
-
-    def validate_for_create(self, data, value):
-        """ Helper method to ensure appropriate properties set on Project PUT api"""
-        if not data['for_create']:
-            return
-
-        if None in [data['area_of_interest'], data['tasks']]:
-            raise ValidationError('Empty required field detected')
-
-        return value
+    project_status = StringType(required=True, serialized_name='projectStatus', validators=[is_known_project_status])

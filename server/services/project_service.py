@@ -1,29 +1,29 @@
 import geojson
 import json
-from server.models.dtos.project_dto import ProjectDTO
+from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.models.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData
 
 
 class ProjectService:
 
-    def create_draft_project(self, project_dto: ProjectDTO) -> int:
+    def create_draft_project(self, draft_project_dto: DraftProjectDTO) -> int:
         """
         Validates and then persists draft projects in the DB
-        :param project_dto: Project DTO with data from API
+        :param draft_project_dto: Draft Project DTO with data from API
         :raises InvalidGeoJson
         :returns ID of new draft project
         """
         try:
-            area_of_interest = AreaOfInterest(project_dto.area_of_interest)
+            area_of_interest = AreaOfInterest(draft_project_dto.area_of_interest)
         except InvalidGeoJson as e:
             raise e
 
         try:
-            draft_project = Project(project_dto.project_name, area_of_interest)
+            draft_project = Project(draft_project_dto.project_name, area_of_interest)
         except InvalidData as e:
             raise e
 
-        self._attach_tasks_to_project(draft_project, project_dto.tasks)
+        self._attach_tasks_to_project(draft_project, draft_project_dto.tasks)
 
         draft_project.create()
         return draft_project.id
@@ -40,8 +40,6 @@ class ProjectService:
 
         project.update(project_dto)
         return project
-
-
 
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
         """

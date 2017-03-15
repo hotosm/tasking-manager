@@ -1,6 +1,6 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
-from server.models.dtos.project_dto import ProjectDTO
+from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.services.project_service import ProjectService, InvalidGeoJson, InvalidData
 
 
@@ -50,16 +50,15 @@ class ProjectsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            project_dto = ProjectDTO(request.get_json())
-            project_dto.for_create = True
-            project_dto.validate()
+            draft_project_dto = DraftProjectDTO(request.get_json())
+            draft_project_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
         try:
             project_service = ProjectService()
-            draft_project_id = project_service.create_draft_project(project_dto)
+            draft_project_id = project_service.create_draft_project(draft_project_dto)
             return {"projectId": draft_project_id}, 201
         except (InvalidGeoJson, InvalidData) as e:
             return {"error": f'{str(e)}'}, 400
