@@ -8,8 +8,8 @@ from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO
 from server.models.postgis.statuses import ProjectStatus
-from server.models.task import Task
-from server.models.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
+from server.models.postgis.task import Task
+from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
 
 
 class AreaOfInterest(db.Model):
