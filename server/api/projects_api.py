@@ -51,21 +51,31 @@ class ProjectsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            # TODO this a little clunky but avoids DTO object, however DTOs may be cleaner - will decide later
-            data = request.get_json()
-            project_name = data['projectName']
-            aoi_geometry_geojson = json.dumps(data['areaOfInterest'])
-            tasks_geojson = json.dumps(data['tasks'])
-        except KeyError as e:
-            error_msg = f'Key {str(e)} not found in JSON, note parser is case sensitive'
-            current_app.logger.error(error_msg)
-            return {"error": error_msg}, 400
+            project_dto = ProjectDTO(request.get_json())
+            project_dto.for_create = True
+            project_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
 
-        # Check that none of the required fields are empty
-        if '' in [project_name, aoi_geometry_geojson, tasks_geojson]:
-            error_msg = 'Empty required field detected'
-            current_app.logger.error(error_msg)
-            return {"error": error_msg}, 400
+        # try:
+        #     # TODO this a little clunky but avoids DTO object, however DTOs may be cleaner - will decide later
+        #     #data = request.get_json()
+        #     #project_name = data['projectName']
+        #     #aoi_geometry_geojson = json.dumps(data['areaOfInterest'])
+        #     #tasks_geojson = json.dumps(data['tasks'])
+        #
+        #     project_dto = ProjectDTO(request.get_json())
+        # except KeyError as e:
+        #     error_msg = f'Key {str(e)} not found in JSON, note parser is case sensitive'
+        #     current_app.logger.error(error_msg)
+        #     return {"error": error_msg}, 400
+        #
+        # # Check that none of the required fields are empty
+        # if '' in [project_name, aoi_geometry_geojson, tasks_geojson]:
+        #     error_msg = 'Empty required field detected'
+        #     current_app.logger.error(error_msg)
+        #     return {"error": error_msg}, 400
 
         try:
             project_service = ProjectService()
