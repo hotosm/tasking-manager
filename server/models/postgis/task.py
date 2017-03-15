@@ -1,9 +1,7 @@
 import datetime
-from enum import Enum
-
 import geojson
+from enum import Enum
 from geoalchemy2 import Geometry
-
 from server import db
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp
 
