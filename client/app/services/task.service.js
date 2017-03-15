@@ -52,8 +52,8 @@
          * @returns ol.Feature - randomly selected mappable ol.Feature object
          */
         function getRandomMappableTaskFeature(features) {
-            //first check that we have a non empty array of ol.Feature objects
-            if (features && (Object.prototype.toString.call(features) === '[object Array]') && features.length > 0) {
+            //first check that we have a non empty array to work with
+            if (features && (features instanceof Array) && features.length > 0) {
 
                 var candidates = [];
 
@@ -81,16 +81,22 @@
          * @param taskLocked - boolean, required locked status
          * @param taskStatus - required task status
          */
-        function getTasksByStatus(features, taskLocked, taskStatus) {
+        function getTasksByStatus(features, locked, status) {
+            //TODO - may need to refactor to allow passing in null for locked or status to infer any value.
+            //This would allow get all locked tasks, regardless of status, or all tasks with certain status,
+            //regardless of locked
             candidates = [];
-            if (features && (Object.prototype.toString.call(features) === '[object Array]') && features.length > 0) {
-                // get all non locked ready tasks
+            //first check we are working with a non empty array
+            if (features && (features instanceof Array) && features.length > 0) {
+                // get all tasks with taskLocked and taskStatus property values meeting the passed in values for locked and status
                 var candidates = features.filter(function (item) {
-                    if (typeof item.get === "function") {
+                    //check we are working with an ol.Feature
+                    if (item instanceof ol.Feature) {
                         // safe to use the function
-                        var isLocked = item.get('taskLocked');
-                        var status = item.get('taskStatus');
-                        if (item.get('taskLocked') == taskLocked && item.get('taskStatus') === taskStatus) return item;
+                        var taskLocked = item.get('taskLocked');
+                        var taskStatus = item.get('taskStatus');
+                        if (taskLocked == locked && taskStatus === status)
+                            return item;
                     }
                 });
             }

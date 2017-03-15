@@ -10,7 +10,7 @@
         <div class="create-project">
             <div class="sidebar">
                 <div class="content">
-                    <div class="button-group button-group--horizontal" role="group" aria-label="...">
+                    <div class="button-group button-group--horizontal" role="group" aria-label="tabs for navigation of project contribution">
                         <button ng-click="projectCtrl.currentTab = 'description'" class="button button--achromic"
                                 type="button" ng-class="projectCtrl.currentTab == 'description'? 'button--active':''">
                             Description
@@ -83,13 +83,10 @@
                             </p>
                         </div>
                         <div ng-show="projectCtrl.mappingStep === 'view'">
-
                             <h3>Task #{{ projectCtrl.selectedTask.taskId }} is
                                 <span ng-show="projectCtrl.selectedTask.taskLocked">LOCKED</span><span
                                         ng-hide="projectCtrl.selectedTask.taskLocked"> {{ projectCtrl.selectedTask.taskStatus }} </span>
                             </h3>
-
-
                             <div ng-show="projectCtrl.isSelectTaskMappable" class="alert alert--success" role="alert">
                                 <p>This task is available for mapping.</p>
                             </div>
@@ -97,7 +94,6 @@
                             <div ng-hide="projectCtrl.isSelectTaskMappable" class="alert alert--danger" role="alert">
                                 <p>The selected task is not available for mapping.</p>
                             </div>
-
                             <div>
                                 <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary">
                                     Start
@@ -109,9 +105,7 @@
                                 <button class="button button--secondary" ng-click="projectCtrl.clearCurrentSelection()">
                                     Cancel
                                 </button>
-
                             </div>
-
                             <div ng-init="showAdvanced=false" class="panel-grey-rounder-corners">
                                 <div>
                                     <h3 ng-click="showAdvanced=!showAdvanced">
@@ -123,7 +117,6 @@
                                     </h3>
                                     <p class="lead">Advanced task information and editing options</p>
                                 </div>
-
                                 <div ng-show="showAdvanced">
                                     <div>
                                         <h6 class="heading-alt">Details</h6>
@@ -185,7 +178,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>

@@ -113,7 +113,6 @@
             vm.map.addLayer(vm.taskVectorLayer);
 
             // read tasks JSON into features
-            console.log(tasks);
             var format = new ol.format.GeoJSON();
             var taskFeatures = format.readFeatures(tasks, {
                 dataProjection: 'EPSG:4326',
@@ -146,7 +145,7 @@
         }
 
         /**
-         * Gets a task from the server and uses sets up the task returned as the currently selected task
+         * Gets a task from the server and sets up the task returned as the currently selected task
          * @param feature
          */
         function onTaskSelection(feature) {
@@ -163,7 +162,6 @@
                 vm.mappingStep = 'view';
             }, function () {
                 // task not returned successfully
-                // TODO - may want to handle error
                 vm.selectedTask = null;
                 vm.isSelectTaskMappable = false;
                 vm.currentTab = 'mapping';
