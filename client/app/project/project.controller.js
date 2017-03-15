@@ -14,7 +14,7 @@
         vm.project = null;
         vm.map = null;
 
-        // table and view control
+        // tab and view control
         vm.currentTab = '';
         vm.mappingStep = '';
 
@@ -30,7 +30,6 @@
         activate();
 
         function activate() {
-            //TODO: Set up sidebar tabs
             vm.currentTab = 'description';
             vm.mappingStep = 'select';
             mapService.createOSMMap('map');
@@ -46,9 +45,12 @@
 
             var id = $location.search().project;
             initialiseProject(id);
-            //TODO: put the project metadata (description instructions on siedbar tabs
+            //TODO: put the project metadata (description and instructions on siedbar tabs)
         }
 
+        /**
+         * Sets up a randomly selected task as the currently selected task
+         */
         vm.selectRandomTask = function () {
             var task = getRandomMappableTask(vm.project.tasks);
             if (task) {
@@ -90,7 +92,7 @@
         };
 
         /**
-         * Initilaise a project with using it's id
+         * Initilaise a project using it's id
          * @param id - id of the project to initialise
          */
         function initialiseProject(id) {
@@ -155,7 +157,7 @@
         /**
          * returns a randomly selected mappable task from the passed in tasks JSON object
          * @param tasks - the set of tasks from which to find a random task
-         * @returns task if one found, null if non available
+         * @returns task if one found, null if none available
          */
         function getRandomMappableTask(tasks) {
 
@@ -164,7 +166,7 @@
             var candidates = tasks.features.filter(function (item) {
                 if (!item.properties.taskLocked && item.properties.taskStatus === 'READY') return item;
             });
-            // if no ready tasks, get non locked invalid tasks
+            // if no ready tasks, get non locked invalidated tasks
             if (candidates.length == 0) {
                 candidates = tasks.features.filter(function (item) {
                     if (!item.properties.taskLocked && item.properties.taskStatus === 'INVALIDATED') return item;
@@ -181,7 +183,7 @@
         }
 
         /**
-         * Sets up the model for currently selected feature
+         * Gets a task from the server and uses sets up the task returned as the currently selected task
          * @param feature
          */
         function onTaskSelection(feature) {
@@ -204,11 +206,6 @@
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'task-get-error';
             });
-
-
-
-
-
         }
 
 

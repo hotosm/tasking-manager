@@ -240,7 +240,7 @@ describe('style.service', function () {
         expect(style).toEqual(DEAFAULT_STYLE);
     });
 
-    it('should rreturn default style taskStatus is unknown', function () {
+    it('should return default style when taskStatus is unknown', function () {
         // arrange
         var taskFeature = new ol.Feature({
             taskStatus: 'ejrgfkerj'
@@ -250,6 +250,7 @@ describe('style.service', function () {
         var style = styleService.getTaskStyleFunction(taskFeature)
 
         // assert
+        expect(style).toEqual(DEAFAULT_STYLE);
     });
 
 });

@@ -15,4 +15,15 @@ describe('project.controller', function () {
     it('should be created successfully', function () {
         expect(projectController).toBeDefined()
     });
+
+    it('should return null', function () {
+        //arrange
+        projectController.getRandomMappableTask();
+
+        //act
+
+        //assert
+
+        expect(projectController).toBe()
+    });
 });
