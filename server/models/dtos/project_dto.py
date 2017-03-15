@@ -21,7 +21,7 @@ class DraftProjectDTO(Model):
 
 class ProjectDTO(Model):
     """ Describes JSON model for a tasking manager project """
-    project_id = IntType()
+    project_id = IntType(serialized_name='projectId')
     project_name = StringType(required=True, serialized_name='projectName')
     project_status = StringType(required=True, serialized_name='projectStatus', validators=[is_known_project_status],
                                 serialize_when_none=False)
