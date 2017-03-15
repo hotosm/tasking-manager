@@ -14,3 +14,21 @@
 .form__group {
   margin-top: $global-spacing;
 }
+
+.panel-grey-rounder-corners {
+  border-radius: 0.5em;
+  background: #ebebeb;
+  padding: 1em;
+  margin-top: 0.5em;
+}
+
+.panel-white-round-corners {
+  background: #ffffff;
+  border-radius: 0.2em;
+  padding: 0.2em;
+  font-size: smaller;
+}
+
+.historyItem {
+  margin-bottom: 0.5em;
+}
