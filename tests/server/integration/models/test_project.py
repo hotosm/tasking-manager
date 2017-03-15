@@ -1,6 +1,7 @@
 import os
 import unittest
 import geojson
+import json
 from server import create_app
 from server.services.project_service import Project, AreaOfInterest, Task
 
@@ -54,17 +55,18 @@ class TestProject(unittest.TestCase):
         project_dto = Project.as_dto(self.test_project.id)
 
         # Assert
-        self.assertIsInstance(project_dto['areaOfInterest'], geojson.MultiPolygon)
-        self.assertIsInstance(project_dto['tasks'], geojson.FeatureCollection)
-        self.assertEqual(project_dto['projectName'], 'Test')
-        self.assertEqual(project_dto['projectId'], self.test_project.id)
+        self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)
+        self.assertIsInstance(project_dto.tasks, geojson.FeatureCollection)
+        self.assertEqual(project_dto.project_name, 'Test')
+        self.assertEqual(project_dto.project_id, self.test_project.id)
 
     def create_test_project(self):
         """
         Helper function that creates a valid test project in the db
         """
-        multipoly_geojson = '{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],' \
-            '[-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12}, "type": "MultiPolygon"}'
+        multipoly_geojson = json.loads('{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],'
+                                       '[-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12},'
+                                       '"type": "MultiPolygon"}')
 
         task_feature = geojson.loads('{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'
                                      '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "type": "MultiPolygon"},'

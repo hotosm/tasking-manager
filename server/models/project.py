@@ -100,7 +100,7 @@ class Project(db.Model):
         db.session.commit()
 
     @staticmethod
-    def as_dto(project_id, for_admin=False):
+    def as_dto(project_id, for_admin=False) -> ProjectDTO:
         """
         Creates a Project DTO suitable for transmitting via the API
         :param project_id: project_id in scope
