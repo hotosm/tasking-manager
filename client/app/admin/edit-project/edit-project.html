@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Edit project: #{{ editProjectCtrl.projectId }} - {{ editProjectCtrl.projectName }}
+                    Edit project: #{{ editProjectCtrl.project.id }} - {{ editProjectCtrl.project.name }}
                 </h1>
             </div>
         </header>
@@ -68,7 +68,7 @@
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
                                         <label class="form__label">Status</label>
-                                        <select class="form__control" ng-model="editProjectCtrl.projectStatus">
+                                        <select class="form__control" ng-model="editProjectCtrl.project.status">
                                             <option value="published">Published</option>
                                             <option value="archived">Archived</option>
                                             <option value="draft">Draft</option>
@@ -76,7 +76,7 @@
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Priority</label>
-                                        <select class="form__control" ng-model="editProjectCtrl.projectPriority">
+                                        <select class="form__control" ng-model="editProjectCtrl.project.priority">
                                             <option value="urgent">Urgent</option>
                                             <option value="high">High</option>
                                             <option value="medium">Medium</option>
@@ -86,24 +86,24 @@
                                     <div class="form__group">
                                         <label class="form__label">Name of the project</label>
                                         <input type="text" class="form__control"
-                                               ng-model="editProjectCtrl.projectName"/>
+                                               ng-model="editProjectCtrl.project.name"/>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Short description</label>
-                                        <textarea class="form__control" ng-model="editProjectCtrl.shortDescription" rows="4"></textarea>
+                                        <textarea class="form__control" ng-model="editProjectCtrl.project.shortDescription" rows="4"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
-                                        <div ng-show="editProjectCtrl.shortDescription">
+                                        <div ng-show="editProjectCtrl.project.shortDescription">
                                             <label class="form__label">Preview</label>
-                                            <p markdown-to-html="editProjectCtrl.shortDescription"></p>
+                                            <p markdown-to-html="editProjectCtrl.project.shortDescription"></p>
                                         </div>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Description</label>
-                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.description"></textarea>
+                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.project.description"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
-                                        <div ng-show="editProjectCtrl.description">
+                                        <div ng-show="editProjectCtrl.project.description">
                                             <label class="form__label">Preview</label>
-                                            <p markdown-to-html="editProjectCtrl.description"></p>
+                                            <p markdown-to-html="editProjectCtrl.project.description"></p>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -132,20 +132,20 @@
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Detailed instructions</label>
-                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.instructions"></textarea>
+                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.project.instructions"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
-                                        <div ng-show="editProjectCtrl.instructions">
+                                        <div ng-show="editProjectCtrl.project.instructions">
                                             <label class="form__label">Preview</label>
-                                            <p markdown-to-html="editProjectCtrl.instructions"></p>
+                                            <p markdown-to-html="editProjectCtrl.project.instructions"></p>
                                         </div>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Per task instructions (optional)</label>
-                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.taskInstructions"></textarea>
+                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.project.taskInstructions"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
-                                        <div ng-show="editProjectCtrl.taskInstructions">
+                                        <div ng-show="editProjectCtrl.project.taskInstructions">
                                             <label class="form__label">Preview</label>
-                                            <p markdown-to-html="editProjectCtrl.taskInstructions"></p>
+                                            <p markdown-to-html="editProjectCtrl.project.taskInstructions"></p>
                                         </div>
                                     </div>
                                </fieldset>
@@ -253,9 +253,26 @@
                         <!--/ imagery section -->
                         <!-- priority area section -->
                         <div ng-show="editProjectCtrl.currentSection === 'priorityareas'">
-                            TODO: add draw tools
+                            <p>{{ editProjectCtrl.numberOfPriorityAreas }} priority areas</p>
                             <div>
                                 <p>If you want mappers to work on the highest priorty areas first, draw one of more polygons within the project area. </p>
+                            </div>
+                            <div class="button-group button-group--horizontal" role="group" aria-label="priority draw tools">
+                                <button class="button button--achromic"
+                                        ng-class="editProjectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''"
+                                        ng-click="editProjectCtrl.drawPriorityPolygon()">Draw polygon</button>
+                                <button class="button button--achromic"
+                                        ng-class="editProjectCtrl.drawRectangleInteraction.getActive() ? 'button--active' : ''"
+                                        ng-click="editProjectCtrl.drawPriorityRectangle()">Draw rectangle</button>
+                                <button class="button button--achromic"
+                                        ng-class="editProjectCtrl.drawCircleInteraction.getActive() ? 'button--active' : ''"
+                                        ng-click="editProjectCtrl.drawPriorityCircle()">Draw circle</button>
+                                <button class="button button--achromic"
+                                        ng-class="editProjectCtrl.editPriority ? 'button--active' : ''"
+                                        ng-click="editProjectCtrl.editPriorityArea()">Edit</button>
+                                <button class="button button--achromic"
+                                        ng-class="editProjectCtrl.deletePriority ? 'button--active' : ''"
+                                        ng-click="editProjectCtrl.deletePriorityArea()">Delete</button>
                             </div>
                             <div id="map" class="map-container"></div>
                         </div>

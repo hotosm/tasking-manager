@@ -45,7 +45,7 @@
                     zoom: 2
                 })
             });
-
+            
             map.addControl(scaleLineControl);
 
             // Add additional layers defined in the config
