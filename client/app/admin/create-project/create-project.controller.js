@@ -7,11 +7,12 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', '$location', 'mapService', 'aoiService', 'projectService', createProjectController]);
+        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', createProjectController]);
     
-    function createProjectController($scope, $location, mapService, aoiService, projectService) {
+    function createProjectController($scope, $location, mapService, drawService, projectService) {
 
         var vm = this;
+        vm.map = null;
 
         // Wizard 
         vm.currentStep = '';
@@ -57,7 +58,12 @@
             vm.currentStep = 'area';
 
             mapService.createOSMMap('map');
-            aoiService.initDrawTools();
+            vm.map = mapService.getOSMMap();
+            drawService.initInteractions(true, false, false, false, false, true);
+            vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
+            vm.drawPolygonInteraction.on('drawstart', function(){
+               drawService.getSource().clear();
+            });
             projectService.init();
             addGeocoder_();
         }
@@ -73,19 +79,19 @@
                 projectService.removeTaskGrid();
                 vm.currentStep = wizardStep;
                 if (vm.isDrawnAOI){
-                    aoiService.setDrawPolygonActive(true);
+                    vm.drawPolygonInteraction.setActive(true);
                 }
             }
             else if (wizardStep === 'tasks') {
                 setSplitToolsActive_(false);
                 if (vm.isDrawnAOI) {
-                    var aoiValidationResult = projectService.validateAOI(aoiService.getFeatures());
+                    var aoiValidationResult = projectService.validateAOI(drawService.getSource().getFeatures());
                     vm.isAOIValid = aoiValidationResult.valid;
                     vm.AOIValidationMessage = aoiValidationResult.message;
 
                     if (vm.isAOIValid) {
-                        aoiService.setDrawPolygonActive(false);
-                        aoiService.zoomToExtent();
+                        vm.drawPolygonInteraction.setActive(false);
+                        vm.map.getView().fit(drawService.getSource().getExtent());
                         // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
                         vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
                             + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
@@ -96,8 +102,8 @@
                 }
                 if (vm.isImportedAOI){
                     // TODO: validate AOI - depends on what API supports! Self-intersecting polygons?
-                    aoiService.setDrawPolygonActive(false);
-                    aoiService.zoomToExtent();
+                    vm.drawPolygonInteraction.setActive(false);
+                    vm.map.getView().fit(drawService.getSource().getExtent());
                     // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
                     vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
                         + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
@@ -159,11 +165,9 @@
          * Draw Area of Interest
          */
         vm.drawAOI = function(){
-            if (!aoiService.getDrawPolygonActive()){
-                aoiService.setDrawPolygonActive(true);
-                vm.isDrawnAOI = true;
-                vm.isImportedAOI = false;
-            }
+            vm.drawPolygonInteraction.setActive(true);
+            vm.isDrawnAOI = true;
+            vm.isImportedAOI = false;
         };
 
         /**
@@ -177,7 +181,7 @@
             projectService.removeTaskGrid();
 
              // Get and set the AOI
-            var areaOfInterest = aoiService.getFeatures();
+            var areaOfInterest = drawService.getSource().getFeatures();
             projectService.setAOI(areaOfInterest);
 
             // Create a task grid
@@ -214,12 +218,10 @@
          */
         vm.import = function (file) {
             // Set drawing an AOI to inactive
-            if (aoiService.getDrawPolygonActive()){
-                aoiService.setDrawPolygonActive(false);
-            }
+            vm.drawPolygonInteraction.setActive(false);
             vm.isImportError = false;
             if (file) {
-                aoiService.removeAllFeatures();
+                drawService.getSource().clear();
                 var fileReader = new FileReader();
                 fileReader.onloadend = function (e) {
                     var data = e.target.result;
@@ -264,8 +266,8 @@
             vm.isImportedAOI = true;
             vm.isDrawnAOI = false;
             projectService.setAOI(features);
-            aoiService.setFeatures(features);
-            aoiService.zoomToExtent();
+            drawService.getSource.addFeatures(features);
+            vm.map.getView().fit(drawService.getSource().getExtent());
         }
 
         /**
