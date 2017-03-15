@@ -85,6 +85,7 @@
 
         /**
          * Initialises the draw interaction for drawing polygons
+         * @private
          */
         function initDrawPolygonInteraction_() {
             drawPolygonInteraction = new ol.interaction.Draw({
@@ -106,6 +107,7 @@
 
         /**
          * Initialises the draw interaction for drawing rectangles
+         * @private
          */
         function initDrawRectangleInteraction_(){
             drawRectangleInteraction = new ol.interaction.Draw({
@@ -127,6 +129,7 @@
 
         /**
          * Initialises the draw interaction for drawing circles
+         * @private
          */
         function initDrawCircleInteraction_(){
             drawCircleInteraction = new ol.interaction.Draw({
@@ -151,9 +154,12 @@
          * It allows modifying the selected feature so it needs the select interaction to be active.
          * TODO: check if there is any progress on modifying circles and rectangles:
          * https://github.com/openlayers/openlayers/issues/5095
+         * @private
          */
         function initModifyInteraction_() {
             var modifyFeatures = features;
+            // If a select interaction is defined, use the selected features for modification, otherwise use the 
+            // vector's source's features
             if (selectInteraction){
                 modifyFeatures = selectInteraction.getFeatures();
             }
@@ -180,6 +186,7 @@
 
         /**
          * Initialises the select interaction which can be used for deleting features etc.
+         * @private
          */
         function initSelectInteraction_(){
             selectInteraction = new ol.interaction.Select();
@@ -197,6 +204,7 @@
         /**
          * Initialise the translate interaction - which is used for moving features
          * It allows moving the selected feature so it needs the select interaction to be active.
+         * @private
          */
         function initTranslateInteraction_(){
             translateInteraction = new ol.interaction.Translate({

@@ -52,6 +52,10 @@
         vm.drawAndSelectPolygon = null;
         vm.drawAndSelectPoint = null;
 
+        // Draw interactions
+        vm.modifyInteraction = null;
+        vm.drawPolygonInteraction = null;
+
         activate();
 
         function activate() {
@@ -60,6 +64,7 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             drawService.initInteractions(true, false, false, false, false, true);
+            vm.modifyInteraction = drawService.getModifyInteraction();
             vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
             vm.drawPolygonInteraction.on('drawstart', function(){
                drawService.getSource().clear();
@@ -80,6 +85,7 @@
                 vm.currentStep = wizardStep;
                 if (vm.isDrawnAOI){
                     vm.drawPolygonInteraction.setActive(true);
+                    vm.modifyInteraction.setActive(true);
                 }
             }
             else if (wizardStep === 'tasks') {
@@ -88,9 +94,7 @@
                     var aoiValidationResult = projectService.validateAOI(drawService.getSource().getFeatures());
                     vm.isAOIValid = aoiValidationResult.valid;
                     vm.AOIValidationMessage = aoiValidationResult.message;
-
                     if (vm.isAOIValid) {
-                        vm.drawPolygonInteraction.setActive(false);
                         vm.map.getView().fit(drawService.getSource().getExtent());
                         // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
                         vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
@@ -98,6 +102,8 @@
                         // Reset the user zoom level offset
                         vm.userZoomLevelOffset = 0;
                         vm.currentStep = wizardStep;
+                        vm.drawPolygonInteraction.setActive(false);
+                        vm.modifyInteraction.setActive(false);
                     }
                 }
                 if (vm.isImportedAOI){
@@ -108,6 +114,8 @@
                     vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
                         + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
                     vm.currentStep = wizardStep;
+                    vm.drawPolygonInteraction.setActive(false);
+                    vm.modifyInteraction.setActive(false);
                     // Reset the user zoom level offset
                     vm.userZoomLevelOffset = 0;
                 }
