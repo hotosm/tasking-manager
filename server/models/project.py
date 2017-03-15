@@ -100,10 +100,11 @@ class Project(db.Model):
         db.session.commit()
 
     @staticmethod
-    def as_dto(project_id):
+    def as_dto(project_id, for_admin=False):
         """
         Creates a Project DTO suitable for transmitting via the API
         :param project_id: project_id in scope
+        :param for_admin: set to True if project is required for admin
         :return: Project DTO dict
         """
         query = db.session.query(Project.id, Project.name, AreaOfInterest.geometry.ST_AsGeoJSON()
@@ -111,10 +112,6 @@ class Project(db.Model):
 
         if query is None:
             return None
-
-        # project_dto = dict(projectId=project_id, projectName=query.name)
-        # project_dto['areaOfInterest'] = geojson.loads(query.geojson)
-        # project_dto['tasks'] = Task.get_tasks_as_geojson_feature_collection(project_id)
 
         project_dto = ProjectDTO()
         project_dto.project_id = project_id
