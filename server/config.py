@@ -1,6 +1,6 @@
 import logging
 import os
-from server.models.utils import DateTimeEncoder
+from server.models.postgis.utils import DateTimeEncoder
 
 
 class EnvironmentConfig:
@@ -8,7 +8,7 @@ class EnvironmentConfig:
     Base class for config that is shared between environments
     """
     LOG_LEVEL = logging.ERROR
-    RESTFUL_JSON = {'cls': DateTimeEncoder}
+    RESTFUL_JSON = {'cls': DateTimeEncoder}  # Setup custom json encoder for Python datatimes
     SQLALCHEMY_DATABASE_URI = os.getenv('TASKING_MANAGER_DB', None)
 
 

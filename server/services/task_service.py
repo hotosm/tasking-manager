@@ -1,5 +1,6 @@
 from flask import current_app
-from server.models.task import Task, TaskStatus, TaskHistory, TaskAction
+
+from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 
 
 class TaskServiceError(Exception):

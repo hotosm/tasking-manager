@@ -1,9 +1,15 @@
-import geojson
+import json
 from enum import Enum
+from typing import Optional
+
+import geojson
 from geoalchemy2 import Geometry
+
 from server import db
-from server.models.task import Task
-from server.models.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
+from server.models.dtos.project_dto import ProjectDTO
+from server.models.postgis.statuses import ProjectStatus
+from server.models.postgis.task import Task
+from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
 
 
 class AreaOfInterest(db.Model):
@@ -22,7 +28,7 @@ class AreaOfInterest(db.Model):
         :param aoi_geometry_geojson: AOI GeoJson
         :raises InvalidGeoJson
         """
-        aoi_geometry = geojson.loads(aoi_geometry_geojson)
+        aoi_geometry = geojson.loads(json.dumps(aoi_geometry_geojson))
 
         if type(aoi_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')
@@ -35,14 +41,12 @@ class AreaOfInterest(db.Model):
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
 
 
-class ProjectStatus(Enum):
-    """
-    Enum to describes all possible states of a Mapping Project
-    """
-    # TODO add DELETE state, others??
-    ARCHIVED = 0
-    PUBLISHED = 1
-    DRAFT = 2
+class ProjectPriority(Enum):
+    """ Enum to describe all possible project priority levels """
+    URGENT = 0
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
 
 
 class Project(db.Model):
@@ -53,11 +57,12 @@ class Project(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
-    status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value)
+    status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
-    created = db.Column(db.DateTime, default=timestamp)
+    created = db.Column(db.DateTime, default=timestamp, nullable=False)
+    priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
 
     def __init__(self, project_name, aoi):
         """
@@ -81,6 +86,12 @@ class Project(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def update(self, project_dto: ProjectDTO):
+        """ Updates project from DTO """
+        self.name = project_dto.project_name
+        self.status = ProjectStatus[project_dto.project_status].value
+        db.session.commit()
+
     def delete(self):
         """
         Deletes the current model from the DB
@@ -89,10 +100,11 @@ class Project(db.Model):
         db.session.commit()
 
     @staticmethod
-    def as_dto(project_id):
+    def as_dto(project_id, for_admin=False) -> Optional[ProjectDTO]:
         """
         Creates a Project DTO suitable for transmitting via the API
         :param project_id: project_id in scope
+        :param for_admin: set to True if project is required for admin
         :return: Project DTO dict
         """
         query = db.session.query(Project.id, Project.name, AreaOfInterest.geometry.ST_AsGeoJSON()
@@ -101,8 +113,10 @@ class Project(db.Model):
         if query is None:
             return None
 
-        project_dto = dict(projectId=project_id, projectName=query.name)
-        project_dto['areaOfInterest'] = geojson.loads(query.geojson)
-        project_dto['tasks'] = Task.get_tasks_as_geojson_feature_collection(project_id)
+        project_dto = ProjectDTO()
+        project_dto.project_id = project_id
+        project_dto.project_name = query.name
+        project_dto.area_of_interest = geojson.loads(query.geojson)
+        project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
 
         return project_dto

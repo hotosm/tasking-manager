@@ -81,8 +81,8 @@ def init_flask_restful_routes(app):
 
     api.add_resource(SwaggerDocsAPI, '/api/docs')
     api.add_resource(HealthCheckAPI, '/api/health-check')
-    api.add_resource(ProjectsAPI,    '/api/v1/project', methods=['PUT'])
-    api.add_resource(ProjectsAPI,    '/api/v1/project/<int:project_id>', endpoint="get", methods=['GET'])
+    api.add_resource(ProjectsAPI,    '/api/v1/project', endpoint="create_project", methods=['PUT'])
+    api.add_resource(ProjectsAPI,    '/api/v1/project/<int:project_id>', methods=['GET', 'POST'])
     api.add_resource(TaskAPI,        '/api/v1/project/<int:project_id>/task/<int:task_id>')
     api.add_resource(LockTaskAPI,    '/api/v1/project/<int:project_id>/task/<int:task_id>/lock')
     api.add_resource(UnlockTaskAPI,  '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock')

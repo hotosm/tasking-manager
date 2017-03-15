@@ -1,3 +1,4 @@
+import json
 import unittest
 from unittest.mock import MagicMock
 from server.services.project_service import ProjectService, InvalidGeoJson, Project
@@ -17,10 +18,10 @@ class TestProject(unittest.TestCase):
 
     def test_valid_geo_json_attaches_task_to_project(self):
         # Arrange
-        valid_feature_collection = '{"features": [{"geometry": {"coordinates": [[[[-4.0237, 56.0904],' \
-                                   '[-3.9111, 56.1715], [-3.8122, 56.098], [-4.0237, 56.0904]]]], "type":' \
-                                   '"MultiPolygon"}, "properties": {"x": 2402, "y": 1736, "zoom": 12}, "type":' \
-                                   '"Feature"}], "type": "FeatureCollection"}'
+        valid_feature_collection = json.loads('{"features": [{"geometry": {"coordinates": [[[[-4.0237, 56.0904],'
+                                              '[-3.9111, 56.1715], [-3.8122, 56.098], [-4.0237, 56.0904]]]], "type":'
+                                              '"MultiPolygon"}, "properties": {"x": 2402, "y": 1736, "zoom": 12}, "type":'
+                                              '"Feature"}], "type": "FeatureCollection"}')
 
         test_project_service = ProjectService()
         test_project = Project('Test', MagicMock())
