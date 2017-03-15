@@ -36,7 +36,7 @@
     "node-bourbon": "^4.2.8",
     "oam-design-system": "git+https://github.com/hotosm/oam-design-system.git",
     "ol3-geocoder": "^2.5.0",
-    "ol3-layerswitcher": "^1.1.2",
+    "ol3-layerswitcher": "^1.1.0",
     "openlayers": "^4.0.1",
     "phantomjs-prebuilt": "^2.1.14",
     "react": "^15.4.2",

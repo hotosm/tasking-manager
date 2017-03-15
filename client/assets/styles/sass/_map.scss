@@ -14,3 +14,9 @@
 .ol-scale-line {
   background-color: $secondary-color;
 }
+
+/* Layer switcher override */
+.layer-switcher {
+  bottom: 3em;
+  top: auto;
+}
