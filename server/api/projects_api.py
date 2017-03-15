@@ -1,4 +1,3 @@
-import json
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import ProjectDTO
@@ -57,25 +56,6 @@ class ProjectsAPI(Resource):
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
-
-        # try:
-        #     # TODO this a little clunky but avoids DTO object, however DTOs may be cleaner - will decide later
-        #     #data = request.get_json()
-        #     #project_name = data['projectName']
-        #     #aoi_geometry_geojson = json.dumps(data['areaOfInterest'])
-        #     #tasks_geojson = json.dumps(data['tasks'])
-        #
-        #     project_dto = ProjectDTO(request.get_json())
-        # except KeyError as e:
-        #     error_msg = f'Key {str(e)} not found in JSON, note parser is case sensitive'
-        #     current_app.logger.error(error_msg)
-        #     return {"error": error_msg}, 400
-        #
-        # # Check that none of the required fields are empty
-        # if '' in [project_name, aoi_geometry_geojson, tasks_geojson]:
-        #     error_msg = 'Empty required field detected'
-        #     current_app.logger.error(error_msg)
-        #     return {"error": error_msg}, 400
 
         try:
             project_service = ProjectService()
@@ -154,6 +134,8 @@ class ProjectsAPI(Resource):
         responses:
             200:
                 description: Project updated
+            400:
+                description: Client Error - Invalid Request
             404:
                 description: Project not found
             500:
@@ -161,24 +143,20 @@ class ProjectsAPI(Resource):
         """
         try:
             project_dto = ProjectDTO(request.get_json())
+            project_dto.project_id = project_id
             project_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
-
         try:
-            project_dto = ProjectDTO(request.get_json())
-
-            project_dto.validate()
-
             project_service = ProjectService()
-            project = project_service.update_project(project_id, project_dto)
+            project = project_service.update_project(project_dto)
 
             if project is None:
                 return {"Error": "Project Not Found"}, 404
 
-            return project, 200
+            return {"Status": "Updated"}, 200
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

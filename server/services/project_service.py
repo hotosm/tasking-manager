@@ -9,9 +9,7 @@ class ProjectService:
     def create_draft_project(self, project_dto: ProjectDTO) -> int:
         """
         Validates and then persists draft projects in the DB
-        :param project_name: Name the Project Manager has given the project
-        :param aoi_geojson: Area Of Interest Geometry as a geoJSON multipolygon
-        :param tasks_geojson: All tasks associated with the project as a geoJSON feature collection
+        :param project_dto: Project DTO with data from API
         :raises InvalidGeoJson
         :returns ID of new draft project
         """
@@ -34,10 +32,15 @@ class ProjectService:
         """ Get the project as DTO for transmission via the API """
         return Project.as_dto(project_id)
 
-    def update_project(self, project_id, project_dto):
-        project = Project.query.get(project_id)
+    def update_project(self, project_dto: ProjectDTO):
+        project = Project.query.get(project_dto.project_id)
 
-        iain = project
+        if project is None:
+            return None
+
+        project.update(project_dto)
+        return project
+
 
 
     def _attach_tasks_to_project(self, draft_project, tasks_geojson):
