@@ -2,6 +2,7 @@ import geojson
 import json
 from enum import Enum
 from geoalchemy2 import Geometry
+from typing import Optional
 from server import db
 from server.models.statuses import ProjectStatus
 from server.models.dtos.project_dto import ProjectDTO
@@ -36,9 +37,6 @@ class AreaOfInterest(db.Model):
 
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
-
-
-
 
 
 class ProjectPriority(Enum):
@@ -100,7 +98,7 @@ class Project(db.Model):
         db.session.commit()
 
     @staticmethod
-    def as_dto(project_id, for_admin=False) -> ProjectDTO:
+    def as_dto(project_id, for_admin=False) -> Optional[ProjectDTO]:
         """
         Creates a Project DTO suitable for transmitting via the API
         :param project_id: project_id in scope
