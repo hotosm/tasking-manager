@@ -103,12 +103,12 @@ class ProjectsAPI(Resource):
         """
         try:
             project_service = ProjectService()
-            project = project_service.get_project_as_dto(project_id)
+            project_dto = project_service.get_project_as_dto(project_id)
 
-            if project is None:
+            if project_dto is None:
                 return {"Error": "Project Not Found"}, 404
 
-            return project, 200
+            return project_dto.to_primitive(), 200
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

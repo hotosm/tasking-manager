@@ -2,10 +2,10 @@ import geojson
 from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
+from server.models.statuses import ProjectStatus
 from server.models.dtos.project_dto import ProjectDTO
 from server.models.task import Task
 from server.models.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
-
 
 
 class AreaOfInterest(db.Model):
@@ -37,12 +37,7 @@ class AreaOfInterest(db.Model):
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
 
 
-class ProjectStatus(Enum):
-    """ Enum to describes all possible states of a Mapping Project """
-    # TODO add DELETE state, others??
-    ARCHIVED = 0
-    PUBLISHED = 1
-    DRAFT = 2
+
 
 
 class ProjectPriority(Enum):
@@ -114,8 +109,14 @@ class Project(db.Model):
         if query is None:
             return None
 
-        project_dto = dict(projectId=project_id, projectName=query.name)
-        project_dto['areaOfInterest'] = geojson.loads(query.geojson)
-        project_dto['tasks'] = Task.get_tasks_as_geojson_feature_collection(project_id)
+        # project_dto = dict(projectId=project_id, projectName=query.name)
+        # project_dto['areaOfInterest'] = geojson.loads(query.geojson)
+        # project_dto['tasks'] = Task.get_tasks_as_geojson_feature_collection(project_id)
+
+        project_dto = ProjectDTO()
+        project_dto.project_id = project_id
+        project_dto.project_name = query.name
+        project_dto.area_of_interest = geojson.loads(query.geojson)
+        project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
 
         return project_dto
