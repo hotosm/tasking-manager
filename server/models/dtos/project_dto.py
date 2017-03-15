@@ -16,7 +16,7 @@ def is_known_project_status(value):
 def is_known_project_priority(value):
     """ Validates Project priority is known value """
     try:
-        ProjectStatus[value.upper()]
+        ProjectPriority[value.upper()]
     except KeyError:
         raise ValidationError(f'Unknown projectStatus: {value} Valid values are {ProjectPriority.LOW.name}, '
                               f'{ProjectPriority.MEDIUM.name}, {ProjectPriority.HIGH.name}, '
