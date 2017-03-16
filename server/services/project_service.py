@@ -28,9 +28,14 @@ class ProjectService:
         draft_project.create()
         return draft_project.id
 
-    def get_project_as_dto(self, project_id):
-        """ Get the project as DTO for transmission via the API """
-        return Project.as_dto(project_id)
+    def get_project_dto_for_mapper(self, project_id):
+        """ Get the project as DTO for mappers """
+        return Project.as_dto_for_mapper(project_id)
+
+    def get_project_dto_for_admin(self, project_id):
+        """ Get the project as DTO for project managers """
+        project = Project.query.get(project_id)
+        dto = project.as_dto_for_admin()
 
     def update_project(self, project_dto: ProjectDTO):
         project = Project.query.get(project_dto.project_id)

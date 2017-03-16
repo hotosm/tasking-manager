@@ -128,16 +128,14 @@ class Project(db.Model):
         db.session.commit()
 
     def delete(self):
-        """
-        Deletes the current model from the DB
-        """
+        """ Deletes the current model from the DB """
         db.session.delete(self)
         db.session.commit()
 
     @staticmethod
-    def as_dto(project_id, for_admin=False) -> Optional[ProjectDTO]:
+    def as_dto_for_mapper(project_id, for_admin=False) -> Optional[ProjectDTO]:
         """
-        Creates a Project DTO suitable for transmitting via the API
+        Creates a Project DTO suitable for transmitting to mapper users
         :param project_id: project_id in scope
         :param for_admin: set to True if project is required for admin
         :return: Project DTO dict
@@ -155,3 +153,6 @@ class Project(db.Model):
         project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
 
         return project_dto
+
+    def as_dto_for_admin(self):
+        iain = 'test'

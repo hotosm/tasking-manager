@@ -52,7 +52,7 @@ class TestProject(unittest.TestCase):
 
     def test_project_can_be_generated_as_dto(self):
         # Act
-        project_dto = Project.as_dto(self.test_project.id)
+        project_dto = Project.as_dto_for_mapper(self.test_project.id)
 
         # Assert
         self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)

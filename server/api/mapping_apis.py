@@ -29,7 +29,7 @@ class ProjectAPI(Resource):
         """
         try:
             project_service = ProjectService()
-            project_dto = project_service.get_project_as_dto(project_id)
+            project_dto = project_service.get_project_dto_for_mapper(project_id)
 
             if project_dto is None:
                 return {"Error": "Project Not Found"}, 404
