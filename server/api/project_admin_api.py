@@ -4,7 +4,7 @@ from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.services.project_service import ProjectService, InvalidGeoJson, InvalidData
 
 
-class ProjectsAPI(Resource):
+class ProjectAdminAPI(Resource):
     """
     /api/projects
     """
@@ -14,7 +14,7 @@ class ProjectsAPI(Resource):
         Creates a tasking-manager project
         ---
         tags:
-            - projects
+            - project-admin
         produces:
             - application/json
         parameters:
@@ -72,7 +72,7 @@ class ProjectsAPI(Resource):
         Retrieves a Tasking-Manager project
         ---
         tags:
-            - projects
+            - project-admin
         produces:
             - application/json
         parameters:
@@ -108,7 +108,7 @@ class ProjectsAPI(Resource):
         Updates a Tasking-Manager project
         ---
         tags:
-            - projects
+            - project-admin
         produces:
             - application/json
         parameters:
