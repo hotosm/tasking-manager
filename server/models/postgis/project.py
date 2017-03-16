@@ -57,6 +57,7 @@ class Project(db.Model):
     __tablename__ = 'projects'
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))  # TODO remove column
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")

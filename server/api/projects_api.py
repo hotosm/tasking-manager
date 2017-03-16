@@ -133,6 +133,11 @@ class ProjectsAPI(Resource):
                       projectPriority:
                           type: string
                           default: MEDIUM
+                      projectInfo:
+                          type: array
+                          items:
+                              schema:
+                                  $ref: "#/definitions/ProjectInfo"
         responses:
             200:
                 description: Project updated
