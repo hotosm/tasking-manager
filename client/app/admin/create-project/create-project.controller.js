@@ -340,18 +340,6 @@
          };
 
         /**
-         * Add layer
-         * Supported types: 
-         *  - XYZ
-         * @param url
-         */
-        vm.addLayer = function(url){
-            if (url) {
-                mapService.addXYZLayer('temporary', url);
-            }
-        };
-
-        /**
          * Create a new project with a project name
          */
         vm.createProject = function(){
