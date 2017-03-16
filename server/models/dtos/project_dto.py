@@ -31,9 +31,9 @@ class DraftProjectDTO(Model):
     tasks = BaseType(required=True)
 
 
-class ProjectInfo(Model):
+class ProjectInfoDTO(Model):
     """ Contains the localized project info"""
-    locale = StringType()
+    locale = StringType(required=True)
     name = StringType()
     short_description = StringType(serialized_name='shortDescription')
     description = StringType()
@@ -50,4 +50,4 @@ class ProjectDTO(Model):
                                   validators=[is_known_project_priority], serialize_when_none=False)
     area_of_interest = BaseType(serialized_name='areaOfInterest')
     tasks = BaseType()
-    project_info = ListType(ModelType(ProjectInfo), serialized_name='projectInfo')
+    project_info = ListType(ModelType(ProjectInfoDTO), serialized_name='projectInfo')

@@ -3,7 +3,7 @@ import geojson
 from typing import Optional
 from geoalchemy2 import Geometry
 from server import db
-from server.models.dtos.project_dto import ProjectDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority
 from server.models.postgis.task import Task
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
@@ -51,19 +51,30 @@ class ProjectInfo(db.Model):
 
     __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
 
+    def __init__(self, dto: ProjectInfoDTO):
+        self.locale = dto.locale
+        self.name = dto.name
+        self.short_description = dto.short_description
+        self.description = dto.description
+        self.instructions = dto.instructions
+
 
 class Project(db.Model):
     """ Describes a HOT Mapping Project """
     __tablename__ = 'projects'
 
+    # Columns
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))  # TODO remove column
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
-    area_of_interest = db.relationship(AreaOfInterest, cascade="all")
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
+
+    # Mapped Objects
+    area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
+    project_info = db.relationship(ProjectInfo, cascade="all")
 
     def __init__(self, project_name, aoi):
         """
@@ -92,6 +103,15 @@ class Project(db.Model):
         self.name = project_dto.project_name
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
+
+        # Set Project Info for all returned locales
+        info = []
+        for dto in project_dto.project_info:
+            project_info = ProjectInfo(dto)
+            info.append(project_info)
+
+        self.project_info = info
+
         db.session.commit()
 
     def delete(self):
