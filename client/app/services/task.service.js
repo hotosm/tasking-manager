@@ -13,7 +13,8 @@
         var service = {
             getTask: getTask,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
-            getTasksByStatus: getTasksByStatus
+            getTasksByStatus: getTasksByStatus,
+            lockTask: lockTask
         };
 
         return service;
@@ -36,6 +37,25 @@
                 // this callback will be called asynchronously
                 // when the response is available
                 return (response.data);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        function lockTask(projectId, taskId){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/v1/project/'+projectId+'/task/'+taskId+'/lock',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response);
             }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
