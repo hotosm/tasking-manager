@@ -105,6 +105,7 @@
         function getSelectedStyleFunction(feature) {
             // get the base style for the feature and override it's stroke only.
             var baseStyle = getTaskStyleFunction(feature);
+            console.log(baseStyle.getFill().getColor());
             baseStyle.getStroke().setColor(STROKE_COLOUR_SELECTED);
             baseStyle.getStroke().setWidth(STROKE_WIDTH_SELECTED);
             return baseStyle;

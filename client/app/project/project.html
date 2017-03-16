@@ -164,7 +164,7 @@
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment"></textarea>
                                 </div>
-                                <button class="button button--secondary" >
+                                <button class="button button--secondary" ng-click="projectCtrl.unLockTask(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
                                     Stop Mapping
                                 </button>
                                 <button class="button button--secondary" ng-click="projectCtrl.unLockTask(projectCtrl.comment, 'DONE')">

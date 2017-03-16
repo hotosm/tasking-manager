@@ -22,12 +22,10 @@
 
         //selected task
         vm.selectedTaskData = null;
-        vm.selectedTaskFeature = null;
         vm.isSelectTaskMappable = false;
 
         //locked task
         vm.lockedTaskData = null;
-        vm.lockedTaskFeature = null;
 
         //interaction
         var select = new ol.interaction.Select({
@@ -36,7 +34,6 @@
 
         //bound from the html
         vm.comment = '';
-
 
         activate();
 
@@ -89,7 +86,7 @@
             }
             else {
                 vm.selectedTaskData = null;
-                vm.selectedTaskFeature = null;
+                //vm.selectedTaskFeature = null;
                 vm.isSelectTaskMappable = false;
                 vm.taskError = 'none-available';
                 vm.mappingStep = 'viewing';
@@ -101,7 +98,7 @@
          */
         vm.clearCurrentSelection = function () {
             vm.selectedTaskData = null;
-            vm.selectedTaskFeature = null;
+            //vm.selectedTaskFeature = null;
             vm.isSelectTaskMappable = false;
             vm.currentTab = 'mapping';
             vm.mappingStep = 'selecting';
@@ -118,7 +115,7 @@
                 //project returned successfully
                 vm.projectData = data;
                 addAoiToMap(vm.projectData.areaOfInterest);
-                addProjectTasksToMap(vm.projectData.tasks);
+                addProjectTasksToMap(vm.projectData.tasks, true);
             }, function () {
                 // project not returned successfully
                 // TODO - may want to handle error
@@ -130,8 +127,8 @@
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.projectData = data;
-                // TODO: get the mapp extent before add so can return to same extent after add
-                addProjectTasksToMap(vm.projectData.tasks);
+                // TODO: get the map extent before add so can return to same extent after add
+                addProjectTasksToMap(vm.projectData.tasks, false);
             }, function () {
                 // project not returned successfully
                 // TODO - may want to handle error
@@ -143,7 +140,7 @@
          * Adds project tasks to map as features from geojson
          * @param tasks
          */
-        function addProjectTasksToMap(tasks) {
+        function addProjectTasksToMap(tasks, fitToProject) {
             //TODO: may want to refactor this into a service at some point so that it can be reused
             var source;
             if (!vm.taskVectorLayer) {
@@ -166,7 +163,9 @@
                 featureProjection: 'EPSG:3857'
             });
             source.addFeatures(taskFeatures);
-            vm.map.getView().fit(source.getExtent());
+            if(fitToProject) {
+                vm.map.getView().fit(source.getExtent());
+            }
         }
 
         /**
@@ -203,7 +202,7 @@
             var taskPromise = taskService.getTask(projectId, taskId);
             taskPromise.then(function (data) {
                 //task returned successfully
-                vm.selectedTaskFeature = feature;
+                //vm.selectedTaskFeature = feature;
                 vm.selectedTaskData = data;
                 vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
                 vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
@@ -212,7 +211,7 @@
             }, function () {
                 // task not returned successfully
                 vm.selectedTaskData = null;
-                vm.selectedTaskFeature = null;
+                //vm.selectedTaskFeature = null;
                 vm.isSelectTaskMappable = false;
                 vm.currentTab = 'mapping';
                 vm.taskError = 'task-get-error';
@@ -220,71 +219,83 @@
             });
         }
 
-        // function setLockedTask(feature) {
-        //     var taskId = feature.get('taskId');
-        //     var projectId = vm.projectData.projectId;
-        //     // get full task from task service call
-        //     var taskPromise = taskService.getTask(projectId, taskId);
-        //     taskPromise.then(function (data) {
-        //         //task returned successfully
-        //         vm.selectedTaskFeature = feature;
-        //         vm.selectedTaskData = data;
-        //         vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
-        //     }, function () {
-        //         // TODO - may need to handle error
-        //     });
-        // }
+        function setLockedTask(task) {
+            var taskId = task.taskId;
+            var projectId = vm.projectData.projectId;
+            // get full task from task service call
+            var taskPromise = taskService.getTask(projectId, taskId);
+            taskPromise.then(function (data) {
+                //task returned successfully, need to recheck it's status to see if it's ok to map
+                if (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED') {
+                    //ok to map
+                }
+                else {
+                    //it's become unmappable while user was thinking
+                }
+            }, function () {
+                // TODO - may need to handle error
+            });
+        }
 
         vm.unLockTask = function (comment, status) {
             var projectId = vm.projectData.projectId;
             var taskId = vm.lockedTaskData.taskId;
             var unLockPromise = taskService.unLockTask(projectId, taskId, comment, status);
             unLockPromise.then(function (response) {
-                console.log('success');
-                selectFeature(vm.lockedTaskFeature);
-                vm.lockedTaskData = null;
-                vm.lockedTaskFeature = null;
                 refreshProject(projectId);
-
+                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
             }, function () {
             });
-
         }
 
         vm.lockSelectedTask = function () {
-            // console.log('lockSelectedTask');
-            // vm.isSelectTaskMappable = false;
-            // onTaskSelection(vm.selectedTaskFeature);
-            //TODO:
-            // - get currently selected project and task id
+
             var projectId = vm.projectData.projectId;
             var taskId = vm.selectedTaskData.taskId;
+
             // - try to lock the task, call returns a promise
             var lockPromise = taskService.lockTask(projectId, taskId);
             lockPromise.then(function (response) {
                 // - if task successfully locked update view to show task locked for mapping UI
-                vm.currentTab = 'mapping';
-                vm.mappingStep = 'locked';
-                // refresh the project data, which will refresh the map
+                //TODO - need the task return with the lock response
+                // refresh the project, to ensure we catch up with any status changes
+                // on the server
                 refreshProject(projectId);
+
+                //refresh the task to check it's still mappable
                 var taskPromise = taskService.getTask(projectId, taskId);
                 taskPromise.then(function (data) {
-                    //task returned successfully
-                    vm.lockedTaskFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId);
-                    vm.lockedTaskData = data;
-                    vm.selectedTaskData = null;
-                    vm.selectedTaskFeature = null;
-                    vm.isSelectTaskMappable = false;
-                    //TODO when there is locked by data for styling the map to show tasks locked by you: select.getFeatures().clear();
+                    //task returned successfully, need to recheck it's status to see if it's ok to map
+                    if (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED') {
+                        //ok to map
+                        //set view to locked
+                        vm.currentTab = 'mapping';
+                        vm.mappingStep = 'locked';
+                        vm.selectedTaskData = data;
+                        vm.isSelectTaskMappable = true;
+                        vm.taskError = '';
+                        vm.lockedTaskData = data;
+                    }
+                    else {
+                        //it's become unmappable while user was thinking
+                        // unlock it and return view to viewing
+                        //TODO: unlock it again
+                        var unLockPromise = taskService.unLockTask(projectId, taskId, '', data.taskStatus);
+                        unLockPromise.then(function (response) {
+                            refreshProject(projectId);
+                            onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+                        }, function () {
+                        });
+                    }
                 }, function () {
-                    onTaskSelection(vm.selectedTaskFeature);
+                    // TODO - may need to handle error
                 });
-
 
             }, function () {
                 // - otherwise, most likely because task was locked while viewing,
                 // call onTaskSelection to update UI to show task status
-                onTaskSelection(vm.selectedTaskFeature);
+                refreshProject(projectId);
+                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
             });
         }
     }
