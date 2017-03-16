@@ -32,7 +32,7 @@
 
         function activate() {
             vm.currentTab = 'description';
-            vm.mappingStep = 'select';
+            vm.mappingStep = 'selecting';
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
 
@@ -77,7 +77,7 @@
             vm.selectedTask = null;
             vm.isSelectTaskMappable = false;
             vm.currentTab = 'mapping';
-            vm.mappingStep = 'select';
+            vm.mappingStep = 'selecting';
             select.getFeatures().clear();
         };
 
@@ -159,7 +159,7 @@
                 vm.selectedTask = data;
                 vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
                 vm.currentTab = 'mapping';
-                vm.mappingStep = 'view';
+                vm.mappingStep = 'viewing';
             }, function () {
                 // task not returned successfully
                 vm.selectedTask = null;
