@@ -1,0 +1,19 @@
+<div class="form__group">
+    <span>
+        <div class="form__input-group">
+        <input type="text" class="form__control form__control--small"
+             placeholder="Map URL"
+             ng-model="addLayerCtrl.layerURL">
+          <span class="form__input-group-button">
+               <select class="button button--achromic button--small" ng-model="addLayerCtrl.type">
+                   <option value="xyz">XYZ</option>
+                </select>
+              <button type="submit"
+                      ng-click="addLayerCtrl.addLayer()"
+                      class="button button--secondary button--small">
+                Add layer
+              </button>
+          </span>
+        </div>
+    </span>
+</div>

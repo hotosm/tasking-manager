@@ -20,3 +20,10 @@
   bottom: 3em;
   top: auto;
 }
+
+.add-layer-control {
+  right: 0.5em;
+  position: absolute;
+  width: 300px;
+  z-index: 1000;
+}

@@ -7,17 +7,15 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', createProjectController]);
+        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService','geospatialService', createProjectController]);
     
-    function createProjectController($scope, $location, mapService, drawService, projectService) {
+    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService) {
 
         var vm = this;
         vm.map = null;
 
         // Wizard 
         vm.currentStep = '';
-        vm.isTaskGrid = false;
-        vm.isTaskArbitrary = false;
         vm.projectName = '';
         vm.projectNameForm = {};
 
@@ -62,6 +60,7 @@
             vm.currentStep = 'area';
 
             mapService.createOSMMap('map');
+            mapService.addGeocoder();
             vm.map = mapService.getOSMMap();
             drawService.initInteractions(true, false, false, false, false, true);
             vm.modifyInteraction = drawService.getModifyInteraction();
@@ -70,7 +69,6 @@
                drawService.getSource().clear();
             });
             projectService.init();
-            addGeocoder_();
         }
 
         /**
@@ -235,17 +233,17 @@
                     var data = e.target.result;
                     var uploadedFeatures = null;
                     if (file.name.substr(-4) === 'json') {
-                        uploadedFeatures = getFeaturesFromGeoJSON_(data);
+                        uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(data);
                         setImportedAOI_(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'kml') {
-                        uploadedFeatures = getFeaturesFromKML_(data);
+                        uploadedFeatures = geospatialService.getFeaturesFromKML(data);
                         setImportedAOI_(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'zip') {
                         // Use the Shapefile.js library to read the zipped Shapefile (with GeoJSON as output)
                         shp(data).then(function(geojson){
-                            var uploadedFeatures = getFeaturesFromGeoJSON_(geojson);
+                            var uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(geojson);
                             setImportedAOI_(uploadedFeatures);
                         });
                     }
@@ -274,41 +272,8 @@
             vm.isImportedAOI = true;
             vm.isDrawnAOI = false;
             projectService.setAOI(features);
-            drawService.getSource.addFeatures(features);
+            drawService.getSource().addFeatures(features);
             vm.map.getView().fit(drawService.getSource().getExtent());
-        }
-
-        /**
-         * Get OL features from GeoJSON
-         * @param data
-         * @returns {Array.<ol.Feature>}
-         * @private
-         */
-        function getFeaturesFromGeoJSON_(data){
-            var format = new ol.format.GeoJSON();
-            var features = format.readFeatures(data, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
-            return features;
-        }
-
-        /**
-         * Get OL features from GeoJSON
-         * @param data
-         * @returns {Array.<ol.Feature>}
-         * @private
-         */
-        function getFeaturesFromKML_(data){
-            var format = new ol.format.KML({
-                extractStyles: false,
-                showPointNames: false
-            });
-            var features = format.readFeatures(data, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
-            return features;
         }
 
         /**
@@ -375,6 +340,18 @@
          };
 
         /**
+         * Add layer
+         * Supported types: 
+         *  - XYZ
+         * @param url
+         */
+        vm.addLayer = function(url){
+            if (url) {
+                mapService.addXYZLayer('temporary', url);
+            }
+        };
+
+        /**
          * Create a new project with a project name
          */
         vm.createProject = function(){
@@ -402,37 +379,6 @@
                 vm.projectNameForm.submitted = true;
             }
         };
-
-        /**
-         * Adds a geocoder control to the map
-         * It is using an OpenLayers plugin control
-         * For more info and options, please see https://github.com/jonataswalker/ol3-geocoder
-         * @private
-         */
-        function addGeocoder_(){
-
-            var map =  mapService.getOSMMap();
-
-            // Initialise the geocoder
-            var geocoder = new Geocoder('nominatim', {
-                provider: 'osm',
-                lang: 'en',
-                placeholder: 'Search for ...',
-                targetType: 'glass-button',
-                limit: 5,
-                keepOpen: true,
-                preventDefault: true
-            });
-            map.addControl(geocoder);
-
-            // By setting the preventDefault to false when initialising the Geocoder, you can add your own event
-            // handler which has been done here.
-            geocoder.on('addresschosen', function(evt){
-                map.getView().setCenter(evt.coordinate);
-                // It is assumed that most people will search for cities. Zoom level 12 seems most appropriate
-                map.getView().setZoom(12);
-            });
-        }
 
         /**
          * Set split tools to active/inactive

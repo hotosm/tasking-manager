@@ -16,7 +16,8 @@
         var service = {
             createOSMMap: createOSMMap,
             getOSMMap: getOSMMap,
-            addXYZLayer: addXYZLayer
+            addXYZLayer: addXYZLayer,
+            addGeocoder: addGeocoder
         };
 
         return service;
@@ -83,9 +84,13 @@
         /**
          * Adds a XYZ layer to the map
          */
-        function addXYZLayer(name, url){
+        function addXYZLayer(name, url, visible){
+            var visibility = false;
+            if (visible){
+                visibility = true;
+            }
             var aerialLayer = new ol.layer.Tile({
-                visible: false,
+                visible: visibility,
                 preload: Infinity,
                 title: name,
                 type: 'base',
@@ -94,6 +99,35 @@
                 })
             });
             map.addLayer(aerialLayer);
+        }
+        
+        /**
+         * Adds a geocoder control to the map
+         * It is using an OpenLayers plugin control
+         * For more info and options, please see https://github.com/jonataswalker/ol3-geocoder
+         * @private
+         */
+        function addGeocoder(){
+
+            // Initialise the geocoder
+            var geocoder = new Geocoder('nominatim', {
+                provider: 'osm',
+                lang: 'en',
+                placeholder: 'Search for ...',
+                targetType: 'glass-button',
+                limit: 5,
+                keepOpen: true,
+                preventDefault: true
+            });
+            map.addControl(geocoder);
+
+            // By setting the preventDefault to false when initialising the Geocoder, you can add your own event
+            // handler which has been done here.
+            geocoder.on('addresschosen', function(evt){
+                map.getView().setCenter(evt.coordinate);
+                // It is assumed that most people will search for cities. Zoom level 12 seems most appropriate
+                map.getView().setZoom(12);
+            });
         }
     }
 })();
