@@ -90,12 +90,14 @@
                         <!-- task viewing and mapping UI's -->
                         <div ng-show="projectCtrl.mappingStep === 'viewing' || projectCtrl.mappingStep === 'locked'">
                             <!-- task viewing UI -->
-                            <h3 ng-show="projectCtrl.selectedTaskData">Task #{{ projectCtrl.selectedTaskData.taskId }} is
-                                <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED</span><span
-                                        ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
-                            </h3>
+
                             <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                 <!-- task information -->
+                                <h3>Task
+                                    #{{ projectCtrl.selectedTaskData.taskId }} is
+                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED</span><span
+                                            ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
+                                </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
                                     <div ng-show="projectCtrl.isSelectTaskMappable" class="alert alert--success"
                                          role="alert">
@@ -142,6 +144,9 @@
                             </div>
                             <!-- task locked UI -->
                             <div ng-show="projectCtrl.mappingStep === 'locked'"><!-- task mapping UI -->
+                                <h3>Task
+                                    #{{ projectCtrl.lockedTaskData.taskId }} is LOCKED by you
+                                </h3>
                                 <p></p>
                                 <div class="form__group">
                                     <div>

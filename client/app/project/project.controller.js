@@ -25,10 +25,15 @@
         vm.selectedTaskFeature = null;
         vm.isSelectTaskMappable = false;
 
+        //locked task
+        vm.lockedTaskData = null;
+        vm.lockedTaskFeature = null;
+
         //interaction
         var select = new ol.interaction.Select({
             style: styleService.getSelectedStyleFunction
         });
+
 
         activate();
 
@@ -52,6 +57,18 @@
         }
 
         /**
+         * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual
+         * context of feature location
+         * @returns {number} - padding number
+         */
+        function getVPadding() {
+            // padding to makes sure there is plenty of clear space around feature on map to keep visual
+            // context of feature location
+            return vm.map.getSize()[1] * 0.3;
+        }
+
+
+        /**
          * Sets up a randomly selected task as the currently selected task
          */
         vm.selectRandomTask = function () {
@@ -60,9 +77,7 @@
                 select.getFeatures().clear();
                 select.getFeatures().push(feature);
                 onTaskSelection(feature);
-                // padding to makes sure there is plenty of clear space around feature on map to keep visual
-                // context of feature location
-                var vPadding = vm.map.getSize()[1] * 0.3;
+                var vPadding = getVPadding();
                 vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
             }
             else {
@@ -108,6 +123,7 @@
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.projectData = data;
+                // TODO: get the mapp extent before add so can return to same extent after add
                 addProjectTasksToMap(vm.projectData.tasks);
             }, function () {
                 // project not returned successfully
@@ -197,7 +213,7 @@
             });
         }
 
-        function refreshSelectedTask(feature) {
+        function setLockedTask(feature) {
             var taskId = feature.get('taskId');
             var projectId = vm.projectData.projectId;
             // get full task from task service call
@@ -211,6 +227,8 @@
                 // TODO - may need to handle error
             });
         }
+
+        vm.refreshTask
 
         vm.lockSelectedTask = function () {
             // console.log('lockSelectedTask');
@@ -226,15 +244,28 @@
                 // - if task successfully locked update view to show task locked for mapping UI
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
-                refreshSelectedTask(vm.selectedTaskFeature);
+                //locked task
+                var taskPromise = taskService.getTask(projectId, taskId);
+                taskPromise.then(function (data) {
+                    //task returned successfully
+                    //TODO: vm.lockedTaskFeature = feature;
+                    vm.lockedTaskData = data;
+                    vm.selectedTaskData = null;
+                    vm.selectedTaskFeature = null;
+                    vm.isSelectTaskMappable = false;
+                    //TODO when there is locked by data for styling the map to show tasks locked by you: select.getFeatures().clear();
+                }, function () {
+                    onTaskSelection(vm.selectedTaskFeature);
+                });
+                refreshProject(projectId);
+
+
             }, function () {
-                // - otherwise, most likely because task is already locked,
-                // call on task selection to update UI to show task status
-                vm.isSelectTaskMappable = false;
+                // - otherwise, most likely because task was locked while viewing,
+                // call onTaskSelection to update UI to show task status
                 onTaskSelection(vm.selectedTaskFeature);
             });
             // refresh the project data, which will refresh the map
-            refreshProject(projectId);
 
 
         }
