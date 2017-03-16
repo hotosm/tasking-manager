@@ -104,7 +104,8 @@
                                 </div>
                                 <!-- task error alerts -->
                                 <div>
-                                    <div ng-show="projectCtrl.taskError === 'task-not-mappable'" class="alert alert--danger"
+                                    <div ng-show="projectCtrl.taskError === 'task-not-mappable'"
+                                         class="alert alert--danger"
                                          role="alert">
                                         <p>The selected task is not available for mapping.</p>
                                     </div>
@@ -129,7 +130,8 @@
                                         Start
                                         Mapping
                                     </button>
-                                    <button ng-hide="projectCtrl.taskError === 'none-available'" ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                    <button ng-hide="projectCtrl.taskError === 'none-available'"
+                                            ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
                                         Select another task
                                     </button>
                                     <button class="button button--secondary"
@@ -140,7 +142,29 @@
                             </div>
                             <!-- task locked UI -->
                             <div ng-show="projectCtrl.mappingStep === 'locked'"><!-- task mapping UI -->
-                                <p>You are now mapping</p>
+                                <p>You have the controls....</p>
+                                <div class="form__group">
+                                    <div>
+                                        <select>
+                                            <option selected="true">ID Editor</option>
+                                            <option>JOSM</option>
+                                            <option>Potlach 2</option>
+                                            <option>Walking papers</option>
+                                            <option>Field papers</option>
+                                        </select>
+                                        <button class="button button--secondary">
+                                            Start Editor
+                                        </button>
+                                    </div>
+                                    <textarea class="form__control" rows="4"
+                                              placeholder="Leave a comment"></textarea>
+                                </div>
+                                <button class="button button--secondary">
+                                    Stop Mapping
+                                </button>
+                                <button class="button button--secondary">
+                                    Mark as done
+                                </button>
                             </div>
                             <!-- advanced options UI -->
                             <div ng-init="showAdvanced=false" class="panel-grey-rounder-corners"
@@ -187,16 +211,6 @@
                                     </div>
                                     <div>
                                         <h6 class="heading-alt">Options</h6>
-                                        <div ng-show="projectCtrl.mappingStep === 'mapping'">
-                                            <label for="form-select-1">Change Editor</label>
-                                            <select class="form__control form__control--small" id="form-select-1">
-                                                <option selected="true">ID Editor</option>
-                                                <option>JOSM</option>
-                                                <option>Potlach 2</option>
-                                                <option>Walking papers</option>
-                                                <option>Field papers</option>
-                                            </select>
-                                        </div>
                                         <button class="button button--primary-unbounded">Preview task in OSM ID Editor
                                         </button>
                                         <button class="button button--primary-unbounded">View OSM changesets</button>

@@ -219,6 +219,7 @@
                 vm.isSelectTaskMappable = false;
                 onTaskSelection(vm.selectedTaskFeature);
             });
+            // refresh the project data, which will refresh the map
             refreshProject(projectId);
 
 
