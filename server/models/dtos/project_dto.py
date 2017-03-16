@@ -50,4 +50,5 @@ class ProjectDTO(Model):
                                   validators=[is_known_project_priority], serialize_when_none=False)
     area_of_interest = BaseType(serialized_name='areaOfInterest')
     tasks = BaseType()
+    default_locale = StringType(serialized_name='defaultLocale')
     project_info = ListType(ModelType(ProjectInfoDTO), serialized_name='projectInfo')

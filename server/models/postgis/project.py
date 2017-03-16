@@ -51,12 +51,21 @@ class ProjectInfo(db.Model):
 
     __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
 
-    def __init__(self, dto: ProjectInfoDTO):
-        self.locale = dto.locale
-        self.name = dto.name
-        self.short_description = dto.short_description
-        self.description = dto.description
-        self.instructions = dto.instructions
+    @staticmethod
+    def from_dto(project_id: int, dto: ProjectInfoDTO):
+        """ Instantiate new ProjectInfo object from DTO """
+        project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=dto.locale).one_or_none()
+
+        if project_info is None:
+            project_info = ProjectInfo(project_id=project_id)  # No info for supplied locale, so must be new
+
+        project_info.locale = dto.locale
+        project_info.name = dto.name
+        project_info.short_description = dto.short_description
+        project_info.description = dto.description
+        project_info.instructions = dto.instructions
+
+        return project_info
 
 
 class Project(db.Model):
@@ -71,10 +80,11 @@ class Project(db.Model):
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
+    default_locale = db.Column(db.String(10), default='en')  # The locale that is returned if requested locale not available
 
     # Mapped Objects
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
-    project_info = db.relationship(ProjectInfo, cascade="all")
+    project_info = db.relationship(ProjectInfo)
 
     def __init__(self, project_name, aoi):
         """
@@ -103,14 +113,12 @@ class Project(db.Model):
         self.name = project_dto.project_name
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
+        self.default_locale = project_dto.default_locale
 
         # Set Project Info for all returned locales
-        info = []
         for dto in project_dto.project_info:
-            project_info = ProjectInfo(dto)
-            info.append(project_info)
-
-        self.project_info = info
+            project_info = ProjectInfo.from_dto(self.id, dto)
+            self.project_info.append(project_info)
 
         db.session.commit()
 

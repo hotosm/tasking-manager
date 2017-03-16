@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 897dfade8545
+Revision ID: ce2a103f532b
 Revises: b93421cec5bd
-Create Date: 2017-03-16 10:57:03.999825
+Create Date: 2017-03-16 13:47:57.984467
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '897dfade8545'
+revision = 'ce2a103f532b'
 down_revision = 'b93421cec5bd'
 branch_labels = None
 depends_on = None
@@ -31,6 +31,7 @@ def upgrade():
     op.create_index('idx_project_info composite', 'project_info', ['locale', 'project_id'], unique=False)
     op.drop_index('idx_areas_of_interest_centroid', table_name='areas_of_interest')
     op.drop_index('idx_areas_of_interest_geometry', table_name='areas_of_interest')
+    op.add_column('projects', sa.Column('default_locale', sa.String(length=10), nullable=True))
     op.add_column('projects', sa.Column('priority', sa.Integer(), nullable=True))
     op.alter_column('projects', 'created',
                existing_type=postgresql.TIMESTAMP(),
@@ -52,6 +53,7 @@ def downgrade():
                existing_type=postgresql.TIMESTAMP(),
                nullable=True)
     op.drop_column('projects', 'priority')
+    op.drop_column('projects', 'default_locale')
     op.create_index('idx_areas_of_interest_geometry', 'areas_of_interest', ['geometry'], unique=False)
     op.create_index('idx_areas_of_interest_centroid', 'areas_of_interest', ['centroid'], unique=False)
     op.drop_index('idx_project_info composite', table_name='project_info')
