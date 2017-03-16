@@ -1,6 +1,7 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
 from schematics.types import StringType, BaseType, IntType
+from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority
 
 
@@ -30,6 +31,15 @@ class DraftProjectDTO(Model):
     tasks = BaseType(required=True)
 
 
+class ProjectInfoDTO(Model):
+    """ Contains the localized project info"""
+    locale = StringType(required=True)
+    name = StringType()
+    short_description = StringType(serialized_name='shortDescription')
+    description = StringType()
+    instructions = StringType()
+
+
 class ProjectDTO(Model):
     """ Describes JSON model for a tasking manager project """
     project_id = IntType(serialized_name='projectId')
@@ -40,3 +50,5 @@ class ProjectDTO(Model):
                                   validators=[is_known_project_priority], serialize_when_none=False)
     area_of_interest = BaseType(serialized_name='areaOfInterest')
     tasks = BaseType()
+    default_locale = StringType(serialized_name='defaultLocale')
+    project_info = ListType(ModelType(ProjectInfoDTO), serialized_name='projectInfo')

@@ -38,6 +38,8 @@ class ProjectService:
         if project is None:
             return None
 
+        # TODO if projectStatus is published validate we have one full set in default locale
+
         project.update(project_dto)
         return project
 

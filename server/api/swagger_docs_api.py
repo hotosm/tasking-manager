@@ -28,6 +28,24 @@ class SwaggerDocsAPI(Resource):
                             type: number
                             default: [[[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]]
             - schema:
+                id: ProjectInfo
+                properties:
+                    locale:
+                        type: string
+                        default: en
+                    name:
+                        type: string
+                        default: Thinkwhere Project
+                    shortDescription:
+                        type: string
+                        default: Awesome little project
+                    description:
+                        type: string
+                        default: Awesome little project and a little bit more
+                    instructions:
+                        type: string
+                        default: Complete the tasks
+            - schema:
                 id: GeoJsonFeature
                 properties:
                     type:

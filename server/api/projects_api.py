@@ -133,6 +133,14 @@ class ProjectsAPI(Resource):
                       projectPriority:
                           type: string
                           default: MEDIUM
+                      defaultLocale:
+                          type: string
+                          default: en
+                      projectInfo:
+                          type: array
+                          items:
+                              schema:
+                                  $ref: "#/definitions/ProjectInfo"
         responses:
             200:
                 description: Project updated
