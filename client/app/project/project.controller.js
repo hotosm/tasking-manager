@@ -34,6 +34,9 @@
             style: styleService.getSelectedStyleFunction
         });
 
+        //bound from the html
+        vm.comment = '';
+
 
         activate();
 
@@ -68,17 +71,21 @@
         }
 
 
+        function selectFeature(feature) {
+            select.getFeatures().clear();
+            select.getFeatures().push(feature);
+            onTaskSelection(feature);
+            var vPadding = getVPadding();
+            vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
+        }
+
         /**
          * Sets up a randomly selected task as the currently selected task
          */
         vm.selectRandomTask = function () {
             var feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
             if (feature) {
-                select.getFeatures().clear();
-                select.getFeatures().push(feature);
-                onTaskSelection(feature);
-                var vPadding = getVPadding();
-                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [vPadding, vPadding, vPadding, vPadding]});
+                selectFeature(feature);
             }
             else {
                 vm.selectedTaskData = null;
@@ -213,22 +220,36 @@
             });
         }
 
-        function setLockedTask(feature) {
-            var taskId = feature.get('taskId');
-            var projectId = vm.projectData.projectId;
-            // get full task from task service call
-            var taskPromise = taskService.getTask(projectId, taskId);
-            taskPromise.then(function (data) {
-                //task returned successfully
-                vm.selectedTaskFeature = feature;
-                vm.selectedTaskData = data;
-                vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
-            }, function () {
-                // TODO - may need to handle error
-            });
-        }
+        // function setLockedTask(feature) {
+        //     var taskId = feature.get('taskId');
+        //     var projectId = vm.projectData.projectId;
+        //     // get full task from task service call
+        //     var taskPromise = taskService.getTask(projectId, taskId);
+        //     taskPromise.then(function (data) {
+        //         //task returned successfully
+        //         vm.selectedTaskFeature = feature;
+        //         vm.selectedTaskData = data;
+        //         vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
+        //     }, function () {
+        //         // TODO - may need to handle error
+        //     });
+        // }
 
-        vm.refreshTask
+        vm.unLockTask = function (comment, status) {
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.lockedTaskData.taskId;
+            var unLockPromise = taskService.unLockTask(projectId, taskId, comment, status);
+            unLockPromise.then(function (response) {
+                console.log('success');
+                selectFeature(vm.lockedTaskFeature);
+                vm.lockedTaskData = null;
+                vm.lockedTaskFeature = null;
+                refreshProject(projectId);
+
+            }, function () {
+            });
+
+        }
 
         vm.lockSelectedTask = function () {
             // console.log('lockSelectedTask');
@@ -244,11 +265,12 @@
                 // - if task successfully locked update view to show task locked for mapping UI
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
-                //locked task
+                // refresh the project data, which will refresh the map
+                refreshProject(projectId);
                 var taskPromise = taskService.getTask(projectId, taskId);
                 taskPromise.then(function (data) {
                     //task returned successfully
-                    //TODO: vm.lockedTaskFeature = feature;
+                    vm.lockedTaskFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId);
                     vm.lockedTaskData = data;
                     vm.selectedTaskData = null;
                     vm.selectedTaskFeature = null;
@@ -257,7 +279,6 @@
                 }, function () {
                     onTaskSelection(vm.selectedTaskFeature);
                 });
-                refreshProject(projectId);
 
 
             }, function () {
@@ -265,9 +286,6 @@
                 // call onTaskSelection to update UI to show task status
                 onTaskSelection(vm.selectedTaskFeature);
             });
-            // refresh the project data, which will refresh the map
-
-
         }
     }
 })();

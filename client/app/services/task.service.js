@@ -12,9 +12,11 @@
 
         var service = {
             getTask: getTask,
+            unLockTask: unLockTask,
+            lockTask: lockTask,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
             getTasksByStatus: getTasksByStatus,
-            lockTask: lockTask
+            getTaskFeatureById: getTaskFeatureById
         };
 
         return service;
@@ -44,11 +46,34 @@
             });
         }
 
-        function lockTask(projectId, taskId){
+        function unLockTask(projectId, taskId, comment, status) {
             // Returns a promise
             return $http({
                 method: 'POST',
-                url: configService.tmAPI + '/v1/project/'+projectId+'/task/'+taskId+'/lock',
+                data: {
+                    comment: comment,
+                    status: status
+                },
+                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/unlock',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        function lockTask(projectId, taskId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/lock',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
@@ -121,6 +146,27 @@
                 });
             }
             return candidates;
+        }
+
+        function getTaskFeatureById(features, id) {
+            candidates = [];
+            //first check we are working with a non empty array
+            if (features && (features instanceof Array) && features.length > 0) {
+                // get all tasks with taskId= id
+                var candidates = features.filter(function (item) {
+                    //check we are working with an ol.Feature
+                    if (item instanceof ol.Feature) {
+                        // safe to use the function
+                        var taskId = item.get('taskId');
+                        if (taskId == id)
+                            return item;
+                    }
+                });
+            }
+            if (candidates.length > 0) {
+                return candidates[0];
+            }
+            return null;
         }
     }
 })();
