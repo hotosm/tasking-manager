@@ -38,14 +38,25 @@ class AreaOfInterest(db.Model):
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
 
 
+class ProjectInfo(db.Model):
+    """ Contains all project info localized into supported languages """
+    __tablename__ = 'project_info'
+
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), primary_key=True)
+    locale = db.Column(db.String(10), primary_key=True)
+    name = db.Column(db.String(512))
+    short_description = db.Column(db.String)
+    description = db.Column(db.String)
+    instructions = db.Column(db.String)
+
+    __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
+
+
 class Project(db.Model):
-    """
-    Describes a HOT Mapping Project
-    """
+    """ Describes a HOT Mapping Project """
     __tablename__ = 'projects'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256))
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")
