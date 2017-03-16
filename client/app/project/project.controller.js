@@ -197,12 +197,25 @@
             });
         }
 
+        function refreshSelectedTask(feature) {
+            var taskId = feature.get('taskId');
+            var projectId = vm.projectData.projectId;
+            // get full task from task service call
+            var taskPromise = taskService.getTask(projectId, taskId);
+            taskPromise.then(function (data) {
+                //task returned successfully
+                vm.selectedTaskFeature = feature;
+                vm.selectedTaskData = data;
+                vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
+            }, function () {
+                // TODO - may need to handle error
+            });
+        }
+
         vm.lockSelectedTask = function () {
             // console.log('lockSelectedTask');
             // vm.isSelectTaskMappable = false;
             // onTaskSelection(vm.selectedTaskFeature);
-
-
             //TODO:
             // - get currently selected project and task id
             var projectId = vm.projectData.projectId;
@@ -213,6 +226,7 @@
                 // - if task successfully locked update view to show task locked for mapping UI
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
+                refreshSelectedTask(vm.selectedTaskFeature);
             }, function () {
                 // - otherwise, most likely because task is already locked,
                 // call on task selection to update UI to show task status
