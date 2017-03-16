@@ -51,21 +51,20 @@ class ProjectInfo(db.Model):
 
     __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
 
-    @staticmethod
-    def from_dto(project_id: int, dto: ProjectInfoDTO):
-        """ Instantiate new ProjectInfo object from DTO """
-        project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=dto.locale).one_or_none()
+    @classmethod
+    def create_from_dto(cls, dto: ProjectInfoDTO):
+        """ Creates a new ProjectInfo class from dto """
+        new_info = cls()
+        new_info.update_from_dto(dto)
+        return new_info
 
-        if project_info is None:
-            project_info = ProjectInfo(project_id=project_id)  # No info for supplied locale, so must be new
-
-        project_info.locale = dto.locale
-        project_info.name = dto.name
-        project_info.short_description = dto.short_description
-        project_info.description = dto.description
-        project_info.instructions = dto.instructions
-
-        return project_info
+    def update_from_dto(self, dto: ProjectInfoDTO):
+        """ Updates existing ProjectInfo from supplied DTO """
+        self.locale = dto.locale
+        self.name = dto.name
+        self.short_description = dto.short_description
+        self.description = dto.description
+        self.instructions = dto.instructions
 
 
 class Project(db.Model):
@@ -84,7 +83,7 @@ class Project(db.Model):
 
     # Mapped Objects
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
-    project_info = db.relationship(ProjectInfo)
+    project_info = db.relationship(ProjectInfo, lazy='dynamic')
 
     def __init__(self, project_name, aoi):
         """
@@ -117,8 +116,14 @@ class Project(db.Model):
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info:
-            project_info = ProjectInfo.from_dto(self.id, dto)
-            self.project_info.append(project_info)
+
+            project_info = self.project_info.filter_by(locale=dto.locale).one_or_none()
+
+            if project_info is None:
+                new_info = ProjectInfo.create_from_dto(dto)  # Can't find info so must be new locale
+                self.project_info.append(new_info)
+            else:
+                project_info.update_from_dto(dto)
 
         db.session.commit()
 
