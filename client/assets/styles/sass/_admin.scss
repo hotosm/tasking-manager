@@ -39,6 +39,7 @@
   .map-container {
     float: left;
     height: inherit;
+    position: relative;
     @include span(7/12);
 
     @include media(medium-up) {

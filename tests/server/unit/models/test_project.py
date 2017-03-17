@@ -28,7 +28,7 @@ class TestProject(unittest.TestCase):
         # Act / Assert
         with self.assertRaises(InvalidData):
             # Only geometries of type MultiPolygon are valid
-            Project('', 'aoi')
+            Project().create_draft_project('', 'aoi')
 
     def test_cant_add_task_if_not_supplied_feature_type(self):
         # Arrange
