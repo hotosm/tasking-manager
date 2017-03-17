@@ -46,6 +46,14 @@
             });
         }
 
+        /**
+         * Requests a task unLock
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @param comment - comment for the unlock status change to be persisted to task history
+         * @param status - new status.  If status not changing, use current status
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
         function unLockTask(projectId, taskId, comment, status) {
             // Returns a promise
             return $http({
@@ -69,6 +77,12 @@
             });
         }
 
+        /**
+         * Requests a task lock
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
         function lockTask(projectId, taskId) {
             // Returns a promise
             return $http({
