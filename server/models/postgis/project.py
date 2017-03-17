@@ -130,7 +130,7 @@ class Project(db.Model):
 
     # Mapped Objects
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
-    project_info = db.relationship(ProjectInfo, lazy='dynamic')
+    project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
 
     def create_draft_project(self, project_name, aoi):
         """
@@ -142,7 +142,6 @@ class Project(db.Model):
         if not project_name:
             raise InvalidData('Project: project_name cannot be empty')
 
-        #self.name = project_name
         self.project_info.append(ProjectInfo.create_from_name(project_name))
         self.area_of_interest = aoi
         self.status = ProjectStatus.DRAFT.value
