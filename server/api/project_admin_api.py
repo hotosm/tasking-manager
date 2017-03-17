@@ -136,7 +136,7 @@ class ProjectAdminAPI(Resource):
                       defaultLocale:
                           type: string
                           default: en
-                      projectInfo:
+                      projectInfoLocales:
                           type: array
                           items:
                               schema:

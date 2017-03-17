@@ -115,7 +115,7 @@ class Project(db.Model):
         self.default_locale = project_dto.default_locale
 
         # Set Project Info for all returned locales
-        for dto in project_dto.project_info:
+        for dto in project_dto.project_info_locales:
 
             project_info = self.project_info.filter_by(locale=dto.locale).one_or_none()
 
@@ -133,13 +133,14 @@ class Project(db.Model):
         db.session.commit()
 
     @staticmethod
-    def as_dto_for_mapper(project_id, for_admin=False) -> Optional[ProjectDTO]:
+    def as_dto_for_mapper(project_id) -> Optional[ProjectDTO]:
         """
         Creates a Project DTO suitable for transmitting to mapper users
         :param project_id: project_id in scope
         :param for_admin: set to True if project is required for admin
         :return: Project DTO dict
         """
+        # Query ignores tasks so we can more optimally generate the task feature collection in the call below
         query = db.session.query(Project.id, Project.name, AreaOfInterest.geometry.ST_AsGeoJSON()
                                  .label('geojson')).join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
