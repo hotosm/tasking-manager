@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location','mapService','drawService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location','mapService','drawService', 'projectService', editProjectController]);
 
-    function editProjectController($scope, $location, mapService, drawService) {
+    function editProjectController($scope, $location, mapService, drawService, projectService) {
         var vm = this;
         vm.currentSection = '';
 
@@ -28,13 +28,18 @@
         
         vm.numberOfPriorityAreas = 0;
 
+        // Locale
+        vm.languages = [
+            '...', 'es', 'en'
+        ];
+
         // TODO: get project metadata from API
         vm.project = {
             id: null,
             name: '',
-            status: 'draft',
-            priority: 'medium',
-            shortDescription: '',
+            status: 'DRAFT',
+            priority: 'MEDIUM',
+            shortDescription: 'test', // TODO: different languages
             description: '',
             instructions: '',
             taskInstructions: ''
@@ -72,14 +77,52 @@
          * Cancel edits
          */
         vm.cancelEdits = function(){
-            //TODO: cancel edits
+            //TODO: navigate to the project page
         };
 
         /**
          * Save edits
          */
         vm.saveEdits = function(){
-            // TODO: save edits by calling API
+            vm.updateProjectFail = false;
+            vm.updateProjectSuccess = false;
+            
+            // TODO: locale
+            var projectData = {
+                defaultLocale: 'en',
+                projectInfo: [{
+                    description: vm.project.description,
+                    instructions: vm.project.instructions,
+                    locale: 'en',
+                    name: vm.project.name,
+                    shortDescription: vm.project.shortDescription
+                }],
+                projectName: vm.project.name,
+                projectPriority: vm.project.priority,
+                projectStatus: vm.project.status
+            };
+
+            var resultsPromise = projectService.updateProject(vm.project.id, projectData);
+            resultsPromise.then(function (data) {
+                // Project updated successfully
+                vm.updateProjectFail = false;
+                vm.updateProjectSuccess = true;
+                // Navigate to the project page
+                $location.path('/project').search({
+                    projectid: vm.project.id
+                });
+            }, function(){
+                // Project not updated successfully
+                vm.updateProjectFail = true;
+                vm.updateProjectSuccess = false;
+            });
+        };
+
+        /**
+         * Change language
+         */
+        vm.changeLanguage = function() {
+            console.log("change language");
         };
 
         /**

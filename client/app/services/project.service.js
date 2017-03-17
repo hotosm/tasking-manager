@@ -47,7 +47,8 @@
             setAOI: setAOI,
             getAOI: getAOI,
             splitTasks: splitTasks,
-            getProject: getProject
+            getProject: getProject,
+            updateProject: updateProject
         };
 
         return service;
@@ -434,12 +435,38 @@
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
-                return (response.data);
+                return response.data;
             }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject("error");
             });
+        }
+
+        /**
+         * Updates a project 
+         * @param id
+         * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function updateProject(id, projectData){
+            
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/v1/project/' + id,
+                data: projectData,
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'    
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously 
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
         }
     }
 })();

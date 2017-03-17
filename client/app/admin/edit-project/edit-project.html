@@ -7,7 +7,7 @@
                 </h1>
             </div>
         </header>
-        <div class="section-container">
+        <div class="section-container edit-project">
             <div class="section__body">
                 <div class="inner">
                     <aside class="section__aside-content">
@@ -69,27 +69,41 @@
                                     <div class="form__group">
                                         <label class="form__label">Status</label>
                                         <select class="form__control" ng-model="editProjectCtrl.project.status">
-                                            <option value="published">Published</option>
-                                            <option value="archived">Archived</option>
-                                            <option value="draft">Draft</option>
+                                            <option value="PUBLISHED">Published</option>
+                                            <option value="ARCHIVED">Archived</option>
+                                            <option value="DRAFT">Draft</option>
                                         </select>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Priority</label>
                                         <select class="form__control" ng-model="editProjectCtrl.project.priority">
-                                            <option value="urgent">Urgent</option>
-                                            <option value="high">High</option>
-                                            <option value="medium">Medium</option>
-                                            <option value="low">Low</option>
+                                            <option value="URGENT">Urgent</option>
+                                            <option value="HIGH">High</option>
+                                            <option value="MEDIUM">Medium</option>
+                                            <option value="LOW">Low</option>
                                         </select>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Name of the project</label>
+                                        <div class="button-group button-group--horizontal pull-right" role="group" aria-label="choose default locale">
+                                            <button class="button button--small button--achromic button--active" type="button"><span>en</span></button>
+                                            <button class="button button--small button--achromic" type="button"><span>es</span></button>
+                                            <button class="button button--small button--achromic" type="button"><span>....</span></button>
+                                        </div>
                                         <input type="text" class="form__control"
                                                ng-model="editProjectCtrl.project.name"/>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Short description</label>
+                                        <div class="button-group button-group--horizontal pull-right"
+                                             ng-repeat="language in editProjectCtrl.languages track by $index"
+                                             role="group"
+                                             aria-label="choose default locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                ng-click="editProjectCtrl.changeLanguage()">
+                                                {{ language }}
+                                            </button>
+                                        </div>
                                         <textarea class="form__control" ng-model="editProjectCtrl.project.shortDescription" rows="4"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
                                         <div ng-show="editProjectCtrl.project.shortDescription">
@@ -99,6 +113,11 @@
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Description</label>
+                                        <div class="button-group button-group--horizontal pull-right" role="group" aria-label="choose default locale">
+                                            <button class="button button--small button--achromic button--active" type="button"><span>en</span></button>
+                                            <button class="button button--small button--achromic" type="button"><span>es</span></button>
+                                            <button class="button button--small button--achromic" type="button"><span>....</span></button>
+                                        </div>
                                         <textarea class="form__control" rows="4" ng-model="editProjectCtrl.project.description"></textarea>
                                         <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
                                         <div ng-show="editProjectCtrl.project.description">
@@ -328,6 +347,14 @@
                         <div ng-show="editProjectCtrl.currentSection === 'settings'">
                             <form class="form">
                                 <fieldset class="form__fieldset">
+                                    <div class="form__group">
+                                        <label class="form__label">Default locale</label>
+                                        <div class="button-group button-group--horizontal" role="group" aria-label="choose default locale">
+                                            <button class="button button--small button--achromic button--active" type="button"><span>en</span></button>
+                                            <button class="button button--small button--achromic" type="button"><span>es</span></button>
+                                            <button class="button button--small button--achromic" type="button"><span>....</span></button>
+                                        </div>
+                                    </div>
                                     <div class="form__group">
                                         <label class="form__label">Project due date (dd/mm/yyyy)</label>
                                         <div class="form__input-group">
