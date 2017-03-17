@@ -53,8 +53,16 @@ class ProjectInfo(db.Model):
     __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
 
     @classmethod
+    def create_from_name(cls, name: str):
+        """ Creates a new ProjectInfo class from name, used when creating draft projects """
+        new_info = cls()
+        new_info.locale = 'en'  # Draft project default to english, PMs can change this prior to publication
+        new_info.name = name
+        return new_info
+
+    @classmethod
     def create_from_dto(cls, dto: ProjectInfoDTO):
-        """ Creates a new ProjectInfo class from dto """
+        """ Creates a new ProjectInfo class from dto, used from project edit """
         new_info = cls()
         new_info.update_from_dto(dto)
         return new_info
@@ -134,7 +142,8 @@ class Project(db.Model):
         if not project_name:
             raise InvalidData('Project: project_name cannot be empty')
 
-        self.name = project_name
+        #self.name = project_name
+        self.project_info.append(ProjectInfo.create_from_name(project_name))
         self.area_of_interest = aoi
         self.status = ProjectStatus.DRAFT.value
 

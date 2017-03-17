@@ -34,7 +34,8 @@ class ProjectService:
             raise e
 
         try:
-            draft_project = Project().create_draft_project(draft_project_dto.project_name, area_of_interest)
+            draft_project = Project()
+            draft_project.create_draft_project(draft_project_dto.project_name, area_of_interest)
         except InvalidData as e:
             raise e
 
