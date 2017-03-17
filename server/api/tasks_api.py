@@ -80,7 +80,7 @@ class LockTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = TaskService().lock_task(task_id, project_id)
+            task = TaskService().lock_task_for_mapping(task_id, project_id)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404

@@ -16,23 +16,24 @@ class TestProject(unittest.TestCase):
         self.task_stub = Task()
         self.task_stub.id = 1
         self.task_stub.project_id = 1
+        self.task_stub.task_status = 0
 
     def tearDown(self):
         self.ctx.pop()
 
     @patch.object(Task, 'get')
-    def test_lock_task_returns_none_if_task_not_found(self, mock_task):
+    def test_lock_task_for_mapping_returns_none_if_task_not_found(self, mock_task):
         # Arrange
         mock_task.return_value = None
 
         # Act
-        test_task = TaskService().lock_task(1, 1)
+        test_task = TaskService().lock_task_for_mapping(1, 1)
 
         # Assert
         self.assertIsNone(test_task)
 
     @patch.object(Task, 'get')
-    def test_lock_task_raises_error_if_task_already_locked(self, mock_task):
+    def test_lock_task_for_mapping_raises_error_if_task_already_locked(self, mock_task):
         # Arrange
         self.task_stub.task_locked = True
 
@@ -40,29 +41,41 @@ class TestProject(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(TaskServiceError):
-            TaskService().lock_task(1, 1)
+            TaskService().lock_task_for_mapping(1, 1)
+
+    @patch.object(Task, 'get')
+    def test_lock_task_for_mapping_raises_error_if_task_in_invalid_state(self, mock_task):
+        # Arrange
+        self.task_stub.task_locked = True
+        self.task_stub.task_status = 2
+
+        mock_task.return_value = self.task_stub
+
+        # Act / Assert
+        with self.assertRaises(TaskServiceError):
+            TaskService().lock_task_for_mapping(1, 1)
 
     @patch.object(Task, 'update')
     @patch.object(Task, 'get')
-    def test_lock_tasks_sets_locked_status_when_valid(self, mock_task, mock_update):
+    def test_lock_task_for_mapping_sets_locked_status_when_valid(self, mock_task, mock_update):
         # Arrange
         self.task_stub.task_locked = False
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = TaskService().lock_task(1, 1)
+        test_task = TaskService().lock_task_for_mapping(1, 1)
 
         # Assert
         self.assertTrue(test_task.task_locked, 'Locked should be set to True')
 
     @patch.object(Task, 'update')
     @patch.object(Task, 'get')
-    def test_lock_task_adds_locked_history(self, mock_task, mock_update):
+    def test_lock_task_for_mapping_adds_locked_history(self, mock_task, mock_update):
         # Arrange
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = TaskService().lock_task(1, 1)
+        test_task = TaskService().lock_task_for_mapping(1, 1)
 
         # Assert
         self.assertEqual(TaskAction.LOCKED.name, test_task.task_history[0].action)

@@ -19,7 +19,7 @@ class TaskService:
         """ Get task as DTO for transmission over API """
         return Task.as_dto(task_id, project_id)
 
-    def lock_task(self, task_id, project_id):
+    def lock_task_for_mapping(self, task_id, project_id):
         """
         Sets the task_locked status to locked so no other user can work on it
         :param task_id: Task ID in scope
@@ -34,6 +34,10 @@ class TaskService:
 
         if task.task_locked:
             raise TaskServiceError(f'Task: {task_id} Project {project_id} is already locked')
+
+        current_state = TaskStatus(task.task_status).name
+        if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name]:
+            raise TaskServiceError(f'Cannot lock task {task_id} for mapping, current state is {current_state}')
 
         # TODO user can only have 1 tasked locked at a time
 
