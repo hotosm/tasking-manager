@@ -382,7 +382,7 @@
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/v1/admin/project/' + id,
+                url: configService.tmAPI + '/v1/project/' + id,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
