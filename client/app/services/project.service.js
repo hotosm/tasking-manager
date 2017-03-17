@@ -355,7 +355,7 @@
             // Returns a promise
             return $http({
                 method: 'PUT',
-                url: configService.tmAPI + '/v1/project',
+                url: configService.tmAPI + '/v1/admin/project',
                 data: newProject,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
@@ -381,7 +381,7 @@
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/v1/project/' + id,
+                url: configService.tmAPI + '/v1/admin/project/' + id,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
