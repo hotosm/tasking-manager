@@ -383,7 +383,9 @@
                 method: 'GET',
                 url: configService.tmAPI + '/v1/project/' + id,
                 headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    //TODO - Accept-Language header hardcoded for now
+                    'Accept-Language': 'en'
                 }
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
