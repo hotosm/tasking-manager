@@ -4,6 +4,7 @@ from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp
+from server.models.dtos.task_dto import TaskDTO, TaskHistoryDTO
 
 
 class TaskAction(Enum):
@@ -183,10 +184,22 @@ class Task(db.Model):
             if action.action_text is None:
                 continue  # Don't return any history without action text
 
-            history = dict(action=action.action, actionText=action.action_text, actionDate=action.action_date)
+            #history = dict(action=action.action, actionText=action.action_text, actionDate=action.action_date)
+            history = TaskHistoryDTO()
+            history.action = action.action
+            history.action_text = action.action_text
+            history.action_date = action.action_date
+
             task_history.append(history)
 
-        task_dto = dict(taskId=self.id, projectId=self.project_id, taskStatus=TaskStatus(self.task_status).name,
-                        taskLocked=self.task_locked, taskHistory=task_history)
+        #task_dto = dict(taskId=self.id, projectId=self.project_id, taskStatus=TaskStatus(self.task_status).name,
+        #                taskLocked=self.task_locked, taskHistory=task_history)
+
+        task_dto = TaskDTO()
+        task_dto.task_id = self.id
+        task_dto.project_id = self.project_id
+        task_dto.task_status = self.task_status
+        task_dto.task_locked = self.task_locked
+        task_dto.task_history = task_history
 
         return task_dto

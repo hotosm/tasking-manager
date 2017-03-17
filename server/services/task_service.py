@@ -1,5 +1,4 @@
 from flask import current_app
-
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 
 
@@ -23,8 +22,6 @@ class TaskService:
             return None
 
         return task.as_dto()
-
-        #return Task.as_dto(task_id, project_id)
 
     def lock_task_for_mapping(self, task_id, project_id):
         """
@@ -54,7 +51,7 @@ class TaskService:
 
         return task.as_dto()
 
-    def unlock_task(self, task_id, project_id, state, comment=None):
+    def unlock_task_after_mapping(self, task_id, project_id, state, comment=None):
         """
         Unlocks the task and sets the task history appropriately
         :param task_id: Selected Task
