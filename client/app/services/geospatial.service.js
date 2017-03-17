@@ -18,6 +18,7 @@
 
         var service = {
             getFeaturesFromGeoJSON: getFeaturesFromGeoJSON,
+            getFeatureFromGeoJSON: getFeatureFromGeoJSON,
             getFeaturesFromKML: getFeaturesFromKML,
             getGeoJSONFromFeature: getGeoJSONFromFeature,
             getGeoJSONObjectFromFeature: getGeoJSONObjectFromFeature,
@@ -39,6 +40,20 @@
                 featureProjection: MAP_PROJECTION
             });
             return features;
+        }
+
+        /**
+         * Get OL feature from GeoJSON
+         * @param {string} geojson
+         * @returns <ol.Feature>
+         */
+        function getFeatureFromGeoJSON(geojson){
+            var format = new ol.format.GeoJSON();
+            var feature = format.readFeature(geojson, {
+                dataProjection: DATA_PROJECTION,
+                featureProjection: MAP_PROJECTION
+            });
+            return feature;
         }
 
         /**

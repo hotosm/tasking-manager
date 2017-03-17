@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$location', 'mapService', 'projectService', 'styleService', 'taskService', projectController]);
+        .controller('projectController', ['$scope', '$location', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', projectController]);
 
-    function projectController($scope, $location, mapService, projectService, styleService, taskService) {
+    function projectController($scope, $location, mapService, projectService, styleService, taskService, geospatialService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -163,11 +163,12 @@
             }
 
             // read tasks JSON into features
-            var format = new ol.format.GeoJSON();
-            var taskFeatures = format.readFeatures(tasks, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
+            // var format = new ol.format.GeoJSON();
+            // var taskFeatures = format.readFeatures(tasks, {
+            //     dataProjection: 'EPSG:4326',
+            //     featureProjection: 'EPSG:3857'
+            // });
+            var taskFeatures = geospatialService.getFeaturesFromGeoJSON(tasks)
             source.addFeatures(taskFeatures);
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
@@ -188,12 +189,8 @@
             vm.map.addLayer(vector);
 
             // read tasks JSON into features
-            var format = new ol.format.GeoJSON();
-            var aoiFeatures = format.readFeature(aoi, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
-            source.addFeature(aoiFeatures);
+            var aoiFeature = geospatialService.getFeatureFromGeoJSON(aoi)
+            source.addFeature(aoiFeature);
         }
 
         /**
