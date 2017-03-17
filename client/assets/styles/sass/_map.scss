@@ -21,9 +21,26 @@
   top: auto;
 }
 
-.add-layer-control {
-  right: 0.5em;
+/** Add layer control **/
+.add-layer-control{
+  top: 0.5rem;
+  right: 0.5rem;
   position: absolute;
-  width: 300px;
   z-index: 1000;
+}
+
+.add-layer-panel {
+  top: 3rem;
+  right: 0.5rem;
+  position: absolute;
+  z-index: 1000;
+}
+
+.add-layer-wrapper {
+    background:rgba(255,255,255, 0.9);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    select {
+      width: 100%;
+    }
 }

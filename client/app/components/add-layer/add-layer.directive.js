@@ -37,6 +37,7 @@
         var vm = this;
         vm.type = 'xyz';
         vm.layerURL = '';
+        vm.isVisible = false;
         
          /**
          * Add layer
@@ -52,5 +53,9 @@
                 }
             }
         };
+
+        vm.toggleVisibility = function(){
+            vm.isVisible = !vm.isVisible;
+        }
     }
 })();

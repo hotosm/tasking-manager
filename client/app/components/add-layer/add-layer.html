@@ -1,19 +1,21 @@
-<div class="form__group">
-    <span>
-        <div class="form__input-group">
+<div class="add-layer-wrapper">
+    <div class="form__input-group">
+        <label class="form__label">Map service URL</label>
         <input type="text" class="form__control form__control--small"
-             placeholder="Map URL"
-             ng-model="addLayerCtrl.layerURL">
-          <span class="form__input-group-button">
-               <select class="button button--achromic button--small" ng-model="addLayerCtrl.type">
-                   <option value="xyz">XYZ</option>
-                </select>
-              <button type="submit"
-                      ng-click="addLayerCtrl.addLayer()"
-                      class="button button--secondary button--small">
-                Add layer
-              </button>
-          </span>
-        </div>
-    </span>
+               placeholder="Map URL"
+               ng-model="addLayerCtrl.layerURL">
+    </div>
+    <div class="form__input-group">
+        <label class="form__label">Map service type</label>
+        <select class="button button--achromic button--small pull-right" ng-model="addLayerCtrl.type">
+            <option value="xyz">XYZ (e.g. MapBox)</option>
+        </select>
+    </div>
+    <div class="form__input-group">
+        <button type="submit"
+                ng-click="addLayerCtrl.addLayer()"
+                class="button button--secondary button--small pull-right">
+            Add layer
+        </button>
+    </div>
 </div>

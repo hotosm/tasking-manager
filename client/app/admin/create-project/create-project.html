@@ -185,8 +185,14 @@
                 </div>
             </div>
             <div id="map" class="map-container">
-                <div class="add-layer-control">
-                    <add-layer></add-layer>
+                <div class="add-layer-control ol-control">
+                    <button type="button" class="button"
+                            ng-click="createProjectCtrl.isVisible = !createProjectCtrl.isVisible">
+                        <i class="oam-ds-icon-hamburger-menu"></i>
+                    </button>
+                </div>
+                <div class="add-layer-panel">
+                    <add-layer ng-show="createProjectCtrl.isVisible"></add-layer>
                 </div>
             </div>
         </div>
