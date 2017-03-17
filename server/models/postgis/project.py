@@ -120,7 +120,6 @@ class Project(db.Model):
 
     # Columns
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256))  # TODO remove column
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
@@ -156,7 +155,6 @@ class Project(db.Model):
 
     def update(self, project_dto: ProjectDTO):
         """ Updates project from DTO """
-        self.name = project_dto.project_name
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
         self.default_locale = project_dto.default_locale
@@ -184,7 +182,6 @@ class Project(db.Model):
 
         # Query ignores tasks so we can more optimally generate the task feature collection if needed
         project = db.session.query(Project.id,
-                                   Project.name,
                                    Project.priority,
                                    Project.status,
                                    Project.default_locale,
@@ -196,7 +193,6 @@ class Project(db.Model):
 
         base_dto = ProjectDTO()
         base_dto.project_id = project_id
-        base_dto.project_name = project.name
         base_dto.project_status = ProjectStatus(project.status).name
         base_dto.project_priority = ProjectPriority(project.priority).name
         base_dto.area_of_interest = geojson.loads(project.geojson)

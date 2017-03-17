@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: b93421cec5bd
+Revision ID: 58f514394c00
 Revises: 
-Create Date: 2017-03-10 14:25:33.683640
+Create Date: 2017-03-17 15:33:12.862843
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import geoalchemy2
 
 
 # revision identifiers, used by Alembic.
-revision = 'b93421cec5bd'
+revision = '58f514394c00'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,13 +27,25 @@ def upgrade():
     )
     op.create_table('projects',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=256), nullable=True),
-    sa.Column('status', sa.Integer(), nullable=True),
+    sa.Column('status', sa.Integer(), nullable=False),
     sa.Column('aoi_id', sa.Integer(), nullable=True),
-    sa.Column('created', sa.DateTime(), nullable=True),
+    sa.Column('created', sa.DateTime(), nullable=False),
+    sa.Column('priority', sa.Integer(), nullable=True),
+    sa.Column('default_locale', sa.String(length=10), nullable=True),
     sa.ForeignKeyConstraint(['aoi_id'], ['areas_of_interest.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('project_info',
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('locale', sa.String(length=10), nullable=False),
+    sa.Column('name', sa.String(length=512), nullable=True),
+    sa.Column('short_description', sa.String(), nullable=True),
+    sa.Column('description', sa.String(), nullable=True),
+    sa.Column('instructions', sa.String(), nullable=True),
+    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
+    sa.PrimaryKeyConstraint('project_id', 'locale')
+    )
+    op.create_index('idx_project_info composite', 'project_info', ['locale', 'project_id'], unique=False)
     op.create_table('tasks',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('project_id', sa.Integer(), nullable=False),
@@ -67,6 +79,8 @@ def downgrade():
     op.drop_table('task_history')
     op.drop_index(op.f('ix_tasks_project_id'), table_name='tasks')
     op.drop_table('tasks')
+    op.drop_index('idx_project_info composite', table_name='project_info')
+    op.drop_table('project_info')
     op.drop_table('projects')
     op.drop_table('areas_of_interest')
     # ### end Alembic commands ###
