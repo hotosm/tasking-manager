@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    {{ projectCtrl.project.projectName }}
+                    #{{ projectCtrl.projectData.projectId }}-{{ projectCtrl.projectData.projectInfo.name }}
                 </h1>
             </div>
         </header>
@@ -29,50 +29,33 @@
                         </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'description'">
-                        <h3>Description</h3>
-                        <p>Lorem ipsum dolor sit amet, ius idque facete concludaturque eu, esse populo tacimates te cum.
-                            Agam mollis sit no, vis lorem laoreet adversarium ut. Tollit dolorem mandamus te mel. Cum
-                            mazim
-                            mucius neglegentur ut, vel nominati pericula constituam in. Eu cum elit rationibus, tibique
-                            suavitate inciderint pri at. Vim eu laoreet perpetua maluisset.</p>
 
-                        <p>Tollit ocurreret his no, utamur expetendis has id, nisl mnesarchum appellantur pri id. Laudem
-                            recusabo ex usu. Te eripuit similique rationibus mel. Et est nisl duis, ridens facilis mei
-                            cu.
-                            Aliquam recteque sit id, quem errem nostro in qui, id sea ridens melius forensibus.</p>
 
-                        <p>Blandit sensibus id nec, quo ex recusabo reprehendunt, no errem veritus quo. Erat sonet
-                            quando
-                            sea ex, unum aliquid sit ex. Qui an etiam utinam deleniti, usu ea clita molestie intellegam,
-                            et
-                            duo posse inani vocent. Brute percipit mel ad. Ea eum tollit vivendo. Veniam apeirian ei
-                            mei,
-                            pro et fierent neglegentur.</p>
+                        <section class="panel">
+                            <header class="panel__header">
+                                <div class="panel__headline">
+                                    <h1 class="panel__title">
+                                        #{{ projectCtrl.projectData.projectId }}-{{ projectCtrl.projectData.projectInfo.name }}</h1>
+                                    <div class="panel__subtitle">{{ projectCtrl.projectData.projectInfo.shortDescription }}</div>
+                                    <div class="panel__subtitle">{{ projectCtrl.projectData.projectPriority }}
+                                        Priority
+                                    </div>
+                                </div>
+                            </header>
+                            <div class="panel__body">
+                                <div class="panel__body-inner">
+                                    <p>{{ projectCtrl.projectData.projectInfo.description }}</p>
+                                </div>
+                            </div>
+                            <footer class="panel__footer"></footer>
+                        </section>
                         <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'instructions'">
-                            Instructions >>
+                            Instructions <i class="oam-ds-icon-sm-chevron-right"></i>
                         </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
-                        <h3>Instructions</h3>
-                        <p>Lorem ipsum dolor sit amet, oporteat liberavisse at nam, hinc nemore pericula eos in. Ei hinc
-                            minim has. Vix brute falli ei, his ut exerci temporibus disputationi, an vel sumo corrumpit.
-                            Eu
-                            sea exerci euismod invenire, meis mundi graeco vix cu. In vis delenit oportere dignissim,
-                            viderer aperiri ei mei, fastidii moderatius duo ex.</p>
-
-                        <p>An sea iracundia dissentiet, id inermis cotidieque nec, porro propriae dissentias ex per. At
-                            labores nominati moderatius pro, eam dolor placerat liberavisse ne, civibus apeirian
-                            convenire
-                            vis te. Id posse labore democritum vim, eos natum iudico in, ne everti omnesque rationibus
-                            cum.
-                            Cu sale brute graeci sea, ad sea verear diceret.</p>
-
-                        <p>Malis fierent eleifend usu te. Augue eruditi dissentias eum ne. Eos odio solet an. Nobis
-                            persequeris vim ad, sit exerci aliquid similique id, dico suavitate contentiones cum cu. Has
-                            no
-                            mucius civibus accusata, nam diam eirmod euripidis et, qui euismod laoreet delicata in.</p>
-                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
-                            >>
+                        <p>{{ projectCtrl.projectData.projectInfo.instructions }}</p>
+                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping <i class="oam-ds-icon-sm-chevron-right"></i>>>
                         </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'mapping'">
@@ -81,9 +64,9 @@
                             <h3>Choose a task</h3>
                             <p>There are 2 options for choosing a task:</p>
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
-                            <p><strong>Option 2: </strong>Select a random task
+                            <p><strong>Option 2: </strong>
                                 <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
-                                    Select random
+                                    Select a random task
                                 </button>
                             </p>
                         </div>
@@ -164,10 +147,12 @@
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment"></textarea>
                                 </div>
-                                <button class="button button--secondary" ng-click="projectCtrl.unLockTask(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.unLockTask(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
                                     Stop Mapping
                                 </button>
-                                <button class="button button--secondary" ng-click="projectCtrl.unLockTask(projectCtrl.comment, 'DONE')">
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.unLockTask(projectCtrl.comment, 'DONE')">
                                     Mark as done
                                 </button>
                             </div>
