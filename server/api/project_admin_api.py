@@ -124,9 +124,6 @@ class ProjectAdminAPI(Resource):
               description: JSON object for creating draft project
               schema:
                   properties:
-                      projectName:
-                          type: string
-                          default: HOT Project
                       projectStatus:
                           type: string
                           default: DRAFT
