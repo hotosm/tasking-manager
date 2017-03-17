@@ -30,7 +30,7 @@
 
         // Locale
         vm.languages = [
-            '...', 'es', 'en'
+            'nl', 'en'
         ];
 
         // TODO: get project metadata from API
@@ -39,15 +39,36 @@
             name: '',
             status: 'DRAFT',
             priority: 'MEDIUM',
-            shortDescription: 'test', // TODO: different languages
+            projectInfo: [
+                {
+                    description: 'english description',
+                    instructions: 'english instructions',
+                    locale: 'en',
+                    name: 'english name',
+                    shortDescription: 'english short description'
+                },
+                {
+                    description: 'nederlandse beschrijving',
+                    instructions: 'nederlandse instructies',
+                    locale: 'nl',
+                    name: 'nederlandse naam',
+                    shortDescription: 'nederlandse korte beschrijving'
+                }
+            ],
+            shortDescription: '',
             description: '',
             instructions: '',
             taskInstructions: ''
         };
+
+        vm.descriptionLanguage = 'en';
+        vm.shortDescriptionLanguage = 'en';
+        vm.nameLanguage = 'en';
         
         activate();
 
         function activate() {
+
             vm.currentSection = 'description';
             vm.project.id = $location.search().id;
             vm.project.name = $location.search().name;
@@ -84,6 +105,8 @@
          * Save edits
          */
         vm.saveEdits = function(){
+
+            console.log(vm.project);
             vm.updateProjectFail = false;
             vm.updateProjectSuccess = false;
             
@@ -119,10 +142,26 @@
         };
 
         /**
-         * Change language
+         * Change the language of the description
+         * @param language
          */
-        vm.changeLanguage = function() {
-            console.log("change language");
+        vm.changeLanguageDescription = function(language){
+            vm.descriptionLanguage = language;
+        };
+        
+        /**
+         * Change the language of name field
+         * @param language
+         */
+        vm.changeLanguageName = function(language){
+            vm.nameLanguage = language;
+        };
+
+        /**
+         * Change the language short description field
+         */
+        vm.changeLanguageShortDescription = function(language) {
+            vm.shortDescriptionLanguage = language;
         };
 
         /**
