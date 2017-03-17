@@ -80,6 +80,8 @@
             var vector = new ol.layer.Vector({
                 source: source
             });
+            // Use a high Z index to ensure it draws on top of other layers
+            vector.setZIndex(100);
             map.addLayer(vector);
         }
 

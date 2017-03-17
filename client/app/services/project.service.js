@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', ['$http', '$q', 'mapService','configService', projectService]);
+        .service('projectService', ['$http', '$q', 'mapService','configService', 'geospatialService', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -11,19 +11,13 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService($http, $q, mapService, configService) {
+    function projectService($http, $q, mapService, configService, geospatialService) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
 
         // X/Y axis offset
         var AXIS_OFFSET = MAXRESOLUTION * 256 / 2;
-
-        // Target projection for Turf.js
-        var TARGETPROJECTION = 'EPSG:4326';
-
-        // Map projection in OpenLayers
-        var MAPPROJECTION = 'EPSG:3857';
 
         var map = null;
         var taskGrid = null;
@@ -71,6 +65,8 @@
             var vector = new ol.layer.Vector({
                 source: taskGridSource
             });
+            // Use a high Z index to ensure it draws on top of other layers
+            vector.setZIndex(100);
             map.addLayer(vector);
         }
 
@@ -83,16 +79,8 @@
         function createTaskGrid(areaOfInterest, zoomLevel) {
 
             var zoomLevel = zoomLevel;
-
             var extent = areaOfInterest.getGeometry().getExtent();
-
-            var format = new ol.format.GeoJSON();
-
-            // Convert feature to GeoJSON for Turf.js to process
-            var areaOfInterestGeoJSON = format.writeFeature(areaOfInterest, {
-                dataProjection: TARGETPROJECTION,
-                featureProjection: MAPPROJECTION
-            });
+            var areaOfInterestGeoJSON = geospatialService.getGeoJSONFromFeature(areaOfInterest);
 
             var xmin = Math.ceil(extent[0]);
             var ymin = Math.ceil(extent[1]);
@@ -113,11 +101,7 @@
             for (var x = xminstep; x < xmaxstep; x++) {
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
-                    // Write the feature as GeoJSON and transform to the projection Turf.js needs
-                    var taskFeatureGeoJSON = format.writeFeature(taskFeature, {
-                        dataProjection: TARGETPROJECTION,
-                        featureProjection: MAPPROJECTION
-                    });
+                    var taskFeatureGeoJSON = geospatialService.getGeoJSONFromFeature(taskFeature);
                     // Check if the generated task feature intersects with the area of interest
                     var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
                     // Add the task feature to the array if it intersects
@@ -166,12 +150,7 @@
          * @returns {number} the size of the task
          */
         function getTaskSize(){
-            // Write the feature as GeoJSON and transform to the projection Turf.js needs
-            var format = new ol.format.GeoJSON();
-            var taskGeoJSON = format.writeFeature(taskGrid[0], {
-                dataProjection: TARGETPROJECTION,
-                featureProjection: MAPPROJECTION
-            });
+            var taskGeoJSON = geospatialService.getGeoJSONFromFeature(taskGrid[0]);
             return turf.area(JSON.parse(taskGeoJSON)) / 1000000;
         }
 
@@ -305,21 +284,11 @@
          */
         function splitTasks(drawnPolygon){
 
-            var format = new ol.format.GeoJSON();
-
-            // Write the polygon as GeoJSON and transform to the projection Turf.js needs
-            var drawnPolygonGeoJSON = format.writeFeatureObject(drawnPolygon, {
-                dataProjection: TARGETPROJECTION,
-                featureProjection: MAPPROJECTION
-            });
+            var drawnPolygonGeoJSON = geospatialService.getGeoJSONObjectFromFeature(drawnPolygon);
             
             var newTaskGrid = [];
             for (var i = 0; i < taskGrid.length; i++){
-                // Write the feature as GeoJSON and transform to the projection Turf.js needs
-                var taskGeoJSON = format.writeFeatureObject(taskGrid[i], {
-                    dataProjection: TARGETPROJECTION,
-                    featureProjection: MAPPROJECTION
-                });
+                var taskGeoJSON = geospatialService.getGeoJSONObjectFromFeature(taskGrid[i]);
                 // Check if the task intersects with the drawn polygon
                 var intersection = turf.intersect(drawnPolygonGeoJSON, taskGeoJSON);
                 // If the task doesn't intersect with the drawn polygon, copy the existing task into the new task grid
@@ -358,39 +327,24 @@
          * @param feature - has to be a Polygon
          * @returns {boolean}
          */
-        function checkFeatureSelfIntersections_(feature){
-            var format = new ol.format.GeoJSON();
-            var hasSelfIntersections = false;
-            var feature_as_gj = format.writeFeatureObject(feature, {
-                dataProjection: TARGETPROJECTION,
-                featureProjection: MAPPROJECTION
-            });
-            if (turf.kinks(feature_as_gj).features.length > 0) {
-                hasSelfIntersections = true;
-            }
-            return hasSelfIntersections;
-        }
+         function checkFeatureSelfIntersections_(feature) {
+             var hasSelfIntersections = false;
+             var featureAsGeoJSON = geospatialService.getGeoJSONObjectFromFeature(feature);
+             if (turf.kinks(featureAsGeoJSON).features.length > 0) {
+                 hasSelfIntersections = true;
+             }
+             return hasSelfIntersections;
+         }
 
         /**
          * Creates a project by calling the API with the AOI, a task grid and a project name
          * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
          */
         function createProject(projectName){
+
+            var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
+            var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid);
             
-            var format = new ol.format.GeoJSON();
-
-            // Write the feature as a GeoJSON object and transform to the projection the API needs
-            var areaOfInterestGeoJSON = format.writeFeaturesObject(aoi, {
-                dataProjection: TARGETPROJECTION,
-                featureProjection: MAPPROJECTION
-            });
-
-            // Write the features as a GeoJSON object and transform to the projection the API needs
-            var taskGridGeoJSON = format.writeFeaturesObject(taskGrid, {
-                dataProjection: TARGETPROJECTION,
-                featureProjection: MAPPROJECTION
-            });
-
             // Get the geometry of the area of interest. It should only have one feature.
             var newProject = {
                 areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
