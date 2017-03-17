@@ -67,14 +67,32 @@ class ProjectInfo(db.Model):
         self.instructions = dto.instructions
 
     @staticmethod
-    def get_locales_for_project(project_id) -> List[ProjectInfoDTO]:
+    def get_dto_for_locale(project_id, locale, default_locale):
+        project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=locale).one_or_none()
+
+        return project_info.get_dto()
+
+    def get_dto(self):
+
+        project_info_dto = ProjectInfoDTO()
+        project_info_dto.locale = self.locale
+        project_info_dto.name = self.name
+        project_info_dto.description = self.description
+        project_info_dto.short_description = self.short_description
+        project_info_dto.instructions = self.instructions
+
+        return project_info_dto
+
+    @staticmethod
+    def get_dto_for_all_locales(project_id) -> List[ProjectInfoDTO]:
         locales = ProjectInfo.query.filter_by(project_id=project_id).all()
 
-        dto = []
+        project_info_dtos = []
         for locale in locales:
-            iain = locale
+            project_info_dto = locale.get_dto()
+            project_info_dtos.append(project_info_dto)
 
-        return dto
+        return project_info_dtos
 
 
 class Project(db.Model):
@@ -172,16 +190,18 @@ class Project(db.Model):
             return None
 
         project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
+        project_dto.project_info = ProjectInfo.get_dto_for_locale(project_id, 'en', 'en')
 
         return project_dto
 
     def as_dto_for_admin(self, project_id):
+        """ Creates a Project DTO suitable for transmitting to project admins """
         project, project_dto = self._get_project_and_base_dto(project_id)
 
         if project is None:
             return None
 
         project_dto.project_status = ProjectStatus(project.priority).name
-        #project_dto.project_info_locales = ProjectInfo.get_locales_for_project(project_id)
+        project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(project_id)
 
         return project_dto
