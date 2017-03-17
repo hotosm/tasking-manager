@@ -1,6 +1,6 @@
 import json
 import geojson
-from typing import Optional
+from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO
@@ -66,6 +66,16 @@ class ProjectInfo(db.Model):
         self.description = dto.description
         self.instructions = dto.instructions
 
+    @staticmethod
+    def get_locales_for_project(project_id) -> List[ProjectInfoDTO]:
+        locales = ProjectInfo.query.filter_by(project_id=project_id).all()
+
+        dto = []
+        for locale in locales:
+            iain = locale
+
+        return dto
+
 
 class Project(db.Model):
     """ Describes a HOT Mapping Project """
@@ -85,7 +95,7 @@ class Project(db.Model):
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
     project_info = db.relationship(ProjectInfo, lazy='dynamic')
 
-    def __init__(self, project_name, aoi):
+    def create_draft_project(self, project_name, aoi):
         """
         Project constructor
         :param project_name: Name Project Manager has given the project
@@ -132,28 +142,44 @@ class Project(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    @staticmethod
-    def as_dto_for_mapper(project_id) -> Optional[ProjectDTO]:
-        """
-        Creates a Project DTO suitable for transmitting to mapper users
-        :param project_id: project_id in scope
-        :param for_admin: set to True if project is required for admin
-        :return: Project DTO dict
-        """
-        # Query ignores tasks so we can more optimally generate the task feature collection in the call below
-        query = db.session.query(Project.id, Project.name, AreaOfInterest.geometry.ST_AsGeoJSON()
-                                 .label('geojson')).join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
+    def _get_project_and_base_dto(self, project_id):
+        """ Populates a project DTO with properties common to all roles """
 
-        if query is None:
+        # Query ignores tasks so we can more optimally generate the task feature collection if needed
+        project = db.session.query(Project.id,
+                                   Project.name,
+                                   Project.priority,
+                                   Project.status,
+                                   AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
+            .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
+
+        if project is None:
+            return None, None
+
+        base_dto = ProjectDTO()
+        base_dto.project_id = project_id
+        base_dto.project_name = project.name
+        base_dto.project_priority = ProjectPriority(project.priority).name
+        base_dto.area_of_interest = geojson.loads(project.geojson)
+
+        return project, base_dto
+
+    def as_dto_for_mapper(self, project_id: int) -> Optional[ProjectDTO]:
+        """ Creates a Project DTO suitable for transmitting to mapper users """
+        project, project_dto = self._get_project_and_base_dto(project_id)
+
+        if project is None:
             return None
 
-        project_dto = ProjectDTO()
-        project_dto.project_id = project_id
-        project_dto.project_name = query.name
-        project_dto.area_of_interest = geojson.loads(query.geojson)
         project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
 
         return project_dto
 
-    def as_dto_for_admin(self):
-        iain = 'test'
+    def as_dto_for_admin(self, project_id):
+        project, project_dto = self._get_project_for_dto(project_id)
+
+        if project is None:
+            return None
+
+        project_dto.project_status = ProjectStatus(project.priority).name
+        project_dto.project_info_locales = ProjectInfo.get_locales_for_project(project_id)
