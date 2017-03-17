@@ -6,20 +6,14 @@ from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJso
 
 
 class ProjectServiceError(Exception):
-    """
-    Custom Exception to notify callers an error occurred when validating a Project
-    """
-
+    """ Custom Exception to notify callers an error occurred when validating a Project """
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
 
 class ProjectStoreError(Exception):
-    """
-    Custom Exception to notify callers an error occurred with database CRUD operations
-    """
-
+    """ Custom Exception to notify callers an error occurred with database CRUD operations """
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
