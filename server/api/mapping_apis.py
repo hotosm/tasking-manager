@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource, current_app, request
 from server.services.project_service import ProjectService, ProjectServiceError, ProjectStoreError
 
 
@@ -13,6 +13,12 @@ class ProjectAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The unique project ID
@@ -31,7 +37,8 @@ class ProjectAPI(Resource):
         """
         try:
             project_service = ProjectService()
-            project_dto = project_service.get_project_dto_for_mapper(project_id)
+            project_dto = project_service.get_project_dto_for_mapper(project_id,
+                                                                     request.environ.get('HTTP_ACCEPT_LANGUAGE'))
 
             if project_dto is None:
                 return {"Error": "Project Not Found"}, 404

@@ -44,11 +44,11 @@ class ProjectService:
         draft_project.create()
         return draft_project.id
 
-    def get_project_dto_for_mapper(self, project_id: int):
+    def get_project_dto_for_mapper(self, project_id: int, locale='en'):
         """ Get the project as DTO for mappers """
         try:
             project = Project()
-            project_dto = project.as_dto_for_mapper(project_id)
+            project_dto = project.as_dto_for_mapper(project_id, locale)
         except Exception as e:
             raise ProjectStoreError(f'Error getting project {project_id} - {str(e)}')
 
