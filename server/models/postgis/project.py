@@ -1,5 +1,6 @@
 import json
 import geojson
+from flask import current_app
 from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
@@ -52,8 +53,16 @@ class ProjectInfo(db.Model):
     __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
 
     @classmethod
+    def create_from_name(cls, name: str):
+        """ Creates a new ProjectInfo class from name, used when creating draft projects """
+        new_info = cls()
+        new_info.locale = 'en'  # Draft project default to english, PMs can change this prior to publication
+        new_info.name = name
+        return new_info
+
+    @classmethod
     def create_from_dto(cls, dto: ProjectInfoDTO):
-        """ Creates a new ProjectInfo class from dto """
+        """ Creates a new ProjectInfo class from dto, used from project edit """
         new_info = cls()
         new_info.update_from_dto(dto)
         return new_info
@@ -62,19 +71,47 @@ class ProjectInfo(db.Model):
         """ Updates existing ProjectInfo from supplied DTO """
         self.locale = dto.locale
         self.name = dto.name
+
+        # TODO bleach input
         self.short_description = dto.short_description
         self.description = dto.description
         self.instructions = dto.instructions
 
     @staticmethod
-    def get_locales_for_project(project_id) -> List[ProjectInfoDTO]:
+    def get_dto_for_locale(project_id, locale, default_locale='en'):
+        project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=locale).one_or_none()
+
+        if project_info is None:
+            project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=default_locale).one_or_none()
+            if project_info is None:
+                error_message = \
+                    f'BAD DATA - no info found for project {project_id}, locale: {locale}, default {default_locale}'
+                current_app.logger.critical(error_message)
+                raise ValueError(error_message)
+
+        return project_info.get_dto()
+
+    def get_dto(self):
+
+        project_info_dto = ProjectInfoDTO()
+        project_info_dto.locale = self.locale
+        project_info_dto.name = self.name
+        project_info_dto.description = self.description
+        project_info_dto.short_description = self.short_description
+        project_info_dto.instructions = self.instructions
+
+        return project_info_dto
+
+    @staticmethod
+    def get_dto_for_all_locales(project_id) -> List[ProjectInfoDTO]:
         locales = ProjectInfo.query.filter_by(project_id=project_id).all()
 
-        dto = []
+        project_info_dtos = []
         for locale in locales:
-            iain = locale
+            project_info_dto = locale.get_dto()
+            project_info_dtos.append(project_info_dto)
 
-        return dto
+        return project_info_dtos
 
 
 class Project(db.Model):
@@ -93,7 +130,7 @@ class Project(db.Model):
 
     # Mapped Objects
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
-    project_info = db.relationship(ProjectInfo, lazy='dynamic')
+    project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
 
     def create_draft_project(self, project_name, aoi):
         """
@@ -105,7 +142,7 @@ class Project(db.Model):
         if not project_name:
             raise InvalidData('Project: project_name cannot be empty')
 
-        self.name = project_name
+        self.project_info.append(ProjectInfo.create_from_name(project_name))
         self.area_of_interest = aoi
         self.status = ProjectStatus.DRAFT.value
 
@@ -150,6 +187,7 @@ class Project(db.Model):
                                    Project.name,
                                    Project.priority,
                                    Project.status,
+                                   Project.default_locale,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -159,6 +197,7 @@ class Project(db.Model):
         base_dto = ProjectDTO()
         base_dto.project_id = project_id
         base_dto.project_name = project.name
+        base_dto.project_status = ProjectStatus(project.status).name
         base_dto.project_priority = ProjectPriority(project.priority).name
         base_dto.area_of_interest = geojson.loads(project.geojson)
 
@@ -172,16 +211,17 @@ class Project(db.Model):
             return None
 
         project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
+        project_dto.project_info = ProjectInfo.get_dto_for_locale(project_id, 'en', project.default_locale)
 
         return project_dto
 
     def as_dto_for_admin(self, project_id):
+        """ Creates a Project DTO suitable for transmitting to project admins """
         project, project_dto = self._get_project_and_base_dto(project_id)
 
         if project is None:
             return None
 
-        project_dto.project_status = ProjectStatus(project.priority).name
-        #project_dto.project_info_locales = ProjectInfo.get_locales_for_project(project_id)
+        project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(project_id)
 
         return project_dto

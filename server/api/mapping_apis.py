@@ -1,5 +1,5 @@
 from flask_restful import Resource, current_app
-from server.services.project_service import ProjectService
+from server.services.project_service import ProjectService, ProjectServiceError, ProjectStoreError
 
 
 class ProjectAPI(Resource):
@@ -22,6 +22,8 @@ class ProjectAPI(Resource):
         responses:
             200:
                 description: Project found
+            400:
+                description: Invalid request
             404:
                 description: Project not found
             500:
@@ -35,6 +37,10 @@ class ProjectAPI(Resource):
                 return {"Error": "Project Not Found"}, 404
 
             return project_dto.to_primitive(), 200
+        except ProjectServiceError as e:
+            return {"error": str(e)}, 400
+        except ProjectStoreError as e:
+            return {"error": str(e)}, 500
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
