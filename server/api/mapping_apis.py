@@ -138,7 +138,7 @@ class LockTaskForMappingAPI(Resource):
             if task is None:
                 return {"Error": "Task Not Found"}, 404
 
-            return task, 200
+            return task.to_primitive(), 200
         except TaskServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:

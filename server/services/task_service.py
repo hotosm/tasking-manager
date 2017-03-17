@@ -1,5 +1,7 @@
+from typing import Optional
 from flask import current_app
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
+from server.models.dtos.task_dto import TaskDTO
 
 
 class TaskServiceError(Exception):
@@ -14,7 +16,7 @@ class TaskServiceError(Exception):
 
 class TaskService:
 
-    def get_task_as_dto(self, task_id: int, project_id: int):
+    def get_task_as_dto(self, task_id: int, project_id: int) -> Optional[TaskDTO]:
         """ Get task as DTO for transmission over API """
         task = Task.get(task_id, project_id)
 
