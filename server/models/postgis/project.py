@@ -176,10 +176,12 @@ class Project(db.Model):
         return project_dto
 
     def as_dto_for_admin(self, project_id):
-        project, project_dto = self._get_project_for_dto(project_id)
+        project, project_dto = self._get_project_and_base_dto(project_id)
 
         if project is None:
             return None
 
         project_dto.project_status = ProjectStatus(project.priority).name
-        project_dto.project_info_locales = ProjectInfo.get_locales_for_project(project_id)
+        #project_dto.project_info_locales = ProjectInfo.get_locales_for_project(project_id)
+
+        return project_dto

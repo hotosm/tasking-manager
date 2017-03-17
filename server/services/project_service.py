@@ -30,11 +30,13 @@ class ProjectService:
 
     def get_project_dto_for_mapper(self, project_id):
         """ Get the project as DTO for mappers """
-        return Project().as_dto_for_mapper(project_id)
+        project = Project()
+        return project.as_dto_for_mapper(project_id)
 
     def get_project_dto_for_admin(self, project_id):
         """ Get the project as DTO for project managers """
-        dto = project.as_dto_for_admin()
+        project = Project()
+        return project.as_dto_for_admin(project_id)
 
     def update_project(self, project_dto: ProjectDTO):
         project = Project.query.get(project_dto.project_id)
