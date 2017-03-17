@@ -1,6 +1,6 @@
 from flask_restful import Resource, current_app, request
 from server.services.project_service import ProjectService, ProjectServiceError, ProjectStoreError
-from server.services.task_service import TaskService
+from server.services.task_service import TaskService, TaskServiceError
 
 
 class ProjectAPI(Resource):
@@ -94,7 +94,7 @@ class LockTaskForMappingAPI(Resource):
             if task is None:
                 return {"Error": "Task Not Found"}, 404
 
-            return {"Status": "Success"}, 200
+            return task, 200
         except TaskServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:

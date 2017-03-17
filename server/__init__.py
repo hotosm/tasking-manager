@@ -78,7 +78,7 @@ def init_flask_restful_routes(app):
     from server.api.mapping_apis import ProjectAPI, LockTaskForMappingAPI
     from server.api.project_admin_api import ProjectAdminAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
-    from server.api.tasks_api import TaskAPI, LockTaskAPI, UnlockTaskAPI
+    from server.api.tasks_api import TaskAPI, UnlockTaskAPI
 
     api.add_resource(SwaggerDocsAPI,        '/api/docs')
     api.add_resource(HealthCheckAPI,        '/api/health-check')

@@ -15,9 +15,16 @@ class TaskServiceError(Exception):
 
 class TaskService:
 
-    def get_task_as_dto(self, task_id, project_id):
+    def get_task_as_dto(self, task_id: int, project_id: int):
         """ Get task as DTO for transmission over API """
-        return Task.as_dto(task_id, project_id)
+        task = Task.get(task_id, project_id)
+
+        if task is None:
+            return None
+
+        return task.as_dto()
+
+        #return Task.as_dto(task_id, project_id)
 
     def lock_task_for_mapping(self, task_id, project_id):
         """
@@ -37,14 +44,15 @@ class TaskService:
 
         current_state = TaskStatus(task.task_status).name
         if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name]:
-            raise TaskServiceError(f'Cannot lock task {task_id} for mapping, current state is {current_state}')
+            raise TaskServiceError(f'Cannot lock task {task_id} state must be in {TaskStatus.READY.name},'
+                                   f' {TaskStatus.INVALIDATED.name}')
 
         # TODO user can only have 1 tasked locked at a time
 
         self._set_task_history(task=task, action=TaskAction.LOCKED)
         task.lock_task()
 
-        return task
+        return task.as_dto()
 
     def unlock_task(self, task_id, project_id, state, comment=None):
         """

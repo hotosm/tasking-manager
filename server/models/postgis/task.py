@@ -171,28 +171,22 @@ class Task(db.Model):
 
         return geojson.FeatureCollection(tasks_features)
 
-    @staticmethod
-    def as_dto(task_id, project_id):
+    def as_dto(self):
         """
         Creates a Task DTO suitable for transmitting via the API
         :param task_id: Task ID in scope
         :param project_id: Project ID in scope
         :return: JSON serializable Task DTO
         """
-        task = Task.get(task_id, project_id)
-
-        if task is None:
-            return None
-
         task_history = []
-        for action in task.task_history:
+        for action in self.task_history:
             if action.action_text is None:
                 continue  # Don't return any history without action text
 
             history = dict(action=action.action, actionText=action.action_text, actionDate=action.action_date)
             task_history.append(history)
 
-        task_dto = dict(taskId=task.id, projectId=task.project_id, taskStatus=TaskStatus(task.task_status).name,
-                        taskLocked=task.task_locked, taskHistory=task_history)
+        task_dto = dict(taskId=self.id, projectId=self.project_id, taskStatus=TaskStatus(self.task_status).name,
+                        taskLocked=self.task_locked, taskHistory=task_history)
 
         return task_dto
