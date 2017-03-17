@@ -19,7 +19,7 @@ class ProjectService:
             raise e
 
         try:
-            draft_project = Project(draft_project_dto.project_name, area_of_interest)
+            draft_project = Project().create_draft_project(draft_project_dto.project_name, area_of_interest)
         except InvalidData as e:
             raise e
 
@@ -28,9 +28,15 @@ class ProjectService:
         draft_project.create()
         return draft_project.id
 
-    def get_project_as_dto(self, project_id):
-        """ Get the project as DTO for transmission via the API """
-        return Project.as_dto(project_id)
+    def get_project_dto_for_mapper(self, project_id):
+        """ Get the project as DTO for mappers """
+        project = Project()
+        return project.as_dto_for_mapper(project_id)
+
+    def get_project_dto_for_admin(self, project_id):
+        """ Get the project as DTO for project managers """
+        project = Project()
+        return project.as_dto_for_admin(project_id)
 
     def update_project(self, project_dto: ProjectDTO):
         project = Project.query.get(project_dto.project_id)

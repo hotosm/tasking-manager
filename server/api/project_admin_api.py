@@ -4,7 +4,7 @@ from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.services.project_service import ProjectService, InvalidGeoJson, InvalidData
 
 
-class ProjectsAPI(Resource):
+class ProjectAdminAPI(Resource):
     """
     /api/projects
     """
@@ -14,7 +14,7 @@ class ProjectsAPI(Resource):
         Creates a tasking-manager project
         ---
         tags:
-            - projects
+            - project-admin
         produces:
             - application/json
         parameters:
@@ -72,7 +72,7 @@ class ProjectsAPI(Resource):
         Retrieves a Tasking-Manager project
         ---
         tags:
-            - projects
+            - project-admin
         produces:
             - application/json
         parameters:
@@ -92,7 +92,7 @@ class ProjectsAPI(Resource):
         """
         try:
             project_service = ProjectService()
-            project_dto = project_service.get_project_as_dto(project_id)
+            project_dto = project_service.get_project_dto_for_admin(project_id)
 
             if project_dto is None:
                 return {"Error": "Project Not Found"}, 404
@@ -108,7 +108,7 @@ class ProjectsAPI(Resource):
         Updates a Tasking-Manager project
         ---
         tags:
-            - projects
+            - project-admin
         produces:
             - application/json
         parameters:
@@ -136,7 +136,7 @@ class ProjectsAPI(Resource):
                       defaultLocale:
                           type: string
                           default: en
-                      projectInfo:
+                      projectInfoLocales:
                           type: array
                           items:
                               schema:

@@ -24,7 +24,8 @@ class TestProject(unittest.TestCase):
                                               '"Feature"}], "type": "FeatureCollection"}')
 
         test_project_service = ProjectService()
-        test_project = Project('Test', MagicMock())
+        test_project = Project()
+        test_project.create_draft_project('Test', MagicMock())
 
         # Act
         test_project_service._attach_tasks_to_project(test_project, valid_feature_collection)

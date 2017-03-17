@@ -49,6 +49,8 @@ class ProjectDTO(Model):
     project_priority = StringType(required=True, serialized_name='projectPriority',
                                   validators=[is_known_project_priority], serialize_when_none=False)
     area_of_interest = BaseType(serialized_name='areaOfInterest')
-    tasks = BaseType()
-    default_locale = StringType(serialized_name='defaultLocale')
-    project_info = ListType(ModelType(ProjectInfoDTO), serialized_name='projectInfo')
+    tasks = BaseType(serialize_when_none=False)
+    default_locale = StringType(required=True, serialized_name='defaultLocale')
+    project_info = ModelType(ProjectInfoDTO, serialized_name='projectInfo', serialize_when_none=False)
+    project_info_locales = ListType(ModelType(ProjectInfoDTO), serialized_name='projectInfoLocales',
+                                    serialize_when_none=False)
