@@ -1,7 +1,5 @@
 import unittest
-
 import geojson
-
 from server.models.postgis.project import InvalidGeoJson, InvalidData, Task
 
 
