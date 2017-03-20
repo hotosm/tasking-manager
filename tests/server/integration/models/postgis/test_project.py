@@ -39,10 +39,16 @@ class TestProject(unittest.TestCase):
         self.ctx.pop()
 
     def test_project_can_be_persisted_to_db(self):
+        if self.skip_tests:
+            return
+
         # Checks that code we ran in setUp actually created a project in the DB
         self.assertIsNotNone(self.test_project.id, 'ID should be set if project successfully persisted')
 
     def test_task_can_generate_valid_feature_collection(self):
+        if self.skip_tests:
+            return
+
         # Act
         feature_collection = Task.get_tasks_as_geojson_feature_collection(self.test_project.id)
 
@@ -51,6 +57,9 @@ class TestProject(unittest.TestCase):
         self.assertEqual(1, len(feature_collection.features))
 
     def test_project_can_be_generated_as_dto(self):
+        if self.skip_tests:
+            return
+
         # Act
         project_dto = Project().as_dto_for_mapper(self.test_project.id, 'en')
 
@@ -62,9 +71,10 @@ class TestProject(unittest.TestCase):
         self.assertEqual(project_dto.project_id, self.test_project.id)
 
     def create_test_project(self):
-        """
-        Helper function that creates a valid test project in the db
-        """
+        """ Helper function that creates a valid test project in the db """
+        if self.skip_tests:
+            return
+
         multipoly_geojson = json.loads('{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],'
                                        '[-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12},'
                                        '"type": "MultiPolygon"}')

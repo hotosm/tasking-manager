@@ -44,21 +44,6 @@ class ProjectService:
         draft_project.create()
         return draft_project.id
 
-    def get_project_dto_for_mapper(self, project_id: int, locale='en'):
-        """ Get the project as DTO for mappers """
-        try:
-            project = Project()
-            project_dto = project.as_dto_for_mapper(project_id, locale)
-        except Exception as e:
-            raise ProjectStoreError(f'Error getting project {project_id} - {str(e)}')
-
-        if project_dto is None:
-            return None
-
-        if project_dto.project_status != ProjectStatus.PUBLISHED.name:
-            raise ProjectServiceError(f'Project {project_id} is not published')
-
-        return project_dto
 
     def get_project_dto_for_admin(self, project_id: int):
         """ Get the project as DTO for project managers """
