@@ -1,13 +1,13 @@
 from flask_restful import Resource, current_app, request
 from server.services.project_service import ProjectService, ProjectServiceError, ProjectStoreError
-from server.services.task_service import TaskService, TaskServiceError
+from server.services.mapping_service import MappingService, MappingServiceError
 
 
-class ProjectAPI(Resource):
+class MappingProjectAPI(Resource):
 
     def get(self, project_id):
         """
-        Retrieves a Tasking-Manager project
+        Get HOT Project for mapping
         ---
         tags:
             - mapping
@@ -55,11 +55,11 @@ class ProjectAPI(Resource):
             return {"error": error_msg}, 500
 
 
-class TaskAPI(Resource):
+class MappingTaskAPI(Resource):
 
     def get(self, project_id, task_id):
         """
-        Get task details
+        Get task for mapping
         ---
         tags:
             - mapping
@@ -87,7 +87,7 @@ class TaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = TaskService().get_task_as_dto(task_id, project_id)
+            task = MappingService().get_task_as_dto(task_id, project_id)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404
@@ -133,13 +133,13 @@ class LockTaskForMappingAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = TaskService().lock_task_for_mapping(task_id, project_id)
+            task = MappingService().lock_task_for_mapping(task_id, project_id)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404
 
             return task.to_primitive(), 200
-        except TaskServiceError as e:
+        except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
@@ -205,13 +205,13 @@ class UnlockTaskForMappingAPI(Resource):
             if status == '':
                 return {"Error": "Status not supplied"}, 400
 
-            task = TaskService().unlock_task_after_mapping(task_id, project_id, status, comment)
+            task = MappingService().unlock_task_after_mapping(task_id, project_id, status, comment)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404
 
             return task.to_primitive(), 200
-        except TaskServiceError as e:
+        except MappingServiceError as e:
             return {"Error": str(e)}, 400
         except Exception as e:
             error_msg = f'Task Lock API - unhandled error: {str(e)}'

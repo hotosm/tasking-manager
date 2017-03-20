@@ -4,7 +4,7 @@ from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 from server.models.dtos.task_dto import TaskDTO
 
 
-class TaskServiceError(Exception):
+class MappingServiceError(Exception):
     """
     Custom Exception to notify callers an error occurred when handling Task
     """
@@ -14,7 +14,7 @@ class TaskServiceError(Exception):
             current_app.logger.error(message)
 
 
-class TaskService:
+class MappingService:
 
     def get_task_as_dto(self, task_id: int, project_id: int) -> Optional[TaskDTO]:
         """ Get task as DTO for transmission over API """
@@ -39,11 +39,11 @@ class TaskService:
             return None
 
         if task.task_locked:
-            raise TaskServiceError(f'Task: {task_id} Project {project_id} is already locked')
+            raise MappingServiceError(f'Task: {task_id} Project {project_id} is already locked')
 
         current_state = TaskStatus(task.task_status).name
         if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name]:
-            raise TaskServiceError(f'Cannot lock task {task_id} state must be in {TaskStatus.READY.name},'
+            raise MappingServiceError(f'Cannot lock task {task_id} state must be in {TaskStatus.READY.name},'
                                    f' {TaskStatus.INVALIDATED.name}')
 
         # TODO user can only have 1 tasked locked at a time
@@ -72,7 +72,7 @@ class TaskService:
         try:
             new_state = TaskStatus[state.upper()]
         except KeyError:
-            raise TaskServiceError(
+            raise MappingServiceError(
                 f'Unknown status: {state} Valid values are {TaskStatus.BADIMAGERY.name}, {TaskStatus.DONE.name}, '
                 f'{TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}')
 

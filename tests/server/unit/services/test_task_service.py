@@ -1,5 +1,5 @@
 import unittest
-from server.services.task_service import TaskService, Task, TaskServiceError, TaskAction, TaskStatus, TaskHistory
+from server.services.mapping_service import MappingService, Task, MappingServiceError, TaskAction, TaskStatus, TaskHistory
 from unittest.mock import patch
 from server import create_app
 
@@ -27,7 +27,7 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = None
 
         # Act
-        test_task = TaskService().lock_task_for_mapping(1, 1)
+        test_task = MappingService().lock_task_for_mapping(1, 1)
 
         # Assert
         self.assertIsNone(test_task)
@@ -40,8 +40,8 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act / Assert
-        with self.assertRaises(TaskServiceError):
-            TaskService().lock_task_for_mapping(1, 1)
+        with self.assertRaises(MappingServiceError):
+            MappingService().lock_task_for_mapping(1, 1)
 
     @patch.object(Task, 'get')
     def test_lock_task_for_mapping_raises_error_if_task_in_invalid_state(self, mock_task):
@@ -52,8 +52,8 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act / Assert
-        with self.assertRaises(TaskServiceError):
-            TaskService().lock_task_for_mapping(1, 1)
+        with self.assertRaises(MappingServiceError):
+            MappingService().lock_task_for_mapping(1, 1)
 
     @patch.object(Task, 'update')
     @patch.object(Task, 'get')
@@ -63,7 +63,7 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = TaskService().lock_task_for_mapping(1, 1)
+        test_task = MappingService().lock_task_for_mapping(1, 1)
 
         # Assert
         self.assertTrue(test_task.task_locked, 'Locked should be set to True')
@@ -76,7 +76,7 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = TaskService().lock_task_for_mapping(1, 1)
+        test_task = MappingService().lock_task_for_mapping(1, 1)
 
         # Assert
         self.assertEqual(TaskAction.LOCKED.name, test_task.task_history[0].action)
@@ -87,7 +87,7 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = None
 
         # Act
-        test_task = TaskService().unlock_task_after_mapping(1, 1, 'TEST')
+        test_task = MappingService().unlock_task_after_mapping(1, 1, 'TEST')
 
         # Assert
         self.assertIsNone(test_task)
@@ -99,7 +99,7 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = TaskService().unlock_task_after_mapping(1, 1, 'TEST')
+        test_task = MappingService().unlock_task_after_mapping(1, 1, 'TEST')
 
         # Assert
         self.assertEqual(test_task.id, self.task_stub.id)
@@ -111,8 +111,8 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act / Assert
-        with self.assertRaises(TaskServiceError):
-            TaskService().unlock_task_after_mapping(1, 1, 'IAIN')
+        with self.assertRaises(MappingServiceError):
+            MappingService().unlock_task_after_mapping(1, 1, 'IAIN')
 
     @patch.object(Task, 'update')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
@@ -124,7 +124,7 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = TaskService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name, 'Test comment')
+        test_task = MappingService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name, 'Test comment')
 
         # Assert
         self.assertEqual(TaskAction.COMMENT.name, test_task.task_history[0].action)
@@ -141,7 +141,7 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = TaskService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name)
+        test_task = MappingService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name)
 
         # Assert
         self.assertEqual(TaskAction.STATE_CHANGE.name, test_task.task_history[0].action)
@@ -158,7 +158,7 @@ class TestProject(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = TaskService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name)
+        test_task = MappingService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name)
 
         # Assert
         self.assertFalse(test_task.task_locked)
