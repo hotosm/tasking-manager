@@ -1,10 +1,8 @@
 import os
 import unittest
-import geojson
-import json
 from server import create_app
 from server.services.mapping_service import MappingService
-from server.services.project_service import Project, AreaOfInterest, Task
+from tests.server.integration.helpers.test_helpers import create_test_project
 
 
 class TestMappingService(unittest.TestCase):
@@ -30,7 +28,7 @@ class TestMappingService(unittest.TestCase):
         if self.skip_tests:
             return
 
-        self.create_test_project()
+        self.test_project = create_test_project()
 
     def tearDown(self):
         if self.skip_tests:
@@ -39,12 +37,10 @@ class TestMappingService(unittest.TestCase):
         self.test_project.delete()
         self.ctx.pop()
 
-    def test_lock_task_for_mapping_adds_locked_history(self, mock_task, mock_update):
-        # Arrange
-        mock_task.return_value = self.task_stub
-
+    def test_lock_task_for_mapping_adds_locked_history(self):
         # Act
-        test_task = MappingService().lock_task_for_mapping(1, 1)
+        test_task = MappingService().lock_task_for_mapping(1, self.test_project.id)
 
         # Assert
-        self.assertEqual(TaskAction.LOCKED.name, test_task.task_history[0].action)
+        self.assertTrue(test_task.task_locked)
+

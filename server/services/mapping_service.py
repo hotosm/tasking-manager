@@ -46,7 +46,7 @@ class MappingService:
 
         return task.as_dto()
 
-    def lock_task_for_mapping(self, task_id, project_id):
+    def lock_task_for_mapping(self, task_id, project_id) -> Optional[TaskDTO]:
         """
         Sets the task_locked status to locked so no other user can work on it
         :param task_id: Task ID in scope
