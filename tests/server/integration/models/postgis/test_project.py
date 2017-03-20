@@ -4,7 +4,6 @@ import geojson
 import json
 from server import create_app
 from server.services.project_service import Project, AreaOfInterest, Task
-from tests.server.integration.helpers.test_helpers import create_test_project
 
 
 class TestProject(unittest.TestCase):
@@ -30,7 +29,7 @@ class TestProject(unittest.TestCase):
         if self.skip_tests:
             return
 
-        self.test_project = create_test_project()
+        self.create_test_project()
 
     def tearDown(self):
         if self.skip_tests:
@@ -61,3 +60,21 @@ class TestProject(unittest.TestCase):
         # TODO test for project info
         # self.assertEqual(project_dto.project_name, 'Test')
         self.assertEqual(project_dto.project_id, self.test_project.id)
+
+    def create_test_project(self):
+        """
+        Helper function that creates a valid test project in the db
+        """
+        multipoly_geojson = json.loads('{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],'
+                                       '[-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12},'
+                                       '"type": "MultiPolygon"}')
+
+        task_feature = geojson.loads('{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'
+                                     '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "type": "MultiPolygon"},'
+                                     '"properties": {"x": 2402, "y": 1736, "zoom": 12}, "type": "Feature"}')
+
+        test_aoi = AreaOfInterest(multipoly_geojson)
+        self.test_project = Project()
+        self.test_project.create_draft_project('Test', test_aoi)
+        self.test_project.tasks.append(Task.from_geojson_feature(1, task_feature))
+        self.test_project.create()
