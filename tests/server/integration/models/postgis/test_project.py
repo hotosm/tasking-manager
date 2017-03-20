@@ -3,7 +3,7 @@ import unittest
 import geojson
 import json
 from server import create_app
-from server.services.project_service import Project, AreaOfInterest, Task
+from server.models.postgis.project import Project, AreaOfInterest, Task, ProjectDTO, ProjectInfoDTO, ProjectStatus, ProjectPriority
 
 
 class TestProject(unittest.TestCase):
@@ -69,6 +69,32 @@ class TestProject(unittest.TestCase):
         # TODO test for project info
         # self.assertEqual(project_dto.project_name, 'Test')
         self.assertEqual(project_dto.project_id, self.test_project.id)
+
+    def test_update_project_adds_project_info(self):
+        if self.skip_tests:
+            return
+
+        # Arrange
+        locales = []
+        test_info = ProjectInfoDTO()
+        test_info.locale = 'en'
+        test_info.name = 'Thinkwhere Test'
+        locales.append(test_info)
+
+        test_dto = ProjectDTO()
+        test_dto.project_status = ProjectStatus.PUBLISHED.name
+        test_dto.project_priority = ProjectPriority.MEDIUM.name
+        test_dto.default_locale = 'en'
+        test_dto.project_info_locales = locales
+
+        # Act
+        self.test_project.update(test_dto)
+
+        # Assert
+        self.assertEqual(self.test_project.status, ProjectStatus.PUBLISHED.value)
+        self.assertEqual(self.test_project.priority, ProjectPriority.MEDIUM.value)
+        self.assertEqual(self.test_project.default_locale, 'en')
+        self.assertEqual(self.test_project.project_info[0].name, 'Thinkwhere Test')
 
     def create_test_project(self):
         """ Helper function that creates a valid test project in the db """
