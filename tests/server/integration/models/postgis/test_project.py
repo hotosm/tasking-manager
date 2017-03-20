@@ -71,9 +71,10 @@ class TestProject(unittest.TestCase):
         self.assertEqual(project_dto.project_id, self.test_project.id)
 
     def create_test_project(self):
-        """
-        Helper function that creates a valid test project in the db
-        """
+        """ Helper function that creates a valid test project in the db """
+        if self.skip_tests:
+            return
+
         multipoly_geojson = json.loads('{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],'
                                        '[-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12},'
                                        '"type": "MultiPolygon"}')
