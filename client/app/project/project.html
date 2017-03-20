@@ -55,7 +55,8 @@
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
                         <p>{{ projectCtrl.projectData.projectInfo.instructions }}</p>
-                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping <i class="oam-ds-icon-sm-chevron-right"></i>>>
+                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
+                            <i class="oam-ds-icon-sm-chevron-right"></i>>>
                         </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'mapping'">
@@ -89,6 +90,11 @@
                                 </div>
                                 <!-- task error alerts -->
                                 <div>
+                                    <div ng-show="projectCtrl.taskLockError">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>The task could not be locked for mapping.</p>
+                                        </div>
+                                    </div>
                                     <div ng-show="projectCtrl.taskError === 'task-not-mappable'"
                                          class="alert alert--danger"
                                          role="alert">

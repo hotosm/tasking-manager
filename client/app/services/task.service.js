@@ -62,14 +62,14 @@
                     comment: comment,
                     status: status
                 },
-                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/unlock',
+                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/unlock-after-mapping',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
-                return (response);
+                return (response.data);
             }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -87,14 +87,14 @@
             // Returns a promise
             return $http({
                 method: 'POST',
-                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/lock',
+                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/lock-for-mapping',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
-                return (response);
+                return (response.data);
             }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
