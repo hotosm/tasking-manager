@@ -17,6 +17,7 @@
             createOSMMap: createOSMMap,
             getOSMMap: getOSMMap,
             addXYZLayer: addXYZLayer,
+            addTiledWMSLayer: addTiledWMSLayer,
             addGeocoder: addGeocoder
         };
 
@@ -27,6 +28,7 @@
          * with additional layers. 
          * Supported additional layers:
          *    - XYZ
+         *    - WMS
          * @param targetElement
          */
         function createOSMMap(targetElement){
@@ -55,6 +57,9 @@
                 for (var i = 0; i < additionalLayers.length; i++) {
                     if (additionalLayers[i].type === 'XYZ') {
                         addXYZLayer(additionalLayers[i].name, additionalLayers[i].url);
+                    }
+                    if (additionalLayers[i].type === 'WMS'){
+                        addTiledWMSLayer(additionalLayers[i].name, additionalLayers[i].url, additionalLayers[i].layerName)
                     }
                 }
             }
@@ -99,6 +104,32 @@
                 })
             });
             map.addLayer(aerialLayer);
+        }
+
+        /**
+         * Add tiled WMS layer
+         * @param name
+         * @param url
+         * @param layer
+         * @param visible
+         */
+        function addTiledWMSLayer(name, url, layer, visible){
+            var visibility = false;
+            if (visible){
+                visibility = true;
+            }
+            var wmsLayer = new ol.layer.Tile({
+                visible: visibility,
+                title: name,
+                type: 'base',
+                source: new ol.source.TileWMS({
+                    url: url,
+                    params: {
+                        'LAYERS': layer
+                    }
+                })
+            });
+            map.addLayer(wmsLayer);
         }
         
         /**

@@ -90,3 +90,10 @@
     background: rgba($base-color, 0.08);
   }
 }
+
+/** OAM design system override **/
+.edit-project {
+  .form__label {
+    display: inline;
+  }
+}
