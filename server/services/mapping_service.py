@@ -1,20 +1,41 @@
 from typing import Optional
 from flask import current_app
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
+from server.models.postgis.project import Project, ProjectStatus
 from server.models.dtos.task_dto import TaskDTO
 
 
-class MappingServiceError(Exception):
-    """
-    Custom Exception to notify callers an error occurred when handling Task
-    """
+class DatabaseError(Exception):
+    """ Custom exception to notify callers error occurred with database"""
+    def __init__(self, message):
+        if current_app:
+            current_app.logger.error(message)
 
+
+class MappingServiceError(Exception):
+    """ Custom Exception to notify callers an error occurred when handling mapping """
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
 
 class MappingService:
+
+    def get_project_dto_for_mapper(self, project_id: int, locale='en'):
+        """ Get the project as DTO for mappers """
+        try:
+            project = Project()
+            project_dto = project.as_dto_for_mapper(project_id, locale)
+        except Exception as e:
+            raise DatabaseError(f'Error getting project {project_id} - {str(e)}')
+
+        if project_dto is None:
+            return None
+
+        if project_dto.project_status != ProjectStatus.PUBLISHED.name:
+            raise MappingServiceError(f'Project {project_id} is not published')
+
+        return project_dto
 
     def get_task_as_dto(self, task_id: int, project_id: int) -> Optional[TaskDTO]:
         """ Get task as DTO for transmission over API """

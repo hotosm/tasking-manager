@@ -1,6 +1,5 @@
 from flask_restful import Resource, current_app, request
-from server.services.project_service import ProjectService, ProjectServiceError, ProjectStoreError
-from server.services.mapping_service import MappingService, MappingServiceError
+from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError
 
 
 class MappingProjectAPI(Resource):
@@ -37,17 +36,17 @@ class MappingProjectAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            project_service = ProjectService()
-            project_dto = project_service.get_project_dto_for_mapper(project_id,
+            mapping_service = MappingService()
+            project_dto = mapping_service.get_project_dto_for_mapper(project_id,
                                                                      request.environ.get('HTTP_ACCEPT_LANGUAGE'))
 
             if project_dto is None:
                 return {"Error": "Project Not Found"}, 404
 
             return project_dto.to_primitive(), 200
-        except ProjectServiceError as e:
+        except MappingServiceError as e:
             return {"error": str(e)}, 400
-        except ProjectStoreError as e:
+        except DatabaseError as e:
             return {"error": str(e)}, 500
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
