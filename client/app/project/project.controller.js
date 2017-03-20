@@ -28,6 +28,11 @@
         //locked task
         vm.lockedTaskData = null;
 
+        //project display text
+        vm.description = '';
+        vm.shortDescription = '';
+        vm.instructions = '';
+
         //interaction
         var select = new ol.interaction.Select({
             style: styleService.getSelectedStyleFunction
@@ -118,13 +123,16 @@
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.projectData = data;
+                $scope.description = data.projectInfo.description;
+                $scope.shortDescription = data.projectInfo.shortDescription;
+                $scope.instructions = data.projectInfo.instructions;
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addProjectTasksToMap(vm.projectData.tasks, true);
             }, function () {
                 // project not returned successfully
                 // TODO - may want to handle error
             });
-        };
+        }
 
         /**
          * Gets project data from server and updates the map
@@ -164,13 +172,7 @@
                 source.clear();
             }
 
-            // read tasks JSON into features
-            // var format = new ol.format.GeoJSON();
-            // var taskFeatures = format.readFeatures(tasks, {
-            //     dataProjection: 'EPSG:4326',
-            //     featureProjection: 'EPSG:3857'
-            // });
-            var taskFeatures = geospatialService.getFeaturesFromGeoJSON(tasks)
+            var taskFeatures = geospatialService.getFeaturesFromGeoJSON(tasks);
             source.addFeatures(taskFeatures);
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
@@ -244,7 +246,8 @@
                 vm.selectedTaskData = data;
                 vm.lockedTaskData = data;
                 vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
-                vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';;
+                vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
+                ;
                 vm.taskLockError = false;
             }, function () {
                 // could not unlock lock task, very unlikey to happen but
