@@ -28,50 +28,28 @@
         
         vm.numberOfPriorityAreas = 0;
 
-        // Locale
-        vm.languages = [
+        // Locale - TODO: get from API
+        vm.locales = [
             'nl', 'en'
         ];
 
-        // TODO: get project metadata from API
-        vm.project = {
-            id: null,
-            name: '',
-            status: 'DRAFT',
-            priority: 'MEDIUM',
-            projectInfo: [
-                {
-                    description: 'english description',
-                    instructions: 'english instructions',
-                    locale: 'en',
-                    name: 'english name',
-                    shortDescription: 'english short description'
-                },
-                {
-                    description: 'nederlandse beschrijving',
-                    instructions: 'nederlandse instructies',
-                    locale: 'nl',
-                    name: 'nederlandse naam',
-                    shortDescription: 'nederlandse korte beschrijving'
-                }
-            ],
-            shortDescription: '',
-            description: '',
-            instructions: '',
-            taskInstructions: ''
-        };
-
+        vm.project = {};
         vm.descriptionLanguage = 'en';
         vm.shortDescriptionLanguage = 'en';
         vm.nameLanguage = 'en';
+        vm.instructionsLanguage = 'en';
         
         activate();
 
         function activate() {
 
-            vm.currentSection = 'description';
-            vm.project.id = $location.search().id;
+            var id = $location.search().id;
             vm.project.name = $location.search().name;
+
+            getProjectMetadata(id);
+
+            vm.currentSection = 'description';
+
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
 
@@ -106,33 +84,36 @@
          */
         vm.saveEdits = function(){
 
-            console.log(vm.project);
             vm.updateProjectFail = false;
             vm.updateProjectSuccess = false;
-            
-            // TODO: locale
-            var projectData = {
-                defaultLocale: 'en',
-                projectInfo: [{
-                    description: vm.project.description,
-                    instructions: vm.project.instructions,
-                    locale: 'en',
-                    name: vm.project.name,
-                    shortDescription: vm.project.shortDescription
-                }],
-                projectName: vm.project.name,
-                projectPriority: vm.project.priority,
-                projectStatus: vm.project.status
-            };
 
-            var resultsPromise = projectService.updateProject(vm.project.id, projectData);
+            // Prepare the data for sending to API by removing any locales with no fields
+            // TODO: move to service
+            for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
+                var info = vm.project.projectInfoLocales[i];
+                var populatedLocale = false;
+
+                if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== ''){
+                    populatedLocale = true;
+                }
+
+                // if no fields for this locale are populated, remove from array
+                if (!populatedLocale){
+                    vm.project.projectInfoLocales.splice(i, 1);
+                    // decrease the counter because there is one less item in the array
+                    i--;
+                }
+            }
+            vm.project.defaultLocale = 'en';
+
+            var resultsPromise = projectService.updateProject(vm.project.projectId, vm.project);
             resultsPromise.then(function (data) {
                 // Project updated successfully
                 vm.updateProjectFail = false;
                 vm.updateProjectSuccess = true;
                 // Navigate to the project page
                 $location.path('/project').search({
-                    projectid: vm.project.id
+                    projectid: vm.project.projectId
                 });
             }, function(){
                 // Project not updated successfully
@@ -162,6 +143,14 @@
          */
         vm.changeLanguageShortDescription = function(language) {
             vm.shortDescriptionLanguage = language;
+        };
+
+        /**
+         * Change the language instructions field
+         * @param language
+         */
+        vm.changeLanguageInstructions = function(language) {
+            vm.instructionsLanguage = language;
         };
 
         /**
@@ -268,6 +257,41 @@
             });
             vm.source.on('removefeature', function(){
                 $scope.$apply(vm.numberOfPriorityAreas--);
+            });
+        }
+
+        /**
+         * Get project metadata
+         * @param id
+         */
+        function getProjectMetadata(id){
+            var resultsPromise = projectService.getProjectMetadata(id);
+            resultsPromise.then(function (data) {
+                vm.project = data;
+                // only 'non-empty' locales are included so add empty locales to ease editing
+                // TODO: move to separate service?
+                for (var i = 0; i < vm.locales.length; i++){
+                    var found = false;
+                    for (var j = 0; j < vm.project.projectInfoLocales.length; j++){
+                        if (vm.locales[i] === vm.project.projectInfoLocales[j].locale){
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found){
+                        // Add an empty projectInfoLocale
+                        var locale = {
+                            "locale": vm.locales[i],
+                            "name": "",
+                            "shortDescription": "",
+                            "description": "",
+                            "instructions": ""
+                        };
+                        vm.project.projectInfoLocales.push(locale);
+                    }
+                }
+            }, function(){
+               // TODO
             });
         }
     }

@@ -42,6 +42,7 @@
             getAOI: getAOI,
             splitTasks: splitTasks,
             getProject: getProject,
+            getProjectMetadata: getProjectMetadata,
             updateProject: updateProject
         };
 
@@ -398,6 +399,31 @@
         }
 
         /**
+         * Get a project JSON
+         * @param id - project id
+         * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function getProjectMetadata(id){
+
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/v1/admin/project/' + id,
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
          * Updates a project 
          * @param id
          * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
@@ -407,7 +433,7 @@
             // Returns a promise
             return $http({
                 method: 'POST',
-                url: configService.tmAPI + '/v1/project/' + id,
+                url: configService.tmAPI + '/v1/admin/project/' + id,
                 data: projectData,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'    
