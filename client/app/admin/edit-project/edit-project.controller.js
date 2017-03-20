@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location','mapService','drawService', 'projectService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$showdown', 'mapService','drawService', 'projectService', editProjectController]);
 
-    function editProjectController($scope, $location, mapService, drawService, projectService) {
+    function editProjectController($scope, $location, $showdown, mapService, drawService, projectService) {
         var vm = this;
         vm.currentSection = '';
 
@@ -38,6 +38,8 @@
         vm.shortDescriptionLanguage = 'en';
         vm.nameLanguage = 'en';
         vm.instructionsLanguage = 'en';
+
+        vm.descriptionHTML = '';
         
         activate();
 
@@ -96,6 +98,11 @@
                 var populatedLocale = false;
 
                 if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== ''){
+                    // Convert to HTML using the showdown library
+                    info.description = $showdown.makeHtml(info.description);
+                    info.shortDescription = $showdown.makeHtml(info.shortDescription);
+                    info.name = $showdown.makeHtml(info.name);
+                    info.instructions = $showdown.makeHtml(info.instructions);
                     populatedLocale = true;
                 }
 
@@ -276,6 +283,11 @@
                     var found = false;
                     for (var j = 0; j < vm.project.projectInfoLocales.length; j++){
                         if (vm.locales[i] === vm.project.projectInfoLocales[j].locale){
+                            // Convert to markdown using the to-markdown library
+                            vm.project.projectInfoLocales[j].description = toMarkdown(vm.project.projectInfoLocales[j].description);
+                            vm.project.projectInfoLocales[j].shortDescription = toMarkdown(vm.project.projectInfoLocales[j].shortDescription);
+                            vm.project.projectInfoLocales[j].instructions = toMarkdown(vm.project.projectInfoLocales[j].instructions);
+                            vm.project.projectInfoLocales[j].name = toMarkdown(vm.project.projectInfoLocales[j].name);
                             found = true;
                             break;
                         }

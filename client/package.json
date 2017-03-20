@@ -45,6 +45,7 @@
     "react-tether": "^0.5.5",
     "run-sequence": "^1.2.2",
     "showdown": "^1.6.4",
+    "to-markdown": "^3.0.4",
     "turf": "^3.0.14"
   }
 }

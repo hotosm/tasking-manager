@@ -152,7 +152,10 @@
                                                         ng-click="editProjectCtrl.showPreviewDescription = !editProjectCtrl.showPreviewDescription">
                                                         Preview
                                                 </button>
-                                                <p ng-show="editProjectCtrl.showPreviewDescription" markdown-to-html="info.description"></p>
+                                                <p ng-show="editProjectCtrl.showPreviewDescription"
+                                                   markdown-to-html="info.description"
+                                                    ng-model="editProjectCtrl.descriptionHTML">
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
