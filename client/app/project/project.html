@@ -36,7 +36,9 @@
                                 <div class="panel__headline">
                                     <h1 class="panel__title">
                                         #{{ projectCtrl.projectData.projectId }}-{{ projectCtrl.projectData.projectInfo.name }}</h1>
-                                    <div class="panel__subtitle">{{ projectCtrl.projectData.projectInfo.shortDescription }}</div>
+
+                                    <div ng-bind-html="shortDescription" class="panel__subtitle"></div>
+
                                     <div class="panel__subtitle">{{ projectCtrl.projectData.projectPriority }}
                                         Priority
                                     </div>
@@ -44,7 +46,7 @@
                             </header>
                             <div class="panel__body">
                                 <div class="panel__body-inner">
-                                    <p>{{ projectCtrl.projectData.projectInfo.description }}</p>
+                                    <p ng-bind-html="description"></p>
                                 </div>
                             </div>
                             <footer class="panel__footer"></footer>
@@ -54,9 +56,9 @@
                         </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
-                        <p>{{ projectCtrl.projectData.projectInfo.instructions }}</p>
+                        <p ng-bind-html="instructions"></p>
                         <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
-                            <i class="oam-ds-icon-sm-chevron-right"></i>>>
+                            <i class="oam-ds-icon-sm-chevron-right"></i>
                         </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'mapping'">

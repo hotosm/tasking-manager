@@ -28,6 +28,11 @@
         //locked task
         vm.lockedTaskData = null;
 
+        //project display text
+        vm.description = '';
+        vm.shortDescription = '';
+        vm.instructions = '';
+
         //interaction
         var select = new ol.interaction.Select({
             style: styleService.getSelectedStyleFunction
@@ -118,6 +123,9 @@
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.projectData = data;
+                $scope.description = data.projectInfo.description;
+                $scope.shortDescription = data.projectInfo.shortDescription;
+                $scope.instructions = data.projectInfo.instructions;
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addProjectTasksToMap(vm.projectData.tasks, true);
             }, function () {
@@ -244,7 +252,8 @@
                 vm.selectedTaskData = data;
                 vm.lockedTaskData = data;
                 vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
-                vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';;
+                vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
+                ;
                 vm.taskLockError = false;
             }, function () {
                 // could not unlock lock task, very unlikey to happen but
