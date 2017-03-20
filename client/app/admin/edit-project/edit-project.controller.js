@@ -75,15 +75,6 @@
         }
 
         /**
-         * Cancel edits
-         */
-        vm.cancelEdits = function(){
-            $location.path('/project').search({
-                projectid: vm.project.projectId
-            });
-        };
-
-        /**
          * Save edits
          */
         vm.saveEdits = function(){
@@ -101,7 +92,6 @@
                     // Convert to HTML using the showdown library
                     info.description = $showdown.makeHtml(info.description);
                     info.shortDescription = $showdown.makeHtml(info.shortDescription);
-                    info.name = $showdown.makeHtml(info.name);
                     info.instructions = $showdown.makeHtml(info.instructions);
                     populatedLocale = true;
                 }
@@ -120,10 +110,8 @@
                 // Project updated successfully
                 vm.updateProjectFail = false;
                 vm.updateProjectSuccess = true;
-                // Navigate to the project page
-                $location.path('/project').search({
-                    projectid: vm.project.projectId
-                });
+                // Reset the page elements 
+                activate();
             }, function(){
                 // Project not updated successfully
                 vm.updateProjectFail = true;
@@ -287,7 +275,6 @@
                             vm.project.projectInfoLocales[j].description = toMarkdown(vm.project.projectInfoLocales[j].description);
                             vm.project.projectInfoLocales[j].shortDescription = toMarkdown(vm.project.projectInfoLocales[j].shortDescription);
                             vm.project.projectInfoLocales[j].instructions = toMarkdown(vm.project.projectInfoLocales[j].instructions);
-                            vm.project.projectInfoLocales[j].name = toMarkdown(vm.project.projectInfoLocales[j].name);
                             found = true;
                             break;
                         }

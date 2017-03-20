@@ -439,14 +439,19 @@
                         <div class="pull-right">
                             <form class="form">
                                 <div class="form__group">
-                                    <button class="button button--achromic" type="button"
-                                            ng-click="editProjectCtrl.cancelEdits()">Cancel
-                                    </button>
                                     <button class="button button--primary" type="button"
                                             ng-click="editProjectCtrl.saveEdits()">Save changes
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                        <div class="pull-right">
+                            <form class="form">
+                                <div class="form__group">
+                            <p ng-show="editProjectCtrl.updateProjectSuccess">Your project has been updated successfully.</p>
+                            <p class="error" ng-show="editProjectCtrl.updateProjectFail">There was an error updating your project. Please try again.</p>
+                                    </div>
+                                </div>
                         </div>
                         <!--/ settings -->
                     </div>
