@@ -76,7 +76,9 @@
          * Cancel edits
          */
         vm.cancelEdits = function(){
-            //TODO: navigate to the project page
+            $location.path('/project').search({
+                projectid: vm.project.projectId
+            });
         };
 
         /**
