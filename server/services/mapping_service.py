@@ -88,7 +88,7 @@ class MappingService:
             return None
 
         if not task.task_locked:
-            return task  # Task is already unlocked, so return without any further processing
+            return task.as_dto()  # Task is already unlocked, so return without any further processing
 
         try:
             new_state = TaskStatus[state.upper()]

@@ -99,7 +99,7 @@ class TestProject(unittest.TestCase):
         test_task = MappingService().unlock_task_after_mapping(1, 1, 'TEST')
 
         # Assert
-        self.assertEqual(test_task.id, self.task_stub.id)
+        self.assertEqual(test_task.task_id, self.task_stub.id)
 
     @patch.object(Task, 'get')
     def test_unlock_with_unknown_status_raises_error(self, mock_task):
