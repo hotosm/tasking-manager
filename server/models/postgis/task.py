@@ -4,6 +4,7 @@ from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp
+from server.models.dtos.task_dto import TaskDTO, TaskHistoryDTO
 
 
 class TaskAction(Enum):
@@ -171,28 +172,30 @@ class Task(db.Model):
 
         return geojson.FeatureCollection(tasks_features)
 
-    @staticmethod
-    def as_dto(task_id, project_id):
+    def as_dto(self):
         """
         Creates a Task DTO suitable for transmitting via the API
         :param task_id: Task ID in scope
         :param project_id: Project ID in scope
         :return: JSON serializable Task DTO
         """
-        task = Task.get(task_id, project_id)
-
-        if task is None:
-            return None
-
         task_history = []
-        for action in task.task_history:
+        for action in self.task_history:
             if action.action_text is None:
                 continue  # Don't return any history without action text
 
-            history = dict(action=action.action, actionText=action.action_text, actionDate=action.action_date)
+            history = TaskHistoryDTO()
+            history.action = action.action
+            history.action_text = action.action_text
+            history.action_date = action.action_date
+
             task_history.append(history)
 
-        task_dto = dict(taskId=task.id, projectId=task.project_id, taskStatus=TaskStatus(task.task_status).name,
-                        taskLocked=task.task_locked, taskHistory=task_history)
+        task_dto = TaskDTO()
+        task_dto.task_id = self.id
+        task_dto.project_id = self.project_id
+        task_dto.task_status = TaskStatus(self.task_status).name
+        task_dto.task_locked = self.task_locked
+        task_dto.task_history = task_history
 
         return task_dto

@@ -1,6 +1,7 @@
+from typing import Optional
 from flask import current_app
-
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
+from server.models.dtos.task_dto import TaskDTO
 
 
 class TaskServiceError(Exception):
@@ -15,11 +16,16 @@ class TaskServiceError(Exception):
 
 class TaskService:
 
-    def get_task_as_dto(self, task_id, project_id):
+    def get_task_as_dto(self, task_id: int, project_id: int) -> Optional[TaskDTO]:
         """ Get task as DTO for transmission over API """
-        return Task.as_dto(task_id, project_id)
+        task = Task.get(task_id, project_id)
 
-    def lock_task(self, task_id, project_id):
+        if task is None:
+            return None
+
+        return task.as_dto()
+
+    def lock_task_for_mapping(self, task_id, project_id):
         """
         Sets the task_locked status to locked so no other user can work on it
         :param task_id: Task ID in scope
@@ -35,14 +41,19 @@ class TaskService:
         if task.task_locked:
             raise TaskServiceError(f'Task: {task_id} Project {project_id} is already locked')
 
+        current_state = TaskStatus(task.task_status).name
+        if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name]:
+            raise TaskServiceError(f'Cannot lock task {task_id} state must be in {TaskStatus.READY.name},'
+                                   f' {TaskStatus.INVALIDATED.name}')
+
         # TODO user can only have 1 tasked locked at a time
 
         self._set_task_history(task=task, action=TaskAction.LOCKED)
         task.lock_task()
 
-        return task
+        return task.as_dto()
 
-    def unlock_task(self, task_id, project_id, state, comment=None):
+    def unlock_task_after_mapping(self, task_id, project_id, state, comment=None):
         """
         Unlocks the task and sets the task history appropriately
         :param task_id: Selected Task
@@ -74,7 +85,7 @@ class TaskService:
             task.task_status = new_state.value
 
         task.unlock_task()
-        return task
+        return task.as_dto()
 
     @staticmethod
     def _set_task_history(task, action, comment=None, new_state=None):
