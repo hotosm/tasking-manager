@@ -78,7 +78,14 @@ class ProjectInfo(db.Model):
         self.instructions = dto.instructions
 
     @staticmethod
-    def get_dto_for_locale(project_id, locale, default_locale='en'):
+    def get_dto_for_locale(project_id, locale, default_locale='en') -> ProjectInfoDTO:
+        """
+        Gets the projectInfoDTO for the project for the requested locale. If not found, then the default locale is used
+        :param project_id: ProjectID in scope
+        :param locale: locale requested by user
+        :param default_locale: default locale of project
+        :raises: ValueError if no info found for Default Locale
+        """
         project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=locale).one_or_none()
 
         if project_info is None:
@@ -199,7 +206,7 @@ class Project(db.Model):
 
         return project, base_dto
 
-    def as_dto_for_mapper(self, project_id: int, locale: str) -> Optional[ProjectDTO]:
+    def as_dto_for_mapping(self, project_id: int, locale: str) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         project, project_dto = self._get_project_and_base_dto(project_id)
 

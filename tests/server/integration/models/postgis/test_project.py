@@ -61,7 +61,7 @@ class TestProject(unittest.TestCase):
             return
 
         # Act
-        project_dto = Project().as_dto_for_mapper(self.test_project.id, 'en')
+        project_dto = Project().as_dto_for_mapping(self.test_project.id, 'en')
 
         # Assert
         self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)

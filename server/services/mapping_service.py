@@ -2,6 +2,7 @@ from typing import Optional
 from flask import current_app
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 from server.models.postgis.project import Project, ProjectStatus
+from server.models.dtos.project_dto import ProjectDTO
 from server.models.dtos.task_dto import TaskDTO
 
 
@@ -21,11 +22,16 @@ class MappingServiceError(Exception):
 
 class MappingService:
 
-    def get_project_dto_for_mapper(self, project_id: int, locale='en'):
-        """ Get the project as DTO for mappers """
+    def get_project_dto_for_mapper(self, project_id: int, locale='en') -> Optional[ProjectDTO]:
+        """
+        Get the project DTO for mappers
+        :param project_id: ID of the Project mapper has requested
+        :param locale: Locale the mapper has requested
+        :raises DatabaseError, MappingServiceError
+        """
         try:
             project = Project()
-            project_dto = project.as_dto_for_mapper(project_id, locale)
+            project_dto = project.as_dto_for_mapping(project_id, locale)
         except Exception as e:
             raise DatabaseError(f'Error getting project {project_id} - {str(e)}')
 
