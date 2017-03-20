@@ -132,7 +132,7 @@
                 // project not returned successfully
                 // TODO - may want to handle error
             });
-        };
+        }
 
         /**
          * Gets project data from server and updates the map
@@ -172,13 +172,7 @@
                 source.clear();
             }
 
-            // read tasks JSON into features
-            // var format = new ol.format.GeoJSON();
-            // var taskFeatures = format.readFeatures(tasks, {
-            //     dataProjection: 'EPSG:4326',
-            //     featureProjection: 'EPSG:3857'
-            // });
-            var taskFeatures = geospatialService.getFeaturesFromGeoJSON(tasks)
+            var taskFeatures = geospatialService.getFeaturesFromGeoJSON(tasks);
             source.addFeatures(taskFeatures);
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
