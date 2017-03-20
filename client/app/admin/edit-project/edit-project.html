@@ -3,11 +3,11 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Edit project: #{{ editProjectCtrl.project.id }} - {{ editProjectCtrl.project.name }}
+                    Edit project: #{{ editProjectCtrl.project.projectId }} - {{ editProjectCtrl.project.name }}
                 </h1>
             </div>
         </header>
-        <div class="section-container">
+        <div class="section-container edit-project">
             <div class="section__body">
                 <div class="inner">
                     <aside class="section__aside-content">
@@ -68,42 +68,95 @@
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
                                         <label class="form__label">Status</label>
-                                        <select class="form__control" ng-model="editProjectCtrl.project.status">
-                                            <option value="published">Published</option>
-                                            <option value="archived">Archived</option>
-                                            <option value="draft">Draft</option>
+                                        <select class="form__control" ng-model="editProjectCtrl.project.projectStatus">
+                                            <option value="PUBLISHED">Published</option>
+                                            <option value="ARCHIVED">Archived</option>
+                                            <option value="DRAFT">Draft</option>
                                         </select>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Priority</label>
-                                        <select class="form__control" ng-model="editProjectCtrl.project.priority">
-                                            <option value="urgent">Urgent</option>
-                                            <option value="high">High</option>
-                                            <option value="medium">Medium</option>
-                                            <option value="low">Low</option>
+                                        <select class="form__control" ng-model="editProjectCtrl.project.projectPriority">
+                                            <option value="URGENT">Urgent</option>
+                                            <option value="HIGH">High</option>
+                                            <option value="MEDIUM">Medium</option>
+                                            <option value="LOW">Low</option>
                                         </select>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Name of the project</label>
-                                        <input type="text" class="form__control"
-                                               ng-model="editProjectCtrl.project.name"/>
+                                        <div class="button-group button-group--horizontal pull-right"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose default locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                ng-class="editProjectCtrl.nameLanguage === locale ? 'button--active' : ''"
+                                                ng-click="editProjectCtrl.changeLanguageName(locale)">
+                                                {{ locale }}
+                                            </button>
+                                        </div>
+                                        <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
+                                            <div ng-show="info.locale === editProjectCtrl.nameLanguage">
+                                                <input type="text" class="form__control"
+                                                    ng-model="info.name"/>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Short description</label>
-                                        <textarea class="form__control" ng-model="editProjectCtrl.project.shortDescription" rows="4"></textarea>
-                                        <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
-                                        <div ng-show="editProjectCtrl.project.shortDescription">
-                                            <label class="form__label">Preview</label>
-                                            <p markdown-to-html="editProjectCtrl.project.shortDescription"></p>
+                                        <div class="button-group button-group--horizontal pull-right"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose default locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                ng-class="editProjectCtrl.shortDescriptionLanguage === locale ? 'button--active' : ''"
+                                                ng-click="editProjectCtrl.changeLanguageShortDescription(locale)">
+                                                {{ locale }}
+                                            </button>
+                                        </div>
+                                        <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
+                                            <div ng-show="info.locale === editProjectCtrl.shortDescriptionLanguage">
+                                               <textarea
+                                                       class="form__control"
+                                                       ng-model="info.shortDescription" rows="4">
+                                                 </textarea>
+                                                <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
+                                                <button class="button button--secondary button--small"
+                                                        ng-click="editProjectCtrl.showPreviewShortDescription = !editProjectCtrl.showPreviewShortDescription">
+                                                        Preview
+                                                </button>
+                                                <p ng-show="editProjectCtrl.showPreviewShortDescription" markdown-to-html="info.shortDescription"></p>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Description</label>
-                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.project.description"></textarea>
-                                        <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
-                                        <div ng-show="editProjectCtrl.project.description">
-                                            <label class="form__label">Preview</label>
-                                            <p markdown-to-html="editProjectCtrl.project.description"></p>
+                                        <div class="button-group button-group--horizontal pull-right"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose default locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                ng-class="editProjectCtrl.descriptionLanguage === locale ? 'button--active' : ''"
+                                                ng-click="editProjectCtrl.changeLanguageDescription(locale)">
+                                                {{ locale }}
+                                            </button>
+                                        </div>
+                                        <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
+                                            <div ng-show="info.locale === editProjectCtrl.descriptionLanguage">
+                                                <textarea
+                                                        class="form__control"
+                                                        ng-model="info.description" rows="4">
+                                                </textarea>
+                                                <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
+                                                <button class="button button--secondary button--small"
+                                                        ng-click="editProjectCtrl.showPreviewDescription = !editProjectCtrl.showPreviewDescription">
+                                                        Preview
+                                                </button>
+                                                <p ng-show="editProjectCtrl.showPreviewDescription"
+                                                   markdown-to-html="info.description"
+                                                    ng-model="editProjectCtrl.descriptionHTML">
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -132,11 +185,29 @@
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Detailed instructions</label>
-                                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.project.instructions"></textarea>
-                                        <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
-                                        <div ng-show="editProjectCtrl.project.instructions">
-                                            <label class="form__label">Preview</label>
-                                            <p markdown-to-html="editProjectCtrl.project.instructions"></p>
+                                        <div class="button-group button-group--horizontal pull-right"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose default locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                ng-class="editProjectCtrl.instructionsLanguage === locale ? 'button--active' : ''"
+                                                ng-click="editProjectCtrl.changeLanguageInstructions(locale)">
+                                                {{ locale }}
+                                            </button>
+                                        </div>
+                                        <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
+                                            <div ng-show="info.locale === editProjectCtrl.instructionsLanguage">
+                                                <textarea
+                                                        class="form__control"
+                                                        ng-model="info.instructions" rows="4">
+                                                </textarea>
+                                                <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
+                                                <button class="button button--secondary button--small"
+                                                        ng-click="editProjectCtrl.showPreviewInstructions = !editProjectCtrl.showPreviewInstructions">
+                                                        Preview
+                                                </button>
+                                                <p ng-show="editProjectCtrl.showPreviewInstructions" markdown-to-html="info.instructions"></p>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form__group">
@@ -329,6 +400,14 @@
                             <form class="form">
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
+                                        <label class="form__label">Default locale</label>
+                                        <div class="button-group button-group--horizontal" role="group" aria-label="choose default locale">
+                                            <button class="button button--small button--achromic button--active" type="button"><span>en</span></button>
+                                            <button class="button button--small button--achromic" type="button"><span>es</span></button>
+                                            <button class="button button--small button--achromic" type="button"><span>....</span></button>
+                                        </div>
+                                    </div>
+                                    <div class="form__group">
                                         <label class="form__label">Project due date (dd/mm/yyyy)</label>
                                         <div class="form__input-group">
                                             <input type="date" class="form__control form__control--medium"
@@ -360,14 +439,19 @@
                         <div class="pull-right">
                             <form class="form">
                                 <div class="form__group">
-                                    <button class="button button--achromic" type="button"
-                                            ng-click="editProjectCtrl.cancelEdits()">Cancel
-                                    </button>
                                     <button class="button button--primary" type="button"
                                             ng-click="editProjectCtrl.saveEdits()">Save changes
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                        <div class="pull-right">
+                            <form class="form">
+                                <div class="form__group">
+                            <p ng-show="editProjectCtrl.updateProjectSuccess">Your project has been updated successfully.</p>
+                            <p class="error" ng-show="editProjectCtrl.updateProjectFail">There was an error updating your project. Please try again.</p>
+                                    </div>
+                                </div>
                         </div>
                         <!--/ settings -->
                     </div>
