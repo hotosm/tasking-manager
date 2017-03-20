@@ -85,7 +85,7 @@ class TaskService:
             task.task_status = new_state.value
 
         task.unlock_task()
-        return task
+        return task.as_dto()
 
     @staticmethod
     def _set_task_history(task, action, comment=None, new_state=None):

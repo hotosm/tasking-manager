@@ -184,7 +184,6 @@ class Task(db.Model):
             if action.action_text is None:
                 continue  # Don't return any history without action text
 
-            #history = dict(action=action.action, actionText=action.action_text, actionDate=action.action_date)
             history = TaskHistoryDTO()
             history.action = action.action
             history.action_text = action.action_text
@@ -192,13 +191,10 @@ class Task(db.Model):
 
             task_history.append(history)
 
-        #task_dto = dict(taskId=self.id, projectId=self.project_id, taskStatus=TaskStatus(self.task_status).name,
-        #                taskLocked=self.task_locked, taskHistory=task_history)
-
         task_dto = TaskDTO()
         task_dto.task_id = self.id
         task_dto.project_id = self.project_id
-        task_dto.task_status = self.task_status
+        task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.task_locked = self.task_locked
         task_dto.task_history = task_history
 

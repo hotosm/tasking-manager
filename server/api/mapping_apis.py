@@ -210,7 +210,7 @@ class UnlockTaskForMappingAPI(Resource):
             if task is None:
                 return {"Error": "Task Not Found"}, 404
 
-            return {"Status": "Success"}, 200
+            return task.to_primitive(), 200
         except TaskServiceError as e:
             return {"Error": str(e)}, 400
         except Exception as e:
