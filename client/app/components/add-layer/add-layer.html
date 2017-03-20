@@ -1,15 +1,22 @@
 <div class="add-layer-wrapper">
     <div class="form__input-group">
+        <label class="form__label">Map service type</label>
+        <select class="button button--achromic button--small pull-right" ng-model="addLayerCtrl.type">
+            <option value="xyz">XYZ (e.g. MapBox)</option>
+            <option value="wms">WMS (tiled)</option>
+        </select>
+    </div>
+    <div class="form__input-group">
         <label class="form__label">Map service URL</label>
         <input type="text" class="form__control form__control--small"
                placeholder="Map URL"
                ng-model="addLayerCtrl.layerURL">
     </div>
-    <div class="form__input-group">
-        <label class="form__label">Map service type</label>
-        <select class="button button--achromic button--small pull-right" ng-model="addLayerCtrl.type">
-            <option value="xyz">XYZ (e.g. MapBox)</option>
-        </select>
+    <div ng-show="addLayerCtrl.type === 'wms'" class="form__input-group">
+        <label class="form__label">Layer name</label>
+        <input type="text" class="form__control form__control--small"
+               placeholder="Layer name"
+               ng-model="addLayerCtrl.layerName">
     </div>
     <div class="form__input-group">
         <button type="submit"

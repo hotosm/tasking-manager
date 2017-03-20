@@ -37,12 +37,14 @@
         var vm = this;
         vm.type = 'xyz';
         vm.layerURL = '';
+        vm.layerName = '';
         vm.isVisible = false;
         
          /**
          * Add layer
          * Supported types: 
          *  - XYZ
+         *  - WMS (tiled)
          * @param url
          */
         vm.addLayer = function(){
@@ -50,6 +52,9 @@
                 if (vm.type === 'xyz'){
                     // Use the type as the layer name
                     mapService.addXYZLayer(vm.type + ' (temporary)', vm.layerURL, true);
+                }
+                if (vm.type === 'wms'){
+                    mapService.addTiledWMSLayer(vm.type + ' (temporary)', vm.layerURL, vm.layerName, true);
                 }
             }
         };
