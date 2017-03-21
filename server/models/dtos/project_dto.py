@@ -34,10 +34,10 @@ class DraftProjectDTO(Model):
 class ProjectInfoDTO(Model):
     """ Contains the localized project info"""
     locale = StringType(required=True)
-    name = StringType()
-    short_description = StringType(serialized_name='shortDescription')
-    description = StringType()
-    instructions = StringType()
+    name = StringType(default='')
+    short_description = StringType(serialized_name='shortDescription', default='')
+    description = StringType(default='')
+    instructions = StringType(default='')
 
 
 class ProjectDTO(Model):

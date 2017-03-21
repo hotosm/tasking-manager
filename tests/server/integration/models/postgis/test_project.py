@@ -3,7 +3,7 @@ import unittest
 import geojson
 import json
 from server import create_app
-from server.services.project_service import Project, AreaOfInterest, Task
+from server.models.postgis.project import Project, AreaOfInterest, Task, ProjectDTO, ProjectInfoDTO, ProjectStatus, ProjectPriority
 
 
 class TestProject(unittest.TestCase):
@@ -60,8 +60,11 @@ class TestProject(unittest.TestCase):
         if self.skip_tests:
             return
 
+        # Arrange
+        self.update_project_with_info()
+
         # Act
-        project_dto = Project().as_dto_for_mapper(self.test_project.id, 'en')
+        project_dto = Project().as_dto_for_mapping(self.test_project.id, 'en')
 
         # Assert
         self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)
@@ -69,6 +72,45 @@ class TestProject(unittest.TestCase):
         # TODO test for project info
         # self.assertEqual(project_dto.project_name, 'Test')
         self.assertEqual(project_dto.project_id, self.test_project.id)
+
+    def test_update_project_adds_project_info(self):
+        if self.skip_tests:
+            return
+
+        # Act
+        self.update_project_with_info()
+
+        # Assert
+        self.assertEqual(self.test_project.status, ProjectStatus.PUBLISHED.value)
+        self.assertEqual(self.test_project.priority, ProjectPriority.MEDIUM.value)
+        self.assertEqual(self.test_project.default_locale, 'en')
+        self.assertEqual(self.test_project.project_info[0].name, 'Thinkwhere Test')
+
+    def test_partial_translation_uses_default_trans_for_empty_fields(self):
+        if self.skip_tests:
+            return
+
+        # Arrange
+        self.update_project_with_info()
+
+        locales = []
+        test_info = ProjectInfoDTO()
+        test_info.locale = 'it'
+        locales.append(test_info)
+
+        test_dto = ProjectDTO()
+        test_dto.project_status = ProjectStatus.PUBLISHED.name
+        test_dto.project_priority = ProjectPriority.MEDIUM.name
+        test_dto.default_locale = 'en'
+        test_dto.project_info_locales = locales
+
+        # Act - Create empty italian translation
+        self.test_project.update(test_dto)
+        dto = self.test_project.as_dto_for_mapping(self.test_project.id, 'it')
+
+        # Assert
+        self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
+                         'English translation should be returned as Italian name was not provided')
 
     def create_test_project(self):
         """ Helper function that creates a valid test project in the db """
@@ -88,3 +130,23 @@ class TestProject(unittest.TestCase):
         self.test_project.create_draft_project('Test', test_aoi)
         self.test_project.tasks.append(Task.from_geojson_feature(1, task_feature))
         self.test_project.create()
+
+    def update_project_with_info(self):
+
+        locales = []
+        test_info = ProjectInfoDTO()
+        test_info.locale = 'en'
+        test_info.name = 'Thinkwhere Test'
+        test_info.description = 'Test Description'
+        test_info.short_description = 'Short description'
+        test_info.instructions = 'Instructions'
+        locales.append(test_info)
+
+        test_dto = ProjectDTO()
+        test_dto.project_status = ProjectStatus.PUBLISHED.name
+        test_dto.project_priority = ProjectPriority.MEDIUM.name
+        test_dto.default_locale = 'en'
+        test_dto.project_info_locales = locales
+
+        self.test_project.update(test_dto)
+

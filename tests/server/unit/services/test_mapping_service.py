@@ -1,11 +1,11 @@
 import unittest
-from server.services.mapping_service import MappingService, Task, MappingServiceError, TaskAction, TaskStatus, TaskHistory
+from server.services.mapping_service import MappingService, Task, MappingServiceError, TaskAction, TaskStatus, \
+    TaskHistory, Project, ProjectDTO, ProjectStatus
 from unittest.mock import patch
 from server import create_app
 
 
 class TestProject(unittest.TestCase):
-
     task_stub = Task
 
     def setUp(self):
@@ -21,10 +21,34 @@ class TestProject(unittest.TestCase):
     def tearDown(self):
         self.ctx.pop()
 
+    @patch.object(Project, 'as_dto_for_mapping')
+    def test_get_project_dto_for_mapping_returns_none_if_project_not_found(self, mock_project):
+        # Arrange
+        mock_project.return_value = None
+        test_project = 'test'
+
+        # Act
+        test_project = MappingService().get_project_dto_for_mapper(1, 'en')
+
+        # Assert
+        self.assertIsNone(test_project)
+
+    @patch.object(Project, 'as_dto_for_mapping')
+    def test_get_project_dto_for_mapping_raises_error_if_project_not_published(self, mock_project):
+        # Arrange
+        test_project = ProjectDTO()
+        test_project.project_status = ProjectStatus.DRAFT.name
+        mock_project.return_value = test_project
+
+        # Act
+        with self.assertRaises(MappingServiceError):
+            test_project = MappingService().get_project_dto_for_mapper(1, 'en')
+
     @patch.object(Task, 'get')
     def test_lock_task_for_mapping_returns_none_if_task_not_found(self, mock_task):
         # Arrange
         mock_task.return_value = None
+        test_task = 'test'
 
         # Act
         test_task = MappingService().lock_task_for_mapping(1, 1)
