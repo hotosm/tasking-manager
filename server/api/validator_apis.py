@@ -38,8 +38,6 @@ class LockTasksForValidationAPI(Resource):
                 description: Task(s) locked for validation
             400:
                 description: Client Error
-            403:
-                description: Task already locked
             404:
                 description: Task not found
             500:
@@ -55,6 +53,7 @@ class LockTasksForValidationAPI(Resource):
 
         try:
             tasks = ValidatorService().lock_tasks_for_validation(validator_dto)
+            return tasks.to_primitive(), 200
         except ValidatatorServiceError as e:
             return {"Error": str(e)}, 400
         except TaskNotFound as e:
@@ -63,22 +62,6 @@ class LockTasksForValidationAPI(Resource):
             error_msg = f'Validator Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
-
-
-        iain = validator_dto
-        # try:
-        #     task = MappingService().lock_task_for_mapping(task_id, project_id)
-        #
-        #     if task is None:
-        #         return {"Error": "Task Not Found"}, 404
-        #
-        #     return task.to_primitive(), 200
-        # except MappingServiceError as e:
-        #     return {"Error": str(e)}, 403
-        # except Exception as e:
-        #     error_msg = f'Task Lock API - unhandled error: {str(e)}'
-        #     current_app.logger.critical(error_msg)
-        #     return {"Error": error_msg}, 500
 
 
 class UnlockTasksForValidationAPI(Resource):

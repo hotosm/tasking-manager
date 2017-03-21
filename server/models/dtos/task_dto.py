@@ -17,3 +17,8 @@ class TaskDTO(Model):
     task_status = StringType(serialized_name='taskStatus')
     task_locked = BooleanType(serialized_name='taskLocked')
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
+
+
+class TaskDTOs(Model):
+    """ Describes an array of Task DTOs"""
+    tasks = ListType(ModelType(TaskDTO))

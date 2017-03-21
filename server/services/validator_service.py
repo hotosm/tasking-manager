@@ -1,6 +1,7 @@
 from flask import current_app
+from server.models.dtos.task_dto import TaskDTOs
 from server.models.dtos.validator_dto import LockForValidationDTO
-from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.task import Task, TaskStatus, TaskAction
 
 
 class TaskNotFound(Exception):
@@ -37,7 +38,14 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
-
+        dtos = []
         for task in tasks_to_lock:
-            pass
+            #task.set_task_history(action=TaskAction.LOCKED)
+            task.lock_task()
+            dtos.append(task.as_dto())
+
+        task_dtos = TaskDTOs()
+        task_dtos.tasks = dtos
+
+        return task_dtos
 
