@@ -1,7 +1,7 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
-from server.services.project_service import ProjectService, InvalidGeoJson, InvalidData
+from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData
 
 
 class ProjectAdminAPI(Resource):
@@ -57,7 +57,7 @@ class ProjectAdminAPI(Resource):
             return str(e), 400
 
         try:
-            project_service = ProjectService()
+            project_service = ProjectAdminService()
             draft_project_id = project_service.create_draft_project(draft_project_dto)
             return {"projectId": draft_project_id}, 201
         except (InvalidGeoJson, InvalidData) as e:
@@ -91,7 +91,7 @@ class ProjectAdminAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            project_service = ProjectService()
+            project_service = ProjectAdminService()
             project_dto = project_service.get_project_dto_for_admin(project_id)
 
             if project_dto is None:
@@ -157,7 +157,7 @@ class ProjectAdminAPI(Resource):
             return str(e), 400
 
         try:
-            project_service = ProjectService()
+            project_service = ProjectAdminService()
             project = project_service.update_project(project_dto)
 
             if project is None:

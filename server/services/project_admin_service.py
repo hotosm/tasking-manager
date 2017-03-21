@@ -19,7 +19,7 @@ class ProjectStoreError(Exception):
             current_app.logger.error(message)
 
 
-class ProjectService:
+class ProjectAdminService:
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO) -> int:
         """
@@ -44,8 +44,7 @@ class ProjectService:
         draft_project.create()
         return draft_project.id
 
-
-    def get_project_dto_for_admin(self, project_id: int):
+    def get_project_dto_for_admin(self, project_id: int) -> ProjectDTO:
         """ Get the project as DTO for project managers """
         project = Project()
         return project.as_dto_for_admin(project_id)
