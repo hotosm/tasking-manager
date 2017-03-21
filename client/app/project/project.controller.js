@@ -33,6 +33,9 @@
         vm.shortDescription = '';
         vm.instructions = '';
 
+        //user input
+        vm.comment = 'My Comment';
+
         //interaction
         var select = new ol.interaction.Select({
             style: styleService.getSelectedStyleFunction
@@ -111,6 +114,7 @@
             vm.isSelectTaskMappable = false;
             vm.currentTab = 'mapping';
             vm.mappingStep = 'selecting';
+            vm.taskError = '';
             select.getFeatures().clear();
         };
 
@@ -214,11 +218,8 @@
             var taskPromise = taskService.getTask(projectId, taskId);
             taskPromise.then(function (data) {
                 //task returned successfully
-                vm.selectedTaskData = data;
-                vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
-                vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
-                vm.currentTab = 'mapping';
-                vm.mappingStep = 'viewing';
+                refreshCurrentSelection(data);
+
             }, function () {
                 // task not returned successfully
                 vm.selectedTaskData = null;
@@ -229,6 +230,17 @@
             });
         }
 
+        /**
+         * Sets up the view model for the task options and actions for passed in task data object.
+         * @param data - task JSON data object
+         */
+        function refreshCurrentSelection(data) {
+            vm.currentTab = 'mapping';
+            vm.mappingStep = 'viewing';
+            vm.selectedTaskData = data;
+            vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
+            vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
+        }
 
         /**
          * Call api to unlock currently locked task.  Will pass the comment and new status to api.  Will update view and map after unlock.
@@ -241,14 +253,16 @@
             var unLockPromise = taskService.unLockTask(projectId, taskId, comment, status);
             unLockPromise.then(function (data) {
                 refreshProject(projectId);
-                vm.currentTab = 'mapping';
-                vm.mappingStep = 'viewing';
-                vm.selectedTaskData = data;
-                vm.lockedTaskData = data;
-                vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
-                vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
-                ;
-                vm.taskLockError = false;
+                if (status == 'DONE') {
+                    vm.lockedTaskData = null;
+                    vm.taskLockError = false;
+                    vm.clearCurrentSelection();
+                }
+                else {
+                    vm.lockedTaskData = null;
+                    vm.taskLockError = false;
+                    refreshCurrentSelection(data);
+                }
             }, function () {
                 // could not unlock lock task, very unlikey to happen but
                 // most likely because task was unlocked or status changed on server
@@ -266,7 +280,6 @@
             var taskId = vm.selectedTaskData.taskId;
             // - try to lock the task, call returns a promise
             var lockPromise = taskService.lockTask(projectId, taskId);
-
             lockPromise.then(function (data) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
@@ -274,10 +287,10 @@
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
-                vm.lockedTaskData = data;
                 vm.isSelectTaskMappable = true;
                 vm.taskError = '';
                 vm.taskLockError = false;
+                vm.lockedTaskData = data;
             }, function () {
                 // could not lock task for mapping, most likely because task was locked or status changed user after
                 // selection but before lock,
