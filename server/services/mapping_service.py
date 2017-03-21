@@ -71,7 +71,7 @@ class MappingService:
         current_state = TaskStatus(task.task_status).name
         if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name]:
             raise MappingServiceError(f'Cannot lock task {task_id} state must be in {TaskStatus.READY.name},'
-                                   f' {TaskStatus.INVALIDATED.name}')
+                                      f' {TaskStatus.INVALIDATED.name}')
 
         # TODO user can only have 1 tasked locked at a time
 
@@ -101,7 +101,10 @@ class MappingService:
         except KeyError:
             raise MappingServiceError(
                 f'Unknown status: {state} Valid values are {TaskStatus.BADIMAGERY.name}, {TaskStatus.DONE.name}, '
-                f'{TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}')
+                f'{TaskStatus.INVALIDATED.name}, {TaskStatus.READY.name}')
+
+        if new_state.name == TaskStatus.VALIDATED.name:
+            raise MappingServiceError('Cannot set task to Validated after mapping')
 
         if comment:
             # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
