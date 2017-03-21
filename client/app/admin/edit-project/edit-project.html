@@ -411,7 +411,6 @@
                                                 {{ locale }}
                                             </button>
                                         </div>
-                                        {{ editProjectCtrl.project.defaultLocale }}
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Project due date (dd/mm/yyyy)</label>
@@ -454,10 +453,10 @@
                         <div class="pull-right">
                             <form class="form">
                                 <div class="form__group">
-                            <p ng-show="editProjectCtrl.updateProjectSuccess">Your project has been updated successfully.</p>
-                            <p class="error" ng-show="editProjectCtrl.updateProjectFail">There was an error updating your project. Please try again.</p>
-                                    </div>
+                                    <p ng-show="editProjectCtrl.updateProjectSuccess">Your project has been updated successfully.</p>
+                                    <p class="error" ng-show="editProjectCtrl.updateProjectFail">There was an error updating your project. Please try again.</p>
                                 </div>
+                            </form>
                         </div>
                         <!--/ settings -->
                     </div>
