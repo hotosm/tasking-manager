@@ -1,16 +1,16 @@
 import json
 import unittest
 from unittest.mock import MagicMock, patch
-from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project, ProjectAdminServiceError
+from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project, \
+    ProjectAdminServiceError, ProjectDTO, ProjectStatus
 from server.models.dtos.project_dto import ProjectInfoDTO
 
 
 class TestProjectAdminService(unittest.TestCase):
-
     def test_cant_add_tasks_if_geojson_not_feature_collection(self):
         # Arrange
         invalid_feature = '{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],' \
-            '[-4.0237, 56.0904]]]], "type": "MultiPolygon"}'
+                          '[-4.0237, 56.0904]]]], "type": "MultiPolygon"}'
         test_project_service = ProjectAdminService()
 
         # Act
@@ -45,6 +45,30 @@ class TestProjectAdminService(unittest.TestCase):
         # Assert
         self.assertIsNone(test_project)
 
+    @patch.object(Project, 'get')
+    def test_published_project_with_incomplete_default_locale_raises_error(self, mock_project):
+        # Arrange
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+
+        mock_project.return_value = stub_project
+
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = 'en'
+        info.name = 'Test'
+        locales.append(info)
+
+        dto = ProjectDTO()
+        dto.project_id = 1
+        dto.default_locale = 'en'
+        dto.project_info_locales = locales
+        dto.project_status = ProjectStatus.PUBLISHED.name
+
+        # Act / Assert
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService().update_project(dto)
+
     def test_no_project_info_for_default_locale_raises_error(self):
         # Arrange
         locales = []
@@ -56,18 +80,6 @@ class TestProjectAdminService(unittest.TestCase):
         # Act / Assert
         with self.assertRaises(ProjectAdminServiceError):
             ProjectAdminService()._validate_default_locale('it', locales)
-
-    def test_incomplete_default_locale_raises_error(self):
-        # Arrange
-        locales = []
-        info = ProjectInfoDTO()
-        info.locale = 'en'
-        info.name = 'Test'
-        locales.append(info)
-
-        # Act / Assert
-        with self.assertRaises(ProjectAdminServiceError):
-            ProjectAdminService()._validate_default_locale('en', locales)
 
     def test_complete_default_locale_raises_is_valid(self):
         # Arrange
