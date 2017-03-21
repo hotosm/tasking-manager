@@ -74,7 +74,6 @@
                         <!-- task viewing and mapping UI's -->
                         <div ng-show="projectCtrl.mappingStep === 'viewing' || projectCtrl.mappingStep === 'locked'">
                             <!-- task viewing UI -->
-
                             <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                 <!-- task information -->
                                 <h3>Task
@@ -198,7 +197,7 @@
                                             <i ng-show="showHistory"
                                                class="oam-ds-icon-sm-chevron-up"></i></h6>
                                         <div class="historyItem" ng-show="showHistory"
-                                             ng-repeat="item in projectCtrl.selectedTaskData.taskHistory track by $index"
+                                             ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
                                              ng-class-odd="odd" ng-class-even="even">
                                             <div><strong>Action: </strong> {{ item.action }}</div>
                                             <div><strong>Date: </strong> {{ item.actionDate }}</div>
