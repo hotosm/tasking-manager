@@ -232,6 +232,13 @@
             taskPromise.then(function (data) {
                 //task returned successfully
                 refreshCurrentSelection(data);
+                // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
+                // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
+                // tab
+                if (vm.currentTab === 'description' || vm.currentTab === 'instructions') {
+                    //prioritise validation
+                    vm.currentTab = vm.isSelectTaskValidatable ? 'validating' : 'mapping';
+                }
 
             }, function () {
                 // task not returned successfully
@@ -242,15 +249,13 @@
                 vm.taskErrorValidation = 'task-get-error';
                 vm.mappingStep = 'viewing';
                 vm.validatingStep = 'viewing';
+                if (vm.currentTab === 'description' || vm.currentTab !== 'instructions') {
+                    //prioritise validation
+                    vm.currentTab = 'mapping';
+                }
             });
 
-            // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
-            // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
-            // tab
-            if(vm.currentTab === 'description' || vm.currentTab !== 'validating'){
-                //prioritise validation
-                vm.currentTab = vm.isSelectTaskValidatable ? 'validating' : 'mapping'
-            }
+
         }
 
         /**
