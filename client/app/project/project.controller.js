@@ -33,9 +33,6 @@
         vm.shortDescription = '';
         vm.instructions = '';
 
-        //user input
-        vm.comment = 'My Comment';
-
         //interaction
         var select = new ol.interaction.Select({
             style: styleService.getSelectedStyleFunction
@@ -251,6 +248,7 @@
             var projectId = vm.projectData.projectId;
             var taskId = vm.lockedTaskData.taskId;
             var unLockPromise = taskService.unLockTask(projectId, taskId, comment, status);
+            vm.comment = '';
             unLockPromise.then(function (data) {
                 refreshProject(projectId);
                 if (status == 'DONE') {
