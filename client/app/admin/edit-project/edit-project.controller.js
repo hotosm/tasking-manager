@@ -222,17 +222,32 @@
         function setSelectInteractionEventHandler_(){
             vm.selectInteraction.on('select', function (event){
                 // Add selected style
-                var style =  new ol.style.Style({
+                // TODO: move to style service?
+                var unselectedStyle =  new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: 'rgba(255,165,0,0.4)'
+                        color: 'rgba(255,255,255,0.6)'
                     }),
                     stroke: new ol.style.Stroke({
-                        color: 'rgba(255,165,0,1)',
+                        color: 'rgba(255,0,0,1)', //red
+                        width: 1
+                    })
+                });
+                var selectedStyle =  new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255,255,255,0.6)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,0,0,1)', //red
                         width: 3
                     })
                 });
-                // only one feature is selected at a time
-                event.selected[0].setStyle(style);
+                // only one feature is selected/deselected at a time
+                if (event.selected[0]){
+                    event.selected[0].setStyle(selectedStyle);
+                }
+                if (event.deselected[0]){
+                    event.deselected[0].setStyle(unselectedStyle);
+                }
                 if (vm.translateInteraction.getActive()){
                     // Move feature on select
                     // The translate interaction handles this
@@ -257,10 +272,10 @@
                 // Add style to make it stand out from the AOI
                 var style =  new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: 'rgba(255,165,0,0.4)'
+                        color: 'rgba(255,255,255,0.6)'
                     }),
                     stroke: new ol.style.Stroke({
-                        color: 'rgba(255,165,0,1)',
+                        color: 'rgba(255,0,0,1)', //red
                         width: 1
                     })
                 });
