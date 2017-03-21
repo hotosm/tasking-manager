@@ -24,7 +24,7 @@ class LockTasksForValidationAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for unlocking a task
+              description: JSON object for locking task(s)
               schema:
                   properties:
                       taskIds:
