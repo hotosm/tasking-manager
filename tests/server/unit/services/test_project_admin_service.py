@@ -1,7 +1,7 @@
 import json
 import unittest
-from unittest.mock import MagicMock
-from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project
+from unittest.mock import MagicMock, patch
+from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project, ProjectDTO
 
 
 class TestProjectAdminService(unittest.TestCase):
@@ -32,3 +32,14 @@ class TestProjectAdminService(unittest.TestCase):
 
         # Assert
         self.assertEqual(1, len(test_project.tasks), 'One task should have been attached to project')
+
+    @patch.object(Project, 'get')
+    def test_get_project_for_update_returns_none_if_project_not_found(self, mock_project):
+        # Arrange
+        mock_project.return_value = None
+
+        # Act
+        test_project = ProjectAdminService().update_project(MagicMock())
+
+        # Assert
+        self.assertIsNone(test_project)

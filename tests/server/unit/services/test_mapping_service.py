@@ -25,7 +25,6 @@ class TestProject(unittest.TestCase):
     def test_get_project_dto_for_mapping_returns_none_if_project_not_found(self, mock_project):
         # Arrange
         mock_project.return_value = None
-        test_project = 'test'
 
         # Act
         test_project = MappingService().get_project_dto_for_mapper(1, 'en')
@@ -42,7 +41,7 @@ class TestProject(unittest.TestCase):
 
         # Act
         with self.assertRaises(MappingServiceError):
-            test_project = MappingService().get_project_dto_for_mapper(1, 'en')
+            MappingService().get_project_dto_for_mapper(1, 'en')
 
     @patch.object(Task, 'get')
     def test_lock_task_for_mapping_returns_none_if_task_not_found(self, mock_task):

@@ -50,7 +50,7 @@ class ProjectAdminService:
         return project.as_dto_for_admin(project_id)
 
     def update_project(self, project_dto: ProjectDTO):
-        project = Project.query.get(project_dto.project_id)
+        project = Project.get(project_dto.project_id)
 
         if project is None:
             return None

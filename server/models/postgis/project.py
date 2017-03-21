@@ -166,12 +166,19 @@ class Project(db.Model):
         self.status = ProjectStatus.DRAFT.value
 
     def create(self):
-        """
-        Creates and saves the current model to the DB
-        """
+        """ Creates and saves the current model to the DB """
         # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
         db.session.commit()
+
+    @staticmethod
+    def get(project_id: int):
+        """
+        Gets specified project
+        :param project_id: project ID in scope
+        :return: Project if found otherwise None
+        """
+        return Project.query.get(project_id)
 
     def update(self, project_dto: ProjectDTO):
         """ Updates project from DTO """
