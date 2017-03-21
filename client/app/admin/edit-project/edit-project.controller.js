@@ -80,7 +80,6 @@
                     info.instructions = $showdown.makeHtml(info.instructions);
                     populatedLocale = true;
                 }
-                vm.project.defaultLocale = vm.defaultLocale;
                 
                 // if no fields for this locale are populated, remove from array
                 if (!populatedLocale){
@@ -89,6 +88,8 @@
                     i--;
                 }
             }
+            
+            vm.project.defaultLocale = vm.defaultLocale;
 
             var resultsPromise = projectService.updateProject(vm.project.projectId, vm.project);
             resultsPromise.then(function (data) {
