@@ -95,7 +95,7 @@
                 vm.updateProjectFail = false;
                 vm.updateProjectSuccess = true;
                 // Reset the page elements 
-                activate();
+                getProjectMetadata(vm.project.projectId);
             }, function(){
                 // Project not updated successfully
                 vm.updateProjectFail = true;
