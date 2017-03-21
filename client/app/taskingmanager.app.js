@@ -14,6 +14,15 @@
 
         .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
 
+            // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
+            $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
+            $httpProvider.defaults.cache = false;
+
+            if (!$httpProvider.defaults.headers.get){
+                $httpProvider.defaults.headers.get = {};
+            }
+            $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
+            
             $routeProvider
 
                 .when('/', {
