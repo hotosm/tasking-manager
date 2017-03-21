@@ -134,6 +134,16 @@ class TestProject(unittest.TestCase):
         with self.assertRaises(MappingServiceError):
             MappingService().unlock_task_after_mapping(1, 1, 'IAIN')
 
+    @patch.object(Task, 'get')
+    def test_unlock_cannot_set_status_to_validated(self, mock_task):
+        # Arrange
+        self.task_stub.task_locked = True
+        mock_task.return_value = self.task_stub
+
+        # Act / Assert
+        with self.assertRaises(MappingServiceError):
+            MappingService().unlock_task_after_mapping(1, 1, TaskStatus.VALIDATED.name)
+
     @patch.object(Task, 'update')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
     @patch.object(Task, 'get')
