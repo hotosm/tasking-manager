@@ -17,7 +17,7 @@ class LockTasksForValidationAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: The ID of the project the tasks are associated with
               required: true
               type: integer
               default: 1
