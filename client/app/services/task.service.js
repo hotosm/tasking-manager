@@ -15,6 +15,7 @@
             unLockTask: unLockTask,
             lockTask: lockTask,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
+            getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
             getTaskFeatureById: getTaskFeatureById
         };
@@ -123,6 +124,32 @@
                 if (candidates.length == 0) {
                     candidates = getTasksByStatus(features, false, 'INVALIDATED');
                 }
+
+                // if candidates features were found, pick one randomly and return it
+                if (candidates.length > 0) {
+                    return candidates[Math.floor((Math.random() * (candidates.length - 1)))];
+                }
+            }
+
+            // if all else fails, return null
+            return null;
+        }
+
+/**
+         * returns a randomly selected validatable task feature from the passed in vector features.
+         * Will return a non locked DONE task if available,
+         * otherwise will return null.
+         * @param feature - array of ol.Feature objects from which to find a random task
+         * @returns ol.Feature - randomly selected mappable ol.Feature object
+         */
+        function getRandomTaskFeatureForValidation(features) {
+            //first check that we have a non empty array to work with
+            if (features && (features instanceof Array) && features.length > 0) {
+
+                var candidates = [];
+
+                // get all non locked DONE tasks
+                var candidates = getTasksByStatus(features, false, 'DONE');
 
                 // if candidates features were found, pick one randomly and return it
                 if (candidates.length > 0) {

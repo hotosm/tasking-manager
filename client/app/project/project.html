@@ -27,6 +27,10 @@
                                 type="button"
                                 ng-class="projectCtrl.currentTab == 'mapping'? 'button--active':''">Mapping
                         </button>
+                        <button ng-click="projectCtrl.currentTab = 'validating'" class="button button--achromic"
+                                type="button"
+                                ng-class="projectCtrl.currentTab == 'validating'? 'button--active':''">Validation
+                        </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'description'">
 
@@ -56,6 +60,9 @@
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
                         <p ng-bind-html="instructions"></p>
                         <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
+                            <i class="oam-ds-icon-sm-chevron-right"></i>
+                        </button>
+                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'validating'">Validation
                             <i class="oam-ds-icon-sm-chevron-right"></i>
                         </button>
                     </div>
@@ -218,6 +225,165 @@
                         </div>
 
                     </div>
+                    <div ng-show="projectCtrl.currentTab === 'validating'">
+                        <!-- select UI -->
+                        <div ng-show="projectCtrl.validatingStep === 'selecting'">
+                            <h3>Choose a task for validation</h3>
+                            <p>There are 2 options for choosing a task:</p>
+                            <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
+                            <p><strong>Option 2: </strong>
+                                <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                    Select a random task
+                                </button>
+                            </p>
+                        </div>
+                        <!-- task viewing and mapping UI's -->
+                        <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked'">
+                            <!-- task viewing UI -->
+                            <div ng-show="projectCtrl.validatingStep === 'viewing' ">
+                                <!-- task information -->
+                                <h3>Task
+                                    #{{ projectCtrl.selectedTaskData.taskId }} is
+                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED</span><span
+                                            ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
+                                </h3>
+                                <div ng-show="projectCtrl.selectedTaskData">
+                                    <div ng-show="projectCtrl.isSelectTaskValidatable" class="alert alert--success"
+                                         role="alert">
+                                        <p>This task is available for validation.</p>
+                                    </div>
+                                </div>
+                                <!-- task error alerts -->
+                                <div>
+                                    <div ng-show="projectCtrl.taskLockError">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>The task could not be locked for validation.</p>
+                                        </div>
+                                    </div>
+                                    <div ng-show="projectCtrl.taskErrorValidation === 'task-not-validatable'"
+                                         class="alert alert--danger"
+                                         role="alert">
+                                        <p>The selected task is not available for validation.</p>
+                                    </div>
+                                    <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>There are no tasks currently available for validation.</p>
+                                        </div>
+                                    </div>
+                                    <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
+                                        <div class="alert alert--danger" role="alert">
+                                            <button class="alert__button-dismiss" title="Dismiss alert"
+                                                    ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
+                                            </button>
+                                            <p>there was an error retrieving the task from the server.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- task action buttons -->
+                                <div>
+                                    <button ng-show="projectCtrl.isSelectTaskValidatable" class="button button--secondary"
+                                            ng-click="projectCtrl.lockSelectedTask()">
+                                        Start
+                                        Validating
+                                    </button>
+                                    <button ng-hide="projectCtrl.taskErrorValidation === 'none-available'"
+                                            ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                        Select another task
+                                    </button>
+                                    <button class="button button--secondary"
+                                            ng-click="projectCtrl.clearCurrentSelection()">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- task locked UI -->
+                            <div ng-show="projectCtrl.validatingStep === 'locked'"><!-- task mapping UI -->
+                                <h3>Task
+                                    #{{ projectCtrl.lockedTaskData.taskId }} is LOCKED by you
+                                </h3>
+                                <p></p>
+                                <div class="form__group">
+                                    <div>
+                                        <select>
+                                            <option selected="true">ID Editor</option>
+                                            <option>JOSM</option>
+                                            <option>Potlach 2</option>
+                                            <option>Walking papers</option>
+                                            <option>Field papers</option>
+                                        </select>
+                                        <button class="button button--secondary">
+                                            Start Editor
+                                        </button>
+                                    </div>
+                                    <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                              placeholder="Leave a comment"></textarea>
+                                </div>
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.unLockTask(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
+                                    Stop Mapping
+                                </button>
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.unLockTask(projectCtrl.comment, 'DONE')">
+                                    Mark as done
+                                </button>
+                            </div>
+                            <!-- advanced options UI -->
+                            <div ng-init="showAdvanced=false" class="panel-grey-rounder-corners"
+                                 ng-show="projectCtrl.validatingStep === 'validating' || projectCtrl.mappingStep === 'validatingStep'">
+                                <div>
+                                    <h3 ng-click="showAdvanced=!showAdvanced">
+                                        Advanced
+                                        <i ng-show="!showAdvanced"
+                                           class="oam-ds-icon-sm-chevron-down"></i>
+                                        <i ng-show="showAdvanced"
+                                           class="oam-ds-icon-sm-chevron-up"></i>
+                                    </h3>
+                                    <p class="lead">Advanced task information and editing options</p>
+                                </div>
+                                <div ng-show="showAdvanced">
+                                    <div>
+                                        <h6 class="heading-alt">Details</h6>
+                                        <dl class="dl-horizontal">
+                                            <dt>ID</dt>
+                                            <dd>#{{ projectCtrl.selectedTaskData.taskId }}</dd>
+                                            <dt>Status</dt>
+                                            <dd>{{ projectCtrl.selectedTaskData.taskStatus }}</dd>
+                                            <dt>Locked</dt>
+                                            <dd>{{ projectCtrl.selectedTaskData.taskLocked }}</dd>
+                                            <dt>Difficulty</dt>
+                                            <dd>TODO</dd>
+                                            <dt>Addisgned</dt>
+                                            <dd>TODO</dd>
+                                        </dl>
+                                    </div>
+                                    <div ng-init="showHistory=false" class="panel-white-round-corners">
+                                        <h6 class="heading-alt" ng-click="showHistory=!showHistory">History <i
+                                                ng-show="!showHistory"
+                                                class="oam-ds-icon-sm-chevron-down"></i>
+                                            <i ng-show="showHistory"
+                                               class="oam-ds-icon-sm-chevron-up"></i></h6>
+                                        <div class="historyItem" ng-show="showHistory"
+                                             ng-repeat="item in projectCtrl.selectedTaskData.taskHistory track by $index"
+                                             ng-class-odd="odd" ng-class-even="even">
+                                            <div><strong>Action: </strong> {{ item.action }}</div>
+                                            <div><strong>Date: </strong> {{ item.actionDate }}</div>
+                                            <div><strong>Text: </strong> {{ item.actionText }}</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h6 class="heading-alt">Options</h6>
+                                        <button class="button button--primary-unbounded">Preview task in OSM ID Editor
+                                        </button>
+                                        <button class="button button--primary-unbounded">View OSM changesets</button>
+                                        <button class="button button--primary-unbounded">View changes in overpass turbo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
             <div id="map" class="map-container"></div>

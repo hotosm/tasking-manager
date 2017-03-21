@@ -18,12 +18,15 @@
         // tab and view control
         vm.currentTab = '';
         vm.mappingStep = '';
+        vm.validatingStep = '';
         vm.taskError = '';
+        vm.taskErrorValidation = '';
         vm.taskLockError = false;
 
         //selected task
         vm.selectedTaskData = null;
         vm.isSelectTaskMappable = false;
+        vm.isSelectTaskValidatable = false;
 
         //locked task
         vm.lockedTaskData = null;
@@ -46,6 +49,7 @@
         function activate() {
             vm.currentTab = 'description';
             vm.mappingStep = 'selecting';
+            vm.validatingStep = 'selecting';
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
 
@@ -90,7 +94,14 @@
          * Sets up a randomly selected task as the currently selected task
          */
         vm.selectRandomTask = function () {
-            var feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
+            var feature = null;
+            if (vm.currentTab === 'mapping') {
+                feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
+            }
+            else if (vm.currentTab === 'validating') {
+                feature = taskService.getRandomTaskFeatureForValidation(vm.taskVectorLayer.getSource().getFeatures());
+            }
+
             if (feature) {
                 selectFeature(feature);
             }
@@ -98,10 +109,13 @@
                 vm.selectedTaskData = null;
                 vm.isSelectTaskMappable = false;
                 vm.taskError = 'none-available';
+                vm.taskErrorValidation = 'none-available';
                 vm.taskLockError = false;
                 vm.mappingStep = 'viewing';
+                vm.validatingStep = 'viewing';
             }
         };
+
 
         /**
          * clears the currently selected task.  Clears down/resets the vm properties and clears the feature param in the select interaction object.
@@ -109,9 +123,10 @@
         vm.clearCurrentSelection = function () {
             vm.selectedTaskData = null;
             vm.isSelectTaskMappable = false;
-            vm.currentTab = 'mapping';
             vm.mappingStep = 'selecting';
+            vm.validatingStep = 'selecting';
             vm.taskError = '';
+            vm.taskErrorValidation = '';
             select.getFeatures().clear();
         };
 
@@ -209,6 +224,7 @@
 
             //reset task errors
             vm.taskError = '';
+            vm.taskErrorValidation = '';
             vm.taskLockError = false;
 
             // get full task from task service call
@@ -221,10 +237,20 @@
                 // task not returned successfully
                 vm.selectedTaskData = null;
                 vm.isSelectTaskMappable = false;
-                vm.currentTab = 'mapping';
+                vm.isSelectTaskValidatable = false;
                 vm.taskError = 'task-get-error';
+                vm.taskErrorValidation = 'task-get-error';
                 vm.mappingStep = 'viewing';
+                vm.validatingStep = 'viewing';
             });
+
+            // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
+            // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
+            // tab
+            if(vm.currentTab === 'description' || vm.currentTab !== 'validating'){
+                //prioritise validation
+                vm.currentTab = vm.isSelectTaskValidatable ? 'validating' : 'mapping'
+            }
         }
 
         /**
@@ -232,11 +258,13 @@
          * @param data - task JSON data object
          */
         function refreshCurrentSelection(data) {
-            vm.currentTab = 'mapping';
             vm.mappingStep = 'viewing';
+            vm.validatingStep = 'viewing';
             vm.selectedTaskData = data;
             vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
             vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
+            vm.isSelectTaskValidatable = !data.taskLocked && (data.taskStatus !== 'READY');
+            vm.taskErrorValidation = vm.isSelectTaskValidatable ? '' : 'task-not-validatable';
         }
 
         /**
