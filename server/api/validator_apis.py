@@ -1,5 +1,7 @@
 from flask_restful import Resource, current_app, request
-from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError
+from server.models.dtos.validator_dto import LockForValidationDTO
+from schematics.exceptions import DataError
+from server.services.validator_service import ValidatorService, TaskNotFound
 
 
 class LockTasksForValidationAPI(Resource):
@@ -33,7 +35,9 @@ class LockTasksForValidationAPI(Resource):
                           default: [1,2]
         responses:
             200:
-                description: Task locked
+                description: Task(s) locked for validation
+            400:
+                description: Client Error
             403:
                 description: Task already locked
             404:
@@ -41,7 +45,25 @@ class LockTasksForValidationAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        pass
+        try:
+            validator_dto = LockForValidationDTO(request.get_json())
+            validator_dto.project_id = project_id
+            validator_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            tasks = ValidatorService().lock_tasks_for_validation(validator_dto)
+        except TaskNotFound as e:
+            return {"Error": str(e)}, 404
+        except Exception as e:
+            error_msg = f'Validator Lock API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+        iain = validator_dto
         # try:
         #     task = MappingService().lock_task_for_mapping(task_id, project_id)
         #

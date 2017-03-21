@@ -5,7 +5,7 @@ from unittest.mock import patch
 from server import create_app
 
 
-class TestProject(unittest.TestCase):
+class TestMappingService(unittest.TestCase):
     task_stub = Task
 
     def setUp(self):
