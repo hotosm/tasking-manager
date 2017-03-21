@@ -68,3 +68,20 @@ class TestProjectAdminService(unittest.TestCase):
         # Act / Assert
         with self.assertRaises(ProjectAdminServiceError):
             ProjectAdminService()._validate_default_locale('en', locales)
+
+    def test_complete_default_locale_raises_is_valid(self):
+        # Arrange
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = 'en'
+        info.name = 'Test'
+        info.description = 'Test Desc'
+        info.short_description = 'Short Desc'
+        info.instructions = 'Instruct'
+        locales.append(info)
+
+        # Act
+        is_valid = ProjectAdminService()._validate_default_locale('en', locales)
+
+        # Assert
+        self.assertTrue(is_valid, 'Complete default locale should be valid')

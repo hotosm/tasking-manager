@@ -88,7 +88,13 @@ class ProjectAdminService:
             task_id += 1
 
     def _validate_default_locale(self, default_locale, project_info_locales):
-
+        """
+        Validates that all fields for the default project info locale have been completed
+        :param default_locale: Admin supplied default locale
+        :param project_info_locales: All locales supplied by admin
+        :raises ProjectAdminServiceError
+        :return: True if valid
+        """
         default_info = None
         for info in project_info_locales:
             if info.locale.lower() == default_locale.lower():
@@ -101,3 +107,5 @@ class ProjectAdminService:
         for attr, value in default_info.items():
             if not value:
                 raise(ProjectAdminServiceError(f'{attr} not provided for Default Locale'))
+
+        return True  # Indicates valid default locale for unit testing
