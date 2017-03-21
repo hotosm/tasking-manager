@@ -75,9 +75,7 @@ class MappingService:
 
         # TODO user can only have 1 tasked locked at a time
 
-        self._set_task_history(task=task, action=TaskAction.LOCKED)
         task.lock_task()
-
         return task.as_dto()
 
     def unlock_task_after_mapping(self, task_id, project_id, state, comment=None):
@@ -126,6 +124,7 @@ class MappingService:
         :param comment: Comment user has added
         :param new_state: New state of the task
         """
+        # TODO remove this method and use Task version
         history = TaskHistory(task.id, task.project_id)
 
         if action == TaskAction.LOCKED:

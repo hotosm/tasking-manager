@@ -23,6 +23,7 @@ class ValidatorService:
     def lock_tasks_for_validation(self, validation_dto: LockForValidationDTO):
         """ Lock provides tasks for validation """
 
+        # Loop supplied tasks to check they can all be locked for validation
         tasks_to_lock = []
         for task_id in validation_dto.task_ids:
             task = Task.get(task_id, validation_dto.project_id)
@@ -38,9 +39,9 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
+        # Lock all tasks for validation
         dtos = []
         for task in tasks_to_lock:
-            #task.set_task_history(action=TaskAction.LOCKED)
             task.lock_task()
             dtos.append(task.as_dto())
 
