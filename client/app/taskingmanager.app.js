@@ -12,7 +12,7 @@
             return config;
         }])
 
-        .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+        .config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 
             // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
             $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
