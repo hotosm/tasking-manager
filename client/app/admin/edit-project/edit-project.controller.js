@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$showdown', 'mapService','drawService', 'projectService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', editProjectController]);
 
-    function editProjectController($scope, $location, $showdown, mapService, drawService, projectService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, mapService, drawService, projectService) {
         var vm = this;
         vm.currentSection = '';
 
@@ -44,9 +44,8 @@
         activate();
 
         function activate() {
-
-            var id = $location.search().id;
-            vm.project.name = $location.search().name;
+            
+            var id = $routeParams.id;
 
             getProjectMetadata(id);
 

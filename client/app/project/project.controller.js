@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$location', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', projectController]);
+        .controller('projectController', ['$scope', '$routeParams', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', projectController]);
 
-    function projectController($scope, $location, mapService, projectService, styleService, taskService, geospatialService) {
+    function projectController($scope, $routeParams, mapService, projectService, styleService, taskService, geospatialService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -56,8 +56,8 @@
                     onTaskSelection(feature);
                 });
             });
-
-            var id = $location.search().project;
+            
+            var id = $routeParams.id;
             initialiseProject(id);
             //TODO: put the project metadata (description and instructions on siedbar tabs)
         }
