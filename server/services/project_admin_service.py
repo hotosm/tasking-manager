@@ -5,7 +5,7 @@ from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData, ProjectStatus
 
 
-class ProjectServiceError(Exception):
+class ProjectAdminServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when validating a Project """
     def __init__(self, message):
         if current_app:
@@ -55,7 +55,8 @@ class ProjectAdminService:
         if project is None:
             return None
 
-        # TODO if projectStatus is published validate we have one full set in default locale
+        if project_dto.project_status == ProjectStatus.PUBLISHED.name:
+            self._validate_default_locale(project_dto.default_locale, project_dto.project_info_locales)
 
         project.update(project_dto)
         return project
@@ -85,3 +86,18 @@ class ProjectAdminService:
 
             draft_project.tasks.append(task)
             task_id += 1
+
+    def _validate_default_locale(self, default_locale, project_info_locales):
+
+        default_info = None
+        for info in project_info_locales:
+            if info.locale.lower() == default_locale.lower():
+                default_info = info
+                break
+
+        if default_info is None:
+            raise ProjectAdminServiceError('Project Info for Default Locale not provided')
+
+        for attr, value in default_info.items():
+            if not value:
+                raise(ProjectAdminServiceError(f'{attr} not provided for Default Locale'))

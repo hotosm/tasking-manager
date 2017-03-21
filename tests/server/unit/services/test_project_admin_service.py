@@ -1,7 +1,8 @@
 import json
 import unittest
 from unittest.mock import MagicMock, patch
-from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project, ProjectDTO
+from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project, ProjectAdminServiceError
+from server.models.dtos.project_dto import ProjectInfoDTO
 
 
 class TestProjectAdminService(unittest.TestCase):
@@ -43,3 +44,27 @@ class TestProjectAdminService(unittest.TestCase):
 
         # Assert
         self.assertIsNone(test_project)
+
+    def test_no_project_info_for_default_locale_raises_error(self):
+        # Arrange
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = 'en'
+        info.name = 'Test'
+        locales.append(info)
+
+        # Act / Assert
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService()._validate_default_locale('it', locales)
+
+    def test_incomplete_default_locale_raises_error(self):
+        # Arrange
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = 'en'
+        info.name = 'Test'
+        locales.append(info)
+
+        # Act / Assert
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService()._validate_default_locale('en', locales)
