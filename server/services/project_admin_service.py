@@ -5,7 +5,7 @@ from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData, ProjectStatus
 
 
-class ProjectServiceError(Exception):
+class ProjectAdminServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when validating a Project """
     def __init__(self, message):
         if current_app:
@@ -19,7 +19,7 @@ class ProjectStoreError(Exception):
             current_app.logger.error(message)
 
 
-class ProjectService:
+class ProjectAdminService:
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO) -> int:
         """
@@ -44,19 +44,19 @@ class ProjectService:
         draft_project.create()
         return draft_project.id
 
-
-    def get_project_dto_for_admin(self, project_id: int):
+    def get_project_dto_for_admin(self, project_id: int) -> ProjectDTO:
         """ Get the project as DTO for project managers """
         project = Project()
         return project.as_dto_for_admin(project_id)
 
     def update_project(self, project_dto: ProjectDTO):
-        project = Project.query.get(project_dto.project_id)
+        project = Project.get(project_dto.project_id)
 
         if project is None:
             return None
 
-        # TODO if projectStatus is published validate we have one full set in default locale
+        if project_dto.project_status == ProjectStatus.PUBLISHED.name:
+            self._validate_default_locale(project_dto.default_locale, project_dto.project_info_locales)
 
         project.update(project_dto)
         return project
@@ -86,3 +86,26 @@ class ProjectService:
 
             draft_project.tasks.append(task)
             task_id += 1
+
+    def _validate_default_locale(self, default_locale, project_info_locales):
+        """
+        Validates that all fields for the default project info locale have been completed
+        :param default_locale: Admin supplied default locale
+        :param project_info_locales: All locales supplied by admin
+        :raises ProjectAdminServiceError
+        :return: True if valid
+        """
+        default_info = None
+        for info in project_info_locales:
+            if info.locale.lower() == default_locale.lower():
+                default_info = info
+                break
+
+        if default_info is None:
+            raise ProjectAdminServiceError('Project Info for Default Locale not provided')
+
+        for attr, value in default_info.items():
+            if not value:
+                raise(ProjectAdminServiceError(f'{attr} not provided for Default Locale'))
+
+        return True  # Indicates valid default locale for unit testing
