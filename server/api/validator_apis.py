@@ -1,7 +1,7 @@
 from flask_restful import Resource, current_app, request
 from server.models.dtos.validator_dto import LockForValidationDTO
 from schematics.exceptions import DataError
-from server.services.validator_service import ValidatorService, TaskNotFound
+from server.services.validator_service import ValidatorService, TaskNotFound, ValidatatorServiceError
 
 
 class LockTasksForValidationAPI(Resource):
@@ -55,6 +55,8 @@ class LockTasksForValidationAPI(Resource):
 
         try:
             tasks = ValidatorService().lock_tasks_for_validation(validator_dto)
+        except ValidatatorServiceError as e:
+            return {"Error": str(e)}, 400
         except TaskNotFound as e:
             return {"Error": str(e)}, 404
         except Exception as e:

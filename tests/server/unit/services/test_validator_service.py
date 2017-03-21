@@ -41,3 +41,19 @@ class TestValidatorService(unittest.TestCase):
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
             ValidatorService().lock_tasks_for_validation(lock_dto)
+
+    @patch.object(Task, 'get')
+    def test_lock_tasks_for_validation_raises_error_if_task_already_locked(self, mock_task):
+        # Arrange
+        task_stub = Task()
+        task_stub.task_status = TaskStatus.DONE.value
+        task_stub.task_locked = True
+        mock_task.return_value = task_stub
+
+        lock_dto = LockForValidationDTO()
+        lock_dto.project_id = 1
+        lock_dto.task_ids = [1, 2]
+
+        # Act / Assert
+        with self.assertRaises(ValidatatorServiceError):
+            ValidatorService().lock_tasks_for_validation(lock_dto)

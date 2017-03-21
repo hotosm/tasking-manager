@@ -32,6 +32,12 @@ class ValidatorService:
             if TaskStatus(task.task_status) != TaskStatus.DONE:
                 raise ValidatatorServiceError(f'Task {task_id} in not DONE')
 
+            if task.task_locked:
+                raise ValidatatorServiceError(f'Task: {task_id} is already locked')
+
             tasks_to_lock.append(task)
 
+
+        for task in tasks_to_lock:
+            pass
 
