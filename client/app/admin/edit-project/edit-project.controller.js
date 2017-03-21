@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$showdown', 'mapService','drawService', 'projectService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService', editProjectController]);
 
-    function editProjectController($scope, $location, $showdown, mapService, drawService, projectService) {
+    function editProjectController($scope, $location, $showdown, mapService, drawService, projectService, geospatialService) {
         var vm = this;
         vm.currentSection = '';
 
@@ -34,6 +34,7 @@
         ];
 
         vm.project = {};
+        vm.defaultLocale = 'en';
         vm.descriptionLanguage = 'en';
         vm.shortDescriptionLanguage = 'en';
         vm.nameLanguage = 'en';
@@ -48,30 +49,14 @@
             var id = $location.search().id;
             vm.project.name = $location.search().name;
 
+            // Initialise the map and add interactions
+            mapService.createOSMMap('map');
+            vm.map = mapService.getOSMMap();
+            addInteractions();
+
             getProjectMetadata(id);
 
             vm.currentSection = 'description';
-
-            mapService.createOSMMap('map');
-            vm.map = mapService.getOSMMap();
-
-            // Priority areas: initialise the draw service with interactions
-            drawService.initInteractions(true, true, true, true, true, true);
-
-            // Get the interactions in the controller so events can be handled
-            vm.source = drawService.getSource();
-            vm.modifyInteraction = drawService.getModifyInteraction();
-            vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
-            vm.drawRectangleInteraction = drawService.getDrawRectangleInteraction();
-            vm.drawCircleInteraction = drawService.getDrawCircleInteraction();
-            vm.selectInteraction = drawService.getSelectInteraction();
-            vm.translateInteraction = drawService.getTranslateInteraction();
-
-            // Add select interaction handler
-            setSelectInteractionEventHandler_();
-
-            // Add vector source event handler for adding and removing features
-            setVectorSourceEventHandlers_();
         }
 
         /**
@@ -95,7 +80,8 @@
                     info.instructions = $showdown.makeHtml(info.instructions);
                     populatedLocale = true;
                 }
-
+                vm.project.defaultLocale = vm.defaultLocale;
+                
                 // if no fields for this locale are populated, remove from array
                 if (!populatedLocale){
                     vm.project.projectInfoLocales.splice(i, 1);
@@ -103,7 +89,6 @@
                     i--;
                 }
             }
-            vm.project.defaultLocale = 'en';
 
             var resultsPromise = projectService.updateProject(vm.project.projectId, vm.project);
             resultsPromise.then(function (data) {
@@ -148,6 +133,14 @@
          */
         vm.changeLanguageInstructions = function(language) {
             vm.instructionsLanguage = language;
+        };
+
+        /**
+         * Change the default locale
+         * @param language
+         */
+        vm.changeDefaultLocale = function(language){
+            vm.defaultLocale = language;
         };
 
         /**
@@ -229,6 +222,18 @@
          */
         function setSelectInteractionEventHandler_(){
             vm.selectInteraction.on('select', function (event){
+                // Add selected style
+                var style =  new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255,165,0,0.4)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,165,0,1)',
+                        width: 3
+                    })
+                });
+                // only one feature is selected at a time
+                event.selected[0].setStyle(style);
                 if (vm.translateInteraction.getActive()){
                     // Move feature on select
                     // The translate interaction handles this
@@ -249,7 +254,18 @@
          * @private
          */
         function setVectorSourceEventHandlers_(){
-            vm.source.on('addfeature', function(){
+            vm.source.on('addfeature', function(event){
+                // Add style to make it stand out from the AOI
+                var style =  new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255,165,0,0.4)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,165,0,1)',
+                        width: 1
+                    })
+                });
+                event.feature.setStyle(style);
                 $scope.$apply(vm.numberOfPriorityAreas++);
             });
             vm.source.on('removefeature', function(){
@@ -290,10 +306,56 @@
                         };
                         vm.project.projectInfoLocales.push(locale);
                     }
+                    addAOIToMap();
                 }
             }, function(){
                // TODO
             });
+        }
+
+        /**
+         * Add the interactions for the priority areas section
+         */
+        function addInteractions(){
+
+            // Priority areas: initialise the draw service with interactions
+            drawService.initInteractions(true, true, true, true, true, true);
+
+            // Get the interactions in the controller so events can be handled
+            vm.source = drawService.getSource();
+            vm.modifyInteraction = drawService.getModifyInteraction();
+            vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
+            vm.drawRectangleInteraction = drawService.getDrawRectangleInteraction();
+            vm.drawCircleInteraction = drawService.getDrawCircleInteraction();
+            vm.selectInteraction = drawService.getSelectInteraction();
+            vm.translateInteraction = drawService.getTranslateInteraction();
+
+            // Add select interaction handler
+            setSelectInteractionEventHandler_();
+
+            // Add vector source event handler for adding and removing features
+            setVectorSourceEventHandlers_();
+        }
+
+        /**
+         * Add AOI to map (priority areas section)
+         */
+        function addAOIToMap(){
+            // Create a vector source and layer for the AOI
+            var source = new ol.source.Vector();
+            var vector = new ol.layer.Vector({
+                source: source
+            });
+            vm.map.addLayer(vector);
+
+            // Get features from GeoJSON
+            var AOIFeatures = geospatialService.getFeaturesFromGeoJSON(vm.project.areaOfInterest);
+
+            // Add features to map
+            source.addFeatures(AOIFeatures);
+
+            // Zoom to the extent of the AOI
+            vm.map.getView().fit(source.getExtent());
         }
     }
 })();
