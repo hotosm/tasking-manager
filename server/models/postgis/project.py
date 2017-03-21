@@ -105,17 +105,14 @@ class ProjectInfo(db.Model):
             current_app.logger.critical(error_message)
             raise ValueError(error_message)
 
-        # Pass thru default_locale incase of partial translation
+        # Pass thru default_locale in case of partial translation
         return project_info.get_dto(default_locale)
 
-    def get_dto(self, default_locale=None) -> ProjectDTO:
+    def get_dto(self, default_locale=ProjectInfoDTO()) -> ProjectInfoDTO:
         """
         Get DTO for current ProjectInfo
-        :param default_locale: If true, use default locale string for any empty fields
+        :param default_locale: The default locale string for any empty fields
         """
-
-        # TODO on migrate fill in MISSING on any empty null columns on default locales
-
         project_info_dto = ProjectInfoDTO()
         project_info_dto.locale = self.locale
         project_info_dto.name = self.name if self.name else default_locale.name
