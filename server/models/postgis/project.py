@@ -78,27 +78,47 @@ class ProjectInfo(db.Model):
         self.instructions = dto.instructions
 
     @staticmethod
-    def get_dto_for_locale(project_id, locale, default_locale='en'):
+    def get_dto_for_locale(project_id, locale, default_locale='en') -> ProjectInfoDTO:
+        """
+        Gets the projectInfoDTO for the project for the requested locale. If not found, then the default locale is used
+        :param project_id: ProjectID in scope
+        :param locale: locale requested by user
+        :param default_locale: default locale of project
+        :raises: ValueError if no info found for Default Locale
+        """
         project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=locale).one_or_none()
 
         if project_info is None:
+            # If project is none, get default locale and don't worry about empty translations
             project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=default_locale).one_or_none()
-            if project_info is None:
-                error_message = \
-                    f'BAD DATA - no info found for project {project_id}, locale: {locale}, default {default_locale}'
-                current_app.logger.critical(error_message)
-                raise ValueError(error_message)
+            return project_info.get_dto()
 
-        return project_info.get_dto()
+        if locale == default_locale:
+            # If locale == default_locale don't need to worry about empty translations
+            return project_info.get_dto()
 
-    def get_dto(self):
+        default_locale = ProjectInfo.query.filter_by(project_id=project_id, locale=default_locale).one_or_none()
 
+        if default_locale is None:
+            error_message = \
+                f'BAD DATA - no info found for project {project_id}, locale: {locale}, default {default_locale}'
+            current_app.logger.critical(error_message)
+            raise ValueError(error_message)
+
+        # Pass thru default_locale in case of partial translation
+        return project_info.get_dto(default_locale)
+
+    def get_dto(self, default_locale=ProjectInfoDTO()) -> ProjectInfoDTO:
+        """
+        Get DTO for current ProjectInfo
+        :param default_locale: The default locale string for any empty fields
+        """
         project_info_dto = ProjectInfoDTO()
         project_info_dto.locale = self.locale
-        project_info_dto.name = self.name
-        project_info_dto.description = self.description
-        project_info_dto.short_description = self.short_description
-        project_info_dto.instructions = self.instructions
+        project_info_dto.name = self.name if self.name else default_locale.name
+        project_info_dto.description = self.description if self.description else default_locale.description
+        project_info_dto.short_description = self.short_description if self.short_description else default_locale.short_description
+        project_info_dto.instructions = self.instructions if self.description else default_locale.instructions
 
         return project_info_dto
 
@@ -199,7 +219,7 @@ class Project(db.Model):
 
         return project, base_dto
 
-    def as_dto_for_mapper(self, project_id: int, locale: str) -> Optional[ProjectDTO]:
+    def as_dto_for_mapping(self, project_id: int, locale: str) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         project, project_dto = self._get_project_and_base_dto(project_id)
 
