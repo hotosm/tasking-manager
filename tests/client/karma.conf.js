@@ -26,6 +26,8 @@ module.exports = function(config) {
       'node_modules/ng-file-upload/dist/ng-file-upload.js',
       'node_modules/showdown/dist/showdown.js',
       'node_modules/ng-showdown/dist/ng-showdown.js',
+      'node_modules/moment/moment.js',
+      'node_modules/angular-moment/angular-moment.js',
       'app/*.js',
       'app/**/*.js',
       '../tests/client/unit/**/*.js'
