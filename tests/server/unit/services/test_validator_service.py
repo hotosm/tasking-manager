@@ -95,3 +95,23 @@ class TestValidatorService(unittest.TestCase):
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
             ValidatorService().unlock_tasks_after_validation(unlock_dto)
+
+    @patch.object(Task, 'get')
+    def test_unlock_tasks_for_validation_raises_error_if_task_not_locked(self, mock_task):
+        # Arrange
+        task_stub = Task()
+        task_stub.task_status = TaskStatus.DONE.value
+        task_stub.task_locked = False
+        mock_task.return_value = task_stub
+
+        validated_task = ValidatedTask()
+        validated_task.task_id = 1
+        validated_tasks = [validated_task]
+
+        unlock_dto = UnlockAfterValidationDTO()
+        unlock_dto.project_id = 1
+        unlock_dto.validated_tasks = validated_tasks
+
+        # Act / Assert
+        with self.assertRaises(ValidatatorServiceError):
+            ValidatorService().unlock_tasks_after_validation(unlock_dto)
