@@ -23,11 +23,9 @@ class TaskHistory(db.Model):
     """
     __tablename__ = "task_history"
 
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, primary_key=True)
-
     id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, primary_key=True)
     task_id = db.Column(db.Integer, nullable=False)
-    project_id = db.Column(db.Integer, nullable=False)
     action = db.Column(db.String, nullable=False)
     action_text = db.Column(db.String)
     action_date = db.Column(db.DateTime, nullable=False, default=timestamp)
@@ -156,8 +154,16 @@ class Task(db.Model):
         self.task_locked = True
         self.update()
 
-    def unlock_task(self):
+    def unlock_task(self, new_state=None, comment=None):
         """ Unlock task and ensure duration task locked is saved in History """
+        if comment:
+            # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
+            self._set_task_history(action=TaskAction.COMMENT, comment=comment)
+
+        if TaskStatus(self.task_status) != new_state:
+            self._set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state)
+            self.task_status = new_state.value
+
         TaskHistory.update_task_locked_with_duration(self.id, self.project_id)
         self.task_locked = False
         self.update()

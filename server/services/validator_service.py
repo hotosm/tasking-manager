@@ -66,9 +66,12 @@ class ValidatorService:
             if not task.task_locked:
                 raise ValidatatorServiceError(f'Task: {validated_task.task_id} is not locked')
 
-
-
-            # task = Task.get(task_id, validation_dto.project_id)
-
             # TODO check user owns task before allowing unlock
 
+            tasks_to_unlock.append(dict(task=task, new_state=validated_task.status, comment=validated_task.comment))
+
+        # Unlock all tasks
+        dtos = []
+        for task_to_unlock in tasks_to_unlock:
+            task = task_to_unlock['task']
+            task.unlock_task(task_to_unlock['new_state'], task_to_unlock['comment'])
