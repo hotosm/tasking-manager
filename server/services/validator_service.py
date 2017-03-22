@@ -68,7 +68,8 @@ class ValidatorService:
 
             # TODO check user owns task before allowing unlock
 
-            tasks_to_unlock.append(dict(task=task, new_state=validated_task.status, comment=validated_task.comment))
+            tasks_to_unlock.append(dict(task=task, new_state=TaskStatus[validated_task.status],
+                                        comment=validated_task.comment))
 
         # Unlock all tasks
         dtos = []

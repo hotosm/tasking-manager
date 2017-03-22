@@ -86,9 +86,6 @@ class UnlockTasksAfterValidationAPI(Resource):
               required: true
               description: JSON object for unlocking a task
               schema:
-                  id: TaskUpdate
-                  required:
-                      - status
                   properties:
                       validatedTasks:
                           type: array
@@ -115,7 +112,7 @@ class UnlockTasksAfterValidationAPI(Resource):
 
         try:
             tasks = ValidatorService().unlock_tasks_after_validation(validated_dto)
-            #return tasks.to_primitive(), 200
+            return tasks.to_primitive(), 200
         except ValidatatorServiceError as e:
             return {"Error": str(e)}, 400
         except TaskNotFound as e:

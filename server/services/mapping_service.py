@@ -1,6 +1,6 @@
 from typing import Optional
 from flask import current_app
-from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
+from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.project import Project, ProjectStatus
 from server.models.dtos.project_dto import ProjectDTO
 from server.models.dtos.task_dto import TaskDTO
@@ -104,34 +104,5 @@ class MappingService:
         if new_state.name == TaskStatus.VALIDATED.name:
             raise MappingServiceError('Cannot set task to Validated after mapping')
 
-        if comment:
-            # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
-            self._set_task_history(task=task, action=TaskAction.COMMENT, comment=comment)
-
-        if TaskStatus(task.task_status) != new_state:
-            self._set_task_history(task=task, action=TaskAction.STATE_CHANGE, new_state=new_state)
-            task.task_status = new_state.value
-
-        task.unlock_task()
+        task.unlock_task(new_state, comment)
         return task.as_dto()
-
-    @staticmethod
-    def _set_task_history(task, action, comment=None, new_state=None):
-        """
-        Sets the task history for the action that the user has just performed
-        :param task: Task in scope
-        :param action: Action the user has performed
-        :param comment: Comment user has added
-        :param new_state: New state of the task
-        """
-        # TODO remove this method and use Task version
-        history = TaskHistory(task.id, task.project_id)
-
-        if action == TaskAction.LOCKED:
-            history.set_task_locked_action()
-        elif action == TaskAction.COMMENT:
-            history.set_comment_action(comment)
-        elif action == TaskAction.STATE_CHANGE:
-            history.set_state_change_action(new_state)
-
-        task.task_history.append(history)
