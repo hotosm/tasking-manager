@@ -66,6 +66,18 @@ class SwaggerDocsAPI(Resource):
                             zoom:
                                 type: integer
                                 default: 12
+            - schema:
+                id: ValidatedTask
+                properties:
+                    taskId:
+                        type: integer
+                        default: 1
+                    status:
+                        type: string
+                        default: VALIDATED
+                    comment:
+                        type: string
+                        default: Nice work :)
         """
         swag = swagger(current_app)
         swag['info']['title'] = "HOT Tasking Manager API"
