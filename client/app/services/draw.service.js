@@ -14,6 +14,7 @@
     function drawService(mapService) {
 
         var source = null;
+        var vectorLayer = null;
         var map = null;
         var features = null;
 
@@ -77,12 +78,12 @@
          */
         function addVectorLayer(){
             source = new ol.source.Vector({features: features});
-            var vector = new ol.layer.Vector({
+            vectorLayer = new ol.layer.Vector({
                 source: source
             });
             // Use a high Z index to ensure it draws on top of other layers
-            vector.setZIndex(100);
-            map.addLayer(vector);
+            vectorLayer.setZIndex(100);
+            map.addLayer(vectorLayer);
         }
 
         /**
@@ -191,7 +192,9 @@
          * @private
          */
         function initSelectInteraction_(){
-            selectInteraction = new ol.interaction.Select();
+            selectInteraction = new ol.interaction.Select({
+                layers: [vectorLayer]
+            });
             map.addInteraction(selectInteraction);
         }
 
