@@ -113,25 +113,14 @@ class UnlockTasksAfterValidationAPI(Resource):
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
-        iain = validated_dto
-
-        # try:
-        #     data = request.get_json()
-        #     status = data['status']
-        #     comment = data['comment'] if 'comment' in data else None
-        #
-        #     if status == '':
-        #         return {"Error": "Status not supplied"}, 400
-        #
-        #     task = MappingService().unlock_task_after_mapping(task_id, project_id, status, comment)
-        #
-        #     if task is None:
-        #         return {"Error": "Task Not Found"}, 404
-        #
-        #     return task.to_primitive(), 200
-        # except MappingServiceError as e:
-        #     return {"Error": str(e)}, 400
-        # except Exception as e:
-        #     error_msg = f'Task Lock API - unhandled error: {str(e)}'
-        #     current_app.logger.critical(error_msg)
-        #     return {"Error": error_msg}, 500
+        try:
+            tasks = ValidatorService().unlock_tasks_after_validation(validated_dto)
+            #return tasks.to_primitive(), 200
+        except ValidatatorServiceError as e:
+            return {"Error": str(e)}, 400
+        except TaskNotFound as e:
+            return {"Error": str(e)}, 404
+        except Exception as e:
+            error_msg = f'Validator Lock API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500

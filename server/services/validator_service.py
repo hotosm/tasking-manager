@@ -1,7 +1,7 @@
 from flask import current_app
 from server.models.dtos.task_dto import TaskDTOs
-from server.models.dtos.validator_dto import LockForValidationDTO
-from server.models.postgis.task import Task, TaskStatus, TaskAction
+from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
+from server.models.postgis.task import Task, TaskStatus
 
 
 class TaskNotFound(Exception):
@@ -20,9 +20,11 @@ class ValidatatorServiceError(Exception):
 
 class ValidatorService:
 
-    def lock_tasks_for_validation(self, validation_dto: LockForValidationDTO):
-        """ Lock provides tasks for validation """
-
+    def lock_tasks_for_validation(self, validation_dto: LockForValidationDTO) -> TaskDTOs:
+        """
+        Lock supplied tasks for validation
+        :raises ValidatatorServiceError
+        """
         # Loop supplied tasks to check they can all be locked for validation
         tasks_to_lock = []
         for task_id in validation_dto.task_ids:
@@ -49,4 +51,16 @@ class ValidatorService:
         task_dtos.tasks = dtos
 
         return task_dtos
+
+    def unlock_tasks_after_validation(self, validated_dto: UnlockAfterValidationDTO):
+        tasks_to_unlock = []
+        for validated_task in validated_dto.validated_tasks:
+            task = Task.get(validated_task.task_id, validated_dto.project_id)
+
+            if task is None:
+                raise TaskNotFound(f'Task {validated_task.task_id} not found')
+
+            # task = Task.get(task_id, validation_dto.project_id)
+
+            # TODO check user owns task before allowing unlock
 
