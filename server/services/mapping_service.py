@@ -92,7 +92,7 @@ class MappingService:
         if TaskStatus(task.task_status) == TaskStatus.DONE:
             raise MappingServiceError('Cannot unlock DONE task')
 
-        new_state = TaskStatus[mapped_task.state.upper()]
+        new_state = TaskStatus[mapped_task.status.upper()]
 
         task.unlock_task(new_state, mapped_task.comment)
         return task.as_dto()

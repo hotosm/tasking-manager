@@ -1,8 +1,9 @@
 import unittest
 from server.services.mapping_service import MappingService, Task, MappingServiceError, TaskStatus, \
      Project, ProjectDTO, ProjectStatus
+from server.models.dtos.mapping_dto import MappedTaskDTO
 from server.models.postgis.task import TaskHistory, TaskAction
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from server import create_app
 
 
@@ -108,7 +109,7 @@ class TestMappingService(unittest.TestCase):
         mock_task.return_value = None
 
         # Act
-        test_task = MappingService().unlock_task_after_mapping(1, 1, 'TEST')
+        test_task = MappingService().unlock_task_after_mapping(MagicMock())
 
         # Assert
         self.assertIsNone(test_task)
@@ -120,42 +121,28 @@ class TestMappingService(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = MappingService().unlock_task_after_mapping(1, 1, 'TEST')
+        test_task = MappingService().unlock_task_after_mapping(MagicMock())
 
         # Assert
         self.assertEqual(test_task.task_id, self.task_stub.id)
-
-    @patch.object(Task, 'get')
-    def test_unlock_with_unknown_status_raises_error(self, mock_task):
-        # Arrange
-        self.task_stub.task_locked = True
-        mock_task.return_value = self.task_stub
-
-        # Act / Assert
-        with self.assertRaises(MappingServiceError):
-            MappingService().unlock_task_after_mapping(1, 1, 'IAIN')
-
-    @patch.object(Task, 'get')
-    def test_unlock_cannot_set_status_to_validated(self, mock_task):
-        # Arrange
-        self.task_stub.task_locked = True
-        mock_task.return_value = self.task_stub
-
-        # Act / Assert
-        with self.assertRaises(MappingServiceError):
-            MappingService().unlock_task_after_mapping(1, 1, TaskStatus.VALIDATED.name)
 
     @patch.object(Task, 'update')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
     @patch.object(Task, 'get')
     def test_unlock_with_comment_sets_history(self, mock_task, mock_history, mock_update):
         # Arrange
-        self.task_stub.task_status = TaskStatus.DONE.value
+        self.task_stub.task_status = TaskStatus.READY.value
         self.task_stub.task_locked = True
         mock_task.return_value = self.task_stub
 
+        mapped_task = MappedTaskDTO()
+        mapped_task.task_id = 1
+        mapped_task.project_id = 1
+        mapped_task.status = TaskStatus.DONE.name
+        mapped_task.comment = 'Test comment'
+
         # Act
-        test_task = MappingService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name, 'Test comment')
+        test_task = MappingService().unlock_task_after_mapping(mapped_task)
 
         # Assert
         self.assertEqual(TaskAction.COMMENT.name, test_task.task_history[0].action)
@@ -170,8 +157,13 @@ class TestMappingService(unittest.TestCase):
         self.task_stub.task_locked = True
         mock_task.return_value = self.task_stub
 
+        mapped_task = MappedTaskDTO()
+        mapped_task.task_id = 1
+        mapped_task.project_id = 1
+        mapped_task.status = TaskStatus.DONE.name
+
         # Act
-        test_task = MappingService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name)
+        test_task = MappingService().unlock_task_after_mapping(mapped_task)
 
         # Assert
         self.assertEqual(TaskAction.STATE_CHANGE.name, test_task.task_history[0].action)
@@ -184,11 +176,16 @@ class TestMappingService(unittest.TestCase):
     def test_unlock_task_sets_lock_status(self, mock_task, mock_history, mock_update):
         # Arrange
         self.task_stub.task_locked = True
-        self.task_stub.task_status = TaskStatus.DONE.value
+        self.task_stub.task_status = TaskStatus.READY.value
         mock_task.return_value = self.task_stub
 
+        mapped_task = MappedTaskDTO()
+        mapped_task.task_id = 1
+        mapped_task.project_id = 1
+        mapped_task.status = TaskStatus.READY.name
+
         # Act
-        test_task = MappingService().unlock_task_after_mapping(1, 1, TaskStatus.DONE.name)
+        test_task = MappingService().unlock_task_after_mapping(mapped_task)
 
         # Assert
         self.assertFalse(test_task.task_locked)
