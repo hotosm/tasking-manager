@@ -3,59 +3,42 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    #{{ projectCtrl.projectData.projectId }}-{{ projectCtrl.projectData.projectInfo.name }}
+                    #{{ projectCtrl.projectData.projectId }} - {{ projectCtrl.projectData.projectInfo.name }}
                 </h1>
             </div>
         </header>
-        <div class="create-project">
+        <div class="project-container">
             <!-- side bar -->
             <div class="sidebar">
-
-                <div class="content">
-                    <!-- tabs -->
-                    <div class="button-group button-group--horizontal" role="group"
-                         aria-label="tabs for navigation of project contribution">
-                        <button ng-click="projectCtrl.currentTab = 'description'" class="button button--achromic"
-                                type="button" ng-class="projectCtrl.currentTab == 'description'? 'button--active':''">
+                <!-- tabs -->
+                <ul class="navigation">
+                        <li ng-click="projectCtrl.currentTab = 'description'"
+                            ng-class="projectCtrl.currentTab == 'description'? 'active':''">
                             Description
-                        </button>
-                        <button ng-click="projectCtrl.currentTab = 'instructions'" class="button button--achromic"
-                                type="button" ng-class="projectCtrl.currentTab == 'instructions'? 'button--active':''">
+                        </li>
+                        <li ng-click="projectCtrl.currentTab = 'instructions'"
+                            ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
                             Instructions
-                        </button>
-                        <button ng-click="projectCtrl.currentTab = 'mapping'" class="button button--achromic"
-                                type="button"
-                                ng-class="projectCtrl.currentTab == 'mapping'? 'button--active':''">Mapping
-                        </button>
-                    </div>
+                        </li>
+                        <li ng-click="projectCtrl.currentTab = 'mapping'"
+                            ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
+                            Mapping
+                        </li>
+                    </ul>
+                <div class="content">
                     <div ng-show="projectCtrl.currentTab === 'description'">
-
-
-                        <section class="panel">
-                            <header class="panel__header">
-                                <div class="panel__headline">
-                                    <h1 class="panel__title">
-                                        #{{ projectCtrl.projectData.projectId }}-{{ projectCtrl.projectData.projectInfo.name }}</h1>
-                                    <div ng-bind-html="shortDescription" class="panel__subtitle"></div>
-                                    <div class="panel__subtitle">{{ projectCtrl.projectData.projectPriority }}
-                                        Priority
-                                    </div>
-                                </div>
-                            </header>
-                            <div class="panel__body">
-                                <div class="panel__body-inner">
-                                    <p ng-bind-html="description"></p>
-                                </div>
-                            </div>
-                            <footer class="panel__footer"></footer>
+                        <section>
+                            <h4>#{{ projectCtrl.projectData.projectId }}-{{ projectCtrl.projectData.projectInfo.name }}</h4>
+                            <div><mark>Priority: {{ projectCtrl.projectData.projectPriority }}</mark></div>
+                            <p ng-bind-html="description"></p>
                         </section>
-                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'instructions'">
+                        <button class="button button--secondary pull-right" ng-click="projectCtrl.currentTab = 'instructions'">
                             Instructions <i class="oam-ds-icon-sm-chevron-right"></i>
                         </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
                         <p ng-bind-html="instructions"></p>
-                        <button class="button button--secondary" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
+                        <button class="button button--secondary pull-right" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
                             <i class="oam-ds-icon-sm-chevron-right"></i>
                         </button>
                     </div>
@@ -121,10 +104,10 @@
                                         Mapping
                                     </button>
                                     <button ng-hide="projectCtrl.taskError === 'none-available'"
-                                            ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                            ng-click="projectCtrl.selectRandomTask()" class="button button--achromic">
                                         Select another task
                                     </button>
-                                    <button class="button button--secondary"
+                                    <button class="button button--achromic"
                                             ng-click="projectCtrl.clearCurrentSelection()">
                                         Cancel
                                     </button>
@@ -162,7 +145,7 @@
                                 </button>
                             </div>
                             <!-- advanced options UI -->
-                            <div ng-init="showAdvanced=false" class="panel-grey-rounder-corners"
+                            <div ng-init="showAdvanced=false"
                                  ng-show="projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing'">
                                 <div>
                                     <h3 ng-click="showAdvanced=!showAdvanced">
@@ -172,7 +155,7 @@
                                         <i ng-show="showAdvanced"
                                            class="oam-ds-icon-sm-chevron-up"></i>
                                     </h3>
-                                    <p class="lead">Advanced task information and editing options</p>
+                                    <p>Advanced task information and editing options</p>
                                 </div>
                                 <div ng-show="showAdvanced">
                                     <div>
@@ -199,23 +182,36 @@
                                         <div class="historyItem" ng-show="showHistory"
                                              ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
                                              ng-class-odd="odd" ng-class-even="even">
-                                            <div><strong>Action: </strong> {{ item.action }}</div>
-                                            <div><strong>Date: </strong> {{ item.actionDate }}</div>
-                                            <div><strong>Text: </strong> {{ item.actionText }}</div>
+                                            <div>
+                                                <span ng-show="item.action === 'COMMENT'">Comment left by TODO</span>
+                                                <span ng-show="item.action === 'LOCKED'">Locked by TODO</span>
+                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by TODO</span>
+                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by TODO</span>
+                                            </div>
+                                            <div>
+                                                <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
+                                            </div>
+                                            <div>
+                                                <span am-time-ago=item.actionDate></span>
+                                                <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div>
                                         <h6 class="heading-alt">Options</h6>
-                                        <button class="button button--primary-unbounded">Preview task in OSM ID Editor
+                                        <button class="button button--achromic button--small">
+                                            Preview task in OSM ID Editor
                                         </button>
-                                        <button class="button button--primary-unbounded">View OSM changesets</button>
-                                        <button class="button button--primary-unbounded">View changes in overpass turbo
+                                        <button class="button button--achromic button--small">
+                                            View OSM changesets
+                                        </button>
+                                        <button class="button button--achromic button--small">
+                                            View changes in overpass turbo
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
