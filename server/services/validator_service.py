@@ -1,5 +1,5 @@
 from flask import current_app
-from server.models.dtos.task_dto import TaskDTOs
+from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
 from server.models.postgis.task import Task, TaskStatus
 
@@ -52,7 +52,12 @@ class ValidatorService:
 
         return task_dtos
 
-    def unlock_tasks_after_validation(self, validated_dto: UnlockAfterValidationDTO):
+    def unlock_tasks_after_validation(self, validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
+        """
+        Unlocks supplied tasks after validation
+        :raises ValidatatorServiceError
+        """
+        # Loop supplied tasks to check they can all be unlocked after validation
         tasks_to_unlock = []
         for validated_task in validated_dto.validated_tasks:
             task = Task.get(validated_task.task_id, validated_dto.project_id)

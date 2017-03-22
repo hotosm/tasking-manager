@@ -3,7 +3,7 @@ from flask import current_app
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.project import Project, ProjectStatus
 from server.models.dtos.project_dto import ProjectDTO
-from server.models.dtos.task_dto import TaskDTO
+from server.models.dtos.mapping_dto import TaskDTO
 
 
 class DatabaseError(Exception):
