@@ -98,7 +98,7 @@
             if (vm.currentTab === 'mapping') {
                 feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
             }
-            else if (vm.currentTab === 'validating') {
+            else if (vm.currentTab === 'validation') {
                 feature = taskService.getRandomTaskFeatureForValidation(vm.taskVectorLayer.getSource().getFeatures());
             }
 
@@ -237,7 +237,7 @@
                 // tab
                 if (vm.currentTab === 'description' || vm.currentTab === 'instructions') {
                     //prioritise validation
-                    vm.currentTab = vm.isSelectTaskValidatable ? 'validating' : 'mapping';
+                    vm.currentTab = vm.isSelectTaskValidatable ? 'validation' : 'mapping';
                 }
 
             }, function () {
@@ -250,7 +250,7 @@
                 vm.mappingStep = 'viewing';
                 vm.validatingStep = 'viewing';
                 if (vm.currentTab === 'description' || vm.currentTab !== 'instructions') {
-                    //prioritise validation
+                    //prioritise mapping
                     vm.currentTab = 'mapping';
                 }
             });
