@@ -7,15 +7,15 @@ from server.models.postgis.statuses import TaskStatus
 
 def is_valid_validated_status(value):
     """ Validates that Task Status is in correct range for after validation """
+    valid_values = f'{TaskStatus.DONE.name}, {TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}'
+
     try:
         validated_status = TaskStatus[value.upper()]
     except KeyError:
-        raise ValidationError(f'Unknown projectStatus. Valid values are {TaskStatus.DONE.name}, '
-                              f'{TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}')
+        raise ValidationError(f'Unknown task status. Valid values are {valid_values}')
 
-    if validated_status.name not in [TaskStatus.DONE.name, TaskStatus.INVALIDATED.name, TaskStatus.VALIDATED.name]:
-        raise ValidationError(f'Invalid status.  Valid values are {TaskStatus.DONE.name}, '
-                              f'{TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}')
+    if validated_status not in [TaskStatus.DONE, TaskStatus.INVALIDATED, TaskStatus.VALIDATED]:
+        raise ValidationError(f'Invalid status.  Valid values are {valid_values}')
 
 
 class LockForValidationDTO(Model):
