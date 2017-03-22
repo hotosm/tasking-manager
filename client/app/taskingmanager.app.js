@@ -35,7 +35,7 @@
                     controllerAs: 'createProjectCtrl'
                 })
                 
-                .when('/admin/edit-project', {
+                .when('/admin/edit-project/:id', {
                     templateUrl: 'app/admin/edit-project/edit-project.html',
                     controller: 'editProjectController',
                     controllerAs: 'editProjectCtrl'
@@ -55,7 +55,7 @@
                     controllerAs: 'contributeCtrl'
                 })
 
-                .when('/project', {
+                .when('/project/:id', {
                     templateUrl: 'app/project/project.html',
                     controller: 'projectController',
                     controllerAs: 'projectCtrl'

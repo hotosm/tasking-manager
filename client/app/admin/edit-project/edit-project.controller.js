@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService', editProjectController]);
 
-    function editProjectController($scope, $location, $showdown, mapService, drawService, projectService, geospatialService) {
+    function editProjectController($scope, $routeParams, $showdown, mapService, drawService, projectService, geospatialService) {
         var vm = this;
         vm.currentSection = '';
 
@@ -45,9 +45,8 @@
         activate();
 
         function activate() {
-
-            var id = $location.search().id;
-            vm.project.name = $location.search().name;
+            
+            var id = $routeParams.id;
 
             // Initialise the map and add interactions
             mapService.createOSMMap('map');
