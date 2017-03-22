@@ -60,6 +60,9 @@ class ValidatorService:
             if task is None:
                 raise TaskNotFound(f'Task {validated_task.task_id} not found')
 
+            if TaskStatus(task.task_status) != TaskStatus.DONE:
+                    raise ValidatatorServiceError(f'Task {validated_task.task_id} in not DONE')
+
             # task = Task.get(task_id, validation_dto.project_id)
 
             # TODO check user owns task before allowing unlock
