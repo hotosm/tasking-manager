@@ -1,4 +1,6 @@
 from flask_restful import Resource, current_app, request
+from schematics.exceptions import DataError
+from server.models.dtos.mapping_dto import MappedTaskDTO
 from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError
 
 
@@ -197,12 +199,21 @@ class UnlockTaskForMappingAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            data = request.get_json()
-            status = data['status']
-            comment = data['comment'] if 'comment' in data else None
+            mapped_task = MappedTaskDTO(request.get_json())
+            mapped_task.project_id = project_id
+            mapped_task.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
 
-            if status == '':
-                return {"Error": "Status not supplied"}, 400
+
+        try:
+            # data = request.get_json()
+            # status = data['status']
+            # comment = data['comment'] if 'comment' in data else None
+            #
+            # if status == '':
+            #     return {"Error": "Status not supplied"}, 400
 
             task = MappingService().unlock_task_after_mapping(task_id, project_id, status, comment)
 

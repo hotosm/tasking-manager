@@ -3,7 +3,7 @@ from flask import current_app
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.project import Project, ProjectStatus
 from server.models.dtos.project_dto import ProjectDTO
-from server.models.dtos.mapping_dto import TaskDTO
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO
 
 
 class DatabaseError(Exception):
@@ -78,15 +78,9 @@ class MappingService:
         task.lock_task()
         return task.as_dto()
 
-    def unlock_task_after_mapping(self, task_id, project_id, state, comment=None):
-        """
-        Unlocks the task and sets the task history appropriately
-        :param task_id: Selected Task
-        :param project_id: Project ID associated with Task
-        :param state: The current state of the task (this could be the same as the existing state)
-        :param comment: Comment user has provided about the task
-        """
-        task = Task.get(task_id, project_id)
+    def unlock_task_after_mapping(self, mapped_task: MappedTaskDTO) -> Optional[TaskDTO]:
+        """ Unlocks the task and sets the task history appropriately """
+        task = Task.get(mapped_task.task_id, mapped_task.project_id)
 
         if task is None:
             return None
@@ -94,15 +88,11 @@ class MappingService:
         if not task.task_locked:
             return task.as_dto()  # Task is already unlocked, so return without any further processing
 
-        try:
-            new_state = TaskStatus[state.upper()]
-        except KeyError:
-            raise MappingServiceError(
-                f'Unknown status: {state} Valid values are {TaskStatus.BADIMAGERY.name}, {TaskStatus.DONE.name}, '
-                f'{TaskStatus.INVALIDATED.name}, {TaskStatus.READY.name}')
+        # TODO check user owns lock
+        if TaskStatus(task.task_status) == TaskStatus.DONE:
+            raise MappingServiceError('Cannot unlock DONE task')
 
-        if new_state.name == TaskStatus.VALIDATED.name:
-            raise MappingServiceError('Cannot set task to Validated after mapping')
+        new_state = TaskStatus[mapped_task.state.upper()]
 
-        task.unlock_task(new_state, comment)
+        task.unlock_task(new_state, mapped_task.comment)
         return task.as_dto()
