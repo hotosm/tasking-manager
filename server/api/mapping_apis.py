@@ -200,22 +200,15 @@ class UnlockTaskForMappingAPI(Resource):
         """
         try:
             mapped_task = MappedTaskDTO(request.get_json())
+            mapped_task.task_id = task_id
             mapped_task.project_id = project_id
             mapped_task.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
-
         try:
-            # data = request.get_json()
-            # status = data['status']
-            # comment = data['comment'] if 'comment' in data else None
-            #
-            # if status == '':
-            #     return {"Error": "Status not supplied"}, 400
-
-            task = MappingService().unlock_task_after_mapping(task_id, project_id, status, comment)
+            task = MappingService().unlock_task_after_mapping(mapped_task)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404
