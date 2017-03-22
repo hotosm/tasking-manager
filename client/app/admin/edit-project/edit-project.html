@@ -401,10 +401,15 @@
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
                                         <label class="form__label">Default locale</label>
-                                        <div class="button-group button-group--horizontal" role="group" aria-label="choose default locale">
-                                            <button class="button button--small button--achromic button--active" type="button"><span>en</span></button>
-                                            <button class="button button--small button--achromic" type="button"><span>es</span></button>
-                                            <button class="button button--small button--achromic" type="button"><span>....</span></button>
+                                         <div class="button-group button-group--horizontal pull-right"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose default locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                ng-class="editProjectCtrl.defaultLocale === locale ? 'button--active' : ''"
+                                                ng-click="editProjectCtrl.changeDefaultLocale(locale)">
+                                                {{ locale }}
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="form__group">
@@ -448,10 +453,10 @@
                         <div class="pull-right">
                             <form class="form">
                                 <div class="form__group">
-                            <p ng-show="editProjectCtrl.updateProjectSuccess">Your project has been updated successfully.</p>
-                            <p class="error" ng-show="editProjectCtrl.updateProjectFail">There was an error updating your project. Please try again.</p>
-                                    </div>
+                                    <p ng-show="editProjectCtrl.updateProjectSuccess">Your project has been updated successfully.</p>
+                                    <p class="error" ng-show="editProjectCtrl.updateProjectFail">There was an error updating your project. Please try again.</p>
                                 </div>
+                            </form>
                         </div>
                         <!--/ settings -->
                     </div>

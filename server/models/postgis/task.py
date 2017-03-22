@@ -136,12 +136,32 @@ class Task(db.Model):
         """
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
 
+    def set_task_history(self, action, comment=None, new_state=None):
+        """
+        Sets the task history for the action that the user has just performed
+        :param task: Task in scope
+        :param action: Action the user has performed
+        :param comment: Comment user has added
+        :param new_state: New state of the task
+        """
+        history = TaskHistory(self.id, self.project_id)
+
+        if action == TaskAction.LOCKED:
+            history.set_task_locked_action()
+        elif action == TaskAction.COMMENT:
+            history.set_comment_action(comment)
+        elif action == TaskAction.STATE_CHANGE:
+            history.set_state_change_action(new_state)
+
+        self.task_history.append(history)
+
     def update(self):
         """ Updates the DB with the current state of the Task """
         db.session.commit()
 
     def lock_task(self):
         """ Lock task and save in DB  """
+        self.set_task_history(TaskAction.LOCKED)
         self.task_locked = True
         self.update()
 
