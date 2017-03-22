@@ -66,6 +66,8 @@ class ValidatorService:
             if not task.task_locked:
                 raise ValidatatorServiceError(f'Task: {validated_task.task_id} is not locked')
 
+
+
             # task = Task.get(task_id, validation_dto.project_id)
 
             # TODO check user owns task before allowing unlock
