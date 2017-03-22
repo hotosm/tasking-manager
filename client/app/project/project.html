@@ -185,6 +185,8 @@
                                             <div>
                                                 <span ng-show="item.action === 'COMMENT'">Comment left by TODO</span>
                                                 <span ng-show="item.action === 'LOCKED'">Locked by TODO</span>
+                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by TODO</span>
+                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by TODO</span>
                                                 <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by TODO</span>
                                                 <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by TODO</span>
                                             </div>
