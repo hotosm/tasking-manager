@@ -75,3 +75,9 @@ class ValidatorService:
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock['task']
             task.unlock_task(task_to_unlock['new_state'], task_to_unlock['comment'])
+            dtos.append(task.as_dto())
+
+        task_dtos = TaskDTOs()
+        task_dtos.tasks = dtos
+
+        return task_dtos
