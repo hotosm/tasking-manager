@@ -1,5 +1,5 @@
 from flask_restful import Resource, current_app, request
-from server.models.dtos.validator_dto import LockForValidationDTO
+from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
 from schematics.exceptions import DataError
 from server.services.validator_service import ValidatorService, TaskNotFound, ValidatatorServiceError
 
@@ -64,7 +64,7 @@ class LockTasksForValidationAPI(Resource):
             return {"Error": error_msg}, 500
 
 
-class UnlockTasksForValidationAPI(Resource):
+class UnlockTasksAfterValidationAPI(Resource):
 
     def post(self, project_id):
         """
@@ -81,12 +81,6 @@ class UnlockTasksForValidationAPI(Resource):
               required: true
               type: integer
               default: 1
-            - name: task_id
-              in: path
-              description: The unique task ID
-              required: true
-              type: integer
-              default: 1
             - in: body
               name: body
               required: true
@@ -96,14 +90,11 @@ class UnlockTasksForValidationAPI(Resource):
                   required:
                       - status
                   properties:
-                      status:
-                          type: string
-                          description: The new status for the task
-                          default: DONE
-                      comment:
-                          type: string
-                          description: Optional user comment about the task
-                          default: Mapping makes me feel good!
+                      validatedTasks:
+                          type: array
+                          items:
+                              schema:
+                                  $ref: "#/definitions/ValidatedTask"
         responses:
             200:
                 description: Task unlocked
@@ -114,7 +105,16 @@ class UnlockTasksForValidationAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        pass
+        try:
+            validated_dto = UnlockAfterValidationDTO(request.get_json())
+            validated_dto.project_id = project_id
+            validated_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        iain = validated_dto
+
         # try:
         #     data = request.get_json()
         #     status = data['status']
