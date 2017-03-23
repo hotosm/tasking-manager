@@ -5,7 +5,7 @@ from geoalchemy2 import Geometry
 from server import db
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp
-from server.models.dtos.task_dto import TaskDTO, TaskHistoryDTO
+from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 
 
 class TaskAction(Enum):

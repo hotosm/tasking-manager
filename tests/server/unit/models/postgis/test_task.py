@@ -1,9 +1,18 @@
-import unittest
 import geojson
-from server.models.postgis.project import InvalidGeoJson, InvalidData, Task
+import unittest
+from server import create_app
+from server.models.postgis.task import InvalidGeoJson, InvalidData, Task, TaskAction
 
 
 class TestProject(unittest.TestCase):
+
+    def setUp(self):
+        self.app = create_app()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+
+    def tearDown(self):
+        self.ctx.pop()
 
     def test_cant_add_task_if_feature_geometry_is_invalid(self):
         # Arrange
@@ -23,3 +32,13 @@ class TestProject(unittest.TestCase):
 
         with self.assertRaises(InvalidData):
             Task.from_geojson_feature(1, invalid_properties)
+
+    def test_lock_task_for_mapping_adds_locked_history(self):
+        # Arrange
+        test_task = Task()
+
+        # Act
+        test_task.set_task_history(action=TaskAction.LOCKED)
+
+        # Assert
+        self.assertEqual(TaskAction.LOCKED.name, test_task.task_history[0].action)
