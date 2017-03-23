@@ -27,6 +27,11 @@
   }
 }
 
+.page__header__fixed {
+  position: fixed;
+  width: 100%;
+}
+
 /* Headline */
 
 .page__headline {
@@ -165,6 +170,9 @@
 
 .page__body {
   @extend .clearfix;
+  .inner {
+    padding-top: 40px; /* TODO: variable */
+  }
 }
 
 /* ==========================================================================
