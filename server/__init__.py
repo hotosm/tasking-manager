@@ -49,7 +49,8 @@ def create_app(env=None):
 
     CORS(app)  # Enables CORS on all API routes, meaning API is callable from anywhere
 
-    app.secret_key = '123'
+    # TODO prob want to make this an env var for security
+    app.secret_key = 'xb6qvWTf'  # Required by Flask-OAuthlib for creating entropy
     oauth.init_app(app)
 
     return app
