@@ -1,55 +1,63 @@
-<div class="inner">
+<div>
     <section class="section">
-        <header class="section__header">
-            <div class="inner">
-                <h1 class="section__title">
-                    #{{ projectCtrl.projectData.projectId }} - {{ projectCtrl.projectData.projectInfo.name }}
-                </h1>
-            </div>
-        </header>
         <div class="project-container">
             <!-- side bar -->
             <div class="sidebar">
                 <!-- tabs -->
                 <ul class="navigation">
                         <li ng-click="projectCtrl.currentTab = 'description'"
+                            title="Go to the description tab"
                             ng-class="projectCtrl.currentTab == 'description'? 'active':''">
                             Description
                         </li>
                         <li ng-click="projectCtrl.currentTab = 'instructions'"
+                            title="Go to the instructions tab"
                             ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
                             Instructions
                         </li>
                         <li ng-click="projectCtrl.currentTab = 'mapping'"
+                            title="Go to the mapping tab"
                             ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
-                            Mapping
+                            Map
+                        </li>
+                        <li ng-click="projectCtrl.currentTab = 'validate'"
+                            title="Go to the validate tab"
+                            ng-class="projectCtrl.currentTab == 'validate'? 'active':''">
+                            Validate
                         </li>
                     </ul>
                 <div class="content">
                     <div ng-show="projectCtrl.currentTab === 'description'">
+                        <button class="button button--secondary pull-right" ng-click="projectCtrl.currentTab = 'instructions'">
+                            Instructions <i class="oam-ds-icon-sm-chevron-right"></i>
+                        </button>
                         <section>
+                            <h2>Description</h2>
                             <h4>#{{ projectCtrl.projectData.projectId }}-{{ projectCtrl.projectData.projectInfo.name }}</h4>
                             <div><mark>Priority: {{ projectCtrl.projectData.projectPriority }}</mark></div>
                             <p ng-bind-html="description"></p>
                         </section>
-                        <button class="button button--secondary pull-right" ng-click="projectCtrl.currentTab = 'instructions'">
-                            Instructions <i class="oam-ds-icon-sm-chevron-right"></i>
-                        </button>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
-                        <p ng-bind-html="instructions"></p>
                         <button class="button button--secondary pull-right" ng-click="projectCtrl.currentTab = 'mapping'">Mapping
                             <i class="oam-ds-icon-sm-chevron-right"></i>
                         </button>
+                        <section>
+                            <h2>Instructions</h2>
+                            <p ng-bind-html="instructions"></p>
+                        </section>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'mapping'">
+                        <section>
+                            <h2>Mapping</h2>
+                        </section>
                         <!-- select UI -->
                         <div ng-show="projectCtrl.mappingStep === 'selecting'">
-                            <h3>Choose a task</h3>
+                            <h4>Choose a task</h4>
                             <p>There are 2 options for choosing a task:</p>
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
-                                <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary pull-center">
                                     Select a random task
                                 </button>
                             </p>
@@ -98,19 +106,25 @@
                                 </div>
                                 <!-- task action buttons -->
                                 <div>
-                                    <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary"
+                                    <div class="pull-center">
+                                        <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary button--large"
                                             ng-click="projectCtrl.lockSelectedTask()">
-                                        Start
-                                        Mapping
-                                    </button>
-                                    <button ng-hide="projectCtrl.taskError === 'none-available'"
-                                            ng-click="projectCtrl.selectRandomTask()" class="button button--achromic">
-                                        Select another task
-                                    </button>
-                                    <button class="button button--achromic"
-                                            ng-click="projectCtrl.clearCurrentSelection()">
-                                        Cancel
-                                    </button>
+                                            Start Mapping
+                                        </button>
+                                    </div>
+                                    <hr />
+                                    <div class="pull-center">
+                                        <div class="button-group button-group--horizontal" role="group" aria-label="other options">
+                                            <button ng-hide="projectCtrl.taskError === 'none-available'"
+                                                    ng-click="projectCtrl.selectRandomTask()" class="button button--achromic">
+                                                Select another task
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-click="projectCtrl.clearCurrentSelection()">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <!-- task locked UI -->
@@ -147,8 +161,9 @@
                             <!-- advanced options UI -->
                             <div ng-init="showAdvanced=false"
                                  ng-show="projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing'">
+                                <hr />
                                 <div>
-                                    <h3 ng-click="showAdvanced=!showAdvanced">
+                                    <h3 ng-click="showAdvanced=!showAdvanced" class="pointer" title="show advanced options">
                                         Advanced
                                         <i ng-show="!showAdvanced"
                                            class="oam-ds-icon-sm-chevron-down"></i>
@@ -159,7 +174,7 @@
                                 </div>
                                 <div ng-show="showAdvanced">
                                     <div>
-                                        <h6 class="heading-alt">Details</h6>
+                                        <h6>Details</h6>
                                         <dl class="dl-horizontal">
                                             <dt>ID</dt>
                                             <dd>#{{ projectCtrl.selectedTaskData.taskId }}</dd>
@@ -169,47 +184,57 @@
                                             <dd>{{ projectCtrl.selectedTaskData.taskLocked }}</dd>
                                             <dt>Difficulty</dt>
                                             <dd>TODO</dd>
-                                            <dt>Addisgned</dt>
+                                            <dt>Assigned</dt>
                                             <dd>TODO</dd>
                                         </dl>
                                     </div>
-                                    <div ng-init="showHistory=false" class="panel-white-round-corners">
-                                        <h6 class="heading-alt" ng-click="showHistory=!showHistory">History <i
-                                                ng-show="!showHistory"
-                                                class="oam-ds-icon-sm-chevron-down"></i>
+                                    <div ng-init="showHistory=false">
+                                        <h6 class="heading-alt" ng-click="showHistory=!showHistory">History
+                                            <i ng-show="!showHistory"
+                                                class="oam-ds-icon-sm-chevron-down">
+                                            </i>
                                             <i ng-show="showHistory"
-                                               class="oam-ds-icon-sm-chevron-up"></i></h6>
-                                        <div class="historyItem" ng-show="showHistory"
-                                             ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
-                                             ng-class-odd="odd" ng-class-even="even">
-                                            <div>
-                                                <span ng-show="item.action === 'COMMENT'">Comment left by TODO</span>
-                                                <span ng-show="item.action === 'LOCKED'">Locked by TODO</span>
-                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by TODO</span>
-                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by TODO</span>
-                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by TODO</span>
-                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by TODO</span>
-                                            </div>
-                                            <div>
-                                                <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
-                                            </div>
-                                            <div>
-                                                <span am-time-ago=item.actionDate></span>
-                                                <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                               class="oam-ds-icon-sm-chevron-up">
+                                            </i>
+                                        </h6>
+                                        <div class="history">
+                                            <div ng-show="showHistory"
+                                                 ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
+                                                 ng-class-odd="'odd'" ng-class-even="'even'">
+                                                <div>
+                                                    <span ng-show="item.action === 'COMMENT'">Comment left by TODO</span>
+                                                    <span ng-show="item.action === 'LOCKED'">Locked by TODO</span>
+                                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by TODO</span>
+                                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by TODO</span>
+                                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by TODO</span>
+                                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by TODO</span>
+                                                </div>
+                                                <div>
+                                                    <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
+                                                </div>
+                                                <div>
+                                                    <span am-time-ago=item.actionDate></span>
+                                                    <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <h6 class="heading-alt">Options</h6>
-                                        <button class="button button--achromic button--small">
-                                            Preview task in OSM ID Editor
-                                        </button>
-                                        <button class="button button--achromic button--small">
-                                            View OSM changesets
-                                        </button>
-                                        <button class="button button--achromic button--small">
-                                            View changes in overpass turbo
-                                        </button>
+                                        <h6>Options</h6>
+                                        <div class="button-group button-group--vertical" role="group" aria-label="advanced options">
+                                            <button class="button button--achromic"
+                                                 title="Preview the task in the OSM iD Editor">
+                                                Preview in OSM iD Editor
+                                            </button>
+                                            <button class="button button--achromic"
+                                                title="See the changesets in the OSM database for this area">
+                                                View OSM changesets
+                                            </button>
+                                            <button class="button button--achromic"
+                                                title="See the changes in this area using overpass turbo">
+                                                View changes in overpass turbo
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -217,7 +242,13 @@
                     </div>
                 </div>
             </div>
-            <div id="map" class="map-container"></div>
+            <div id="map" class="map-container">
+                <div class="project-title">
+                    <h2 class="section__title">
+                        #{{ projectCtrl.projectData.projectId }} - {{ projectCtrl.projectData.projectInfo.name }}
+                    </h2>
+                </div>
+            </div>
         </div>
     </section>
 </div>
