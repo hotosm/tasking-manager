@@ -3,12 +3,19 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from logging.handlers import RotatingFileHandler
 
 db = SQLAlchemy()
 migrate = Migrate()
+oauth = OAuth()
+
+osm = oauth.remote_app(
+    'osm',
+    app_key='OSM_OAUTH_SETTINGS'
+)
 
 # Import all models so that they are registered with SQLAlchemy
 from server.models import *  # noqa
@@ -42,6 +49,10 @@ def create_app(env=None):
 
     CORS(app)  # Enables CORS on all API routes, meaning API is callable from anywhere
 
+    # TODO prob want to make this an env var for security
+    app.secret_key = 'xb6qvWTf'  # Required by Flask-OAuthlib for creating entropy
+    oauth.init_app(app)
+
     return app
 
 
@@ -72,12 +83,13 @@ def init_flask_restful_routes(app):
     http://flask-restful-cn.readthedocs.org/en/0.3.5/quickstart.html#endpoints
     """
     app.logger.debug('Initialising API Routes')
-    api = Api(app, default_mediatype='application/json')
+    api = Api(app)
 
     from server.api.health_check_api import HealthCheckAPI
     from server.api.mapping_apis import MappingProjectAPI, MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI
     from server.api.project_admin_api import ProjectAdminAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
+    from server.api.authentication_apis import LoginAPI, OAuthAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
@@ -90,3 +102,5 @@ def init_flask_restful_routes(app):
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
+    api.add_resource(LoginAPI,                      '/api/v1/auth/login')
+    api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth')
