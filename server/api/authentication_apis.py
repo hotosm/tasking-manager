@@ -1,10 +1,11 @@
-from flask_restful import Resource, request
+from flask_restful import Resource
 from flask import session
 from server import osm
 
 
 @osm.tokengetter
-def get_osm_oauth_token():
+def get_oauth_token():
+    """ Required by Flask-OAuthlib.  Pulls oauth token from the session so we can make authenticated requests"""
     if 'osm_oauth' in session:
         resp = session['osm_oauth']
         return resp['oauth_token'], resp['oauth_token_secret']
@@ -14,39 +15,42 @@ class LoginAPI(Resource):
 
     def get(self):
         """
-        Redirects user to OSM to login there
+        Redirects user to OSM to authenticate
         ---
         tags:
-          - user
+          - authentication
         produces:
           - application/json
         responses:
           302:
-            description: Redirect to OSM
+            description: Redirects to OSM
         """
         callback_url = 'http://localhost:5000/api/v1/auth/oauth'
-
-        #callback_url = url_for('oauthorized', next=request.args.get('next'))
         return osm.authorize(callback=callback_url)
-        #return redirect("https://www.openstreetmap.org/oauth/authorize")
 
 
 class OAuthAPI(Resource):
 
     def get(self):
-        iain = request
-
-        resp = osm.authorized_response()
-        if resp is None:
-            iain = 'bad'
+        """
+        Handles the OSM OAuth response
+        ---
+        tags:
+          - authentication
+        produces:
+          - application/json
+        responses:
+          302:
+            description: Redirects to login page, or login failed page
+        """
+        osm_resp = osm.authorized_response()
+        if osm_resp is None:
+            # TODO auth failed so redirect to login failed
+            pass
         else:
-            session['osm_oauth'] = resp
+            session['osm_oauth'] = osm_resp  # Set OAuth details in the session temporarily
 
-        test = osm.request('user/details')
-        iain = test
+        osm_user_details = osm.request('user/details')
+        debug = osm_user_details
 
-
-
-
-        # TODO return redirect(url_for('index'))
-
+        # TODO set user details, and generate session token

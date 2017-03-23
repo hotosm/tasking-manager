@@ -30,5 +30,3 @@ class DevConfig(EnvironmentConfig):
         'access_token_url': 'https://www.openstreetmap.org/oauth/access_token',
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
     }
-
-
