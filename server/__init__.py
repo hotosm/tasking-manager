@@ -72,12 +72,13 @@ def init_flask_restful_routes(app):
     http://flask-restful-cn.readthedocs.org/en/0.3.5/quickstart.html#endpoints
     """
     app.logger.debug('Initialising API Routes')
-    api = Api(app, default_mediatype='application/json')
+    api = Api(app)
 
     from server.api.health_check_api import HealthCheckAPI
     from server.api.mapping_apis import MappingProjectAPI, MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI
     from server.api.project_admin_api import ProjectAdminAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
+    from server.api.user_apis import LoginAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
@@ -90,3 +91,4 @@ def init_flask_restful_routes(app):
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
+    api.add_resource(LoginAPI,                      '/api/v1/user/login')
