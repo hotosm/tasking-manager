@@ -86,8 +86,6 @@
             select.getFeatures().clear();
             select.getFeatures().push(feature);
             onTaskSelection(feature);
-            var padding = getPaddingSize();
-            vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
         }
 
         /**
@@ -104,6 +102,8 @@
 
             if (feature) {
                 selectFeature(feature);
+                var padding = getPaddingSize();
+                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
             }
             else {
                 vm.selectedTaskData = null;
@@ -160,6 +160,13 @@
                 //project returned successfully
                 vm.projectData = data;
                 addProjectTasksToMap(vm.projectData.tasks, false);
+                if (vm.selectedTaskData) {
+                    var selectedFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), vm.selectedTaskData.taskId);
+                    //this just forces the selected styling to apply
+                    select.getFeatures().clear();
+                    select.getFeatures().push(selectedFeature);
+                }
+
             }, function () {
                 // project not returned successfully
                 // TODO - may want to handle error
@@ -348,7 +355,7 @@
                 vm.selectedTaskData = data;
                 vm.isSelectTaskMappable = true;
                 vm.taskError = '';
-                vm.taskErrorValidation = ''
+                vm.taskErrorValidation = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = data;
             }, function () {
