@@ -61,12 +61,8 @@
 
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'mapping'">
-                        <section>
-                            <h2>Mapping</h2>
-                        </section>
                         <!-- select UI -->
                         <div ng-show="projectCtrl.mappingStep === 'selecting'">
-
                             <h3>Choose a task</h3>
                             <p>There are 2 options for choosing a task for mapping:</p>
 
@@ -183,98 +179,19 @@
                                     Mark as Bad Imagery
                                 </button>
                             </div>
-                            <!-- advanced options UI -->
-                            <div ng-init="showAdvanced=false"
-                                 ng-show="projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing'">
-                                <hr/>
-                                <div>
-                                    <h3 ng-click="showAdvanced=!showAdvanced" class="pointer"
-                                        title="show advanced options">
-                                        Advanced
-                                        <i ng-show="!showAdvanced"
-                                           class="oam-ds-icon-sm-chevron-down"></i>
-                                        <i ng-show="showAdvanced"
-                                           class="oam-ds-icon-sm-chevron-up"></i>
-                                    </h3>
-                                    <p>Advanced task information and editing options</p>
-                                </div>
-                                <div ng-show="showAdvanced">
-                                    <div>
-                                        <h6>Details</h6>
-                                        <dl class="dl-horizontal">
-                                            <dt>ID</dt>
-                                            <dd>#{{ projectCtrl.selectedTaskData.taskId }}</dd>
-                                            <dt>Status</dt>
-                                            <dd>{{ projectCtrl.selectedTaskData.taskStatus }}</dd>
-                                            <dt>Locked</dt>
-                                            <dd>{{ projectCtrl.selectedTaskData.taskLocked }}</dd>
-                                            <dt>Difficulty</dt>
-                                            <dd>TODO</dd>
-                                            <dt>Assigned</dt>
-                                            <dd>TODO</dd>
-                                        </dl>
-                                    </div>
-                                    <div ng-init="showHistory=false">
-                                        <h6 class="heading-alt" ng-click="showHistory=!showHistory">History
-                                            <i ng-show="!showHistory"
-                                               class="oam-ds-icon-sm-chevron-down">
-                                            </i>
-                                            <i ng-show="showHistory"
-                                               class="oam-ds-icon-sm-chevron-up">
-                                            </i>
-                                        </h6>
-                                        <div class="history">
-                                            <div ng-show="showHistory"
-                                                 ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
-                                                 ng-class-odd="'odd'" ng-class-even="'even'">
-                                                <div>
-                                                    <span ng-show="item.action === 'COMMENT'">Comment left by TODO</span>
-                                                    <span ng-show="item.action === 'LOCKED'">Locked by TODO</span>
-                                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by TODO</span>
-                                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by TODO</span>
-                                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by TODO</span>
-                                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by TODO</span>
-                                                </div>
-                                                <div>
-                                                    <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
-                                                </div>
-                                                <div>
-                                                    <span am-time-ago=item.actionDate></span>
-                                                    <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h6>Options</h6>
-                                        <div class="button-group button-group--vertical" role="group"
-                                             aria-label="advanced options">
-                                            <button class="button button--achromic"
-                                                    title="Preview the task in the OSM iD Editor">
-                                                Preview in OSM iD Editor
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    title="See the changesets in the OSM database for this area">
-                                                View OSM changesets
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    title="See the changes in this area using overpass turbo">
-                                                View changes in overpass turbo
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'validation'">
                         <!-- select UI -->
                         <div ng-show="projectCtrl.validatingStep === 'selecting'">
-                            <h3>Choose a task for validation</h3>
-                            <p>There are 2 options for choosing a task:</p>
+                            <h3>Choose a task</h3>
+                            <p>There are 2 options for choosing a task for mapping:</p>
+
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
-                                <button ng-click="projectCtrl.selectRandomTask()" class="button button--secondary">
+                                <button ng-click="projectCtrl.selectRandomTask()"
+                                        class="button button--secondary pull-center">
                                     Select a random task
                                 </button>
                             </p>
@@ -386,78 +303,92 @@
                                 </button>
 
                             </div>
-                            <!-- advanced options UI -->
-                            <div ng-init="showAdvanced=false"
-                                 ng-show="projectCtrl.validatingStep === 'selecting' || projectCtrl.validatingStep === 'viewing'">
-                                <div>
-                                    <h3 ng-click="showAdvanced=!showAdvanced">
-                                        Advanced
-                                        <i ng-show="!showAdvanced"
-                                           class="oam-ds-icon-sm-chevron-down"></i>
-                                        <i ng-show="showAdvanced"
-                                           class="oam-ds-icon-sm-chevron-up"></i>
-                                    </h3>
-                                    <p>Advanced task information and editing options</p>
-                                </div>
-                                <div ng-show="showAdvanced">
-                                    <div>
-                                        <h6 class="heading-alt">Details</h6>
-                                        <dl class="dl-horizontal">
-                                            <dt>ID</dt>
-                                            <dd>#{{ projectCtrl.selectedTaskData.taskId }}</dd>
-                                            <dt>Status</dt>
-                                            <dd>{{ projectCtrl.selectedTaskData.taskStatus }}</dd>
-                                            <dt>Locked</dt>
-                                            <dd>{{ projectCtrl.selectedTaskData.taskLocked }}</dd>
-                                            <dt>Difficulty</dt>
-                                            <dd>TODO</dd>
-                                            <dt>Addisgned</dt>
-                                            <dd>TODO</dd>
-                                        </dl>
-                                    </div>
-                                    <div ng-init="showHistory=false" class="panel-white-round-corners">
-                                        <h6 class="heading-alt" ng-click="showHistory=!showHistory">History <i
-                                                ng-show="!showHistory"
-                                                class="oam-ds-icon-sm-chevron-down"></i>
-                                            <i ng-show="showHistory"
-                                               class="oam-ds-icon-sm-chevron-up"></i></h6>
-                                        <div class="historyItem" ng-show="showHistory"
-                                             ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
-                                             ng-class-odd="odd" ng-class-even="even">
-                                            <div>
-                                                <span ng-show="item.action === 'COMMENT'">Comment left by TODO</span>
-                                                <span ng-show="item.action === 'LOCKED'">Locked by TODO</span>
-                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by TODO</span>
-                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by TODO</span>
-                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by TODO</span>
-                                                <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by TODO</span>
-                                            </div>
-                                            <div>
-                                                <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
-                                            </div>
-                                            <div>
-                                                <span am-time-ago=item.actionDate></span>
-                                                <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                            </div>
+                        </div>
+                    </div>
+                    <!-- advanced options UI -->
+                    <div ng-init="showAdvanced=false"
+                         ng-show="(projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') && (projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing')">
+                        <hr/>
+                        <div>
+                            <h3 ng-click="showAdvanced=!showAdvanced" class="pointer"
+                                title="show advanced options">
+                                Advanced
+                                <i ng-show="!showAdvanced"
+                                   class="oam-ds-icon-sm-chevron-down"></i>
+                                <i ng-show="showAdvanced"
+                                   class="oam-ds-icon-sm-chevron-up"></i>
+                            </h3>
+                            <p>Advanced task information and editing options</p>
+                        </div>
+                        <div ng-show="showAdvanced">
+                            <div>
+                                <h6>Details</h6>
+                                <dl class="dl-horizontal">
+                                    <dt>ID</dt>
+                                    <dd>#{{ projectCtrl.selectedTaskData.taskId }}</dd>
+                                    <dt>Status</dt>
+                                    <dd>{{ projectCtrl.selectedTaskData.taskStatus }}</dd>
+                                    <dt>Locked</dt>
+                                    <dd>{{ projectCtrl.selectedTaskData.taskLocked }}</dd>
+                                    <dt>Difficulty</dt>
+                                    <dd>TODO</dd>
+                                    <dt>Assigned</dt>
+                                    <dd>TODO</dd>
+                                </dl>
+                            </div>
+                            <div ng-init="showHistory=false">
+                                <h6 class="heading-alt" ng-click="showHistory=!showHistory">History
+                                    <i ng-show="!showHistory"
+                                       class="oam-ds-icon-sm-chevron-down">
+                                    </i>
+                                    <i ng-show="showHistory"
+                                       class="oam-ds-icon-sm-chevron-up">
+                                    </i>
+                                </h6>
+                                <div class="history">
+                                    <div ng-show="showHistory"
+                                         ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
+                                         ng-class-odd="'odd'" ng-class-even="'even'">
+                                        <div>
+                                            <span ng-show="item.action === 'COMMENT'">Comment left by TODO</span>
+                                            <span ng-show="item.action === 'LOCKED'">Locked by TODO</span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by TODO</span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by TODO</span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by TODO</span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by TODO</span>
+                                        </div>
+                                        <div>
+                                            <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
+                                        </div>
+                                        <div>
+                                            <span am-time-ago=item.actionDate></span>
+                                            <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <h6 class="heading-alt">Options</h6>
-                                        <button class="button button--achromic button--small">
-                                            Preview task in OSM ID Editor
-                                        </button>
-                                        <button class="button button--achromic button--small">
-                                            View OSM changesets
-                                        </button>
-                                        <button class="button button--achromic button--small">
-                                            View changes in overpass turbo
-                                        </button>
-                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h6>Options</h6>
+                                <div class="button-group button-group--vertical" role="group"
+                                     aria-label="advanced options">
+                                    <button class="button button--achromic"
+                                            title="Preview the task in the OSM iD Editor">
+                                        Preview in OSM iD Editor
+                                    </button>
+                                    <button class="button button--achromic"
+                                            title="See the changesets in the OSM database for this area">
+                                        View OSM changesets
+                                    </button>
+                                    <button class="button button--achromic"
+                                            title="See the changes in this area using overpass turbo">
+                                        View changes in overpass turbo
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
             <div id="map" class="map-container">
                 <div class="project-title">
