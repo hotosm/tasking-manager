@@ -108,7 +108,7 @@
                                 <!-- task action buttons -->
                                 <div>
                                     <button ng-show="projectCtrl.isSelectTaskMappable" class="button button--secondary"
-                                            ng-click="projectCtrl.lockSelectedTask()">
+                                            ng-click="projectCtrl.lockSelectedTaskMapping()">
                                         Start
                                         Mapping
                                     </button>
@@ -145,11 +145,11 @@
                                               placeholder="Leave a comment"></textarea>
                                 </div>
                                 <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTask(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
+                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
                                     Stop Mapping
                                 </button>
                                 <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTask(projectCtrl.comment, 'DONE')">
+                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'DONE')">
                                     Mark as done
                                 </button>
                             </div>
@@ -281,7 +281,7 @@
                                 <!-- task action buttons -->
                                 <div>
                                     <button ng-show="projectCtrl.isSelectTaskValidatable" class="button button--secondary"
-                                            ng-click="projectCtrl.lockSelectedTask()">
+                                            ng-click="projectCtrl.lockSelectedTaskValidation()">
                                         Start
                                         Validating
                                     </button>
@@ -318,11 +318,11 @@
                                               placeholder="Leave a comment"></textarea>
                                 </div>
                                 <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTask(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
+                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
                                     Stop Mapping
                                 </button>
                                 <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTask(projectCtrl.comment, 'DONE')">
+                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'DONE')">
                                     Mark as done
                                 </button>
                             </div>
@@ -396,9 +396,7 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
             </div>
             <div id="map" class="map-container"></div>

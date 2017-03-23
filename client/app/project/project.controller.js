@@ -273,14 +273,14 @@
         }
 
         /**
-         * Call api to unlock currently locked task.  Will pass the comment and new status to api.  Will update view and map after unlock.
+         * Call api to unlock currently locked task after mapping.  Will pass the comment and new status to api.  Will update view and map after unlock.
          * @param comment
          * @param status
          */
-        vm.unLockTask = function (comment, status) {
+        vm.unLockTaskMapping = function (comment, status) {
             var projectId = vm.projectData.projectId;
             var taskId = vm.lockedTaskData.taskId;
-            var unLockPromise = taskService.unLockTask(projectId, taskId, comment, status);
+            var unLockPromise = taskService.unLockTaskMapping(projectId, taskId, comment, status);
             vm.comment = '';
             unLockPromise.then(function (data) {
                 refreshProject(projectId);
@@ -304,13 +304,13 @@
         }
 
         /**
-         * Call api to lock currently selected task.  Will update view and map after unlock.
+         * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
-        vm.lockSelectedTask = function () {
+        vm.lockSelectedTaskMapping = function () {
             var projectId = vm.projectData.projectId;
             var taskId = vm.selectedTaskData.taskId;
             // - try to lock the task, call returns a promise
-            var lockPromise = taskService.lockTask(projectId, taskId);
+            var lockPromise = taskService.lockTaskMapping(projectId, taskId);
             lockPromise.then(function (data) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
@@ -319,6 +319,37 @@
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
                 vm.isSelectTaskMappable = true;
+                vm.taskError = '';
+                vm.taskErrorValidation = ''
+                vm.taskLockError = false;
+                vm.lockedTaskData = data;
+            }, function () {
+                // could not lock task for mapping, most likely because task was locked or status changed user after
+                // selection but before lock,
+                // refresh map and selected task.  UI will react to new state if task
+                refreshProject(projectId);
+                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+                vm.taskLockError = true;
+            });
+        }
+
+        /**
+         * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
+         */
+        vm.lockSelectedTaskValidation = function () {
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var taskIds = [taskId];
+            // - try to lock the task, call returns a promise
+            var lockPromise = taskService.lockTaskValidation(projectId, taskIds);
+            lockPromise.then(function (data) {
+                // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                // on the server
+                refreshProject(projectId);
+                vm.currentTab = 'validation';
+                vm.validatingStep = 'locked';
+                vm.selectedTaskData = data;
+                vm.isSelectTaskValidatable = true;
                 vm.taskError = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = data;

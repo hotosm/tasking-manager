@@ -12,8 +12,10 @@
 
         var service = {
             getTask: getTask,
-            unLockTask: unLockTask,
-            lockTask: lockTask,
+            unLockTaskMapping: unLockTaskMapping,
+            lockTaskMapping: lockTaskMapping,
+            unLockTaskValidation: unLockTaskValidation,
+            lockTaskValidation: lockTaskValidation,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
@@ -48,14 +50,14 @@
         }
 
         /**
-         * Requests a task unLock
+         * Requests a task unLock after mapping
          * @param projectId - id of the task project
          * @param taskId - id of the task
          * @param comment - comment for the unlock status change to be persisted to task history
          * @param status - new status.  If status not changing, use current status
          * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
          */
-        function unLockTask(projectId, taskId, comment, status) {
+        function unLockTaskMapping(projectId, taskId, comment, status) {
             // Returns a promise
             return $http({
                 method: 'POST',
@@ -79,16 +81,75 @@
         }
 
         /**
-         * Requests a task lock
+         * Requests a task lock for mapping
          * @param projectId - id of the task project
          * @param taskId - id of the task
          * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
          */
-        function lockTask(projectId, taskId) {
+        function lockTaskMapping(projectId, taskId) {
             // Returns a promise
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/lock-for-mapping',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+/**
+         * Requests a task unlock after validation
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @param comment - comment for the unlock status change to be persisted to task history
+         * @param status - new status.  If status not changing, use current status
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function unLockTaskValidation(projectId, taskId, comment, status) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                data: {
+                    comment: comment,
+                    status: status
+                },
+                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/unlock-after-validation',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Requests a task lock for validation
+         * @param projectId - id of the task project
+         * @param taskIds - JSON object arrai of ids tasks to ne locked
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function lockTaskValidation(projectId, taskIds) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                data: {
+                    taskIds: taskIds,
+                },
+                url: configService.tmAPI + '/v1/project/' + projectId + '/lock-for-validation',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
