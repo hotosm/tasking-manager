@@ -6,7 +6,15 @@
   height: 100%;
   position: absolute;
   width: 100%;
-  padding-top: 80px; /* TODO: make variable */
+  padding-top: $global-spacing * 2;
+
+  @include media(medium-up) {
+    padding-top: $global-spacing * 4;
+  }
+
+   @include media(large-up) {
+    padding-top: $global-spacing * 5;
+  }
 
   p {
     font-size: 0.90rem;
