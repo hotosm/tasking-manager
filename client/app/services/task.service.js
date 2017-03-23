@@ -105,7 +105,7 @@
             });
         }
 
-/**
+        /**
          * Requests a task unlock after validation
          * @param projectId - id of the task project
          * @param taskId - id of the task
@@ -113,22 +113,21 @@
          * @param status - new status.  If status not changing, use current status
          * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
          */
-        function unLockTaskValidation(projectId, taskId, comment, status) {
+        function unLockTaskValidation(projectId, tasks) {
             // Returns a promise
             return $http({
                 method: 'POST',
                 data: {
-                    comment: comment,
-                    status: status
+                    "validatedTasks": tasks
                 },
-                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/unlock-after-validation',
+                url: configService.tmAPI + '/v1/project/' + projectId + '/unlock-after-validation',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
-                return (response.data);
+                return (response.data.tasks);
             }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -156,7 +155,7 @@
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
-                return (response.data);
+                return (response.data.tasks);
             }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -196,7 +195,7 @@
             return null;
         }
 
-/**
+        /**
          * returns a randomly selected validatable task feature from the passed in vector features.
          * Will return a non locked DONE task if available,
          * otherwise will return null.
