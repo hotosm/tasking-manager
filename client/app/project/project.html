@@ -307,7 +307,7 @@
                     </div>
                     <!-- advanced options UI -->
                     <div ng-init="showAdvanced=false"
-                         ng-show="(projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') && (projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing')">
+                         ng-show="projectCtrl.selectedTaskData && (projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') && (projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing')">
                         <hr/>
                         <div>
                             <h3 ng-click="showAdvanced=!showAdvanced" class="pointer"
