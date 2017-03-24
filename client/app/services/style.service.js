@@ -57,9 +57,6 @@
          */
         function getTaskStyleFunction(feature) {
 
-
-
-
             // Get the feature's properties that control styling
             var status = feature.get('taskStatus');
             var isLocked = feature.get('taskLocked');
@@ -98,8 +95,6 @@
                     width: STROKE_WIDTH
                 })
             });
-
-
         }
 
         /**

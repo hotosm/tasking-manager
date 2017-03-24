@@ -63,7 +63,6 @@
 
             var id = $routeParams.id;
             initialiseProject(id);
-            //TODO: put the project metadata (description and instructions on siedbar tabs)
         }
 
         /**
