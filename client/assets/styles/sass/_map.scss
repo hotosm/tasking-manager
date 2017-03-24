@@ -22,7 +22,7 @@
 }
 
 /** Add layer control **/
-.add-layer-control{
+.add-layer-control {
   top: 0.5rem;
   right: 0.5rem;
   position: absolute;
@@ -37,10 +37,20 @@
 }
 
 .add-layer-wrapper {
-    background:rgba(255,255,255, 0.9);
-    padding: 1rem;
-    border-radius: 0.5rem;
-    select {
-      width: 100%;
-    }
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  select {
+    width: 100%;
+  }
+}
+
+.mapping-legend {
+  top: 0.5rem;
+  right: 0.5rem;
+  position: absolute;
+  z-index: 1000;
+  padding: 0.5rem;
+  background: white;
+  border: solid 1px;
 }
