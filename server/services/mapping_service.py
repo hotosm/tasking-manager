@@ -69,7 +69,7 @@ class MappingService:
             raise MappingServiceError(f'Task: {task_id} Project {project_id} is already locked')
 
         current_state = TaskStatus(task.task_status).name
-        if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name]:
+        if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name, TaskStatus.BADIMAGERY.name]:
             raise MappingServiceError(f'Cannot lock task {task_id} state must be in {TaskStatus.READY.name},'
                                       f' {TaskStatus.INVALIDATED.name}')
 
@@ -89,10 +89,14 @@ class MappingService:
             return task.as_dto()  # Task is already unlocked, so return without any further processing
 
         # TODO check user owns lock
-        if TaskStatus(task.task_status) == TaskStatus.DONE:
+        current_status = TaskStatus(task.task_status)
+        new_state = TaskStatus[mapped_task.status.upper()]
+
+        if current_status == TaskStatus.DONE:
             raise MappingServiceError('Cannot unlock DONE task')
 
-        new_state = TaskStatus[mapped_task.status.upper()]
+        if current_status == TaskStatus.BADIMAGERY and new_state not in [TaskStatus.READY, TaskStatus.BADIMAGERY]:
+            raise MappingServiceError(f'Cannot set BADIMAGERY to {current_status.name}')
 
         task.unlock_task(new_state, mapped_task.comment)
         return task.as_dto()

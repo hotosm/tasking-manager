@@ -116,6 +116,23 @@ class TestMappingService(unittest.TestCase):
         # Assert
         self.assertEqual(test_task.task_id, self.task_stub.id)
 
+    @patch.object(Task, 'get')
+    def test_unlock_badimagery_to_invalid_status_raises_error(self, mock_task):
+        # Arrange
+        self.task_stub.task_status = 4
+        self.task_stub.task_locked = True
+        mock_task.return_value = self.task_stub
+
+        mapped_task = MappedTaskDTO()
+        mapped_task.task_id = 1
+        mapped_task.project_id = 1
+        mapped_task.status = TaskStatus.DONE.name
+        mapped_task.comment = 'Test comment'
+
+        # Act / Assert
+        with self.assertRaises(MappingServiceError):
+            MappingService().unlock_task_after_mapping(mapped_task)
+
     @patch.object(Task, 'update')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
     @patch.object(Task, 'get')
