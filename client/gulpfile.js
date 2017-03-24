@@ -8,7 +8,7 @@ var gulp = require('gulp'),
     processhtml = require('gulp-processhtml'),
     runSequence = require('run-sequence'),
     sass = require('gulp-sass');
-    uglify = require('gulp-uglify');
+uglify = require('gulp-uglify');
 
 // paths object holds references to location of all assets
 var paths = {
@@ -21,14 +21,14 @@ var paths = {
 gulp.task('browser-sync', function () {
     /** Runs the web app currently under development and watches the filesystem for changes */
 
-    // Specify list of files to watch for changes, apparently reload method doesn't work on Windows */
-	var filesToWatch = [
-        './**/*.html',
-        './**/*.js'
-   ];
+        // Specify list of files to watch for changes, apparently reload method doesn't work on Windows */
+    var filesToWatch = [
+            './**/*.html',
+            './**/*.js'
+        ];
 
     // Create a rewrite rule that redirects to index.html to let Angular handle the routing
-	browserSync.init(filesToWatch, {
+    browserSync.init(filesToWatch, {
         server: {
             baseDir: "./",
             middleware: [
@@ -37,15 +37,15 @@ gulp.task('browser-sync', function () {
                 ])
             ]
         }
-	});
+    });
 });
 
-gulp.task('clean', function() {
+gulp.task('clean', function () {
     /** Clean up dist folder before adding deployment files */
     return del(['../server/web/static/dist/*'], {force: true});
 });
 
-gulp.task('minify-css', function() {
+gulp.task('minify-css', function () {
     /** Minify all CSS and output to dist - Docs for CSSNano are here https://github.com/ben-eb/cssnano */
 
     return gulp.src(paths.styles)
@@ -55,7 +55,7 @@ gulp.task('minify-css', function() {
         .pipe(gulp.dest('../server/web/static/dist/assets/styles/css'));
 });
 
-gulp.task('uglify', function() {
+gulp.task('uglify', function () {
     /**
      * Process scripts and concatenate them into one output file, note that output of uglify MUST be piped back
      * to dist, otherwise minified js won't be saved
@@ -78,9 +78,10 @@ gulp.task('compile-sass', function () {
     /** Creates a CSS file from the SCSS files */
     return gulp.src('assets/styles/sass/taskingmanager.scss')
         .pipe(sass({
-            outputStyle: 'expanded', 
-            precision: 10,
-            includePaths: require('node-bourbon').with('node_modules/jeet/scss', require('oam-design-system/gulp-addons').scssPath)}
+                outputStyle: 'expanded',
+                precision: 10,
+                includePaths: require('node-bourbon').with('node_modules/jeet/scss', require('oam-design-system/gulp-addons').scssPath)
+            }
         ).on('error', sass.logError))
         .pipe(gulp.dest('assets/styles/css/'));
 });
@@ -90,35 +91,48 @@ gulp.task('sass:watch', function () {
     gulp.watch('assets/styles/sass/*.scss', ['compile-sass']);
 });
 
-gulp.task('create-dev-config', function (){
-    /** Creates a config file for Angular with the relevant environment variables for development */
-   return gulp.src('taskingmanager.config.json')
-       .pipe(config('taskingmanager.config', {environment: 'development'}))
-       .pipe(gulp.dest('app'))
+gulp.task('copy_images_to_dist', function () {
+    /* Copy the images in the image folder to a dist folder */
+    return gulp.src(paths.images)
+        .pipe(gulp.dest('../server/web/static/dist/assets/img'));
 });
 
-gulp.task('create-release-config', function (){
+gulp.task('create-dev-config', function () {
+    /** Creates a config file for Angular with the relevant environment variables for development */
+    return gulp.src('taskingmanager.config.json')
+        .pipe(config('taskingmanager.config', {environment: 'development'}))
+        .pipe(gulp.dest('app'))
+});
+
+gulp.task('create-release-config', function () {
     /** Creates a config file for Angular with the relevant environment variables for release */
-   return gulp.src('taskingmanager.config.json')
-       .pipe(config('taskingmanager.config', {environment: 'release'}))
-       .pipe(gulp.dest('app'))
+    return gulp.src('taskingmanager.config.json')
+        .pipe(config('taskingmanager.config', {environment: 'release'}))
+        .pipe(gulp.dest('app'))
 });
 
 /** Build task for will minify the app and copy it to the dist folder ready to deploy */
-gulp.task('build', function(callback) {
+gulp.task('build', function (callback) {
     runSequence('clean',
-                'create-release-config',
-                'compile-sass',
-                'minify-css',
-                'uglify',
-                'processhtml',
-                callback);
+        'create-release-config',
+        'compile-sass',
+        'copy_images_to_dist',
+        'minify-css',
+        'uglify',
+        'processhtml',
+        callback
+    )
+    ;
 });
 
-gulp.task('run', function(callback){
+gulp.task('run', function (callback) {
     runSequence('create-dev-config',
-                'compile-sass',
-                'browser-sync',
-                'sass:watch',
-                callback);
+        'compile-sass',
+        'copy_images_to_dist',
+        'browser-sync',
+        'sass:watch',
+        callback
+    )
+    ;
 });
+
