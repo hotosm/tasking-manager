@@ -128,7 +128,6 @@ gulp.task('build', function (callback) {
 gulp.task('run', function (callback) {
     runSequence('create-dev-config',
         'compile-sass',
-        'copy_images_to_dist',
         'browser-sync',
         'sass:watch',
         callback
