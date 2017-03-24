@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import session
+from flask import session, current_app
 from server import osm
 
 
@@ -25,15 +25,15 @@ class LoginAPI(Resource):
           302:
             description: Redirects to OSM
         """
-        callback_url = 'http://localhost:5000/api/v1/auth/oauth'
-        return osm.authorize(callback=callback_url)
+        base_url = current_app.config['APP_BASE_URL']
+        return osm.authorize(callback=f'{base_url}/api/v1/auth/oauth-callback')
 
 
 class OAuthAPI(Resource):
 
     def get(self):
         """
-        Handles the OSM OAuth response
+        Handles the OSM OAuth callback
         ---
         tags:
           - authentication
@@ -48,6 +48,7 @@ class OAuthAPI(Resource):
             # TODO auth failed so redirect to login failed
             pass
         else:
+            # TODO create authorized handler in client
             session['osm_oauth'] = osm_resp  # Set OAuth details in the session temporarily
 
         osm_user_details = osm.request('user/details')
