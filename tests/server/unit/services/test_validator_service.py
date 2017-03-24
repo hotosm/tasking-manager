@@ -77,7 +77,7 @@ class TestValidatorService(unittest.TestCase):
             ValidatorService().unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(Task, 'get')
-    def test_unlock_tasks_for_validation_raises_error_if_task_not_done(self, mock_task):
+    def test_unlock_tasks_for_validation_raises_error_if_task_not_done_or_validated(self, mock_task):
         # Arrange
         task_stub = Task()
         task_stub.task_status = TaskStatus.READY.value
