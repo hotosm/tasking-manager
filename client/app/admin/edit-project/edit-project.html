@@ -27,9 +27,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a title="Edit tags" ng-click="editProjectCtrl.currentSection = 'tags'"
-                                       class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'tags' ? 'aside-menu-item--active' : ''">
-                                        Tags
+                                    <a title="Edit tags" ng-click="editProjectCtrl.currentSection = 'metadata'"
+                                       class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'metadata' ? 'aside-menu-item--active' : ''">
+                                        Metadata
                                     </a>
                                 </li>
                                 <li>
@@ -223,11 +223,11 @@
                             </form>
                         </div>
                         <!--/ instructions section -->
-                        <!-- tags section -->
-                        <div ng-show="editProjectCtrl.currentSection === 'tags'">
+                        <!-- metadata section -->
+                        <div ng-show="editProjectCtrl.currentSection === 'metadata'">
                             <form class="form">
                                 <fieldset class="form__fieldset">
-                                    <p>Tags are used to allow users to find projects to work on and group projects.</p>
+                                    <p>Metadata and tags are used to allow users to find projects to work on and group projects.</p>
                                     <div class="form__group">
                                         <label class="form__label">Mapper level</label>
                                         <div class="button-group button-group--horizontal" role="group"
@@ -242,6 +242,24 @@
                                         </div>
                                         <p>Setting the level will help the mappers find suitable projects to work
                                             on. You can enforce the level required for mapping in the permissions section.</p>
+                                    </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Type(s) of mapping</label>
+                                        <label class="form__option">
+                                            <input type="checkbox"/>Roads
+                                        </label>
+                                        <label class="form__option">
+                                            <input type="checkbox"/>Buildings
+                                        </label>
+                                        <label class="form__option">
+                                            <input type="checkbox"/>Waterways
+                                        </label>
+                                        <label class="form__option">
+                                            <input type="checkbox"/>Land use
+                                        </label>
+                                        <label class="form__option">
+                                            <input type="checkbox"/>Other
+                                        </label>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Organisation tag(s)</label>
@@ -298,7 +316,7 @@
                                </fieldset>
                             </form>
                         </div>
-                        <!--/ tags section -->
+                        <!--/ metadata section -->
                         <!-- imagery section -->
                         <div ng-show="editProjectCtrl.currentSection === 'imagery'">
                             <form class="form">

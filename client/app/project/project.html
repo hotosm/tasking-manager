@@ -307,7 +307,7 @@
                     </div>
                     <!-- advanced options UI -->
                     <div ng-init="showAdvanced=false"
-                         ng-show="(projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') && (projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing')">
+                         ng-show="projectCtrl.selectedTaskData && (projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') && (projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing')">
                         <hr/>
                         <div>
                             <h3 ng-click="showAdvanced=!showAdvanced" class="pointer"
@@ -388,6 +388,9 @@
                 </div>
             </div>
             <div id="map" class="map-container">
+                <div class="mapping-legend">
+                    <img src="./assets/img/legend.png" width="121px" height="122px"/>
+                </div>
                 <div class="project-title">
                     <h2 class="section__title">
                         #{{ projectCtrl.projectData.projectId }} - {{ projectCtrl.projectData.projectInfo.name }}
