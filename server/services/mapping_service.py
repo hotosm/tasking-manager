@@ -71,7 +71,7 @@ class MappingService:
         current_state = TaskStatus(task.task_status).name
         if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name, TaskStatus.BADIMAGERY.name]:
             raise MappingServiceError(f'Cannot lock task {task_id} state must be in {TaskStatus.READY.name},'
-                                      f' {TaskStatus.INVALIDATED.name}')
+                                      f' {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}')
 
         # TODO user can only have 1 tasked locked at a time
 
