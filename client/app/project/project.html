@@ -330,10 +330,6 @@
                                     <dd>{{ projectCtrl.selectedTaskData.taskStatus }}</dd>
                                     <dt>Locked</dt>
                                     <dd>{{ projectCtrl.selectedTaskData.taskLocked }}</dd>
-                                    <dt>Difficulty</dt>
-                                    <dd>TODO</dd>
-                                    <dt>Assigned</dt>
-                                    <dd>TODO</dd>
                                 </dl>
                             </div>
                             <div ng-init="showHistory=false">
@@ -373,22 +369,23 @@
                                      aria-label="advanced options">
                                     <button class="button button--achromic"
                                             title="Preview the task in the OSM iD Editor">
-                                        Preview in OSM iD Editor
+                                        Preview in OSM iD Editor (TODO)
                                     </button>
                                     <button class="button button--achromic"
-                                            title="See the changesets in the OSM database for this area">
+                                            title="See the changesets in the OSM database for this area"
+                                            ng-click="projectCtrl.viewOSMChangesets()">
                                         View OSM changesets
                                     </button>
                                     <button class="button button--achromic"
-                                            title="See the changes in this area using overpass turbo">
-                                        View changes in overpass turbo
+                                            title="See the changes in this area using overpass turbo"
+                                            ng-click="projectCtrl.viewOverpassTurbo()">
+                                        View changes in overpass turbo (TODO)
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div id="map" class="map-container">
                 <div class="mapping-legend">

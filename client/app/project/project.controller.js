@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$routeParams', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', projectController]);
+        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', projectController]);
 
-    function projectController($scope, $routeParams, mapService, projectService, styleService, taskService, geospatialService) {
+    function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -305,7 +305,7 @@
                 refreshProject(projectId);
                 onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
             });
-        }
+        };
 
         /**
          * Call api to unlock currently locked task after validation.  Will pass the comment and new status to api.  Will update view and map after unlock.
@@ -334,7 +334,7 @@
                 refreshProject(projectId);
                 onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
             });
-        }
+        };
 
 
         /**
@@ -365,7 +365,7 @@
                 onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
                 vm.taskLockError = true;
             });
-        }
+        };
 
         /**
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
@@ -395,6 +395,41 @@
                 onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
                 vm.taskLockError = true;
             });
+        };
+
+        /**
+         * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
+         */
+        vm.viewOSMChangesets = function(){
+            var taskId = vm.selectedTaskData.taskId;
+            var features = vm.taskVectorLayer.getSource().getFeatures();
+            var selectedFeature = taskService.getTaskFeatureById(features, taskId);
+            var bbox = selectedFeature.getGeometry().getExtent();
+            // Transform coordinates from web mercator (used by OpenLayers) to WGS84 (used by OSM)
+            var bottomLeft = ol.proj.transform([bbox[0], bbox[1]], 'EPSG:3857', 'EPSG:4326');
+            var topRight = ol.proj.transform([bbox[2], bbox[3]], 'EPSG:3857', 'EPSG:4326');
+            $window.open('http://www.openstreetmap.org/history?bbox=' + bottomLeft[0] + ',' + bottomLeft[1] + ',' + topRight[0] + ',' + topRight[1]);
+        };
+
+        /**
+         * View changes in Overpass Turbo
+         * TODO: format the middle of the query which needs user names
+         */
+        vm.viewOverpassTurbo = function() {
+            var queryPrefix = '<osm-script output="json" timeout="25"><union>';
+            var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
+            var queryMiddle = '';
+            // Loop through the history and get a unique list of users to pass to Overpass Turbo
+            var userList = [];
+            var history = vm.selectedTaskData.taskHistory;
+            if (history) {
+                for (var i = 0; i < history.length; i++) {
+                    // TODO: iterate over history and append unique users
+                    // See https://github.com/hotosm/osm-tasking-manager2/blob/bda6ffed25eec37801d0bad30baa5e08396b0d68/osmtm/templates/task.mako
+                }
+            }
+            var query = queryPrefix + queryMiddle + querySuffix;
+            $window.open('http://overpass-turbo.eu/map.html?Q=' + query);
         }
     }
 })();
