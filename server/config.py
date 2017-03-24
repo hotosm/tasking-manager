@@ -12,7 +12,7 @@ class EnvironmentConfig:
     OSM_OAUTH_SETTINGS = {
         'base_url': 'https://www.openstreetmap.org/api/0.6/',
         'consumer_key': '4I5YXs4VQkXTTrMgau11rmE5tuTVoAIWsQXE5HnW',
-        'consumer_secret': os.environ['HOT_CONSUMER_SECRET'],
+        'consumer_secret': os.getenv('TM_CONSUMER_SECRET', None),
         'request_token_url': 'https://www.openstreetmap.org/oauth/request_token',
         'access_token_url': 'https://www.openstreetmap.org/oauth/access_token',
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
