@@ -307,7 +307,7 @@
                     </div>
                     <!-- advanced options UI -->
                     <div ng-init="showAdvanced=false"
-                         ng-show="projectCtrl.selectedTaskData && (projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') && (projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing')">
+                         ng-show="(projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') && (projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing')">
                         <hr/>
                         <div>
                             <h3 ng-click="showAdvanced=!showAdvanced" class="pointer"
@@ -330,10 +330,6 @@
                                     <dd>{{ projectCtrl.selectedTaskData.taskStatus }}</dd>
                                     <dt>Locked</dt>
                                     <dd>{{ projectCtrl.selectedTaskData.taskLocked }}</dd>
-                                    <dt>Difficulty</dt>
-                                    <dd>TODO</dd>
-                                    <dt>Assigned</dt>
-                                    <dd>TODO</dd>
                                 </dl>
                             </div>
                             <div ng-init="showHistory=false">
@@ -373,27 +369,25 @@
                                      aria-label="advanced options">
                                     <button class="button button--achromic"
                                             title="Preview the task in the OSM iD Editor">
-                                        Preview in OSM iD Editor
+                                        Preview in OSM iD Editor (TODO)
                                     </button>
                                     <button class="button button--achromic"
-                                            title="See the changesets in the OSM database for this area">
+                                            title="See the changesets in the OSM database for this area"
+                                            ng-click="projectCtrl.viewOSMChangesets()">
                                         View OSM changesets
                                     </button>
                                     <button class="button button--achromic"
-                                            title="See the changes in this area using overpass turbo">
-                                        View changes in overpass turbo
+                                            title="See the changes in this area using overpass turbo"
+                                            ng-click="projectCtrl.viewOverpassTurbo()">
+                                        View changes in overpass turbo (TODO)
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div id="map" class="map-container">
-                <div class="mapping-legend">
-                    <img src="./assets/img/legend.png" width="121px" height="122px"/>
-                </div>
                 <div class="project-title">
                     <h2 class="section__title">
                         #{{ projectCtrl.projectData.projectId }} - {{ projectCtrl.projectData.projectInfo.name }}

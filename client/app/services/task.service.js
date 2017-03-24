@@ -146,7 +146,7 @@
             return $http({
                 method: 'POST',
                 data: {
-                    taskIds: taskIds,
+                    taskIds: taskIds
                 },
                 url: configService.tmAPI + '/v1/project/' + projectId + '/lock-for-validation',
                 headers: {
@@ -249,6 +249,12 @@
             return candidates;
         }
 
+        /**
+         * Get a task feature by task ID
+         * @param features
+         * @param id
+         * @returns {ol.Feature} task feature
+         */
         function getTaskFeatureById(features, id) {
             candidates = [];
             //first check we are working with a non empty array
