@@ -13,15 +13,15 @@ describe('style.service', function () {
         })
     });
 
-    var FILL_COLOUR_READY = 'rgba(223,223,223,0.1)';//very light grey, 0.1 opacity
-    var FILL_COLOUR_INVALIDATED = 'rgba(255,0,0,0.4)';//red, 0.4 opacity
-    var FILL_COLOUR_DONE = 'rgba(255,165,0,0.4)';//orange, 0.4 opacity
-    var FILL_COLOUR_VALIDATED = 'rgba(0,128,0,0.4)';//green, 0.4 opacity
-    var FILL_COLOUR_LOCKED = 'rgba(30,144,255,0.4)';//blue, 0.4 opacity
-    var FILL_COLOUR_BADIMAGERY = 'rgba(0,0,0,0.4)';//black, 0.4 opacity
+       var FILL_COLOUR_READY = [223,223,223,0.1];//very light grey, 0.1 opacity
+        var FILL_COLOUR_INVALIDATED = [255,0,0,0.4];//red, 0.4 opacity
+        var FILL_COLOUR_DONE = [255,165,0,0.4];//orange, 0.4 opacity
+        var FILL_COLOUR_VALIDATED = [0,128,0,0.4];//green, 0.4 opacity
+        var FILL_COLOUR_LOCKED = [30,144,255,0.4];//blue, 0.4 opacity
+        var FILL_COLOUR_BADIMAGERY = [0,0,0,0.4];//black, 0.4 opacity
 
-    var STROKE_COLOUR = 'rgba(84,84,84,0.7)';//grey, 0.7 opacity
-    var STROKE_WIDTH = 1;
+        var STROKE_COLOUR = [84,84,84,0.7];//grey, 0.7 opacity
+        var STROKE_WIDTH = 1;
 
     beforeEach(function () {
         module('taskingManager');
