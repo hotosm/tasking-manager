@@ -1,42 +1,23 @@
 # HOT tasking-manager
 
 ## Intro
-The app is split into a Client (AngularJS) and Server (Python) structure.  Each can be developed independently of each other
+The app is split into a Client (AngularJS) and Server (Python) structure.  Each can be developed independently of each other.  See below for instructions on how to set up your deve environment.
 
-## Installing
+[See our FAQ if you hit any problems getting setup](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ)
+
+
+## Client Development
 ### Dependencies
-Before you can run/develop locally you must have the following installed on your dev environment
+Following must be available locally:
 
-* Python 3.6 - [Python 3.6 install here](https://www.python.org/downloads/)
 * NodeJS LTS v6+ [NodeJS LTS install here](https://nodejs.org/en/)
 
-###  Development Environment
-All developers should follow these steps to create a dev environment. A [FAQ is available here](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ) if you hit any problems.
-
-
-#### Setting up the Server
-* Create a Python Virtual Environment, using Python 3.6:
-    * ```python -m venv ./venv```
-* Activate your virtual environment:
-    * Linux/Mac:
-        * ```. ./venv/bin/activate```
-    * Windows:
-        * ```.\venv\scripts\activate```
-* Install all dependencies:
-    * ```pip install -r requirements.txt```
-* Set environment variable to point to appropriate postgres database instance with HOT schema set up.  You will need to modify the sample connection string with username, password etc:
-    * Linux/Mac:
-        * ```export TASKING_MANAGER_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
-    * Windows (may require you to restart your dev env to pick up the variable):
-        * ```setx TASKING_MANAGER_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
-    
 #### Build the Client
 * Install Gulp.  [Gulp](http://gulpjs.com/) is used to automate the Client build and needs to be installed globally:
     * ```npm install gulp -g```
 * Build the client, with gulp:
     * ```gulp build```
-    
-## Client Development
+
 ### Running Locally
 If you plan to do client development you can run the app using gulp, without having to worry too much about the server
 
@@ -54,13 +35,43 @@ The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests, that
 ```
 
 ## Server Development
+### Dependencies
+Following must be available locally:
+
+* Python 3.6 - [Python 3.6 install here](https://www.python.org/downloads/)
+
+### Build the Server
+* Create a Python Virtual Environment, using Python 3.6:
+    * ```python -m venv ./venv```
+* Activate your virtual environment:
+    * Linux/Mac:
+        * ```. ./venv/bin/activate```
+    * Windows:
+        * ```.\venv\scripts\activate```
+* Install all dependencies:
+    * ```pip install -r requirements.txt```
+* Set environment variable to point to appropriate postgres database instance with HOT schema set up.  You will need to modify the sample connection string with username, password etc:
+    * Linux/Mac:
+        * ```export TASKING_MANAGER_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
+    * Windows (may require you to restart your dev env to pick up the variable):
+        * ```setx TASKING_MANAGER_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
+        
+### Environment vars:
+As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
+
+* HOT_CONSUMER_SECRET = This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
+
+* Linux/Mac
+    export HOT_CONSUMER_SECRET=secret-key-goes-here
+* Windows:
+    * setx HOT_CONSUMER_SECRET "secret-key-goes-here"
+
 ### Running Locally
-If you plan to do server development you can run the app using python
+You can now run the app as follows:
 
 ```
 python manage.py runserver -d
 ```
-
 
 ## Dev Ops
 
