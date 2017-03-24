@@ -107,11 +107,12 @@
             else {
                 vm.selectedTaskData = null;
                 vm.isSelectTaskMappable = false;
+                vm.isSelectTaskValidatable = false;
                 vm.taskError = 'none-available';
                 vm.taskErrorValidation = 'none-available';
                 vm.taskLockError = false;
-                vm.mappingStep = 'viewing';
-                vm.validatingStep = 'viewing';
+                vm.mappingStep = vm.currentTab === 'mapping' ? 'viewing' : 'selecting';
+                vm.validatingStep = vm.currentTab === 'validation' ? 'viewing' : 'selecting';
             }
         };
 

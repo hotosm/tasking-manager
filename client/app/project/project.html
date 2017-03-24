@@ -79,9 +79,10 @@
                             <!-- task viewing UI -->
                             <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                 <!-- task information -->
+                                <h2>Mapping</h2>
                                 <h3>Task
                                     #{{ projectCtrl.selectedTaskData.taskId }} is
-                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">being worked on</span>
+                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED</span>
                                     <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
@@ -201,6 +202,7 @@
                             <!-- task viewing UI -->
                             <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                 <!-- task information -->
+                                <h2>Validation</h2>
                                 <h3>Task
                                     #{{ projectCtrl.selectedTaskData.taskId }} is
                                     <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED</span><span
