@@ -59,12 +59,12 @@ Following must be available locally:
 ### Environment vars:
 As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
 
-* HOT_CONSUMER_SECRET = This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
+* TM_CONSUMER_SECRET = This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
 
 * Linux/Mac
-    export HOT_CONSUMER_SECRET=secret-key-goes-here
+    export TM_CONSUMER_SECRET=secret-key-goes-here
 * Windows:
-    * setx HOT_CONSUMER_SECRET "secret-key-goes-here"
+    * setx TM_CONSUMER_SECRET "secret-key-goes-here"
 
 ### Running Locally
 You can now run the app as follows:
