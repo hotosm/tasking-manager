@@ -9,18 +9,14 @@ from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 
 
 class TaskAction(Enum):
-    """
-    Describes the possible actions that can happen to to a task, that we'll record history for
-    """
+    """ Describes the possible actions that can happen to to a task, that we'll record history for """
     LOCKED = 1
     STATE_CHANGE = 2
     COMMENT = 3
 
 
 class TaskHistory(db.Model):
-    """
-    Describes the history associated with a task
-    """
+    """ Describes the history associated with a task """
     __tablename__ = "task_history"
 
     id = db.Column(db.Integer, primary_key=True)
