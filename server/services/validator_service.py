@@ -33,8 +33,8 @@ class ValidatorService:
             if task is None:
                 raise TaskNotFound(f'Task {task_id} not found')
 
-            if TaskStatus(task.task_status) != TaskStatus.DONE:
-                raise ValidatatorServiceError(f'Task {task_id} in not DONE')
+            if TaskStatus(task.task_status) not in [TaskStatus.DONE, TaskStatus.VALIDATED]:
+                raise ValidatatorServiceError(f'Task {task_id} is not DONE or VALIDATED')
 
             if task.task_locked:
                 raise ValidatatorServiceError(f'Task: {task_id} is already locked')
@@ -65,8 +65,8 @@ class ValidatorService:
             if task is None:
                 raise TaskNotFound(f'Task {validated_task.task_id} not found')
 
-            if TaskStatus(task.task_status) != TaskStatus.DONE:
-                raise ValidatatorServiceError(f'Task {validated_task.task_id} in not DONE')
+            if TaskStatus(task.task_status) not in [TaskStatus.DONE, TaskStatus.VALIDATED]:
+                raise ValidatatorServiceError(f'Task {validated_task.task_id} is not DONE or VALIDATED')
 
             if not task.task_locked:
                 raise ValidatatorServiceError(f'Task: {validated_task.task_id} is not locked')
