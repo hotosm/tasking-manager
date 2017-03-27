@@ -51,6 +51,7 @@
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
             mapService.createOSMMap('map');
+            mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
 
             vm.map.addInteraction(select);
