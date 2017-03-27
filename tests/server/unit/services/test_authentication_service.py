@@ -10,10 +10,8 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = self._get_test_file()
 
         # Act / Assert
-        with self.assertRaises(AuthServiceError)
-            AuthenticationService().login_user(osm_response, 'not-find')
-
-
+        with self.assertRaises(AuthServiceError):
+            AuthenticationService().login_user(osm_response, 'wont-find')
 
     def _get_test_file(self):
         """ Helper method to find test file, dependent on where tests are being run from """

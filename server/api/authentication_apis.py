@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import session, current_app
 from server import osm
-from server.services.authentication_service import AuthenticationService
+from server.services.authentication_service import AuthenticationService, AuthServiceError
 
 
 @osm.tokengetter
@@ -43,6 +43,8 @@ class OAuthAPI(Resource):
         responses:
           302:
             description: Redirects to login page, or login failed page
+          500:
+            description: A problem occurred authenticating the user
           502:
             description: A problem occurred negotiating with the OSM API
         """
@@ -59,6 +61,9 @@ class OAuthAPI(Resource):
         if osm_response.status != 200:
             return {"Error": "Error Response from OSM API"}, 502
 
-        AuthenticationService().login_user(osm_response.data)
+        try:
+            AuthenticationService().login_user(osm_response.data)
+        except AuthServiceError as e:
+            return {"Error": str(e)}, 500
 
         # TODO set user details, and generate session token
