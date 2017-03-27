@@ -1,16 +1,17 @@
 import unittest
 import xml.etree.ElementTree as ET
-from server.services.authentication_service import AuthenticationService
+from server.services.authentication_service import AuthenticationService, AuthServiceError
 
 
 class TestAuthenticationService(unittest.TestCase):
 
-    def test_valid_xml(self):
+    def test_unable_to_find_user_in_osm_response_raises_error(self):
         # Arrange
         osm_response = self._get_test_file()
 
-        # Act
-        AuthenticationService().login_user(osm_response)
+        # Act / Assert
+        with self.assertRaises(AuthServiceError)
+            AuthenticationService().login_user(osm_response, 'not-find')
 
 
 

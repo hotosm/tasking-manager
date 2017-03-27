@@ -18,7 +18,7 @@ osm = oauth.remote_app(
 )
 
 # Import all models so that they are registered with SQLAlchemy
-from server.models import *  # noqa
+from server.models.postgis import *  # noqa
 
 
 def create_app(env=None):
