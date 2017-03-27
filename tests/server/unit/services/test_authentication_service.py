@@ -1,29 +1,40 @@
 import unittest
-import xml.etree.ElementTree as ET
-from server.services.authentication_service import AuthenticationService, AuthServiceError
+from unittest.mock import patch
+from tests.server.helpers.test_helpers import get_canned_osm_user_details
+from server.services.authentication_service import AuthenticationService, AuthServiceError, User
 
 
 class TestAuthenticationService(unittest.TestCase):
 
     def test_unable_to_find_user_in_osm_response_raises_error(self):
         # Arrange
-        osm_response = self._get_test_file()
+        osm_response = get_canned_osm_user_details()
 
         # Act / Assert
         with self.assertRaises(AuthServiceError):
             AuthenticationService().login_user(osm_response, 'wont-find')
 
-    def _get_test_file(self):
-        """ Helper method to find test file, dependent on where tests are being run from """
-        file_locations = ['./test_files/osm_user_details.xml',
-                          './server/unit/services/test_files/osm_user_details.xml',
-                          './tests/server/unit/services/test_files/osm_user_details.xml']
+    @patch.object(User, 'get')
+    def test_if_user_get_called_with_osm_id(self, mock_user_get):
+        # Arrange
+        osm_response = get_canned_osm_user_details()
 
-        for location in file_locations:
-            try:
-                open(location, 'r')
-                return ET.parse(location)
-            except FileNotFoundError:
-                continue
+        # Act
+        AuthenticationService().login_user(osm_response)
 
-        raise FileNotFoundError('Test file not found')
+        # Assert
+        mock_user_get.assert_called_with(7777777)
+
+    @patch.object(User, 'create_from_osm_user_details')
+    @patch.object(User, 'get')
+    def test_if_user_create_called_if_user_not_found(self, mock_user_get, mock_user_create):
+        # Arrange
+        osm_response = get_canned_osm_user_details()
+        mock_user_get.return_value = None
+
+        # Act
+        AuthenticationService().login_user(osm_response)
+
+        # Assert
+        mock_user_create.assert_called_with(7777777, 'Thinkwhere Test', 16)
+

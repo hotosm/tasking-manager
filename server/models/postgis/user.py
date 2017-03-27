@@ -27,8 +27,14 @@ class User(db.Model):
     mapping_level = db.Column(db.Integer, default=1)
 
     @classmethod
-    def create_from_osm_user_details(cls, user_id, username, changesets):
-        pass
+    def create_from_osm_user_details(cls, user_id: int, username: str, changeset_count: int):
+        user = cls()
+        user.id = user_id,
+        user.username = username
+        user.role = UserRole.MAPPER.value
+
+        # TODO set mapping level based on changeset count
+        user.mapping_level = MappingLevel.BEGINNER.value
 
     def get(self, user_id: int):
         """ Return the user for the specified id, or None if not found """

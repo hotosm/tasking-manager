@@ -13,12 +13,20 @@ class AuthenticationService:
 
     def login_user(self, osm_user_details, user_element='user'):
 
-        user = osm_user_details.find(user_element)
+        osm_user = osm_user_details.find(user_element)
 
-        if user is None:
+        if osm_user is None:
             raise AuthServiceError('User element not found in OSM response')
 
+        osm_id = int(osm_user.attrib['id'])
+        existing_user = User().get(osm_id)
 
-        changesets = user.find('changesets')
+        if not existing_user:
+            username = osm_user.attrib['display_name']
+            changesets = osm_user.find('changesets')
+            changeset_count = int(changesets.attrib['count'])
 
-        exists = User.query.get(123)
+            User.create_from_osm_user_details(osm_id, username, changeset_count)
+
+        # TODO create session token
+
