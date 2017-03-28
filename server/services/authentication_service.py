@@ -1,4 +1,5 @@
 from flask import current_app
+from itsdangerous import URLSafeTimedSerializer
 from server.models.postgis.user import User
 
 
@@ -28,5 +29,16 @@ class AuthenticationService:
 
             User.create_from_osm_user_details(osm_id, username, changeset_count)
 
-        # TODO create session token
+        self._generate_session_token_for_user(osm_id)
 
+    def _generate_session_token_for_user(self, osm_id):
+        """
+        Generates a unique token with the customer_name and current time embedded within it
+        :param customer_name: Customer Name in scope
+        :return: Token
+        """
+        serializer = URLSafeTimedSerializer(PRIVATE_KEY)
+
+        # Generate token using email
+        token = serializer.dumps(osm_id)
+        return token
