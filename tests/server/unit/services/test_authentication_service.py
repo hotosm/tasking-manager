@@ -1,10 +1,19 @@
 import unittest
 from unittest.mock import patch
 from tests.server.helpers.test_helpers import get_canned_osm_user_details
+from server import create_app
 from server.services.authentication_service import AuthenticationService, AuthServiceError, User
 
 
 class TestAuthenticationService(unittest.TestCase):
+
+    def setUp(self):
+        self.app = create_app()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+
+    def tearDown(self):
+        self.ctx.pop()
 
     def test_unable_to_find_user_in_osm_response_raises_error(self):
         # Arrange
@@ -38,3 +47,17 @@ class TestAuthenticationService(unittest.TestCase):
         # Assert
         mock_user_create.assert_called_with(7777777, 'Thinkwhere Test', 16)
 
+    @patch.object(User, 'get')
+    def test_valid_auth_request_gets_token(self, mock_user_get):
+        # Arrange
+        osm_response = get_canned_osm_user_details()
+
+        test_user = User()
+        test_user.id = 12345
+        test_user.username = 'Iain'
+        mock_user_get.return_value = test_user
+
+        auth_dto = AuthenticationService().login_user(osm_response)
+
+        self.assertEqual(auth_dto.username, 'Thinkwhere Test')
+        self.assertTrue(auth_dto.session_token)

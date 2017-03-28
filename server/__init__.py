@@ -49,8 +49,10 @@ def create_app(env=None):
 
     CORS(app)  # Enables CORS on all API routes, meaning API is callable from anywhere
 
-    app.secret_key = app.config['TM_SECRET']  # Required by itsdangeroud, Flask-OAuthlib for creating entropy
+    app.secret_key = app.config['SECRET_KEY']  # Required by itsdangeroud, Flask-OAuthlib for creating entropy
     oauth.init_app(app)
+
+
 
     return app
 
