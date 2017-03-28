@@ -18,7 +18,7 @@ osm = oauth.remote_app(
 )
 
 # Import all models so that they are registered with SQLAlchemy
-from server.models import *  # noqa
+from server.models.postgis import *  # noqa
 
 
 def create_app(env=None):
@@ -29,7 +29,7 @@ def create_app(env=None):
     app = Flask(__name__)
 
     if env is None:
-        env = os.getenv('TASKING_MANAGER_ENV', 'Dev')  # default to Dev if config environment var not set
+        env = os.getenv('TM_ENV', 'Dev')  # default to Dev if config environment var not set
 
     app.config.from_object(f'server.config.{env}Config')
 
@@ -49,8 +49,7 @@ def create_app(env=None):
 
     CORS(app)  # Enables CORS on all API routes, meaning API is callable from anywhere
 
-    # TODO prob want to make this an env var for security
-    app.secret_key = 'xb6qvWTf'  # Required by Flask-OAuthlib for creating entropy
+    app.secret_key = app.config['SECRET_KEY']  # Required by itsdangeroud, Flask-OAuthlib for creating entropy
     oauth.init_app(app)
 
     return app
