@@ -6,13 +6,13 @@ from server.models.postgis.user import User
 
 class AuthServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when authenticating """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
 
 class AuthenticationService:
-
     def login_user(self, osm_user_details, user_element='user') -> str:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
@@ -59,5 +59,5 @@ class AuthenticationService:
     def _generate_authorized_url(self, username, session_token):
         """ Generate URL that we'll redirect the user to once authenticated """
         base_url = current_app.config['APP_BASE_URL']
-        authorized_url = f'{base_url}/authorized/?username={parse.quote(username)}&session_token={session_token}'
+        authorized_url = f'{base_url}/authorized?username={parse.quote(username)}&session_token={parse.quote(session_token)}'
         return authorized_url
