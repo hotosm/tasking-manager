@@ -28,6 +28,7 @@ class User(db.Model):
 
     @classmethod
     def create_from_osm_user_details(cls, user_id: int, username: str, changeset_count: int):
+        """ Creates a new user in database from details supplied from OSM """
         user = cls()
         user.id = user_id,
         user.username = username
@@ -35,7 +36,13 @@ class User(db.Model):
 
         # TODO set mapping level based on changeset count
         user.mapping_level = MappingLevel.BEGINNER.value
+        db.session.add(user)
+        db.session.commit()
 
     def get(self, user_id: int):
         """ Return the user for the specified id, or None if not found """
         return User.query.get(user_id)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
