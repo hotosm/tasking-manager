@@ -1,4 +1,24 @@
-<a class="button button--primary" role="button"
+<a ng-show="!accountNavCtrl.username" class="button button--primary" role="button"
     ng-click="accountNavCtrl.login()">
     <span>Login</span>
+</a>
+<!--<a class="global-menu-item" ng-show="accountNavCtrl.username">
+    <span>{{ accountNavCtrl.username }}</span>
+    <span><i class="oam-ds-icon-sm-chevron-down"></i></span>
+</a>-->
+<a class="global-menu-item" ng-show="accountNavCtrl.username">
+    <div class="drop drop--down drop--align-left drop--open">
+        <button class="button button--achromic drop__toggle drop__toggle--caret" type="button"
+            ng-click="accountNavCtrl.showDropdown = !accountNavCtrl.showDropdown">
+            <span>{{ accountNavCtrl.username }}</span>
+        </button>
+        <div ng-show="accountNavCtrl.showDropdown" class="drop__content">
+            <ul class="drop__menu drop__menu--iconified" role="menu">
+                <li>
+                    <a title="Logout" class="drop__menu-item" ng-click="accountNavCtrl.logout()">
+                    Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </a>

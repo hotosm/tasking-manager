@@ -33,11 +33,12 @@
     function accountNavController($scope, accountService, authService) {
         
         var vm = this;
-        vm.firstName = '';
+        vm.username = '';
+        vm.showDropdown = false;
 
         // Watch the accountService for changes and update when needed
         $scope.$watch(function(){ return accountService.getAccount();}, function(account){
-            vm.firstName = account.firstName;
+            vm.username = account.username;
         }, true);
 
         /**
@@ -52,6 +53,7 @@
          */
         vm.logout = function(){
             authService.logout();
+            vm.showDropdown = false;
         }
     }
 })();

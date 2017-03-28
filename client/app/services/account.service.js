@@ -11,9 +11,7 @@
     function accountService() {
 
         var account = {
-            emailAddress: '',
-            firstName: '',
-            surname: ''
+            username: ''
         };
 
         var service = {
