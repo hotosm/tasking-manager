@@ -59,5 +59,6 @@ class AuthenticationService:
     def _generate_authorized_url(self, username, session_token):
         """ Generate URL that we'll redirect the user to once authenticated """
         base_url = current_app.config['APP_BASE_URL']
-        authorized_url = f'{base_url}/authorized?username={parse.quote(username)}&session_token={parse.quote(session_token)}'
+        # Trailing & required by Angular to terminate querystring
+        authorized_url = f'{base_url}/authorized?username={parse.quote(username)}&session_token={parse.quote(session_token)}&'
         return authorized_url
