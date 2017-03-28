@@ -53,6 +53,7 @@
             vm.validatingStep = 'selecting';
             vm.selectedEditor = 'ideditor'; // default to iD editor
             mapService.createOSMMap('map');
+            mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
 
             vm.map.addInteraction(select);
