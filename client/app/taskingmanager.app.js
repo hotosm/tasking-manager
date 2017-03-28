@@ -59,6 +59,14 @@
                     templateUrl: 'app/project/project.html',
                     controller: 'projectController',
                     controllerAs: 'projectCtrl'
+                })
+
+                .when('/authorized', {
+                    templateUrl: 'app/login/authorized.html'
+                })
+
+                .when('/auth-failed', {
+                    templateUrl: 'app/login/auth-failed.html'
                 });
             
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them
