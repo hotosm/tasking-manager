@@ -17,16 +17,15 @@
         return service;
 
         /**
-         * Editor options:
+         * Returns the URL for launching the editor
+         * Options:
          * - bounds
          * - base
          * - centroid
          * - protocol
-         * - changeset_comment
-         * - imagery_url
+         * - changesetComment
+         * - imageryUrl
          * @param options
-         * @param changeset comment
-         * @param imagery_url
          * @returns {string}
          */
         function getUrlForEditor(options) {
