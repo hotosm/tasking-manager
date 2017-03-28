@@ -35,7 +35,7 @@
             var zoom = mapService.getOSMMap().getView().getZoom();
             var centroid = options.centroid;
             var changesetComment = options.changesetComment;
-            var imageryUrl = option.imageryUrl;
+            var imageryUrl = options.imageryUrl;
             switch (options.protocol) {
                 case 'lbrt':  // TODO
                     if (typeof imageryUrl != "undefined" && imageryUrl !== '') {
