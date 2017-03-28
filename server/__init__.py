@@ -52,8 +52,6 @@ def create_app(env=None):
     app.secret_key = app.config['SECRET_KEY']  # Required by itsdangeroud, Flask-OAuthlib for creating entropy
     oauth.init_app(app)
 
-
-
     return app
 
 
