@@ -34,7 +34,7 @@
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId,
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
@@ -65,7 +65,7 @@
                     comment: comment,
                     status: status
                 },
-                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/unlock-after-mapping',
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/unlock-after-mapping',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
@@ -90,7 +90,7 @@
             // Returns a promise
             return $http({
                 method: 'POST',
-                url: configService.tmAPI + '/v1/project/' + projectId + '/task/' + taskId + '/lock-for-mapping',
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/lock-for-mapping',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
@@ -120,7 +120,7 @@
                 data: {
                     "validatedTasks": tasks
                 },
-                url: configService.tmAPI + '/v1/project/' + projectId + '/unlock-after-validation',
+                url: configService.tmAPI + '/project/' + projectId + '/unlock-after-validation',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
@@ -148,7 +148,7 @@
                 data: {
                     taskIds: taskIds
                 },
-                url: configService.tmAPI + '/v1/project/' + projectId + '/lock-for-validation',
+                url: configService.tmAPI + '/project/' + projectId + '/lock-for-validation',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
