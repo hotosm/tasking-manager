@@ -19,7 +19,7 @@ class AuthenticationService:
         :param osm_user_details: XML response from OSM
         :param user_element: Exists for unit testing
         :raises AuthServiceError
-        :returns Redirect URL with authentication details in query string
+        :returns Authorized URL with authentication details in query string
         """
         osm_user = osm_user_details.find(user_element)
 
@@ -37,9 +37,9 @@ class AuthenticationService:
             User.create_from_osm_user_details(osm_id, username, changeset_count)
 
         session_token = self._generate_session_token_for_user(osm_id)
-        redirect_url = self._generate_redirect_url(username, session_token)
+        authorized_url = self._generate_authorized_url(username, session_token)
 
-        return redirect_url
+        return authorized_url
 
     def _generate_session_token_for_user(self, osm_id: int):
         """
@@ -48,14 +48,10 @@ class AuthenticationService:
         :return: Token
         """
         serializer = URLSafeTimedSerializer(current_app.secret_key)
+        return serializer.dumps(osm_id)
 
-        # Generate token using email
-        token = serializer.dumps(osm_id)
-        return token
-
-    def _generate_redirect_url(self, username, session_token):
+    def _generate_authorized_url(self, username, session_token):
         """ Generate URL that we'll redirect the user to once authenticated """
-
         base_url = current_app.config['APP_BASE_URL']
-        redirect_url = f'{base_url}/auth/?username={parse.quote(username)}&session_token={session_token}'
-        return redirect_url
+        authorized_url = f'{base_url}/authorized/?username={parse.quote(username)}&session_token={session_token}'
+        return authorized_url

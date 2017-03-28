@@ -53,7 +53,6 @@ class OAuthAPI(Resource):
             # TODO auth failed so redirect to login failed
             pass
         else:
-            # TODO create authorized handler in client
             session['osm_oauth'] = osm_resp  # Set OAuth details in the session temporarily
 
         osm_response = osm.request('user/details')  # Get details for the authenticating user
@@ -62,8 +61,7 @@ class OAuthAPI(Resource):
             return {"Error": "Error Response from OSM API"}, 502
 
         try:
-            auth_dto = AuthenticationService().login_user(osm_response.data)
+            authorized_url = AuthenticationService().login_user(osm_response.data)
+            return redirect(authorized_url)
         except AuthServiceError as e:
             return {"Error": str(e)}, 500
-
-        # TODO set user details, and generate session token
