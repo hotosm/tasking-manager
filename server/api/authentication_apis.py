@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import session, current_app
+from flask import session, current_app, redirect
 from server import osm
 from server.services.authentication_service import AuthenticationService, AuthServiceError
 
@@ -62,7 +62,7 @@ class OAuthAPI(Resource):
             return {"Error": "Error Response from OSM API"}, 502
 
         try:
-            AuthenticationService().login_user(osm_response.data)
+            auth_dto = AuthenticationService().login_user(osm_response.data)
         except AuthServiceError as e:
             return {"Error": str(e)}, 500
 

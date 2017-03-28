@@ -1,4 +1,5 @@
 import unittest
+from urllib.parse import urlparse, parse_qs
 from unittest.mock import patch
 from tests.server.helpers.test_helpers import get_canned_osm_user_details
 from server import create_app
@@ -57,7 +58,12 @@ class TestAuthenticationService(unittest.TestCase):
         test_user.username = 'Iain'
         mock_user_get.return_value = test_user
 
-        auth_dto = AuthenticationService().login_user(osm_response)
+        # Act
+        redirect_url = AuthenticationService().login_user(osm_response)
 
-        self.assertEqual(auth_dto.username, 'Thinkwhere Test')
-        self.assertTrue(auth_dto.session_token)
+        # Assert
+        parsed_url = urlparse(redirect_url)
+        query = parse_qs(parsed_url.query)
+
+        self.assertEqual(query['username'][0], 'Thinkwhere Test')
+        self.assertTrue(query['session_token'][0])

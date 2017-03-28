@@ -44,5 +44,6 @@ class User(db.Model):
         return User.query.get(user_id)
 
     def delete(self):
+        """ Delete the user in scope from DB """
         db.session.delete(self)
         db.session.commit()

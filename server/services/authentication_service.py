@@ -1,6 +1,6 @@
+from urllib import parse
 from flask import current_app
 from itsdangerous import URLSafeTimedSerializer
-from server.models.dtos.user_dto import AuthorizedDTO
 from server.models.postgis.user import User
 
 
@@ -13,8 +13,14 @@ class AuthServiceError(Exception):
 
 class AuthenticationService:
 
-    def login_user(self, osm_user_details, user_element='user'):
-
+    def login_user(self, osm_user_details, user_element='user') -> str:
+        """
+        Generates authentication details for user, creating in DB if user is unknown to us
+        :param osm_user_details: XML response from OSM
+        :param user_element: Exists for unit testing
+        :raises AuthServiceError
+        :returns Redirect URL with authentication details in query string
+        """
         osm_user = osm_user_details.find(user_element)
 
         if osm_user is None:
@@ -30,11 +36,10 @@ class AuthenticationService:
 
             User.create_from_osm_user_details(osm_id, username, changeset_count)
 
-        auth_dto = AuthorizedDTO()
-        auth_dto.username = username
-        auth_dto.session_token = self._generate_session_token_for_user(osm_id)
+        session_token = self._generate_session_token_for_user(osm_id)
+        redirect_url = self._generate_redirect_url(username, session_token)
 
-        return auth_dto
+        return redirect_url
 
     def _generate_session_token_for_user(self, osm_id: int):
         """
@@ -47,3 +52,10 @@ class AuthenticationService:
         # Generate token using email
         token = serializer.dumps(osm_id)
         return token
+
+    def _generate_redirect_url(self, username, session_token):
+        """ Generate URL that we'll redirect the user to once authenticated """
+
+        base_url = current_app.config['APP_BASE_URL']
+        redirect_url = f'{base_url}/auth/?username={parse.quote(username)}&session_token={session_token}'
+        return redirect_url
