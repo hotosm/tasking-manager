@@ -67,3 +67,11 @@ class TestAuthenticationService(unittest.TestCase):
 
         self.assertEqual(query['username'][0], 'Thinkwhere Test')
         self.assertTrue(query['session_token'][0])
+
+    def test_get_authentication_failed_url_returns_expected_url(self):
+        # Act
+        auth_failed_url = AuthenticationService().get_authentication_failed_url()
+
+        # Assert
+        parsed_url = urlparse(auth_failed_url)
+        self.assertEqual(parsed_url.path, '/auth-failed')

@@ -41,6 +41,12 @@ class AuthenticationService:
 
         return authorized_url
 
+    def get_authentication_failed_url(self):
+        """ Generates the auth-failed URL for the running app """
+        base_url = current_app.config['APP_BASE_URL']
+        auth_failed_url = f'{base_url}/auth-failed'
+        return auth_failed_url
+
     def _generate_session_token_for_user(self, osm_id: int):
         """
         Generates a unique token with the osm_id and current time embedded within it
