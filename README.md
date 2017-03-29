@@ -7,22 +7,26 @@ The app is split into a Client (AngularJS) and Server (Python) structure.  Each 
 
 
 ## Client Development
-### Dependencies
+### Global Dependencies
 Following must be available locally:
 
 * NodeJS LTS v6+ [NodeJS LTS install here](https://nodejs.org/en/)
-
-#### Build the Client
-* Install Gulp.  [Gulp](http://gulpjs.com/) is used to automate the Client build and needs to be installed globally:
+* [Gulp](http://gulpjs.com/) is used to run and build the app, install globally as follows:
     * ```npm install gulp -g```
-* Build the client, with gulp:
-    * ```gulp build```
+
+### App Dependencies
+You will now have to install all the app dependencies using [NPM](https://www.npmjs.com/)
+
+```
+cd client
+npm install
+```
 
 ### Running Locally
 If you plan to do client development you can run the app using gulp, without having to worry too much about the server
 
 ```
-cd client
+cd client   [if not already in client]
 gulp run
 ```
 
@@ -30,7 +34,7 @@ gulp run
 The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests, that you can run using [Karma](https://karma-runner.github.io/1.0/index.html) as follows
 
 ```
- cd client
+ cd client    [if not already in client]
  karma start ..\tests\client\karma.conf.js
 ```
 
@@ -75,11 +79,26 @@ python manage.py db upgrade
 ```
 
 ### Running Locally
-You can now run the app as follows:
 
-```
-python manage.py runserver -d
-```
+#### API Development only
+If you plan to only work on the API you don't need to build the client and can run as follows:
+
+* Run the server:
+    * ``` python manage.py runserver -d ```
+* Point your browser to:
+    * [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+    
+#### Seeing the client
+If you want to see the client you will need to follow all the instruction in **Client Development** section then build the client as follows:
+
+* Build the client using gulp:
+    * ```cd client```
+    * ```gulp build```
+* You can now run the server as above from the root dir:
+    * ```cd ..```
+    * ``` python manage.py runserver -d ```
+* Point your browser to:
+    * [http://localhost:5000](http://localhost:5000)
 
 ### Running Unit Tests
 The project includes a suite of Unit and Integration tests that you should run after any changes with [nose](http://nose.readthedocs.io/en/latest/)

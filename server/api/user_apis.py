@@ -28,8 +28,7 @@ class UserAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_service = UserService()
-            user_dto = user_service.get_user(username)
+            user_dto = UserService.get_user_by_username(username)
 
             if user_dto is None:
                 return {"Error": "User Not Found"}, 404
