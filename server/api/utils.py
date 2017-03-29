@@ -18,13 +18,3 @@ class TMAPIDecorators:
                 return func(*args, **kwargs)
             return decorated_function
         return pm_only_decorator
-
-
-def who_made_request(request):
-    """
-    Convience function to extract the user-id of the user making the request
-    :param request: HTTP request in scope
-    :return: The mapCloud Customer name
-    """
-    customer = request.authorization['username']
-    return customer
