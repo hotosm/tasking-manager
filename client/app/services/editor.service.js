@@ -80,36 +80,26 @@
             reqObj.open('GET', url, false);
             var success = false;
             reqObj.onreadystatechange = function () {
+                console.log(this.readyState);
                 if (this.readyState == 4) {
                     if (this.status == 200) {
                         success = true;
                     }
                 }
             }
-            reqObj.send();
-            return success;
-        }
-
-        function sendJOSMImageryCmd(imageryTitle, imageryType, imageryUrl) {
-            //load imagery if available
-            var imageryReq = new XMLHttpRequest();
-            var imageryTitle = "Tasking Manager - #" + projectId;
-            imageryUrl = encodeURIComponent(imageryUrl);
-            var imageryCommandUrl = 'http://127.0.0.1:8111/imagery' +
-                '?title=' + encodeURIComponent(imageryTitle) +
-                '&type=' + encodeURIComponent(imageryType) +
-                '&url=' + encodeURIComponent(imageryUrl);//encodeURIComponent('tms[22]:https://api.mapbox.com/v4/digitalglobe.2lnp1jee/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNpd3A2OTAwODAwNGUyenFuNTkyZjRkeWsifQ.Y44JcpYP9gXsZD3p5KBZbA');
-
-            imageryReq.open('GET', imageryCommandUrl, true);
-            imageryReq.onreadystatechange = function () {
-                if (this.readyState == 4) {
-                    if (this.status == 200) {
-                        //TODO may want to do something here
-                    }
-                }
+            try {
+                reqObj.send();
             }
-            imageryReq.send();
+            catch (e) {
+                console.log('error');
+                success = false;
+            }
+            finally{
+                console.log('finally');
+                return success;
+            }
 
         }
+
     }
 })();

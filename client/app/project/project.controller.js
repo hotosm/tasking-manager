@@ -37,6 +37,9 @@
         vm.shortDescription = '';
         vm.instructions = '';
 
+        //editor
+        vm.editorStartError = '';
+
         //interaction
         var select = new ol.interaction.Select({
             style: styleService.getSelectedStyleFunction
@@ -441,6 +444,7 @@
          * @param editor
          */
         vm.startEditor = function (editor) {
+            vm.editorStartError = '';
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
@@ -495,47 +499,8 @@
                 }
                 else {
                     //TODO warn that JSOM couldn't be started
+                    vm.editorStartError = 'josm-error';
                 }
-                ;
-
-
-                // return options.base + decodeURIComponent($.param({
-                //         left: roundToDecimals(bounds[0], 5),
-                //         bottom: roundToDecimals(bounds[1], 5),
-                //         right: roundToDecimals(bounds[2], 5),
-                //         top: roundToDecimals(bounds[3], 5),
-                //         changeset_comment: changesetComment,
-                //         changeset_source: source
-                //     }));
-                //
-                // url = editorService.getUrlForIDEditor({
-                //     base: 'http://127.0.0.1:8111/load_and_zoom?',
-                //     bounds: extentTransformed,
-                //     protocol: 'lbrt',
-                //     changesetComment: '', // TODO: changeset comment
-                //     imageryUrl: '' // TODO: imagery URL
-                // });
-                // $.ajax({
-                //     url: url,
-                //     complete: function (t) {
-                //         if (t.status != 200) {
-                //             alert(josmRcDidNotRespondI18n);
-                //         } else {
-                //             if (typeof imagery_url != "undefined" && imagery_url !== '') {
-                //                 $.ajax({
-                //                     url: 'http://127.0.0.1:8111/imagery',
-                //                     data: {
-                //                         title: "Tasking Manager - #" + project_id,
-                //                         type: imagery_url.toLowerCase().substring(0, 3),
-                //                         url: imagery_url
-                //                     }
-                //                 });
-                //             }
-                //         }
-                //     }
-                // });
-
-
             }
             // TODO: other editors
         }
