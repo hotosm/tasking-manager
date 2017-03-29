@@ -18,7 +18,8 @@
             getOSMMap: getOSMMap,
             addXYZLayer: addXYZLayer,
             addTiledWMSLayer: addTiledWMSLayer,
-            addGeocoder: addGeocoder
+            addGeocoder: addGeocoder,
+            addOverviewMap: addOverviewMap
         };
 
         return service;
@@ -84,6 +85,19 @@
         function addLayerSwitcherControl_(){
             var layerSwitcher = new ol.control.LayerSwitcher();
             map.addControl(layerSwitcher);
+        }
+
+        /**
+         * Adds an overview map to the map and restrict the resolution to the maximum resolution of the main map
+         */
+        function addOverviewMap(){
+            var restrictedResolution = map.getView().getMaxResolution();
+            var overviewMapControl = new ol.control.OverviewMap({
+                view: new ol.View({
+                    resolutions: [restrictedResolution]
+                })
+            });
+            map.addControl(overviewMapControl);
         }
 
         /**

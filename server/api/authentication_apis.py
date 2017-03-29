@@ -1,6 +1,7 @@
 from flask_restful import Resource
-from flask import session, current_app
+from flask import session, current_app, redirect
 from server import osm
+from server.services.authentication_service import AuthenticationService, AuthServiceError
 
 
 @osm.tokengetter
@@ -42,16 +43,26 @@ class OAuthAPI(Resource):
         responses:
           302:
             description: Redirects to login page, or login failed page
+          500:
+            description: A problem occurred authenticating the user
+          502:
+            description: A problem occurred negotiating with the OSM API
         """
         osm_resp = osm.authorized_response()
         if osm_resp is None:
-            # TODO auth failed so redirect to login failed
-            pass
+            current_app.logger.critical('No response from OSM')
+            return redirect(AuthenticationService().get_authentication_failed_url())
         else:
-            # TODO create authorized handler in client
             session['osm_oauth'] = osm_resp  # Set OAuth details in the session temporarily
 
-        osm_user_details = osm.request('user/details')
-        debug = osm_user_details
+        osm_response = osm.request('user/details')  # Get details for the authenticating user
 
-        # TODO set user details, and generate session token
+        if osm_response.status != 200:
+            current_app.logger.critical('Error response from OSM')
+            return redirect(AuthenticationService().get_authentication_failed_url())
+
+        try:
+            authorized_url = AuthenticationService().login_user(osm_response.data)
+            return redirect(authorized_url)  # Redirect to Authentication page on successful authorization :)
+        except AuthServiceError as e:
+            return {"Error": str(e)}, 500
