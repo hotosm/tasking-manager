@@ -89,6 +89,7 @@ def init_flask_restful_routes(app):
     from server.api.project_admin_api import ProjectAdminAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.authentication_apis import LoginAPI, OAuthAPI
+    from server.api.user_apis import UserAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
@@ -101,5 +102,6 @@ def init_flask_restful_routes(app):
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
+    api.add_resource(UserAPI,                       '/api/v1/user/<string:user_name>')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')

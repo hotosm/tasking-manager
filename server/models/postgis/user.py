@@ -26,6 +26,8 @@ class User(db.Model):
     role = db.Column(db.Integer, default=0)
     mapping_level = db.Column(db.Integer, default=1)
 
+    __table_args__ = (db.Index('idx_username', 'username'), {})
+
     @classmethod
     def create_from_osm_user_details(cls, user_id: int, username: str, changeset_count: int):
         """ Creates a new user in database from details supplied from OSM """
