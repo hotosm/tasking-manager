@@ -52,7 +52,6 @@
                 username: username
             };
             localStorage.setItem(localStorageSessionName, JSON.stringify(session));
-            console.log(localStorage.getItem(localStorageSessionName));
             accountService.setAccount(username);
         }
 

@@ -24,7 +24,7 @@
             authService.setSession(vm.sessionToken, vm.userName);
             // Return to the URL where the user came from
             $location.path($location.search().redirect);
-            // Clear the search parameters
+            // Clear the URL parameters
             $location.search('username', null);
             $location.search('session_token', null);
             $location.search('redirect', null);

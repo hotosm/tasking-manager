@@ -3,7 +3,7 @@
     'use strict';
 
     /**
-     * Profile controller which manages the user's profiles
+     * Profile controller which manages the user profiles
      */
     angular
         .module('taskingManager')
