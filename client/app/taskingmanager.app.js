@@ -18,18 +18,10 @@
             // Get session storage on application load
             var nameOfLocalStorage = authService.getLocalStorageSessionName();
             var sessionStorage = JSON.parse(localStorage.getItem(nameOfLocalStorage));
-            var account = {
-                username: ''
-            };
 
             if (sessionStorage) {
-                account = {
-                    username: sessionStorage.username || ''
-                };
                 authService.setSession(sessionStorage.sessionToken || '', sessionStorage.username || '');
             }
-
-            accountService.setAccount(account);
         }])
 
         .config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
@@ -82,7 +74,7 @@
                 })
                 
                 .when('/user/:id', {
-                    templateUrl: 'app/profile/user-profile.html',
+                    templateUrl: 'app/profile/profile.html',
                     controller: 'profileController',
                     controllerAs: 'profileCtrl'
                 })

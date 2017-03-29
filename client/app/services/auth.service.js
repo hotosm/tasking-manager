@@ -12,15 +12,13 @@
 
         var sessionToken = '';
         var localStorageSessionName = 'session';
-        var urlBeforeLoggingIn = '/';
 
         var service = {
             login: login,
             logout: logout,
             setSession: setSession,
             getAuthenticatedHeader: getAuthenticatedHeader,
-            getLocalStorageSessionName: getLocalStorageSessionName,
-            getUrlBeforeLoggingIn: getUrlBeforeLoggingIn
+            getLocalStorageSessionName: getLocalStorageSessionName
         };
 
         return service;
@@ -30,8 +28,8 @@
          */
         function login(){
             // Get the current page the user is on and remember it so we can go back to it
-            urlBeforeLoggingIn = $location.path();
-            $window.location.href = configService.tmAPI + '/auth/login';
+            var urlBeforeLoggingIn = $location.path();
+            $window.location.href = configService.tmAPI + '/auth/login?redirect=' + urlBeforeLoggingIn;
         }
         
         /**
@@ -54,10 +52,9 @@
                 username: username
             };
             localStorage.setItem(localStorageSessionName, JSON.stringify(session));
-            var account = {
-                username: username
-            };
-            accountService.setAccount(account);
+            if (username) {
+                accountService.setAccount(username);
+            }
         }
 
         /**
@@ -79,14 +76,6 @@
          */
         function getLocalStorageSessionName(){
             return localStorageSessionName;
-        }
-
-        /**
-         * Return the URL from before logging in
-         * @returns {string}
-         */
-        function getUrlBeforeLoggingIn(){
-            return urlBeforeLoggingIn;
         }
     }
 })();

@@ -7,16 +7,30 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', profileController]);
+        .controller('profileController', ['$routeParams', 'accountService', profileController]);
 
-    function profileController($routeParams) {
+    function profileController($routeParams, accountService) {
         var vm = this;
         vm.username = '';
+        vm.currentlyLoggedInUser = null;
+        vm.userDetails = null;
 
         activate();
 
         function activate() {
             vm.username = $routeParams.id;
+            
+            // Get account details from account service
+             var resultsPromise = accountService.getUser(vm.username);
+            resultsPromise.then(function (data) {
+                // On success, set the account details for this user
+                vm.userDetails = data;
+
+                var account = accountService.getAccount();
+                if (account){
+                    vm.currentlyLoggedInUser = account;
+                }
+            });
         }
     }
 })();

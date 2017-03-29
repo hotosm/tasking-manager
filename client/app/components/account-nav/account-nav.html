@@ -8,11 +8,24 @@
             ng-click="accountNavCtrl.showDropdown = !accountNavCtrl.showDropdown">
             <span>{{ accountNavCtrl.username }}</span>
         </button>
-        <div ng-show="accountNavCtrl.showDropdown" class="drop__content">
+        <div ng-show="accountNavCtrl.showDropdown" class="drop__content" style="z-index: 1000">
             <ul class="drop__menu drop__menu--iconified" role="menu">
                 <li>
+                    <a title="Your profile" class="drop__menu-item" ng-click="accountNavCtrl.navigateToProfile()">
+                        Your profile
+                    </a>
+                </li>
+                <li>
                     <a title="Logout" class="drop__menu-item" ng-click="accountNavCtrl.logout()">
-                    Logout</a>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+            <ul class="drop__menu drop__menu--iconified" role="menu">
+                <li>
+                    <a title="New project" class="drop__menu-item" ng-click="accountNavCtrl.createNewProject()">
+                        Create new project
+                    </a>
                 </li>
             </ul>
         </div>

@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('accountNavController', ['$scope','accountService','authService', accountNavController])
+        .controller('accountNavController', ['$scope','$location','accountService','authService', accountNavController])
         .directive('accountNav', accountNavDirective);
 
     /**
@@ -30,7 +30,7 @@
         return directive;
     }
 
-    function accountNavController($scope, accountService, authService) {
+    function accountNavController($scope, $location, accountService, authService) {
         
         var vm = this;
         vm.username = '';
@@ -53,6 +53,19 @@
          */
         vm.logout = function(){
             authService.logout();
+            vm.showDropdown = false;
+        };
+
+        /**
+         * Navigate to the user's profile
+         */
+        vm.navigateToProfile = function(){
+            $location.path('user/' + vm.username);
+            vm.showDropdown = false;
+        };
+
+        vm.createNewProject = function(){
+            $location.path('admin/create-project');
             vm.showDropdown = false;
         }
     }

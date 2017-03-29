@@ -23,10 +23,11 @@
             // Set the session in the authentication service
             authService.setSession(vm.sessionToken, vm.userName);
             // Return to the URL where the user came from
-            $location.path(authService.getUrlBeforeLoggingIn());
+            $location.path($location.search().redirect);
             // Clear the search parameters
             $location.search('username', null);
             $location.search('session_token', null);
+            $location.search('redirect', null);
             $location.search('ng', null);
         }
     }
