@@ -29,11 +29,20 @@
          * @param username
          */
         function setAccount(username){
-            var resultsPromise = getUser(username);
-            resultsPromise.then(function (data) {
-                // On success, set the account details for this user
-                account = data;
-            });
+            if (username) {
+                var resultsPromise = getUser(username);
+                resultsPromise.then(function (data) {
+                    // On success, set the account details for this user
+                    account = data;
+                });
+            }
+            else {
+                account = {
+                    username: '',
+                    role: '',
+                    mappingLevel: ''
+                }
+            }
         }
 
         /**

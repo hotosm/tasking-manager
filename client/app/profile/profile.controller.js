@@ -25,7 +25,7 @@
             resultsPromise.then(function (data) {
                 // On success, set the account details for this user
                 vm.userDetails = data;
-
+                // Get the account for the currently logged in user
                 var account = accountService.getAccount();
                 if (account){
                     vm.currentlyLoggedInUser = account;

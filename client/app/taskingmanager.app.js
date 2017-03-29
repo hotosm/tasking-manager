@@ -18,7 +18,7 @@
             // Get session storage on application load
             var nameOfLocalStorage = authService.getLocalStorageSessionName();
             var sessionStorage = JSON.parse(localStorage.getItem(nameOfLocalStorage));
-
+            console.log(sessionStorage);
             if (sessionStorage) {
                 authService.setSession(sessionStorage.sessionToken || '', sessionStorage.username || '');
             }

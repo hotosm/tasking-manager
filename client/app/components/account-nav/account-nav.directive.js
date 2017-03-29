@@ -53,6 +53,7 @@
          */
         vm.logout = function(){
             authService.logout();
+            $location.path('/');
             vm.showDropdown = false;
         };
 
@@ -64,6 +65,9 @@
             vm.showDropdown = false;
         };
 
+        /**
+         * Navigate to the create project page
+         */
         vm.createNewProject = function(){
             $location.path('admin/create-project');
             vm.showDropdown = false;
