@@ -33,12 +33,12 @@
     function accountNavController($scope, $location, accountService, authService) {
         
         var vm = this;
-        vm.username = '';
+        vm.account = {};
         vm.showDropdown = false;
 
         // Watch the accountService for changes and update when needed
         $scope.$watch(function(){ return accountService.getAccount();}, function(account){
-            vm.username = account.username;
+            vm.account = account;
         }, true);
 
         /**
@@ -61,7 +61,7 @@
          * Navigate to the user's profile
          */
         vm.navigateToProfile = function(){
-            $location.path('user/' + vm.username);
+            $location.path('user/' + vm.account.username);
             vm.showDropdown = false;
         };
 

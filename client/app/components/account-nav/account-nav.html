@@ -1,12 +1,12 @@
-<a ng-show="!accountNavCtrl.username" class="button button--primary" role="button"
+<a ng-show="!accountNavCtrl.account.username" class="button button--primary" role="button"
     ng-click="accountNavCtrl.login()">
     <span>Login</span>
 </a>
-<a class="global-menu-item" ng-show="accountNavCtrl.username">
+<a class="global-menu-item" ng-show="accountNavCtrl.account.username">
     <div class="drop drop--down drop--align-left drop--open">
         <button class="button button--achromic drop__toggle drop__toggle--caret" type="button"
             ng-click="accountNavCtrl.showDropdown = !accountNavCtrl.showDropdown">
-            <span>{{ accountNavCtrl.username }}</span>
+            <span>{{ accountNavCtrl.account.username }}</span>
         </button>
         <div ng-show="accountNavCtrl.showDropdown" class="drop__content">
             <ul class="drop__menu drop__menu--iconified" role="menu">
@@ -22,7 +22,7 @@
                 </li>
             </ul>
             <ul class="drop__menu drop__menu--iconified" role="menu">
-                <li>
+                <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
                     <a title="New project" class="drop__menu-item" ng-click="accountNavCtrl.createNewProject()">
                         Create new project
                     </a>
