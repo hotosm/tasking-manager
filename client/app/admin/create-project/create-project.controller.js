@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService','geospatialService', createProjectController]);
+        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService','geospatialService','accountService', createProjectController]);
     
-    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService) {
+    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService) {
 
         var vm = this;
         vm.map = null;
@@ -57,6 +57,15 @@
         activate();
 
         function activate() {
+
+            // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
+            var account = accountService.getAccount();
+            if (account){
+                if (account.role !== 'PROJECT_MANAGER' && account.role !== 'ADMIN'){
+                    $location.path('/');
+                }
+            }
+
             vm.currentStep = 'area';
 
             mapService.createOSMMap('map');
