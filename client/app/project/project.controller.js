@@ -7,7 +7,7 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService','editorService', projectController]);
+        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', projectController]);
 
     function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService) {
         var vm = this;
@@ -404,12 +404,12 @@
         /**
          * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
          */
-        vm.viewOSMChangesets = function(){
+        vm.viewOSMChangesets = function () {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var bbox = selectedFeature.getGeometry().getExtent();
-            var bboxTransformed = geospatialService.transformExtentToLatLon(bbox);
+            var bboxTransformed = geospatialService.transformExtentToLatLonString(bbox);
             $window.open('http://www.openstreetmap.org/history?bbox=' + bboxTransformed);
         };
 
@@ -417,7 +417,7 @@
          * View changes in Overpass Turbo
          * TODO: format the middle of the query which needs user names
          */
-        vm.viewOverpassTurbo = function() {
+        vm.viewOverpassTurbo = function () {
             var queryPrefix = '<osm-script output="json" timeout="25"><union>';
             var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
             var queryMiddle = '';
@@ -440,12 +440,16 @@
          * See: https://github.com/hotosm/osm-tasking-manager2/blob/d3a3b70d09256ba16bdff1b35909ad4f3b9f66e2/osmtm/static/js/project.js
          * @param editor
          */
-        vm.startEditor = function(editor){
+        vm.startEditor = function (editor) {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var extent = selectedFeature.getGeometry().getExtent();
-            var extentTransformed = geospatialService.transformExtentToLatLon(extent);
+            var extentTransformed = geospatialService.transformExtentToLatLonArray(extent);
+            var imageryUrl = 'tms[22]:https://api.mapbox.com/v4/digitalglobe.2lnp1jee/{z}/{x}/{y}.png?' +
+                'access_token=pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNpd3A2OTAwODAwNGUyenFuN' +
+                'TkyZjRkeWsifQ.Y44JcpYP9gXsZD3p5KBZbA'; // TODO: get imagery URL from project
+            var changesetComment = '#TODO #CHANGSET_COMMENT'; // TODO: get changeset comment from project
             // get center in the right projection
             var center = ol.proj.transform(geospatialService.getCenterOfExtent(extent), 'EPSG:3857', 'EPSG:4326');
             var url = '';
@@ -456,11 +460,82 @@
                     bounds: extentTransformed,
                     centroid: center,
                     protocol: 'id',
-                    changesetComment: '', // TODO: changeset comment
-                    imageryUrl: '' // TODO: imagery URL
+                    changesetComment: '', // TODO: use changeset comment from above
+                    imageryUrl: '' // TODO: use imagery URL from above
                 });
                 // TODO: GPX file
                 window.open(url);
+            }
+            else if (editor === 'jsom') {
+                // TODO licence agreement
+                var changesetSource = "Bing";
+                var hasImagery = false;
+                if (typeof imageryUrl != "undefined" && imageryUrl !== '') {
+                    changesetSource = imageryUrl;
+                    hasImagery = true;
+                }
+                var loadAndZoomParams = {
+                    left: extentTransformed[0],
+                    bottom: extentTransformed[1],
+                    right: extentTransformed[2],
+                    top: extentTransformed[3],
+                    changeset_comment: encodeURIComponent(changesetComment),
+                    changeset_source: encodeURIComponent(changesetSource)
+                };
+                var isLoadAndZoomSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams)
+                if (isLoadAndZoomSuccess) {
+                    if (hasImagery) {
+                        var imageryParams = {
+                            title: encodeURIComponent('Tasking Manager - #' + vm.projectData.projectId),
+                            type: imageryUrl.toLowerCase().substring(0, 3),
+                            url: encodeURIComponent(imageryUrl)
+                        }
+                        editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
+                    }
+                }
+                else {
+                    //TODO warn that JSOM couldn't be started
+                }
+                ;
+
+
+                // return options.base + decodeURIComponent($.param({
+                //         left: roundToDecimals(bounds[0], 5),
+                //         bottom: roundToDecimals(bounds[1], 5),
+                //         right: roundToDecimals(bounds[2], 5),
+                //         top: roundToDecimals(bounds[3], 5),
+                //         changeset_comment: changesetComment,
+                //         changeset_source: source
+                //     }));
+                //
+                // url = editorService.getUrlForIDEditor({
+                //     base: 'http://127.0.0.1:8111/load_and_zoom?',
+                //     bounds: extentTransformed,
+                //     protocol: 'lbrt',
+                //     changesetComment: '', // TODO: changeset comment
+                //     imageryUrl: '' // TODO: imagery URL
+                // });
+                // $.ajax({
+                //     url: url,
+                //     complete: function (t) {
+                //         if (t.status != 200) {
+                //             alert(josmRcDidNotRespondI18n);
+                //         } else {
+                //             if (typeof imagery_url != "undefined" && imagery_url !== '') {
+                //                 $.ajax({
+                //                     url: 'http://127.0.0.1:8111/imagery',
+                //                     data: {
+                //                         title: "Tasking Manager - #" + project_id,
+                //                         type: imagery_url.toLowerCase().substring(0, 3),
+                //                         url: imagery_url
+                //                     }
+                //                 });
+                //             }
+                //         }
+                //     }
+                // });
+
+
             }
             // TODO: other editors
         }

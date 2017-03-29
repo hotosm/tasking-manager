@@ -6,12 +6,13 @@
 
     angular
         .module('taskingManager')
-        .service('editorService', ['mapService', editorService]);
+        .service('editorService', ['$http', '$location', 'mapService', editorService]);
 
-    function editorService(mapService) {
+    function editorService($http, $location, mapService) {
 
         var service = {
-            getUrlForEditor: getUrlForEditor
+            getUrlForEditor: getUrlForEditor,
+            sendJOSMCmd: sendJOSMCmd
         };
 
         return service;
@@ -37,20 +38,6 @@
             var changesetComment = options.changesetComment;
             var imageryUrl = options.imageryUrl;
             switch (options.protocol) {
-                case 'lbrt':  // TODO
-                    if (typeof imageryUrl != "undefined" && imageryUrl !== '') {
-                        source = encodeURIComponent(imageryUrl);
-                    } else {
-                        source = "Bing";
-                    }
-                    return options.base + decodeURIComponent($.param({
-                            left: roundToDecimals(bounds[0], 5),
-                            bottom: roundToDecimals(bounds[1], 5),
-                            right: roundToDecimals(bounds[2], 5),
-                            top: roundToDecimals(bounds[3], 5),
-                            changeset_comment: changesetComment,
-                            changeset_source: source
-                        }));
                 case 'llz':  // TODO
                     return options.base + $.param({
                             lon: roundToDecimals(c[0], 5),
@@ -76,6 +63,53 @@
         function roundToDecimals(input, decimals) {
             var p = Math.pow(10, decimals);
             return Math.round(input * p) / p;
+        }
+
+        function formatUrlParams(params) {
+            return "?" + Object
+                    .keys(params)
+                    .map(function (key) {
+                        return key + "=" + params[key]
+                    })
+                    .join("&")
+        }
+
+        function sendJOSMCmd(endpoint, params) {
+            var reqObj = new XMLHttpRequest();
+            var url = endpoint + formatUrlParams(params);
+            reqObj.open('GET', url, false);
+            var success = false;
+            reqObj.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        success = true;
+                    }
+                }
+            }
+            reqObj.send();
+            return success;
+        }
+
+        function sendJOSMImageryCmd(imageryTitle, imageryType, imageryUrl) {
+            //load imagery if available
+            var imageryReq = new XMLHttpRequest();
+            var imageryTitle = "Tasking Manager - #" + projectId;
+            imageryUrl = encodeURIComponent(imageryUrl);
+            var imageryCommandUrl = 'http://127.0.0.1:8111/imagery' +
+                '?title=' + encodeURIComponent(imageryTitle) +
+                '&type=' + encodeURIComponent(imageryType) +
+                '&url=' + encodeURIComponent(imageryUrl);//encodeURIComponent('tms[22]:https://api.mapbox.com/v4/digitalglobe.2lnp1jee/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNpd3A2OTAwODAwNGUyenFuNTkyZjRkeWsifQ.Y44JcpYP9gXsZD3p5KBZbA');
+
+            imageryReq.open('GET', imageryCommandUrl, true);
+            imageryReq.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        //TODO may want to do something here
+                    }
+                }
+            }
+            imageryReq.send();
+
         }
     }
 })();
