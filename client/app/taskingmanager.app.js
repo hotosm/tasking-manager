@@ -59,6 +59,12 @@
                     templateUrl: 'app/project/project.html',
                     controller: 'projectController',
                     controllerAs: 'projectCtrl'
+                })
+                
+                .when('/user/:id', {
+                    templateUrl: 'app/profile/user-profile.html',
+                    controller: 'profileController',
+                    controllerAs: 'profileCtrl'
                 });
             
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them
