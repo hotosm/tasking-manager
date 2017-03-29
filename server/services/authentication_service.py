@@ -28,7 +28,7 @@ class AuthenticationService:
 
         osm_id = int(osm_user.attrib['id'])
         username = osm_user.attrib['display_name']
-        existing_user = User().get(osm_id)
+        existing_user = User().get_by_id(osm_id)
 
         if not existing_user:
             changesets = osm_user.find('changesets')

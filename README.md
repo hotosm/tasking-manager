@@ -54,9 +54,9 @@ Following must be available locally:
 ### Environment vars:
 As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
 
-* *TM_DB* - This is the for the PostGIS connection string
-* *TM_SECRET* - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
-* *TM_CONSUMER_SECRET* - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
+* **TM_DB** - This is the for the PostGIS connection string
+* **TM_SECRET** - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
+* **TM_CONSUMER_SECRET** - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
 
 * Linux/Mac
     * ```export TM_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
@@ -67,11 +67,25 @@ As the project is open source we have to keep secrets out of the repo.  You will
     * ```setx TM_SECRET "secret-key-here"```
     * ```setx TM_CONSUMER_SECRET "outh-consumer-secret-key-goes-here"```
 
+### Creating the DB
+We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to create the database from migrations directory.  Create the database as follows:
+
+```
+python manage.py db upgrade
+```
+
 ### Running Locally
 You can now run the app as follows:
 
 ```
 python manage.py runserver -d
+```
+
+### Running Unit Tests
+The project includes a suite of Unit and Integration tests that you should run after any changes with [nose](http://nose.readthedocs.io/en/latest/)
+
+```
+nosetests ./tests/server
 ```
 
 ## Dev Ops
