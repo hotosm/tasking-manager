@@ -27,6 +27,7 @@
             // Clear the search parameters
             $location.search('username', null);
             $location.search('session_token', null);
+            $location.search('ng', null);
         }
     }
 })();
