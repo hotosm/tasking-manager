@@ -1,3 +1,4 @@
+import base64
 import os
 import unittest
 from urllib.parse import urlparse, parse_qs
@@ -93,6 +94,10 @@ class TestAuthenticationService(unittest.TestCase):
         # Assert
         parsed_url = urlparse(redirect_url)
         query = parse_qs(parsed_url.query)
+
+        iain = query['session_token'][0]
+
+        works = base64.b64encode(iain.encode())
 
         self.assertEqual(query['username'][0], 'Thinkwhere Test')
         self.assertTrue(query['session_token'][0])

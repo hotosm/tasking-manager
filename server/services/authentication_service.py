@@ -1,7 +1,24 @@
+import base64
 from urllib import parse
 from flask import current_app
-from itsdangerous import URLSafeTimedSerializer
+from flask_httpauth import HTTPTokenAuth
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from server.models.postgis.user import User
+
+token_auth = HTTPTokenAuth(scheme='Token')
+
+
+@token_auth.verify_token
+def verify_token(token):
+    if not token:
+        return False
+
+    decoded_token = base64.b64decode(token).decode('utf-8')
+
+    # If token check is valid we don't need to do any subsequent testing.  Note that tokens are hardcoded to
+    # be good for 7 days (604800 seconds)
+    if AuthenticationService.is_valid_token(decoded_token, 604800):
+        return True
 
 
 class AuthServiceError(Exception):
@@ -62,3 +79,35 @@ class AuthenticationService:
         # Trailing & added as Angular a bit flaky with parsing querystring
         authorized_url = f'{base_url}/authorized?username={parse.quote(username)}&session_token={session_token}&ng=0'
         return authorized_url
+
+    @staticmethod
+    def is_valid_token(token, token_expiry, requested_username=None):
+        """
+        Validates if the supplied token is valid, and hasn't expired.
+        :param token: Token to check
+        :param token_expiry: When the token expires
+        :param requested_username: The username that was requested from the API, if this is different from the tokenised
+          user then the tokenised user is attempting to illegally access other users details
+        :return: True if token is valid
+        """
+        serializer = URLSafeTimedSerializer(current_app.secret_key)
+
+        try:
+            tokenised_username = serializer.loads(token, max_age=token_expiry)
+        except SignatureExpired:
+            app.logger.debug('Token has expired')
+            return False
+        except BadSignature:
+            app.logger.debug('Bad Token Signature')
+            return False
+
+        if requested_username is not None:
+            # If the requested username is not equal to the tokenised username, then the user is attempting to
+            # access a resource that belongs to another user, which is effectively hacking, hence logging out warning
+            if tokenised_username != requested_username.lower():
+                current_app.logger.warn(
+                    'Tokenised user {0}, attempted to access resource belonging to {1}'.format(tokenised_username,
+                                                                                               requested_username))
+                return False
+
+        return True

@@ -1,14 +1,13 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
+from server.services.authentication_service import token_auth
 from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData, ProjectAdminServiceError
 
 
 class ProjectAdminAPI(Resource):
-    """
-    /api/projects
-    """
 
+    @token_auth.login_required
     def put(self):
         """
         Creates a tasking-manager project
@@ -18,6 +17,12 @@ class ProjectAdminAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: body
               name: body
               required: true
@@ -46,6 +51,8 @@ class ProjectAdminAPI(Resource):
                 description: Draft project created successfully
             400:
                 description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
             500:
                 description: Internal Server Error
         """
