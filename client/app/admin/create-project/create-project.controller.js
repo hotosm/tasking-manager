@@ -61,7 +61,7 @@
             // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
             var account = accountService.getAccount();
             if (account){
-                if (account.role !== 'PROJECT_MANANGER' || account.role !== 'ADMIN'){
+                if (account.role !== 'PROJECT_MANAGER' && account.role !== 'ADMIN'){
                     $location.path('/');
                 }
             }
