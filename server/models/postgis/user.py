@@ -1,5 +1,6 @@
 from enum import Enum
 from server import db
+from server.models.dtos.user_dto import UserDTO
 
 
 class UserRole(Enum):
@@ -45,9 +46,18 @@ class User(db.Model):
 
     def get_by_username(self, username: str):
         """ Return the user for the specified username, or None if not found """
-        return User.query.filter(username=username).one_or_none()
+        return User.query.filter_by(username=username).one_or_none()
 
     def delete(self):
         """ Delete the user in scope from DB """
         db.session.delete(self)
         db.session.commit()
+
+    def as_dto(self):
+        """ Create DTO object from user in scope """
+        user_dto = UserDTO()
+        user_dto.username = self.username
+        user_dto.role = UserRole(self.role).name
+        user_dto.mapping_level = MappingLevel(self.mapping_level).name
+
+        return user_dto
