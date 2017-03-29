@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', projectController]);
+        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService','editorService', projectController]);
 
-    function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService) {
+    function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -22,6 +22,7 @@
         vm.taskError = '';
         vm.taskErrorValidation = '';
         vm.taskLockError = false;
+        vm.selectedEditor = '';
 
         //selected task
         vm.selectedTaskData = null;
@@ -50,7 +51,9 @@
             vm.currentTab = 'description';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
+            vm.selectedEditor = 'ideditor'; // default to iD editor
             mapService.createOSMMap('map');
+            mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
 
             vm.map.addInteraction(select);
@@ -406,10 +409,8 @@
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var bbox = selectedFeature.getGeometry().getExtent();
-            // Transform coordinates from web mercator (used by OpenLayers) to WGS84 (used by OSM)
-            var bottomLeft = ol.proj.transform([bbox[0], bbox[1]], 'EPSG:3857', 'EPSG:4326');
-            var topRight = ol.proj.transform([bbox[2], bbox[3]], 'EPSG:3857', 'EPSG:4326');
-            $window.open('http://www.openstreetmap.org/history?bbox=' + bottomLeft[0] + ',' + bottomLeft[1] + ',' + topRight[0] + ',' + topRight[1]);
+            var bboxTransformed = geospatialService.transformExtentToLatLon(bbox);
+            $window.open('http://www.openstreetmap.org/history?bbox=' + bboxTransformed);
         };
 
         /**
@@ -431,6 +432,37 @@
             }
             var query = queryPrefix + queryMiddle + querySuffix;
             $window.open('http://overpass-turbo.eu/map.html?Q=' + query);
+        };
+
+        /**
+         * Start the editor by getting the editor options and the URL to call
+         * TODO: complete for all editors
+         * See: https://github.com/hotosm/osm-tasking-manager2/blob/d3a3b70d09256ba16bdff1b35909ad4f3b9f66e2/osmtm/static/js/project.js
+         * @param editor
+         */
+        vm.startEditor = function(editor){
+            var taskId = vm.selectedTaskData.taskId;
+            var features = vm.taskVectorLayer.getSource().getFeatures();
+            var selectedFeature = taskService.getTaskFeatureById(features, taskId);
+            var extent = selectedFeature.getGeometry().getExtent();
+            var extentTransformed = geospatialService.transformExtentToLatLon(extent);
+            // get center in the right projection
+            var center = ol.proj.transform(geospatialService.getCenterOfExtent(extent), 'EPSG:3857', 'EPSG:4326');
+            var url = '';
+            if (editor === 'ideditor') {
+                // TODO licence agreement
+                url = editorService.getUrlForEditor({
+                    base: 'http://www.openstreetmap.org/edit?editor=id&',
+                    bounds: extentTransformed,
+                    centroid: center,
+                    protocol: 'id',
+                    changesetComment: '', // TODO: changeset comment
+                    imageryUrl: '' // TODO: imagery URL
+                });
+                // TODO: GPX file
+                window.open(url);
+            }
+            // TODO: other editors
         }
     }
 })();

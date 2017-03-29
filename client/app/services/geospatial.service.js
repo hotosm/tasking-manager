@@ -23,7 +23,9 @@
             getGeoJSONFromFeature: getGeoJSONFromFeature,
             getGeoJSONObjectFromFeature: getGeoJSONObjectFromFeature,
             getGeoJSONFromFeatures: getGeoJSONFromFeatures,
-            getGeoJSONObjectFromFeatures: getGeoJSONObjectFromFeatures
+            getGeoJSONObjectFromFeatures: getGeoJSONObjectFromFeatures,
+            getCenterOfExtent: getCenterOfExtent,
+            transformExtentToLatLon: transformExtentToLatLon
         };
 
         return service;
@@ -127,6 +129,30 @@
                 featureProjection: MAP_PROJECTION
             });
             return geojsonObject;
+        }
+
+        /**
+         * Get center of extent
+         * This only works accurately in coordinate systems such as EPSG:3857 
+         * @param OL extent
+         * @returns {*[]}
+         */
+        function getCenterOfExtent(extent){
+            var x = extent[0] + (extent[2]-extent[0])/2;
+            var y = extent[1] + (extent[3]-extent[1])/2;
+            return [x, y];
+        }
+
+        /**
+         * Transform extent from map projection to lat lon
+         * @param extent
+         * @returns {string}
+         */
+        function transformExtentToLatLon(extent){
+            var bottomLeft = ol.proj.transform([extent[0], extent[1]], MAP_PROJECTION, DATA_PROJECTION);
+            var topRight = ol.proj.transform([extent[2], extent[3]], MAP_PROJECTION, DATA_PROJECTION);
+            var extentLatLon = bottomLeft[0] + ',' + bottomLeft[1] + ',' + topRight[0] + ',' + topRight[1];
+            return extentLatLon;
         }
     }
 })();

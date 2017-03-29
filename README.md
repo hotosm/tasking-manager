@@ -50,21 +50,22 @@ Following must be available locally:
         * ```.\venv\scripts\activate```
 * Install all dependencies:
     * ```pip install -r requirements.txt```
-* Set environment variable to point to appropriate postgres database instance with HOT schema set up.  You will need to modify the sample connection string with username, password etc:
-    * Linux/Mac:
-        * ```export TASKING_MANAGER_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
-    * Windows (may require you to restart your dev env to pick up the variable):
-        * ```setx TASKING_MANAGER_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
         
 ### Environment vars:
 As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
 
-* TM_CONSUMER_SECRET = This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
+* *TM_DB* - This is the for the PostGIS connection string
+* *TM_SECRET* - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
+* *TM_CONSUMER_SECRET* - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
 
 * Linux/Mac
-    export TM_CONSUMER_SECRET=secret-key-goes-here
+    * ```export TM_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
+    * ```export TM_SECRET=secret-key-here```
+    * ```export TM_CONSUMER_SECRET=outh-consumer-secret-key-goes-here```
 * Windows:
-    * setx TM_CONSUMER_SECRET "secret-key-goes-here"
+    * ```setx TM_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
+    * ```setx TM_SECRET "secret-key-here"```
+    * ```setx TM_CONSUMER_SECRET "outh-consumer-secret-key-goes-here"```
 
 ### Running Locally
 You can now run the app as follows:
