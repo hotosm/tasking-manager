@@ -14,7 +14,7 @@
 
          // Check if user is logged in by checking available cookies
         .run(['accountService','authService', function (accountService, authService) {
-            
+
             // Get session storage on application load
             var nameOfLocalStorage = authService.getLocalStorageSessionName();
             var sessionStorage = JSON.parse(localStorage.getItem(nameOfLocalStorage));
