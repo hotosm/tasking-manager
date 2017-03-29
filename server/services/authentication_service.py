@@ -20,6 +20,8 @@ def verify_token(token):
     if AuthenticationService.is_valid_token(decoded_token, 604800):
         return True
 
+    return False
+
 
 class AuthServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when authenticating """
