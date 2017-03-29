@@ -12,6 +12,26 @@
             return config;
         }])
 
+         // Check if user is logged in by checking available cookies
+        .run(['accountService','authService', function (accountService, authService) {
+
+            // Get session storage on application load
+            var nameOfLocalStorage = authService.getLocalStorageSessionName();
+            var sessionStorage = JSON.parse(localStorage.getItem(nameOfLocalStorage));
+            var account = {
+                username: ''
+            };
+
+            if (sessionStorage) {
+                account = {
+                    username: sessionStorage.username || ''
+                };
+                authService.setSession(sessionStorage.sessionToken || '', sessionStorage.username || '');
+            }
+
+            accountService.setAccount(account);
+        }])
+
         .config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 
             // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
@@ -59,6 +79,16 @@
                     templateUrl: 'app/project/project.html',
                     controller: 'projectController',
                     controllerAs: 'projectCtrl'
+                })
+
+                .when('/authorized', {
+                    templateUrl: 'app/login/authorized.html',
+                    controller: 'loginController',
+                    controllerAs: 'loginCtrl'
+                })
+
+                .when('/auth-failed', {
+                    templateUrl: 'app/login/auth-failed.html'
                 });
             
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them

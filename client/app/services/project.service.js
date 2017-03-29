@@ -357,7 +357,7 @@
             // Returns a promise
             return $http({
                 method: 'PUT',
-                url: configService.tmAPI + '/v1/admin/project',
+                url: configService.tmAPI + '/admin/project',
                 data: newProject,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
@@ -383,7 +383,7 @@
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/v1/project/' + id,
+                url: configService.tmAPI + '/project/' + id,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8',
                     //TODO - Accept-Language header hardcoded for now
@@ -410,7 +410,7 @@
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/v1/admin/project/' + id,
+                url: configService.tmAPI + '/admin/project/' + id,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
@@ -435,7 +435,7 @@
             // Returns a promise
             return $http({
                 method: 'POST',
-                url: configService.tmAPI + '/v1/admin/project/' + id,
+                url: configService.tmAPI + '/admin/project/' + id,
                 data: projectData,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'    
