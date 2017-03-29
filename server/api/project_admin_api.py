@@ -58,8 +58,8 @@ class ProjectAdminAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            iain = tm.authenticated_user_id
             draft_project_dto = DraftProjectDTO(request.get_json())
+            draft_project_dto.user_id = tm.authenticated_user_id
             draft_project_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
