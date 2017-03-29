@@ -1,7 +1,6 @@
 import unittest
-
 import geojson
-
+from server.models.dtos.project_dto import DraftProjectDTO
 from server.models.postgis.project import AreaOfInterest, InvalidGeoJson, InvalidData, Project, Task
 
 
@@ -23,12 +22,6 @@ class TestProject(unittest.TestCase):
         with self.assertRaises(InvalidGeoJson):
             # Only geometries of type MultiPolygon are valid
             AreaOfInterest(geojson.dumps(bad_multipolygon))
-
-    def test_cant_create_project_with_empty_project_name(self):
-        # Act / Assert
-        with self.assertRaises(InvalidData):
-            # Only geometries of type MultiPolygon are valid
-            Project().create_draft_project('', 'aoi')
 
     def test_cant_add_task_if_not_supplied_feature_type(self):
         # Arrange

@@ -3,7 +3,11 @@ import unittest
 import geojson
 import json
 from server import create_app
+from server.models.dtos.project_dto import DraftProjectDTO
 from server.models.postgis.project import Project, AreaOfInterest, Task, ProjectDTO, ProjectInfoDTO, ProjectStatus, ProjectPriority
+from server.models.postgis.user import User
+
+TEST_USER_ID = 7777777
 
 
 class TestProject(unittest.TestCase):
@@ -29,6 +33,7 @@ class TestProject(unittest.TestCase):
         if self.skip_tests:
             return
 
+        User.create_from_osm_user_details(TEST_USER_ID, 'Thinkwhere Test', 16)  # Create test user
         self.create_test_project()
 
     def tearDown(self):
@@ -36,6 +41,8 @@ class TestProject(unittest.TestCase):
             return
 
         self.test_project.delete()
+        user = User().get_by_id(TEST_USER_ID)
+        user.delete()
         self.ctx.pop()
 
     def test_project_can_be_persisted_to_db(self):
@@ -126,8 +133,13 @@ class TestProject(unittest.TestCase):
                                      '"properties": {"x": 2402, "y": 1736, "zoom": 12}, "type": "Feature"}')
 
         test_aoi = AreaOfInterest(multipoly_geojson)
+
+        test_project_dto = DraftProjectDTO()
+        test_project_dto.project_name = 'Test'
+        test_project_dto.user_id = TEST_USER_ID
+
         self.test_project = Project()
-        self.test_project.create_draft_project('Test', test_aoi)
+        self.test_project.create_draft_project(test_project_dto, test_aoi)
         self.test_project.tasks.append(Task.from_geojson_feature(1, task_feature))
         self.test_project.create()
 

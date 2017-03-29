@@ -26,7 +26,7 @@ class TestProjectAdminService(unittest.TestCase):
 
         test_project_service = ProjectAdminService()
         test_project = Project()
-        test_project.create_draft_project('Test', MagicMock())
+        test_project.create_draft_project(MagicMock(), MagicMock())
 
         # Act
         test_project_service._attach_tasks_to_project(test_project, valid_feature_collection)

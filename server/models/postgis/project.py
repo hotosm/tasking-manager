@@ -4,9 +4,10 @@ from flask import current_app
 from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority
 from server.models.postgis.task import Task
+from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
 
 
@@ -146,24 +147,23 @@ class Project(db.Model):
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = db.Column(db.String(10), default='en')  # The locale that is returned if requested locale not available
+    author_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
 
     # Mapped Objects
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
+    author = db.relationship(User)
 
-    def create_draft_project(self, project_name, aoi):
+    def create_draft_project(self, draft_project_dto: DraftProjectDTO, aoi: AreaOfInterest):
         """
-        Project constructor
-        :param project_name: Name Project Manager has given the project
+        Creates a draft project
+        :param draft_project_dto: DTO containing draft project details
         :param aoi: Area of Interest for the project (eg boundary of project)
-        :raises InvalidData
         """
-        if not project_name:
-            raise InvalidData('Project: project_name cannot be empty')
-
-        self.project_info.append(ProjectInfo.create_from_name(project_name))
+        self.project_info.append(ProjectInfo.create_from_name(draft_project_dto.project_name))
         self.area_of_interest = aoi
         self.status = ProjectStatus.DRAFT.value
+        self.author_id = draft_project_dto.user_id
 
     def create(self):
         """ Creates and saves the current model to the DB """
