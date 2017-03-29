@@ -44,7 +44,7 @@ class TestAuthenticationService(unittest.TestCase):
         with self.assertRaises(AuthServiceError):
             AuthenticationService().login_user(osm_response, 'wont-find')
 
-    @patch.object(User, 'get')
+    @patch.object(User, 'get_by_id')
     def test_if_user_get_called_with_osm_id(self, mock_user_get):
         if self.skip_tests:
             return
@@ -59,7 +59,7 @@ class TestAuthenticationService(unittest.TestCase):
         mock_user_get.assert_called_with(7777777)
 
     @patch.object(User, 'create_from_osm_user_details')
-    @patch.object(User, 'get')
+    @patch.object(User, 'get_by_id')
     def test_if_user_create_called_if_user_not_found(self, mock_user_get, mock_user_create):
         if self.skip_tests:
             return
@@ -74,7 +74,7 @@ class TestAuthenticationService(unittest.TestCase):
         # Assert
         mock_user_create.assert_called_with(7777777, 'Thinkwhere Test', 16)
 
-    @patch.object(User, 'get')
+    @patch.object(User, 'get_by_id')
     def test_valid_auth_request_gets_token(self, mock_user_get):
         if self.skip_tests:
             return

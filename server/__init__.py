@@ -102,6 +102,6 @@ def init_flask_restful_routes(app):
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
-    api.add_resource(UserAPI,                       '/api/v1/user/<string:user_name>')
+    api.add_resource(UserAPI,                       '/api/v1/user/<string:username>')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')

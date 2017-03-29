@@ -22,11 +22,9 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.BigInteger, primary_key=True, index=True)
-    username = db.Column(db.String)
+    username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0)
     mapping_level = db.Column(db.Integer, default=1)
-
-    __table_args__ = (db.Index('idx_username', 'username'), {})
 
     @classmethod
     def create_from_osm_user_details(cls, user_id: int, username: str, changeset_count: int):
@@ -41,9 +39,13 @@ class User(db.Model):
         db.session.add(user)
         db.session.commit()
 
-    def get(self, user_id: int):
+    def get_by_id(self, user_id: int):
         """ Return the user for the specified id, or None if not found """
         return User.query.get(user_id)
+
+    def get_by_username(self, username: str):
+        """ Return the user for the specified username, or None if not found """
+        return User.query.filter(username=username).one_or_none()
 
     def delete(self):
         """ Delete the user in scope from DB """

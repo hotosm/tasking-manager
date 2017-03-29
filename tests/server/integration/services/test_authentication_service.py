@@ -29,7 +29,7 @@ class TestAuthenticationService(unittest.TestCase):
         if self.skip_tests:
             return
 
-        user = User().get(7777777)
+        user = User().get_by_id(7777777)
         user.delete()
 
         self.ctx.pop()
