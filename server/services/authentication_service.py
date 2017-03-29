@@ -3,24 +3,31 @@ from urllib import parse
 from flask import current_app
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from server.api.utils import TMAPIDecorators
+from server.services.user_service import UserService
 from server.models.postgis.user import User
 
 token_auth = HTTPTokenAuth(scheme='Token')
+tm = TMAPIDecorators()
 
 
 @token_auth.verify_token
 def verify_token(token):
+    """ Verify the supplied token and check user role is correct for the requested resource"""
     if not token:
         return False
 
     decoded_token = base64.b64decode(token).decode('utf-8')
 
-    # If token check is valid we don't need to do any subsequent testing.  Note that tokens are hardcoded to
-    # be good for 7 days (604800 seconds)
-    if AuthenticationService.is_valid_token(decoded_token, 604800):
-        return True
+    valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
+    if not valid_token:
+        return False
 
-    return False
+    if tm.is_pm_only_resource:
+        if not UserService.is_user_a_project_manager(user_id):
+            return False
+
+    return True  # All tests passed token is good for the requested resource
 
 
 class AuthServiceError(Exception):
@@ -83,33 +90,22 @@ class AuthenticationService:
         return authorized_url
 
     @staticmethod
-    def is_valid_token(token, token_expiry, requested_username=None):
+    def is_valid_token(token, token_expiry):
         """
         Validates if the supplied token is valid, and hasn't expired.
         :param token: Token to check
         :param token_expiry: When the token expires
-        :param requested_username: The username that was requested from the API, if this is different from the tokenised
-          user then the tokenised user is attempting to illegally access other users details
-        :return: True if token is valid
+        :return: True if token is valid, and user_id contained in token
         """
         serializer = URLSafeTimedSerializer(current_app.secret_key)
 
         try:
-            tokenised_username = serializer.loads(token, max_age=token_expiry)
+            tokenised_user_id = serializer.loads(token, max_age=token_expiry)
         except SignatureExpired:
-            app.logger.debug('Token has expired')
-            return False
+            current_app.logger.debug('Token has expired')
+            return False, None
         except BadSignature:
-            app.logger.debug('Bad Token Signature')
-            return False
+            current_app.logger.debug('Bad Token Signature')
+            return False, None
 
-        if requested_username is not None:
-            # If the requested username is not equal to the tokenised username, then the user is attempting to
-            # access a resource that belongs to another user, which is effectively hacking, hence logging out warning
-            if tokenised_username != requested_username.lower():
-                current_app.logger.warn(
-                    'Tokenised user {0}, attempted to access resource belonging to {1}'.format(tokenised_username,
-                                                                                               requested_username))
-                return False
-
-        return True
+        return True, tokenised_user_id
