@@ -27,6 +27,7 @@ def verify_token(token):
         if not UserService.is_user_a_project_manager(user_id):
             return False
 
+    tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
     return True  # All tests passed token is good for the requested resource
 
 
@@ -62,7 +63,7 @@ class AuthenticationService:
 
             User.create_from_osm_user_details(osm_id, username, changeset_count)
 
-        session_token = self._generate_session_token_for_user(osm_id)
+        session_token = self.generate_session_token_for_user(osm_id)
         authorized_url = self._generate_authorized_url(username, session_token)
 
         return authorized_url
@@ -73,7 +74,8 @@ class AuthenticationService:
         auth_failed_url = f'{base_url}/auth-failed'
         return auth_failed_url
 
-    def _generate_session_token_for_user(self, osm_id: int):
+    @staticmethod
+    def generate_session_token_for_user(osm_id: int):
         """
         Generates a unique token with the osm_id and current time embedded within it
         :param osm_id: OSM ID of the user authenticating
