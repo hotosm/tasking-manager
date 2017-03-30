@@ -25,7 +25,7 @@
             // Return to the URL where the user came from
             var redirectURL = $location.search().redirect;
             if (redirectURL){
-                $location.path($location.search().redirect);
+                $location.path(redirectURL);
             }
             else {
                 // If no redirect URL is given, navigate to the homepage
