@@ -40,6 +40,7 @@ class TaskHistoryDTO(Model):
     action = StringType()
     action_text = StringType(serialized_name='actionText')
     action_date = DateTimeType(serialized_name='actionDate')
+    action_by = StringType(serialized_name='actionBy')
 
 
 class TaskDTO(Model):

@@ -156,6 +156,7 @@ class TestMappingService(unittest.TestCase):
         mapped_task.task_id = 1
         mapped_task.project_id = 1
         mapped_task.status = TaskStatus.DONE.name
+        mapped_task.user_id = 1234
         mapped_task.comment = 'Test comment'
 
         # Act

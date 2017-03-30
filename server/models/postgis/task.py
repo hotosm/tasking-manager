@@ -28,6 +28,8 @@ class TaskHistory(db.Model):
     action_date = db.Column(db.DateTime, nullable=False, default=timestamp)
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
 
+    actioned_by = db.relationship(User)
+
     __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
                       db.Index('idx_task_history_composite', 'task_id', 'project_id'), {})
 
@@ -211,6 +213,7 @@ class Task(db.Model):
             history.action = action.action
             history.action_text = action.action_text
             history.action_date = action.action_date
+            history.action_by = action.actioned_by.username if action.actioned_by else None
 
             task_history.append(history)
 
