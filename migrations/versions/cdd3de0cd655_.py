@@ -1,17 +1,16 @@
 """empty message
 
-Revision ID: c39f05c0bba6
+Revision ID: cdd3de0cd655
 Revises: 
-Create Date: 2017-03-30 09:50:51.394229
+Create Date: 2017-03-30 11:31:04.016799
 
 """
 from alembic import op
 import sqlalchemy as sa
 import geoalchemy2
 
-
 # revision identifiers, used by Alembic.
-revision = 'c39f05c0bba6'
+revision = 'cdd3de0cd655'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -70,15 +69,15 @@ def upgrade():
     sa.Column('geometry', geoalchemy2.types.Geometry(geometry_type='MULTIPOLYGON', srid=4326), nullable=True),
     sa.Column('task_status', sa.Integer(), nullable=True),
     sa.Column('task_locked', sa.Boolean(), nullable=True),
-    sa.Column('lock_holder', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['lock_holder'], ['users.id'], name='fk_users'),
+    sa.Column('lock_holder_id', sa.BigInteger(), nullable=True),
+    sa.ForeignKeyConstraint(['lock_holder_id'], ['users.id'], name='fk_users'),
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
     sa.PrimaryKeyConstraint('id', 'project_id')
     )
     op.create_index(op.f('ix_tasks_project_id'), 'tasks', ['project_id'], unique=False)
     op.create_table('task_history',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('project_id', sa.Integer(), nullable=True),
     sa.Column('task_id', sa.Integer(), nullable=False),
     sa.Column('action', sa.String(), nullable=False),
     sa.Column('action_text', sa.String(), nullable=True),
@@ -87,7 +86,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
     sa.ForeignKeyConstraint(['task_id', 'project_id'], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='fk_users'),
-    sa.PrimaryKeyConstraint('id', 'project_id')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_index('idx_task_history_composite', 'task_history', ['task_id', 'project_id'], unique=False)
     op.create_index(op.f('ix_task_history_project_id'), 'task_history', ['project_id'], unique=False)

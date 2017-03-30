@@ -3,9 +3,10 @@ import geojson
 from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
-from server.models.postgis.statuses import TaskStatus
-from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
+from server.models.postgis.statuses import TaskStatus
+from server.models.postgis.user import User
+from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp
 
 
 class TaskAction(Enum):
@@ -20,7 +21,7 @@ class TaskHistory(db.Model):
     __tablename__ = "task_history"
 
     id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True)
     task_id = db.Column(db.Integer, nullable=False)
     action = db.Column(db.String, nullable=False)
     action_text = db.Column(db.String)
@@ -30,9 +31,10 @@ class TaskHistory(db.Model):
     __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
                       db.Index('idx_task_history_composite', 'task_id', 'project_id'), {})
 
-    def __init__(self, task_id, project_id):
+    def __init__(self, task_id, project_id, user_id):
         self.task_id = task_id
         self.project_id = project_id
+        self.user_id = user_id
 
     def set_task_locked_action(self):
         self.action = TaskAction.LOCKED.name
@@ -76,10 +78,11 @@ class Task(db.Model):
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
     task_locked = db.Column(db.Boolean, default=False)
-    lock_holder = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'))
+    lock_holder_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'))
 
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
+    lock_holder = db.relationship(User)
 
     @classmethod
     def from_geojson_feature(cls, task_id, task_feature):
@@ -125,15 +128,16 @@ class Task(db.Model):
         """
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
 
-    def set_task_history(self, action, comment=None, new_state=None):
+    def set_task_history(self, action, user_id, comment=None, new_state=None):
         """
         Sets the task history for the action that the user has just performed
         :param task: Task in scope
+        :param user_id: ID of user performing the action
         :param action: Action the user has performed
         :param comment: Comment user has added
         :param new_state: New state of the task
         """
-        history = TaskHistory(self.id, self.project_id)
+        history = TaskHistory(self.id, self.project_id, user_id)
 
         if action == TaskAction.LOCKED:
             history.set_task_locked_action()
@@ -150,9 +154,9 @@ class Task(db.Model):
 
     def lock_task(self, user_id: int):
         """ Lock task and save in DB  """
-        self.set_task_history(TaskAction.LOCKED)
+        self.set_task_history(TaskAction.LOCKED, user_id)
         self.task_locked = True
-        self.lock_holder = user_id
+        self.lock_holder_id = user_id
         self.update()
 
     def unlock_task(self, new_state=None, comment=None):
@@ -214,6 +218,7 @@ class Task(db.Model):
         task_dto.project_id = self.project_id
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.task_locked = self.task_locked
+        task_dto.lock_holder = self.lock_holder.username
         task_dto.task_history = task_history
 
         return task_dto

@@ -47,6 +47,7 @@ class TaskDTO(Model):
     project_id = IntType(serialized_name='projectId')
     task_status = StringType(serialized_name='taskStatus')
     task_locked = BooleanType(serialized_name='taskLocked')
+    lock_holder = StringType(serialized_name='lockHolder')
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
 
 
