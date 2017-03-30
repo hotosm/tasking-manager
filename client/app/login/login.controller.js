@@ -23,7 +23,14 @@
             // Set the session in the authentication service
             authService.setSession(vm.sessionToken, vm.userName);
             // Return to the URL where the user came from
-            $location.path($location.search().redirect);
+            var redirectURL = $location.search().redirect;
+            if (redirectURL){
+                $location.path(redirectURL);
+            }
+            else {
+                // If no redirect URL is given, navigate to the homepage
+                $location.path('/');
+            }
             // Clear the URL parameters
             $location.search('username', null);
             $location.search('session_token', null);
