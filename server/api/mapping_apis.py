@@ -1,6 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO
+from server.services.authentication_service import token_auth, tm
 from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError
 
 
@@ -102,6 +103,7 @@ class MappingTaskAPI(Resource):
 
 class LockTaskForMappingAPI(Resource):
 
+    @token_auth.login_required
     def post(self, project_id, task_id):
         """
         Locks the task for mapping
@@ -111,6 +113,12 @@ class LockTaskForMappingAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -150,6 +158,7 @@ class LockTaskForMappingAPI(Resource):
 
 class UnlockTaskForMappingAPI(Resource):
 
+    @token_auth.login_required
     def post(self, project_id, task_id):
         """
         Unlocks the task after mapping completed
@@ -159,6 +168,12 @@ class UnlockTaskForMappingAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The ID of the project the task is associated with

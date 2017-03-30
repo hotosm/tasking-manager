@@ -76,6 +76,8 @@ class ProjectAdminAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
+    @token_auth.login_required
     def get(self, project_id):
         """
         Retrieves a Tasking-Manager project
@@ -85,6 +87,12 @@ class ProjectAdminAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
@@ -112,6 +120,8 @@ class ProjectAdminAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
+    @token_auth.login_required
     def post(self, project_id):
         """
         Updates a Tasking-Manager project
@@ -121,6 +131,12 @@ class ProjectAdminAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
