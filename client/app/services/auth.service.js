@@ -10,6 +10,7 @@
 
     function authService($window, $location, configService, accountService) {
 
+        var session = {};
         var sessionToken = '';
         var localStorageSessionName = 'session';
 
@@ -17,6 +18,7 @@
             login: login,
             logout: logout,
             setSession: setSession,
+            getSession: getSession,
             getAuthenticatedHeader: getAuthenticatedHeader,
             getLocalStorageSessionName: getLocalStorageSessionName
         };
@@ -47,12 +49,20 @@
          */
         function setSession(token, username){
             sessionToken = token;
-            var session = {
+            session = {
                 sessionToken: token,
                 username: username
             };
             localStorage.setItem(localStorageSessionName, JSON.stringify(session));
             accountService.setAccount(username);
+        }
+
+        /**
+         * Returns the session
+         * @returns {*}
+         */
+        function getSession(){
+            return session;
         }
 
         /**
@@ -63,7 +73,7 @@
 
             var header = {
                 'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': 'Token ' + btoa(sessionToken + ':' + '')
+                'Authorization': 'Token ' + btoa(sessionToken)
             };
             return header;
         }
