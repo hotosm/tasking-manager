@@ -71,6 +71,11 @@
         vm.createNewProject = function(){
             $location.path('admin/create-project');
             vm.showDropdown = false;
+        };
+
+        vm.manageLicenses = function(){
+            $location.path('admin/licences');
+            vm.showDropdown = false;
         }
     }
 })();

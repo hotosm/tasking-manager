@@ -1,0 +1,50 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Edit license (TODO)
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <form class="form">
+                        <fieldset class="form__fieldset">
+                            <div class="form__group">
+                                <label class="form__label" for="form-name">Name</label>
+                                <input type="text" class="form__control form__control--medium" id="form-name"
+                                       ng-model="licenseEditCtrl.license.name"
+                                       name="form-name" placeholder="Enter a name for the license (provider for example)"/>
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label" for="form-description">Description</label>
+                                <textarea class="form__control form__control--medium" id="form-description" rows="8"
+                                       ng-model="licenseEditCtrl.license.description"
+                                       name="form-name" placeholder="Enter the license terms"/>
+                                </textarea>
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label" for="form-plaintext">Plain text</label>
+                                <textarea class="form__control form__control--medium" id="form-plaintext" rows="2"
+                                       ng-model="licenseEditCtrl.license.plainText"
+                                       name="form-name" placeholder="Enter a short version of the terms"/>
+                                </textarea>
+                            </div>
+                        </fieldset>
+                        <fieldset ng-show="!licenseEditCtrl.isNew" class="form__fieldset">
+                            <button class="button button--secondary" type="button">Save edits</button>
+                            <button class="button button--base" type="button">Delete</button>
+                            <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">Cancel</button>
+                        </fieldset>
+                        <fieldset ng-show="licenseEditCtrl.isNew" class="form__fieldset">
+                            <button class="button button--secondary" type="button" ng-click="licenseEditCtrl.createNewLicense()">Create new licence</button>
+                            <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">Cancel</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
