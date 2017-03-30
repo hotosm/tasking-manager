@@ -232,6 +232,7 @@ class UnlockTaskForMappingAPI(Resource):
             mapped_task = MappedTaskDTO(request.get_json())
             mapped_task.task_id = task_id
             mapped_task.project_id = project_id
+            mapped_task.user_id = tm.authenticated_user_id
             mapped_task.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')

@@ -97,5 +97,5 @@ class MappingService:
         if current_status == TaskStatus.BADIMAGERY and new_state not in [TaskStatus.READY, TaskStatus.BADIMAGERY]:
             raise MappingServiceError(f'Cannot set BADIMAGERY to {current_status.name}')
 
-        task.unlock_task(new_state, mapped_task.comment)
+        task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
         return task.as_dto()

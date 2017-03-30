@@ -159,18 +159,19 @@ class Task(db.Model):
         self.lock_holder_id = user_id
         self.update()
 
-    def unlock_task(self, new_state=None, comment=None):
+    def unlock_task(self, user_id, new_state=None, comment=None):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
             # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
-            self.set_task_history(action=TaskAction.COMMENT, comment=comment)
+            self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         if TaskStatus(self.task_status) != new_state:
-            self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state)
+            self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
             self.task_status = new_state.value
 
         TaskHistory.update_task_locked_with_duration(self.id, self.project_id)
         self.task_locked = False
+        self.lock_holder_id = None
         self.update()
 
     @staticmethod
@@ -218,7 +219,7 @@ class Task(db.Model):
         task_dto.project_id = self.project_id
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.task_locked = self.task_locked
-        task_dto.lock_holder = self.lock_holder.username
+        task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
 
         return task_dto

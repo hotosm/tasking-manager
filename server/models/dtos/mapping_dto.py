@@ -20,7 +20,7 @@ def is_valid_mapped_status(value):
 
 
 class LockTaskDTO(Model):
-    """ DTO used to lock multiple tasks for validation """
+    """ DTO used to lock a task for mapping """
     project_id = IntType(required=True)
     task_id = IntType(required=True)
     user_id = IntType(required=True)
@@ -48,7 +48,7 @@ class TaskDTO(Model):
     project_id = IntType(serialized_name='projectId')
     task_status = StringType(serialized_name='taskStatus')
     task_locked = BooleanType(serialized_name='taskLocked')
-    lock_holder = StringType(serialized_name='lockHolder')
+    lock_holder = StringType(serialized_name='lockHolder', serialize_when_none=False)
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
 
 
