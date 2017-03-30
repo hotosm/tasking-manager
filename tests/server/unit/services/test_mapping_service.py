@@ -90,6 +90,20 @@ class TestMappingService(unittest.TestCase):
         with self.assertRaises(MappingServiceError):
             MappingService().lock_task_for_mapping(self.lock_task_dto)
 
+    @patch.object(Project, 'has_user_already_locked_task')
+    @patch.object(Task, 'get')
+    def test_lock_task_for_mapping_raises_error_if_user_already_has_locked_task(self, mock_task, mock_project):
+        # Arrange
+        self.task_stub.task_locked = False
+        self.task_stub.task_status = 0
+
+        mock_task.return_value = self.task_stub
+        mock_project.return_value = True
+
+        # Act / Assert
+        with self.assertRaises(MappingServiceError):
+            MappingService().lock_task_for_mapping(self.lock_task_dto)
+
     @patch.object(Task, 'update')
     @patch.object(Task, 'get')
     def test_lock_task_for_mapping_sets_locked_status_when_valid(self, mock_task, mock_update):
