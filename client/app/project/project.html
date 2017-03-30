@@ -160,7 +160,8 @@
                                             <option value="walkingpapers">Walking papers</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
-                                        <button class="button button--secondary" ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                             Start Editor
                                         </button>
                                     </div>
@@ -186,9 +187,8 @@
                     <div ng-show="projectCtrl.currentTab === 'validation'">
                         <!-- select UI -->
                         <div ng-show="projectCtrl.validatingStep === 'selecting'">
-                            <h3>Choose a task</h3>
+                            <h3>Select for validation</h3>
                             <p>There are 2 options for choosing a task for validation:</p>
-
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
                                 <button ng-click="projectCtrl.selectRandomTask()"
@@ -196,6 +196,33 @@
                                     Select a random task
                                 </button>
                             </p>
+                            <div>
+                                <p><strong>Option 3: </strong> Select By user:
+                                </p>
+                                <table class="table--zebra user-activity-for-validation">
+                                    <thead>
+                                    <tr>
+                                        <td class="heading-alt">Contributer</td>
+                                        <td class="heading-alt">Level</td>
+                                        <td class="heading-alt">Done</td>
+                                        <td class="heading-alt">Oldest</td>
+                                        <td class="heading-alt">Newest</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="task in projectCtrl.tasksForValidation.doneTasks" >
+                                        <td>{{ task.user }}</td>
+                                        <td>{{ task.level }}</td>
+                                        <td>{{ task.tasks.length }}</td>
+                                        <td><span am-time-ago="task.tasks[0].timeStamp | amUtc"></span></td>
+                                        <td><span
+                                                am-time-ago="task.tasks[task.tasks.length-1].timeStamp | amUtc"></span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                count: {{ count }}
+                            </div>
                         </div>
                         <!-- task viewing and mapping UI's -->
                         <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked'">
@@ -359,7 +386,7 @@
                                             <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
                                         </div>
                                         <div>
-                                            <span am-time-ago=item.actionDate></span>
+                                            <span am-time-ago="item.actionDate | amUtc"></span>
                                             <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                         </div>
                                     </div>
@@ -391,7 +418,8 @@
                 </div>
                 <div>
                     <div class="edit-project-button">
-                        <a href="/admin/edit-project/{{ projectCtrl.projectData.projectId }}" class="button button--secondary">Edit project</a>
+                        <a href="/admin/edit-project/{{ projectCtrl.projectData.projectId }}"
+                           class="button button--secondary">Edit project</a>
                     </div>
                 </div>
             </div>

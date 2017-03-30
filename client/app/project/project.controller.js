@@ -7,7 +7,7 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService','editorService', projectController]);
+        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', projectController]);
 
     function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService) {
         var vm = this;
@@ -41,6 +41,73 @@
         var select = new ol.interaction.Select({
             style: styleService.getSelectedStyleFunction
         });
+
+        vm.tasksForValidation = {
+            doneTasks: [
+                {
+                    user: 'feenster',
+                    level: 'beginner',
+                    tasks: [
+                        {
+                            taskId: 1,
+                            timeStamp: '2017-03-10T14:43:27.02348'
+                        },
+                        {
+                            taskId: 2,
+                            timeStamp: '2017-03-15T14:43:27.02348'
+                        },
+                        {
+                            taskId: 3,
+                            timeStamp: '2017-03-20T14:43:27.02348'
+                        }
+                    ]
+                },
+                {
+                    user: 'hunter',
+                    level: 'intermediate',
+                    tasks: [
+                        {
+                            taskId: 4,
+                            timeStamp: '2017-03-30T15:10:27.02348'
+                        },
+                        {
+                            taskId: 5,
+                            timeStamp: '2017-03-30T15:11:27.02348'
+                        },
+                        {
+                            taskId: 6,
+                            timeStamp: '2017-03-30T15:12:27.02348'
+                        },
+                        {
+                            taskId: 7,
+                            timeStamp: '2017-03-30T15:13:27.02348'
+                        }
+                    ]
+                },
+                {
+                    user: 'alblas',
+                    level: 'advance',
+                    tasks: [
+                        {
+                            taskId: 8,
+                            timeStamp: '2017-03-30T10:43:27.02348'
+                        },
+                        {
+                            taskId: 9,
+                            timeStamp: '2017-03-30T12:43:27.02348'
+                        },
+                        {
+                            taskId: 10,
+                            timeStamp: '2017-03-30T14:43:27.02348'
+                        },
+                        {
+                            taskId: 11,
+                            timeStamp: '2017-03-30T18:43:27.02348'
+                        }
+                    ]
+                }
+            ]
+        }
 
         //bound from the html
         vm.comment = '';
@@ -404,7 +471,7 @@
         /**
          * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
          */
-        vm.viewOSMChangesets = function(){
+        vm.viewOSMChangesets = function () {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
@@ -417,7 +484,7 @@
          * View changes in Overpass Turbo
          * TODO: format the middle of the query which needs user names
          */
-        vm.viewOverpassTurbo = function() {
+        vm.viewOverpassTurbo = function () {
             var queryPrefix = '<osm-script output="json" timeout="25"><union>';
             var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
             var queryMiddle = '';
@@ -440,7 +507,7 @@
          * See: https://github.com/hotosm/osm-tasking-manager2/blob/d3a3b70d09256ba16bdff1b35909ad4f3b9f66e2/osmtm/static/js/project.js
          * @param editor
          */
-        vm.startEditor = function(editor){
+        vm.startEditor = function (editor) {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
