@@ -102,6 +102,8 @@ class ProjectAdminAPI(Resource):
         responses:
             200:
                 description: Project found
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Project not found
             500:
@@ -168,6 +170,8 @@ class ProjectAdminAPI(Resource):
                 description: Project updated
             400:
                 description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Project not found
             500:

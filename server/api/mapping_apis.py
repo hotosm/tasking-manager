@@ -1,6 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from server.models.dtos.mapping_dto import MappedTaskDTO
+from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from server.services.authentication_service import token_auth, tm
 from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError
 
@@ -134,6 +134,10 @@ class LockTaskForMappingAPI(Resource):
         responses:
             200:
                 description: Task locked
+            400:
+                description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
             403:
                 description: Task already locked
             404:
@@ -142,7 +146,16 @@ class LockTaskForMappingAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = MappingService().lock_task_for_mapping(task_id, project_id)
+            lock_task_dto = LockTaskDTO()
+            lock_task_dto.task_id = task_id
+            lock_task_dto.project_id = project_id
+            lock_task_dto.user_id = tm.authenticated_user_id
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            task = MappingService().lock_task_for_mapping(lock_task_dto)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404
@@ -208,6 +221,8 @@ class UnlockTaskForMappingAPI(Resource):
                 description: Task unlocked
             400:
                 description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Task not found
             500:

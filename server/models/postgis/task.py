@@ -148,10 +148,11 @@ class Task(db.Model):
         """ Updates the DB with the current state of the Task """
         db.session.commit()
 
-    def lock_task(self):
+    def lock_task(self, user_id: int):
         """ Lock task and save in DB  """
         self.set_task_history(TaskAction.LOCKED)
         self.task_locked = True
+        self.lock_holder = user_id
         self.update()
 
     def unlock_task(self, new_state=None, comment=None):
