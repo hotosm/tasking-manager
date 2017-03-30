@@ -3,7 +3,7 @@ from flask import current_app
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.project import Project, ProjectStatus
 from server.models.dtos.project_dto import ProjectDTO
-from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 
 
 class DatabaseError(Exception):
@@ -52,30 +52,29 @@ class MappingService:
 
         return task.as_dto()
 
-    def lock_task_for_mapping(self, task_id, project_id) -> Optional[TaskDTO]:
+    def lock_task_for_mapping(self, lock_task_dto: LockTaskDTO) -> Optional[TaskDTO]:
         """
         Sets the task_locked status to locked so no other user can work on it
-        :param task_id: Task ID in scope
-        :param project_id: Project ID in scope
+        :param lock_task_dto: DTO with data needed to lock the task
         :raises TaskServiceError
         :return: Updated task, or None if not found
         """
-        task = Task.get(task_id, project_id)
+        task = Task.get(lock_task_dto.task_id, lock_task_dto.project_id)
 
         if task is None:
             return None
 
         if task.task_locked:
-            raise MappingServiceError(f'Task: {task_id} Project {project_id} is already locked')
+            raise MappingServiceError(f'Task: {lock_task_dto.task_id} Project {lock_task_dto.project_id} is already locked')
 
         current_state = TaskStatus(task.task_status).name
         if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name, TaskStatus.BADIMAGERY.name]:
-            raise MappingServiceError(f'Cannot lock task {task_id} state must be in {TaskStatus.READY.name},'
+            raise MappingServiceError(f'Cannot lock task {lock_task_dto.task_id} state must be in {TaskStatus.READY.name},'
                                       f' {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}')
 
         # TODO user can only have 1 tasked locked at a time
 
-        task.lock_task()
+        task.lock_task(lock_task_dto.user_id)
         return task.as_dto()
 
     def unlock_task_after_mapping(self, mapped_task: MappedTaskDTO) -> Optional[TaskDTO]:
@@ -98,5 +97,5 @@ class MappingService:
         if current_status == TaskStatus.BADIMAGERY and new_state not in [TaskStatus.READY, TaskStatus.BADIMAGERY]:
             raise MappingServiceError(f'Cannot set BADIMAGERY to {current_status.name}')
 
-        task.unlock_task(new_state, mapped_task.comment)
+        task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
         return task.as_dto()

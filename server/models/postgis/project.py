@@ -147,7 +147,11 @@ class Project(db.Model):
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = db.Column(db.String(10), default='en')  # The locale that is returned if requested locale not available
-    author_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
+    author_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
+    mapper_level = db.Column(db.Integer, default=1, nullable=False)
+    enforce_mapper_level = db.Column(db.Boolean, default=False)
+    enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
+    private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
 
     # Mapped Objects
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
