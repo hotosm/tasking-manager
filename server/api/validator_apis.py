@@ -125,6 +125,7 @@ class UnlockTasksAfterValidationAPI(Resource):
         try:
             validated_dto = UnlockAfterValidationDTO(request.get_json())
             validated_dto.project_id = project_id
+            validated_dto.user_id = tm.authenticated_user_id
             validated_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
