@@ -73,6 +73,9 @@
             vm.showDropdown = false;
         };
 
+        /**
+         * Navigate to the licence management page
+         */
         vm.manageLicenses = function(){
             $location.path('admin/licences');
             vm.showDropdown = false;

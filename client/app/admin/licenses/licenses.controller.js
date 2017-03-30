@@ -11,9 +11,7 @@
 
     function licensesController($location, licenseService) {
         var vm = this;
-
-        // Mocked up licenses
-        // TODO: get from API
+        
         vm.licenses = [];
         
         activate();
