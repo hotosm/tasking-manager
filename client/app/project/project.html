@@ -82,7 +82,14 @@
                                 <h2>Mapping</h2>
                                 <h3>Task
                                     #{{ projectCtrl.selectedTaskData.taskId }} is
-                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED</span>
+                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED by
+                                         <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
+                                            you
+                                         </span>
+                                         <span ng-show="projectCtrl.selectedTaskData.lockHolder !== projectCtrl.user.username">
+                                            {{ projectCtrl.lockedTaskData.lockHolder }}
+                                         </span>
+                                    </span>
                                     <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
@@ -142,13 +149,18 @@
                                             </button>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                             <!-- task locked UI -->
                             <div ng-show="projectCtrl.mappingStep === 'locked'"><!-- task mapping UI -->
                                 <h3>Task
-                                    #{{ projectCtrl.lockedTaskData.taskId }} is LOCKED by you
+                                    #{{ projectCtrl.lockedTaskData.taskId }} is LOCKED by
+                                    <span ng-show="projectCtrl.lockedTaskData.lockHolder === projectCtrl.user.username">
+                                        you
+                                    </span>
+                                    <span ng-show="projectCtrl.lockedTaskData.lockHolder !== projectCtrl.user.username">
+                                        {{ projectCtrl.lockedTaskData.lockHolder }}
+                                    </span>
                                 </h3>
                                 <p></p>
                                 <div class="form__group">
@@ -205,8 +217,15 @@
                                 <h2>Validation</h2>
                                 <h3>Task
                                     #{{ projectCtrl.selectedTaskData.taskId }} is
-                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED</span><span
-                                            ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
+                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED by
+                                        <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
+                                            you
+                                        </span>
+                                        <span ng-show="projectCtrl.selectedTaskData.lockHolder !== projectCtrl.user.username">
+                                            {{ projectCtrl.lockedTaskData.lockHolder }}
+                                        </span>
+                                    </span>
+                                    <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
                                     <div ng-show="projectCtrl.isSelectTaskValidatable" class="alert alert--success"
@@ -241,10 +260,7 @@
                                     </div>
                                 </div>
                                 <!-- task action buttons -->
-
-
                                 <div>
-
                                     <div class="pull-center">
                                         <button ng-show="projectCtrl.isSelectTaskValidatable"
                                                 class="button button--secondary button--large"
@@ -272,7 +288,13 @@
                             <!-- task locked UI -->
                             <div ng-show="projectCtrl.validatingStep === 'locked'"><!-- task mapping UI -->
                                 <h3>Task
-                                    #{{ projectCtrl.lockedTaskData.taskId }} is LOCKED by you (TODO)
+                                    #{{ projectCtrl.lockedTaskData.taskId }} is LOCKED by
+                                    <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
+                                        you
+                                    </span>
+                                    <span ng-show="projectCtrl.selectedTaskData.lockHolder !== projectCtrl.user.username">
+                                        {{ projectCtrl.lockedTaskData.lockHolder }}
+                                    </span>
                                 </h3>
                                 <p></p>
                                 <div class="form__group">
@@ -348,12 +370,12 @@
                                          ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
                                          ng-class-odd="'odd'" ng-class-even="'even'">
                                         <div>
-                                            <span ng-show="item.action === 'COMMENT'">Comment left by TODO</span>
-                                            <span ng-show="item.action === 'LOCKED'">Locked by TODO</span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by TODO</span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by TODO</span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by TODO</span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by TODO</span>
+                                            <span ng-show="item.action === 'COMMENT'">Comment left by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'LOCKED'">Locked by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                         </div>
                                         <div>
                                             <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
@@ -390,7 +412,7 @@
                     </h2>
                 </div>
                 <div>
-                    <div class="edit-project-button">
+                    <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'" class="edit-project-button">
                         <a href="/admin/edit-project/{{ projectCtrl.projectData.projectId }}" class="button button--secondary">Edit project</a>
                     </div>
                 </div>

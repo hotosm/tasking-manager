@@ -7,13 +7,14 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService','editorService', projectController]);
+        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService','editorService','authService','accountService', projectController]);
 
-    function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService) {
+    function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
         vm.map = null;
+        vm.user = {};
 
         // tab and view control
         vm.currentTab = '';
@@ -48,6 +49,16 @@
         activate();
 
         function activate() {
+
+             // Check the user's role
+            var session = authService.getSession();
+            if (session){
+                var resultsPromise = accountService.getUser(session.username);
+                resultsPromise.then(function (user) {
+                    vm.user = user;
+                });
+            }
+
             vm.currentTab = 'description';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
@@ -303,7 +314,7 @@
                     refreshCurrentSelection(data);
                 }
             }, function () {
-                // could not unlock lock task, very unlikey to happen but
+                // could not unlock lock task, very unlikely to happen but
                 // most likely because task was unlocked or status changed on server
                 // refresh map and selected task.  UI will react to new state if task
                 refreshProject(projectId);
