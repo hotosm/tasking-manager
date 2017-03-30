@@ -74,31 +74,27 @@
                     .join("&")
         }
 
-        function sendJOSMCmd(endpoint, params) {
+        function sendJOSMCmd(endpoint, params, callBack) {
             var reqObj = new XMLHttpRequest();
             var url = endpoint + formatUrlParams(params);
-            reqObj.open('GET', url, false);
-            var success = false;
             reqObj.onreadystatechange = function () {
                 console.log(this.readyState);
-                if (this.readyState == 4) {
+                if (this.readyState == 4 ) {
                     if (this.status == 200) {
-                        success = true;
+                        callback(true);
+                    }
+                    else {
+                       callback(false);
                     }
                 }
             }
             try {
+                reqObj.open('GET', url, true);
                 reqObj.send();
             }
             catch (e) {
-                console.log('error');
-                success = false;
+                callBack(false);
             }
-            finally{
-                console.log('finally');
-                return success;
-            }
-
         }
 
     }

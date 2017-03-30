@@ -486,21 +486,26 @@
                     changeset_comment: encodeURIComponent(changesetComment),
                     changeset_source: encodeURIComponent(changesetSource)
                 };
-                var isLoadAndZoomSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams)
-                if (isLoadAndZoomSuccess) {
-                    if (hasImagery) {
-                        var imageryParams = {
-                            title: encodeURIComponent('Tasking Manager - #' + vm.projectData.projectId),
-                            type: imageryUrl.toLowerCase().substring(0, 3),
-                            url: encodeURIComponent(imageryUrl)
+                var isLoadAndZoomSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams, function (success) {
+                    if (success) {
+                        if (hasImagery) {
+                            var imageryParams = {
+                                title: encodeURIComponent('Tasking Manager - #' + vm.projectData.projectId),
+                                type: imageryUrl.toLowerCase().substring(0, 3),
+                                url: encodeURIComponent(imageryUrl)
+                            }
+                            editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams, function(success){
+                                //TODO - may want to handle imagery command fail
+                            });
                         }
-                        editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
                     }
-                }
-                else {
-                    //TODO warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                }
+                    else {
+                        //TODO warn that JSOM couldn't be started
+                        vm.editorStartError = 'josm-error';
+                    }
+                });
+
+
             }
             // TODO: other editors
         }
