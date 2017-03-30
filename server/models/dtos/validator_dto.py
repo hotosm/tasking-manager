@@ -22,6 +22,7 @@ class LockForValidationDTO(Model):
     """ DTO used to lock multiple tasks for validation """
     project_id = IntType(required=True)
     task_ids = ListType(IntType, required=True, serialized_name='taskIds')
+    user_id = IntType(required=True)
 
 
 class ValidatedTask(Model):
@@ -35,3 +36,4 @@ class UnlockAfterValidationDTO(Model):
     """ DTO used to transmit the status of multiple tasks after validation """
     project_id = IntType(required=True)
     validated_tasks = ListType(ModelType(ValidatedTask), required=True, serialized_name='validatedTasks')
+    user_id = IntType(required=True)

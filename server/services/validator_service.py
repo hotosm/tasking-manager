@@ -44,7 +44,7 @@ class ValidatorService:
         # Lock all tasks for validation
         dtos = []
         for task in tasks_to_lock:
-            task.lock_task()
+            task.lock_task(validation_dto.user_id)
             dtos.append(task.as_dto())
 
         task_dtos = TaskDTOs()
