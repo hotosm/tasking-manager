@@ -68,7 +68,6 @@ class TaskHistory(db.Model):
 
 class Task(db.Model):
     """ Describes an individual mapping Task """
-
     __tablename__ = "tasks"
 
     # Table has composite PK on (id and project_id)

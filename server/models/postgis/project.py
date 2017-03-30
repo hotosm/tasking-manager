@@ -143,7 +143,6 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
-    tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = db.Column(db.String(10), default='en')  # The locale that is returned if requested locale not available
@@ -154,6 +153,7 @@ class Project(db.Model):
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
 
     # Mapped Objects
+    tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
     author = db.relationship(User)
@@ -207,6 +207,16 @@ class Project(db.Model):
         """ Deletes the current model from the DB """
         db.session.delete(self)
         db.session.commit()
+
+    @staticmethod
+    def has_user_already_locked_task(project_id, user_id) -> bool:
+        """ Helper to see if user already has a locked task on project """
+        project = Project.get(project_id)
+        task_count = project.tasks.filter_by(lock_holder_id=user_id).count()
+
+        if task_count > 0:
+            return True
+        return False
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """

@@ -16,6 +16,7 @@ manager.add_command('db', MigrateCommand)
 def gen_token(user_id):
     """ Helper method for generating valid base64 encoded session tokens """
     token = AuthenticationService.generate_session_token_for_user(user_id)
+    print(f'Raw token is: {token}')
     b64_token = base64.b64encode(token.encode())
     print(f'Your base64 encoded session token: {b64_token}')
 
