@@ -29,6 +29,7 @@ class DraftProjectDTO(Model):
     project_name = StringType(required=True, serialized_name='projectName')
     area_of_interest = BaseType(required=True, serialized_name='areaOfInterest')
     tasks = BaseType(required=True)
+    user_id = IntType(required=True)
 
 
 class ProjectInfoDTO(Model):

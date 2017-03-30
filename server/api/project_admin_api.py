@@ -1,14 +1,14 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
+from server.services.authentication_service import token_auth, tm
 from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData, ProjectAdminServiceError
 
 
 class ProjectAdminAPI(Resource):
-    """
-    /api/projects
-    """
 
+    @tm.pm_only()
+    @token_auth.login_required
     def put(self):
         """
         Creates a tasking-manager project
@@ -18,6 +18,12 @@ class ProjectAdminAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: body
               name: body
               required: true
@@ -46,11 +52,14 @@ class ProjectAdminAPI(Resource):
                 description: Draft project created successfully
             400:
                 description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
             500:
                 description: Internal Server Error
         """
         try:
             draft_project_dto = DraftProjectDTO(request.get_json())
+            draft_project_dto.user_id = tm.authenticated_user_id
             draft_project_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -67,6 +76,8 @@ class ProjectAdminAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
+    @token_auth.login_required
     def get(self, project_id):
         """
         Retrieves a Tasking-Manager project
@@ -76,6 +87,12 @@ class ProjectAdminAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
@@ -85,6 +102,8 @@ class ProjectAdminAPI(Resource):
         responses:
             200:
                 description: Project found
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Project not found
             500:
@@ -103,6 +122,8 @@ class ProjectAdminAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
+    @token_auth.login_required
     def post(self, project_id):
         """
         Updates a Tasking-Manager project
@@ -112,6 +133,12 @@ class ProjectAdminAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
@@ -143,6 +170,8 @@ class ProjectAdminAPI(Resource):
                 description: Project updated
             400:
                 description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Project not found
             500:

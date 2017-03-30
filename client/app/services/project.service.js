@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', ['$http', '$q', 'mapService','configService', 'geospatialService', projectService]);
+        .service('projectService', ['$http', '$q', 'mapService','configService', 'authService', 'geospatialService', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -11,7 +11,7 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService($http, $q, mapService, configService, geospatialService) {
+    function projectService($http, $q, mapService, configService, authService, geospatialService) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -357,11 +357,9 @@
             // Returns a promise
             return $http({
                 method: 'PUT',
-                url: configService.tmAPI + '/v1/admin/project',
+                url: configService.tmAPI + '/admin/project',
                 data: newProject,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -383,12 +381,8 @@
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/v1/project/' + id,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    //TODO - Accept-Language header hardcoded for now
-                    'Accept-Language': 'en'
-                }
+                url: configService.tmAPI + '/project/' + id,
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -410,10 +404,8 @@
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/v1/admin/project/' + id,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                url: configService.tmAPI + '/admin/project/' + id,
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -435,11 +427,9 @@
             // Returns a promise
             return $http({
                 method: 'POST',
-                url: configService.tmAPI + '/v1/admin/project/' + id,
+                url: configService.tmAPI + '/admin/project/' + id,
                 data: projectData,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'    
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously 
                 // when the response is available

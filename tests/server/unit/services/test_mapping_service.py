@@ -1,24 +1,34 @@
 import unittest
 from server.services.mapping_service import MappingService, Task, MappingServiceError, TaskStatus, \
      Project, ProjectDTO, ProjectStatus
-from server.models.dtos.mapping_dto import MappedTaskDTO
-from server.models.postgis.task import TaskHistory, TaskAction
+from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
+from server.models.postgis.task import TaskHistory, TaskAction, User
 from unittest.mock import patch, MagicMock
 from server import create_app
 
 
 class TestMappingService(unittest.TestCase):
     task_stub = Task
+    lock_task_dto = LockTaskDTO
 
     def setUp(self):
         self.app = create_app()
         self.ctx = self.app.app_context()
         self.ctx.push()
 
+        self.lock_task_dto = LockTaskDTO()
+        self.lock_task_dto.task_id = 1
+        self.lock_task_dto.project_id = 1
+        self.lock_task_dto.user_id = 123456
+
+        test_user = User()
+        test_user.username = 'Thinkwhere'
+
         self.task_stub = Task()
         self.task_stub.id = 1
         self.task_stub.project_id = 1
         self.task_stub.task_status = 0
+        self.task_stub.lock_holder = test_user
 
     def tearDown(self):
         self.ctx.pop()
@@ -52,7 +62,7 @@ class TestMappingService(unittest.TestCase):
         test_task = 'test'
 
         # Act
-        test_task = MappingService().lock_task_for_mapping(1, 1)
+        test_task = MappingService().lock_task_for_mapping(self.lock_task_dto)
 
         # Assert
         self.assertIsNone(test_task)
@@ -66,7 +76,7 @@ class TestMappingService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(MappingServiceError):
-            MappingService().lock_task_for_mapping(1, 1)
+            MappingService().lock_task_for_mapping(self.lock_task_dto)
 
     @patch.object(Task, 'get')
     def test_lock_task_for_mapping_raises_error_if_task_in_invalid_state(self, mock_task):
@@ -78,7 +88,7 @@ class TestMappingService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(MappingServiceError):
-            MappingService().lock_task_for_mapping(1, 1)
+            MappingService().lock_task_for_mapping(self.lock_task_dto)
 
     @patch.object(Task, 'update')
     @patch.object(Task, 'get')
@@ -88,7 +98,7 @@ class TestMappingService(unittest.TestCase):
         mock_task.return_value = self.task_stub
 
         # Act
-        test_task = MappingService().lock_task_for_mapping(1, 1)
+        test_task = MappingService().lock_task_for_mapping(self.lock_task_dto)
 
         # Assert
         self.assertTrue(test_task.task_locked, 'Locked should be set to True')
@@ -146,6 +156,7 @@ class TestMappingService(unittest.TestCase):
         mapped_task.task_id = 1
         mapped_task.project_id = 1
         mapped_task.status = TaskStatus.DONE.name
+        mapped_task.user_id = 1234
         mapped_task.comment = 'Test comment'
 
         # Act

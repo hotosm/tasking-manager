@@ -7,22 +7,26 @@ The app is split into a Client (AngularJS) and Server (Python) structure.  Each 
 
 
 ## Client Development
-### Dependencies
+### Global Dependencies
 Following must be available locally:
 
 * NodeJS LTS v6+ [NodeJS LTS install here](https://nodejs.org/en/)
-
-#### Build the Client
-* Install Gulp.  [Gulp](http://gulpjs.com/) is used to automate the Client build and needs to be installed globally:
+* [Gulp](http://gulpjs.com/) is used to run and build the app, install globally as follows:
     * ```npm install gulp -g```
-* Build the client, with gulp:
-    * ```gulp build```
+
+### App Dependencies
+You will now have to install all the app dependencies using [NPM](https://www.npmjs.com/)
+
+```
+cd client
+npm install
+```
 
 ### Running Locally
 If you plan to do client development you can run the app using gulp, without having to worry too much about the server
 
 ```
-cd client
+cd client   [if not already in client]
 gulp run
 ```
 
@@ -30,7 +34,7 @@ gulp run
 The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests, that you can run using [Karma](https://karma-runner.github.io/1.0/index.html) as follows
 
 ```
- cd client
+ cd client    [if not already in client]
  karma start ..\tests\client\karma.conf.js
 ```
 
@@ -50,27 +54,57 @@ Following must be available locally:
         * ```.\venv\scripts\activate```
 * Install all dependencies:
     * ```pip install -r requirements.txt```
-* Set environment variable to point to appropriate postgres database instance with HOT schema set up.  You will need to modify the sample connection string with username, password etc:
-    * Linux/Mac:
-        * ```export TASKING_MANAGER_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
-    * Windows (may require you to restart your dev env to pick up the variable):
-        * ```setx TASKING_MANAGER_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
         
 ### Environment vars:
 As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
 
-* TM_CONSUMER_SECRET = This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
+* **TM_DB** - This is the for the PostGIS connection string
+* **TM_SECRET** - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
+* **TM_CONSUMER_SECRET** - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
 
 * Linux/Mac
-    export TM_CONSUMER_SECRET=secret-key-goes-here
+    * ```export TM_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
+    * ```export TM_SECRET=secret-key-here```
+    * ```export TM_CONSUMER_SECRET=outh-consumer-secret-key-goes-here```
 * Windows:
-    * setx TM_CONSUMER_SECRET "secret-key-goes-here"
+    * ```setx TM_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
+    * ```setx TM_SECRET "secret-key-here"```
+    * ```setx TM_CONSUMER_SECRET "outh-consumer-secret-key-goes-here"```
 
-### Running Locally
-You can now run the app as follows:
+### Creating the DB
+We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to create the database from migrations directory.  Create the database as follows:
 
 ```
-python manage.py runserver -d
+python manage.py db upgrade
+```
+
+### Running Locally
+
+#### API Development only
+If you plan to only work on the API you don't need to build the client and can run as follows:
+
+* Run the server:
+    * ``` python manage.py runserver -d ```
+* Point your browser to:
+    * [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+    
+#### Seeing the client
+If you want to see the client you will need to follow all the instruction in **Client Development** section then build the client as follows:
+
+* Build the client using gulp:
+    * ```cd client```
+    * ```gulp build```
+* You can now run the server as above from the root dir:
+    * ```cd ..```
+    * ``` python manage.py runserver -d ```
+* Point your browser to:
+    * [http://localhost:5000](http://localhost:5000)
+
+### Running Unit Tests
+The project includes a suite of Unit and Integration tests that you should run after any changes with [nose](http://nose.readthedocs.io/en/latest/)
+
+```
+nosetests ./tests/server
 ```
 
 ## Dev Ops
