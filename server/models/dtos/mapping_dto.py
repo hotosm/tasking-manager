@@ -30,6 +30,7 @@ class MappedTaskDTO(Model):
     """ Describes the model used to update the status of one task after mapping """
     project_id = IntType(required=True, serialized_name='projectId')
     task_id = IntType(required=True, serialized_name='taskId')
+    user_id = IntType(required=True)
     status = StringType(required=True, validators=[is_valid_mapped_status])
     comment = StringType()
 

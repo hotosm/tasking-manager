@@ -2,7 +2,7 @@ import unittest
 from server.services.mapping_service import MappingService, Task, MappingServiceError, TaskStatus, \
      Project, ProjectDTO, ProjectStatus
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
-from server.models.postgis.task import TaskHistory, TaskAction
+from server.models.postgis.task import TaskHistory, TaskAction, User
 from unittest.mock import patch, MagicMock
 from server import create_app
 
@@ -21,10 +21,14 @@ class TestMappingService(unittest.TestCase):
         self.lock_task_dto.project_id = 1
         self.lock_task_dto.user_id = 123456
 
+        test_user = User()
+        test_user.username = 'Thinkwhere'
+
         self.task_stub = Task()
         self.task_stub.id = 1
         self.task_stub.project_id = 1
         self.task_stub.task_status = 0
+        self.task_stub.lock_holder = test_user
 
     def tearDown(self):
         self.ctx.pop()
