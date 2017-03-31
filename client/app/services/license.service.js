@@ -75,7 +75,7 @@
                     }
                 }
             }
-            return [];
+            return null;
         }
     }
 })();

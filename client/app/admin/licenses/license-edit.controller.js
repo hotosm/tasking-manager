@@ -7,13 +7,14 @@
      */
     angular
         .module('taskingManager')
-        .controller('licenseEditController', ['$routeParams', 'licenseService', licenseEditController]);
+        .controller('licenseEditController', ['$routeParams', '$location', 'licenseService', licenseEditController]);
 
-    function licenseEditController($routeParams, licenseService) {
+    function licenseEditController($routeParams, $location, licenseService) {
         var vm = this;
         
         vm.license = {};
         vm.isNew = false;
+        vm.isLicenseFound = false;
         
         activate();
 
@@ -23,7 +24,14 @@
                 vm.isNew = true;
             }
             else {
-                vm.license = licenseService.getLicenseForId(id);
+                var license = licenseService.getLicenseForId(id);
+                if (license){
+                    vm.license = license;
+                    vm.isLicenseFound = true;
+                }
+                else {
+                    vm.isLicenseFound = false;
+                }
             }
         }
 

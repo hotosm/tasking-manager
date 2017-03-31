@@ -77,7 +77,7 @@
          * Navigate to the licence management page
          */
         vm.manageLicenses = function(){
-            $location.path('admin/licences');
+            $location.path('admin/licenses');
             vm.showDropdown = false;
         }
     }
