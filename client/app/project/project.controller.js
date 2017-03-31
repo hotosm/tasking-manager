@@ -7,7 +7,7 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService','editorService','authService','accountService', projectController]);
+        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
 
     function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
@@ -51,9 +51,9 @@
 
         function activate() {
 
-             // Check the user's role
+            // Check the user's role
             var session = authService.getSession();
-            if (session){
+            if (session) {
                 var resultsPromise = accountService.getUser(session.username);
                 resultsPromise.then(function (user) {
                     vm.user = user;
@@ -283,17 +283,39 @@
          * @param data - task JSON data object
          */
         function refreshCurrentSelection(data) {
-            vm.mappingStep = 'viewing';
-            vm.validatingStep = 'viewing';
-            vm.selectedTaskData = data;
-            vm.isSelectTaskMappable =
-                !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY')
-                || data.taskLocked && (data.lockHolder === vm.user.username); // user should be able to map their own locked task
+
+            vm.taskError = '';
+            vm.taskErrorValidation = '';
+            vm.taskLockError = false;
+            var isLocked = data.taskLocked;
+            var isLockedByMe = data.taskLocked && data.lockHolder === vm.user.username;
+            var isMappableStatus = (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
+            var isValidatableStatus = data.taskStatus === 'DONE' || data.taskStatus === 'VALIDATED';
+            vm.isSelectTaskMappable = (!isLocked || isLockedByMe) && isMappableStatus;// user should be able to map their own locked task
+            vm.isSelectTaskValidatable = (!isLocked || isLockedByMe) && isValidatableStatus;
             vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
-            vm.isSelectTaskValidatable =
-                !data.taskLocked && (data.taskStatus === 'DONE' || data.taskStatus === 'VALIDATED')
-                || data.taskLocked && (data.lockHolder === vm.user.username); // user should be able to validate their own locked task
             vm.taskErrorValidation = vm.isSelectTaskValidatable ? '' : 'task-not-validatable';
+            vm.selectedTaskData = data;
+
+            //jump to locked step if mappable and locked by me
+            if (vm.isSelectTaskMappable && isLockedByMe) {
+                vm.mappingStep = 'locked';
+                vm.lockedTaskData = data;
+                vm.currentTab = 'mapping';
+            }
+            else {
+                vm.mappingStep = 'viewing';
+            }
+
+            //jump to validatable step if validatable and locked by me
+            if (vm.isSelectTaskValidatable && isLockedByMe) {
+                vm.validatingStep = 'locked';
+                vm.lockedTaskData = data;
+                vm.currentTab = 'validation';
+            }
+            else {
+                vm.validatingStep = 'viewing';
+            }
         }
 
         /**
@@ -402,7 +424,7 @@
         /**
          * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
          */
-        vm.viewOSMChangesets = function(){
+        vm.viewOSMChangesets = function () {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
@@ -414,7 +436,7 @@
         /**
          * View changes in Overpass Turbo
          */
-        vm.viewOverpassTurbo = function() {
+        vm.viewOverpassTurbo = function () {
             var queryPrefix = '<osm-script output="json" timeout="25"><union>';
             var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
             var queryMiddle = '';
@@ -433,7 +455,7 @@
                 for (var i = 0; i < history.length; i++) {
                     var user = history[i].actionBy;
                     var indexInArray = userList.indexOf(user);
-                    if (user && indexInArray == -1){
+                    if (user && indexInArray == -1) {
                         // user existing and not found in user list yet
                         var userQuery =
                             '<query type="node"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
@@ -454,7 +476,7 @@
          * See: https://github.com/hotosm/osm-tasking-manager2/blob/d3a3b70d09256ba16bdff1b35909ad4f3b9f66e2/osmtm/static/js/project.js
          * @param editor
          */
-        vm.startEditor = function(editor){
+        vm.startEditor = function (editor) {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
