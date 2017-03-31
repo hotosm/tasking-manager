@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', 'accountService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', 'accountService', profileController]);
 
-    function profileController($routeParams, accountService) {
+    function profileController($routeParams, $location, accountService) {
         var vm = this;
         vm.username = '';
         vm.currentlyLoggedInUser = null;
@@ -30,6 +30,9 @@
                 if (account){
                     vm.currentlyLoggedInUser = account;
                 }
+            }, function () {
+                // Could not find the user, redirect to the homepage
+                $location.path('/');
             });
         }
     }
