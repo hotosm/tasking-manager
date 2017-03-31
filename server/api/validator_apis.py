@@ -119,6 +119,8 @@ class UnlockTasksAfterValidationAPI(Resource):
                 description: Client Error
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             404:
                 description: Task not found
             500:
@@ -137,7 +139,7 @@ class UnlockTasksAfterValidationAPI(Resource):
             tasks = ValidatorService().unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
         except ValidatatorServiceError as e:
-            return {"Error": str(e)}, 400
+            return {"Error": str(e)}, 403
         except TaskNotFound as e:
             return {"Error": str(e)}, 404
         except Exception as e:
