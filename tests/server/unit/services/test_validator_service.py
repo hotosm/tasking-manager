@@ -1,8 +1,8 @@
 import unittest
 from server.services.validator_service import ValidatorService, Task, TaskNotFound, LockForValidationDTO, TaskStatus, \
-    ValidatatorServiceError, UnlockAfterValidationDTO
+    ValidatatorServiceError, UnlockAfterValidationDTO, Project, UserService
 from server.models.dtos.validator_dto import ValidatedTask
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from server import create_app
 
 
@@ -58,6 +58,18 @@ class TestValidatorService(unittest.TestCase):
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
             ValidatorService().lock_tasks_for_validation(lock_dto)
+
+    @patch.object(UserService, 'is_user_validator')
+    @patch.object(Project, 'get')
+    def test_lock_tasks_raises_error_if_project_validator_only_and_user_not_validator(self, mock_project, mock_user):
+        stub_project = Project()
+        stub_project.enforce_validator_role = True
+        mock_project.return_value = stub_project
+
+        mock_user.return_value = False
+
+        with self.assertRaises(ValidatatorServiceError):
+            ValidatorService()._validate_user_permissions(MagicMock())
 
     @patch.object(Task, 'get')
     def test_unlock_tasks_for_validation_raises_error_if_task_not_found(self, mock_task):

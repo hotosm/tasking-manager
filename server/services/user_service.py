@@ -2,7 +2,7 @@ import requests
 import xml.etree.ElementTree as ET
 from flask import current_app
 from typing import Optional
-from server.models.postgis.user import User
+from server.models.postgis.user import User, UserRole
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO
 
 
@@ -34,6 +34,17 @@ class UserService:
             return False
 
         return user.is_project_manager()
+
+    @staticmethod
+    def is_user_validator(user_id: int):
+        """ Get the role for the specified user """
+        user = User().get_by_id(user_id)
+        user_role = UserRole(user.role)
+
+        if user_role in [UserRole.VALIDATOR, UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+            return True
+
+        return False
 
     @staticmethod
     def get_osm_details_for_user(username: str) -> Optional[UserOSMDTO]:
