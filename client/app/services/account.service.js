@@ -19,7 +19,8 @@
         var service = {
             setAccount: setAccount,
             getAccount: getAccount,
-            getUser: getUser
+            getUser: getUser,
+            getOSMUserDetails: getOSMUserDetails
         };
 
         return service;
@@ -59,10 +60,29 @@
          * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
          */
         function getUser(username){
-             // Returns a promise
+            // Returns a promise
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/user/' + username,
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        function getOSMUserDetails(username){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/user/' + username + '/osm-details',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
