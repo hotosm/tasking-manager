@@ -55,7 +55,8 @@ class UserService:
         return UserService._parse_osm_user_details_response(response.text)
 
     @staticmethod
-    def _parse_osm_user_details_response(osm_response: str, user_element='user'):
+    def _parse_osm_user_details_response(osm_response: str, user_element='user') -> UserOSMDTO:
+        """ Parses the OSM user details response and extracts user info """
         root = ET.fromstring(osm_response)
 
         osm_user = root.find(user_element)
