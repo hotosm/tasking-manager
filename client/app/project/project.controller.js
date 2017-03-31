@@ -319,7 +319,7 @@
                     refreshCurrentSelection(data);
                 }
             }, function (error) {
-                onLockError(projectId, taskId, error);
+                onLockUnLockError(projectId, taskId, error);
             });
         };
 
@@ -344,7 +344,7 @@
                 vm.taskLockError = false;
                 vm.clearCurrentSelection();
             }, function (error) {
-                onLockError(projectId, taskId, error);
+                onLockUnLockError(projectId, taskId, error);
             });
         };
 
@@ -370,7 +370,7 @@
                 vm.taskLockError = false;
                 vm.lockedTaskData = data;
             }, function (error) {
-                onLockError(projectId, taskId, error);
+                onLockUnLockError(projectId, taskId, error);
             });
         };
 
@@ -395,7 +395,7 @@
                 vm.taskLockError = false;
                 vm.lockedTaskData = tasks[0];
             }, function (error) {
-                onLockError(projectId, taskId, error);
+                onLockUnLockError(projectId, taskId, error);
             });
         };
 
@@ -485,7 +485,7 @@
          * @param taskId
          * @param error
          */
-        function onLockError(projectId, taskId, error) {
+        function onLockUnLockError(projectId, taskId, error) {
             // Could not unlock/lock task
             // Refresh the map and selected task.
             refreshProject(projectId);
