@@ -189,6 +189,9 @@ class Project(db.Model):
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
         self.default_locale = project_dto.default_locale
+        self.enforce_mapper_level = project_dto.enforce_mapper_level
+        self.enforce_validator_role = project_dto.enforce_validator_role
+        self.private = project_dto.private
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
