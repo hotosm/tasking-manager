@@ -160,6 +160,18 @@ class ProjectAdminAPI(Resource):
                       defaultLocale:
                           type: string
                           default: en
+                      mapperLevel:
+                          type: string
+                          default: BEGINNER
+                      enforceMapperLevel:
+                          type: boolean
+                          default: false
+                      enforceValidatorRole:
+                          type: boolean
+                          default: false
+                      private:
+                          type: boolean
+                          default: false
                       projectInfoLocales:
                           type: array
                           items:

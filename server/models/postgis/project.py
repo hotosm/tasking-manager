@@ -5,7 +5,7 @@ from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
@@ -147,7 +147,7 @@ class Project(db.Model):
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = db.Column(db.String(10), default='en')  # The locale that is returned if requested locale not available
     author_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
-    mapper_level = db.Column(db.Integer, default=1, nullable=False)
+    mapper_level = db.Column(db.Integer, default=1, nullable=False)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
@@ -189,6 +189,10 @@ class Project(db.Model):
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
         self.default_locale = project_dto.default_locale
+        self.enforce_mapper_level = project_dto.enforce_mapper_level
+        self.enforce_validator_role = project_dto.enforce_validator_role
+        self.private = project_dto.private
+        self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
