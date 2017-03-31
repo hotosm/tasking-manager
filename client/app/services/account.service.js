@@ -78,6 +78,11 @@
             })
         }
 
+        /**
+         * Get the user's OSM details
+         * @param username
+         * @returns {!jQuery.jqXHR|*|!jQuery.Promise|!jQuery.deferred}
+         */
         function getOSMUserDetails(username){
             // Returns a promise
             return $http({
