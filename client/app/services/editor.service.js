@@ -77,24 +77,26 @@
         function sendJOSMCmd(endpoint, params, callBack) {
             var reqObj = new XMLHttpRequest();
             var url = endpoint + formatUrlParams(params);
+            var success = false;
             reqObj.onreadystatechange = function () {
                 console.log(this.readyState);
-                if (this.readyState == 4 ) {
+                if (this.readyState == 4) {
                     if (this.status == 200) {
-                        callback(true);
+                        success = true;
                     }
                     else {
-                       callback(false);
+                        success = false;
                     }
                 }
             }
             try {
-                reqObj.open('GET', url, true);
+                reqObj.open('GET', url, false);
                 reqObj.send();
             }
             catch (e) {
-                callBack(false);
+                success = false;
             }
+            return success;
         }
 
     }
