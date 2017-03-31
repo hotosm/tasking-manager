@@ -16,8 +16,10 @@
                             <p ng-show="profileCtrl.userDetails.mappingLevel === 'BEGINNER'">Beginner mapper</p>
                             <p ng-show="profileCtrl.userDetails.mappingLevel === 'INTERMEDIATE'">Intermediate mapper</p>
                             <p ng-show="profileCtrl.userDetails.mappingLevel === 'ADVANCED'">Advanced mapper</p>
-                            <p>Joined 2 years ago (TODO)</p>
-                            <p>16 total changesets (TODO)</p>
+                            <div ng-show="profileCtrl.osmUserDetails">
+                                <p>Joined <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
+                                <p>{{ profileCtrl.osmUserDetails.changesetCount}} total changesets</p>
+                            </div>
                             <p><a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}">OSM profile</a></p>
                             <p><a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}/history">OSM edit history</a></p>
                         </div>
