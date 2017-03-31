@@ -1,5 +1,6 @@
 from flask_restful import Resource
-from flask import session, current_app, redirect
+from flask import session, current_app, redirect, request
+from urllib import parse
 from server import osm
 from server.services.authentication_service import AuthenticationService, AuthServiceError
 
@@ -22,12 +23,23 @@ class LoginAPI(Resource):
           - authentication
         produces:
           - application/json
+        parameters:
+            - in: query
+              name: redirect_to
+              description: Route to redirect user once authenticated
+              type: string
+              default: /take/me/here
         responses:
           302:
             description: Redirects to OSM
         """
+        redirect_query = ''
+        redirect_to = request.args.get('redirect_to')
+        if redirect_to:
+            redirect_query = f'?redirect_to={parse.quote(redirect_to)}'
+
         base_url = current_app.config['APP_BASE_URL']
-        return osm.authorize(callback=f'{base_url}/api/v1/auth/oauth-callback')
+        return osm.authorize(callback=f'{base_url}/api/v1/auth/oauth-callback{redirect_query}')
 
 
 class OAuthAPI(Resource):
@@ -62,7 +74,8 @@ class OAuthAPI(Resource):
             return redirect(AuthenticationService().get_authentication_failed_url())
 
         try:
-            authorized_url = AuthenticationService().login_user(osm_response.data)
+            redirect_to = request.args.get('redirect_to')
+            authorized_url = AuthenticationService().login_user(osm_response.data, redirect_to)
             return redirect(authorized_url)  # Redirect to Authentication page on successful authorization :)
         except AuthServiceError as e:
             return {"Error": str(e)}, 500
