@@ -88,7 +88,9 @@ class MappingService:
         if not task.task_locked:
             return task.as_dto()  # Task is already unlocked, so return without any further processing
 
-        # TODO check user owns lock
+        if task.lock_holder_id != mapped_task.user_id:
+            raise MappingServiceError('Attempting to unlock a task owned by another user')
+
         current_status = TaskStatus(task.task_status)
         new_state = TaskStatus[mapped_task.status.upper()]
 
