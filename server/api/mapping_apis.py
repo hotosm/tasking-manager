@@ -1,6 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from server.models.dtos.mapping_dto import MappedTaskDTO
+from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
+from server.services.authentication_service import token_auth, tm
 from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError
 
 
@@ -102,6 +103,7 @@ class MappingTaskAPI(Resource):
 
 class LockTaskForMappingAPI(Resource):
 
+    @token_auth.login_required
     def post(self, project_id, task_id):
         """
         Locks the task for mapping
@@ -111,6 +113,12 @@ class LockTaskForMappingAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -126,15 +134,28 @@ class LockTaskForMappingAPI(Resource):
         responses:
             200:
                 description: Task locked
+            400:
+                description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
             403:
-                description: Task already locked
+                description: Forbidden
             404:
                 description: Task not found
             500:
                 description: Internal Server Error
         """
         try:
-            task = MappingService().lock_task_for_mapping(task_id, project_id)
+            lock_task_dto = LockTaskDTO()
+            lock_task_dto.task_id = task_id
+            lock_task_dto.project_id = project_id
+            lock_task_dto.user_id = tm.authenticated_user_id
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            task = MappingService().lock_task_for_mapping(lock_task_dto)
 
             if task is None:
                 return {"Error": "Task Not Found"}, 404
@@ -150,6 +171,7 @@ class LockTaskForMappingAPI(Resource):
 
 class UnlockTaskForMappingAPI(Resource):
 
+    @token_auth.login_required
     def post(self, project_id, task_id):
         """
         Unlocks the task after mapping completed
@@ -159,6 +181,12 @@ class UnlockTaskForMappingAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -193,6 +221,8 @@ class UnlockTaskForMappingAPI(Resource):
                 description: Task unlocked
             400:
                 description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Task not found
             500:
@@ -202,6 +232,7 @@ class UnlockTaskForMappingAPI(Resource):
             mapped_task = MappedTaskDTO(request.get_json())
             mapped_task.task_id = task_id
             mapped_task.project_id = project_id
+            mapped_task.user_id = tm.authenticated_user_id
             mapped_task.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')

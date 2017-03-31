@@ -382,11 +382,7 @@
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/project/' + id,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    //TODO - Accept-Language header hardcoded for now
-                    'Accept-Language': 'en'
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -409,9 +405,7 @@
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/admin/project/' + id,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -435,9 +429,7 @@
                 method: 'POST',
                 url: configService.tmAPI + '/admin/project/' + id,
                 data: projectData,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'    
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously 
                 // when the response is available

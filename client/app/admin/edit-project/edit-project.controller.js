@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', editProjectController]);
 
-    function editProjectController($scope, $routeParams, $showdown, mapService, drawService, projectService, geospatialService) {
+    function editProjectController($scope, $routeParams, $showdown, mapService, drawService, projectService, geospatialService, accountService, authService) {
         var vm = this;
         vm.currentSection = '';
 
@@ -45,6 +45,21 @@
         activate();
 
         function activate() {
+
+            // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
+            var session = authService.getSession();
+            if (session){
+                var resultsPromise = accountService.getUser(session.username);
+                resultsPromise.then(function (user) {
+                    // Returned the user successfully. Check the user's role
+                    if (user.role !== 'PROJECT_MANAGER' && user.role !== 'ADMIN'){
+                        $location.path('/');
+                    }
+                }, function(){
+                    // an error occurred, navigate to homepage
+                    $location.path('/');
+                });
+            }
             
             var id = $routeParams.id;
 

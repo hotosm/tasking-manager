@@ -34,7 +34,7 @@
                 $httpProvider.defaults.headers.get = {};
             }
             $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
-            
+
             $routeProvider
 
                 .when('/', {

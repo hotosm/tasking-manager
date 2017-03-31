@@ -6,9 +6,9 @@
 
     angular
         .module('taskingManager')
-        .service('taskService', ['$http', '$q', 'configService', taskService]);
+        .service('taskService', ['$http', '$q', 'configService','authService', taskService]);
 
-    function taskService($http, $q, configService) {
+    function taskService($http, $q, configService, authService) {
 
         var service = {
             getTask: getTask,
@@ -66,9 +66,7 @@
                     status: status
                 },
                 url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/unlock-after-mapping',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -91,9 +89,7 @@
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/lock-for-mapping',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -121,9 +117,7 @@
                     "validatedTasks": tasks
                 },
                 url: configService.tmAPI + '/project/' + projectId + '/unlock-after-validation',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -149,9 +143,7 @@
                     taskIds: taskIds
                 },
                 url: configService.tmAPI + '/project/' + projectId + '/lock-for-validation',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
