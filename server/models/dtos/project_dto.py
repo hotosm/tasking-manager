@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType
+from schematics.types import StringType, BaseType, IntType, BooleanType
 from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority
 
@@ -54,3 +54,7 @@ class ProjectDTO(Model):
     project_info = ModelType(ProjectInfoDTO, serialized_name='projectInfo', serialize_when_none=False)
     project_info_locales = ListType(ModelType(ProjectInfoDTO), serialized_name='projectInfoLocales',
                                     serialize_when_none=False)
+    mapper_level = StringType(required=True, serialized_name='mapperLevel')
+    enforce_mapper_level = BooleanType(required=True, default=False, serialized_name='enforceMapperLevel')
+    enforce_validator_role = BooleanType(required=True, default=False, serialized_name='enforceValidatorRole')
+    private = BooleanType(required=True)
