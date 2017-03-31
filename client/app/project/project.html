@@ -87,7 +87,7 @@
                                             you
                                          </span>
                                          <span ng-show="projectCtrl.selectedTaskData.lockHolder !== projectCtrl.user.username">
-                                            {{ projectCtrl.lockedTaskData.lockHolder }}
+                                            {{ projectCtrl.selectedTaskData.lockHolder }}
                                          </span>
                                     </span>
                                     <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
@@ -100,9 +100,14 @@
                                 </div>
                                 <!-- task error alerts -->
                                 <div>
-                                    <div ng-show="projectCtrl.taskLockError">
+                                    <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
                                             <p>The task could not be locked for mapping.</p>
+                                        </div>
+                                    </div>
+                                     <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>Please login first.</p>
                                         </div>
                                     </div>
                                     <div ng-show="projectCtrl.taskError === 'task-not-mappable'"
@@ -126,7 +131,6 @@
                                 </div>
                                 <!-- task action buttons -->
                                 <div>
-
                                     <div class="pull-center">
                                         <button ng-show="projectCtrl.isSelectTaskMappable"
                                                 class="button button--secondary button--large"
@@ -222,7 +226,7 @@
                                             you
                                         </span>
                                         <span ng-show="projectCtrl.selectedTaskData.lockHolder !== projectCtrl.user.username">
-                                            {{ projectCtrl.lockedTaskData.lockHolder }}
+                                            {{ projectCtrl.selectedTaskData.lockHolder }}
                                         </span>
                                     </span>
                                     <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
@@ -235,9 +239,14 @@
                                 </div>
                                 <!-- task error alerts -->
                                 <div>
-                                    <div ng-show="projectCtrl.taskLockError">
+                                    <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
                                             <p>The task could not be locked for validation.</p>
+                                        </div>
+                                    </div>
+                                    <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>Please login first.</p>
                                         </div>
                                     </div>
                                     <div ng-show="projectCtrl.taskErrorValidation === 'task-not-validatable'"

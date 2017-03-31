@@ -34,7 +34,7 @@
             // Clear the URL parameters
             $location.search('username', null);
             $location.search('session_token', null);
-            $location.search('redirect', null);
+            $location.search('redirect_to', null);
             $location.search('ng', null);
         }
     }

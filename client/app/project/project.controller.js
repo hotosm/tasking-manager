@@ -23,6 +23,7 @@
         vm.taskError = '';
         vm.taskErrorValidation = '';
         vm.taskLockError = false;
+        vm.isAuthorized = false;
         vm.selectedEditor = '';
 
         //selected task
@@ -285,9 +286,13 @@
             vm.mappingStep = 'viewing';
             vm.validatingStep = 'viewing';
             vm.selectedTaskData = data;
-            vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
+            vm.isSelectTaskMappable =
+                !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY')
+                || data.taskLocked && (data.lockHolder === vm.user.username); // user should be able to map their own locked task
             vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
-            vm.isSelectTaskValidatable = !data.taskLocked && (data.taskStatus === 'DONE' || data.taskStatus === 'VALIDATED');
+            vm.isSelectTaskValidatable =
+                !data.taskLocked && (data.taskStatus === 'DONE' || data.taskStatus === 'VALIDATED')
+                || data.taskLocked && (data.lockHolder === vm.user.username); // user should be able to validate their own locked task
             vm.taskErrorValidation = vm.isSelectTaskValidatable ? '' : 'task-not-validatable';
         }
 
@@ -313,12 +318,8 @@
                     vm.taskLockError = false;
                     refreshCurrentSelection(data);
                 }
-            }, function () {
-                // could not unlock lock task, very unlikely to happen but
-                // most likely because task was unlocked or status changed on server
-                // refresh map and selected task.  UI will react to new state if task
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+            }, function (error) {
+                onLockError(projectId, taskId, error);
             });
         };
 
@@ -342,12 +343,8 @@
                 vm.lockedTaskData = null;
                 vm.taskLockError = false;
                 vm.clearCurrentSelection();
-            }, function () {
-                // could not unlock lock task, very unlikey to happen but
-                // most likely because task was unlocked or status changed on server
-                // refresh map and selected task.  UI will react to new state if task
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+            }, function (error) {
+                onLockError(projectId, taskId, error);
             });
         };
 
@@ -372,13 +369,8 @@
                 vm.taskErrorValidation = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = data;
-            }, function () {
-                // could not lock task for mapping, most likely because task was locked or status changed user after
-                // selection but before lock,
-                // refresh map and selected task.  UI will react to new state if task
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
-                vm.taskLockError = true;
+            }, function (error) {
+                onLockError(projectId, taskId, error);
             });
         };
 
@@ -402,13 +394,8 @@
                 vm.taskError = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = tasks[0];
-            }, function () {
-                // could not lock task for mapping, most likely because task was locked or status changed user after
-                // selection but before lock,
-                // refresh map and selected task.  UI will react to new state if task
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
-                vm.taskLockError = true;
+            }, function (error) {
+                onLockError(projectId, taskId, error);
             });
         };
 
@@ -474,6 +461,28 @@
                 window.open(url);
             }
             // TODO: other editors
+        };
+
+        /**
+         * Refresh the map and selected task on error
+         * @param projectId
+         * @param taskId
+         * @param error
+         */
+        function onLockError(projectId, taskId, error) {
+            // Could not unlock/lock task
+            // Refresh the map and selected task.
+            refreshProject(projectId);
+            onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+            vm.taskLockError = true;
+            // Check if it is an unauthorized error. If so, display appropriate message
+            if (error.status == 401) {
+                vm.isAuthorized = false;
+            }
+            else {
+                // Another error occurred.
+                vm.isAuthorized = true;
+            }
         }
     }
 })();
