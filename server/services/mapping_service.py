@@ -72,6 +72,9 @@ class MappingService:
             raise MappingServiceError(f'Cannot lock task {lock_task_dto.task_id} state must be in {TaskStatus.READY.name},'
                                       f' {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}')
 
+        # TODO check if allowed user for private project
+        # TODO check role if enforce role
+
         if Project.has_user_already_locked_task(lock_task_dto.project_id, lock_task_dto.user_id):
             raise MappingServiceError('User already has a locked task on this project')
 
