@@ -65,6 +65,11 @@
             return Math.round(input * p) / p;
         }
 
+        /**
+         * Formats a set of key value pairs into a URL paramater string
+         * @param params
+         * @returns {string} formatted paramater string
+         */
         function formatUrlParams(params) {
             return "?" + Object
                     .keys(params)
@@ -74,8 +79,21 @@
                     .join("&")
         }
 
+        /**
+         * Sends a sycnhronous remote contraol command to JOSM and returns a boolean to indicate success
+         * @param URL of the JOSM remote control endpoint
+         * @param Object containing key,value pairs to be used as URL paramaters
+         * @returns {boolean} Did JOSM Repond successfully
+         */
         function sendJOSMCmd(endpoint, params) {
-            var reqObj = new XMLHttpRequest();
+            // This has been implemented using XMLHTTP rather than Angular promises
+            // THis was done because angular was adding request headers such that the browser was
+            // preflighing the GET request with an OPTIONS requests due to CORS.
+            // JOSM does not suppport the OPTIONS requests
+            // After some time, we were unable to find a way to control the headrer to stop the preflighting
+            // The workaround is as you see here, to use XMLHttpRequest in synchrounous mode
+
+            var reqObj = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");//new XMLHttpRequest();
             var url = endpoint + formatUrlParams(params);
             var success = false;
             reqObj.onreadystatechange = function () {
@@ -90,6 +108,8 @@
                 }
             }
             try {
+                //use synchronous mode.  Not ideal but should be ok since JOSM is local.
+                //Otherwise callbacks would be required
                 reqObj.open('GET', url, false);
                 reqObj.send();
             }
