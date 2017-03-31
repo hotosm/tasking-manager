@@ -5,7 +5,7 @@ from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
@@ -143,17 +143,17 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
-    tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan")
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = db.Column(db.String(10), default='en')  # The locale that is returned if requested locale not available
     author_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
-    mapper_level = db.Column(db.Integer, default=1, nullable=False)
+    mapper_level = db.Column(db.Integer, default=1, nullable=False)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
 
     # Mapped Objects
+    tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
     author = db.relationship(User)
@@ -189,6 +189,10 @@ class Project(db.Model):
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
         self.default_locale = project_dto.default_locale
+        self.enforce_mapper_level = project_dto.enforce_mapper_level
+        self.enforce_validator_role = project_dto.enforce_validator_role
+        self.private = project_dto.private
+        self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
@@ -208,6 +212,16 @@ class Project(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    @staticmethod
+    def has_user_already_locked_task(project_id, user_id) -> bool:
+        """ Helper to see if user already has a locked task on project """
+        project = Project.get(project_id)
+        task_count = project.tasks.filter_by(lock_holder_id=user_id).count()
+
+        if task_count > 0:
+            return True
+        return False
+
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """
 
@@ -216,6 +230,10 @@ class Project(db.Model):
                                    Project.priority,
                                    Project.status,
                                    Project.default_locale,
+                                   Project.mapper_level,
+                                   Project.enforce_validator_role,
+                                   Project.enforce_mapper_level,
+                                   Project.private,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -227,6 +245,10 @@ class Project(db.Model):
         base_dto.project_status = ProjectStatus(project.status).name
         base_dto.project_priority = ProjectPriority(project.priority).name
         base_dto.area_of_interest = geojson.loads(project.geojson)
+        base_dto.enforce_mapper_level = project.enforce_mapper_level
+        base_dto.enforce_validator_role = project.enforce_validator_role
+        base_dto.private = project.private
+        base_dto.mapper_level = MappingLevel(project.mapper_level).name
 
         return project, base_dto
 

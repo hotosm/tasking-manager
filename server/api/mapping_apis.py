@@ -139,7 +139,7 @@ class LockTaskForMappingAPI(Resource):
             401:
                 description: Unauthorized - Invalid credentials
             403:
-                description: Task already locked
+                description: Forbidden
             404:
                 description: Task not found
             500:
@@ -223,6 +223,8 @@ class UnlockTaskForMappingAPI(Resource):
                 description: Client Error
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             404:
                 description: Task not found
             500:
@@ -246,7 +248,7 @@ class UnlockTaskForMappingAPI(Resource):
 
             return task.to_primitive(), 200
         except MappingServiceError as e:
-            return {"Error": str(e)}, 400
+            return {"Error": str(e)}, 403
         except Exception as e:
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

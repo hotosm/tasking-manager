@@ -1,0 +1,36 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Licenses (TODO)
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <button class="button button--primary pull-right" type="button" ng-click="licensesCtrl.createNewLicense()">
+                        Create new license
+                    </button>
+                    <table class="table table--zebra">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Plain text</th>
+                            <th>Edit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="license in licensesCtrl.licenses">
+                                <td><strong>{{ license.name }}</strong></td>
+                                <td>{{ license.plainText }}</td>
+                                <td><a href="/admin/licenses/edit/{{ license.id }}">edit</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

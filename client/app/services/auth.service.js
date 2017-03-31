@@ -31,7 +31,7 @@
         function login(){
             // Get the current page the user is on and remember it so we can go back to it
             var urlBeforeLoggingIn = $location.path();
-            $window.location.href = configService.tmAPI + '/auth/login?redirect=' + urlBeforeLoggingIn;
+            $window.location.href = configService.tmAPI + '/auth/login?redirect_to=' + urlBeforeLoggingIn;
         }
         
         /**

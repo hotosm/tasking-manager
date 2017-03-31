@@ -1,6 +1,7 @@
 from enum import Enum
 from server import db
 from server.models.dtos.user_dto import UserDTO
+from server.models.postgis.statuses import MappingLevel
 
 
 class UserRole(Enum):
@@ -9,13 +10,6 @@ class UserRole(Enum):
     ADMIN = 1
     PROJECT_MANAGER = 2
     VALIDATOR = 4
-
-
-class MappingLevel(Enum):
-    """ The mapping level the mapper has achieved """
-    BEGINNER = 1
-    INTERMEDIATE = 2
-    ADVANCED = 3
 
 
 class User(db.Model):

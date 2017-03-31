@@ -201,6 +201,14 @@
         };
 
         /**
+         * Set the project mapper level
+         * @param level
+         */
+        vm.setMapperLevel = function(level){
+            vm.project.mapperLevel = level;
+        };
+
+        /**
          * Priority areas: set interactions to active/inactive
          * @param boolean
          * @private
@@ -334,8 +342,8 @@
                         };
                         vm.project.projectInfoLocales.push(locale);
                     }
-                    addAOIToMap();
                 }
+                addAOIToMap();
             }, function(){
                // TODO
             });

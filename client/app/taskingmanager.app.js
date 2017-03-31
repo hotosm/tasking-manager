@@ -87,6 +87,18 @@
 
                 .when('/auth-failed', {
                     templateUrl: 'app/login/auth-failed.html'
+                })
+
+                .when('/admin/licenses', {
+                    templateUrl: 'app/admin/licenses/licenses.html',
+                    controller: 'licensesController',
+                    controllerAs: 'licensesCtrl'
+                })
+
+                .when('/admin/licenses/edit/:id', {
+                    templateUrl: 'app/admin/licenses/license-edit.html',
+                    controller: 'licenseEditController',
+                    controllerAs: 'licenseEditCtrl'
                 });
             
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them

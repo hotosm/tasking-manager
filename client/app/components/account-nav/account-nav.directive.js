@@ -71,6 +71,14 @@
         vm.createNewProject = function(){
             $location.path('admin/create-project');
             vm.showDropdown = false;
+        };
+
+        /**
+         * Navigate to the licence management page
+         */
+        vm.manageLicenses = function(){
+            $location.path('admin/licenses');
+            vm.showDropdown = false;
         }
     }
 })();

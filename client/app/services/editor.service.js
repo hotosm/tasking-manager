@@ -74,7 +74,7 @@
                     .join("&")
         }
 
-        function sendJOSMCmd(endpoint, params, callBack) {
+        function sendJOSMCmd(endpoint, params) {
             var reqObj = new XMLHttpRequest();
             var url = endpoint + formatUrlParams(params);
             var success = false;

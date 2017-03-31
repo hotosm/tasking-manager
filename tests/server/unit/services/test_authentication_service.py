@@ -43,7 +43,7 @@ class TestAuthenticationService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(AuthServiceError):
-            AuthenticationService().login_user(osm_response, 'wont-find')
+            AuthenticationService().login_user(osm_response, '/test/redirect', 'wont-find')
 
     @patch.object(User, 'get_by_id')
     def test_if_user_get_called_with_osm_id(self, mock_user_get):
@@ -54,7 +54,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details()
 
         # Act
-        AuthenticationService().login_user(osm_response)
+        AuthenticationService().login_user(osm_response, '/test/redirect')
 
         # Assert
         mock_user_get.assert_called_with(7777777)
@@ -70,7 +70,7 @@ class TestAuthenticationService(unittest.TestCase):
         mock_user_get.return_value = None
 
         # Act
-        AuthenticationService().login_user(osm_response)
+        AuthenticationService().login_user(osm_response, '/test/redirect')
 
         # Assert
         mock_user_create.assert_called_with(7777777, 'Thinkwhere Test', 16)
@@ -89,7 +89,7 @@ class TestAuthenticationService(unittest.TestCase):
         mock_user_get.return_value = test_user
 
         # Act
-        redirect_url = AuthenticationService().login_user(osm_response)
+        redirect_url = AuthenticationService().login_user(osm_response, '/test/redirect')
 
         # Assert
         parsed_url = urlparse(redirect_url)
@@ -97,6 +97,7 @@ class TestAuthenticationService(unittest.TestCase):
 
         self.assertEqual(query['username'][0], 'Thinkwhere Test')
         self.assertTrue(query['session_token'][0])
+        self.assertEqual(query['redirect_to'][0], '/test/redirect')
 
     def test_get_authentication_failed_url_returns_expected_url(self):
         if self.skip_tests:

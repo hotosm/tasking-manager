@@ -10,6 +10,7 @@ from server import create_app
 class TestMappingService(unittest.TestCase):
     task_stub = Task
     lock_task_dto = LockTaskDTO
+    mapped_task_dto = MappedTaskDTO
 
     def setUp(self):
         self.app = create_app()
@@ -21,13 +22,21 @@ class TestMappingService(unittest.TestCase):
         self.lock_task_dto.project_id = 1
         self.lock_task_dto.user_id = 123456
 
+        self.mapped_task_dto = MappedTaskDTO()
+        self.mapped_task_dto.task_id = 1
+        self.mapped_task_dto.project_id = 1
+        self.mapped_task_dto.status = TaskStatus.DONE.name
+        self.mapped_task_dto.user_id = 123456
+
         test_user = User()
+        test_user.id = 123456
         test_user.username = 'Thinkwhere'
 
         self.task_stub = Task()
         self.task_stub.id = 1
         self.task_stub.project_id = 1
         self.task_stub.task_status = 0
+        self.task_stub.lock_holder_id = 123456
         self.task_stub.lock_holder = test_user
 
     def tearDown(self):
@@ -90,12 +99,30 @@ class TestMappingService(unittest.TestCase):
         with self.assertRaises(MappingServiceError):
             MappingService().lock_task_for_mapping(self.lock_task_dto)
 
+    @patch.object(Project, 'has_user_already_locked_task')
+    @patch.object(Task, 'get')
+    def test_lock_task_for_mapping_raises_error_if_user_already_has_locked_task(self, mock_task, mock_project):
+        # Arrange
+        self.task_stub.task_locked = False
+        self.task_stub.task_status = 0
+
+        mock_task.return_value = self.task_stub
+        mock_project.return_value = True
+
+        # Act / Assert
+        with self.assertRaises(MappingServiceError):
+            MappingService().lock_task_for_mapping(self.lock_task_dto)
+
+    @patch.object(Project, 'has_user_already_locked_task')
     @patch.object(Task, 'update')
     @patch.object(Task, 'get')
-    def test_lock_task_for_mapping_sets_locked_status_when_valid(self, mock_task, mock_update):
+    def test_lock_task_for_mapping_sets_locked_status_when_valid(self, mock_task, mock_update, mock_project):
         # Arrange
         self.task_stub.task_locked = False
         mock_task.return_value = self.task_stub
+        mock_project.return_value = False
+
+        self.mapped_task_dto.comment = 'Test comment'
 
         # Act
         test_task = MappingService().lock_task_for_mapping(self.lock_task_dto)
@@ -133,15 +160,9 @@ class TestMappingService(unittest.TestCase):
         self.task_stub.task_locked = True
         mock_task.return_value = self.task_stub
 
-        mapped_task = MappedTaskDTO()
-        mapped_task.task_id = 1
-        mapped_task.project_id = 1
-        mapped_task.status = TaskStatus.DONE.name
-        mapped_task.comment = 'Test comment'
-
         # Act / Assert
         with self.assertRaises(MappingServiceError):
-            MappingService().unlock_task_after_mapping(mapped_task)
+            MappingService().unlock_task_after_mapping(self.mapped_task_dto)
 
     @patch.object(Task, 'update')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
@@ -152,15 +173,10 @@ class TestMappingService(unittest.TestCase):
         self.task_stub.task_locked = True
         mock_task.return_value = self.task_stub
 
-        mapped_task = MappedTaskDTO()
-        mapped_task.task_id = 1
-        mapped_task.project_id = 1
-        mapped_task.status = TaskStatus.DONE.name
-        mapped_task.user_id = 1234
-        mapped_task.comment = 'Test comment'
+        self.mapped_task_dto.comment = 'Test comment'
 
         # Act
-        test_task = MappingService().unlock_task_after_mapping(mapped_task)
+        test_task = MappingService().unlock_task_after_mapping(self.mapped_task_dto)
 
         # Assert
         self.assertEqual(TaskAction.COMMENT.name, test_task.task_history[0].action)
@@ -175,13 +191,8 @@ class TestMappingService(unittest.TestCase):
         self.task_stub.task_locked = True
         mock_task.return_value = self.task_stub
 
-        mapped_task = MappedTaskDTO()
-        mapped_task.task_id = 1
-        mapped_task.project_id = 1
-        mapped_task.status = TaskStatus.DONE.name
-
         # Act
-        test_task = MappingService().unlock_task_after_mapping(mapped_task)
+        test_task = MappingService().unlock_task_after_mapping(self.mapped_task_dto)
 
         # Assert
         self.assertEqual(TaskAction.STATE_CHANGE.name, test_task.task_history[0].action)
@@ -197,13 +208,17 @@ class TestMappingService(unittest.TestCase):
         self.task_stub.task_status = TaskStatus.READY.value
         mock_task.return_value = self.task_stub
 
-        mapped_task = MappedTaskDTO()
-        mapped_task.task_id = 1
-        mapped_task.project_id = 1
-        mapped_task.status = TaskStatus.READY.name
-
         # Act
-        test_task = MappingService().unlock_task_after_mapping(mapped_task)
+        test_task = MappingService().unlock_task_after_mapping(self.mapped_task_dto)
 
         # Assert
         self.assertFalse(test_task.task_locked)
+
+    @patch.object(Task, 'get')
+    def test_cant_unlock_a_task_you_dont_own(self, mock_task):
+        # Arrange
+        self.task_stub.lock_holder_id = 12
+
+        # Act / Assert
+        with self.assertRaises(MappingServiceError):
+            MappingService().unlock_task_after_mapping(self.mapped_task_dto)
