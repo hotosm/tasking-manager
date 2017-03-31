@@ -289,9 +289,6 @@
          */
         function refreshCurrentSelection(data) {
 
-            vm.taskError = '';
-            vm.taskErrorValidation = '';
-            vm.taskLockError = false;
             var isLocked = data.taskLocked;
             var isLockedByMe = data.taskLocked && data.lockHolder === vm.user.username;
             var isMappableStatus = (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
