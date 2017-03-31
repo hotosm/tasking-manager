@@ -413,23 +413,39 @@
 
         /**
          * View changes in Overpass Turbo
-         * TODO: format the middle of the query which needs user names
          */
         vm.viewOverpassTurbo = function() {
             var queryPrefix = '<osm-script output="json" timeout="25"><union>';
             var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
             var queryMiddle = '';
+            // Get the bbox of the task
+            var taskId = vm.selectedTaskData.taskId;
+            var features = vm.taskVectorLayer.getSource().getFeatures();
+            var selectedFeature = taskService.getTaskFeatureById(features, taskId);
+            var extent = selectedFeature.getGeometry().getExtent();
+            var bboxTransformed = geospatialService.transformExtentToLatLon(extent);
+            var bboxArray = bboxTransformed.split(',');
+            var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
             // Loop through the history and get a unique list of users to pass to Overpass Turbo
             var userList = [];
             var history = vm.selectedTaskData.taskHistory;
             if (history) {
                 for (var i = 0; i < history.length; i++) {
-                    // TODO: iterate over history and append unique users
-                    // See https://github.com/hotosm/osm-tasking-manager2/blob/bda6ffed25eec37801d0bad30baa5e08396b0d68/osmtm/templates/task.mako
+                    var user = history[i].actionBy;
+                    var indexInArray = userList.indexOf(user);
+                    if (user && indexInArray == -1){
+                        // user existing and not found in user list yet
+                        var userQuery =
+                            '<query type="node"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
+                            '<query type="way"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
+                            '<query type="relation"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>';
+                        queryMiddle = queryMiddle + userQuery;
+                        userList.push(user);
+                    }
                 }
             }
             var query = queryPrefix + queryMiddle + querySuffix;
-            $window.open('http://overpass-turbo.eu/map.html?Q=' + query);
+            $window.open('http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query));
         };
 
         /**
