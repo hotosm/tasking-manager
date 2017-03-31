@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from typing import Optional
 from server.models.postgis.user import User
-from server.models.dtos.user_dto import UserDTO
+from server.models.dtos.user_dto import UserDTO, UserOSMDTO
 
 
 class UserServiceError(Exception):
@@ -36,10 +36,13 @@ class UserService:
         return user.is_project_manager()
 
     @staticmethod
-    def get_osm_details_for_user(username: str):
-
+    def get_osm_details_for_user(username: str) -> Optional[UserOSMDTO]:
+        """
+        Gets OSM details for the user from OSM API
+        :param username: username in scope
+        :raises UserServiceError
+        """
         user = User().get_by_username(username)
-
         if user is None:
             return None
 
@@ -49,20 +52,21 @@ class UserService:
         if response.status_code != 200:
             raise UserServiceError('Bad response from OSM')
 
-        UserService._parse_osm_user_details_response(response.text)
+        return UserService._parse_osm_user_details_response(response.text)
 
     @staticmethod
-    def _parse_osm_user_details_response(osm_response: str):
+    def _parse_osm_user_details_response(osm_response: str, user_element='user'):
         root = ET.fromstring(osm_response)
 
-        user_element = root.find('user')
-        # TODO if none
+        osm_user = root.find(user_element)
+        if osm_user is None:
+            raise UserServiceError('User element not found in OSM response')
 
-        account_created = user_element.attrib['account_created']
-        changesets = user_element.find('changesets')
+        account_created = osm_user.attrib['account_created']
+        changesets = osm_user.find('changesets')
         changeset_count = int(changesets.attrib['count'])
 
-
-        iain = user_element
-
-
+        osm_dto = UserOSMDTO()
+        osm_dto.account_created = account_created
+        osm_dto.changeset_count = changeset_count
+        return osm_dto

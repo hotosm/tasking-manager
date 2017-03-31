@@ -68,12 +68,12 @@ class UserOSMAPI(Resource):
                 description: Bad response from OSM
         """
         try:
-            user_dto = UserService.get_osm_details_for_user(username)
+            osm_dto = UserService.get_osm_details_for_user(username)
 
-            # if user_dto is None:
-            #     return {"Error": "User Not Found"}, 404
-            #
-            # return user_dto.to_primitive(), 200
+            if osm_dto is None:
+                return {"Error": "OSM User Not Found"}, 404
+
+            return osm_dto.to_primitive(), 200
         except UserServiceError as e:
             return {"Error": str(e)}, 502
         except Exception as e:
