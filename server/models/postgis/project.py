@@ -230,6 +230,10 @@ class Project(db.Model):
                                    Project.priority,
                                    Project.status,
                                    Project.default_locale,
+                                   Project.mapper_level,
+                                   Project.enforce_validator_role,
+                                   Project.enforce_mapper_level,
+                                   Project.private,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -241,6 +245,10 @@ class Project(db.Model):
         base_dto.project_status = ProjectStatus(project.status).name
         base_dto.project_priority = ProjectPriority(project.priority).name
         base_dto.area_of_interest = geojson.loads(project.geojson)
+        base_dto.enforce_mapper_level = project.enforce_mapper_level
+        base_dto.enforce_validator_role = project.enforce_validator_role
+        base_dto.private = project.private
+        base_dto.mapper_level = MappingLevel(project.mapper_level).name
 
         return project, base_dto
 
