@@ -5,7 +5,7 @@ from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
@@ -192,6 +192,7 @@ class Project(db.Model):
         self.enforce_mapper_level = project_dto.enforce_mapper_level
         self.enforce_validator_role = project_dto.enforce_validator_role
         self.private = project_dto.private
+        self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
