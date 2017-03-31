@@ -59,9 +59,6 @@ class ValidatorService:
     @staticmethod
     def _validate_user_permissions(validation_dto: LockForValidationDTO):
         """ Check user has permission to validate on this project """
-
-        # TODO if user attempting to lock multiple raise error, maybe depending on PO
-
         project = Project.get(validation_dto.project_id)
         if project.enforce_validator_role and not UserService.is_user_validator(validation_dto.user_id):
             raise ValidatatorServiceError('User must be a validator to validate this project')
@@ -85,7 +82,8 @@ class ValidatorService:
             if not task.task_locked:
                 raise ValidatatorServiceError(f'Task: {validated_task.task_id} is not locked')
 
-            # TODO check user owns task before allowing unlock
+            if task.lock_holder_id != validated_dto.user_id:
+                raise ValidatatorServiceError('Attempting to unlock a task owned by another user')
 
             tasks_to_unlock.append(dict(task=task, new_state=TaskStatus[validated_task.status],
                                         comment=validated_task.comment))
