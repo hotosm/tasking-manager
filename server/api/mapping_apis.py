@@ -139,7 +139,7 @@ class LockTaskForMappingAPI(Resource):
             401:
                 description: Unauthorized - Invalid credentials
             403:
-                description: Task already locked
+                description: Forbidden
             404:
                 description: Task not found
             500:
