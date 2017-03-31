@@ -42,7 +42,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details()
 
         # Act
-        redirect_url = AuthenticationService().login_user(osm_response)
+        redirect_url = AuthenticationService().login_user(osm_response, '/test/redirect')
 
         # Assert
         parsed_url = urlparse(redirect_url)
@@ -50,3 +50,4 @@ class TestAuthenticationService(unittest.TestCase):
 
         self.assertEqual(query['username'][0], 'Thinkwhere Test')
         self.assertTrue(query['session_token'][0])
+        self.assertEqual(query['redirect_to'][0], '/test/redirect')
