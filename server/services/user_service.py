@@ -37,7 +37,7 @@ class UserService:
 
     @staticmethod
     def is_user_validator(user_id: int):
-        """ Get the role for the specified user """
+        """ Determines if user is a validator """
         user = User().get_by_id(user_id)
         user_role = UserRole(user.role)
 
