@@ -7,13 +7,14 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService','editorService', projectController]);
+        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
 
-    function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService) {
+    function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
         vm.map = null;
+        vm.user = {};
 
         // tab and view control
         vm.currentTab = '';
@@ -22,6 +23,7 @@
         vm.taskError = '';
         vm.taskErrorValidation = '';
         vm.taskLockError = false;
+        vm.isAuthorized = false;
         vm.selectedEditor = '';
 
         //selected task
@@ -48,6 +50,16 @@
         activate();
 
         function activate() {
+
+            // Check the user's role
+            var session = authService.getSession();
+            if (session) {
+                var resultsPromise = accountService.getUser(session.username);
+                resultsPromise.then(function (user) {
+                    vm.user = user;
+                });
+            }
+
             vm.currentTab = 'description';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
@@ -271,13 +283,39 @@
          * @param data - task JSON data object
          */
         function refreshCurrentSelection(data) {
-            vm.mappingStep = 'viewing';
-            vm.validatingStep = 'viewing';
-            vm.selectedTaskData = data;
-            vm.isSelectTaskMappable = !data.taskLocked && (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
+
+            vm.taskError = '';
+            vm.taskErrorValidation = '';
+            vm.taskLockError = false;
+            var isLocked = data.taskLocked;
+            var isLockedByMe = data.taskLocked && data.lockHolder === vm.user.username;
+            var isMappableStatus = (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
+            var isValidatableStatus = data.taskStatus === 'DONE' || data.taskStatus === 'VALIDATED';
+            vm.isSelectTaskMappable = (!isLocked || isLockedByMe) && isMappableStatus;// user should be able to map their own locked task
+            vm.isSelectTaskValidatable = (!isLocked || isLockedByMe) && isValidatableStatus;
             vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
-            vm.isSelectTaskValidatable = !data.taskLocked && (data.taskStatus === 'DONE' || data.taskStatus === 'VALIDATED');
             vm.taskErrorValidation = vm.isSelectTaskValidatable ? '' : 'task-not-validatable';
+            vm.selectedTaskData = data;
+
+            //jump to locked step if mappable and locked by me
+            if (vm.isSelectTaskMappable && isLockedByMe) {
+                vm.mappingStep = 'locked';
+                vm.lockedTaskData = data;
+                vm.currentTab = 'mapping';
+            }
+            else {
+                vm.mappingStep = 'viewing';
+            }
+
+            //jump to validatable step if validatable and locked by me
+            if (vm.isSelectTaskValidatable && isLockedByMe) {
+                vm.validatingStep = 'locked';
+                vm.lockedTaskData = data;
+                vm.currentTab = 'validation';
+            }
+            else {
+                vm.validatingStep = 'viewing';
+            }
         }
 
         /**
@@ -302,12 +340,8 @@
                     vm.taskLockError = false;
                     refreshCurrentSelection(data);
                 }
-            }, function () {
-                // could not unlock lock task, very unlikey to happen but
-                // most likely because task was unlocked or status changed on server
-                // refresh map and selected task.  UI will react to new state if task
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+            }, function (error) {
+                onLockUnLockError(projectId, taskId, error);
             });
         };
 
@@ -331,12 +365,8 @@
                 vm.lockedTaskData = null;
                 vm.taskLockError = false;
                 vm.clearCurrentSelection();
-            }, function () {
-                // could not unlock lock task, very unlikey to happen but
-                // most likely because task was unlocked or status changed on server
-                // refresh map and selected task.  UI will react to new state if task
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+            }, function (error) {
+                onLockUnLockError(projectId, taskId, error);
             });
         };
 
@@ -361,13 +391,8 @@
                 vm.taskErrorValidation = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = data;
-            }, function () {
-                // could not lock task for mapping, most likely because task was locked or status changed user after
-                // selection but before lock,
-                // refresh map and selected task.  UI will react to new state if task
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
-                vm.taskLockError = true;
+            }, function (error) {
+                onLockUnLockError(projectId, taskId, error);
             });
         };
 
@@ -391,20 +416,15 @@
                 vm.taskError = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = tasks[0];
-            }, function () {
-                // could not lock task for mapping, most likely because task was locked or status changed user after
-                // selection but before lock,
-                // refresh map and selected task.  UI will react to new state if task
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
-                vm.taskLockError = true;
+            }, function (error) {
+                onLockUnLockError(projectId, taskId, error);
             });
         };
 
         /**
          * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
          */
-        vm.viewOSMChangesets = function(){
+        vm.viewOSMChangesets = function () {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
@@ -415,23 +435,39 @@
 
         /**
          * View changes in Overpass Turbo
-         * TODO: format the middle of the query which needs user names
          */
-        vm.viewOverpassTurbo = function() {
+        vm.viewOverpassTurbo = function () {
             var queryPrefix = '<osm-script output="json" timeout="25"><union>';
             var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
             var queryMiddle = '';
+            // Get the bbox of the task
+            var taskId = vm.selectedTaskData.taskId;
+            var features = vm.taskVectorLayer.getSource().getFeatures();
+            var selectedFeature = taskService.getTaskFeatureById(features, taskId);
+            var extent = selectedFeature.getGeometry().getExtent();
+            var bboxTransformed = geospatialService.transformExtentToLatLon(extent);
+            var bboxArray = bboxTransformed.split(',');
+            var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
             // Loop through the history and get a unique list of users to pass to Overpass Turbo
             var userList = [];
             var history = vm.selectedTaskData.taskHistory;
             if (history) {
                 for (var i = 0; i < history.length; i++) {
-                    // TODO: iterate over history and append unique users
-                    // See https://github.com/hotosm/osm-tasking-manager2/blob/bda6ffed25eec37801d0bad30baa5e08396b0d68/osmtm/templates/task.mako
+                    var user = history[i].actionBy;
+                    var indexInArray = userList.indexOf(user);
+                    if (user && indexInArray == -1) {
+                        // user existing and not found in user list yet
+                        var userQuery =
+                            '<query type="node"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
+                            '<query type="way"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
+                            '<query type="relation"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>';
+                        queryMiddle = queryMiddle + userQuery;
+                        userList.push(user);
+                    }
                 }
             }
             var query = queryPrefix + queryMiddle + querySuffix;
-            $window.open('http://overpass-turbo.eu/map.html?Q=' + query);
+            $window.open('http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query));
         };
 
         /**
@@ -440,7 +476,7 @@
          * See: https://github.com/hotosm/osm-tasking-manager2/blob/d3a3b70d09256ba16bdff1b35909ad4f3b9f66e2/osmtm/static/js/project.js
          * @param editor
          */
-        vm.startEditor = function(editor){
+        vm.startEditor = function (editor) {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
@@ -463,6 +499,28 @@
                 window.open(url);
             }
             // TODO: other editors
+        };
+
+        /**
+         * Refresh the map and selected task on error
+         * @param projectId
+         * @param taskId
+         * @param error
+         */
+        function onLockUnLockError(projectId, taskId, error) {
+            // Could not unlock/lock task
+            // Refresh the map and selected task.
+            refreshProject(projectId);
+            onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+            vm.taskLockError = true;
+            // Check if it is an unauthorized error. If so, display appropriate message
+            if (error.status == 401) {
+                vm.isAuthorized = false;
+            }
+            else {
+                // Another error occurred.
+                vm.isAuthorized = true;
+            }
         }
     }
 })();
