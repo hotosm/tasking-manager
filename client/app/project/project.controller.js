@@ -7,9 +7,7 @@
      */
     angular
         .module('taskingManager')
-
         .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
-
 
     function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;

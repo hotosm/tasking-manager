@@ -97,7 +97,6 @@
             var url = endpoint + formatUrlParams(params);
             var success = false;
             reqObj.onreadystatechange = function () {
-                console.log(this.readyState);
                 if (this.readyState == 4) {
                     if (this.status == 200) {
                         success = true;
@@ -106,7 +105,7 @@
                         success = false;
                     }
                 }
-            }
+            };
             try {
                 //use synchronous mode.  Not ideal but should be ok since JOSM is local.
                 //Otherwise callbacks would be required
@@ -118,6 +117,5 @@
             }
             return success;
         }
-
     }
 })();
