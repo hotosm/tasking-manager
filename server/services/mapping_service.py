@@ -17,11 +17,12 @@ class MappingService:
     task = None
     project_service = None
 
-    def __init__(self, task_id: int, project_id: int):
+    def __init__(self, task_id: int, project_id: int, project_service=None):
         """
         Constructs service for task user wants to map
         :param task_id: ID of the task to map
         :param project_id: ID of project task is associated with
+        :param project_service: Service is injectable to ease unit testing
         :raises NotFound if task doesn't exist in the DB
         """
         self.task = Task.get(task_id, project_id)
@@ -29,7 +30,10 @@ class MappingService:
         if self.task is None:
             raise NotFound()
 
-        self.project_service = ProjectService(project_id)
+        if project_service is None:
+            self.project_service = ProjectService.from_project_id(project_id)
+        else:
+            self.project_service = project_service
 
     def get_task_as_dto(self) -> TaskDTO:
         """ Get task as DTO for transmission over API """

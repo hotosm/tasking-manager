@@ -44,7 +44,7 @@ class TestMappingService(unittest.TestCase):
     def set_up_service(self, mock_task, stub_task):
         """ Helper that sets ups the mapping service with the supplied task test stub"""
         mock_task.return_value = stub_task
-        self.mapping_service = MappingService(1, 1)
+        self.mapping_service = MappingService(1, 1, ProjectService())
 
     def test_mapping_service_raises_error_if_task_not_found(self):
         with self.assertRaises(NotFound):

@@ -15,16 +15,19 @@ class ProjectService:
 
     project = Project
 
-    def __init__(self, project_id):
+    @classmethod
+    def from_project_id(cls, project_id):
         """
         Constructs service for supplied project
         :param project_id: ID of project in scope
         :raises NotFound if project doesn't exist in the DB
         """
-        self.project = Project.get(project_id)
+        cls.project = Project.get(project_id)
 
-        if self.project is None:
+        if cls.project is None:
             raise NotFound()
+
+        return cls()
 
     def get_project_dto_for_mapper(self, locale='en') -> ProjectDTO:
         """
