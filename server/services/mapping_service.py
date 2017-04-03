@@ -54,9 +54,8 @@ class MappingService:
             raise MappingServiceError(f'Cannot lock task {self.task.id} state must be in {TaskStatus.READY.name},'
                                       f' {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}')
 
-        user_allowed, error_message = self.project_service.is_user_permitted_to_lock_task(lock_task_dto.user_id)
-
-        if not user_allowed:
+        user_can_map, error_message = self.project_service.is_user_permitted_to_map(lock_task_dto.user_id)
+        if not user_can_map:
             raise MappingServiceError(error_message)
 
         self.task.lock_task(lock_task_dto.user_id)

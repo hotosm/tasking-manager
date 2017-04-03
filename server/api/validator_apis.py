@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
 from schematics.exceptions import DataError
 from server.services.authentication_service import token_auth, tm
-from server.services.validator_service import ValidatorService, TaskNotFound, ValidatatorServiceError
+from server.services.validator_service import ValidatorService, NotFound, ValidatatorServiceError
 
 
 class LockTasksForValidationAPI(Resource):
@@ -69,7 +69,7 @@ class LockTasksForValidationAPI(Resource):
             return tasks.to_primitive(), 200
         except ValidatatorServiceError as e:
             return {"Error": str(e)}, 403
-        except TaskNotFound as e:
+        except NotFound as e:
             return {"Error": str(e)}, 404
         except Exception as e:
             error_msg = f'Validator Lock API - unhandled error: {str(e)}'
@@ -140,7 +140,7 @@ class UnlockTasksAfterValidationAPI(Resource):
             return tasks.to_primitive(), 200
         except ValidatatorServiceError as e:
             return {"Error": str(e)}, 403
-        except TaskNotFound as e:
+        except NotFound as e:
             return {"Error": str(e)}, 404
         except Exception as e:
             error_msg = f'Validator Lock API - unhandled error: {str(e)}'
