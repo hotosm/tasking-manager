@@ -477,13 +477,15 @@
          * @param editor
          */
         vm.startEditor = function (editor) {
-
+            editor = 'ideditor';
             vm.editorStartError = '';
 
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var extent = selectedFeature.getGeometry().getExtent();
+            // Zoom to the extent to get the right zoom level for the editors
+            vm.map.getView().fit(extent);
             var extentTransformed = geospatialService.transformExtentToLatLonArray(extent);
             var imageryUrl = 'tms[22]:https://api.mapbox.com/v4/digitalglobe.2lnp1jee/{z}/{x}/{y}.png?' +
                 'access_token=pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNpd3A2OTAwODAwNGUyenFuN' +
@@ -491,19 +493,16 @@
             var changesetComment = '#TODO #CHANGSET_COMMENT'; // TODO: get changeset comment from project
             // get center in the right projection
             var center = ol.proj.transform(geospatialService.getCenterOfExtent(extent), 'EPSG:3857', 'EPSG:4326');
-            var url = '';
+            // TODO licence agreement
             if (editor === 'ideditor') {
-                // TODO licence agreement
-                url = editorService.getUrlForEditor({
-                    base: 'http://www.openstreetmap.org/edit?editor=id&',
-                    bounds: extentTransformed,
-                    centroid: center,
-                    protocol: 'id',
-                    changesetComment: '', // TODO: use changeset comment from above
-                    imageryUrl: '' // TODO: use imagery URL from above
-                });
-                // TODO: GPX file
-                window.open(url);
+                // TODO: GPX file + imageryURL
+                editorService.launchIdEditor(center, changesetComment);
+            }
+            else if (editor === 'potlatch2'){
+                editorService.launchPotlatch2Editor(center);
+            }
+            else if (editor === 'fieldpapers'){
+                editorService.launchFieldPapersEditor(center);
             }
             else if (editor === 'jsom') {
                 // TODO licence agreement
@@ -528,7 +527,7 @@
                             title: encodeURIComponent('Tasking Manager - #' + vm.projectData.projectId),
                             type: imageryUrl.toLowerCase().substring(0, 3),
                             url: encodeURIComponent(imageryUrl)
-                        }
+                        };
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
                     }
                 }
@@ -537,8 +536,6 @@
                     vm.editorStartError = 'josm-error';
                 }
             }
-
-            // TODO: other editors
         };
 
         /**
