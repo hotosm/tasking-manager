@@ -37,3 +37,13 @@ class ProjectService:
             raise ProjectServiceError(f'Project {self.project.id} is not published')
 
         return self.project.as_dto_for_mapping(locale)
+
+    def is_user_permitted_to_lock_task(self, user_id):
+        # TODO check if allowed user for private project
+        # TODO check level if enforce mapper level
+
+        task_count = self.project.get_task_count_for_user(user_id)
+
+        if task_count > 0:
+            return False, 'User already has a locked task on this project'
+        return True, 'User allowed to lock task'

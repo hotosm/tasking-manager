@@ -71,7 +71,7 @@ class TestProject(unittest.TestCase):
         self.update_project_with_info()
 
         # Act
-        project_dto = Project().as_dto_for_mapping(self.test_project.id, 'en')
+        project_dto = Project().as_dto_for_mapping('en')
 
         # Assert
         self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)
@@ -114,7 +114,7 @@ class TestProject(unittest.TestCase):
 
         # Act - Create empty italian translation
         self.test_project.update(test_dto)
-        dto = self.test_project.as_dto_for_mapping(self.test_project.id, 'it')
+        dto = self.test_project.as_dto_for_mapping('it')
 
         # Assert
         self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
