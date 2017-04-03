@@ -36,6 +36,10 @@
         //locked task
         vm.lockedTaskData = null;
 
+        //multi-validation
+        vm.multiSelectedTssks = [];
+        vm.multiLockedTasks = [];
+
         //project display text
         vm.description = '';
         vm.shortDescription = '';
@@ -56,16 +60,12 @@
                     level: 'beginner',
                     tasks: [
                         {
-                            taskId: 1,
+                            taskId: 22,
                             timeStamp: '2017-03-10T14:43:27.02348'
                         },
                         {
-                            taskId: 2,
+                            taskId: 23,
                             timeStamp: '2017-03-15T14:43:27.02348'
-                        },
-                        {
-                            taskId: 3,
-                            timeStamp: '2017-03-20T14:43:27.02348'
                         }
                     ]
                 },
@@ -630,6 +630,34 @@
                 // Another error occurred.
                 vm.isAuthorized = true;
             }
+
+        }
+
+        vm.contributerClick = function (doneTasks) {
+            select.getFeatures().clear();
+
+            // get an array of the 'done' task id's that have been clicked
+            var doneTaskIds = doneTasks.tasks.map(function(task){
+                return task.taskId;
+            });
+
+            //use doneTaskIds to get corresponding subset of tasks from the project and update controller data
+            // with the selected tasks
+            vm.multiSelectedTasks = vm.projectData.tasks.features.filter(function(task){
+                if(doneTaskIds.includes(task.properties.taskId)){
+                    return task;
+                }
+            });
+
+            //select each one by one
+            vm.multiSelectedTasks.forEach(function (feature) {
+                var feature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), feature.properties.taskId);
+                select.getFeatures().push(feature);
+            });
+
+            //TODO: put the UI in to locked for validation mode
+            //vm.lockSelectedTaskValidation();
+
 
         }
     }

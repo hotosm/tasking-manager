@@ -233,16 +233,20 @@
                                         <td class="heading-alt">Done</td>
                                         <td class="heading-alt">Oldest</td>
                                         <td class="heading-alt">Newest</td>
+                                        <td class="heading-alt">Lock</td>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="task in projectCtrl.tasksForValidation.doneTasks" >
-                                        <td>{{ task.user }}</td>
-                                        <td>{{ task.level }}</td>
-                                        <td>{{ task.tasks.length }}</td>
-                                        <td><span am-time-ago="task.tasks[0].timeStamp | amUtc"></span></td>
+                                    <tr ng-repeat="user in projectCtrl.tasksForValidation.doneTasks">
+                                        <td>{{ user.user }}</td>
+                                        <td>{{ user.level }}</td>
+                                        <td>{{ user.tasks.length }}</td>
+                                        <td><span am-time-ago="user.tasks[0].timeStamp | amUtc"></span></td>
                                         <td><span
-                                                am-time-ago="task.tasks[task.tasks.length-1].timeStamp | amUtc"></span>
+                                                am-time-ago="user.tasks[user.tasks.length-1].timeStamp | amUtc"></span>
+                                        </td>
+                                        <td>
+                                            <button ng-click="projectCtrl.contributerClick(user)">Lock</button>
                                         </td>
                                     </tr>
                                     </tbody>
