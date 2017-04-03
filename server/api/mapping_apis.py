@@ -2,59 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from server.services.authentication_service import token_auth, tm
-from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError, NotFound
-
-
-class MappingProjectAPI(Resource):
-
-    def get(self, project_id):
-        """
-        Get HOT Project for mapping
-        ---
-        tags:
-            - mapping
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Accept-Language
-              description: Language user is requesting
-              type: string
-              required: true
-              default: en
-            - name: project_id
-              in: path
-              description: The unique project ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: Project found
-            400:
-                description: Invalid request
-            404:
-                description: Project not found
-            500:
-                description: Internal Server Error
-        """
-        try:
-            mapping_service = MappingService()
-            project_dto = mapping_service.get_project_dto_for_mapper(project_id,
-                                                                     request.environ.get('HTTP_ACCEPT_LANGUAGE'))
-
-            if project_dto is None:
-                return {"Error": "Project Not Found"}, 404
-
-            return project_dto.to_primitive(), 200
-        except MappingServiceError as e:
-            return {"error": str(e)}, 400
-        except DatabaseError as e:
-            return {"error": str(e)}, 500
-        except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+from server.services.mapping_service import MappingService, MappingServiceError, NotFound
 
 
 class MappingTaskAPI(Resource):

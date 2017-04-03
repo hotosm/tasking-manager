@@ -85,8 +85,9 @@ def init_flask_restful_routes(app):
     api = Api(app)
 
     from server.api.health_check_api import HealthCheckAPI
-    from server.api.mapping_apis import MappingProjectAPI, MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI
+    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI
     from server.api.project_admin_api import ProjectAdminAPI
+    from server.api.project_apis import ProjectAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.authentication_apis import LoginAPI, OAuthAPI
     from server.api.user_apis import UserAPI, UserOSMAPI
@@ -94,7 +95,7 @@ def init_flask_restful_routes(app):
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
-    api.add_resource(MappingProjectAPI,             '/api/v1/project/<int:project_id>')
+    api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
     api.add_resource(LockTaskForMappingAPI,         '/api/v1/project/<int:project_id>/task/<int:task_id>/lock-for-mapping')
     api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project', endpoint="create_project", methods=['PUT'])
     api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project/<int:project_id>', methods=['GET', 'POST'])
