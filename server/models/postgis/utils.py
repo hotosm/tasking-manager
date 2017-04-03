@@ -5,6 +5,11 @@ from geoalchemy2 import Geometry
 from geoalchemy2.functions import GenericFunction
 
 
+class NotFound(Exception):
+    """ Custom exception to indicate model not found in database"""
+    pass
+
+
 class InvalidGeoJson(Exception):
     """ Custom exception to notify caller they have supplied Invalid GeoJson """
     def __init__(self, message):
