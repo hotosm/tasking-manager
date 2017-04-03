@@ -54,7 +54,9 @@
                 })
 
                 .when('/about', {
-                    templateUrl: 'app/about/about.html'
+                    templateUrl: 'app/about/about.html',
+                    controller: 'aboutController',
+                    controllerAs: 'aboutCtrl'
                 })
 
                 .when('/learn', {

@@ -52,13 +52,20 @@
                             </form>
                         </div>
                         <div class="search-results">
-                            <div>
-                                <a href="" ng-click="contributeCtrl.resultsView = 'grid'">
-                                    Grid view
-                                </a>
-                                <a href="" ng-click="contributeCtrl.resultsView = 'list'">
-                                    List view
-                                </a>
+                            <div class="form__group">
+                                <div class="button-group button-group--horizontal" role="group"
+                                     aria-label="choose results view">
+                                    <button class="button button--achromic button--active" type="button"
+                                        ng-click="contributeCtrl.resultsView = 'grid'"
+                                        ng-class="contributeCtrl.resultsView === 'grid' ? 'button--active' : ''">
+                                        Grid view
+                                    </button>
+                                    <button class="button button--achromic" type="button"
+                                        ng-click="contributeCtrl.resultsView = 'list'"
+                                        ng-class="contributeCtrl.resultsView === 'list' ? 'button--active' : ''">
+                                        List view
+                                    </button>
+                                </div>
                             </div>
                             <div ng-show="contributeCtrl.resultsView === 'grid'">
                                 <div class="search-results-container">
@@ -87,13 +94,22 @@
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Organisation</th>
-                                        <th>Level</th>
-                                        <th><a class="table__sort table__sort--none"
-                                               title="Sort column"><span>Priority</span></a></th>
-                                        <th>Contribute</th>
+                                        <th>
+                                            <span>#</span>
+                                        </th>
+                                        <th>
+                                            <span>Name</span>
+                                        </th>
+                                        <th>
+                                            <span>Organisation</span>
+                                        </th>
+                                        <th>
+                                            <span>Level</span>
+                                        </th>
+                                        <th>
+                                            <span>Priority</span>
+                                        </th>
+                                        <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
