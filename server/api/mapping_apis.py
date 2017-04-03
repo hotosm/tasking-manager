@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from server.services.authentication_service import token_auth, tm
-from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError
+from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError, NotFound
 
 
 class MappingProjectAPI(Resource):
@@ -241,12 +241,11 @@ class UnlockTaskForMappingAPI(Resource):
             return str(e), 400
 
         try:
-            task = MappingService().unlock_task_after_mapping(mapped_task)
-
-            if task is None:
-                return {"Error": "Task Not Found"}, 404
-
+            mapping_service = MappingService(task_id, project_id)
+            task = mapping_service.unlock_task_after_mapping(mapped_task)
             return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
