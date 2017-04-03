@@ -37,12 +37,11 @@ class MappingTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = MappingService().get_task_as_dto(task_id, project_id)
-
-            if task is None:
-                return {"Error": "Task Not Found"}, 404
-
+            mapping_service = MappingService(task_id, project_id)
+            task = mapping_service.get_task_as_dto()
             return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
         except Exception as e:
             error_msg = f'Task GET API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

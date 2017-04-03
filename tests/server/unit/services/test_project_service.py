@@ -11,7 +11,7 @@ class TestProjectService(unittest.TestCase):
     def set_up_service(self, mock_task, stub_project):
         """ Helper that sets ups the mapping service with the supplied project test stub"""
         mock_task.return_value = stub_project
-        self.project_service = ProjectService(1)
+        self.project_service = ProjectService.from_project_id(1)
 
     def test_project_service_raises_error_if_project_not_found(self):
         with self.assertRaises(NotFound):

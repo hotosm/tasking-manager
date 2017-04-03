@@ -1,6 +1,6 @@
 import unittest
 from server.services.mapping_service import MappingService, Task, MappingServiceError, TaskStatus, \
-     Project, NotFound
+     ProjectService, NotFound
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import TaskHistory, TaskAction, User
 from unittest.mock import patch, MagicMock
@@ -44,7 +44,7 @@ class TestMappingService(unittest.TestCase):
     def set_up_service(self, mock_task, stub_task):
         """ Helper that sets ups the mapping service with the supplied task test stub"""
         mock_task.return_value = stub_task
-        self.mapping_service = MappingService(1, 1)
+        self.mapping_service = MappingService(1, 1, ProjectService())
 
     def test_mapping_service_raises_error_if_task_not_found(self):
         with self.assertRaises(NotFound):
@@ -68,22 +68,22 @@ class TestMappingService(unittest.TestCase):
         with self.assertRaises(MappingServiceError):
             self.mapping_service.lock_task_for_mapping(self.lock_task_dto)
 
-    @patch.object(Project, 'has_user_already_locked_task')
+    @patch.object(ProjectService, 'is_user_permitted_to_lock_task')
     def test_lock_task_for_mapping_raises_error_if_user_already_has_locked_task(self, mock_project):
         # Arrange
         self.set_up_service(stub_task=self.task_stub)
-        mock_project.return_value = True
+        mock_project.return_value = False, 'Not allowed'
 
         # Act / Assert
         with self.assertRaises(MappingServiceError):
             self.mapping_service.lock_task_for_mapping(self.lock_task_dto)
 
-    @patch.object(Project, 'has_user_already_locked_task')
+    @patch.object(ProjectService, 'is_user_permitted_to_lock_task')
     @patch.object(Task, 'update')
     def test_lock_task_for_mapping_sets_locked_status_when_valid(self, mock_update, mock_project):
         # Arrange
         self.set_up_service(stub_task=self.task_stub)
-        mock_project.return_value = False
+        mock_project.return_value = True, 'Allowed'
         self.mapped_task_dto.comment = 'Test comment'
 
         # Act

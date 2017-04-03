@@ -1,8 +1,8 @@
 from flask import current_app
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import Task, TaskStatus
-from server.models.postgis.project import Project
 from server.models.postgis.utils import NotFound
+from server.services.project_service import ProjectService
 
 
 class MappingServiceError(Exception):
@@ -15,18 +15,25 @@ class MappingServiceError(Exception):
 class MappingService:
 
     task = None
+    project_service = None
 
-    def __init__(self, task_id: int, project_id: int):
+    def __init__(self, task_id: int, project_id: int, project_service=None):
         """
         Constructs service for task user wants to map
         :param task_id: ID of the task to map
         :param project_id: ID of project task is associated with
+        :param project_service: Service is injectable to ease unit testing
         :raises NotFound if task doesn't exist in the DB
         """
         self.task = Task.get(task_id, project_id)
 
         if self.task is None:
             raise NotFound()
+
+        if project_service is None:
+            self.project_service = ProjectService.from_project_id(project_id)
+        else:
+            self.project_service = project_service
 
     def get_task_as_dto(self) -> TaskDTO:
         """ Get task as DTO for transmission over API """
@@ -47,11 +54,10 @@ class MappingService:
             raise MappingServiceError(f'Cannot lock task {self.task.id} state must be in {TaskStatus.READY.name},'
                                       f' {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}')
 
-        # TODO check if allowed user for private project
-        # TODO check level if enforce mapper level
+        user_allowed, error_message = self.project_service.is_user_permitted_to_lock_task(lock_task_dto.user_id)
 
-        if Project.has_user_already_locked_task(self.task.project_id, lock_task_dto.user_id):
-            raise MappingServiceError('User already has a locked task on this project')
+        if not user_allowed:
+            raise MappingServiceError(error_message)
 
         self.task.lock_task(lock_task_dto.user_id)
         return self.task.as_dto()
