@@ -105,7 +105,7 @@
                                             <p>The task could not be locked for mapping.</p>
                                         </div>
                                     </div>
-                                     <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                    <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
                                             <p>Please login first.</p>
                                         </div>
@@ -176,9 +176,20 @@
                                             <option value="walkingpapers">Walking papers</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
-                                        <button class="button button--secondary" ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                             Start Editor
                                         </button>
+                                        <div ng-show="projectCtrl.editorStartError === 'josm-error'">
+                                            <div class="alert alert--danger" role="alert">
+                                                <button class="alert__button-dismiss" title="Dismiss alert"
+                                                        ng-click="projectCtrl.editorStartError = ''">
+                                                    <span>Dismiss</span>
+                                                </button>
+                                                <p>JOSM remote control did not respond. Do you have JOSM running and
+                                                    configured to be controlled remotely?</p>
+                                            </div>
+                                        </div>
                                     </div>
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment"></textarea>
@@ -379,12 +390,18 @@
                                          ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
                                          ng-class-odd="'odd'" ng-class-even="'even'">
                                         <div>
-                                            <span ng-show="item.action === 'COMMENT'">Comment left by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'LOCKED'">Locked by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'COMMENT'">Comment left by <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'LOCKED'">Locked by <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                         </div>
                                         <div>
                                             <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
@@ -426,8 +443,12 @@
                     </h2>
                 </div>
                 <div>
-                    <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'" class="edit-project-button">
-                        <a href="/admin/edit-project/{{ projectCtrl.projectData.projectId }}" class="button button--secondary">Edit project</a>
+
+                    <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'"
+                         class="edit-project-button">
+                        <a href="/admin/edit-project/{{ projectCtrl.projectData.projectId }}"
+                           class="button button--secondary">Edit project</a>
+
                     </div>
                 </div>
             </div>

@@ -39,6 +39,9 @@
         vm.shortDescription = '';
         vm.instructions = '';
 
+        //editor
+        vm.editorStartError = '';
+
         //interaction
         var select = new ol.interaction.Select({
             style: styleService.getSelectedStyleFunction
@@ -284,9 +287,6 @@
          */
         function refreshCurrentSelection(data) {
 
-            vm.taskError = '';
-            vm.taskErrorValidation = '';
-            vm.taskLockError = false;
             var isLocked = data.taskLocked;
             var isLockedByMe = data.taskLocked && data.lockHolder === vm.user.username;
             var isMappableStatus = (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
@@ -429,7 +429,7 @@
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var bbox = selectedFeature.getGeometry().getExtent();
-            var bboxTransformed = geospatialService.transformExtentToLatLon(bbox);
+            var bboxTransformed = geospatialService.transformExtentToLatLonString(bbox);
             $window.open('http://www.openstreetmap.org/history?bbox=' + bboxTransformed);
         };
 
@@ -477,11 +477,18 @@
          * @param editor
          */
         vm.startEditor = function (editor) {
+
+            vm.editorStartError = '';
+
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var extent = selectedFeature.getGeometry().getExtent();
-            var extentTransformed = geospatialService.transformExtentToLatLon(extent);
+            var extentTransformed = geospatialService.transformExtentToLatLonArray(extent);
+            var imageryUrl = 'tms[22]:https://api.mapbox.com/v4/digitalglobe.2lnp1jee/{z}/{x}/{y}.png?' +
+                'access_token=pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNpd3A2OTAwODAwNGUyenFuN' +
+                'TkyZjRkeWsifQ.Y44JcpYP9gXsZD3p5KBZbA'; // TODO: get imagery URL from project
+            var changesetComment = '#TODO #CHANGSET_COMMENT'; // TODO: get changeset comment from project
             // get center in the right projection
             var center = ol.proj.transform(geospatialService.getCenterOfExtent(extent), 'EPSG:3857', 'EPSG:4326');
             var url = '';
@@ -492,12 +499,45 @@
                     bounds: extentTransformed,
                     centroid: center,
                     protocol: 'id',
-                    changesetComment: '', // TODO: changeset comment
-                    imageryUrl: '' // TODO: imagery URL
+                    changesetComment: '', // TODO: use changeset comment from above
+                    imageryUrl: '' // TODO: use imagery URL from above
                 });
                 // TODO: GPX file
                 window.open(url);
             }
+            else if (editor === 'jsom') {
+                // TODO licence agreement
+                var changesetSource = "Bing";
+                var hasImagery = false;
+                if (typeof imageryUrl != "undefined" && imageryUrl !== '') {
+                    changesetSource = imageryUrl;
+                    hasImagery = true;
+                }
+                var loadAndZoomParams = {
+                    left: extentTransformed[0],
+                    bottom: extentTransformed[1],
+                    right: extentTransformed[2],
+                    top: extentTransformed[3],
+                    changeset_comment: encodeURIComponent(changesetComment),
+                    changeset_source: encodeURIComponent(changesetSource)
+                };
+                var isLoadAndZoomSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                if (isLoadAndZoomSuccess) {
+                    if (hasImagery) {
+                        var imageryParams = {
+                            title: encodeURIComponent('Tasking Manager - #' + vm.projectData.projectId),
+                            type: imageryUrl.toLowerCase().substring(0, 3),
+                            url: encodeURIComponent(imageryUrl)
+                        }
+                        editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
+                    }
+                }
+                else {
+                    //TODO warn that JSOM couldn't be started
+                    vm.editorStartError = 'josm-error';
+                }
+            }
+
             // TODO: other editors
         };
 
@@ -521,6 +561,8 @@
                 // Another error occurred.
                 vm.isAuthorized = true;
             }
+
         }
     }
-})();
+})
+();
