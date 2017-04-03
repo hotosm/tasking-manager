@@ -1,0 +1,38 @@
+.sponsor {
+  &__cards {
+    text-align: left;
+    padding-bottom: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-content: top;
+    align-items: stretch;
+  }
+
+  &__card {
+    width: 350px;
+    margin-bottom: 2rem;
+  }
+
+  &__content {
+    padding: 1rem;
+    height: 250px;
+    text-align: center;
+    .sponsor-logo {
+      height: 125px;
+      white-space: nowrap;
+      text-align: center;
+      margin: 1em 0;
+      img {
+        max-height: 125px;
+        vertical-align: middle;
+      }
+    }
+    .helper{
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+    }
+  }
+}

@@ -4,14 +4,14 @@
   .search {
     @include column(12/12);
     @include media(medium-up) {
-      @include column(5/12);
+      @include column(4/12);
     }
   }
 
   .search-results {
     @include column(12/12);
     @include media(medium-up) {
-      @include column(7/12);
+      @include column(8/12);
     }
   }
 }
@@ -37,7 +37,7 @@
   }
 
   &__card {
-    width: 312px;
+    width: 350px;
     margin-bottom: 2rem;
   }
 
