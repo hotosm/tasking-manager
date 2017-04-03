@@ -172,7 +172,7 @@
                                         <select ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">ID Editor</option>
                                             <option value="jsom">JOSM</option>
-                                            <option value="potlach2">Potlatch 2</option>
+                                            <option value="potlatch2">Potlatch 2</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
                                         <button class="button button--secondary"
@@ -318,11 +318,11 @@
                                 <p></p>
                                 <div class="form__group">
                                     <div>
-                                        <select>
-                                            <option selected="true">ID Editor</option>
-                                            <option>JOSM</option>
-                                            <option>Potlach 2</option>
-                                            <option>Field papers</option>
+                                        <select ng-model="projectCtrl.selectedEditor">
+                                            <option value="ideditor" selected="true">ID Editor</option>
+                                            <option value="jsom">JOSM</option>
+                                            <option value="potlatch2">Potlatch 2</option>
+                                            <option value="fieldpapers">Field papers</option>
                                         </select>
                                         <button class="button button--secondary"
                                                 ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
