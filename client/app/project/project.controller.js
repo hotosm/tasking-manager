@@ -477,7 +477,7 @@
          * @param editor
          */
         vm.startEditor = function (editor) {
-            editor = 'ideditor';
+           
             vm.editorStartError = '';
 
             var taskId = vm.selectedTaskData.taskId;
