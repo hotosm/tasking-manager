@@ -27,17 +27,18 @@
         vm.taskLockError = false;
         vm.isAuthorized = false;
         vm.selectedEditor = '';
+        vm.taskLockErrorMessage = '';
 
         //selected task
         vm.selectedTaskData = null;
-        vm.isSelectTaskMappable = false;
-        vm.isSelectTaskValidatable = false;
+        vm.isSelectedMappable = false;
+        vm.isSelectedValidatable = false;
 
         //locked task
         vm.lockedTaskData = null;
 
         //multi-validation
-        vm.multiSelectedTssks = [];
+        vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
 
         //project display text
@@ -193,8 +194,8 @@
             }
             else {
                 vm.selectedTaskData = null;
-                vm.isSelectTaskMappable = false;
-                vm.isSelectTaskValidatable = false;
+                vm.isSelectedMappable = false;
+                vm.isSelectedValidatable = false;
                 vm.taskError = 'none-available';
                 vm.taskErrorValidation = 'none-available';
                 vm.taskLockError = false;
@@ -209,7 +210,7 @@
          */
         vm.clearCurrentSelection = function () {
             vm.selectedTaskData = null;
-            vm.isSelectTaskMappable = false;
+            vm.isSelectedMappable = false;
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
             vm.taskError = '';
@@ -331,14 +332,14 @@
                 // tab
                 if (vm.currentTab === 'description' || vm.currentTab === 'instructions') {
                     //prioritise validation
-                    vm.currentTab = vm.isSelectTaskValidatable ? 'validation' : 'mapping';
+                    vm.currentTab = vm.isSelectedValidatable ? 'validation' : 'mapping';
                 }
 
             }, function () {
                 // task not returned successfully
                 vm.selectedTaskData = null;
-                vm.isSelectTaskMappable = false;
-                vm.isSelectTaskValidatable = false;
+                vm.isSelectedMappable = false;
+                vm.isSelectedValidatable = false;
                 vm.taskError = 'task-get-error';
                 vm.taskErrorValidation = 'task-get-error';
                 vm.mappingStep = 'viewing';
@@ -360,14 +361,14 @@
             var isLockedByMe = data.taskLocked && data.lockHolder === vm.user.username;
             var isMappableStatus = (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
             var isValidatableStatus = data.taskStatus === 'DONE' || data.taskStatus === 'VALIDATED';
-            vm.isSelectTaskMappable = (!isLocked || isLockedByMe) && isMappableStatus;// user should be able to map their own locked task
-            vm.isSelectTaskValidatable = (!isLocked || isLockedByMe) && isValidatableStatus;
-            vm.taskError = vm.isSelectTaskMappable ? '' : 'task-not-mappable';
-            vm.taskErrorValidation = vm.isSelectTaskValidatable ? '' : 'task-not-validatable';
+            vm.isSelectedMappable = (!isLocked || isLockedByMe) && isMappableStatus;// user should be able to map their own locked task
+            vm.isSelectedValidatable = (!isLocked || isLockedByMe) && isValidatableStatus;
+            vm.taskError = vm.isSelectedMappable ? '' : 'task-not-mappable';
+            vm.taskErrorValidation = vm.isSelectedValidatable ? '' : 'task-not-validatable';
             vm.selectedTaskData = data;
 
             //jump to locked step if mappable and locked by me
-            if (vm.isSelectTaskMappable && isLockedByMe) {
+            if (vm.isSelectedMappable && isLockedByMe) {
                 vm.mappingStep = 'locked';
                 vm.lockedTaskData = data;
                 vm.currentTab = 'mapping';
@@ -377,7 +378,7 @@
             }
 
             //jump to validatable step if validatable and locked by me
-            if (vm.isSelectTaskValidatable && isLockedByMe) {
+            if (vm.isSelectedValidatable && isLockedByMe) {
                 vm.validatingStep = 'locked';
                 vm.lockedTaskData = data;
                 vm.currentTab = 'validation';
@@ -455,7 +456,7 @@
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
-                vm.isSelectTaskMappable = true;
+                vm.isSelectedMappable = true;
                 vm.taskError = '';
                 vm.taskErrorValidation = '';
                 vm.taskLockError = false;
@@ -481,7 +482,7 @@
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'locked';
                 vm.selectedTaskData = tasks[0];
-                vm.isSelectTaskValidatable = true;
+                vm.isSelectedValidatable = true;
                 vm.taskError = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = tasks[0];
@@ -637,27 +638,56 @@
             select.getFeatures().clear();
 
             // get an array of the 'done' task id's that have been clicked
-            var doneTaskIds = doneTasks.tasks.map(function(task){
+            var doneTaskIds = doneTasks.tasks.map(function (task) {
                 return task.taskId;
             });
 
-            //use doneTaskIds to get corresponding subset of tasks from the project and update controller data
-            // with the selected tasks
-            vm.multiSelectedTasks = vm.projectData.tasks.features.filter(function(task){
-                if(doneTaskIds.includes(task.properties.taskId)){
+            //use doneTaskIds to get corresponding subset of tasks for selection from the project
+            var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
+                if (doneTaskIds.includes(task.properties.taskId)) {
                     return task;
                 }
             });
 
             //select each one by one
-            vm.multiSelectedTasks.forEach(function (feature) {
+            tasksForSelection.forEach(function (feature) {
                 var feature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), feature.properties.taskId);
                 select.getFeatures().push(feature);
             });
 
-            //TODO: put the UI in to locked for validation mode
-            //vm.lockSelectedTaskValidation();
-            var loackPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
+            //TODO: put the UI in to locked for multi validation mode
+            var lockPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
+            lockPromise.then(function (tasks) {
+                // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                // on the server
+                refreshProject(vm.projectData.projectId);
+                vm.currentTab = 'validation';
+                vm.validatingStep = 'multi-locked';
+                vm.multiSelectedTasksData = tasks;
+                vm.multiLockedTasks = tasks;
+                vm.selectedTaskData = null;
+                vm.lockedTaskData = null
+                vm.isSelectedValidatable = true;
+                vm.taskError = '';
+                vm.taskLockError = false;
+
+            }, function (error) {
+                refreshProject(vm.projectData.projectId);
+                vm.taskLockError = true;
+                // Check if it is an unauthorized error. If so, display appropriate message
+                if (error.status == 401) {
+                    vm.isAuthorized = false;
+                }
+                else {
+                    // Another error occurred.
+                    vm.isAuthorized = true;
+                    vm.taskLockErrorMessage = error.data.Error;
+                    console.log(error.data.Error);
+                    console.log(vm.taskLockErrorMessage);
+
+                }
+
+            });
 
 
         }

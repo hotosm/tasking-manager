@@ -93,7 +93,7 @@
                                     <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
-                                    <div ng-show="projectCtrl.isSelectTaskMappable" class="alert alert--success"
+                                    <div ng-show="projectCtrl.isSelectedMappable" class="alert alert--success"
                                          role="alert">
                                         <p>This task is available for mapping.</p>
                                     </div>
@@ -132,7 +132,7 @@
                                 <!-- task action buttons -->
                                 <div>
                                     <div class="pull-center">
-                                        <button ng-show="projectCtrl.isSelectTaskMappable"
+                                        <button ng-show="projectCtrl.isSelectedMappable"
                                                 class="button button--secondary button--large"
                                                 ng-click="projectCtrl.lockSelectedTaskMapping()">
                                             Start Mapping
@@ -214,7 +214,7 @@
                         <!-- select UI -->
                         <div ng-show="projectCtrl.validatingStep === 'selecting'">
                             <h3>Select for validation</h3>
-                            <p>There are 2 options for choosing a task for validation:</p>
+                            <p>There are 3 options for choosing a task for validation:</p>
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
                                 <button ng-click="projectCtrl.selectRandomTask()"
@@ -225,6 +225,16 @@
                             <div>
                                 <p><strong>Option 3: </strong> Select By user:
                                 </p>
+                                <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>The tasks for the user could not be locked. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Please login first.</p>
+                                    </div>
+                                </div>
                                 <table class="table--zebra user-activity-for-validation">
                                     <thead>
                                     <tr>
@@ -251,11 +261,10 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                count: {{ count }}
                             </div>
                         </div>
                         <!-- task viewing and mapping UI's -->
-                        <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked'">
+                        <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked' || projectCtrl.validatingStep === 'multi-locked'">
                             <!-- task viewing UI -->
                             <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                 <!-- task information -->
@@ -273,7 +282,7 @@
                                     <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
-                                    <div ng-show="projectCtrl.isSelectTaskValidatable" class="alert alert--success"
+                                    <div ng-show="projectCtrl.isSelectedValidatable" class="alert alert--success"
                                          role="alert">
                                         <p>This task is available for validation.</p>
                                     </div>
@@ -312,7 +321,7 @@
                                 <!-- task action buttons -->
                                 <div>
                                     <div class="pull-center">
-                                        <button ng-show="projectCtrl.isSelectTaskValidatable"
+                                        <button ng-show="projectCtrl.isSelectedValidatable"
                                                 class="button button--secondary button--large"
                                                 ng-click="projectCtrl.lockSelectedTaskValidation()">
                                             Start Validating
