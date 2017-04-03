@@ -15,7 +15,7 @@
             unLockTaskMapping: unLockTaskMapping,
             lockTaskMapping: lockTaskMapping,
             unLockTaskValidation: unLockTaskValidation,
-            lockTaskValidation: lockTaskValidation,
+            lockTasksValidation: lockTasksValidation,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
@@ -135,7 +135,7 @@
          * @param taskIds - JSON object arrai of ids tasks to ne locked
          * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
          */
-        function lockTaskValidation(projectId, taskIds) {
+        function lockTasksValidation(projectId, taskIds) {
             // Returns a promise
             return $http({
                 method: 'POST',

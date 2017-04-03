@@ -473,7 +473,7 @@
             var taskId = vm.selectedTaskData.taskId;
             var taskIds = [taskId];
             // - try to lock the task, call returns a promise
-            var lockPromise = taskService.lockTaskValidation(projectId, taskIds);
+            var lockPromise = taskService.lockTasksValidation(projectId, taskIds);
             lockPromise.then(function (tasks) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
@@ -657,6 +657,7 @@
 
             //TODO: put the UI in to locked for validation mode
             //vm.lockSelectedTaskValidation();
+            var loackPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
 
 
         }
