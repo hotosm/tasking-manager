@@ -65,7 +65,8 @@ class LockTasksForValidationAPI(Resource):
             return str(e), 400
 
         try:
-            tasks = ValidatorService().lock_tasks_for_validation(validator_dto)
+            service = ValidatorService(validator_dto.task_ids, validator_dto.project_id)
+            tasks = service.lock_tasks_for_validation(validator_dto)
             return tasks.to_primitive(), 200
         except ValidatatorServiceError as e:
             return {"Error": str(e)}, 403
@@ -136,7 +137,8 @@ class UnlockTasksAfterValidationAPI(Resource):
             return str(e), 400
 
         try:
-            tasks = ValidatorService().unlock_tasks_after_validation(validated_dto)
+            service = ValidatorService(validated_dto.task_ids, validated_dto.project_id)
+            tasks = service.unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
         except ValidatatorServiceError as e:
             return {"Error": str(e)}, 403

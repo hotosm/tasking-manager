@@ -20,6 +20,8 @@ def is_valid_validated_status(value):
 
 class LockForValidationDTO(Model):
     """ DTO used to lock multiple tasks for validation """
+    project_id = IntType(required=True)
+    task_ids = ListType(IntType, required=True, serialized_name='taskIds')
     user_id = IntType(required=True)
 
 

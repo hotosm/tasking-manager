@@ -9,6 +9,7 @@ from server import create_app
 class TestValidatorService(unittest.TestCase):
     task_stub = Task
     validator_service = None
+    unlock_dto = UnlockAfterValidationDTO
 
     def setUp(self):
         self.app = create_app()
@@ -21,23 +22,41 @@ class TestValidatorService(unittest.TestCase):
         self.task_stub.task_locked = False
         self.task_stub.lock_holder_id = 123456
 
+        validated_task = ValidatedTask()
+        validated_task.task_id = 1
+        validated_tasks = [validated_task]
+
+        self.unlock_dto = UnlockAfterValidationDTO()
+        self.unlock_dto.project_id = 1
+        self.unlock_dto.validated_tasks = validated_tasks
+
     def tearDown(self):
         self.ctx.pop()
 
     @patch.object(Task, 'get')
-    def set_up_service(self, mock_task, stub_task):
+    def set_up_service_for_validating(self, mock_task, stub_task):
         """ Helper that sets ups the mapping service with the supplied task test stub"""
         mock_task.return_value = stub_task
-        self.validator_service = ValidatorService([1], 1)
+        self.validator_service = ValidatorService.for_validating([1], 1)
 
-    def test_validator_service_raises_error_if_task_not_found(self):
+    @patch.object(Task, 'get')
+    def set_up_service_for_unlocking(self, mock_task, stub_task):
+        """ Helper that sets ups the mapping service with the supplied task test stub"""
+        mock_task.return_value = stub_task
+        self.validator_service = ValidatorService.for_unlocking(self.unlock_dto)
+
+    def test_validator_service_raises_error_if_task_not_found_when_locking(self):
         with self.assertRaises(NotFound):
-            self.set_up_service(stub_task=None)
+            self.set_up_service_for_validating(stub_task=None)
+
+    def test_validator_service_raises_error_if_task_not_found_when_unlocking(self):
+        with self.assertRaises(NotFound):
+            self.set_up_service_for_unlocking(stub_task=None)
 
     def test_lock_tasks_for_validation_raises_error_if_task_not_done(self):
         # Arrange
         self.task_stub.task_status = TaskStatus.READY.value
-        self.set_up_service(stub_task=self.task_stub)
+        self.set_up_service_for_validating(stub_task=self.task_stub)
 
         lock_dto = LockForValidationDTO()
 
@@ -48,7 +67,7 @@ class TestValidatorService(unittest.TestCase):
     def test_lock_tasks_for_validation_raises_error_if_task_already_locked(self):
         # Arrange
         self.task_stub.task_locked = True
-        self.set_up_service(stub_task=self.task_stub)
+        self.set_up_service_for_validating(stub_task=self.task_stub)
 
         lock_dto = LockForValidationDTO()
 
@@ -59,7 +78,7 @@ class TestValidatorService(unittest.TestCase):
     @patch.object(ProjectService, 'is_user_permitted_to_validate')
     def test_lock_tasks_raises_error_if_user_not_permitted_to_validate(self, mock_project):
         # Arrange
-        self.set_up_service(stub_task=self.task_stub)
+        self.set_up_service_for_validating(stub_task=self.task_stub)
         mock_project.return_value = False, 'Not allowed'
 
         lock_dto = LockForValidationDTO()
@@ -72,19 +91,11 @@ class TestValidatorService(unittest.TestCase):
     def test_unlock_tasks_for_validation_raises_error_if_task_not_done_or_validated(self):
         # Arrange
         self.task_stub.task_status = TaskStatus.READY.value
-        self.set_up_service(stub_task=self.task_stub)
-
-        validated_task = ValidatedTask()
-        validated_task.task_id = 1
-        validated_tasks = [validated_task]
-
-        unlock_dto = UnlockAfterValidationDTO()
-        unlock_dto.project_id = 1
-        unlock_dto.validated_tasks = validated_tasks
+        self.set_up_service_for_unlocking(stub_task=self.task_stub)
 
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
-            self.validator_service.unlock_tasks_after_validation(unlock_dto)
+            self.validator_service.unlock_tasks_after_validation(self.unlock_dto)
 
     def test_unlock_tasks_for_validation_raises_error_if_task_not_locked(self):
         # Arrange
