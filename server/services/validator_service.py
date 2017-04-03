@@ -37,7 +37,7 @@ class ValidatorService:
             tasks_to_lock.append(task)
 
         project_service = ProjectService.from_project_id(validation_dto.project_id)
-        user_can_validate, error_msg = project_service.is_user_permitted_to_validate()
+        user_can_validate, error_msg = project_service.is_user_permitted_to_validate(validation_dto.user_id)
 
         if not user_can_validate:
             raise ValidatatorServiceError(error_msg)
@@ -52,13 +52,6 @@ class ValidatorService:
         task_dtos.tasks = dtos
 
         return task_dtos
-
-    # @staticmethod
-    # def _validate_user_permissions(validation_dto: LockForValidationDTO):
-    #     """ Check user has permission to validate on this project """
-    #     project = Project.get(validation_dto.project_id)
-    #     if project.enforce_validator_role and not UserService.is_user_validator(validation_dto.user_id):
-    #         raise ValidatatorServiceError('User must be a validator to validate this project')
 
     def unlock_tasks_after_validation(self, validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
         """
