@@ -7,100 +7,105 @@ from server import create_app
 
 
 class TestValidatorService(unittest.TestCase):
-    task_stub = Task
-    validator_service = None
-    unlock_dto = UnlockAfterValidationDTO
+    unlock_task_stub = Task
 
     def setUp(self):
         self.app = create_app()
         self.ctx = self.app.app_context()
         self.ctx.push()
 
-        self.task_stub = Task()
-        self.id = 1234
-        self.task_stub.task_status = TaskStatus.DONE.value
-        self.task_stub.task_locked = False
-        self.task_stub.lock_holder_id = 123456
-
-        validated_task = ValidatedTask()
-        validated_task.task_id = 1
-        validated_tasks = [validated_task]
-
-        self.unlock_dto = UnlockAfterValidationDTO()
-        self.unlock_dto.project_id = 1
-        self.unlock_dto.validated_tasks = validated_tasks
+        self.unlock_task_stub = Task()
+        self.unlock_task_stub.task_status = TaskStatus.DONE.value
+        self.unlock_task_stub.task_locked = True
+        self.unlock_task_stub.lock_holder_id = 123456
 
     def tearDown(self):
         self.ctx.pop()
 
     @patch.object(Task, 'get')
-    def set_up_service_for_validating(self, mock_task, stub_task):
-        """ Helper that sets ups the mapping service with the supplied task test stub"""
-        mock_task.return_value = stub_task
-        self.validator_service = ValidatorService.for_validating([1], 1)
+    def test_lock_tasks_for_validation_raises_error_if_task_not_found(self, mock_task):
+        # Arrange
+        mock_task.return_value = None
+
+        lock_dto = LockForValidationDTO()
+        lock_dto.project_id = 1
+        lock_dto.task_ids = [1, 2]
+
+        # Act / Assert
+        with self.assertRaises(NotFound):
+            ValidatorService().lock_tasks_for_validation(lock_dto)
 
     @patch.object(Task, 'get')
-    def set_up_service_for_unlocking(self, mock_task, stub_task):
-        """ Helper that sets ups the mapping service with the supplied task test stub"""
-        mock_task.return_value = stub_task
-        self.validator_service = ValidatorService.for_unlocking(self.unlock_dto)
-
-    def test_validator_service_raises_error_if_task_not_found_when_locking(self):
-        with self.assertRaises(NotFound):
-            self.set_up_service_for_validating(stub_task=None)
-
-    def test_validator_service_raises_error_if_task_not_found_when_unlocking(self):
-        with self.assertRaises(NotFound):
-            self.set_up_service_for_unlocking(stub_task=None)
-
-    def test_lock_tasks_for_validation_raises_error_if_task_not_done(self):
+    def test_lock_tasks_for_validation_raises_error_if_task_not_done(self, mock_task):
         # Arrange
-        self.task_stub.task_status = TaskStatus.READY.value
-        self.set_up_service_for_validating(stub_task=self.task_stub)
+        task_stub = Task()
+        task_stub.task_status = TaskStatus.READY.value
+        mock_task.return_value = task_stub
 
         lock_dto = LockForValidationDTO()
+        lock_dto.project_id = 1
+        lock_dto.task_ids = [1, 2]
 
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
-            self.validator_service.lock_tasks_for_validation(lock_dto)
+            ValidatorService().lock_tasks_for_validation(lock_dto)
 
-    def test_lock_tasks_for_validation_raises_error_if_task_already_locked(self):
+    @patch.object(Task, 'get')
+    def test_lock_tasks_for_validation_raises_error_if_task_already_locked(self, mock_task):
         # Arrange
-        self.task_stub.task_locked = True
-        self.set_up_service_for_validating(stub_task=self.task_stub)
+        task_stub = Task()
+        task_stub.task_status = TaskStatus.DONE.value
+        task_stub.task_locked = True
+        mock_task.return_value = task_stub
 
         lock_dto = LockForValidationDTO()
+        lock_dto.project_id = 1
+        lock_dto.task_ids = [1, 2]
 
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
-            self.validator_service.lock_tasks_for_validation(lock_dto)
+            ValidatorService().lock_tasks_for_validation(lock_dto)
 
+    @patch.object(Task, 'get')
     @patch.object(ProjectService, 'is_user_permitted_to_validate')
-    def test_lock_tasks_raises_error_if_user_not_permitted_to_validate(self, mock_project):
+    def test_lock_tasks_raises_error_if_project_validator_only_and_user_not_validator(self, mock_project, mock_task):
         # Arrange
-        self.set_up_service_for_validating(stub_task=self.task_stub)
+        task_stub = Task()
+        task_stub.task_status = TaskStatus.DONE.value
+        task_stub.task_locked = False
+        mock_task.return_value = task_stub
+
         mock_project.return_value = False, 'Not allowed'
 
         lock_dto = LockForValidationDTO()
-        lock_dto.user_id = 123
+        lock_dto.project_id = 1
+        lock_dto.task_ids = [1, 2]
+
+        with self.assertRaises(ValidatatorServiceError):
+            ValidatorService().lock_tasks_for_validation(lock_dto)
+
+    @patch.object(Task, 'get')
+    def test_unlock_tasks_for_validation_raises_error_if_task_not_found(self, mock_task):
+        # Arrange
+        mock_task.return_value = None
+
+        validated_task = ValidatedTask()
+        validated_task.task_id = 1
+        validated_tasks = [validated_task]
+
+        unlock_dto = UnlockAfterValidationDTO()
+        unlock_dto.project_id = 1
+        unlock_dto.validated_tasks = validated_tasks
 
         # Act / Assert
-        with self.assertRaises(ValidatatorServiceError):
-            self.validator_service.lock_tasks_for_validation(lock_dto)
+        with self.assertRaises(NotFound):
+            ValidatorService().unlock_tasks_after_validation(unlock_dto)
 
-    def test_unlock_tasks_for_validation_raises_error_if_task_not_done_or_validated(self):
+    @patch.object(Task, 'get')
+    def test_unlock_tasks_for_validation_raises_error_if_task_not_done_or_validated(self, mock_task):
         # Arrange
-        self.task_stub.task_status = TaskStatus.READY.value
-        self.set_up_service_for_unlocking(stub_task=self.task_stub)
-
-        # Act / Assert
-        with self.assertRaises(ValidatatorServiceError):
-            self.validator_service.unlock_tasks_after_validation(self.unlock_dto)
-
-    def test_unlock_tasks_for_validation_raises_error_if_task_not_locked(self):
-        # Arrange
-        self.task_stub.task_locked = False
-        self.set_up_service(stub_task=self.task_stub)
+        self.unlock_task_stub.task_status = TaskStatus.READY.value
+        mock_task.return_value = self.unlock_task_stub
 
         validated_task = ValidatedTask()
         validated_task.task_id = 1
@@ -112,12 +117,29 @@ class TestValidatorService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
-            self.validator_service.unlock_tasks_after_validation(unlock_dto)
+            ValidatorService().unlock_tasks_after_validation(unlock_dto)
 
-    def test_unlock_tasks_for_validation_raises_error_if_user_doesnt_own_the_lock(self):
+    @patch.object(Task, 'get')
+    def test_unlock_tasks_for_validation_raises_error_if_task_not_locked(self, mock_task):
         # Arrange
-        self.task_stub.task_locked = True
-        self.set_up_service(stub_task=self.task_stub)
+        self.unlock_task_stub.task_locked = False
+        mock_task.return_value = self.unlock_task_stub
+
+        validated_task = ValidatedTask()
+        validated_task.task_id = 1
+        validated_tasks = [validated_task]
+
+        unlock_dto = UnlockAfterValidationDTO()
+        unlock_dto.project_id = 1
+        unlock_dto.validated_tasks = validated_tasks
+
+        # Act / Assert
+        with self.assertRaises(ValidatatorServiceError):
+            ValidatorService().unlock_tasks_after_validation(unlock_dto)
+
+    @patch.object(Task, 'get')
+    def test_unlock_tasks_for_validation_raises_error_if_user_doesnt_own_the_lock(self, mock_task):
+        mock_task.return_value = self.unlock_task_stub
 
         validated_task = ValidatedTask()
         validated_task.task_id = 1
@@ -130,4 +152,4 @@ class TestValidatorService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
-            self.validator_service.unlock_tasks_after_validation(unlock_dto)
+            ValidatorService().unlock_tasks_after_validation(unlock_dto)
