@@ -1,17 +1,8 @@
-from typing import Optional
 from flask import current_app
-from server.models.dtos.project_dto import ProjectDTO
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import Task, TaskStatus
-from server.models.postgis.project import Project, ProjectStatus
+from server.models.postgis.project import Project
 from server.models.postgis.utils import NotFound
-
-
-class DatabaseError(Exception):
-    """ Custom exception to notify callers error occurred with database"""
-    def __init__(self, message):
-        if current_app:
-            current_app.logger.error(message)
 
 
 class MappingServiceError(Exception):
@@ -36,27 +27,6 @@ class MappingService:
 
         if self.task is None:
             raise NotFound()
-
-    def get_project_dto_for_mapper(self, project_id: int, locale='en') -> Optional[ProjectDTO]:
-        """
-        Get the project DTO for mappers
-        :param project_id: ID of the Project mapper has requested
-        :param locale: Locale the mapper has requested
-        :raises DatabaseError, MappingServiceError
-        """
-        try:
-            project = Project()
-            project_dto = project.as_dto_for_mapping(project_id, locale)
-        except Exception as e:
-            raise DatabaseError(f'Error getting project {project_id} - {str(e)}')
-
-        if project_dto is None:
-            return None
-
-        if project_dto.project_status != ProjectStatus.PUBLISHED.name:
-            raise MappingServiceError(f'Project {project_id} is not published')
-
-        return project_dto
 
     def get_task_as_dto(self) -> TaskDTO:
         """ Get task as DTO for transmission over API """
