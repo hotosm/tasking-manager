@@ -110,6 +110,7 @@ class TestProject(unittest.TestCase):
         test_dto.project_priority = ProjectPriority.MEDIUM.name
         test_dto.default_locale = 'en'
         test_dto.project_info_locales = locales
+        test_dto.mapper_level = 'BEGINNER'
 
         # Act - Create empty italian translation
         self.test_project.update(test_dto)
@@ -159,6 +160,7 @@ class TestProject(unittest.TestCase):
         test_dto.project_priority = ProjectPriority.MEDIUM.name
         test_dto.default_locale = 'en'
         test_dto.project_info_locales = locales
+        test_dto.mapper_level = 'BEGINNER'
 
         self.test_project.update(test_dto)
 

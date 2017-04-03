@@ -232,12 +232,20 @@
                                         <label class="form__label">Mapper level</label>
                                         <div class="button-group button-group--horizontal" role="group"
                                              aria-label="choose level mapping">
-                                            <button class="button button--achromic button--active" type="button">
+                                            <button class="button button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.project.mapperLevel === 'BEGINNER'? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.setMapperLevel('BEGINNER')">
                                                 Beginner
                                             </button>
-                                            <button class="button button--achromic" type="button">Intermediate
+                                            <button class="button button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.project.mapperLevel === 'INTERMEDIATE'? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.setMapperLevel('INTERMEDIATE')">
+                                                Intermediate
                                             </button>
-                                            <button class="button button--achromic" type="button">Advanced
+                                            <button class="button button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.project.mapperLevel === 'ADVANCED'? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.setMapperLevel('ADVANCED')">
+                                                Advanced
                                             </button>
                                         </div>
                                         <p>Setting the level will help the mappers find suitable projects to work
@@ -373,15 +381,17 @@
                                     <div class="form__group">
                                         <label class="form__label">Mapper level</label>
                                         <label class="form__option">
-                                            <input type="checkbox"/>Only mappers with required level can map (*TODO: show level here*)
+                                            <input ng-model="editProjectCtrl.project.enforceMapperLevel" type="checkbox"/>Only mappers with level {{ editProjectCtrl.project.mapperLevel }} can map
                                         </label>
                                         <p>If checked, only users with the experienced mapper role will be able to
-                                            contribute tot the current project. If not, anyone can.</p>
+                                            contribute tot the current project. If not, anyone can.
+                                            Go to metadata to change the level.
+                                        </p>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Validator level</label>
                                         <label class="form__option">
-                                            <input type="checkbox"/>Only validators can validate
+                                            <input ng-model="editProjectCtrl.project.enforceValidatorRole" type="checkbox"/>Only validators can validate
                                         </label>
                                         <p>If checked, only users with the validator role will be able to (in)validate
                                             tasks for the current project. If not, anyone can.</p>
@@ -389,7 +399,7 @@
                                     <div class="form__group">
                                         <label class="form__label">Private project</label>
                                         <label class="form__option">
-                                            <input type="checkbox"/>Private
+                                            <input ng-model="editProjectCtrl.project.private" type="checkbox"/>Private
                                         </label>
                                         <p>Private means that only a given list of users can access this project. In
                                         order for the user's name to be available to add to the Allowed Users - they

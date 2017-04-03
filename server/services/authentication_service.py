@@ -40,10 +40,11 @@ class AuthServiceError(Exception):
 
 
 class AuthenticationService:
-    def login_user(self, osm_user_details, user_element='user') -> str:
+    def login_user(self, osm_user_details, redirect_to, user_element='user') -> str:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
         :param osm_user_details: XML response from OSM
+        :param redirect_to: Route to redirect user to, from callback url
         :param user_element: Exists for unit testing
         :raises AuthServiceError
         :returns Authorized URL with authentication details in query string
@@ -64,7 +65,7 @@ class AuthenticationService:
             User.create_from_osm_user_details(osm_id, username, changeset_count)
 
         session_token = self.generate_session_token_for_user(osm_id)
-        authorized_url = self._generate_authorized_url(username, session_token)
+        authorized_url = self._generate_authorized_url(username, session_token, redirect_to)
 
         return authorized_url
 
@@ -84,11 +85,17 @@ class AuthenticationService:
         serializer = URLSafeTimedSerializer(current_app.secret_key)
         return serializer.dumps(osm_id)
 
-    def _generate_authorized_url(self, username, session_token):
+    def _generate_authorized_url(self, username, session_token, redirect_to):
         """ Generate URL that we'll redirect the user to once authenticated """
         base_url = current_app.config['APP_BASE_URL']
+
+        redirect_query = ''
+        if redirect_to:
+            redirect_query = f'&redirect_to={parse.quote(redirect_to)}'
+
         # Trailing & added as Angular a bit flaky with parsing querystring
-        authorized_url = f'{base_url}/authorized?username={parse.quote(username)}&session_token={session_token}&ng=0'
+        authorized_url = f'{base_url}/authorized?username={parse.quote(username)}&session_token={session_token}&ng=0' \
+                         f'{redirect_query}'
         return authorized_url
 
     @staticmethod

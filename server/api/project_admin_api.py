@@ -76,6 +76,8 @@ class ProjectAdminAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
+    @token_auth.login_required
     def get(self, project_id):
         """
         Retrieves a Tasking-Manager project
@@ -85,6 +87,12 @@ class ProjectAdminAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
@@ -94,6 +102,8 @@ class ProjectAdminAPI(Resource):
         responses:
             200:
                 description: Project found
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Project not found
             500:
@@ -112,6 +122,8 @@ class ProjectAdminAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
+    @token_auth.login_required
     def post(self, project_id):
         """
         Updates a Tasking-Manager project
@@ -121,6 +133,12 @@ class ProjectAdminAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
@@ -142,6 +160,18 @@ class ProjectAdminAPI(Resource):
                       defaultLocale:
                           type: string
                           default: en
+                      mapperLevel:
+                          type: string
+                          default: BEGINNER
+                      enforceMapperLevel:
+                          type: boolean
+                          default: false
+                      enforceValidatorRole:
+                          type: boolean
+                          default: false
+                      private:
+                          type: boolean
+                          default: false
                       projectInfoLocales:
                           type: array
                           items:
@@ -152,6 +182,8 @@ class ProjectAdminAPI(Resource):
                 description: Project updated
             400:
                 description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Project not found
             500:

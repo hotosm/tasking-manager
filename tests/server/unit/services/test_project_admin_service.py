@@ -32,7 +32,7 @@ class TestProjectAdminService(unittest.TestCase):
         test_project_service._attach_tasks_to_project(test_project, valid_feature_collection)
 
         # Assert
-        self.assertEqual(1, len(test_project.tasks), 'One task should have been attached to project')
+        self.assertEqual(1, test_project.tasks.count(), 'One task should have been attached to project')
 
     @patch.object(Project, 'get')
     def test_get_project_for_update_returns_none_if_project_not_found(self, mock_project):

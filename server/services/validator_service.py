@@ -1,7 +1,9 @@
 from flask import current_app
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
+from server.models.postgis.project import Project
 from server.models.postgis.task import Task, TaskStatus
+from server.services.user_service import UserService, UserRole
 
 
 class TaskNotFound(Exception):
@@ -41,16 +43,25 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
+        ValidatorService._validate_user_permissions(validation_dto)
+
         # Lock all tasks for validation
         dtos = []
         for task in tasks_to_lock:
-            task.lock_task()
+            task.lock_task(validation_dto.user_id)
             dtos.append(task.as_dto())
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
 
         return task_dtos
+
+    @staticmethod
+    def _validate_user_permissions(validation_dto: LockForValidationDTO):
+        """ Check user has permission to validate on this project """
+        project = Project.get(validation_dto.project_id)
+        if project.enforce_validator_role and not UserService.is_user_validator(validation_dto.user_id):
+            raise ValidatatorServiceError('User must be a validator to validate this project')
 
     def unlock_tasks_after_validation(self, validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
         """
@@ -71,7 +82,8 @@ class ValidatorService:
             if not task.task_locked:
                 raise ValidatatorServiceError(f'Task: {validated_task.task_id} is not locked')
 
-            # TODO check user owns task before allowing unlock
+            if task.lock_holder_id != validated_dto.user_id:
+                raise ValidatatorServiceError('Attempting to unlock a task owned by another user')
 
             tasks_to_unlock.append(dict(task=task, new_state=TaskStatus[validated_task.status],
                                         comment=validated_task.comment))
@@ -80,7 +92,7 @@ class ValidatorService:
         dtos = []
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock['task']
-            task.unlock_task(task_to_unlock['new_state'], task_to_unlock['comment'])
+            task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'])
             dtos.append(task.as_dto())
 
         task_dtos = TaskDTOs()

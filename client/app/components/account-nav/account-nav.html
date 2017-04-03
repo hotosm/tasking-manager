@@ -21,7 +21,13 @@
                     </a>
                 </li>
             </ul>
-            <ul class="drop__menu drop__menu--iconified" role="menu">
+            <ul ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'"
+                class="drop__menu drop__menu--iconified" role="menu">
+                <li ng-show="accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="Manage licences" class="drop__menu-item" ng-click="accountNavCtrl.manageLicenses()">
+                        Manage licences
+                    </a>
+                </li>
                 <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
                     <a title="New project" class="drop__menu-item" ng-click="accountNavCtrl.createNewProject()">
                         Create new project

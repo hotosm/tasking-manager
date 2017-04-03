@@ -25,7 +25,8 @@
             getGeoJSONFromFeatures: getGeoJSONFromFeatures,
             getGeoJSONObjectFromFeatures: getGeoJSONObjectFromFeatures,
             getCenterOfExtent: getCenterOfExtent,
-            transformExtentToLatLon: transformExtentToLatLon
+            transformExtentToLatLonString: transformExtentToLatLonString,
+            transformExtentToLatLonArray: transformExtentToLatLonArray
         };
 
         return service;
@@ -148,10 +149,22 @@
          * @param extent
          * @returns {string}
          */
-        function transformExtentToLatLon(extent){
+        function transformExtentToLatLonString(extent){
             var bottomLeft = ol.proj.transform([extent[0], extent[1]], MAP_PROJECTION, DATA_PROJECTION);
             var topRight = ol.proj.transform([extent[2], extent[3]], MAP_PROJECTION, DATA_PROJECTION);
             var extentLatLon = bottomLeft[0] + ',' + bottomLeft[1] + ',' + topRight[0] + ',' + topRight[1];
+            return extentLatLon;
+        }
+
+        /**
+         * Transform extent from map projection to lat lon
+         * @param extent
+         * @returns {Array}
+         */
+        function transformExtentToLatLonArray(extent){
+            var bottomLeft = ol.proj.transform([extent[0], extent[1]], MAP_PROJECTION, DATA_PROJECTION);
+            var topRight = ol.proj.transform([extent[2], extent[3]], MAP_PROJECTION, DATA_PROJECTION);
+            var extentLatLon = [bottomLeft[0] , bottomLeft[1] , topRight[0] , topRight[1]];
             return extentLatLon;
         }
     }

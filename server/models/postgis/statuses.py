@@ -25,3 +25,10 @@ class TaskStatus(Enum):
     VALIDATED = 3
     BADIMAGERY = 4  # Task cannot be mapped because of clouds, fuzzy imagery
     # REMOVED = -1 TODO this looks weird can it be removed
+
+
+class MappingLevel(Enum):
+    """ The mapping level the mapper has achieved """
+    BEGINNER = 1
+    INTERMEDIATE = 2
+    ADVANCED = 3
