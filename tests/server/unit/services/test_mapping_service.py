@@ -31,13 +31,9 @@ class TestMappingService(unittest.TestCase):
         self.task_stub.lock_holder = test_user
 
         self.lock_task_dto = LockTaskDTO()
-        self.lock_task_dto.task_id = 1
-        self.lock_task_dto.project_id = 1
         self.lock_task_dto.user_id = 123456
 
         self.mapped_task_dto = MappedTaskDTO()
-        self.mapped_task_dto.task_id = 1
-        self.mapped_task_dto.project_id = 1
         self.mapped_task_dto.status = TaskStatus.DONE.name
         self.mapped_task_dto.user_id = 123456
 
@@ -96,29 +92,31 @@ class TestMappingService(unittest.TestCase):
         # Assert
         self.assertTrue(test_task.task_locked, 'Locked should be set to True')
 
+    @patch.object(Project, 'as_dto_for_mapping')
+    def test_get_project_dto_for_mapping_returns_none_if_project_not_found(self, mock_project):
+        # TODO move
+        # Arrange
+        self.set_up_service(stub_task=self.task_stub)
+        mock_project.return_value = None
 
-    # @patch.object(Project, 'as_dto_for_mapping')
-    # def test_get_project_dto_for_mapping_returns_none_if_project_not_found(self, mock_project):
-    #     # Arrange
-    #     mock_project.return_value = None
-    #
-    #     # Act
-    #     test_project = MappingService().get_project_dto_for_mapper(1, 'en')
-    #
-    #     # Assert
-    #     self.assertIsNone(test_project)
-    #
-    # @patch.object(Project, 'as_dto_for_mapping')
-    # def test_get_project_dto_for_mapping_raises_error_if_project_not_published(self, mock_project):
-    #     # Arrange
-    #     test_project = ProjectDTO()
-    #     test_project.project_status = ProjectStatus.DRAFT.name
-    #     mock_project.return_value = test_project
-    #
-    #     # Act
-    #     with self.assertRaises(MappingServiceError):
-    #         MappingService().get_project_dto_for_mapper(1, 'en')
-    #
+        # Act
+        test_project = self.mapping_service.get_project_dto_for_mapper(1, 'en')
+
+        # Assert
+        self.assertIsNone(test_project)
+
+    @patch.object(Project, 'as_dto_for_mapping')
+    def test_get_project_dto_for_mapping_raises_error_if_project_not_published(self, mock_project):
+        # TODO to move
+        # Arrange
+        test_project = ProjectDTO()
+        test_project.project_status = ProjectStatus.DRAFT.name
+        mock_project.return_value = test_project
+        self.set_up_service(stub_task=self.task_stub)
+
+        # Act
+        with self.assertRaises(MappingServiceError):
+            self.mapping_service.get_project_dto_for_mapper(1, 'en')
 
     def test_unlock_of_already_unlocked_task_is_safe(self):
         # Arrange

@@ -26,6 +26,12 @@ class MappingService:
     task = None
 
     def __init__(self, task_id: int, project_id: int):
+        """
+        Constructs service for task user wants to map
+        :param task_id: ID of the task to map
+        :param project_id: ID of project task is associated with
+        :raises NotFound if task doesn't exist in the DB
+        """
         self.task = Task.get(task_id, project_id)
 
         if self.task is None:
@@ -56,7 +62,7 @@ class MappingService:
         """ Get task as DTO for transmission over API """
         return self.task.as_dto()
 
-    def lock_task_for_mapping(self, lock_task_dto: LockTaskDTO) -> Optional[TaskDTO]:
+    def lock_task_for_mapping(self, lock_task_dto: LockTaskDTO) -> TaskDTO:
         """
         Sets the task_locked status to locked so no other user can work on it
         :param lock_task_dto: DTO with data needed to lock the task
@@ -64,23 +70,23 @@ class MappingService:
         :return: Updated task, or None if not found
         """
         if self.task.task_locked:
-            raise MappingServiceError(f'Task: {lock_task_dto.task_id} Project {lock_task_dto.project_id} is already locked')
+            raise MappingServiceError(f'Task: {self.task.id} Project {self.task.project_id} is already locked')
 
         current_state = TaskStatus(self.task.task_status).name
         if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name, TaskStatus.BADIMAGERY.name]:
-            raise MappingServiceError(f'Cannot lock task {lock_task_dto.task_id} state must be in {TaskStatus.READY.name},'
+            raise MappingServiceError(f'Cannot lock task {self.task.id} state must be in {TaskStatus.READY.name},'
                                       f' {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}')
 
         # TODO check if allowed user for private project
         # TODO check level if enforce mapper level
 
-        if Project.has_user_already_locked_task(lock_task_dto.project_id, lock_task_dto.user_id):
+        if Project.has_user_already_locked_task(self.task.project_id, lock_task_dto.user_id):
             raise MappingServiceError('User already has a locked task on this project')
 
         self.task.lock_task(lock_task_dto.user_id)
         return self.task.as_dto()
 
-    def unlock_task_after_mapping(self, mapped_task: MappedTaskDTO) -> Optional[TaskDTO]:
+    def unlock_task_after_mapping(self, mapped_task: MappedTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
 
         if not self.task.task_locked:

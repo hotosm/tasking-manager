@@ -147,20 +147,17 @@ class LockTaskForMappingAPI(Resource):
         """
         try:
             lock_task_dto = LockTaskDTO()
-            lock_task_dto.task_id = task_id
-            lock_task_dto.project_id = project_id
             lock_task_dto.user_id = tm.authenticated_user_id
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
         try:
-            task = MappingService().lock_task_for_mapping(lock_task_dto)
-
-            if task is None:
-                return {"Error": "Task Not Found"}, 404
-
+            mapping_service = MappingService(task_id, project_id)
+            task = mapping_service.lock_task_for_mapping(lock_task_dto)
             return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
@@ -232,8 +229,6 @@ class UnlockTaskForMappingAPI(Resource):
         """
         try:
             mapped_task = MappedTaskDTO(request.get_json())
-            mapped_task.task_id = task_id
-            mapped_task.project_id = project_id
             mapped_task.user_id = tm.authenticated_user_id
             mapped_task.validate()
         except DataError as e:
