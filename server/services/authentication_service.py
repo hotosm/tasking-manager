@@ -86,7 +86,9 @@ class AuthenticationService:
         :param osm_id: OSM ID of the user authenticating
         :return: Token
         """
-        serializer = URLSafeTimedSerializer(current_app.secret_key)
+        entropy = current_app.secret_key if current_app.secret_key else 'un1testingmode'
+
+        serializer = URLSafeTimedSerializer(entropy)
         return serializer.dumps(osm_id)
 
     def _generate_authorized_url(self, username, session_token, redirect_to):
