@@ -30,7 +30,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details()
 
         # Act
-        AuthenticationService().login_user(osm_response, '/test/redirect')
+        AuthenticationService.login_user(osm_response, '/test/redirect')
 
         # Assert
         mock_user_get.assert_called_with(7777777)
@@ -43,7 +43,7 @@ class TestAuthenticationService(unittest.TestCase):
         mock_user_get.side_effect = NotFound()
 
         # Act
-        AuthenticationService().login_user(osm_response, '/test/redirect')
+        AuthenticationService.login_user(osm_response, '/test/redirect')
 
         # Assert
         mock_user_register.assert_called_with(7777777, 'Thinkwhere Test', 16)
@@ -54,7 +54,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details()
 
         # Act
-        redirect_url = AuthenticationService().login_user(osm_response, '/test/redirect')
+        redirect_url = AuthenticationService.login_user(osm_response, '/test/redirect')
 
         # Assert
         parsed_url = urlparse(redirect_url)
@@ -66,7 +66,7 @@ class TestAuthenticationService(unittest.TestCase):
 
     def test_get_authentication_failed_url_returns_expected_url(self):
         # Act
-        auth_failed_url = AuthenticationService().get_authentication_failed_url()
+        auth_failed_url = AuthenticationService.get_authentication_failed_url()
 
         # Assert
         parsed_url = urlparse(auth_failed_url)

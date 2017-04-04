@@ -15,20 +15,8 @@ class ValidatatorServiceError(Exception):
 
 class ValidatorService:
 
-    project_service = ProjectService
-
-    def __init__(self, project_id, project_service=None):
-        """
-        Construct validator service and dependencies
-        :param project_id: ID of project in scope
-        :param project_service: Injectable project service, for unit testing
-        """
-        if project_service is None:
-            self.project_service = ProjectService.from_project_id(project_id)
-        else:
-            self.project_service = project_service
-
-    def lock_tasks_for_validation(self, validation_dto: LockForValidationDTO) -> TaskDTOs:
+    @staticmethod
+    def lock_tasks_for_validation(validation_dto: LockForValidationDTO) -> TaskDTOs:
         """
         Lock supplied tasks for validation
         :raises ValidatatorServiceError
@@ -49,7 +37,8 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
-        user_can_validate, error_msg = self.project_service.is_user_permitted_to_validate(validation_dto.user_id)
+        user_can_validate, error_msg = ProjectService.is_user_permitted_to_validate(validation_dto.project_id,
+                                                                                    validation_dto.user_id)
 
         if not user_can_validate:
             raise ValidatatorServiceError(error_msg)

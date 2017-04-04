@@ -5,24 +5,20 @@ from server.services.project_service import ProjectService, Project, NotFound, P
 
 class TestProjectService(unittest.TestCase):
 
-    project_service = None
-
     @patch.object(Project, 'get')
-    def set_up_service(self, mock_task, stub_project):
-        """ Helper that sets ups the mapping service with the supplied project test stub"""
-        mock_task.return_value = stub_project
-        self.project_service = ProjectService.from_project_id(1)
+    def test_project_service_raises_error_if_project_not_found(self, mock_project):
+        mock_project.return_value = None
 
-    def test_project_service_raises_error_if_project_not_found(self):
         with self.assertRaises(NotFound):
-            self.set_up_service(stub_project=None)
+            ProjectService.get_project_by_id(123)
 
-    def test_get_project_dto_for_mapping_raises_error_if_project_not_published(self):
+    @patch.object(ProjectService, 'get_project_by_id')
+    def test_get_project_dto_for_mapping_raises_error_if_project_not_published(self, mock_project):
         # Arrange
         test_project = Project()
         test_project.status = ProjectStatus.DRAFT.value
-        self.set_up_service(stub_project=test_project)
+        mock_project.return_value = test_project
 
         # Act / Assert
         with self.assertRaises(ProjectServiceError):
-            self.project_service.get_project_dto_for_mapper('en')
+            ProjectService.get_project_dto_for_mapper(123, 'en')
