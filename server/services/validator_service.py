@@ -49,7 +49,8 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
-        user_can_validate, error_msg = self.project_service.is_user_permitted_to_validate(validation_dto.user_id)
+        user_can_validate, error_msg = ProjectService.is_user_permitted_to_validate(validation_dto.project_id,
+                                                                                    validation_dto.user_id)
 
         if not user_can_validate:
             raise ValidatatorServiceError(error_msg)

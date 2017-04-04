@@ -30,32 +30,49 @@ class ProjectService:
 
         return cls()
 
-    def get_project_dto_for_mapper(self, locale='en') -> ProjectDTO:
+    @staticmethod
+    def get_project_by_id(project_id: int) -> Project:
+        project = Project.get(project_id)
+
+        if project is None:
+            raise NotFound()
+
+        return project
+
+    @staticmethod
+    def get_project_dto_for_mapper(project_id, locale='en') -> ProjectDTO:
         """
         Get the project DTO for mappers
         :param project_id: ID of the Project mapper has requested
         :param locale: Locale the mapper has requested
-        :raises DatabaseError, MappingServiceError
+        :raises ProjectServiceError, NotFound
         """
-        if ProjectStatus(self.project.status) != ProjectStatus.PUBLISHED:
-            raise ProjectServiceError(f'Project {self.project.id} is not published')
+        project = ProjectService.get_project_by_id(project_id)
 
-        return self.project.as_dto_for_mapping(locale)
+        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED:
+            raise ProjectServiceError(f'Project {project.id} is not published')
 
-    def is_user_permitted_to_map(self, user_id: int):
+        return project.as_dto_for_mapping(locale)
+
+    @staticmethod
+    def is_user_permitted_to_map(project_id: int, user_id: int):
         """ Check if the user is allowed to map the on the project in scope """
         # TODO check if allowed user for private project
         # TODO check level if enforce mapper level
+        project = ProjectService.get_project_by_id(project_id)
 
-        task_count = self.project.get_task_count_for_user(user_id)
+        task_count = project.get_task_count_for_user(user_id)
 
         if task_count > 0:
             return False, 'User already has a locked task on this project'
         return True, 'User allowed to map'
 
-    def is_user_permitted_to_validate(self, user_id):
+    @staticmethod
+    def is_user_permitted_to_validate(project_id, user_id):
         """ Check if the user is allowed to validate on the project in scope """
-        if self.project.enforce_validator_role and not UserService.is_user_validator(user_id):
+        project = ProjectService.get_project_by_id(project_id)
+
+        if project.enforce_validator_role and not UserService.is_user_validator(user_id):
             return False, 'User must be a validator to map on this project'
 
         return True, 'User allowed to validate'

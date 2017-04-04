@@ -36,8 +36,8 @@ class ProjectAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            project_service = ProjectService.from_project_id(project_id)
-            project_dto = project_service.get_project_dto_for_mapper(request.environ.get('HTTP_ACCEPT_LANGUAGE'))
+            project_dto = ProjectService.get_project_dto_for_mapper(project_id,
+                                                                    request.environ.get('HTTP_ACCEPT_LANGUAGE'))
             return project_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404

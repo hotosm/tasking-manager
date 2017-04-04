@@ -50,44 +50,48 @@ class TestMappingService(unittest.TestCase):
         with self.assertRaises(NotFound):
             self.set_up_service(stub_task=None)
 
-    def test_lock_task_for_mapping_raises_error_if_task_already_locked(self):
+    @patch.object(MappingService, 'get_task')
+    def test_lock_task_for_mapping_raises_error_if_task_already_locked(self, mock_task):
         # Arrange
         self.task_stub.task_locked = True
-        self.set_up_service(stub_task=self.task_stub)
+        mock_task.return_value = self.task_stub
 
         # Act / Assert
         with self.assertRaises(MappingServiceError):
-            self.mapping_service.lock_task_for_mapping(self.lock_task_dto)
+            MappingService.lock_task_for_mapping(self.lock_task_dto)
 
-    def test_lock_task_for_mapping_raises_error_if_task_in_invalid_state(self):
+    @patch.object(MappingService, 'get_task')
+    def test_lock_task_for_mapping_raises_error_if_task_in_invalid_state(self, mock_task):
         # Arrange
         self.task_stub.task_status = 2
-        self.set_up_service(stub_task=self.task_stub)
+        mock_task.return_value = self.task_stub
 
         # Act / Assert
         with self.assertRaises(MappingServiceError):
-            self.mapping_service.lock_task_for_mapping(self.lock_task_dto)
+            MappingService.lock_task_for_mapping(self.lock_task_dto)
 
     @patch.object(ProjectService, 'is_user_permitted_to_map')
-    def test_lock_task_for_mapping_raises_error_if_user_already_has_locked_task(self, mock_project):
+    @patch.object(MappingService, 'get_task')
+    def test_lock_task_for_mapping_raises_error_if_user_already_has_locked_task(self, mock_task, mock_project):
         # Arrange
-        self.set_up_service(stub_task=self.task_stub)
+        mock_task.return_value = self.task_stub
         mock_project.return_value = False, 'Not allowed'
 
         # Act / Assert
         with self.assertRaises(MappingServiceError):
-            self.mapping_service.lock_task_for_mapping(self.lock_task_dto)
+            MappingService.lock_task_for_mapping(self.lock_task_dto)
 
     @patch.object(ProjectService, 'is_user_permitted_to_map')
     @patch.object(Task, 'update')
-    def test_lock_task_for_mapping_sets_locked_status_when_valid(self, mock_update, mock_project):
+    @patch.object(MappingService, 'get_task')
+    def test_lock_task_for_mapping_sets_locked_status_when_valid(self, mock_task, mock_update, mock_project):
         # Arrange
-        self.set_up_service(stub_task=self.task_stub)
+        mock_task.return_value = self.task_stub
         mock_project.return_value = True, 'Allowed'
         self.mapped_task_dto.comment = 'Test comment'
 
         # Act
-        test_task = self.mapping_service.lock_task_for_mapping(self.lock_task_dto)
+        test_task = MappingService.lock_task_for_mapping(self.lock_task_dto)
 
         # Assert
         self.assertTrue(test_task.task_locked, 'Locked should be set to True')
