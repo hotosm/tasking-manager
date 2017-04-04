@@ -2,9 +2,6 @@
    Get involved
    ========================================================================== */
 .get-involved-container {
-
-  padding: ($global-spacing * 2);
-  box-shadow: inset 0 1px 0 0 $base-alpha-color;
   @include span(12/12);
 
   .description {
@@ -28,7 +25,6 @@
    ========================================================================== */
 
 .field-stories-container {
-  padding: ($global-spacing * 2);
   text-align: center !important;
   @include span(12/12);
 }
