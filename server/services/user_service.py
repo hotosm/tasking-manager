@@ -49,7 +49,7 @@ class UserService:
         elif INTERMEDIATE_MAPPER_LEVEL < changeset_count < ADVANCED_MAPPER_LEVEL:
             new_user.mapping_level = MappingLevel.INTERMEDIATE.value
         else:
-            new_user.mapping_level = MappingLevel.BEGINNER
+            new_user.mapping_level = MappingLevel.BEGINNER.value
 
         new_user.create()
         return new_user
