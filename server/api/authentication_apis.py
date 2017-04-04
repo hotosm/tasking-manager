@@ -63,7 +63,7 @@ class OAuthAPI(Resource):
         osm_resp = osm.authorized_response()
         if osm_resp is None:
             current_app.logger.critical('No response from OSM')
-            return redirect(AuthenticationService().get_authentication_failed_url())
+            return redirect(AuthenticationService.get_authentication_failed_url())
         else:
             session['osm_oauth'] = osm_resp  # Set OAuth details in the session temporarily
 
@@ -71,11 +71,11 @@ class OAuthAPI(Resource):
 
         if osm_response.status != 200:
             current_app.logger.critical('Error response from OSM')
-            return redirect(AuthenticationService().get_authentication_failed_url())
+            return redirect(AuthenticationService.get_authentication_failed_url())
 
         try:
             redirect_to = request.args.get('redirect_to')
-            authorized_url = AuthenticationService().login_user(osm_response.data, redirect_to)
+            authorized_url = AuthenticationService.login_user(osm_response.data, redirect_to)
             return redirect(authorized_url)  # Redirect to Authentication page on successful authorization :)
         except AuthServiceError as e:
             return {"Error": str(e)}, 500

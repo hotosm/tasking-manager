@@ -42,7 +42,9 @@ class AuthServiceError(Exception):
 
 
 class AuthenticationService:
-    def login_user(self, osm_user_details, redirect_to, user_element='user') -> str:
+
+    @staticmethod
+    def login_user(osm_user_details, redirect_to, user_element='user') -> str:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
         :param osm_user_details: XML response from OSM
@@ -67,12 +69,13 @@ class AuthenticationService:
             changeset_count = int(changesets.attrib['count'])
             UserService.register_user(osm_id, username, changeset_count)
 
-        session_token = self.generate_session_token_for_user(osm_id)
-        authorized_url = self._generate_authorized_url(username, session_token, redirect_to)
+        session_token = AuthenticationService.generate_session_token_for_user(osm_id)
+        authorized_url = AuthenticationService.generate_authorized_url(username, session_token, redirect_to)
 
         return authorized_url
 
-    def get_authentication_failed_url(self):
+    @staticmethod
+    def get_authentication_failed_url():
         """ Generates the auth-failed URL for the running app """
         base_url = current_app.config['APP_BASE_URL']
         auth_failed_url = f'{base_url}/auth-failed'
@@ -90,7 +93,8 @@ class AuthenticationService:
         serializer = URLSafeTimedSerializer(entropy)
         return serializer.dumps(osm_id)
 
-    def _generate_authorized_url(self, username, session_token, redirect_to):
+    @staticmethod
+    def generate_authorized_url(username, session_token, redirect_to):
         """ Generate URL that we'll redirect the user to once authenticated """
         base_url = current_app.config['APP_BASE_URL']
 
