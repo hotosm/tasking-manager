@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch
 from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project, \
-    ProjectAdminServiceError, ProjectDTO, ProjectStatus
+    ProjectAdminServiceError, ProjectDTO, ProjectStatus, NotFound
 from server.models.dtos.project_dto import ProjectInfoDTO
 
 
@@ -32,15 +32,13 @@ class TestProjectAdminService(unittest.TestCase):
         self.assertEqual(1, test_project.tasks.count(), 'One task should have been attached to project')
 
     @patch.object(Project, 'get')
-    def test_get_project_for_update_returns_none_if_project_not_found(self, mock_project):
+    def test_get_raises_error_if_not_found(self, mock_project):
         # Arrange
         mock_project.return_value = None
 
-        # Act
-        test_project = ProjectAdminService().update_project(MagicMock())
-
-        # Assert
-        self.assertIsNone(test_project)
+        # Act / Assert
+        with self.assertRaises(NotFound):
+            ProjectAdminService._get_project_by_id(12)
 
     @patch.object(Project, 'get')
     def test_published_project_with_incomplete_default_locale_raises_error(self, mock_project):
@@ -64,7 +62,7 @@ class TestProjectAdminService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(ProjectAdminServiceError):
-            ProjectAdminService().update_project(dto)
+            ProjectAdminService.update_project(dto)
 
     def test_no_project_info_for_default_locale_raises_error(self):
         # Arrange
@@ -76,7 +74,7 @@ class TestProjectAdminService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(ProjectAdminServiceError):
-            ProjectAdminService()._validate_default_locale('it', locales)
+            ProjectAdminService._validate_default_locale('it', locales)
 
     def test_complete_default_locale_raises_is_valid(self):
         # Arrange
@@ -90,7 +88,7 @@ class TestProjectAdminService(unittest.TestCase):
         locales.append(info)
 
         # Act
-        is_valid = ProjectAdminService()._validate_default_locale('en', locales)
+        is_valid = ProjectAdminService._validate_default_locale('en', locales)
 
         # Assert
         self.assertTrue(is_valid, 'Complete default locale should be valid')

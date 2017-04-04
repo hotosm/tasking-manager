@@ -3,6 +3,7 @@ import geojson
 from flask import current_app
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData, ProjectStatus
+from server.models.postgis.utils import NotFound
 
 
 class ProjectAdminServiceError(Exception):
@@ -34,30 +35,35 @@ class ProjectAdminService:
         except InvalidGeoJson as e:
             raise e
 
-        try:
-            draft_project = Project()
-            draft_project.create_draft_project(draft_project_dto, area_of_interest)
-        except InvalidData as e:
-            raise e
+        draft_project = Project()
+        draft_project.create_draft_project(draft_project_dto, area_of_interest)
 
         ProjectAdminService._attach_tasks_to_project(draft_project, draft_project_dto.tasks)
 
         draft_project.create()
         return draft_project.id
 
-    def get_project_dto_for_admin(self, project_id: int) -> ProjectDTO:
-        """ Get the project as DTO for project managers """
-        project = Project()
-        return project.as_dto_for_admin(project_id)
-
-    def update_project(self, project_dto: ProjectDTO):
-        project = Project.get(project_dto.project_id)
+    @staticmethod
+    def _get_project_by_id(project_id: int) -> Project:
+        project = Project.get(project_id)
 
         if project is None:
-            return None
+            raise NotFound()
+
+        return project
+
+    @staticmethod
+    def get_project_dto_for_admin(project_id: int) -> ProjectDTO:
+        """ Get the project as DTO for project managers """
+        project = ProjectAdminService._get_project_by_id(project_id)
+        return project.as_dto_for_admin(project_id)
+
+    @staticmethod
+    def update_project(project_dto: ProjectDTO):
+        project = ProjectAdminService._get_project_by_id(project_dto.project_id)
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
-            self._validate_default_locale(project_dto.default_locale, project_dto.project_info_locales)
+            ProjectAdminService._validate_default_locale(project_dto.default_locale, project_dto.project_info_locales)
 
         project.update(project_dto)
         return project
@@ -89,7 +95,8 @@ class ProjectAdminService:
             draft_project.tasks.append(task)
             task_id += 1
 
-    def _validate_default_locale(self, default_locale, project_info_locales):
+    @staticmethod
+    def _validate_default_locale(default_locale, project_info_locales):
         """
         Validates that all fields for the default project info locale have been completed
         :param default_locale: Admin supplied default locale
