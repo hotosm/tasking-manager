@@ -1,7 +1,6 @@
 import requests
 import xml.etree.ElementTree as ET
 from flask import current_app
-from typing import Optional
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
@@ -19,25 +18,23 @@ class UserServiceError(Exception):
 
 class UserService:
 
-    user = None
+    @staticmethod
+    def get_user_by_id(user_id: int) -> User:
+        user = User().get_by_id(user_id)
 
-    @classmethod
-    def from_user_id(cls, user_id):
-        cls.user = User().get_by_id(user_id)
-
-        if cls.user is None:
+        if user is None:
             raise NotFound()
 
-        return cls()
+        return user
 
-    @classmethod
-    def from_user_name(cls, username):
-        cls.user = User().get_by_username(username)
+    @staticmethod
+    def get_user_by_username(username: str) -> User:
+        user = User().get_by_username(username)
 
-        if cls.user is None:
+        if user is None:
             raise NotFound()
 
-        return cls()
+        return user
 
     @staticmethod
     def register_user(osm_id, username, changeset_count):
@@ -61,39 +58,39 @@ class UserService:
         new_user.create()
         return new_user
 
-    def get_user_dto(self) -> UserDTO:
+    @staticmethod
+    def get_user_dto_by_username(username: str) -> UserDTO:
         """Gets user DTO for supplied username """
-        return self.user.as_dto()
+        user = UserService.get_user_by_username(username)
+        return user.as_dto()
 
-    def is_user_a_project_manager(self):
+    @staticmethod
+    def is_user_a_project_manager(user_id: int) -> bool:
         """ Is the user a project manager """
-        if UserRole(self.user.role) in [UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+        user = UserService.get_user_by_id(user_id)
+        if UserRole(user.role) in [UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
             return True
 
         return False
 
     @staticmethod
-    def is_user_validator(user_id: int):
+    def is_user_validator(user_id: int) -> bool:
         """ Determines if user is a validator """
-        user = User().get_by_id(user_id)
-        user_role = UserRole(user.role)
+        user = UserService.get_user_by_id(user_id)
 
-        if user_role in [UserRole.VALIDATOR, UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+        if UserRole(user.role) in [UserRole.VALIDATOR, UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
             return True
 
         return False
 
     @staticmethod
-    def get_osm_details_for_user(username: str) -> Optional[UserOSMDTO]:
+    def get_osm_details_for_user(username: str) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API
         :param username: username in scope
-        :raises UserServiceError
+        :raises UserServiceError, NotFound
         """
-        user = User().get_by_username(username)
-        if user is None:
-            return None
-
+        user = UserService.get_user_by_username(username)
         osm_user_details_url = f'http://www.openstreetmap.org/api/0.6/user/{user.id}'
         response = requests.get(osm_user_details_url)
 

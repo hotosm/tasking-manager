@@ -28,8 +28,7 @@ class UserAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_service = UserService.from_user_name(username)
-            user_dto = user_service.get_user_dto()
+            user_dto = UserService.get_user_dto_by_username(username)
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404
@@ -68,11 +67,9 @@ class UserOSMAPI(Resource):
         """
         try:
             osm_dto = UserService.get_osm_details_for_user(username)
-
-            if osm_dto is None:
-                return {"Error": "OSM User Not Found"}, 404
-
             return osm_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
         except UserServiceError as e:
             return {"Error": str(e)}, 502
         except Exception as e:
