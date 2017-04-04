@@ -177,14 +177,15 @@ class UnlockTaskForMappingAPI(Resource):
         try:
             mapped_task = MappedTaskDTO(request.get_json())
             mapped_task.user_id = tm.authenticated_user_id
+            mapped_task.task_id = task_id
+            mapped_task.project_id = project_id
             mapped_task.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
         try:
-            mapping_service = MappingService(task_id, project_id)
-            task = mapping_service.unlock_task_after_mapping(mapped_task)
+            task = MappingService.unlock_task_after_mapping(mapped_task)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404

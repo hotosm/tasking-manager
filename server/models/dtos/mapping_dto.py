@@ -31,6 +31,8 @@ class MappedTaskDTO(Model):
     user_id = IntType(required=True)
     status = StringType(required=True, validators=[is_valid_mapped_status])
     comment = StringType()
+    task_id = IntType(required=True)
+    project_id = IntType(required=True)
 
 
 class TaskHistoryDTO(Model):
