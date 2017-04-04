@@ -33,25 +33,27 @@ class TestUserService(unittest.TestCase):
         self.assertEqual(dto.account_created, '2015-05-14T18:10:16Z')
         self.assertEqual(dto.changeset_count, 16)
 
-    def test_user_correctly_identified_as_pm(self):
+    @patch.object(UserService, 'get_user_by_id')
+    def test_user_correctly_identified_as_pm(self, mock_user):
         # Arrange
         test_user = User()
         test_user.role = UserRole.PROJECT_MANAGER.value
 
-        self.set_up_service(stub_user=test_user)
+        mock_user.return_value = test_user
 
         # Act / Assert
-        self.assertTrue(self.user_service.is_user_a_project_manager())
+        self.assertTrue(UserService.is_user_a_project_manager(123))
 
-    def test_user_not_identified_as_pm(self):
+    @patch.object(UserService, 'get_user_by_id')
+    def test_user_not_identified_as_pm(self, mock_user):
         # Arrange
         test_user = User()
         test_user.role = UserRole.MAPPER.value
 
-        self.set_up_service(stub_user=test_user)
+        mock_user.return_value = test_user
 
         # Act / Assert
-        self.assertFalse(self.user_service.is_user_a_project_manager())
+        self.assertFalse(UserService.is_user_a_project_manager(123))
 
     def test_user_service_raise_error_if_user_element_not_found(self):
         # Arrange
@@ -61,7 +63,7 @@ class TestUserService(unittest.TestCase):
         with self.assertRaises(UserServiceError):
             UserService._parse_osm_user_details_response(osm_response, 'wont-find')
 
-    @patch.object(User, 'get_by_id')
+    @patch.object(UserService, 'get_user_by_id')
     def test_mapper_role_is_not_recognized_as_a_validator(self, mock_user):
         # Arrange
         stub_user = User()
@@ -71,7 +73,7 @@ class TestUserService(unittest.TestCase):
         # Act / Assert
         self.assertFalse(UserService.is_user_validator(123))
 
-    @patch.object(User, 'get_by_id')
+    @patch.object(UserService, 'get_user_by_id')
     def test_admin_role_is_recognized_as_a_validator(self, mock_user):
         # Arrange
         stub_user = User()

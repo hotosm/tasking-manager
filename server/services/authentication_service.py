@@ -26,8 +26,7 @@ def verify_token(token):
         return False
 
     if tm.is_pm_only_resource:
-        user_service = UserService.from_user_id(user_id)
-        if not user_service.is_user_a_project_manager():
+        if not UserService.is_user_a_project_manager(user_id):
             return False
 
     tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
@@ -61,7 +60,7 @@ class AuthenticationService:
         username = osm_user.attrib['display_name']
 
         try:
-            UserService.from_user_id(osm_id)
+            UserService.get_user_by_id(osm_id)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.find('changesets')
