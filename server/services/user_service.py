@@ -39,7 +39,8 @@ class UserService:
 
         return cls()
 
-    def register_user(self, osm_id, username, changeset_count):
+    @staticmethod
+    def register_user(osm_id, username, changeset_count):
         """
         Creates user in DB 
         :param osm_id: Unique OSM user id

@@ -3,7 +3,8 @@ import unittest
 from urllib.parse import urlparse, parse_qs
 from tests.server.helpers.test_helpers import get_canned_osm_user_details
 from server import create_app
-from server.services.authentication_service import AuthenticationService, AuthServiceError, User
+from server.services.authentication_service import AuthenticationService
+from server.models.postgis.user import User
 
 
 class TestAuthenticationService(unittest.TestCase):
