@@ -28,3 +28,7 @@ hr {
   width: 100%;
   max-width: 50rem;
 }
+
+.tr-hover:hover {
+  background-color: rgba($base-color, 0.1);
+}
