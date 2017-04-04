@@ -2,11 +2,11 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.services.authentication_service import token_auth, tm
-from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData, ProjectAdminServiceError
+from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData, \
+    ProjectAdminServiceError, NotFound
 
 
 class ProjectAdminAPI(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def put(self):
@@ -66,8 +66,7 @@ class ProjectAdminAPI(Resource):
             return str(e), 400
 
         try:
-            project_service = ProjectAdminService()
-            draft_project_id = project_service.create_draft_project(draft_project_dto)
+            draft_project_id = ProjectAdminService.create_draft_project(draft_project_dto)
             return {"projectId": draft_project_id}, 201
         except (InvalidGeoJson, InvalidData) as e:
             return {"error": f'{str(e)}'}, 400
@@ -110,13 +109,10 @@ class ProjectAdminAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            project_service = ProjectAdminService()
-            project_dto = project_service.get_project_dto_for_admin(project_id)
-
-            if project_dto is None:
-                return {"Error": "Project Not Found"}, 404
-
+            project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
             return project_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
@@ -198,13 +194,10 @@ class ProjectAdminAPI(Resource):
             return str(e), 400
 
         try:
-            project_service = ProjectAdminService()
-            project = project_service.update_project(project_dto)
-
-            if project is None:
-                return {"Error": "Project Not Found"}, 404
-
+            ProjectAdminService.update_project(project_dto)
             return {"Status": "Updated"}, 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
         except ProjectAdminServiceError as e:
             return {"error": str(e)}, 400
         except Exception as e:
