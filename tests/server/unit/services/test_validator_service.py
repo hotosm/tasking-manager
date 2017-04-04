@@ -33,7 +33,7 @@ class TestValidatorService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(NotFound):
-            ValidatorService(lock_dto.project_id, ProjectService()).lock_tasks_for_validation(lock_dto)
+            ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(Task, 'get')
     def test_lock_tasks_for_validation_raises_error_if_task_not_done(self, mock_task):
@@ -48,7 +48,7 @@ class TestValidatorService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
-            ValidatorService(lock_dto.project_id, ProjectService()).lock_tasks_for_validation(lock_dto)
+            ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(Task, 'get')
     def test_lock_tasks_for_validation_raises_error_if_task_already_locked(self, mock_task):
@@ -64,7 +64,7 @@ class TestValidatorService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(ValidatatorServiceError):
-            ValidatorService(lock_dto.project_id, ProjectService()).lock_tasks_for_validation(lock_dto)
+            ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(Task, 'get')
     @patch.object(ProjectService, 'is_user_permitted_to_validate')
@@ -82,7 +82,7 @@ class TestValidatorService(unittest.TestCase):
         lock_dto.task_ids = [1, 2]
 
         with self.assertRaises(ValidatatorServiceError):
-            ValidatorService(lock_dto.project_id, ProjectService()).lock_tasks_for_validation(lock_dto)
+            ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(Task, 'get')
     def test_unlock_tasks_for_validation_raises_error_if_task_not_found(self, mock_task):

@@ -41,14 +41,11 @@ class TestMappingService(unittest.TestCase):
         self.ctx.pop()
 
     @patch.object(Task, 'get')
-    def set_up_service(self, mock_task, stub_task):
-        """ Helper that sets ups the mapping service with the supplied task test stub"""
-        mock_task.return_value = stub_task
-        self.mapping_service = MappingService(1, 1, ProjectService())
+    def test_get_task_raises_error_if_task_not_found(self, mock_task):
+        mock_task.return_value = None
 
-    def test_mapping_service_raises_error_if_task_not_found(self):
         with self.assertRaises(NotFound):
-            self.set_up_service(stub_task=None)
+            MappingService.get_task(12, 12)
 
     @patch.object(MappingService, 'get_task')
     def test_lock_task_for_mapping_raises_error_if_task_already_locked(self, mock_task):
@@ -169,11 +166,11 @@ class TestMappingService(unittest.TestCase):
         self.assertFalse(test_task.task_locked)
 
     @patch.object(MappingService, 'get_task')
-    def test_cant_unlock_a_task_you_dont_own(self):
+    def test_cant_unlock_a_task_you_dont_own(self, mock_task):
         # Arrange
         self.task_stub.task_locked = True
         self.task_stub.lock_holder_id = 12
-        self.set_up_service(stub_task=self.task_stub)
+        mock_task.return_value = self.task_stub
 
         # Act / Assert
         with self.assertRaises(MappingServiceError):
