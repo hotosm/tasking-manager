@@ -66,8 +66,7 @@ class ProjectAdminAPI(Resource):
             return str(e), 400
 
         try:
-            project_service = ProjectAdminService()
-            draft_project_id = project_service.create_draft_project(draft_project_dto)
+            draft_project_id = ProjectAdminService.create_draft_project(draft_project_dto)
             return {"projectId": draft_project_id}, 201
         except (InvalidGeoJson, InvalidData) as e:
             return {"error": f'{str(e)}'}, 400

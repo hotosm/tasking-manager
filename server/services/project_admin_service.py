@@ -21,7 +21,8 @@ class ProjectStoreError(Exception):
 
 class ProjectAdminService:
 
-    def create_draft_project(self, draft_project_dto: DraftProjectDTO) -> int:
+    @staticmethod
+    def create_draft_project(draft_project_dto: DraftProjectDTO) -> int:
         """
         Validates and then persists draft projects in the DB
         :param draft_project_dto: Draft Project DTO with data from API
@@ -39,7 +40,7 @@ class ProjectAdminService:
         except InvalidData as e:
             raise e
 
-        self._attach_tasks_to_project(draft_project, draft_project_dto.tasks)
+        ProjectAdminService._attach_tasks_to_project(draft_project, draft_project_dto.tasks)
 
         draft_project.create()
         return draft_project.id
@@ -61,7 +62,8 @@ class ProjectAdminService:
         project.update(project_dto)
         return project
 
-    def _attach_tasks_to_project(self, draft_project, tasks_geojson):
+    @staticmethod
+    def _attach_tasks_to_project(draft_project: Project, tasks_geojson):
         """
         Validates then iterates over the array of tasks and attach them to the draft project
         :param draft_project: Draft project in scope

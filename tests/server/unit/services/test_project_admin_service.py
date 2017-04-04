@@ -11,11 +11,10 @@ class TestProjectAdminService(unittest.TestCase):
         # Arrange
         invalid_feature = '{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],' \
                           '[-4.0237, 56.0904]]]], "type": "MultiPolygon"}'
-        test_project_service = ProjectAdminService()
 
         # Act
         with self.assertRaises(InvalidGeoJson):
-            test_project_service._attach_tasks_to_project(MagicMock(), invalid_feature)
+            ProjectAdminService._attach_tasks_to_project(MagicMock(), invalid_feature)
 
     def test_valid_geo_json_attaches_task_to_project(self):
         # Arrange
@@ -24,12 +23,10 @@ class TestProjectAdminService(unittest.TestCase):
                                               '"MultiPolygon"}, "properties": {"x": 2402, "y": 1736, "zoom": 12}, "type":'
                                               '"Feature"}], "type": "FeatureCollection"}')
 
-        test_project_service = ProjectAdminService()
         test_project = Project()
-        test_project.create_draft_project(MagicMock(), MagicMock())
 
         # Act
-        test_project_service._attach_tasks_to_project(test_project, valid_feature_collection)
+        ProjectAdminService._attach_tasks_to_project(test_project, valid_feature_collection)
 
         # Assert
         self.assertEqual(1, test_project.tasks.count(), 'One task should have been attached to project')
