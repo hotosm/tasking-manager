@@ -55,7 +55,7 @@ class ProjectService:
 
     def is_user_permitted_to_validate(self, user_id):
         """ Check if the user is allowed to validate on the project in scope """
-        if self.project.enforce_validator_role and not UserService.is_user_validator(user_id.user_id):
+        if self.project.enforce_validator_role and not UserService.is_user_validator(user_id):
             return False, 'User must be a validator to map on this project'
 
         return True, 'User allowed to validate'
