@@ -17,7 +17,10 @@ def verify_token(token):
     if not token:
         return False
 
-    decoded_token = base64.b64decode(token).decode('utf-8')
+    try:
+        decoded_token = base64.b64decode(token).decode('utf-8')
+    except UnicodeDecodeError:
+        return False  # Can't decode token, so fail login
 
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:

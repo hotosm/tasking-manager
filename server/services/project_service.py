@@ -2,6 +2,7 @@ from flask import current_app
 from server.models.dtos.project_dto import ProjectDTO
 from server.models.postgis.project import Project, ProjectStatus
 from server.models.postgis.utils import NotFound
+from server.services.user_service import UserService
 
 
 class ProjectServiceError(Exception):
@@ -41,7 +42,8 @@ class ProjectService:
 
         return self.project.as_dto_for_mapping(locale)
 
-    def is_user_permitted_to_lock_task(self, user_id):
+    def is_user_permitted_to_map(self, user_id: int):
+        """ Check if the user is allowed to map the on the project in scope """
         # TODO check if allowed user for private project
         # TODO check level if enforce mapper level
 
@@ -49,4 +51,11 @@ class ProjectService:
 
         if task_count > 0:
             return False, 'User already has a locked task on this project'
-        return True, 'User allowed to lock task'
+        return True, 'User allowed to map'
+
+    def is_user_permitted_to_validate(self, user_id):
+        """ Check if the user is allowed to validate on the project in scope """
+        if self.project.enforce_validator_role and not UserService.is_user_validator(user_id):
+            return False, 'User must be a validator to map on this project'
+
+        return True, 'User allowed to validate'
