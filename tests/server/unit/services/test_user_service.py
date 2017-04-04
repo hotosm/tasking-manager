@@ -16,15 +16,11 @@ class TestUserService(unittest.TestCase):
 
     @patch.object(User, 'create')
     def test_user_can_register_with_correct_mapping_level(self, mock_user):
-        # Arrange
-        self.set_up_service(stub_user=None)
-
         # Act
-        test_user = self.user_service.register_user(12, 'Thinkwhere', 300)
+        test_user = UserService().register_user(12, 'Thinkwhere', 300)
 
         # Assert
         self.assertEqual(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)
-
 
     def test_user_service_can_parse_oms_user_details_xml(self):
         # Arrange
@@ -36,6 +32,26 @@ class TestUserService(unittest.TestCase):
         # Assert
         self.assertEqual(dto.account_created, '2015-05-14T18:10:16Z')
         self.assertEqual(dto.changeset_count, 16)
+
+    def test_user_correctly_identified_as_pm(self):
+        # Arrange
+        test_user = User()
+        test_user.role = UserRole.PROJECT_MANAGER.value
+
+        self.set_up_service(stub_user=test_user)
+
+        # Act / Assert
+        self.assertTrue(self.user_service.is_user_a_project_manager())
+
+    def test_user_not_identified_as_pm(self):
+        # Arrange
+        test_user = User()
+        test_user.role = UserRole.MAPPER.value
+
+        self.set_up_service(stub_user=test_user)
+
+        # Act / Assert
+        self.assertFalse(self.user_service.is_user_a_project_manager())
 
     def test_user_service_raise_error_if_user_element_not_found(self):
         # Arrange

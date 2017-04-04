@@ -39,10 +39,6 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def is_project_manager(self):
-        """ Determines if user is a PM (Admins are considered as PMs too """
-        return UserRole(self.role) in [UserRole.ADMIN, UserRole.PROJECT_MANAGER]
-
     def as_dto(self):
         """ Create DTO object from user in scope """
         user_dto = UserDTO()

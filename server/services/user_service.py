@@ -2,8 +2,9 @@ import requests
 import xml.etree.ElementTree as ET
 from flask import current_app
 from typing import Optional
-from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO
+from server.models.postgis.user import User, UserRole, MappingLevel
+from server.models.postgis.utils import NotFound
 
 INTERMEDIATE_MAPPER_LEVEL = 250
 ADVANCED_MAPPER_LEVEL = 500
@@ -23,23 +24,28 @@ class UserService:
     @classmethod
     def from_user_id(cls, user_id):
         cls.user = User().get_by_id(user_id)
+
+        if cls.user is None:
+            raise NotFound()
+
         return cls()
 
     @classmethod
     def from_user_name(cls, username):
         cls.user = User().get_by_username(username)
+
+        if cls.user is None:
+            raise NotFound()
+
         return cls()
 
     def register_user(self, osm_id, username, changeset_count):
         """
-        Creates user in DB if they are a new user
+        Creates user in DB 
         :param osm_id: Unique OSM user id
         :param username: OSM Username
         :param changeset_count: OSM changeset count
         """
-        if self.user is not None:
-            return  # User exists so no further processing needed
-
         new_user = User()
         new_user.id = osm_id
         new_user.username = username
@@ -54,25 +60,16 @@ class UserService:
         new_user.create()
         return new_user
 
-    @staticmethod
-    def get_user_by_username(username: str) -> Optional[UserDTO]:
+    def get_user_dto(self) -> UserDTO:
         """Gets user DTO for supplied username """
-        user = User().get_by_username(username)
+        return self.user.as_dto()
 
-        if user is None:
-            return None
-
-        return user.as_dto()
-
-    @staticmethod
-    def is_user_a_project_manager(user_id: int) -> bool:
+    def is_user_a_project_manager(self):
         """ Is the user a project manager """
-        user = User().get_by_id(user_id)
+        if UserRole(self.user.role) in [UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+            return True
 
-        if user is None:
-            return False
-
-        return user.is_project_manager()
+        return False
 
     @staticmethod
     def is_user_validator(user_id: int):
