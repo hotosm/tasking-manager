@@ -1,10 +1,26 @@
 import unittest
 from unittest.mock import patch
-from server.services.user_service import UserService, UserServiceError, User, UserRole
+from server.services.user_service import UserService, UserServiceError, User, UserRole, MappingLevel
 from tests.server.helpers.test_helpers import get_canned_simplified_osm_user_details
 
 
 class TestUserService(unittest.TestCase):
+
+    user_service = None
+
+    @patch.object(User, 'get_by_id')
+    def set_up_service(self, mock_user, stub_user):
+        """ Helper that sets ups the user service with the supplied user test stub"""
+        mock_user.return_value = stub_user
+        self.user_service = UserService.from_user_id(1)
+
+    @patch.object(User, 'create')
+    def test_user_can_register_with_correct_mapping_level(self, mock_user):
+        # Act
+        test_user = UserService().register_user(12, 'Thinkwhere', 300)
+
+        # Assert
+        self.assertEqual(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)
 
     def test_user_service_can_parse_oms_user_details_xml(self):
         # Arrange
@@ -16,6 +32,26 @@ class TestUserService(unittest.TestCase):
         # Assert
         self.assertEqual(dto.account_created, '2015-05-14T18:10:16Z')
         self.assertEqual(dto.changeset_count, 16)
+
+    def test_user_correctly_identified_as_pm(self):
+        # Arrange
+        test_user = User()
+        test_user.role = UserRole.PROJECT_MANAGER.value
+
+        self.set_up_service(stub_user=test_user)
+
+        # Act / Assert
+        self.assertTrue(self.user_service.is_user_a_project_manager())
+
+    def test_user_not_identified_as_pm(self):
+        # Arrange
+        test_user = User()
+        test_user.role = UserRole.MAPPER.value
+
+        self.set_up_service(stub_user=test_user)
+
+        # Act / Assert
+        self.assertFalse(self.user_service.is_user_a_project_manager())
 
     def test_user_service_raise_error_if_user_element_not_found(self):
         # Arrange

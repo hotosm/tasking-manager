@@ -4,8 +4,7 @@ from flask import current_app
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from server.api.utils import TMAPIDecorators
-from server.services.user_service import UserService
-from server.models.postgis.user import User
+from server.services.user_service import UserService, NotFound
 
 token_auth = HTTPTokenAuth(scheme='Token')
 tm = TMAPIDecorators()
@@ -27,7 +26,8 @@ def verify_token(token):
         return False
 
     if tm.is_pm_only_resource:
-        if not UserService.is_user_a_project_manager(user_id):
+        user_service = UserService.from_user_id(user_id)
+        if not user_service.is_user_a_project_manager():
             return False
 
     tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
@@ -59,13 +59,14 @@ class AuthenticationService:
 
         osm_id = int(osm_user.attrib['id'])
         username = osm_user.attrib['display_name']
-        existing_user = User().get_by_id(osm_id)
 
-        if not existing_user:
+        try:
+            UserService.from_user_id(osm_id)
+        except NotFound:
+            # User not found, so must be new user
             changesets = osm_user.find('changesets')
             changeset_count = int(changesets.attrib['count'])
-
-            User.create_from_osm_user_details(osm_id, username, changeset_count)
+            UserService.register_user(osm_id, username, changeset_count)
 
         session_token = self.generate_session_token_for_user(osm_id)
         authorized_url = self._generate_authorized_url(username, session_token, redirect_to)
@@ -85,7 +86,9 @@ class AuthenticationService:
         :param osm_id: OSM ID of the user authenticating
         :return: Token
         """
-        serializer = URLSafeTimedSerializer(current_app.secret_key)
+        entropy = current_app.secret_key if current_app.secret_key else 'un1testingmode'
+
+        serializer = URLSafeTimedSerializer(entropy)
         return serializer.dumps(osm_id)
 
     def _generate_authorized_url(self, username, session_token, redirect_to):

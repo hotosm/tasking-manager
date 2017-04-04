@@ -1,5 +1,5 @@
 from flask_restful import Resource, current_app
-from server.services.user_service import UserService, UserServiceError
+from server.services.user_service import UserService, UserServiceError, NotFound
 
 
 class UserAPI(Resource):
@@ -28,12 +28,11 @@ class UserAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_dto = UserService.get_user_by_username(username)
-
-            if user_dto is None:
-                return {"Error": "User Not Found"}, 404
-
+            user_service = UserService.from_user_name(username)
+            user_dto = user_service.get_user_dto()
             return user_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

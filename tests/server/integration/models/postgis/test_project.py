@@ -33,7 +33,13 @@ class TestProject(unittest.TestCase):
         if self.skip_tests:
             return
 
-        User.create_from_osm_user_details(TEST_USER_ID, 'Thinkwhere Test', 16)  # Create test user
+        # Setup test user
+        test_user = User()
+        test_user.id = TEST_USER_ID
+        test_user.username = 'Thinkwhere TEST'
+        test_user.mapping_level = 1
+        test_user.create()
+
         self.create_test_project()
 
     def tearDown(self):
