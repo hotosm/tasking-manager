@@ -59,13 +59,11 @@ class AuthenticationService:
 
         osm_id = int(osm_user.attrib['id'])
         username = osm_user.attrib['display_name']
-        existing_user = User().get_by_id(osm_id)
+        changesets = osm_user.find('changesets')
+        changeset_count = int(changesets.attrib['count'])
 
-        if not existing_user:
-            changesets = osm_user.find('changesets')
-            changeset_count = int(changesets.attrib['count'])
-
-            User.create_from_osm_user_details(osm_id, username, changeset_count)
+        user_service = UserService.from_user_id(osm_id)
+        user_service.register_user(osm_id, username, changeset_count)
 
         session_token = self.generate_session_token_for_user(osm_id)
         authorized_url = self._generate_authorized_url(username, session_token, redirect_to)

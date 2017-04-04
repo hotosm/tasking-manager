@@ -2,8 +2,11 @@ import requests
 import xml.etree.ElementTree as ET
 from flask import current_app
 from typing import Optional
-from server.models.postgis.user import User, UserRole
+from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO
+
+INTERMEDIATE_MAPPER_LEVEL = 250
+ADVANCED_MAPPER_LEVEL = 500
 
 
 class UserServiceError(Exception):
@@ -14,6 +17,42 @@ class UserServiceError(Exception):
 
 
 class UserService:
+
+    user = None
+
+    @classmethod
+    def from_user_id(cls, user_id):
+        cls.user = User().get_by_id(user_id)
+        return cls()
+
+    @classmethod
+    def from_user_name(cls, username):
+        cls.user = User().get_by_username(username)
+        return cls()
+
+    def register_user(self, osm_id, username, changeset_count):
+        """
+        Creates user in DB if they are a new user
+        :param osm_id: Unique OSM user id
+        :param username: OSM Username
+        :param changeset_count: OSM changeset count
+        """
+        if self.user is not None:
+            return  # User exists so no further processing needed
+
+        new_user = User()
+        new_user.id = osm_id
+        new_user.username = username
+
+        if changeset_count > ADVANCED_MAPPER_LEVEL:
+            new_user.mapping_level = MappingLevel.ADVANCED.value
+        elif INTERMEDIATE_MAPPER_LEVEL < changeset_count < ADVANCED_MAPPER_LEVEL:
+            new_user.mapping_level = MappingLevel.INTERMEDIATE.value
+        else:
+            new_user.mapping_level = MappingLevel.BEGINNER
+
+        new_user.create()
+        return new_user
 
     @staticmethod
     def get_user_by_username(username: str) -> Optional[UserDTO]:
