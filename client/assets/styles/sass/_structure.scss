@@ -169,9 +169,11 @@
    ========================================================================== */
 
 .page__body {
-  @extend .clearfix;
-  .inner {
-    padding-top: 40px; /* TODO: variable */
+  .section__body {
+    @extend .clearfix;
+    .inner {
+      padding-top: 2rem;
+    }
   }
 }
 
@@ -207,7 +209,7 @@
     position: relative;
     color: inherit;
     padding: {
-      top: ($global-spacing * 2) + $page-header-y;
+      top: ($global-spacing * 4);
       right: 0;
       bottom: ($global-spacing * 2);
       left: 0;
@@ -254,14 +256,14 @@
     @include media(medium-up) {
       text-align: center;
       padding: {
-        top: ($global-spacing * 3) + $page-header-y;
+        top: ($global-spacing * 8);
         bottom: ($global-spacing * 3);
       }
     }
 
     @include media(large-up) {
       padding: {
-        top: ($global-spacing * 4) + $page-header-y;
+        top: ($global-spacing * 8);
         bottom: ($global-spacing * 4);
       }
     }
@@ -271,7 +273,7 @@
     position: relative;
     color: inherit;
     padding: {
-      top: ($global-spacing * 0.5) + $page-header-y;
+      top: ($global-spacing * 4);
       right: 0;
       bottom: ($global-spacing * 0.5);
       left: 0;
@@ -318,14 +320,14 @@
     @include media(medium-up) {
       text-align: center;
       padding: {
-        top: ($global-spacing * 1) + $page-header-y;
+        top: ($global-spacing * 7);
         bottom: ($global-spacing * 1);
       }
     }
 
     @include media(large-up) {
       padding: {
-        top: ($global-spacing * 2) + $page-header-y;
+        top: ($global-spacing * 7);
         bottom: ($global-spacing * 2);
       }
     }
