@@ -63,6 +63,7 @@ As the project is open source we have to keep secrets out of the repo.  You will
 * **TM_CONSUMER_SECRET** - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
 
 * Linux/Mac
+    * (It is strongly recommended to set these within your .bash_profile so they are available to all processes )
     * ```export TM_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
     * ```export TM_SECRET=secret-key-here```
     * ```export TM_CONSUMER_SECRET=outh-consumer-secret-key-goes-here```
