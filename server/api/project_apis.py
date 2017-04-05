@@ -9,7 +9,7 @@ class ProjectAPI(Resource):
         Get HOT Project for mapping
         ---
         tags:
-            - project
+            - mapping
         produces:
             - application/json
         parameters:
@@ -47,3 +47,37 @@ class ProjectAPI(Resource):
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class ProjectSearchAPI(Resource):
+
+    def get(self):
+        """
+        Search active projects
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - in: query
+              name: mapper_level
+              type: string
+              default: BEGINNER
+        responses:
+            200:
+                description: Project found
+            403:
+                description: Forbidden
+            404:
+                description: Project not found
+            500:
+                description: Internal Server Error
+        """
+        pass
