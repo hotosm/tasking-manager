@@ -1,6 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import ProjectSearchDTO
+from server.services.authentication_service import token_auth, tm
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 
 
@@ -98,3 +99,48 @@ class ProjectSearchAPI(Resource):
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class HasUserTaskOnProject(Resource):
+
+    @token_auth.login_required
+    def get(self, project_id):
+        """
+        Gets any locked task on the project from logged in user 
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Task user is working on
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: User is not working on any tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            task = ProjectService.get_task_for_logged_in_user(project_id, tm.authenticated_user_id)
+            return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
+        except Exception as e:
+            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500

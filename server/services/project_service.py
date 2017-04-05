@@ -55,12 +55,21 @@ class ProjectService:
         return project.as_dto_for_mapping(locale)
 
     @staticmethod
+    def get_task_for_logged_in_user(project_id: int, user_id: int):
+        """ if the user is working on a task in the project return it """
+        project = ProjectService.get_project_by_id(project_id)
+
+        project.get_tasks_for_user(user_id)
+
+
+
+    @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):
         """ Check if the user is allowed to map the on the project in scope """
         # TODO check if allowed user for private project
         project = ProjectService.get_project_by_id(project_id)
 
-        task_count = project.get_task_count_for_user(user_id)
+        task_count = project.get_tasks_for_user(user_id)
 
         if task_count > 0:
             return False, 'User already has a locked task on this project'
