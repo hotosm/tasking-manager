@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', 'accountService','mapService', 'geospatialService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', 'accountService','mapService', profileController]);
 
-    function profileController($routeParams, $location, accountService, mapService, geospatialService) {
+    function profileController($routeParams, $location, accountService, mapService) {
         var vm = this;
         vm.username = '';
         vm.currentlyLoggedInUser = null;
