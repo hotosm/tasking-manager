@@ -48,7 +48,7 @@ build:
 
     on_success:
         # Run deploy script to manage deploy to appropriate environment
-        - . ./bin/linux/shippable_deploy.sh
+        - . ./devops/ci/shippable_deploy.sh
 
 integrations:
     notifications:
