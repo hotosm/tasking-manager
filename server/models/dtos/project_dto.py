@@ -62,11 +62,13 @@ class ProjectDTO(Model):
 
 
 class ProjectSearchDTO(Model):
+    """ Describes the criteria users use to filter active projects"""
     preferred_locale = StringType(required=True, default='en')
     mapper_level = StringType(required=True, serialized_name='mapperLevel', validators=[is_known_mapping_level])
 
 
 class ProjectSearchResultDTO(Model):
+    """ Describes one search result"""
     project_id = IntType(required=True, serialized_name='projectId')
     locale = StringType(required=True)
     name = StringType(default='')
@@ -77,4 +79,5 @@ class ProjectSearchResultDTO(Model):
 
 
 class ProjectSearchResultsDTO(Model):
+    """ Contains all results for the search criteria """
     results = ListType(ModelType(ProjectSearchResultDTO))

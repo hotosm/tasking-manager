@@ -291,7 +291,11 @@ class Project(db.Model):
             result_dto.priority = ProjectPriority(project.priority).name
             result_dto.mapper_level = MappingLevel(project.mapper_level).name
             result_dto.short_description = project_info_dto.short_description
-            result_dto.aoi_centroid = db.session.scalar(project.area_of_interest.centroid.ST_AsGeoJSON())
+
+            # Get AOI centroid as geoJson
+            centroid_str = db.session.scalar(project.area_of_interest.centroid.ST_AsGeoJSON())
+            result_dto.aoi_centroid = geojson.loads(centroid_str)
+
             results_list.append(result_dto)
 
         results_dto = ProjectSearchResultsDTO()
