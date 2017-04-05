@@ -1,16 +1,9 @@
 from flask import current_app
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
-from server.models.postgis.project import Project
 from server.models.postgis.task import Task, TaskStatus
-from server.services.user_service import UserService, UserRole
-
-
-class TaskNotFound(Exception):
-    """ Custom exception to notify callers that a requested mapping task was not found """
-    def __init__(self, message):
-        if current_app:
-            current_app.logger.error(message)
+from server.models.postgis.utils import NotFound
+from server.services.project_service import ProjectService
 
 
 class ValidatatorServiceError(Exception):
@@ -22,7 +15,8 @@ class ValidatatorServiceError(Exception):
 
 class ValidatorService:
 
-    def lock_tasks_for_validation(self, validation_dto: LockForValidationDTO) -> TaskDTOs:
+    @staticmethod
+    def lock_tasks_for_validation(validation_dto: LockForValidationDTO) -> TaskDTOs:
         """
         Lock supplied tasks for validation
         :raises ValidatatorServiceError
@@ -33,7 +27,7 @@ class ValidatorService:
             task = Task.get(task_id, validation_dto.project_id)
 
             if task is None:
-                raise TaskNotFound(f'Task {task_id} not found')
+                raise NotFound(f'Task {task_id} not found')
 
             if TaskStatus(task.task_status) not in [TaskStatus.DONE, TaskStatus.VALIDATED]:
                 raise ValidatatorServiceError(f'Task {task_id} is not DONE or VALIDATED')
@@ -43,7 +37,11 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
-        ValidatorService._validate_user_permissions(validation_dto)
+        user_can_validate, error_msg = ProjectService.is_user_permitted_to_validate(validation_dto.project_id,
+                                                                                    validation_dto.user_id)
+
+        if not user_can_validate:
+            raise ValidatatorServiceError(error_msg)
 
         # Lock all tasks for validation
         dtos = []
@@ -57,13 +55,7 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
-    def _validate_user_permissions(validation_dto: LockForValidationDTO):
-        """ Check user has permission to validate on this project """
-        project = Project.get(validation_dto.project_id)
-        if project.enforce_validator_role and not UserService.is_user_validator(validation_dto.user_id):
-            raise ValidatatorServiceError('User must be a validator to validate this project')
-
-    def unlock_tasks_after_validation(self, validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
+    def unlock_tasks_after_validation(validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
         """
         Unlocks supplied tasks after validation
         :raises ValidatatorServiceError
@@ -74,7 +66,7 @@ class ValidatorService:
             task = Task.get(validated_task.task_id, validated_dto.project_id)
 
             if task is None:
-                raise TaskNotFound(f'Task {validated_task.task_id} not found')
+                raise NotFound(f'Task {validated_task.task_id} not found')
 
             if TaskStatus(task.task_status) not in [TaskStatus.DONE, TaskStatus.VALIDATED]:
                 raise ValidatatorServiceError(f'Task {validated_task.task_id} is not DONE or VALIDATED')

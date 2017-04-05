@@ -2,59 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from server.services.authentication_service import token_auth, tm
-from server.services.mapping_service import MappingService, MappingServiceError, DatabaseError
-
-
-class MappingProjectAPI(Resource):
-
-    def get(self, project_id):
-        """
-        Get HOT Project for mapping
-        ---
-        tags:
-            - mapping
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Accept-Language
-              description: Language user is requesting
-              type: string
-              required: true
-              default: en
-            - name: project_id
-              in: path
-              description: The unique project ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: Project found
-            400:
-                description: Invalid request
-            404:
-                description: Project not found
-            500:
-                description: Internal Server Error
-        """
-        try:
-            mapping_service = MappingService()
-            project_dto = mapping_service.get_project_dto_for_mapper(project_id,
-                                                                     request.environ.get('HTTP_ACCEPT_LANGUAGE'))
-
-            if project_dto is None:
-                return {"Error": "Project Not Found"}, 404
-
-            return project_dto.to_primitive(), 200
-        except MappingServiceError as e:
-            return {"error": str(e)}, 400
-        except DatabaseError as e:
-            return {"error": str(e)}, 500
-        except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+from server.services.mapping_service import MappingService, MappingServiceError, NotFound
 
 
 class MappingTaskAPI(Resource):
@@ -89,12 +37,10 @@ class MappingTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = MappingService().get_task_as_dto(task_id, project_id)
-
-            if task is None:
-                return {"Error": "Task Not Found"}, 404
-
+            task = MappingService.get_task_as_dto(task_id, project_id)
             return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
         except Exception as e:
             error_msg = f'Task GET API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
@@ -147,20 +93,18 @@ class LockTaskForMappingAPI(Resource):
         """
         try:
             lock_task_dto = LockTaskDTO()
-            lock_task_dto.task_id = task_id
-            lock_task_dto.project_id = project_id
             lock_task_dto.user_id = tm.authenticated_user_id
+            lock_task_dto.project_id = project_id
+            lock_task_dto.task_id = task_id
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
         try:
-            task = MappingService().lock_task_for_mapping(lock_task_dto)
-
-            if task is None:
-                return {"Error": "Task Not Found"}, 404
-
+            task = MappingService.lock_task_for_mapping(lock_task_dto)
             return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
@@ -232,21 +176,19 @@ class UnlockTaskForMappingAPI(Resource):
         """
         try:
             mapped_task = MappedTaskDTO(request.get_json())
+            mapped_task.user_id = tm.authenticated_user_id
             mapped_task.task_id = task_id
             mapped_task.project_id = project_id
-            mapped_task.user_id = tm.authenticated_user_id
             mapped_task.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
         try:
-            task = MappingService().unlock_task_after_mapping(mapped_task)
-
-            if task is None:
-                return {"Error": "Task Not Found"}, 404
-
+            task = MappingService.unlock_task_after_mapping(mapped_task)
             return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:

@@ -212,15 +212,10 @@ class Project(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    @staticmethod
-    def has_user_already_locked_task(project_id, user_id) -> bool:
+    def get_task_count_for_user(self, user_id) -> int:
         """ Helper to see if user already has a locked task on project """
-        project = Project.get(project_id)
-        task_count = project.tasks.filter_by(lock_holder_id=user_id).count()
-
-        if task_count > 0:
-            return True
-        return False
+        task_count = self.tasks.filter_by(lock_holder_id=user_id).count()
+        return task_count
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """
@@ -252,15 +247,12 @@ class Project(db.Model):
 
         return project, base_dto
 
-    def as_dto_for_mapping(self, project_id: int, locale: str) -> Optional[ProjectDTO]:
+    def as_dto_for_mapping(self, locale: str) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
-        project, project_dto = self._get_project_and_base_dto(project_id)
+        project, project_dto = self._get_project_and_base_dto(self.id)
 
-        if project is None:
-            return None
-
-        project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
-        project_dto.project_info = ProjectInfo.get_dto_for_locale(project_id, locale, project.default_locale)
+        project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+        project_dto.project_info = ProjectInfo.get_dto_for_locale(self.id, locale, project.default_locale)
 
         return project_dto
 

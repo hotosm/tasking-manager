@@ -6,52 +6,53 @@
 
     angular
         .module('taskingManager')
-        .service('editorService', ['$http', '$location', 'mapService', editorService]);
+        .service('editorService', ['$window', 'mapService', editorService]);
 
-    function editorService($http, $location, mapService) {
+    function editorService($window, mapService) {
 
         var service = {
-            getUrlForEditor: getUrlForEditor,
-            sendJOSMCmd: sendJOSMCmd
+            sendJOSMCmd: sendJOSMCmd,
+            launchFieldPapersEditor: launchFieldPapersEditor,
+            launchPotlatch2Editor: launchPotlatch2Editor,
+            launchIdEditor: launchIdEditor
         };
 
         return service;
+        
+        /**
+         * Launch the Field Papers editor
+         * @param centroid
+         */
+        function launchFieldPapersEditor(centroid){
+            var base = 'http://fieldpapers.org/compose';
+            var zoom = mapService.getOSMMap().getView().getZoom();
+            var url = base + '#' + [zoom, centroid[1], centroid[0]].join('/');
+            $window.open(url);
+        }
 
         /**
-         * Returns the URL for launching the editor
-         * Options:
-         * - bounds
-         * - base
-         * - centroid
-         * - protocol
-         * - changesetComment
-         * - imageryUrl
-         * @param options
-         * @returns {string}
+         * Launch the Potlatch2 editor
+         * @param centroid
          */
-        function getUrlForEditor(options) {
-            var bounds = options.bounds;
-            // It uses the current zoom level to pass to the editor.
-            // TODO: review if this is good enough.
+        function launchPotlatch2Editor(centroid){
+            var base = 'http://www.openstreetmap.org/edit?editor=potlatch2';
             var zoom = mapService.getOSMMap().getView().getZoom();
-            var centroid = options.centroid;
-            var changesetComment = options.changesetComment;
-            var imageryUrl = options.imageryUrl;
-            switch (options.protocol) {
-                case 'llz':  // TODO
-                    return options.base + $.param({
-                            lon: roundToDecimals(c[0], 5),
-                            lat: roundToDecimals(c[1], 5),
-                            zoom: zoom
-                        });
-                case 'id': // iD editor
-                    return options.base + '#map=' +
+            var url = base + '#map='+ [zoom, roundToDecimals(centroid[1], 5), roundToDecimals(centroid[0], 5)].join('/');
+            $window.open(url);
+        }
+
+        /**
+         * Lauch the iD editor
+         * @param centroid
+         * @param changesetComment
+         */
+        function launchIdEditor(centroid, changesetComment){
+            var base = 'http://www.openstreetmap.org/edit?editor=id&';
+            var zoom = mapService.getOSMMap().getView().getZoom();
+            var url = base + '#map=' +
                         [zoom, centroid[1], centroid[0]].join('/') +
                         '&comment=' + changesetComment;
-                case 'fp':  // TODO
-                    return options.base + '#' +
-                        [zoom, centroid[1], centroid[0]].join('/');
-            }
+            $window.open(url);
         }
 
         /**
@@ -66,11 +67,12 @@
         }
 
         /**
-         * Formats a set of key value pairs into a URL paramater string
+         * Formats a set of key value pairs into a URL parameter string
          * @param params
-         * @returns {string} formatted paramater string
+         * @returns {string} formatted parameter string
+         * @private
          */
-        function formatUrlParams(params) {
+        function formatUrlParams_(params) {
             return "?" + Object
                     .keys(params)
                     .map(function (key) {
@@ -80,9 +82,9 @@
         }
 
         /**
-         * Sends a sycnhronous remote contraol command to JOSM and returns a boolean to indicate success
+         * Sends a synchronous remote control command to JOSM and returns a boolean to indicate success
          * @param URL of the JOSM remote control endpoint
-         * @param Object containing key,value pairs to be used as URL paramaters
+         * @param Object containing key, value pairs to be used as URL parameters
          * @returns {boolean} Did JOSM Repond successfully
          */
         function sendJOSMCmd(endpoint, params) {
@@ -94,7 +96,7 @@
             // The workaround is as you see here, to use XMLHttpRequest in synchrounous mode
 
             var reqObj = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");//new XMLHttpRequest();
-            var url = endpoint + formatUrlParams(params);
+            var url = endpoint + formatUrlParams_(params);
             var success = false;
             reqObj.onreadystatechange = function () {
                 if (this.readyState == 4) {

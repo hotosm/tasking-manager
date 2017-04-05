@@ -4,8 +4,7 @@ from flask import current_app
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from server.api.utils import TMAPIDecorators
-from server.services.user_service import UserService
-from server.models.postgis.user import User
+from server.services.user_service import UserService, NotFound
 
 token_auth = HTTPTokenAuth(scheme='Token')
 tm = TMAPIDecorators()
@@ -17,7 +16,10 @@ def verify_token(token):
     if not token:
         return False
 
-    decoded_token = base64.b64decode(token).decode('utf-8')
+    try:
+        decoded_token = base64.b64decode(token).decode('utf-8')
+    except UnicodeDecodeError:
+        return False  # Can't decode token, so fail login
 
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
@@ -40,7 +42,9 @@ class AuthServiceError(Exception):
 
 
 class AuthenticationService:
-    def login_user(self, osm_user_details, redirect_to, user_element='user') -> str:
+
+    @staticmethod
+    def login_user(osm_user_details, redirect_to, user_element='user') -> str:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
         :param osm_user_details: XML response from OSM
@@ -56,20 +60,22 @@ class AuthenticationService:
 
         osm_id = int(osm_user.attrib['id'])
         username = osm_user.attrib['display_name']
-        existing_user = User().get_by_id(osm_id)
 
-        if not existing_user:
+        try:
+            UserService.get_user_by_id(osm_id)
+        except NotFound:
+            # User not found, so must be new user
             changesets = osm_user.find('changesets')
             changeset_count = int(changesets.attrib['count'])
+            UserService.register_user(osm_id, username, changeset_count)
 
-            User.create_from_osm_user_details(osm_id, username, changeset_count)
-
-        session_token = self.generate_session_token_for_user(osm_id)
-        authorized_url = self._generate_authorized_url(username, session_token, redirect_to)
+        session_token = AuthenticationService.generate_session_token_for_user(osm_id)
+        authorized_url = AuthenticationService.generate_authorized_url(username, session_token, redirect_to)
 
         return authorized_url
 
-    def get_authentication_failed_url(self):
+    @staticmethod
+    def get_authentication_failed_url():
         """ Generates the auth-failed URL for the running app """
         base_url = current_app.config['APP_BASE_URL']
         auth_failed_url = f'{base_url}/auth-failed'
@@ -82,10 +88,13 @@ class AuthenticationService:
         :param osm_id: OSM ID of the user authenticating
         :return: Token
         """
-        serializer = URLSafeTimedSerializer(current_app.secret_key)
+        entropy = current_app.secret_key if current_app.secret_key else 'un1testingmode'
+
+        serializer = URLSafeTimedSerializer(entropy)
         return serializer.dumps(osm_id)
 
-    def _generate_authorized_url(self, username, session_token, redirect_to):
+    @staticmethod
+    def generate_authorized_url(username, session_token, redirect_to):
         """ Generate URL that we'll redirect the user to once authenticated """
         base_url = current_app.config['APP_BASE_URL']
 

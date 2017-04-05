@@ -1,9 +1,12 @@
 import requests
 import xml.etree.ElementTree as ET
 from flask import current_app
-from typing import Optional
-from server.models.postgis.user import User, UserRole
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO
+from server.models.postgis.user import User, UserRole, MappingLevel
+from server.models.postgis.utils import NotFound
+
+INTERMEDIATE_MAPPER_LEVEL = 250
+ADVANCED_MAPPER_LEVEL = 500
 
 
 class UserServiceError(Exception):
@@ -16,47 +19,78 @@ class UserServiceError(Exception):
 class UserService:
 
     @staticmethod
-    def get_user_by_username(username: str) -> Optional[UserDTO]:
-        """Gets user DTO for supplied username """
+    def get_user_by_id(user_id: int) -> User:
+        user = User().get_by_id(user_id)
+
+        if user is None:
+            raise NotFound()
+
+        return user
+
+    @staticmethod
+    def get_user_by_username(username: str) -> User:
         user = User().get_by_username(username)
 
         if user is None:
-            return None
+            raise NotFound()
 
+        return user
+
+    @staticmethod
+    def register_user(osm_id, username, changeset_count):
+        """
+        Creates user in DB 
+        :param osm_id: Unique OSM user id
+        :param username: OSM Username
+        :param changeset_count: OSM changeset count
+        """
+        new_user = User()
+        new_user.id = osm_id
+        new_user.username = username
+
+        if changeset_count > ADVANCED_MAPPER_LEVEL:
+            new_user.mapping_level = MappingLevel.ADVANCED.value
+        elif INTERMEDIATE_MAPPER_LEVEL < changeset_count < ADVANCED_MAPPER_LEVEL:
+            new_user.mapping_level = MappingLevel.INTERMEDIATE.value
+        else:
+            new_user.mapping_level = MappingLevel.BEGINNER.value
+
+        new_user.create()
+        return new_user
+
+    @staticmethod
+    def get_user_dto_by_username(username: str) -> UserDTO:
+        """Gets user DTO for supplied username """
+        user = UserService.get_user_by_username(username)
         return user.as_dto()
 
     @staticmethod
     def is_user_a_project_manager(user_id: int) -> bool:
         """ Is the user a project manager """
-        user = User().get_by_id(user_id)
-
-        if user is None:
-            return False
-
-        return user.is_project_manager()
-
-    @staticmethod
-    def is_user_validator(user_id: int):
-        """ Determines if user is a validator """
-        user = User().get_by_id(user_id)
-        user_role = UserRole(user.role)
-
-        if user_role in [UserRole.VALIDATOR, UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+        user = UserService.get_user_by_id(user_id)
+        if UserRole(user.role) in [UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
             return True
 
         return False
 
     @staticmethod
-    def get_osm_details_for_user(username: str) -> Optional[UserOSMDTO]:
+    def is_user_validator(user_id: int) -> bool:
+        """ Determines if user is a validator """
+        user = UserService.get_user_by_id(user_id)
+
+        if UserRole(user.role) in [UserRole.VALIDATOR, UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+            return True
+
+        return False
+
+    @staticmethod
+    def get_osm_details_for_user(username: str) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API
         :param username: username in scope
-        :raises UserServiceError
+        :raises UserServiceError, NotFound
         """
-        user = User().get_by_username(username)
-        if user is None:
-            return None
-
+        user = UserService.get_user_by_username(username)
         osm_user_details_url = f'http://www.openstreetmap.org/api/0.6/user/{user.id}'
         response = requests.get(osm_user_details_url)
 

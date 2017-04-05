@@ -21,17 +21,9 @@ class User(db.Model):
     role = db.Column(db.Integer, default=0)
     mapping_level = db.Column(db.Integer, default=1)
 
-    @classmethod
-    def create_from_osm_user_details(cls, user_id: int, username: str, changeset_count: int):
-        """ Creates a new user in database from details supplied from OSM """
-        user = cls()
-        user.id = user_id,
-        user.username = username
-        user.role = UserRole.MAPPER.value
-
-        # TODO set mapping level based on changeset count
-        user.mapping_level = MappingLevel.BEGINNER.value
-        db.session.add(user)
+    def create(self):
+        """ Creates and saves the current model to the DB """
+        db.session.add(self)
         db.session.commit()
 
     def get_by_id(self, user_id: int):
@@ -46,10 +38,6 @@ class User(db.Model):
         """ Delete the user in scope from DB """
         db.session.delete(self)
         db.session.commit()
-
-    def is_project_manager(self):
-        """ Determines if user is a PM (Admins are considered as PMs too """
-        return UserRole(self.role) in [UserRole.ADMIN, UserRole.PROJECT_MANAGER]
 
     def as_dto(self):
         """ Create DTO object from user in scope """

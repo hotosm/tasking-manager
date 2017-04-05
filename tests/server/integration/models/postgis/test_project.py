@@ -33,7 +33,13 @@ class TestProject(unittest.TestCase):
         if self.skip_tests:
             return
 
-        User.create_from_osm_user_details(TEST_USER_ID, 'Thinkwhere Test', 16)  # Create test user
+        # Setup test user
+        test_user = User()
+        test_user.id = TEST_USER_ID
+        test_user.username = 'Thinkwhere TEST'
+        test_user.mapping_level = 1
+        test_user.create()
+
         self.create_test_project()
 
     def tearDown(self):
@@ -71,7 +77,7 @@ class TestProject(unittest.TestCase):
         self.update_project_with_info()
 
         # Act
-        project_dto = Project().as_dto_for_mapping(self.test_project.id, 'en')
+        project_dto = self.test_project.as_dto_for_mapping('en')
 
         # Assert
         self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)
@@ -114,7 +120,7 @@ class TestProject(unittest.TestCase):
 
         # Act - Create empty italian translation
         self.test_project.update(test_dto)
-        dto = self.test_project.as_dto_for_mapping(self.test_project.id, 'it')
+        dto = self.test_project.as_dto_for_mapping('it')
 
         # Assert
         self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
