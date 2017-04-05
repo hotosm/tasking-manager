@@ -1,4 +1,6 @@
 from flask_restful import Resource, current_app, request
+from schematics.exceptions import DataError
+from server.models.dtos.project_dto import ProjectSearchDTO
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 
 
@@ -56,7 +58,7 @@ class ProjectSearchAPI(Resource):
         Search active projects
         ---
         tags:
-            - mapping
+            - search
         produces:
             - application/json
         parameters:
@@ -72,12 +74,26 @@ class ProjectSearchAPI(Resource):
               default: BEGINNER
         responses:
             200:
-                description: Project found
-            403:
-                description: Forbidden
+                description: Projects found
             404:
-                description: Project not found
+                description: No projects found
             500:
                 description: Internal Server Error
         """
-        pass
+        try:
+            search_dto = ProjectSearchDTO()
+            search_dto.mapper_level = request.args.get('mapper_level')
+            search_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            project_dto = ProjectService.get_projects_by_search_criteria(search_dto)
+            return project_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No projects found"}, 404
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

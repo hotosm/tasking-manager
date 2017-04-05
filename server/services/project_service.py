@@ -1,5 +1,5 @@
 from flask import current_app
-from server.models.dtos.project_dto import ProjectDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO
 from server.models.postgis.project import Project, ProjectStatus
 from server.models.postgis.utils import NotFound
 from server.services.user_service import UserService
@@ -76,3 +76,7 @@ class ProjectService:
             return False, 'User must be a validator to map on this project'
 
         return True, 'User allowed to validate'
+
+    @staticmethod
+    def get_projects_by_search_criteria(search_dto: ProjectSearchDTO):
+        pass
