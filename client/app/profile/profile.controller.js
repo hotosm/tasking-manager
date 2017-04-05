@@ -16,6 +16,8 @@
         vm.userDetails = null;
         vm.osmUserDetails = null;
         vm.projects = [];
+        vm.totalTasksMapped = 0;
+        vm.totalTasksValidated = 0;
         vm.map = null;
         vm.highlightSource = null;
 
@@ -29,7 +31,7 @@
 
             // add vector layers
             vm.highlightSource = new ol.source.Vector();
-            setUserProjects();
+            setUserProjectsAndStats();
         }
 
         /**
@@ -63,7 +65,9 @@
          * Set the user's project
          * TODO: get from API
          */
-        function setUserProjects(){
+        function setUserProjectsAndStats(){
+            vm.totalTasksMapped = 45;
+            vm.totalTasksValidated = 5;
             vm.projects = [
                 {
                     id: 1,
