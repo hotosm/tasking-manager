@@ -4,7 +4,7 @@ from flask import current_app
 from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
@@ -266,3 +266,11 @@ class Project(db.Model):
         project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(project_id)
 
         return project_dto
+
+    @staticmethod
+    def get_projects_by_seach_criteria(search_dto: ProjectSearchDTO):
+
+        test = Project.query.filter_by(status=ProjectStatus.PUBLISHED.value,
+                                       mapper_level=MappingLevel[search_dto.mapper_level].value).all()
+
+        iain = test

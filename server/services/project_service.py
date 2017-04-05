@@ -79,4 +79,4 @@ class ProjectService:
 
     @staticmethod
     def get_projects_by_search_criteria(search_dto: ProjectSearchDTO):
-        pass
+        test = Project.get_projects_by_seach_criteria(search_dto)
