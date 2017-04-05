@@ -587,7 +587,7 @@
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var extent = selectedFeature.getGeometry().getExtent();
-            // Zoom to the extent to get the right zoom level for the editors
+            // Zoom to the extent to get the right zoom level for the editorsgit commit -a
             vm.map.getView().fit(extent);
             var extentTransformed = geospatialService.transformExtentToLatLonArray(extent);
             var imageryUrl = 'tms[22]:https://api.mapbox.com/v4/digitalglobe.2lnp1jee/{z}/{x}/{y}.png?' +

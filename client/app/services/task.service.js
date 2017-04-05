@@ -19,7 +19,8 @@
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
-            getTaskFeatureById: getTaskFeatureById
+            getTaskFeatureById: getTaskFeatureById,
+            getTaskFeatureaByIds: getTaskFeatureaByIds
         };
 
         return service;
@@ -267,5 +268,25 @@
             }
             return null;
         }
+
+      function getTaskFeatureaByIds(features, ids) {
+            candidates = [];
+            //first check we are working with a non empty array
+            if (features && (features instanceof Array) && features.length > 0) {
+                // get all tasks with taskId= id
+                var candidates = features.filter(function (item) {
+                    //check we are working with an ol.Feature
+                    if (item instanceof ol.Feature) {
+                        // safe to use the function
+                        var taskId = item.get('taskId');
+                        if (ids.includes(taskId ))
+                            return item;
+                    }
+                });
+            }
+            return candidates;
+            }
+            return null;
+
     }
 })();
