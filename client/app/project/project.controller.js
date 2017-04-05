@@ -25,6 +25,7 @@
         vm.taskError = '';
         vm.taskErrorValidation = '';
         vm.taskLockError = false;
+        vm.taskUnLockError = false;
         vm.isAuthorized = false;
         vm.selectedEditor = '';
         vm.taskLockErrorMessage = '';
@@ -40,6 +41,7 @@
         //multi-validation
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
+
 
         //project display text
         vm.description = '';
@@ -61,11 +63,11 @@
                     level: 'beginner',
                     tasks: [
                         {
-                            taskId: 22,
+                            taskId: 5,
                             timeStamp: '2017-03-10T14:43:27.02348'
                         },
                         {
-                            taskId: 23,
+                            taskId: 17,
                             timeStamp: '2017-03-15T14:43:27.02348'
                         }
                     ]
@@ -313,6 +315,9 @@
          * @param feature
          */
         function onTaskSelection(feature) {
+            //we don't want to allow selection of multiple features by map click
+
+
             //get id from feature
             var taskId = feature.get('taskId');
             var projectId = vm.projectData.projectId;
@@ -440,6 +445,34 @@
             });
         };
 
+        vm.unLockMultiTaskValidation = function (comment, status) {
+            var projectId = vm.projectData.projectId;
+
+            var data = vm.multiLockedTasks;
+            var tasks = data.map(function (task) {
+                return {
+                    comment: comment,
+                    status: status ? status : task.taskStatus,
+                    taskId: task.taskId
+                };
+            });
+
+            var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
+            vm.comment = '';
+            unLockPromise.then(function (data) {
+                refreshProject(projectId);
+                vm.multiLockedTasks = null;
+                vm.taskUnLockError = false;
+                vm.clearCurrentSelection();
+            }, function (error) {
+                refreshProject(projectId);
+                vm.multiLockedTasks = null;
+                vm.taskUnLockError = true;
+                select.getFeatures().clear();
+
+            });
+        };
+
 
         /**
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
@@ -547,7 +580,7 @@
          * @param editor
          */
         vm.startEditor = function (editor) {
-           
+
             vm.editorStartError = '';
 
             var taskId = vm.selectedTaskData.taskId;
@@ -568,10 +601,10 @@
                 // TODO: GPX file + imageryURL
                 editorService.launchIdEditor(center, changesetComment);
             }
-            else if (editor === 'potlatch2'){
+            else if (editor === 'potlatch2') {
                 editorService.launchPotlatch2Editor(center);
             }
-            else if (editor === 'fieldpapers'){
+            else if (editor === 'fieldpapers') {
                 editorService.launchFieldPapersEditor(center);
             }
             else if (editor === 'jsom') {
@@ -631,6 +664,17 @@
 
         }
 
+        vm.getSelectTaskIds = function () {
+            if (vm.multiLockedTasks) {
+                var data = vm.multiLockedTasks;
+                var tasks = data.map(function (task) {
+                    return task.taskId;
+                });
+                return tasks.join(',');
+            }
+            return null;
+        }
+
         vm.contributerClick = function (doneTasks) {
             select.getFeatures().clear();
 
@@ -688,6 +732,7 @@
 
 
         }
+
     }
 })
 ();

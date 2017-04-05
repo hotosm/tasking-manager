@@ -386,7 +386,42 @@
 
                             </div>
                             <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
-                                you are doing multi validation
+                                <p>You have the following tasks locked:<span>{{ projectCtrl.getSelectTaskIds() }}</span>
+                                </p>
+                                <p></p>
+                                <div class="form__group">
+                                    <div>
+                                        <select ng-model="projectCtrl.selectedEditor">
+                                            <option value="ideditor" selected="true">ID Editor</option>
+                                            <option value="jsom">JOSM</option>
+                                            <option value="potlatch2">Potlatch 2</option>
+                                            <option value="fieldpapers">Field papers</option>
+                                        </select>
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                            Start Editor
+                                        </button>
+                                    </div>
+                                    <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                              placeholder="Leave a comment on all tasks"></textarea>
+                                </div>
+                                <div ng-show="projectCtrl.taskUnLockError">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>There was a problem unlocking the tasks.</p>
+                                    </div>
+                                </div>
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, null)">
+                                    Stop Validating
+                                </button>
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'VALIDATED')">
+                                    Mark all as Valid
+                                </button>
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'INVALIDATED')">
+                                    Mark all as Invalid
+                                </button>
                             </div>
                         </div>
                     </div>
