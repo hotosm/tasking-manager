@@ -82,6 +82,7 @@ class ProjectSearchAPI(Resource):
         """
         try:
             search_dto = ProjectSearchDTO()
+            search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             search_dto.mapper_level = request.args.get('mapper_level')
             search_dto.validate()
         except DataError as e:
@@ -89,8 +90,8 @@ class ProjectSearchAPI(Resource):
             return str(e), 400
 
         try:
-            project_dto = ProjectService.get_projects_by_search_criteria(search_dto)
-            return project_dto.to_primitive(), 200
+            results_dto = ProjectService.get_projects_by_search_criteria(search_dto)
+            return results_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "No projects found"}, 404
         except Exception as e:

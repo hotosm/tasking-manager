@@ -4,7 +4,7 @@ from flask import current_app
 from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO, ProjectSearchResultDTO, ProjectSearchResultsDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
@@ -268,9 +268,30 @@ class Project(db.Model):
         return project_dto
 
     @staticmethod
-    def get_projects_by_seach_criteria(search_dto: ProjectSearchDTO):
+    def get_projects_by_seach_criteria(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
+        """ Find all projects that match the search criteria """
 
-        test = Project.query.filter_by(status=ProjectStatus.PUBLISHED.value,
-                                       mapper_level=MappingLevel[search_dto.mapper_level].value).all()
 
-        iain = test
+        projects = Project.query.filter_by(status=ProjectStatus.PUBLISHED.value,
+                                           mapper_level=MappingLevel[search_dto.mapper_level].value).all()
+
+        results_list = []
+        for project in projects:
+            # TODO would be nice to get this for an array rather than individually would be more efficient
+            project_info_dto = ProjectInfo.get_dto_for_locale(project.id, search_dto.preferred_locale,
+                                                              project.default_locale)
+
+            result_dto = ProjectSearchResultDTO()
+            result_dto.project_id = project.id
+            result_dto.locale = project_info_dto.locale
+            result_dto.name = project_info_dto.name
+            result_dto.priority = ProjectPriority(project.priority).name
+            result_dto.mapper_level = MappingLevel(project.mapper_level).name
+            result_dto.short_description = project_info_dto.short_description
+
+            results_list.append(result_dto)
+
+        results_dto = ProjectSearchResultsDTO()
+        results_dto.results = results_list
+
+        return results_dto

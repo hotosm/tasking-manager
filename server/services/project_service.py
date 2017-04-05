@@ -79,4 +79,11 @@ class ProjectService:
 
     @staticmethod
     def get_projects_by_search_criteria(search_dto: ProjectSearchDTO):
-        test = Project.get_projects_by_seach_criteria(search_dto)
+        """ Find all projects that match the serach criteria"""
+        # TODO going to have to look at caching here
+
+        results = Project.get_projects_by_seach_criteria(search_dto)
+
+        if len(results.results) == 0:
+            raise NotFound()
+        return results

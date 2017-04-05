@@ -62,4 +62,18 @@ class ProjectDTO(Model):
 
 
 class ProjectSearchDTO(Model):
+    preferred_locale = StringType(required=True, default='en')
     mapper_level = StringType(required=True, serialized_name='mapperLevel', validators=[is_known_mapping_level])
+
+
+class ProjectSearchResultDTO(Model):
+    project_id = IntType(required=True, serialized_name='projectId')
+    locale = StringType(required=True)
+    name = StringType(default='')
+    short_description = StringType(serialized_name='shortDescription', default='')
+    mapper_level = StringType(required=True, serialized_name='mapperLevel')
+    priority = StringType(required=True)
+
+
+class ProjectSearchResultsDTO(Model):
+    results = ListType(ModelType(ProjectSearchResultDTO))
