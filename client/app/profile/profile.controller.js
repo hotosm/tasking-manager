@@ -64,7 +64,6 @@
          * TODO: get from API
          */
         function setUserProjects(){
-            // sort by last updated?
             vm.projects = [
                 {
                     id: 1,
