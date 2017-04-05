@@ -73,6 +73,7 @@ class ProjectSearchResultDTO(Model):
     short_description = StringType(serialized_name='shortDescription', default='')
     mapper_level = StringType(required=True, serialized_name='mapperLevel')
     priority = StringType(required=True)
+    aoi_centroid = BaseType(serialized_name='aoiCentroid')
 
 
 class ProjectSearchResultsDTO(Model):

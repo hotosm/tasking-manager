@@ -1,7 +1,6 @@
 import unittest
 import geojson
-from server.models.dtos.project_dto import DraftProjectDTO
-from server.models.postgis.project import AreaOfInterest, InvalidGeoJson, InvalidData, Project, Task
+from server.models.postgis.project import AreaOfInterest, InvalidGeoJson, Task
 
 
 class TestProject(unittest.TestCase):
