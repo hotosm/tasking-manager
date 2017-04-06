@@ -6,7 +6,7 @@
 
     angular
         .module('taskingManager')
-        .service('taskService', ['$http', '$q', 'configService','authService', taskService]);
+        .service('taskService', ['$http', '$q', 'configService', 'authService', taskService]);
 
     function taskService($http, $q, configService, authService) {
 
@@ -15,11 +15,12 @@
             unLockTaskMapping: unLockTaskMapping,
             lockTaskMapping: lockTaskMapping,
             unLockTaskValidation: unLockTaskValidation,
-            lockTaskValidation: lockTaskValidation,
+            lockTasksValidation: lockTasksValidation,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
-            getTaskFeatureById: getTaskFeatureById
+            getTaskFeatureById: getTaskFeatureById,
+            getTaskFeaturesByIds: getTaskFeaturesByIds
         };
 
         return service;
@@ -135,7 +136,7 @@
          * @param taskIds - JSON object arrai of ids tasks to ne locked
          * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
          */
-        function lockTaskValidation(projectId, taskIds) {
+        function lockTasksValidation(projectId, taskIds) {
             // Returns a promise
             return $http({
                 method: 'POST',
@@ -264,6 +265,33 @@
             }
             if (candidates.length > 0) {
                 return candidates[0];
+            }
+            return null;
+        }
+
+        /**
+         *
+         * @param features {Array<ol.Feature>}
+         * @param ids {Array}
+         * @returns {Array<ol.Feature>}
+         */
+        function getTaskFeaturesByIds(features, ids) {
+            candidates = [];
+            //first check we are working with a non empty array
+            if (features && (features instanceof Array) && features.length > 0) {
+                // get all tasks with taskId= id
+                var candidates = features.filter(function (item) {
+                    //check we are working with an ol.Feature
+                    if (item instanceof ol.Feature) {
+                        // safe to use the function
+                        var taskId = item.get('taskId');
+                        if (ids.includes(taskId))
+                            return item;
+                    }
+                });
+            }
+            if (candidates.length > 0) {
+                return candidates;
             }
             return null;
         }
