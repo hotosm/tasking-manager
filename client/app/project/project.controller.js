@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
+        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
 
-    function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
+    function projectController($interval, $scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -50,6 +50,9 @@
         //bound from the html
         vm.comment = '';
 
+        //interval timer promise for autorefresh
+        var autoRefresh = undefined;
+
         activate();
 
         function activate() {
@@ -81,7 +84,19 @@
 
             var id = $routeParams.id;
             initialiseProject(id);
+
+            autoRefresh = $interval(function () {
+                refreshProject(id)
+            }, 10000);
         }
+
+        $scope.$on('$locationChangeStart', function(){
+             if (angular.isDefined(autoRefresh)) {
+                $interval.cancel(autoRefresh);
+                autoRefresh = undefined;
+            }
+        })
+
 
         /**
          * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual
@@ -477,7 +492,7 @@
          * @param editor
          */
         vm.startEditor = function (editor) {
-           
+
             vm.editorStartError = '';
 
             var taskId = vm.selectedTaskData.taskId;
@@ -498,10 +513,10 @@
                 // TODO: GPX file + imageryURL
                 editorService.launchIdEditor(center, changesetComment);
             }
-            else if (editor === 'potlatch2'){
+            else if (editor === 'potlatch2') {
                 editorService.launchPotlatch2Editor(center);
             }
-            else if (editor === 'fieldpapers'){
+            else if (editor === 'fieldpapers') {
                 editorService.launchFieldPapersEditor(center);
             }
             else if (editor === 'jsom') {
