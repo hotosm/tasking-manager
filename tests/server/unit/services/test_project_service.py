@@ -23,6 +23,8 @@ class TestProjectService(unittest.TestCase):
         with self.assertRaises(ProjectServiceError):
             ProjectService.get_project_dto_for_mapper(123, 'en')
 
+
+
     @patch.object(UserService, 'get_mapping_level')
     def test_user_not_allowed_to_map_if_level_enforced(self, mock_level):
         # Arrange
