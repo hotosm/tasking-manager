@@ -20,7 +20,7 @@
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
             getTaskFeatureById: getTaskFeatureById,
-            getTaskFeatureaByIds: getTaskFeatureaByIds
+            getTaskFeaturesByIds: getTaskFeaturesByIds
         };
 
         return service;
@@ -269,7 +269,7 @@
             return null;
         }
 
-      function getTaskFeatureaByIds(features, ids) {
+      function getTaskFeaturesByIds(features, ids) {
             candidates = [];
             //first check we are working with a non empty array
             if (features && (features instanceof Array) && features.length > 0) {

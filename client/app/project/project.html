@@ -249,17 +249,17 @@
                                         <td class="heading-alt">Lock</td>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    <tr ng-repeat="user in projectCtrl.tasksForValidation.doneTasks">
-                                        <td>{{ user.user }}</td>
-                                        <td>{{ user.level }}</td>
-                                        <td>{{ user.tasks.length }}</td>
-                                        <td><span am-time-ago="user.tasks[0].timeStamp | amUtc | amLocal"></span></td>
+                                    <tbody >
+                                    <tr ng-repeat="doneTasks in projectCtrl.tasksForValidation.doneTasks">
+                                        <td>{{ doneTasks.user }}</td>
+                                        <td>{{ doneTasks.level }}</td>
+                                        <td>{{ doneTasks.tasks.length }}</td>
+                                        <td><span am-time-ago="doneTasks.tasks[0].timeStamp | amUtc | amLocal"></span></td>
                                         <td><span
-                                                am-time-ago="user.tasks[user.tasks.length-1].timeStamp | amUtc | amLocal"></span>
+                                                am-time-ago="doneTasks.tasks[user.tasks.length-1].timeStamp | amUtc | amLocal"></span>
                                         </td>
                                         <td>
-                                            <button ng-click="projectCtrl.contributerClick(user)">Lock</button>
+                                            <button ng-click="projectCtrl.contributerClick(doneTasks)" ng-mouseover="projectCtrl.contributerHighlight(doneTasks, true)" ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">Lock</button>
                                         </td>
                                     </tr>
                                     </tbody>

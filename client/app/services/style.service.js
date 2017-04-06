@@ -45,7 +45,8 @@
 
         var service = {
             getTaskStyleFunction: getTaskStyleFunction,
-            getSelectedStyleFunction: getSelectedStyleFunction
+            getSelectedStyleFunction: getSelectedStyleFunction,
+            getHighlightedStyleFunction: getHighlightedStyleFunction
         };
 
         return service;
@@ -93,6 +94,18 @@
                 stroke: new ol.style.Stroke({
                     color: STROKE_COLOUR,
                     width: STROKE_WIDTH
+                })
+            });
+        }
+
+        function getHighlightedStyleFunction(feature) {
+            return new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: [225, 225, 225, 0]
+                }),
+                stroke: new ol.style.Stroke({
+                    color: [0, 0, 0, 1],
+                    width: 4
                 })
             });
         }

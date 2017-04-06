@@ -15,6 +15,7 @@
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
+        vm.highlightVectorLayer = null;
         vm.map = null;
         vm.user = {};
 
@@ -153,6 +154,8 @@
 
             var id = $routeParams.id;
             initialiseProject(id);
+
+
         }
 
         /**
@@ -234,6 +237,18 @@
                 $scope.instructions = data.projectInfo.instructions;
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+                //add a layer for task highlighting
+                if (!vm.highlightVectorLayer) {
+                    var source = new ol.source.Vector();
+                    vm.highlightVectorLayer = new ol.layer.Vector({
+                        source: source,
+                        name: 'highlight',
+                        style: styleService.getHighlightedStyleFunction
+                    });
+                    vm.map.addLayer(vm.highlightVectorLayer);
+                } else {
+                    vm.highlightVectorLayer.getSource().clear();
+                }
             }, function () {
                 // project not returned successfully
                 // TODO - may want to handle error
@@ -586,7 +601,7 @@
             var selectedFeatures = select.getFeatures();
             var taskCount = selectedFeatures.getArray().length;
             console.log(taskCount);
-            var extent =  geospatialService.getBoundingExtentFromFeatures(selectedFeatures.getArray());
+            var extent = geospatialService.getBoundingExtentFromFeatures(selectedFeatures.getArray());
             // Zoom to the extent to get the right zoom level for the editorsgit commit -a
             vm.map.getView().fit(extent);
             var extentTransformed = geospatialService.transformExtentToLatLonArray(extent);
@@ -678,6 +693,17 @@
             return null;
         }
 
+        vm.contributerHighlight = function (doneTasks) {
+            // get an array of the 'done' task id's that have been clicked
+            var doneTaskIds = doneTasks.tasks.map(function (task) {
+                return task.taskId;
+            });
+            //highlight features
+            var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), doneTaskIds);
+            vm.highlightVectorLayer.getSource().addFeatures(features);
+
+        }
+
         vm.contributerClick = function (doneTasks) {
             select.getFeatures().clear();
 
@@ -734,10 +760,6 @@
             });
 
 
-        }
-
-        vm.editorChanged - function(item){
-            console.log(item);
         }
 
     }
