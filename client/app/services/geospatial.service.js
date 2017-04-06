@@ -169,6 +169,11 @@
             return extentLatLon;
         }
 
+        /**
+         * Get the bounding extent of an array of ol.Feature objects
+         * @param features {Array<ol.Feature>}
+         * @returns {null|ol.Extent}
+         */
         function getBoundingExtentFromFeatures(features) {
 
             //check we have an non empty array of ol.Feature objects

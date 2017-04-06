@@ -53,8 +53,8 @@
 
         /**
          * OpenLayers style function.  Creates a Style for tasks based on the feature's taskStatus and taskLocked properties.
-         * @param feature - feature to be stuled
-         * @returns {Array}
+         * @param feature - feature to be styled
+         * @returns {ol.style.Style}
          */
         function getTaskStyleFunction(feature) {
 
@@ -98,6 +98,11 @@
             });
         }
 
+        /**
+         * OpenLayers style function.  Creates a features on the highlight layer.
+         * @param feature - feature to be styled
+         * @returns {ol.style.Style}
+         */
         function getHighlightedStyleFunction(feature) {
             return new ol.style.Style({
                 fill: new ol.style.Fill({
@@ -112,8 +117,8 @@
 
         /**
          * OpenLayers style function.  Creates a style for currently selected tasks.
-         * @param feature - feature to be stuled
-         * @returns {Array}
+         * @param feature - feature to be styled
+         * @returns {ol.style.Style}
          */
         function getSelectedStyleFunction(feature) {
             // get the base style for the feature and override it's stroke only.
