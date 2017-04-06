@@ -155,7 +155,7 @@ class UnlockTaskForMappingAPI(Resource):
                       status:
                           type: string
                           description: The new status for the task
-                          default: DONE
+                          default: MAPPED
                       comment:
                           type: string
                           description: Optional user comment about the task

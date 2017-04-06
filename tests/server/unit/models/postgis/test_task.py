@@ -38,7 +38,7 @@ class TestProject(unittest.TestCase):
         test_task = Task()
 
         # Act
-        test_task.set_task_history(action=TaskAction.LOCKED, user_id=123454)
+        test_task.set_task_history(action=TaskAction.LOCKED_FOR_MAPPING, user_id=123454)
 
         # Assert
-        self.assertEqual(TaskAction.LOCKED.name, test_task.task_history[0].action)
+        self.assertEqual(TaskAction.LOCKED_FOR_MAPPING.name, test_task.task_history[0].action)

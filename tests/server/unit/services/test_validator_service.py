@@ -15,8 +15,7 @@ class TestValidatorService(unittest.TestCase):
         self.ctx.push()
 
         self.unlock_task_stub = Task()
-        self.unlock_task_stub.task_status = TaskStatus.DONE.value
-        self.unlock_task_stub.task_locked = True
+        self.unlock_task_stub.task_status = TaskStatus.MAPPED.value
         self.unlock_task_stub.lock_holder_id = 123456
 
     def tearDown(self):
@@ -36,26 +35,10 @@ class TestValidatorService(unittest.TestCase):
             ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(Task, 'get')
-    def test_lock_tasks_for_validation_raises_error_if_task_not_done(self, mock_task):
+    def test_lock_tasks_for_validation_raises_error_if_task_not_mapped(self, mock_task):
         # Arrange
         task_stub = Task()
         task_stub.task_status = TaskStatus.READY.value
-        mock_task.return_value = task_stub
-
-        lock_dto = LockForValidationDTO()
-        lock_dto.project_id = 1
-        lock_dto.task_ids = [1, 2]
-
-        # Act / Assert
-        with self.assertRaises(ValidatatorServiceError):
-            ValidatorService.lock_tasks_for_validation(lock_dto)
-
-    @patch.object(Task, 'get')
-    def test_lock_tasks_for_validation_raises_error_if_task_already_locked(self, mock_task):
-        # Arrange
-        task_stub = Task()
-        task_stub.task_status = TaskStatus.DONE.value
-        task_stub.task_locked = True
         mock_task.return_value = task_stub
 
         lock_dto = LockForValidationDTO()
@@ -71,8 +54,7 @@ class TestValidatorService(unittest.TestCase):
     def test_lock_tasks_raises_error_if_project_validator_only_and_user_not_validator(self, mock_project, mock_task):
         # Arrange
         task_stub = Task()
-        task_stub.task_status = TaskStatus.DONE.value
-        task_stub.task_locked = False
+        task_stub.task_status = TaskStatus.MAPPED.value
         mock_task.return_value = task_stub
 
         mock_project.return_value = False, 'Not allowed'
