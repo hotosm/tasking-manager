@@ -20,6 +20,9 @@ class User(db.Model):
     username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0)
     mapping_level = db.Column(db.Integer, default=1)
+    tasks_mapped = db.Column(db.Integer, default=0)
+    tasks_validated = db.Column(db.Integer, default=0)
+    tasks_invalidated = db.Column(db.Integer, default=0)
 
     def create(self):
         """ Creates and saves the current model to the DB """
