@@ -97,7 +97,7 @@ def init_flask_restful_routes(app):
     api.add_resource(HealthCheckAPI,                '/api/health-check')
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
-    api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-task')
+    api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
     api.add_resource(LockTaskForMappingAPI,         '/api/v1/project/<int:project_id>/task/<int:task_id>/lock-for-mapping')
     api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project', endpoint="create_project", methods=['PUT'])
     api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project/<int:project_id>', methods=['GET', 'POST'])

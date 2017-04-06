@@ -5,6 +5,7 @@ from server.services.project_service import ProjectService, Project, NotFound, P
 
 
 class TestProjectService(unittest.TestCase):
+
     @patch.object(Project, 'get')
     def test_project_service_raises_error_if_project_not_found(self, mock_project):
         mock_project.return_value = None
@@ -23,8 +24,6 @@ class TestProjectService(unittest.TestCase):
         with self.assertRaises(ProjectServiceError):
             ProjectService.get_project_dto_for_mapper(123, 'en')
 
-
-
     @patch.object(UserService, 'get_mapping_level')
     def test_user_not_allowed_to_map_if_level_enforced(self, mock_level):
         # Arrange
@@ -40,3 +39,28 @@ class TestProjectService(unittest.TestCase):
 
         # Act / Assert
         self.assertTrue(ProjectService._is_user_mapping_level_at_or_above_level_requests(MappingLevel.ADVANCED, 1))
+
+    @patch.object(Project, 'get_locked_tasks_for_user')
+    @patch.object(Project, 'get')
+    def test_user_not_permitted_to_map_if_already_locked_tasks(self, mock_project, mock_user_tasks):
+        # Arrange
+        mock_project.return_value = Project()
+        mock_user_tasks.return_value = [1]
+
+        #Act
+        allowed, message = ProjectService.is_user_permitted_to_map(1, 1)
+
+        # Assert
+        self.assertFalse(allowed)
+
+    @patch.object(Project, 'get_locked_tasks_for_user')
+    @patch.object(Project, 'get')
+    def test_user_not_permitted_to_map_if_already_locked_tasks(self, mock_project, mock_user_tasks):
+        # Arrange
+        mock_project.return_value = Project()
+        mock_user_tasks.return_value = []
+
+        #Act / Assert
+        with self.assertRaises(NotFound):
+            ProjectService.get_task_for_logged_in_user(1, 1)
+

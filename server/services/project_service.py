@@ -74,9 +74,9 @@ class ProjectService:
         # TODO check if allowed user for private project
         project = ProjectService.get_project_by_id(project_id)
 
-        task_count = project.get_locked_task_count_for_user(user_id)
+        tasks = project.get_locked_tasks_for_user(user_id)
 
-        if task_count > 0:
+        if len(tasks) > 0:
             return False, 'User already has a locked task on this project'
 
         if project.enforce_mapper_level:
