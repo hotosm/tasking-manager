@@ -74,6 +74,13 @@ class UserService:
         return False
 
     @staticmethod
+    def get_mapping_level(user_id: int):
+        """ Gets mapping level user is at"""
+        user = UserService.get_user_by_id(user_id)
+
+        return MappingLevel(user.mapping_level)
+
+    @staticmethod
     def is_user_validator(user_id: int) -> bool:
         """ Determines if user is a validator """
         user = UserService.get_user_by_id(user_id)

@@ -17,8 +17,8 @@
                             <p ng-show="profileCtrl.userDetails.mappingLevel === 'INTERMEDIATE'">Intermediate mapper</p>
                             <p ng-show="profileCtrl.userDetails.mappingLevel === 'ADVANCED'">Advanced mapper</p>
                             <div ng-show="profileCtrl.osmUserDetails">
-                                <p>Joined <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
-                                <p>{{ profileCtrl.osmUserDetails.changesetCount}} total changesets</p>
+                                <p>Joined OSM<span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
+                                <p>{{ profileCtrl.osmUserDetails.changesetCount}} total OSM changesets</p>
                             </div>
                             <p><a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}">OSM profile</a></p>
                             <p><a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}/history">OSM edit history</a></p>
@@ -34,6 +34,54 @@
                                 <i class="oam-ds-icon-pencil"></i> Project Manager
                             </h4>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__inverse--stats">
+                <div class="stats__card">
+                    <div class="stats__card--amount"><strong>{{ profileCtrl.totalTasksMapped }}</strong></div>
+                    <div class="stats__card--title">tasks mapped</div>
+                </div>
+                <div class="stats__card">
+                    <div class="stats__card--amount"><strong>{{ profileCtrl.totalTasksValidated }}</strong></div>
+                    <div class="stats__card--title">tasks validated</div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <h2>Projects</h2>
+                    <div class="profile-projects-list">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Project name</th>
+                                <th>Number of tasks mapped</th>
+                                <th>Number of tasks validated</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="project in profileCtrl.projects | orderBy: '-lastUpdated'"
+                                class="pointer tr-hover"
+                                ng-mouseover="profileCtrl.highlightProjectOnMap(project.id)"
+                                ng-mouseleave="profileCtrl.removeHighlightOnMap()"
+                                ng-click="profileCtrl.navigateToProject(project.id)">
+                                <th scope="row">{{ project.id }}</th>
+                                <td>{{ project.name }}</td>
+                                <td>{{ project.tasksMapped }}</td>
+                                <td>{{ project.tasksValidated }}</td>
+                                <td>{{ project.status }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <div id="map" class="map-container"></div>
                     </div>
                 </div>
             </div>

@@ -2,8 +2,8 @@ import json
 import geojson
 from flask import current_app
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
-from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, InvalidData, ProjectStatus
-from server.models.postgis.utils import NotFound
+from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, ProjectStatus
+from server.models.postgis.utils import NotFound, InvalidData
 
 
 class ProjectAdminServiceError(Exception):
