@@ -46,20 +46,12 @@ class MappingService:
         if not task.is_mappable():
             raise MappingServiceError('Task in invalid state for mapping')
 
-        # if task.task_locked:
-        #     raise MappingServiceError(f'Task: {task.id} Project {task.project_id} is already locked')
-        #
-        # current_state = TaskStatus(task.task_status).name
-        # if current_state not in [TaskStatus.READY.name, TaskStatus.INVALIDATED.name, TaskStatus.BADIMAGERY.name]:
-        #     raise MappingServiceError(f'Cannot lock task {task.id} state must be in {TaskStatus.READY.name},'
-        #                               f' {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}')
-
         user_can_map, error_message = ProjectService.is_user_permitted_to_map(lock_task_dto.project_id,
                                                                               lock_task_dto.user_id)
         if not user_can_map:
             raise MappingServiceError(error_message)
 
-        task.lock_task(lock_task_dto.user_id)
+        task.lock_task_for_mapping(lock_task_dto.user_id)
         return task.as_dto()
 
     @staticmethod

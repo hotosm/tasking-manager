@@ -11,9 +11,10 @@ from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFrom
 
 class TaskAction(Enum):
     """ Describes the possible actions that can happen to to a task, that we'll record history for """
-    LOCKED = 1
-    STATE_CHANGE = 2
-    COMMENT = 3
+    LOCKED_FOR_MAPPING = 1
+    LOCKED_FOR_VALIDATION = 2
+    STATE_CHANGE = 3
+    COMMENT = 4
 
 
 class TaskHistory(db.Model):
@@ -38,8 +39,19 @@ class TaskHistory(db.Model):
         self.project_id = project_id
         self.user_id = user_id
 
-    def set_task_locked_action(self):
-        self.action = TaskAction.LOCKED.name
+    def set_task_locked_action(self, task_action: TaskAction):
+        if task_action not in [TaskAction.LOCKED_FOR_MAPPING, TaskAction.LOCKED_FOR_VALIDATION]:
+            raise ValueError('Invalid Action')
+
+        self.action = task_action.name
+
+    def set_comment_action(self, comment):
+        self.action = TaskAction.COMMENT.name
+        self.action_text = comment
+
+    def set_state_change_action(self, new_state):
+        self.action = TaskAction.STATE_CHANGE.name
+        self.action_text = new_state.name
 
     @staticmethod
     def update_task_locked_with_duration(task_id, project_id):
@@ -57,13 +69,7 @@ class TaskHistory(db.Model):
         last_locked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
         db.session.commit()
 
-    def set_comment_action(self, comment):
-        self.action = TaskAction.COMMENT.name
-        self.action_text = comment
 
-    def set_state_change_action(self, new_state):
-        self.action = TaskAction.STATE_CHANGE.name
-        self.action_text = new_state.name
 
 
 class Task(db.Model):
@@ -148,8 +154,8 @@ class Task(db.Model):
         """
         history = TaskHistory(self.id, self.project_id, user_id)
 
-        if action == TaskAction.LOCKED:
-            history.set_task_locked_action()
+        if action in [TaskAction.LOCKED_FOR_MAPPING, TaskAction.LOCKED_FOR_VALIDATION]:
+            history.set_task_locked_action(action)
         elif action == TaskAction.COMMENT:
             history.set_comment_action(comment)
         elif action == TaskAction.STATE_CHANGE:
@@ -161,12 +167,19 @@ class Task(db.Model):
         """ Updates the DB with the current state of the Task """
         db.session.commit()
 
-    def lock_task(self, user_id: int):
-        """ Lock task and save in DB  """
-        self.set_task_history(TaskAction.LOCKED, user_id)
-        self.task_locked = True
-        self.lock_holder_id = user_id
+    def lock_task_for_mapping(self, user_id: int):
+        self.set_task_history(TaskAction.LOCKED_FOR_MAPPING, user_id)
+        self.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        self.locked_by = user_id
         self.update()
+
+
+    # def lock_task(self, user_id: int):
+    #     """ Lock task and save in DB  """
+    #     self.set_task_history(TaskAction.LOCKED, user_id)
+    #     self.task_locked = True
+    #     self.lock_holder_id = user_id
+    #     self.update()
 
     def unlock_task(self, user_id, new_state=None, comment=None):
         """ Unlock task and ensure duration task locked is saved in History """
@@ -228,7 +241,6 @@ class Task(db.Model):
         task_dto.task_id = self.id
         task_dto.project_id = self.project_id
         task_dto.task_status = TaskStatus(self.task_status).name
-        task_dto.task_locked = self.task_locked
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
 
