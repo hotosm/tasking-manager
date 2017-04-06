@@ -29,9 +29,9 @@
 
         function activate() {
             mapService.createOSMMap('map');
-            searchProjects();
             vm.map = mapService.getOSMMap();
             addVectorLayer_();
+            searchProjects(); 
         }
 
         /**
