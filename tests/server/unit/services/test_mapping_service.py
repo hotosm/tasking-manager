@@ -67,21 +67,6 @@ class TestMappingService(unittest.TestCase):
         with self.assertRaises(MappingServiceError):
             MappingService.lock_task_for_mapping(self.lock_task_dto)
 
-    @patch.object(ProjectService, 'is_user_permitted_to_map')
-    @patch.object(Task, 'update')
-    @patch.object(MappingService, 'get_task')
-    def test_lock_task_for_mapping_sets_locked_status_when_valid(self, mock_task, mock_update, mock_project):
-        # Arrange
-        mock_task.return_value = self.task_stub
-        mock_project.return_value = True, 'Allowed'
-        self.mapped_task_dto.comment = 'Test comment'
-
-        # Act
-        test_task = MappingService.lock_task_for_mapping(self.lock_task_dto)
-
-        # Assert
-        self.assertTrue(test_task.task_locked, 'Locked should be set to True')
-
     @patch.object(MappingService, 'get_task')
     def test_unlock_of_not_locked_for_mapping_raises_error(self, mock_task):
         # Arrange
