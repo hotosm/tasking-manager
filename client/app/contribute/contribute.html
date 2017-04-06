@@ -50,8 +50,32 @@
                                         </div>
                                     </div>
                                     <div class="form__group">
-                                        <label class="form__label">Tags (TODO)</label>
-                                        <input type="text" class="form__control" placeholder="e.g. earthquake, Ebola"/>
+                                        <label class="form__label">Type(s) of mapping (TODO)</label>
+                                        <label class="form__option form__option--custom-checkbox">
+                                            <input type="checkbox" name="form-custom-checkbox"/>
+                                            <span class="form__option__text">Roads</span>
+                                            <span class="form__option__ui"></span>
+                                        </label>
+                                        <label class="form__option form__option--custom-checkbox">
+                                            <input type="checkbox" name="form-custom-checkbox"/>
+                                            <span class="form__option__text">Buildings</span>
+                                            <span class="form__option__ui"></span>
+                                        </label>
+                                        <label class="form__option form__option--custom-checkbox">
+                                            <input type="checkbox" name="form-custom-checkbox"/>
+                                            <span class="form__option__text">Waterways</span>
+                                            <span class="form__option__ui"></span>
+                                        </label>
+                                        <label class="form__option form__option--custom-checkbox">
+                                            <input type="checkbox" name="form-custom-checkbox"/>
+                                            <span class="form__option__text">Land use</span>
+                                            <span class="form__option__ui"></span>
+                                        </label>
+                                        <label class="form__option form__option--custom-checkbox">
+                                            <input type="checkbox" name="form-custom-checkbox"/>
+                                            <span class="form__option__text">Other</span>
+                                            <span class="form__option__ui"></span>
+                                        </label>
                                     </div>
                                     <div>
                                         <button class="button button--primary pull-right"
@@ -64,7 +88,7 @@
                         </div>
                         <div class="search-results">
                             <div ng-hide="contributeCtrl.results.length > 0">
-                                <p>No projects were found.</p>
+                                <p>No projects found.</p>
                             </div>
                             <div ng-show="contributeCtrl.results.length > 0">
                                 <div class="form__group">
