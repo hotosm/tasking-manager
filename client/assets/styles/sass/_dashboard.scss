@@ -1,0 +1,17 @@
+.dashboard-container {
+  @include column(12/12);
+
+  .filter {
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(4/12);
+    }
+  }
+
+  .results {
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(8/12);
+    }
+  }
+}
