@@ -84,7 +84,7 @@ class Task(db.Model):
 
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
-    lock_holder = db.relationship(User)
+    lock_holder = db.relationship(User, foreign_keys=[locked_by])
 
     @classmethod
     def from_geojson_feature(cls, task_id, task_feature):
