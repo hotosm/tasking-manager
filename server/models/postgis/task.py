@@ -174,23 +174,11 @@ class Task(db.Model):
         self.locked_by = user_id
         self.update()
 
-    # def unlock_task_after_mapping(self, user_id: int, new_state: TaskStatus, comment: str):
-    #     if comment:
-    #         # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
-    #         self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
-    #
-    #     if TaskStatus(self.task_status) != new_state:
-    #         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
-    #         self.task_status = new_state.value
-
-
-
-    # def lock_task(self, user_id: int):
-    #     """ Lock task and save in DB  """
-    #     self.set_task_history(TaskAction.LOCKED, user_id)
-    #     self.task_locked = True
-    #     self.lock_holder_id = user_id
-    #     self.update()
+    def lock_task_for_validating(self, user_id: int):
+        self.set_task_history(TaskAction.LOCKED_FOR_VALIDATION, user_id)
+        self.task_status = TaskStatus.LOCKED_FOR_VALIDATION.value
+        self.locked_by = user_id
+        self.update()
 
     def unlock_task(self, user_id, new_state=None, comment=None):
         """ Unlock task and ensure duration task locked is saved in History """
@@ -201,7 +189,14 @@ class Task(db.Model):
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
 
         if new_state == TaskStatus.MAPPED:
+            # TODO +1 user count
             self.mapped_by = user_id
+        elif new_state == TaskStatus.VALIDATED:
+            # TODO +1 user count
+            self.validated_by = user_id
+        elif new_state == TaskStatus.INVALIDATED:
+            # TODO +1 user count
+            pass
 
         # Using a slightly evil side effect of Actions and Statuses having the same name here :)
         TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))

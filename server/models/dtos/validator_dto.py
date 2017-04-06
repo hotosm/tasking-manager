@@ -14,7 +14,7 @@ def is_valid_validated_status(value):
     except KeyError:
         raise ValidationError(f'Unknown task status. Valid values are {valid_values}')
 
-    if validated_status not in [TaskStatus.DONE, TaskStatus.INVALIDATED, TaskStatus.VALIDATED]:
+    if validated_status not in [TaskStatus.INVALIDATED, TaskStatus.VALIDATED]:
         raise ValidationError(f'Invalid status.  Valid values are {valid_values}')
 
 
