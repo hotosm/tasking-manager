@@ -22,7 +22,7 @@
                             <form class="form">
                                 <fieldset class="form__fieldset">
                                     <div class="form__group">
-                                        <label class="form__label">Organisation</label>
+                                        <label class="form__label">Organisation (TODO)</label>
                                         <select class="form__control">
                                             <option value="all">All</option>
                                             <option value="hot">HOT</option>
@@ -34,63 +34,79 @@
                                         <label class="form__label">Mapping difficulty</label>
                                         <div class="button-group button-group--horizontal" role="group"
                                              aria-label="choose mapping difficulty">
-                                            <button class="button button--achromic button--active" type="button">
+                                            <button class="button button--achromic" type="button"
+                                                ng-click="contributeCtrl.setMapperLevel('BEGINNER')"
+                                                ng-class="contributeCtrl.mapperLevel === 'BEGINNER' ? 'button--active' : ''">
                                                 Beginner
                                             </button>
-                                            <button class="button button--achromic" type="button">Intermediate</button>
-                                            <button class="button button--achromic" type="button">Advanced</button>
+                                            <button class="button button--achromic" type="button"
+                                                ng-click="contributeCtrl.setMapperLevel('INTERMEDIATE')"
+                                                ng-class="contributeCtrl.mapperLevel === 'INTERMEDIATE' ? 'button--active' : ''">
+                                                Intermediate</button>
+                                            <button class="button button--achromic" type="button"
+                                                ng-click="contributeCtrl.setMapperLevel('ADVANCED')"
+                                                ng-class="contributeCtrl.mapperLevel === 'ADVANCED' ? 'button--active' : ''">
+                                                Advanced</button>
                                         </div>
                                     </div>
                                     <div class="form__group">
-                                        <label class="form__label">Tags</label>
+                                        <label class="form__label">Tags (TODO)</label>
                                         <input type="text" class="form__control" placeholder="e.g. earthquake, Ebola"/>
                                     </div>
                                     <div>
-                                        <button class="button button--primary pull-right">Search</button>
+                                        <button class="button button--primary pull-right"
+                                            ng-click="contributeCtrl.search()">
+                                            Search
+                                        </button>
                                     </div>
                                 </fieldset>
                             </form>
                         </div>
                         <div class="search-results">
-                            <div class="form__group">
-                                <div class="button-group button-group--horizontal" role="group"
-                                     aria-label="choose results view">
-                                    <button class="button button--achromic button--active" type="button"
-                                        ng-click="contributeCtrl.resultsView = 'grid'"
-                                        ng-class="contributeCtrl.resultsView === 'grid' ? 'button--active' : ''">
-                                        Grid view
-                                    </button>
-                                    <button class="button button--achromic" type="button"
-                                        ng-click="contributeCtrl.resultsView = 'list'"
-                                        ng-class="contributeCtrl.resultsView === 'list' ? 'button--active' : ''">
-                                        List view
-                                    </button>
-                                </div>
+                            <div ng-hide="contributeCtrl.results.length > 0">
+                                <p>No projects were found.</p>
                             </div>
-                            <div ng-show="contributeCtrl.resultsView === 'grid'">
-                                <div class="search-results-container">
-                                    <div class="project-result__cards">
-                                        <div class="project-result__card"
-                                             ng-repeat="project in contributeCtrl.results.slice(((contributeCtrl.currentPage-1)*contributeCtrl.itemsPerPage), ((contributeCtrl.currentPage)*contributeCtrl.itemsPerPage)) track by project.id">
-                                            <section class="panel project-result__content">
-                                                <h4>{{ project.name }}</h4>
-                                                <p>{{ project.description }}</p>
-                                                <ul>
-                                                    <li>Organisation: {{ project.organisation }}</li>
-                                                    <li>Priority: {{ project.priority }}</li>
-                                                    <li>Level: {{ project.level }}</li>
-                                                </ul>
-                                                <a href="/project/{{ project.id }}"
-                                                   class="button button--primary">Contribute</a>
-                                            </section>
-                                        </div>
+                            <div ng-show="contributeCtrl.results.length > 0">
+                                <div class="form__group">
+                                    <div class="button-group button-group--horizontal" role="group"
+                                         aria-label="choose results view">
+                                        <button class="button button--achromic button--active" type="button"
+                                            ng-click="contributeCtrl.resultsView = 'grid'"
+                                            ng-class="contributeCtrl.resultsView === 'grid' ? 'button--active' : ''">
+                                            Grid view
+                                        </button>
+                                        <button class="button button--achromic" type="button"
+                                            ng-click="contributeCtrl.resultsView = 'list'"
+                                            ng-class="contributeCtrl.resultsView === 'list' ? 'button--active' : ''">
+                                            List view
+                                        </button>
                                     </div>
-                                    <ul uib-pagination items-per-page="contributeCtrl.itemsPerPage"
-                                        total-items="contributeCtrl.results.length"
-                                        ng-model="contributeCtrl.currentPage"></ul>
+                                </div>
+                                <div ng-show="contributeCtrl.resultsView === 'grid'">
+                                    <div class="search-results-container">
+                                        <div class="project-result__cards">
+                                            <div class="project-result__card"
+                                                 ng-repeat="project in contributeCtrl.results.slice(((contributeCtrl.currentPage-1)*contributeCtrl.itemsPerPage), ((contributeCtrl.currentPage)*contributeCtrl.itemsPerPage)) track by project.projectId">
+                                                <section class="panel project-result__content">
+                                                    <h4>{{ project.name }}</h4>
+                                                    <p markdown-to-html=project.shortDescription></p>
+                                                    <ul>
+                                                        <li>Organisation: {{ project.organisation }}</li>
+                                                        <li>Priority: {{ project.priority }}</li>
+                                                        <li>Level: {{ project.mapperLevel }}</li>
+                                                    </ul>
+                                                    <a href="/project/{{ project.projectId }}"
+                                                       class="button button--primary">Contribute</a>
+                                                </section>
+                                            </div>
+                                        </div>
+                                        <ul ng-show="contributeCtrl.results.length > 0" uib-pagination items-per-page="contributeCtrl.itemsPerPage"
+                                            total-items="contributeCtrl.results.length"
+                                            ng-model="contributeCtrl.currentPage"></ul>
+                                    </div>
                                 </div>
                             </div>
-                            <div ng-show="contributeCtrl.resultsView === 'list'">
+                            <div class="list" ng-show="contributeCtrl.resultsView === 'list'">
                                 <table class="table">
                                     <thead>
                                     <tr>
@@ -113,13 +129,13 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="project in contributeCtrl.results track by project.id">
-                                        <td>{{ project.id }}</td>
+                                    <tr ng-repeat="project in contributeCtrl.results track by project.projectId">
+                                        <td>{{ project.projectId }}</td>
                                         <td>{{ project.name }}</td>
                                         <td>{{ project.organisation }}</td>
-                                        <td>{{ project.level }}</td>
+                                        <td>{{ project.mapperLevel }}</td>
                                         <td>{{ project.priority }}</td>
-                                        <td><a href="/project/{{ project.id }}" class="button button--primary">Contribute</a></td>
+                                        <td><a href="/project/{{ project.projectId }}" class="button button--primary">Contribute</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
