@@ -1,5 +1,5 @@
 from flask import current_app
-from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO, LockedTasksForUser
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.user_service import UserService
@@ -59,9 +59,14 @@ class ProjectService:
         """ if the user is working on a task in the project return it """
         project = ProjectService.get_project_by_id(project_id)
 
-        project.get_tasks_for_user(user_id)
+        tasks = project.get_locked_tasks_for_user(user_id)
 
+        if len(tasks) == 0:
+            raise NotFound()
 
+        tasks_dto = LockedTasksForUser()
+        tasks_dto.locked_tasks = tasks
+        return tasks_dto
 
     @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):

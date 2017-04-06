@@ -222,7 +222,13 @@ class Project(db.Model):
         return task_count
 
     def get_locked_tasks_for_user(self, user_id):
-        pass
+        tasks = self.tasks.filter_by(locked_by=user_id)
+
+        locked_tasks = []
+        for task in tasks:
+            locked_tasks.append(task.id)
+
+        return locked_tasks
 
 
     def _get_project_and_base_dto(self, project_id):

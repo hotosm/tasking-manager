@@ -81,3 +81,7 @@ class ProjectSearchResultDTO(Model):
 class ProjectSearchResultsDTO(Model):
     """ Contains all results for the search criteria """
     results = ListType(ModelType(ProjectSearchResultDTO))
+
+
+class LockedTasksForUser(Model):
+    locked_tasks = ListType(IntType, serialized_name='lockedTasks')

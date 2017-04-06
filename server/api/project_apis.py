@@ -1,3 +1,4 @@
+import json
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import ProjectSearchDTO
@@ -136,8 +137,8 @@ class HasUserTaskOnProject(Resource):
                 description: Internal Server Error
         """
         try:
-            task = ProjectService.get_task_for_logged_in_user(project_id, tm.authenticated_user_id)
-            return task.to_primitive(), 200
+            locked_tasks = ProjectService.get_task_for_logged_in_user(project_id, tm.authenticated_user_id)
+            return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
         except Exception as e:
