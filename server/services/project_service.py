@@ -1,5 +1,5 @@
 from flask import current_app
-from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO, LockedTasksForUser
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.user_service import UserService
@@ -55,14 +55,28 @@ class ProjectService:
         return project.as_dto_for_mapping(locale)
 
     @staticmethod
+    def get_task_for_logged_in_user(project_id: int, user_id: int):
+        """ if the user is working on a task in the project return it """
+        project = ProjectService.get_project_by_id(project_id)
+
+        tasks = project.get_locked_tasks_for_user(user_id)
+
+        if len(tasks) == 0:
+            raise NotFound()
+
+        tasks_dto = LockedTasksForUser()
+        tasks_dto.locked_tasks = tasks
+        return tasks_dto
+
+    @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):
         """ Check if the user is allowed to map the on the project in scope """
         # TODO check if allowed user for private project
         project = ProjectService.get_project_by_id(project_id)
 
-        task_count = project.get_task_count_for_user(user_id)
+        tasks = project.get_locked_tasks_for_user(user_id)
 
-        if task_count > 0:
+        if len(tasks) > 0:
             return False, 'User already has a locked task on this project'
 
         if project.enforce_mapper_level:

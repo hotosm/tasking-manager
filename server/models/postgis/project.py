@@ -216,10 +216,15 @@ class Project(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def get_task_count_for_user(self, user_id) -> int:
-        """ Helper to see if user already has a locked task on project """
-        task_count = self.tasks.filter_by(locked_by=user_id).count()
-        return task_count
+    def get_locked_tasks_for_user(self, user_id: int):
+        """ Gets tasks on project owned by specifed user id"""
+        tasks = self.tasks.filter_by(locked_by=user_id)
+
+        locked_tasks = []
+        for task in tasks:
+            locked_tasks.append(task.id)
+
+        return locked_tasks
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """
