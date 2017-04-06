@@ -85,11 +85,13 @@
             var id = $routeParams.id;
             initialiseProject(id);
 
+            //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
                 refreshProject(id)
             }, 10000);
         }
 
+        // listen for navigation away from the page event and stop the autrefresh timer
         $scope.$on('$locationChangeStart', function(){
              if (angular.isDefined(autoRefresh)) {
                 $interval.cancel(autoRefresh);
