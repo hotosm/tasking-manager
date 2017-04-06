@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('dashboardController', [dashboardController]);
+        .controller('dashboardController', ['mapService', dashboardController]);
 
-    function dashboardController() {
+    function dashboardController(mapService) {
         var vm = this;
 
         vm.projects = [
@@ -29,6 +29,14 @@
                 percentageValidated: '11',
                 createdBy: 'IF'
             }
-        ]
+        ];
+
+        activate();
+
+        function activate(){
+            mapService.createOSMMap('map');
+            vm.map = mapService.getOSMMap();
+        }
+
     }
 })();

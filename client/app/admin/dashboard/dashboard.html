@@ -51,7 +51,6 @@
                                     <th>% mapped</th>
                                     <th>% validated</th>
                                     <th>Created by</th>
-                                    <th>Select</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -62,10 +61,22 @@
                                         <td>{{ project.percentageMapped }}</td>
                                         <td>{{ project.percentageValidated }}</td>
                                         <td>{{ project.createdBy }}</td>
-                                        <td><input type="radio"></td>
                                     </tr>
                                 </tbody>
                             </table>
+                             <div>
+                                 <h3>Stats</h3>
+                                 <div class="section__inverse--stats">
+                                    <div class="stats__card">
+                                        <div class="stats__card--amount"><strong>33 %</strong></div>
+                                        <div class="stats__card--title">tasks mapped</div>
+                                    </div>
+                                    <div class="stats__card">
+                                        <div class="stats__card--amount"><strong>45 %</strong></div>
+                                        <div class="stats__card--title">tasks validated</div>
+                                    </div>
+                                </div>
+                             </div>
                          </div>
                      </div>
                 </div>
@@ -74,7 +85,7 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <h2>Map</h2>
+                    <div id="map" class="map-container"></div>
                 </div>
             </div>
         </div>
