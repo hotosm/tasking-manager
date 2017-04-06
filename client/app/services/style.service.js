@@ -45,15 +45,16 @@
 
         var service = {
             getTaskStyleFunction: getTaskStyleFunction,
-            getSelectedStyleFunction: getSelectedStyleFunction
+            getSelectedStyleFunction: getSelectedStyleFunction,
+            getHighlightedStyleFunction: getHighlightedStyleFunction
         };
 
         return service;
 
         /**
          * OpenLayers style function.  Creates a Style for tasks based on the feature's taskStatus and taskLocked properties.
-         * @param feature - feature to be stuled
-         * @returns {Array}
+         * @param feature - feature to be styled
+         * @returns {ol.style.Style}
          */
         function getTaskStyleFunction(feature) {
 
@@ -98,9 +99,26 @@
         }
 
         /**
+         * OpenLayers style function.  Creates a features on the highlight layer.
+         * @param feature - feature to be styled
+         * @returns {ol.style.Style}
+         */
+        function getHighlightedStyleFunction(feature) {
+            return new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: [225, 225, 225, 0]
+                }),
+                stroke: new ol.style.Stroke({
+                    color: [0, 0, 0, 1],
+                    width: 4
+                })
+            });
+        }
+
+        /**
          * OpenLayers style function.  Creates a style for currently selected tasks.
-         * @param feature - feature to be stuled
-         * @returns {Array}
+         * @param feature - feature to be styled
+         * @returns {ol.style.Style}
          */
         function getSelectedStyleFunction(feature) {
             // get the base style for the feature and override it's stroke only.

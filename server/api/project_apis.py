@@ -70,7 +70,7 @@ class ProjectSearchAPI(Resource):
               required: true
               default: en
             - in: query
-              name: mapper_level
+              name: mapperLevel
               type: string
               default: BEGINNER
         responses:
@@ -84,7 +84,7 @@ class ProjectSearchAPI(Resource):
         try:
             search_dto = ProjectSearchDTO()
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            search_dto.mapper_level = request.args.get('mapper_level')
+            search_dto.mapper_level = request.args.get('mapperLevel')
             search_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')

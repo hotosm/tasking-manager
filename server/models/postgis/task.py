@@ -11,9 +11,10 @@ from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFrom
 
 class TaskAction(Enum):
     """ Describes the possible actions that can happen to to a task, that we'll record history for """
-    LOCKED = 1
-    STATE_CHANGE = 2
-    COMMENT = 3
+    LOCKED_FOR_MAPPING = 1
+    LOCKED_FOR_VALIDATION = 2
+    STATE_CHANGE = 3
+    COMMENT = 4
 
 
 class TaskHistory(db.Model):
@@ -38,24 +39,11 @@ class TaskHistory(db.Model):
         self.project_id = project_id
         self.user_id = user_id
 
-    def set_task_locked_action(self):
-        self.action = TaskAction.LOCKED.name
+    def set_task_locked_action(self, task_action: TaskAction):
+        if task_action not in [TaskAction.LOCKED_FOR_MAPPING, TaskAction.LOCKED_FOR_VALIDATION]:
+            raise ValueError('Invalid Action')
 
-    @staticmethod
-    def update_task_locked_with_duration(task_id, project_id):
-        """
-        Calculates the duration a task was locked for and sets it on the history record
-        :param task_id: Task in scope
-        :param project_id: Project ID in scope
-        :return:
-        """
-        last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=TaskAction.LOCKED.name,
-                                                  action_text=None).one()
-
-        duration_task_locked = datetime.datetime.utcnow() - last_locked.action_date
-        # Cast duration to isoformat for later transmission via api
-        last_locked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
-        db.session.commit()
+        self.action = task_action.name
 
     def set_comment_action(self, comment):
         self.action = TaskAction.COMMENT.name
@@ -64,6 +52,25 @@ class TaskHistory(db.Model):
     def set_state_change_action(self, new_state):
         self.action = TaskAction.STATE_CHANGE.name
         self.action_text = new_state.name
+
+    @staticmethod
+    def update_task_locked_with_duration(task_id, project_id, lock_action):
+        """
+        Calculates the duration a task was locked for and sets it on the history record
+        :param task_id: Task in scope
+        :param project_id: Project ID in scope
+        :param lock_action: The lock action, either Mapping or Validation
+        :return:
+        """
+        last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=lock_action.name,
+                                                  action_text=None).one()
+
+        duration_task_locked = datetime.datetime.utcnow() - last_locked.action_date
+        # Cast duration to isoformat for later transmission via api
+        last_locked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
+        db.session.commit()
+
+
 
 
 class Task(db.Model):
@@ -78,12 +85,13 @@ class Task(db.Model):
     zoom = db.Column(db.Integer, nullable=False)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
-    task_locked = db.Column(db.Boolean, default=False)
-    lock_holder_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'))
+    locked_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_locked'))
+    mapped_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_mapper'))
+    validated_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_validator'))
 
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
-    lock_holder = db.relationship(User)
+    lock_holder = db.relationship(User, foreign_keys=[locked_by])
 
     @classmethod
     def from_geojson_feature(cls, task_id, task_feature):
@@ -129,6 +137,13 @@ class Task(db.Model):
         """
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
 
+    def is_mappable(self):
+        """ Determines if task in scope is in suitable state for mapping """
+        if TaskStatus(self.task_status) not in [TaskStatus.READY, TaskStatus.INVALIDATED, TaskStatus.BADIMAGERY]:
+            return False
+
+        return True
+
     def set_task_history(self, action, user_id, comment=None, new_state=None):
         """
         Sets the task history for the action that the user has just performed
@@ -140,8 +155,8 @@ class Task(db.Model):
         """
         history = TaskHistory(self.id, self.project_id, user_id)
 
-        if action == TaskAction.LOCKED:
-            history.set_task_locked_action()
+        if action in [TaskAction.LOCKED_FOR_MAPPING, TaskAction.LOCKED_FOR_VALIDATION]:
+            history.set_task_locked_action(action)
         elif action == TaskAction.COMMENT:
             history.set_comment_action(comment)
         elif action == TaskAction.STATE_CHANGE:
@@ -153,11 +168,16 @@ class Task(db.Model):
         """ Updates the DB with the current state of the Task """
         db.session.commit()
 
-    def lock_task(self, user_id: int):
-        """ Lock task and save in DB  """
-        self.set_task_history(TaskAction.LOCKED, user_id)
-        self.task_locked = True
-        self.lock_holder_id = user_id
+    def lock_task_for_mapping(self, user_id: int):
+        self.set_task_history(TaskAction.LOCKED_FOR_MAPPING, user_id)
+        self.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        self.locked_by = user_id
+        self.update()
+
+    def lock_task_for_validating(self, user_id: int):
+        self.set_task_history(TaskAction.LOCKED_FOR_VALIDATION, user_id)
+        self.task_status = TaskStatus.LOCKED_FOR_VALIDATION.value
+        self.locked_by = user_id
         self.update()
 
     def unlock_task(self, user_id, new_state=None, comment=None):
@@ -166,13 +186,23 @@ class Task(db.Model):
             # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
-        if TaskStatus(self.task_status) != new_state:
-            self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
-            self.task_status = new_state.value
+        self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
 
-        TaskHistory.update_task_locked_with_duration(self.id, self.project_id)
-        self.task_locked = False
-        self.lock_holder_id = None
+        if new_state == TaskStatus.MAPPED:
+            # TODO +1 user count
+            self.mapped_by = user_id
+        elif new_state == TaskStatus.VALIDATED:
+            # TODO +1 user count
+            self.validated_by = user_id
+        elif new_state == TaskStatus.INVALIDATED:
+            # TODO +1 user count
+            pass
+
+        # Using a slightly evil side effect of Actions and Statuses having the same name here :)
+        TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
+
+        self.task_status = new_state.value
+        self.locked_by = None
         self.update()
 
     @staticmethod
@@ -183,14 +213,14 @@ class Task(db.Model):
         :return: geojson.FeatureCollection
         """
         project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.task_locked, Task.task_status,
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.task_status,
                              Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
             task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskLocked=task.task_locked, taskStatus=TaskStatus(task.task_status).name)
+                                   taskStatus=TaskStatus(task.task_status).name)
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
             tasks_features.append(feature)
 
@@ -220,7 +250,6 @@ class Task(db.Model):
         task_dto.task_id = self.id
         task_dto.project_id = self.project_id
         task_dto.task_status = TaskStatus(self.task_status).name
-        task_dto.task_locked = self.task_locked
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
 
