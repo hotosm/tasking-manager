@@ -269,6 +269,12 @@
             return null;
         }
 
+        /**
+         *
+         * @param features {Array<ol.Feature>}
+         * @param ids {Array}
+         * @returns {Array<ol.Feature>}
+         */
         function getTaskFeaturesByIds(features, ids) {
             candidates = [];
             //first check we are working with a non empty array

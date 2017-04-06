@@ -460,6 +460,12 @@
             });
         };
 
+
+        /**
+         * Call api to unlock currently locked tasks after validation.  Will pass the comment and new status to api.  Will update view and map after unlock.
+         * @param comment
+         * @param status
+         */
         vm.unLockMultiTaskValidation = function (comment, status) {
             var projectId = vm.projectData.projectId;
 
@@ -682,6 +688,10 @@
 
         }
 
+        /**
+         * Convenience method to get comma separated list of task ids from multiLockedTasks
+         * @returns {*}
+         */
         vm.getSelectTaskIds = function () {
             if (vm.multiLockedTasks) {
                 var data = vm.multiLockedTasks;
@@ -693,6 +703,10 @@
             return null;
         }
 
+        /**
+         * Higlights the set of tasks on the map
+         * @param doneTasks
+         */
         vm.contributerHighlight = function (doneTasks) {
             // get an array of the 'done' task id's that have been clicked
             var doneTaskIds = doneTasks.tasks.map(function (task) {
@@ -704,6 +718,10 @@
 
         }
 
+        /**
+         * Locks the set of tasks for validation
+         * @param doneTasks
+         */
         vm.contributerClick = function (doneTasks) {
             select.getFeatures().clear();
 
@@ -758,10 +776,7 @@
                 }
 
             });
-
-
         }
-
     }
 })
 ();
