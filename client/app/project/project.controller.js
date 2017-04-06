@@ -7,9 +7,7 @@
      */
     angular
         .module('taskingManager')
-
         .controller('projectController', ['$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
-
 
     function projectController($scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
@@ -715,14 +713,13 @@
             //highlight features
             var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), doneTaskIds);
             vm.highlightVectorLayer.getSource().addFeatures(features);
-
         }
 
         /**
          * Locks the set of tasks for validation
          * @param doneTasks
          */
-        vm.contributerClick = function (doneTasks) {
+        vm.contributorClick = function (doneTasks) {
             select.getFeatures().clear();
 
             // get an array of the 'done' task id's that have been clicked
@@ -770,11 +767,7 @@
                     // Another error occurred.
                     vm.isAuthorized = true;
                     vm.taskLockErrorMessage = error.data.Error;
-                    console.log(error.data.Error);
-                    console.log(vm.taskLockErrorMessage);
-
                 }
-
             });
         }
     }

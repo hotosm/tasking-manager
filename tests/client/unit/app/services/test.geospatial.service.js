@@ -41,17 +41,6 @@ describe('geospatial.service', function () {
             geometry: polygon1
         });
 
-        // var polygon2 = new ol.geom.Polygon([[
-        //     [0, 0],
-        //     [1, 1],
-        //     [-1, 1],
-        //     [0, 1],
-        //     [0, 0]
-        // ]]);
-        // var feature2 = new ol.Feature({
-        //     geometry: polygon2
-        // });
-
         var features = [feature1];
 
         //act

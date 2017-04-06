@@ -192,13 +192,12 @@
                 }
             }
 
+            //iterate the features, use ol.extent.extend to push the boundary outwards
             var extent = features[0].getGeometry().getExtent();
             for (var i = 1; i < features.length; i++) {
                 extent = ol.extent.extend(extent, features[i].getGeometry().getExtent());
             }
             return extent;
-
-
         }
     }
 })();
