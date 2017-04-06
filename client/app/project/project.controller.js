@@ -63,11 +63,11 @@
                     level: 'beginner',
                     tasks: [
                         {
-                            taskId: 5,
+                            taskId: 1,
                             timeStamp: '2017-03-10T14:43:27.02348'
                         },
                         {
-                            taskId: 17,
+                            taskId: 35,
                             timeStamp: '2017-03-15T14:43:27.02348'
                         }
                     ]
@@ -583,10 +583,10 @@
 
             vm.editorStartError = '';
 
-            var taskId = vm.selectedTaskData.taskId;
-            var features = vm.taskVectorLayer.getSource().getFeatures();
-            var selectedFeature = taskService.getTaskFeatureById(features, taskId);
-            var extent = selectedFeature.getGeometry().getExtent();
+            var selectedFeatures = select.getFeatures();
+            var taskCount = selectedFeatures.getArray().length;
+            console.log(taskCount);
+            var extent =  geospatialService.getBoundingExtentFromFeatures(selectedFeatures.getArray());
             // Zoom to the extent to get the right zoom level for the editorsgit commit -a
             vm.map.getView().fit(extent);
             var extentTransformed = geospatialService.transformExtentToLatLonArray(extent);
@@ -607,7 +607,7 @@
             else if (editor === 'fieldpapers') {
                 editorService.launchFieldPapersEditor(center);
             }
-            else if (editor === 'jsom') {
+            else if (editor === 'josm') {
                 // TODO licence agreement
                 var changesetSource = "Bing";
                 var hasImagery = false;
@@ -623,7 +623,10 @@
                     changeset_comment: encodeURIComponent(changesetComment),
                     changeset_source: encodeURIComponent(changesetSource)
                 };
-                var isLoadAndZoomSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                var josm_load = taskCount == 1;
+                var josm_endpoint = josm_load ? 'http://127.0.0.1:8111/load_and_zoom' : 'http://127.0.0.1:8111/zoom';
+
+                var isLoadAndZoomSuccess = editorService.sendJOSMCmd(josm_endpoint, loadAndZoomParams);
                 if (isLoadAndZoomSuccess) {
                     if (hasImagery) {
                         var imageryParams = {
@@ -731,6 +734,10 @@
             });
 
 
+        }
+
+        vm.editorChanged - function(item){
+            console.log(item);
         }
 
     }

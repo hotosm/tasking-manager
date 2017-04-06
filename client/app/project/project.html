@@ -171,7 +171,7 @@
                                     <div>
                                         <select ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">ID Editor</option>
-                                            <option value="jsom">JOSM</option>
+                                            <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
@@ -179,6 +179,9 @@
                                                 ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                             Start Editor
                                         </button>
+                                        <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following
+                                            .gpx file and load it in JOSM to see the task boundary.
+                                        </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="Dismiss alert"
@@ -226,7 +229,8 @@
                                 </p>
                                 <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                     <div class="alert alert--danger" role="alert">
-                                        <p>The tasks for the user could not be locked. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                        <p>The tasks for the user could not be
+                                            locked. {{ projectCtrl.taskLockErrorMessage }}</p>
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
@@ -250,9 +254,9 @@
                                         <td>{{ user.user }}</td>
                                         <td>{{ user.level }}</td>
                                         <td>{{ user.tasks.length }}</td>
-                                        <td><span am-time-ago="user.tasks[0].timeStamp | amUtc"></span></td>
+                                        <td><span am-time-ago="user.tasks[0].timeStamp | amUtc | amLocal"></span></td>
                                         <td><span
-                                                am-time-ago="user.tasks[user.tasks.length-1].timeStamp | amUtc"></span>
+                                                am-time-ago="user.tasks[user.tasks.length-1].timeStamp | amUtc | amLocal"></span>
                                         </td>
                                         <td>
                                             <button ng-click="projectCtrl.contributerClick(user)">Lock</button>
@@ -359,7 +363,7 @@
                                     <div>
                                         <select ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">ID Editor</option>
-                                            <option value="jsom">JOSM</option>
+                                            <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
@@ -367,6 +371,9 @@
                                                 ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                             Start Editor
                                         </button>
+                                        <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following .gpx
+                                            file and load it in JOSM to see the task boundary.
+                                        </div>
                                     </div>
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment"></textarea>
@@ -393,7 +400,7 @@
                                     <div>
                                         <select ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">ID Editor</option>
-                                            <option value="jsom">JOSM</option>
+                                            <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
@@ -401,6 +408,10 @@
                                                 ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                             Start Editor
                                         </button>
+                                        <div ng-show="projectCtrl.selectedEditor === 'josm'">You will need to download
+                                            the OSM data to JOSM manually. Download the following .gpx file and load it
+                                            in JOSM to see the task boundaries.
+                                        </div>
                                     </div>
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment on all tasks"></textarea>
@@ -483,7 +494,7 @@
                                             <span ng-show="item.action === 'COMMENT'">{{ item.actionText }}</span>
                                         </div>
                                         <div>
-                                            <span am-time-ago="item.actionDate | amUtc"></span>
+                                            <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
                                             <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                         </div>
                                     </div>
