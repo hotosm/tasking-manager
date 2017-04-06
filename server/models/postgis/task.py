@@ -78,8 +78,9 @@ class Task(db.Model):
     zoom = db.Column(db.Integer, nullable=False)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
-    task_locked = db.Column(db.Boolean, default=False)
-    lock_holder_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'))
+    locked_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_locked'))
+    mapped_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_mapper'))
+    validated_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_validator'))
 
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
@@ -128,6 +129,13 @@ class Task(db.Model):
         :return: Task if found otherwise None
         """
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
+
+    def is_mappable(self):
+        """ Determines if task in scope is in suitable state for mapping """
+        if TaskStatus(self.task_status) not in [TaskStatus.READY, TaskStatus.INVALIDATED, TaskStatus.BADIMAGERY]:
+            return False
+
+        return True
 
     def set_task_history(self, action, user_id, comment=None, new_state=None):
         """
