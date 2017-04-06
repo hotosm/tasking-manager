@@ -59,20 +59,16 @@ class MappingService:
         """ Unlocks the task and sets the task history appropriately """
         task = MappingService.get_task(mapped_task.task_id, mapped_task.project_id)
 
-        if not task.task_locked:
-            return task.as_dto()  # Task is already unlocked, so return without any further processing
+        if TaskStatus(task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
+            raise MappingServiceError('Status must be LOCKED_FOR_MAPPING to unlock')
 
-        if task.lock_holder_id != mapped_task.user_id:
+        if task.locked_by != mapped_task.user_id:
             raise MappingServiceError('Attempting to unlock a task owned by another user')
 
-        current_status = TaskStatus(task.task_status)
         new_state = TaskStatus[mapped_task.status.upper()]
 
-        if current_status == TaskStatus.DONE:
-            raise MappingServiceError('Cannot unlock DONE task')
-
-        if current_status == TaskStatus.BADIMAGERY and new_state not in [TaskStatus.READY, TaskStatus.BADIMAGERY]:
-            raise MappingServiceError(f'Cannot set BADIMAGERY to {current_status.name}')
+        if new_state not in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY, TaskStatus.READY]:
+            raise MappingServiceError('Can only set status to MAPPED, BADIMAGERY, READY after mapping')
 
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
         return task.as_dto()

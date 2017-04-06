@@ -7,7 +7,7 @@ from server.models.postgis.statuses import TaskStatus
 
 def is_valid_validated_status(value):
     """ Validates that Task Status is in correct range for after validation """
-    valid_values = f'{TaskStatus.DONE.name}, {TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}'
+    valid_values = f'{TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}'
 
     try:
         validated_status = TaskStatus[value.upper()]

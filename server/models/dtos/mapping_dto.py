@@ -7,8 +7,7 @@ from server.models.postgis.statuses import TaskStatus
 
 def is_valid_mapped_status(value):
     """ Validates that Task Status is in correct range for after mapping """
-    valid_values = f'{TaskStatus.DONE.name}, {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name},' \
-                   f' {TaskStatus.READY.name}'
+    valid_values = f'{TaskStatus.MAPPED.name}, {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}'
 
     try:
         mapped_status = TaskStatus[value.upper()]
@@ -48,7 +47,6 @@ class TaskDTO(Model):
     task_id = IntType(serialized_name='taskId')
     project_id = IntType(serialized_name='projectId')
     task_status = StringType(serialized_name='taskStatus')
-    task_locked = BooleanType(serialized_name='taskLocked')
     lock_holder = StringType(serialized_name='lockHolder', serialize_when_none=False)
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
 

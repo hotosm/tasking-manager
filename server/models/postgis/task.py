@@ -54,14 +54,15 @@ class TaskHistory(db.Model):
         self.action_text = new_state.name
 
     @staticmethod
-    def update_task_locked_with_duration(task_id, project_id):
+    def update_task_locked_with_duration(task_id, project_id, lock_action):
         """
         Calculates the duration a task was locked for and sets it on the history record
         :param task_id: Task in scope
         :param project_id: Project ID in scope
+        :param lock_action: The lock action, either Mapping or Validation
         :return:
         """
-        last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=TaskAction.LOCKED.name,
+        last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=lock_action.name,
                                                   action_text=None).one()
 
         duration_task_locked = datetime.datetime.utcnow() - last_locked.action_date
@@ -173,6 +174,16 @@ class Task(db.Model):
         self.locked_by = user_id
         self.update()
 
+    # def unlock_task_after_mapping(self, user_id: int, new_state: TaskStatus, comment: str):
+    #     if comment:
+    #         # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
+    #         self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
+    #
+    #     if TaskStatus(self.task_status) != new_state:
+    #         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
+    #         self.task_status = new_state.value
+
+
 
     # def lock_task(self, user_id: int):
     #     """ Lock task and save in DB  """
@@ -187,13 +198,16 @@ class Task(db.Model):
             # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
-        if TaskStatus(self.task_status) != new_state:
-            self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
-            self.task_status = new_state.value
+        self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
 
-        TaskHistory.update_task_locked_with_duration(self.id, self.project_id)
-        self.task_locked = False
-        self.lock_holder_id = None
+        if new_state == TaskStatus.MAPPED:
+            self.mapped_by = user_id
+
+        # Using a slightly evil side effect of Actions and Statuses having the same name here :)
+        TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
+
+        self.task_status = new_state.value
+        self.locked_by = None
         self.update()
 
     @staticmethod
