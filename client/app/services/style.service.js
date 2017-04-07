@@ -26,7 +26,7 @@
 
         var FILL_COLOUR_READY = [223, 223, 223, 0.1];//very light grey, 0.1 opacity
         var FILL_COLOUR_INVALIDATED = [255, 0, 0, 0.4];//red, 0.4 opacity
-        var FILL_COLOUR_DONE = [255, 165, 0, 0.4];//orange, 0.4 opacity
+        var FILL_COLOUR_MAPPED = [255, 165, 0, 0.4];//orange, 0.4 opacity
         var FILL_COLOUR_VALIDATED = [0, 128, 0, 0.4];//green, 0.4 opacity
         var FILL_COLOUR_LOCKED = [30, 144, 255, 0.4];//blue, 0.4 opacity
         var FILL_COLOUR_BADIMAGERY = [0, 0, 0, 0.4];//black, 0.4 opacity
@@ -52,7 +52,7 @@
         return service;
 
         /**
-         * OpenLayers style function.  Creates a Style for tasks based on the feature's taskStatus and taskLocked properties.
+         * OpenLayers style function.  Creates a Style for tasks based on the feature's taskStatus property.
          * @param feature - feature to be styled
          * @returns {ol.style.Style}
          */
@@ -60,12 +60,11 @@
 
             // Get the feature's properties that control styling
             var status = feature.get('taskStatus');
-            var isLocked = feature.get('taskLocked');
 
             // calculate the fill colour and opacity settings based on status, use rgba because this is the way to
             // set opacity in OL3, but also better for cross browser than named colors
             var fillColor = null;
-            if (typeof(isLocked) === 'boolean' && isLocked) {
+            if (status === 'LOCKED_FOR_MAPPING' || status === 'LOCKED_FOR_VALIDATION') {
                 fillColor = FILL_COLOUR_LOCKED;
             }
             else if (status === 'READY') {
@@ -74,8 +73,8 @@
             else if (status === 'INVALIDATED') {
                 fillColor = FILL_COLOUR_INVALIDATED
             }
-            else if (status === 'DONE') {
-                fillColor = FILL_COLOUR_DONE
+            else if (status === 'MAPPED') {
+                fillColor = FILL_COLOUR_MAPPED
             }
             else if (status === 'VALIDATED') {
                 fillColor = FILL_COLOUR_VALIDATED
