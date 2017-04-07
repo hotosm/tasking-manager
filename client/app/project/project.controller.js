@@ -182,7 +182,8 @@
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
-                refreshProject(id)
+                refreshProject(id);
+                //TODO do a selected task refesh too
             }, 10000 );
         }
 
