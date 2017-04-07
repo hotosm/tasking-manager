@@ -81,8 +81,8 @@
                                 <!-- task information -->
                                 <h2>Mapping</h2>
                                 <h3>Task
-                                    #{{ projectCtrl.selectedTaskData.taskId }} is
-                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED by
+                                    #{{ projectCtrl.selectedTaskData.taskId }} is {{ projectCtrl.selectedTaskData.taskStatus }}
+                                    <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_MAPPING'"> by
                                          <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
                                             you
                                          </span>
@@ -90,7 +90,6 @@
                                             {{ projectCtrl.selectedTaskData.lockHolder }}
                                          </span>
                                     </span>
-                                    <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
                                     <div ng-show="projectCtrl.isSelectedMappable" class="alert alert--success"
@@ -197,12 +196,12 @@
                                               placeholder="Leave a comment"></textarea>
                                 </div>
                                 <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
+                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'READY')">
                                     Stop Mapping
                                 </button>
                                 <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'DONE')">
-                                    Mark as done
+                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')">
+                                    Mark as Mapped
                                 </button>
                                 <button class="button button--secondary"
                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
@@ -243,7 +242,7 @@
                                     <tr>
                                         <td class="heading-alt">Contributer</td>
                                         <td class="heading-alt">Level</td>
-                                        <td class="heading-alt">Done</td>
+                                        <td class="heading-alt">Mapped</td>
                                         <td class="heading-alt">Oldest</td>
                                         <td class="heading-alt">Newest</td>
                                         <td class="heading-alt">Lock</td>
@@ -273,8 +272,8 @@
                                 <!-- task information -->
                                 <h2>Validation</h2>
                                 <h3>Task
-                                    #{{ projectCtrl.selectedTaskData.taskId }} is
-                                    <span ng-show="projectCtrl.selectedTaskData.taskLocked">LOCKED by
+                                    #{{ projectCtrl.selectedTaskData.taskId }} is {{ projectCtrl.selectedTaskData.taskStatus }}
+                                    <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_VALIDATION'"> by
                                         <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
                                             you
                                         </span>
@@ -282,7 +281,6 @@
                                             {{ projectCtrl.selectedTaskData.lockHolder }}
                                         </span>
                                     </span>
-                                    <span ng-hide="projectCtrl.selectedTaskData.taskLocked"> {{ projectCtrl.selectedTaskData.taskStatus }} </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
                                     <div ng-show="projectCtrl.isSelectedValidatable" class="alert alert--success"
@@ -379,7 +377,7 @@
                                               placeholder="Leave a comment"></textarea>
                                 </div>
                                 <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, projectCtrl.lockedTaskData.taskStatus)">
+                                        ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'MAPPED')">
                                     Stop Validating
                                 </button>
                                 <button class="button button--secondary"
@@ -459,8 +457,6 @@
                                     <dd>#{{ projectCtrl.selectedTaskData.taskId }}</dd>
                                     <dt>Status</dt>
                                     <dd>{{ projectCtrl.selectedTaskData.taskStatus }}</dd>
-                                    <dt>Locked</dt>
-                                    <dd>{{ projectCtrl.selectedTaskData.taskLocked }}</dd>
                                 </dl>
                             </div>
                             <div ng-init="showHistory=false">
@@ -479,15 +475,19 @@
                                         <div>
                                             <span ng-show="item.action === 'COMMENT'">Comment left by <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'LOCKED'">Locked by <a
+                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">Locked for mapping by <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">Locked for validation by <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                             <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Marked as bad imagery by <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'DONE'">Marked done by <a
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">Marked mapped by <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                             <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Validated by <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                             <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                           <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">Marked as ready <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                         </div>
                                         <div>
@@ -495,7 +495,8 @@
                                         </div>
                                         <div>
                                             <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
-                                            <span ng-show="item.action === 'LOCKED'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                         </div>
                                     </div>
                                 </div>

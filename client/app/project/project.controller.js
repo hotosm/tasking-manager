@@ -62,11 +62,11 @@
                     level: 'beginner',
                     tasks: [
                         {
-                            taskId: 1,
+                            taskId: 7,
                             timeStamp: '2017-03-10T14:43:27.02348'
                         },
                         {
-                            taskId: 35,
+                            taskId: 38,
                             timeStamp: '2017-03-15T14:43:27.02348'
                         }
                     ]
@@ -389,19 +389,16 @@
          * @param data - task JSON data object
          */
         function refreshCurrentSelection(data) {
-
-            var isLocked = data.taskLocked;
-            var isLockedByMe = data.taskLocked && data.lockHolder === vm.user.username;
-            var isMappableStatus = (data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
-            var isValidatableStatus = data.taskStatus === 'DONE' || data.taskStatus === 'VALIDATED';
-            vm.isSelectedMappable = (!isLocked || isLockedByMe) && isMappableStatus;// user should be able to map their own locked task
-            vm.isSelectedValidatable = (!isLocked || isLockedByMe) && isValidatableStatus;
+            var isLockedByMeMapping = data.taskStatus === 'LOCKED_FOR_MAPPING' && data.lockHolder === vm.user.username;
+            var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
+            vm.isSelectedMappable = isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY';
+            vm.isSelectedValidatable = isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED';
             vm.taskError = vm.isSelectedMappable ? '' : 'task-not-mappable';
             vm.taskErrorValidation = vm.isSelectedValidatable ? '' : 'task-not-validatable';
             vm.selectedTaskData = data;
 
             //jump to locked step if mappable and locked by me
-            if (vm.isSelectedMappable && isLockedByMe) {
+            if (isLockedByMeMapping) {
                 vm.mappingStep = 'locked';
                 vm.lockedTaskData = data;
                 vm.currentTab = 'mapping';
@@ -411,7 +408,7 @@
             }
 
             //jump to validatable step if validatable and locked by me
-            if (vm.isSelectedValidatable && isLockedByMe) {
+            if (isLockedByMeValidation) {
                 vm.validatingStep = 'locked';
                 vm.lockedTaskData = data;
                 vm.currentTab = 'validation';
@@ -433,7 +430,7 @@
             vm.comment = '';
             unLockPromise.then(function (data) {
                 refreshProject(projectId);
-                if (status == 'DONE') {
+                if (status == 'MAPPED') {
                     vm.lockedTaskData = null;
                     vm.taskLockError = false;
                     vm.clearCurrentSelection();

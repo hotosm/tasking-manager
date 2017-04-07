@@ -31,11 +31,10 @@ describe('style.service', function () {
         });
     });
 
-    it('should return correct style for status taskLocked = True', function () {
+    it('should return correct style for status LOCKED_FOR_MAPPING', function () {
         // arrange
         var taskFeature = new ol.Feature({
-            'taskStatus': 'MADE_UP_STATUS',
-            'taskLocked': true
+            'taskStatus': 'LOCKED_FOR_MAPPING'
         });
 
         var expectedStyle = new ol.style.Style({
@@ -55,11 +54,10 @@ describe('style.service', function () {
         expect(style).toEqual(expectedStyle);
     });
 
-    it('should return correct style for taskStatus = "READY" and taskLocked = False', function () {
+    it('should return correct style for taskStatus = "READY"', function () {
         // arrange
         var taskFeature = new ol.Feature({
-            'taskStatus': 'READY',
-            'taskLocked': false
+            'taskStatus': 'READY'
         });
 
         var expectedStyle = new ol.style.Style({
@@ -79,11 +77,10 @@ describe('style.service', function () {
         expect(style).toEqual(expectedStyle);
     });
 
-    it('should return correct style for taskStatus = "INVALIDATED" and taskLocked = False', function () {
+    it('should return correct style for taskStatus = "INVALIDATED"', function () {
         // arrange
         var taskFeature = new ol.Feature({
-            'taskStatus': 'INVALIDATED',
-            'taskLocked': false
+            'taskStatus': 'INVALIDATED'
         });
 
         var expectedStyle = new ol.style.Style({
@@ -103,11 +100,10 @@ describe('style.service', function () {
         expect(style).toEqual(expectedStyle);
     });
 
-    it('should return correct style for taskStatus = "DONE" and taskLocked = False', function () {
+    it('should return correct style for taskStatus = "MAPPED"', function () {
         // arrange
         var taskFeature = new ol.Feature({
-            'taskStatus': 'DONE',
-            'taskLocked': false
+            'taskStatus': 'MAPPED'
         });
 
         var expectedStyle = new ol.style.Style({
@@ -127,11 +123,10 @@ describe('style.service', function () {
         expect(style).toEqual(expectedStyle);
     });
 
-    it('should return correct style for taskStatus = "VALIDATED" and taskLocked = False', function () {
+    it('should return correct style for taskStatus = "VALIDATED"', function () {
         // arrange
         var taskFeature = new ol.Feature({
             'taskStatus': 'VALIDATED',
-            'taskLocked': false
         });
 
         var expectedStyle = new ol.style.Style({
@@ -151,11 +146,10 @@ describe('style.service', function () {
         expect(style).toEqual(expectedStyle);
     });
 
-    it('should return correct style for taskStatus = "BADIMAGERY" and taskLocked = False', function () {
+    it('should return correct style for taskStatus = "BADIMAGERY"', function () {
         // arrange
         var taskFeature = new ol.Feature({
-            'taskStatus': 'BADIMAGERY',
-            'taskLocked': false
+            'taskStatus': 'BADIMAGERY'
         });
 
         var expectedStyle = new ol.style.Style({
@@ -173,58 +167,6 @@ describe('style.service', function () {
 
         // assert
         expect(style).toEqual(expectedStyle);
-    });
-
-    it('should return default style when taskLocked is not boolean ', function () {
-        // arrange
-        var taskFeature = new ol.Feature({
-            taskLocked: 'dfkjwlfjekj'
-        });
-
-        // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
-
-        // assert
-        expect(style).toEqual(DEFAULT_STYLE);
-    });
-
-    it('should return default style when taskLocked is null ', function () {
-        // arrange
-        var taskFeature = new ol.Feature({
-            taskLocked: null
-        });
-
-        // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
-
-        // assert
-        expect(style).toEqual(DEFAULT_STYLE);
-    });
-
-    it('should return default style when taskLocked is undefined ', function () {
-        // arrange
-        var taskFeature = new ol.Feature({
-
-        });
-
-        // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
-
-        // assert
-        expect(style).toEqual(DEFAULT_STYLE);
-    });
-
-    it('should return default style taskLocked and taskStatus are undefined', function () {
-        // arrange
-        var taskFeature = new ol.Feature({
-
-        });
-
-        // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
-
-        // assert
-        expect(style).toEqual(DEFAULT_STYLE);
     });
 
     it('should return default style taskStatus is null', function () {
