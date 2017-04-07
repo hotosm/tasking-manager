@@ -4,11 +4,13 @@ from flask import current_app
 from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO, \
+    ProjectSearchResultDTO, ProjectSearchResultsDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp
+from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, \
+    ST_AsGeoJSON
 
 
 class AreaOfInterest(db.Model):
@@ -38,6 +40,7 @@ class AreaOfInterest(db.Model):
 
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
+        self.centroid = ST_Centroid(self.geometry)
 
 
 class ProjectInfo(db.Model):
@@ -145,7 +148,8 @@ class Project(db.Model):
     aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
-    default_locale = db.Column(db.String(10), default='en')  # The locale that is returned if requested locale not available
+    default_locale = db.Column(db.String(10),
+                               default='en')  # The locale that is returned if requested locale not available
     author_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
     mapper_level = db.Column(db.Integer, default=1, nullable=False)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
@@ -212,10 +216,15 @@ class Project(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def get_task_count_for_user(self, user_id) -> int:
-        """ Helper to see if user already has a locked task on project """
-        task_count = self.tasks.filter_by(lock_holder_id=user_id).count()
-        return task_count
+    def get_locked_tasks_for_user(self, user_id: int):
+        """ Gets tasks on project owned by specifed user id"""
+        tasks = self.tasks.filter_by(locked_by=user_id)
+
+        locked_tasks = []
+        for task in tasks:
+            locked_tasks.append(task.id)
+
+        return locked_tasks
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """
@@ -266,3 +275,35 @@ class Project(db.Model):
         project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(project_id)
 
         return project_dto
+
+    @staticmethod
+    def get_projects_by_seach_criteria(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
+        """ Find all projects that match the search criteria """
+
+        projects = Project.query.filter_by(status=ProjectStatus.PUBLISHED.value,
+                                           mapper_level=MappingLevel[search_dto.mapper_level].value).all()
+
+        results_list = []
+        for project in projects:
+            # TODO would be nice to get this for an array rather than individually would be more efficient
+            project_info_dto = ProjectInfo.get_dto_for_locale(project.id, search_dto.preferred_locale,
+                                                              project.default_locale)
+
+            result_dto = ProjectSearchResultDTO()
+            result_dto.project_id = project.id
+            result_dto.locale = project_info_dto.locale
+            result_dto.name = project_info_dto.name
+            result_dto.priority = ProjectPriority(project.priority).name
+            result_dto.mapper_level = MappingLevel(project.mapper_level).name
+            result_dto.short_description = project_info_dto.short_description
+
+            # Get AOI centroid as geoJson
+            centroid_str = db.session.scalar(project.area_of_interest.centroid.ST_AsGeoJSON())
+            result_dto.aoi_centroid = geojson.loads(centroid_str)
+
+            results_list.append(result_dto)
+
+        results_dto = ProjectSearchResultsDTO()
+        results_dto.results = results_list
+
+        return results_dto

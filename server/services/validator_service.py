@@ -29,11 +29,10 @@ class ValidatorService:
             if task is None:
                 raise NotFound(f'Task {task_id} not found')
 
-            if TaskStatus(task.task_status) not in [TaskStatus.DONE, TaskStatus.VALIDATED]:
-                raise ValidatatorServiceError(f'Task {task_id} is not DONE or VALIDATED')
+            if TaskStatus(task.task_status) not in [TaskStatus.MAPPED, TaskStatus.VALIDATED]:
+                raise ValidatatorServiceError(f'Task {task_id} is not MAPPED or VALIDATED')
 
-            if task.task_locked:
-                raise ValidatatorServiceError(f'Task: {task_id} is already locked')
+            # TODO can't validate tasks you own
 
             tasks_to_lock.append(task)
 
@@ -46,7 +45,7 @@ class ValidatorService:
         # Lock all tasks for validation
         dtos = []
         for task in tasks_to_lock:
-            task.lock_task(validation_dto.user_id)
+            task.lock_task_for_validating(validation_dto.user_id)
             dtos.append(task.as_dto())
 
         task_dtos = TaskDTOs()
@@ -68,13 +67,10 @@ class ValidatorService:
             if task is None:
                 raise NotFound(f'Task {validated_task.task_id} not found')
 
-            if TaskStatus(task.task_status) not in [TaskStatus.DONE, TaskStatus.VALIDATED]:
-                raise ValidatatorServiceError(f'Task {validated_task.task_id} is not DONE or VALIDATED')
+            if TaskStatus(task.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
+                raise ValidatatorServiceError(f'Task {validated_task.task_id} is not LOCKED_FOR_VALIDATION')
 
-            if not task.task_locked:
-                raise ValidatatorServiceError(f'Task: {validated_task.task_id} is not locked')
-
-            if task.lock_holder_id != validated_dto.user_id:
+            if task.locked_by != validated_dto.user_id:
                 raise ValidatatorServiceError('Attempting to unlock a task owned by another user')
 
             tasks_to_unlock.append(dict(task=task, new_state=TaskStatus[validated_task.status],

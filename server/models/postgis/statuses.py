@@ -20,10 +20,12 @@ class ProjectPriority(Enum):
 class TaskStatus(Enum):
     """ Enum describing available Task Statuses """
     READY = 0
-    INVALIDATED = 1
-    DONE = 2
-    VALIDATED = 3
-    BADIMAGERY = 4  # Task cannot be mapped because of clouds, fuzzy imagery
+    LOCKED_FOR_MAPPING = 1
+    MAPPED = 2
+    LOCKED_FOR_VALIDATION = 3
+    VALIDATED = 4
+    INVALIDATED = 5
+    BADIMAGERY = 6  # Task cannot be mapped because of clouds, fuzzy imagery
     # REMOVED = -1 TODO this looks weird can it be removed
 
 

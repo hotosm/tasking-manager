@@ -36,6 +36,18 @@ class ST_GeomFromGeoJSON(GenericFunction):
     type = Geometry
 
 
+class ST_AsGeoJSON(GenericFunction):
+    """ Exposes PostGIS ST_AsGeoJSON function """
+    name = 'ST_GeomFromGeoJSON'
+    type = Geometry
+
+
+class ST_Centroid(GenericFunction):
+    """ Exposes PostGIS ST_Centroid function """
+    name = 'ST_Centroid'
+    type = Geometry
+
+
 def timestamp():
     """ Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""
     return datetime.datetime.utcnow()

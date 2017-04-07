@@ -68,36 +68,28 @@ describe('task.service', function () {
     it('should return one unlocked READY feature', function () {
 
         //arrange
-        var locked = false;
         var status = 'READY';
 
         var features = [
             new ol.Feature({
-                taskLocked: locked,
                 taskStatus: status
             }),
             new ol.Feature({
-                taskLocked: locked,
                 taskStatus: status
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'INVALIDATED'
             }),
             new ol.Feature({
-                taskLocked: false,
                 taskStatus: 'READY'
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'READY'
             }),
             new ol.Feature({
-                taskLocked: false,
                 taskStatus: 'OTHER'
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'OTHER'
             })
         ];
@@ -106,43 +98,34 @@ describe('task.service', function () {
         var returnedFeature = taskService.getRandomMappableTaskFeature(features);
 
         //assert
-        expect(returnedFeature.get('taskLocked') == locked &&
-            returnedFeature.get('taskStatus') === status).toEqual(true);
+        expect(returnedFeature.get('taskStatus') === status).toEqual(true);
     });
 
-    it('should return one unlocked INVALIDATED feature', function () {
+    it('should return one READY feature', function () {
 
         //arrange
-        var locked = false;
-        var status = 'INVALIDATED';
+        var status = 'READY';
 
         var features = [
             new ol.Feature({
-                taskLocked: false,
                 taskStatus: 'INVALIDATED'
             }),
             new ol.Feature({
-                taskLocked: false,
                 taskStatus: 'INVALIDATED'
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'INVALIDATED'
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'READY'
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'READY'
             }),
             new ol.Feature({
-                taskLocked: false,
                 taskStatus: 'OTHER'
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'OTHER'
             })
         ];
@@ -151,8 +134,7 @@ describe('task.service', function () {
         var returnedFeature = taskService.getRandomMappableTaskFeature(features);
 
         //assert
-        expect(returnedFeature.get('taskLocked') == locked &&
-            returnedFeature.get('taskStatus') === status).toEqual(true);
+        expect(returnedFeature.get('taskStatus') === status).toEqual(true);
     });
 
     it('should return null when no mappable tasks available', function () {
@@ -161,20 +143,13 @@ describe('task.service', function () {
 
         var features = [
             new ol.Feature({
-                taskLocked: true,
-                taskStatus: 'READY'
+                taskStatus: 'MAPPED'
             }),
             new ol.Feature({
-                taskLocked: false,
-                taskStatus: 'DONE'
-            }),
-            new ol.Feature({
-                taskLocked: false,
                 taskStatus: 'VALIDATED'
             }),
             new ol.Feature({
-                taskLocked: true,
-                taskStatus: 'INVALIDATED'
+                taskStatus: 'IVALIDATED'
             })
         ];
 
@@ -193,31 +168,24 @@ describe('task.service', function () {
 
         var features = [
             new ol.Feature({
-                taskLocked: locked,
                 taskStatus: status
             }),
             new ol.Feature({
-                taskLocked: locked,
                 taskStatus: status
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'INVALIDATED'
             }),
             new ol.Feature({
-                taskLocked: false,
                 taskStatus: 'READY'
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'READY'
             }),
             new ol.Feature({
-                taskLocked: false,
                 taskStatus: 'OTHER'
             }),
             new ol.Feature({
-                taskLocked: true,
                 taskStatus: 'OTHER'
             })
         ];
@@ -227,7 +195,7 @@ describe('task.service', function () {
 
         //assert returnedFeatures meet the criteria
         var candidates = returnedFeatures.filter(function (item) {
-            if (item.get('taskLocked') == locked && item.get('taskStatus') === status) return item;
+            if (item.get('taskStatus') === status) return item;
 
         });
         expect(returnedFeatures.length).toEqual(candidates.length);
@@ -237,13 +205,12 @@ describe('task.service', function () {
     it('should return an empty array array of unexpected objects is passed in', function () {
 
         //arrange
-        var locked = false;
         var status = 'READY';
 
         var features = ['sdfsdf'];
 
         //act
-        var returnedFeatures = taskService.getTasksByStatus(features, locked, status);
+        var returnedFeatures = taskService.getTasksByStatus(features, status);
 
         //assert
         expect(returnedFeatures).toEqual([]);

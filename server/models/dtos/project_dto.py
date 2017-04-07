@@ -59,3 +59,29 @@ class ProjectDTO(Model):
     enforce_mapper_level = BooleanType(required=True, default=False, serialized_name='enforceMapperLevel')
     enforce_validator_role = BooleanType(required=True, default=False, serialized_name='enforceValidatorRole')
     private = BooleanType(required=True)
+
+
+class ProjectSearchDTO(Model):
+    """ Describes the criteria users use to filter active projects"""
+    preferred_locale = StringType(required=True, default='en')
+    mapper_level = StringType(required=True, serialized_name='mapperLevel', validators=[is_known_mapping_level])
+
+
+class ProjectSearchResultDTO(Model):
+    """ Describes one search result"""
+    project_id = IntType(required=True, serialized_name='projectId')
+    locale = StringType(required=True)
+    name = StringType(default='')
+    short_description = StringType(serialized_name='shortDescription', default='')
+    mapper_level = StringType(required=True, serialized_name='mapperLevel')
+    priority = StringType(required=True)
+    aoi_centroid = BaseType(serialized_name='aoiCentroid')
+
+
+class ProjectSearchResultsDTO(Model):
+    """ Contains all results for the search criteria """
+    results = ListType(ModelType(ProjectSearchResultDTO))
+
+
+class LockedTasksForUser(Model):
+    locked_tasks = ListType(IntType, serialized_name='lockedTasks')
