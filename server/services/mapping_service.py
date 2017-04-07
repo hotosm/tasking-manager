@@ -1,4 +1,5 @@
 from flask import current_app
+from geoalchemy2 import shape
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound
@@ -72,3 +73,10 @@ class MappingService:
 
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
         return task.as_dto()
+
+    @staticmethod
+    def generate_gpx(project_id, task_id):
+        task = MappingService.get_task(task_id, project_id)
+        task_geom = shape.to_shape(task.geometry)
+
+        iain = task_geom
