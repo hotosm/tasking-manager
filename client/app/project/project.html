@@ -149,7 +149,7 @@
                                                 Select another task
                                             </button>
                                             <button class="button button--achromic"
-                                                    ng-click="projectCtrl.clearCurrentSelection()">
+                                                    ng-click="projectCtrl.resetToSelectingStep()">
                                                 Cancel
                                             </button>
                                         </div>
@@ -210,10 +210,16 @@
                                     Mark as Bad Imagery
                                 </button>
                                 <div ng-show="projectCtrl.taskUnLockError">
-                                    <div class="alert alert--danger" role="alert">
-                                        <p>There was a problem unlocking the
-                                            task. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                    <div>
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>There was a problem unlocking the
+                                                task. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                        </div>
                                     </div>
+                                    <button class="button button--achromic"
+                                            ng-click="projectCtrl.resetToSelectingStep()">
+                                        Cancel
+                                    </button>
                                 </div>
                             </div>
 
@@ -249,7 +255,7 @@
                                 </p>
                                 <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                     <div class="alert alert--danger" role="alert">
-                                        <p>The tasks for the user could not be
+                                        <p>The tasks could not be
                                             locked. {{ projectCtrl.taskLockErrorMessage }}</p>
                                     </div>
                                 </div>
@@ -354,7 +360,7 @@
                                                 Select another task
                                             </button>
                                             <button class="button button--achromic"
-                                                    ng-click="projectCtrl.clearCurrentSelection()">
+                                                    ng-click="projectCtrl.resetToSelectingStep()">
                                                 Cancel
                                             </button>
                                         </div>
@@ -405,11 +411,18 @@
                                     Mark as Invalid
                                 </button>
                                 <div ng-show="projectCtrl.taskUnLockError">
-                                    <div class="alert alert--danger" role="alert">
-                                        <p>There was a problem unlocking the
-                                            task. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                    <div>
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>There was a problem unlocking the
+                                                task. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                        </div>
                                     </div>
+                                    <button class="button button--achromic"
+                                            ng-click="projectCtrl.resetToSelectingStep()">
+                                        Cancel
+                                    </button>
                                 </div>
+
                             </div>
                             <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
                                 <p>You have the following tasks locked:<span>{{ projectCtrl.getSelectTaskIds() }}</span>
@@ -448,10 +461,16 @@
                                     Mark all as Invalid
                                 </button>
                                 <div ng-show="projectCtrl.taskUnLockError">
-                                    <div class="alert alert--danger" role="alert">
-                                        <p>There was a problem unlocking the
-                                            tasks. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                    <div>
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>There was a problem unlocking the
+                                                tasks. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                        </div>
                                     </div>
+                                    <button class="button button--achromic"
+                                            ng-click="projectCtrl.resetToSelectingStep()">
+                                        Cancel
+                                    </button>
                                 </div>
                             </div>
                         </div>

@@ -67,6 +67,7 @@
                     status: status
                 },
                 url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/unlock-after-mapping',
+
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

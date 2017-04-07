@@ -183,7 +183,7 @@
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
                 refreshProject(id)
-            }, 100000);
+            }, 10000 );
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -307,6 +307,7 @@
                 //project returned successfully
                 vm.projectData = data;
                 addProjectTasksToMap(vm.projectData.tasks, false);
+                //TODO: move the selected task refresh to a separate function so it can be called separately
                 if (vm.selectedTaskData) {
                     var selectedFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), vm.selectedTaskData.taskId);
                     //this just forces the selected styling to apply
@@ -524,6 +525,8 @@
                 vm.resetTaskData();
                 refreshProject(projectId);
                 vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
             }, function (error) {
                 onUnLockError(projectId, error);
             });
@@ -715,7 +718,9 @@
             vm.resetTaskData();
             vm.clearCurrentSelection();
             refreshProject(projectId);
-            onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+            if(taskId != null) {
+                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+            }
             vm.taskLockError = true;
             // Check if it is an unauthorized error. If so, display appropriate message
             if (error.status == 401) {
@@ -818,18 +823,18 @@
                 vm.isSelectedValidatable = true;
 
             }, function (error) {
-                refreshProject(vm.projectData.projectId);
-                vm.taskLockError = true;
-                // Check if it is an unauthorized error. If so, display appropriate message
-                if (error.status == 401) {
-                    vm.isAuthorized = false;
-                }
-                else {
-                    // Another error occurred.
-                    vm.isAuthorized = true;
-                    vm.taskLockErrorMessage = error.data.Error;
-                }
+                onLockError(vm.projectData.projectId, null, error)
             });
+        }
+
+        vm.resetToSelectingStep = function(){
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
+            vm.clearCurrentSelection();
+            vm.mappingStep = 'selecting';
+            vm.validatingStep = 'selecting';
+
         }
     }
 })
