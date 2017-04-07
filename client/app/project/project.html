@@ -105,7 +105,8 @@
                                     </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData ">
-                                    <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError" class="alert alert--success"
+                                    <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                         class="alert alert--success"
                                          role="alert">
                                         <p>This task is available for mapping.</p>
                                     </div>
@@ -114,7 +115,8 @@
                                 <div>
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
-                                            <p>The task could not be locked for mapping. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                            <p>The task could not be locked for
+                                                mapping. {{ projectCtrl.taskLockErrorMessage }}</p>
                                         </div>
                                     </div>
                                     <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
@@ -207,6 +209,12 @@
                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
                                     Mark as Bad Imagery
                                 </button>
+                                <div ng-show="projectCtrl.taskUnLockError">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>There was a problem unlocking the
+                                            task. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -302,7 +310,8 @@
                                     </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
-                                    <div ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError" class="alert alert--success"
+                                    <div ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
+                                         class="alert alert--success"
                                          role="alert">
                                         <p>This task is available for validation.</p>
                                     </div>
@@ -311,7 +320,8 @@
                                 <div>
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
-                                            <p>The task could not be locked for validation. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                            <p>The task could not be locked for
+                                                validation. {{ projectCtrl.taskLockErrorMessage }}</p>
                                         </div>
                                     </div>
                                     <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
@@ -394,7 +404,12 @@
                                         ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'INVALIDATED')">
                                     Mark as Invalid
                                 </button>
-
+                                <div ng-show="projectCtrl.taskUnLockError">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>There was a problem unlocking the
+                                            task. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                    </div>
+                                </div>
                             </div>
                             <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
                                 <p>You have the following tasks locked:<span>{{ projectCtrl.getSelectTaskIds() }}</span>
@@ -420,11 +435,6 @@
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment on all tasks"></textarea>
                                 </div>
-                                <div ng-show="projectCtrl.taskUnLockError">
-                                    <div class="alert alert--danger" role="alert">
-                                        <p>There was a problem unlocking the tasks.</p>
-                                    </div>
-                                </div>
                                 <button class="button button--secondary"
                                         ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
                                     Stop Validating
@@ -437,6 +447,12 @@
                                         ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'INVALIDATED')">
                                     Mark all as Invalid
                                 </button>
+                                <div ng-show="projectCtrl.taskUnLockError">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>There was a problem unlocking the
+                                            tasks. {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

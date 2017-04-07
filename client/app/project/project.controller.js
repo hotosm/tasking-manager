@@ -36,6 +36,7 @@
             vm.taskLockError = false;
             vm.taskLockErrorMessage = '';
             vm.taskUnLockError = false;
+            vm.taskUnLockErrorMessage = '';
         }
 
         //authorization
@@ -461,7 +462,7 @@
                 vm.validatingStep = 'selecting';
 
             }, function (error) {
-                onLockUnLockError(projectId, taskId, error);
+                onUnLockError(projectId, error);
             });
         };
 
@@ -489,7 +490,7 @@
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
             }, function (error) {
-                onLockUnLockError(projectId, taskId, error);
+                onUnLockError(projectId, error);
             });
         };
 
@@ -524,8 +525,7 @@
                 refreshProject(projectId);
                 vm.clearCurrentSelection();
             }, function (error) {
-                refreshProject(projectId);
-                select.getFeatures().clear();
+                onUnLockError(projectId, error);
             });
         };
 
@@ -728,7 +728,7 @@
             }
         }
 
-        function onUnLockError(projectId, taskId, error) {
+        function onUnLockError(projectId, error) {
             // Could not lock task
             // Refresh the map and selected task.
             vm.resetErrors();
