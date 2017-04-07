@@ -6,7 +6,7 @@
 
     angular
         .module('taskingManager')
-        .service('taskService', ['$http', '$q', 'configService','authService', taskService]);
+        .service('taskService', ['$http', '$q', 'configService', 'authService', taskService]);
 
     function taskService($http, $q, configService, authService) {
 
@@ -15,11 +15,12 @@
             unLockTaskMapping: unLockTaskMapping,
             lockTaskMapping: lockTaskMapping,
             unLockTaskValidation: unLockTaskValidation,
-            lockTaskValidation: lockTaskValidation,
+            lockTasksValidation: lockTasksValidation,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
-            getTaskFeatureById: getTaskFeatureById
+            getTaskFeatureById: getTaskFeatureById,
+            getTaskFeaturesByIds: getTaskFeaturesByIds
         };
 
         return service;
@@ -135,7 +136,7 @@
          * @param taskIds - JSON object arrai of ids tasks to ne locked
          * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
          */
-        function lockTaskValidation(projectId, taskIds) {
+        function lockTasksValidation(projectId, taskIds) {
             // Returns a promise
             return $http({
                 method: 'POST',
@@ -157,8 +158,8 @@
 
         /**
          * returns a randomly selected mappable task feature from the passed in vector features.
-         * Will return a non locked READY task if available,
-         * otherwise will return a non locked INVALIDATED task if available,
+         * Will return a READY task if available,
+         * otherwise will return an INVALIDATED task if available,
          * otherwise will return null.
          * @param feature - array of ol.Feature objects from which to find a random task
          * @returns ol.Feature - randomly selected mappable ol.Feature object
@@ -170,11 +171,11 @@
                 var candidates = [];
 
                 // get all non locked ready tasks
-                var candidates = getTasksByStatus(features, false, 'READY');
+                var candidates = getTasksByStatus(features, 'READY');
 
                 // if no ready tasks, get non locked invalidated tasks
                 if (candidates.length == 0) {
-                    candidates = getTasksByStatus(features, false, 'INVALIDATED');
+                    candidates = getTasksByStatus(features, 'INVALIDATED');
                 }
 
                 // if candidates features were found, pick one randomly and return it
@@ -189,7 +190,7 @@
 
         /**
          * returns a randomly selected validatable task feature from the passed in vector features.
-         * Will return a non locked DONE task if available,
+         * Will return a MAPPED task if available,
          * otherwise will return null.
          * @param feature - array of ol.Feature objects from which to find a random task
          * @returns ol.Feature - randomly selected mappable ol.Feature object
@@ -200,8 +201,8 @@
 
                 var candidates = [];
 
-                // get all non locked DONE tasks
-                var candidates = getTasksByStatus(features, false, 'DONE');
+                // get all MAPPED tasks
+                var candidates = getTasksByStatus(features, 'MAPPED');
 
                 // if candidates features were found, pick one randomly and return it
                 if (candidates.length > 0) {
@@ -214,26 +215,21 @@
         }
 
         /**
-         * Returns an array of task features that meet passed in locked and status criteria
+         * Returns an array of task features that meet passed in status criteria
          * @param features - array of ol.Feature objects
-         * @param taskLocked - boolean, required locked status
          * @param taskStatus - required task status
          */
-        function getTasksByStatus(features, locked, status) {
-            //TODO - may need to refactor to allow passing in null for locked or status to infer any value.
-            //This would allow get all locked tasks, regardless of status, or all tasks with certain status,
-            //regardless of locked
+        function getTasksByStatus(features, status) {
             candidates = [];
             //first check we are working with a non empty array
             if (features && (features instanceof Array) && features.length > 0) {
-                // get all tasks with taskLocked and taskStatus property values meeting the passed in values for locked and status
+                // get all tasks with taskStatus property meeting the passed in values for status
                 var candidates = features.filter(function (item) {
                     //check we are working with an ol.Feature
                     if (item instanceof ol.Feature) {
                         // safe to use the function
-                        var taskLocked = item.get('taskLocked');
                         var taskStatus = item.get('taskStatus');
-                        if (taskLocked == locked && taskStatus === status)
+                        if (taskStatus === status)
                             return item;
                     }
                 });
@@ -264,6 +260,33 @@
             }
             if (candidates.length > 0) {
                 return candidates[0];
+            }
+            return null;
+        }
+
+        /**
+         *
+         * @param features {Array<ol.Feature>}
+         * @param ids {Array}
+         * @returns {Array<ol.Feature>}
+         */
+        function getTaskFeaturesByIds(features, ids) {
+            candidates = [];
+            //first check we are working with a non empty array
+            if (features && (features instanceof Array) && features.length > 0) {
+                // get all tasks with taskId= id
+                var candidates = features.filter(function (item) {
+                    //check we are working with an ol.Feature
+                    if (item instanceof ol.Feature) {
+                        // safe to use the function
+                        var taskId = item.get('taskId');
+                        if (ids.includes(taskId))
+                            return item;
+                    }
+                });
+            }
+            if (candidates.length > 0) {
+                return candidates;
             }
             return null;
         }
