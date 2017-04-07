@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('dashboardController', ['mapService', dashboardController]);
+        .controller('dashboardController', ['mapService', 'projectMapService', dashboardController]);
 
-    function dashboardController(mapService) {
+    function dashboardController(mapService, projectMapService) {
         var vm = this;
 
         // TODO: get projects + mapper level stats from the API.
@@ -61,24 +61,31 @@
         function activate(){
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
-            var lastProjectIndex = vm.projects.length - 1;
-            setGraphVariables(lastProjectIndex);
-            addVectorLayer_();
-            showProjectsOnMap_();
+            //TODO: get projects from API
+            if (vm.projects) {
+                var lastProjectIndex = vm.projects.length - 1;
+                setGraphVariables(lastProjectIndex);
+                projectMapService.initialise(vm.map);
+                projectMapService.showProjectsOnMap(vm.projects);
+                projectMapService.highlightProjectOnMap(vm.projects, vm.projects[lastProjectIndex].id);
+            }
         }
 
         /**
-         * Select a project and show graphs
+         * Select a project, show graphs and highlight on map
          * @param projectId
          */
         vm.selectProject = function(projectId){
-            var index = 0;
+            var index = -1;
             for (var i = 0; i < vm.projects.length; i++){
                 if (vm.projects[i].id == projectId){
                     index = i;
                 }
             }
-            setGraphVariables(index);
+            if (index != -1){
+                setGraphVariables(index);
+                projectMapService.highlightProjectOnMap(vm.projects, projectId);
+            }
         };
 
         /**
@@ -105,55 +112,6 @@
             // Level of mappers - TODO
             vm.levelData = vm.selectedProject.levelMappers;
             vm.levelLabels = ['Beginner', 'Intermediate', 'Advanced'];
-        }
-
-        /**
-         * Add vector layer for the project results
-         */
-        function addVectorLayer_(){
-
-            var fill = new ol.style.Fill({
-                color: [255, 0, 0, 0.5],
-                width: 1
-            });
-            var stroke = new ol.style.Stroke({
-                color: [255, 0, 0, 1],
-                width: 1
-            });
-            var style = new ol.style.Style({
-                image: new ol.style.Circle({
-                    fill: fill,
-                    stroke: stroke,
-                    radius: 5
-                })
-            });
-
-            vm.vectorSource = new ol.source.Vector();
-            var vectorLayer = new ol.layer.Vector({
-                source: vm.vectorSource,
-                style: style
-            });
-            vm.map.addLayer(vectorLayer);
-        }
-
-        /**
-         * Show the projects on the map
-         * @private
-         */
-        function showProjectsOnMap_(){
-
-            vm.vectorSource.clear();
-
-            // iterate over the projects and add the center of the project as a point on the map
-            for (var i = 0; i < vm.projects.length; i++){
-                var projectCenter = ol.proj.transform(vm.projects[i].aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
-                var feature = new ol.Feature({
-                    geometry: new ol.geom.Point(projectCenter)
-                });
-                if (vm.vectorSource) {
-                    vm.vectorSource.addFeature(feature);
-                }
-            }
         }
     }
 })();
