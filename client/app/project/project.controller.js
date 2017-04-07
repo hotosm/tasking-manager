@@ -181,7 +181,7 @@
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
                 refreshProject(id)
-            }, 10000);
+            }, 100000);
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -258,11 +258,8 @@
          * clears the currently selected task.  Clears down/resets the vm properties and clears the feature param in the select interaction object.
          */
         vm.clearCurrentSelection = function () {
-            vm.resetErrors();
-            vm.resetStatusFlags();
-            vm.resetTaskData();
-            vm.mappingStep = 'selecting';
-            vm.validatingStep = 'selecting';
+            // vm.mappingStep = 'selecting';
+            // vm.validatingStep = 'selecting';
             select.getFeatures().clear();
         };
 
@@ -459,6 +456,8 @@
                 vm.resetTaskData();
                 refreshProject(projectId);
                 vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
 
             }, function (error) {
                 onLockUnLockError(projectId, taskId, error);
@@ -486,6 +485,8 @@
                 vm.resetTaskData();
                 refreshProject(projectId);
                 vm.clearCurrentSelection();
+               vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
             }, function (error) {
                 onLockUnLockError(projectId, taskId, error);
             });
@@ -516,6 +517,9 @@
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 refreshProject(projectId);
                 vm.clearCurrentSelection();
             }, function (error) {
@@ -546,7 +550,24 @@
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
             }, function (error) {
-                onLockUnLockError(projectId, taskId, error);
+                // Could not unlock/lock task
+                // Refresh the map and selected task.
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.clearCurrentSelection();
+                refreshProject(projectId);
+                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+                vm.taskLockError = true;
+                // Check if it is an unauthorized error. If so, display appropriate message
+                if (error.status == 401) {
+                    vm.isAuthorized = false;
+                }
+                else {
+                    // Another error occurred.
+                    vm.isAuthorized = true;
+                    vm.taskLockErrorMessage = error.data.Error;
+                }
             });
         };
 

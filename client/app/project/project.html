@@ -104,8 +104,8 @@
                                          </span>
                                     </span>
                                 </h3>
-                                <div ng-show="projectCtrl.selectedTaskData">
-                                    <div ng-show="projectCtrl.isSelectedMappable" class="alert alert--success"
+                                <div ng-show="projectCtrl.selectedTaskData ">
+                                    <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError" class="alert alert--success"
                                          role="alert">
                                         <p>This task is available for mapping.</p>
                                     </div>
@@ -114,7 +114,7 @@
                                 <div>
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
-                                            <p>The task could not be locked for mapping.</p>
+                                            <p>The task could not be locked for mapping. {{ projectCtrl.taskLockErrorMessage }}</p>
                                         </div>
                                     </div>
                                     <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
@@ -122,7 +122,7 @@
                                             <p>Please login first.</p>
                                         </div>
                                     </div>
-                                    <div ng-show="!projectCtrl.isSelectedMappable"
+                                    <div ng-show="!projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
                                          class="alert alert--danger"
                                          role="alert">
                                         <p>The selected task is not available for mapping.</p>
@@ -131,7 +131,7 @@
                                 <!-- task action buttons -->
                                 <div>
                                     <div class="pull-center">
-                                        <button ng-show="projectCtrl.isSelectedMappable"
+                                        <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
                                                 class="button button--secondary button--large"
                                                 ng-click="projectCtrl.lockSelectedTaskMapping()">
                                             Start Mapping
