@@ -64,7 +64,7 @@
                                     <tr class="pointer"
                                         ng-repeat="project in dashboardCtrl.projects | filter:dashboardCtrl.searchText | orderBy:dashboardCtrl.propertyName:dashboardCtrl.reverse"
                                         ng-class="project === dashboardCtrl.selectedProject ? 'selected' : ''"
-                                        ng-click="dashboardCtrl.selectProject($index)">
+                                        ng-click="dashboardCtrl.selectProject(project.id)">
                                         <td>{{ project.id }}</td>
                                         <td>{{ project.name }}</td>
                                         <td>{{ project.portfolio }}</td>

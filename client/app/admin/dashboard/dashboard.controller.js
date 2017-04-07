@@ -12,6 +12,7 @@
     function dashboardController(mapService) {
         var vm = this;
 
+        // TODO: get projects + mapper level stats from the API.
         vm.projects = [
             {
                 id: 1,
@@ -19,7 +20,11 @@
                 portfolio: 'Name of portfolio',
                 percentageMapped: '45',
                 percentageValidated: '33',
-                createdBy: 'LindaA1'
+                levelMappers: [20, 30, 50],
+                createdBy: 'LindaA1',
+                aoiCentroid: {
+                    coordinates: [34.3433748084466, 31.003454415691]
+                }
             },
             {
                 id: 2,
@@ -27,7 +32,11 @@
                 portfolio: 'Name of portfolio',
                 percentageMapped: '66',
                 percentageValidated: '11',
-                createdBy: 'IF'
+                levelMappers: [10, 45, 45],
+                createdBy: 'IF',
+                aoiCentroid: {
+                    coordinates: [-51.3464801406698, -11.5096335806906]
+                }
             }
         ];
 
@@ -54,13 +63,21 @@
             vm.map = mapService.getOSMMap();
             var lastProjectIndex = vm.projects.length - 1;
             setGraphVariables(lastProjectIndex);
+            addVectorLayer_();
+            showProjectsOnMap_();
         }
 
         /**
          * Select a project and show graphs
-         * @param index
+         * @param projectId
          */
-        vm.selectProject = function(index){
+        vm.selectProject = function(projectId){
+            var index = 0;
+            for (var i = 0; i < vm.projects.length; i++){
+                if (vm.projects[i].id == projectId){
+                    index = i;
+                }
+            }
             setGraphVariables(index);
         };
 
@@ -86,8 +103,57 @@
             vm.validatedData = [vm.selectedProject.percentageValidated, 100 - vm.selectedProject.percentageValidated];
             vm.validatedLabels = ['Validated', 'Not validated'];
             // Level of mappers - TODO
-            vm.levelData = [20, 30, 50];
+            vm.levelData = vm.selectedProject.levelMappers;
             vm.levelLabels = ['Beginner', 'Intermediate', 'Advanced'];
+        }
+
+        /**
+         * Add vector layer for the project results
+         */
+        function addVectorLayer_(){
+
+            var fill = new ol.style.Fill({
+                color: [255, 0, 0, 0.5],
+                width: 1
+            });
+            var stroke = new ol.style.Stroke({
+                color: [255, 0, 0, 1],
+                width: 1
+            });
+            var style = new ol.style.Style({
+                image: new ol.style.Circle({
+                    fill: fill,
+                    stroke: stroke,
+                    radius: 5
+                })
+            });
+
+            vm.vectorSource = new ol.source.Vector();
+            var vectorLayer = new ol.layer.Vector({
+                source: vm.vectorSource,
+                style: style
+            });
+            vm.map.addLayer(vectorLayer);
+        }
+
+        /**
+         * Show the projects on the map
+         * @private
+         */
+        function showProjectsOnMap_(){
+
+            vm.vectorSource.clear();
+
+            // iterate over the projects and add the center of the project as a point on the map
+            for (var i = 0; i < vm.projects.length; i++){
+                var projectCenter = ol.proj.transform(vm.projects[i].aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
+                var feature = new ol.Feature({
+                    geometry: new ol.geom.Point(projectCenter)
+                });
+                if (vm.vectorSource) {
+                    vm.vectorSource.addFeature(feature);
+                }
+            }
         }
     }
 })();
