@@ -139,10 +139,4 @@
             projectHighlightVectorSource.clear();
         }
     }
-})(); 
-
-
-
-
-        
-         
+})();    
