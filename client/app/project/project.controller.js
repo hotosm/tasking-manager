@@ -560,6 +560,9 @@
             // - try to lock the task, call returns a promise
             var lockPromise = taskService.lockTasksValidation(projectId, taskIds);
             lockPromise.then(function (tasks) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
@@ -567,8 +570,6 @@
                 vm.validatingStep = 'locked';
                 vm.selectedTaskData = tasks[0];
                 vm.isSelectedValidatable = true;
-                vm.taskErrorMapping = '';
-                vm.taskLockError = false;
                 vm.lockedTaskData = tasks[0];
             }, function (error) {
                 onLockUnLockError(projectId, taskId, error);
