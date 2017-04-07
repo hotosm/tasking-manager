@@ -7,14 +7,14 @@ from server.models.postgis.statuses import TaskStatus
 
 def is_valid_validated_status(value):
     """ Validates that Task Status is in correct range for after validation """
-    valid_values = f'{TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}'
+    valid_values = f'{TaskStatus.MAPPED.name}, {TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}'
 
     try:
         validated_status = TaskStatus[value.upper()]
     except KeyError:
         raise ValidationError(f'Unknown task status. Valid values are {valid_values}')
 
-    if validated_status not in [TaskStatus.INVALIDATED, TaskStatus.VALIDATED]:
+    if validated_status not in [TaskStatus.MAPPED, TaskStatus.INVALIDATED, TaskStatus.VALIDATED]:
         raise ValidationError(f'Invalid status.  Valid values are {valid_values}')
 
 
