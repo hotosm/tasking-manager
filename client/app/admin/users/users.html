@@ -1,0 +1,52 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Users (TODO)
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div class="users-container">
+                        <div class="filter">
+                            <form class="form">
+                                 <h3>Search users</h3>
+                                     <div class="form__group">
+                                         <input type="text" class="form__control form__control--medium" id="form-name" name="form-name" placeholder="Search by username" />
+                                     </div>
+                             </form>
+                        </div>
+                        <div class="results">
+                            <div>
+                                Total number of users: {{ usersCtrl.users.length }}
+                            </div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Mapping level</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="user in usersCtrl.users.slice(((usersCtrl.currentPage-1)*usersCtrl.itemsPerPage), ((usersCtrl.currentPage)*usersCtrl.itemsPerPage))  | filter:usersCtrl.searchText track by $index">
+                                    <td><a href="/user/{{ user.username }}">{{ user.username }}</a></td>
+                                    <td>{{ user.role }}</td>
+                                    <td>{{ user.mappingLevel }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <ul ng-show="usersCtrl.users.length > 0" uib-pagination items-per-page="usersCtrl.itemsPerPage"
+                                total-items="usersCtrl.users.length"
+                                ng-model="usersCtrl.currentPage"></ul>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

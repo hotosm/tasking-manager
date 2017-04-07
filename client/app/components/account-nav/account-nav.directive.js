@@ -79,6 +79,14 @@
         vm.manageLicenses = function(){
             $location.path('admin/licenses');
             vm.showDropdown = false;
-        }
+        };
+
+        /**
+         * Navigate to the user list page
+         */
+        vm.goToUserList = function(){
+            $location.path('admin/users');
+            vm.showDropdown = false;
+        };
     }
 })();

@@ -101,6 +101,12 @@
                     templateUrl: 'app/admin/licenses/license-edit.html',
                     controller: 'licenseEditController',
                     controllerAs: 'licenseEditCtrl'
+                })
+            
+                .when('/admin/users', {
+                    templateUrl: 'app/admin/users/users.html',
+                    controller: 'usersController',
+                    controllerAs: 'usersCtrl'
                 });
             
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them
