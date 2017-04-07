@@ -2,7 +2,7 @@
 
 (function () {
 
-    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown','ui.bootstrap', 'angularMoment', 'taskingmanager.config'])
+    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown','ui.bootstrap', 'angularMoment', 'chart.js', 'taskingmanager.config'])
 
         /**
          * Factory that returns the configuration settings for the current environment
@@ -24,7 +24,7 @@
             }
         }])
 
-        .config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
+        .config(['$routeProvider', '$locationProvider', '$httpProvider', 'ChartJsProvider', function ($routeProvider, $locationProvider, $httpProvider, ChartJsProvider) {
 
             // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
             $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
@@ -34,6 +34,10 @@
                 $httpProvider.defaults.headers.get = {};
             }
             $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
+
+            ChartJsProvider.setOptions({
+                chartColors: ['#D73F3F', '#DCDCDC', '#7A7A7A', '#595959']
+            });
 
             $routeProvider
 

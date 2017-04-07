@@ -22,6 +22,9 @@
   overflow-y: auto
 }
 
+/* ==========================================================================
+   Dashboard stats
+   ========================================================================== */
 .section__inverse--stats {
   background-color: rgba($base-color, 0.9);
   color: #eee;
@@ -30,21 +33,23 @@
   width: 100%;
   clear: both;
   padding: 2rem 0;
+  .stats__card {
+    display: inline-block;
+    margin: 1rem auto;
+    /*width: 250px;*/
+    width: 33%;
+    padding: 0rem 3rem;
+  }
+
+  .stats__card--amount {
+    font-size: 2em;
+    letter-spacing: -1px;
+  }
+
+  .stats__card--title {
+    letter-spacing: 1px;
+    opacity: .7;
+    line-height: 18px;
+  }
 }
 
-.stats__card {
-  display: inline-block;
-  margin: 1rem auto;
-  width: 250px;
-}
-
-.stats__card--amount {
-  font-size: 2em;
-  letter-spacing: -1px;
-}
-
-.stats__card--title {
-  letter-spacing: 1px;
-  opacity: .7;
-  line-height: 18px;
-}
