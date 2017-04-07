@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType
+from schematics.types import StringType, IntType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import TaskStatus
 
@@ -37,3 +37,16 @@ class UnlockAfterValidationDTO(Model):
     project_id = IntType(required=True)
     validated_tasks = ListType(ModelType(ValidatedTask), required=True, serialized_name='validatedTasks')
     user_id = IntType(required=True)
+
+
+class MappedTasksByUser(Model):
+    """ Describes number of tasks user has mapped on a project"""
+    username = StringType(required=True)
+    mapped_task_count = IntType(required=True, serialized_name='mappedTaskCount')
+    tasks_mapped = ListType(IntType, required=True, serialized_name='tasksMapped')
+    last_seen = DateTimeType(required=True, serialized_name='lastSeen')
+
+
+class MappedTasks(Model):
+    """ Describes all tasks currently mapped on a project """
+    mapped_tasks = ListType(ModelType(MappedTasksByUser), serialized_name='mappedTasks')

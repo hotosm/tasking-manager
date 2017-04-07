@@ -4,6 +4,7 @@ from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
+from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, NotFound
@@ -226,6 +227,9 @@ class Task(db.Model):
 
     @staticmethod
     def get_mapped_tasks_by_user(project_id: int):
+        """ Gets all mapped tasks for supplied project grouped by user"""
+
+        # Raw SQL is easier to understand that SQL alchemy here :)
         sql = """select u.username, count(1), json_agg(t.id), max(th.action_date) last_seen
                   from tasks t,
                        task_history th,
@@ -239,12 +243,23 @@ class Task(db.Model):
                  group by u.username""".format(project_id)
 
         results = db.engine.execute(sql)
-
         if results.rowcount == 0:
             raise NotFound()
 
+        mapped_tasks = []
         for row in results:
-            iain = row
+            user_mapped = MappedTasksByUser()
+            user_mapped.username = row[0]
+            user_mapped.mapped_task_count = row[1]
+            user_mapped.tasks_mapped = row[2]
+            user_mapped.last_seen = row[3]
+
+            mapped_tasks.append(user_mapped)
+
+        mapped_tasks_dto = MappedTasks()
+        mapped_tasks_dto.mapped_tasks = mapped_tasks
+
+        return mapped_tasks_dto
 
     def as_dto(self):
         """

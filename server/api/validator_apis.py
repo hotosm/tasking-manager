@@ -169,7 +169,7 @@ class MappedTasksByUser(Resource):
             200:
                 description: Task user is working on
             404:
-                description: Project not found
+                description: No mapped tasks
             500:
                 description: Internal Server Error
         """
@@ -177,7 +177,7 @@ class MappedTasksByUser(Resource):
             mapped_tasks = ValidatorService.get_mapped_tasks_by_user(project_id)
             return mapped_tasks.to_primitive(), 200
         except NotFound:
-            return {"Error": "Project not found"}, 404
+            return {"Error": "No mapped tasks"}, 404
         except Exception as e:
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

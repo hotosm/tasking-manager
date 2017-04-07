@@ -1,6 +1,6 @@
 from flask import current_app
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
+from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound
 from server.services.project_service import ProjectService
@@ -89,5 +89,7 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
-    def get_mapped_tasks_by_user(project_id: int):
+    def get_mapped_tasks_by_user(project_id: int) -> MappedTasks:
+        """ Get all mapped tasks on the project grouped by user"""
         mapped_tasks = Task.get_mapped_tasks_by_user(project_id)
+        return mapped_tasks
