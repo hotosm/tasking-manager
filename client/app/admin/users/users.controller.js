@@ -19,6 +19,7 @@
         vm.itemsPerPage = 5;
         vm.currentPage = 1;
 
+        // TODO: get list of users from API
         vm.users = [
             {
                 username: 'LindaA1',
