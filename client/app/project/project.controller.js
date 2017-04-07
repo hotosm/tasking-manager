@@ -508,7 +508,7 @@
             var tasks = data.map(function (task) {
                 return {
                     comment: comment,
-                    status: status ? status : task.taskStatus,
+                    status: status,
                     taskId: task.taskId
                 };
             });
@@ -782,16 +782,15 @@
             lockPromise.then(function (tasks) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 refreshProject(vm.projectData.projectId);
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'multi-locked';
                 vm.multiSelectedTasksData = tasks;
                 vm.multiLockedTasks = tasks;
-                vm.selectedTaskData = null;
-                vm.lockedTaskData = null
                 vm.isSelectedValidatable = true;
-                vm.taskErrorMapping = '';
-                vm.taskLockError = false;
 
             }, function (error) {
                 refreshProject(vm.projectData.projectId);
