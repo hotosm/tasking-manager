@@ -302,7 +302,7 @@
                                     </span>
                                 </h3>
                                 <div ng-show="projectCtrl.selectedTaskData">
-                                    <div ng-show="projectCtrl.isSelectedValidatable" class="alert alert--success"
+                                    <div ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError" class="alert alert--success"
                                          role="alert">
                                         <p>This task is available for validation.</p>
                                     </div>
@@ -311,7 +311,7 @@
                                 <div>
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
-                                            <p>The task could not be locked for validation.</p>
+                                            <p>The task could not be locked for validation. {{ projectCtrl.taskLockErrorMessage }}</p>
                                         </div>
                                     </div>
                                     <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
@@ -319,7 +319,7 @@
                                             <p>Please login first.</p>
                                         </div>
                                     </div>
-                                    <div ng-show="!projectCtrl.isSelectedValidatable"
+                                    <div ng-show="!projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
                                          class="alert alert--danger"
                                          role="alert">
                                         <p>The selected task is not available for validation.</p>

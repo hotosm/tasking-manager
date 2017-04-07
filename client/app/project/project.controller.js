@@ -26,15 +26,16 @@
         vm.taskErrorMapping = '';
         vm.taskErrorValidation = '';
         vm.taskLockError = false;
-        vm.taskUnLockError = false;
         vm.taskLockErrorMessage = '';
+        vm.taskUnLockError = false;
+        vm.taskUnLockErrorMessage = '';
 
         vm.resetErrors = function () {
             vm.taskErrorMapping = '';
             vm.taskErrorValidation = '';
             vm.taskLockError = false;
-            vm.taskUnLockError = false;
             vm.taskLockErrorMessage = '';
+            vm.taskUnLockError = false;
         }
 
         //authorization
@@ -485,7 +486,7 @@
                 vm.resetTaskData();
                 refreshProject(projectId);
                 vm.clearCurrentSelection();
-               vm.mappingStep = 'selecting';
+                vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
             }, function (error) {
                 onLockUnLockError(projectId, taskId, error);
@@ -550,24 +551,7 @@
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
             }, function (error) {
-                // Could not unlock/lock task
-                // Refresh the map and selected task.
-                vm.resetErrors();
-                vm.resetStatusFlags();
-                vm.resetTaskData();
-                vm.clearCurrentSelection();
-                refreshProject(projectId);
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
-                vm.taskLockError = true;
-                // Check if it is an unauthorized error. If so, display appropriate message
-                if (error.status == 401) {
-                    vm.isAuthorized = false;
-                }
-                else {
-                    // Another error occurred.
-                    vm.isAuthorized = true;
-                    vm.taskLockErrorMessage = error.data.Error;
-                }
+                onLockError(projectId, taskId, error);
             });
         };
 
@@ -593,7 +577,7 @@
                 vm.isSelectedValidatable = true;
                 vm.lockedTaskData = tasks[0];
             }, function (error) {
-                onLockUnLockError(projectId, taskId, error);
+                onLockError(projectId, taskId, error);
             });
         };
 
@@ -723,9 +707,13 @@
          * @param taskId
          * @param error
          */
-        function onLockUnLockError(projectId, taskId, error) {
-            // Could not unlock/lock task
+        function onLockError(projectId, taskId, error) {
+            // Could not lock task
             // Refresh the map and selected task.
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
+            vm.clearCurrentSelection();
             refreshProject(projectId);
             onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
             vm.taskLockError = true;
@@ -736,8 +724,28 @@
             else {
                 // Another error occurred.
                 vm.isAuthorized = true;
+                vm.taskLockErrorMessage = error.data.Error;
             }
+        }
 
+        function onUnLockError(projectId, taskId, error) {
+            // Could not lock task
+            // Refresh the map and selected task.
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
+            vm.clearCurrentSelection();
+            refreshProject(projectId);
+            vm.taskUnLockError = true;
+            // Check if it is an unauthorized error. If so, display appropriate message
+            if (error.status == 401) {
+                vm.isAuthorized = false;
+            }
+            else {
+                // Another error occurred.
+                vm.isAuthorized = true;
+                vm.taskUnLockErrorMessage = error.data.Error;
+            }
         }
 
         /**
