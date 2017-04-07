@@ -78,6 +78,13 @@
                                     <p>There are no tasks currently available for mapping.</p>
                                 </div>
                             </div>
+                            <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'" class="alert alert--danger"
+                                 role="alert">
+                                <button class="alert__button-dismiss" title="Dismiss alert"
+                                        ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
+                                </button>
+                                <p>There was an error retrieving the task from the server.</p>
+                            </div>
                         </div>
                         <!-- task viewing and mapping UI's -->
                         <div ng-show="projectCtrl.mappingStep === 'viewing' || projectCtrl.mappingStep === 'locked'">
@@ -119,14 +126,6 @@
                                          class="alert alert--danger"
                                          role="alert">
                                         <p>The selected task is not available for mapping.</p>
-                                    </div>
-                                    <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'">
-                                        <div class="alert alert--danger" role="alert">
-                                            <button class="alert__button-dismiss" title="Dismiss alert"
-                                                    ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
-                                            </button>
-                                            <p>There was an error retrieving the task from the server.</p>
-                                        </div>
                                     </div>
                                 </div>
                                 <!-- task action buttons -->
@@ -229,6 +228,14 @@
                                     <p>There are no tasks currently available for validation.</p>
                                 </div>
                             </div>
+                            <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
+                                <div class="alert alert--danger" role="alert">
+                                    <button class="alert__button-dismiss" title="Dismiss alert"
+                                            ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
+                                    </button>
+                                    <p>there was an error retrieving the task from the server.</p>
+                                </div>
+                            </div>
                             <div>
                                 <p><strong>Option 3: </strong> Select By user:
                                 </p>
@@ -316,14 +323,6 @@
                                          class="alert alert--danger"
                                          role="alert">
                                         <p>The selected task is not available for validation.</p>
-                                    </div>
-                                    <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
-                                        <div class="alert alert--danger" role="alert">
-                                            <button class="alert__button-dismiss" title="Dismiss alert"
-                                                    ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
-                                            </button>
-                                            <p>there was an error retrieving the task from the server.</p>
-                                        </div>
                                     </div>
                                 </div>
                                 <!-- task action buttons -->

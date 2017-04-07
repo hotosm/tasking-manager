@@ -402,8 +402,8 @@
                 // task not returned successfully
                 vm.taskErrorMapping = 'task-get-error';
                 vm.taskErrorValidation = 'task-get-error';
-                vm.mappingStep = 'viewing';
-                vm.validatingStep = 'viewing';
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
                 if (vm.currentTab === 'description' || vm.currentTab !== 'instructions') {
                     //prioritise mapping
                     vm.currentTab = 'mapping';
