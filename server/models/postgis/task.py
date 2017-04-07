@@ -188,7 +188,8 @@ class Task(db.Model):
 
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
 
-        if new_state == TaskStatus.MAPPED:
+        if new_state == TaskStatus.MAPPED and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
+            # Don't set mapped if state being set back to mapped after validation
             # TODO +1 user count
             self.mapped_by = user_id
         elif new_state == TaskStatus.VALIDATED:

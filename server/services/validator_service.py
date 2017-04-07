@@ -68,7 +68,7 @@ class ValidatorService:
                 raise NotFound(f'Task {validated_task.task_id} not found')
 
             if TaskStatus(task.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
-                raise ValidatatorServiceError(f'Task {validated_task.task_id} is not LOCKED_FOR_VALIDATION or VALIDATED')
+                raise ValidatatorServiceError(f'Task {validated_task.task_id} is not LOCKED_FOR_VALIDATION')
 
             if task.locked_by != validated_dto.user_id:
                 raise ValidatatorServiceError('Attempting to unlock a task owned by another user')
