@@ -534,6 +534,9 @@
             // - try to lock the task, call returns a promise
             var lockPromise = taskService.lockTaskMapping(projectId, taskId);
             lockPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
@@ -541,9 +544,6 @@
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
                 vm.isSelectedMappable = true;
-                vm.taskErrorMapping = '';
-                vm.taskErrorValidation = '';
-                vm.taskLockError = false;
                 vm.lockedTaskData = data;
             }, function (error) {
                 onLockUnLockError(projectId, taskId, error);
