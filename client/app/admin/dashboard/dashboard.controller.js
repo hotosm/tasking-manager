@@ -20,7 +20,6 @@
                 portfolio: 'Name of portfolio',
                 percentageMapped: '45',
                 percentageValidated: '33',
-                levelMappers: [20, 30, 50],
                 createdBy: 'LindaA1',
                 aoiCentroid: {
                     coordinates: [34.3433748084466, 31.003454415691]
@@ -32,7 +31,6 @@
                 portfolio: 'Name of portfolio',
                 percentageMapped: '66',
                 percentageValidated: '11',
-                levelMappers: [10, 45, 45],
                 createdBy: 'IF',
                 aoiCentroid: {
                     coordinates: [-51.3464801406698, -11.5096335806906]
@@ -46,8 +44,6 @@
         vm.mappedLabels = [];
         vm.validatedData = [];
         vm.validatedLabels = [];
-        vm.levelData = [];
-        vm.levelLabels = [];
 
         // Filter
         vm.searchText = {};
@@ -109,9 +105,6 @@
             // Tasks validated
             vm.validatedData = [vm.selectedProject.percentageValidated, 100 - vm.selectedProject.percentageValidated];
             vm.validatedLabels = ['Validated', 'Not validated'];
-            // Level of mappers - TODO
-            vm.levelData = vm.selectedProject.levelMappers;
-            vm.levelLabels = ['Beginner', 'Intermediate', 'Advanced'];
         }
     }
 })();
