@@ -23,27 +23,44 @@
         vm.validatingStep = '';
 
         //error control
-        vm.taskError = '';
+        vm.taskErrorMapping = '';
         vm.taskErrorValidation = '';
         vm.taskLockError = false;
         vm.taskUnLockError = false;
         vm.taskLockErrorMessage = '';
 
+        vm.resetErrors = function () {
+            vm.taskErrorMapping = '';
+            vm.taskErrorValidation = '';
+            vm.taskLockError = false;
+            vm.taskUnLockError = false;
+            vm.taskLockErrorMessage = '';
+        }
+
         //authorization
         vm.isAuthorized = false;
 
-        //selected task
-        vm.selectedTaskData = null;
+        //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
 
-        //locking/unlocking
+        vm.resetStatusFlags = function () {
+            vm.isSelectedMappable = false;
+            vm.isSelectedValidatable = false;
+        }
+
+        //task data
+        vm.selectedTaskData = null;
         vm.lockedTaskData = null;
-
-
-        //multi-validation
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
+
+        vm.resetTaskData = function () {
+            vm.selectedTaskData = null;
+            vm.lockedTaskData = null;
+            vm.multiSelectedTasksData = [];
+            vm.multiLockedTasks = [];
+        }
 
 
         //project display text
@@ -201,14 +218,8 @@
         /**
          * Sets up a randomly selected task as the currently selected task
          */
-        vm.selectRandomTask = function () {
-            var feature = null;
-            if (vm.currentTab === 'mapping') {
-                feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
-            }
-            else if (vm.currentTab === 'validation') {
-                feature = taskService.getRandomTaskFeatureForValidation(vm.taskVectorLayer.getSource().getFeatures());
-            }
+        vm.selectRandomTaskMap = function () {
+            var feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
 
             if (feature) {
                 selectFeature(feature);
@@ -216,17 +227,30 @@
                 vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
             }
             else {
-                vm.selectedTaskData = null;
-                vm.isSelectedMappable = false;
-                vm.isSelectedValidatable = false;
-                vm.taskError = 'none-available';
-                vm.taskErrorValidation = 'none-available';
-                vm.taskLockError = false;
-                vm.mappingStep = vm.currentTab === 'mapping' ? 'viewing' : 'selecting';
-                vm.validatingStep = vm.currentTab === 'validation' ? 'viewing' : 'selecting';
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.taskErrorMapping = 'none-available';
+                vm.mappingStep = 'selecting';
             }
         };
 
+        vm.selectRandomTaskValidate = function () {
+            var feature = taskService.getRandomTaskFeatureForValidation(vm.taskVectorLayer.getSource().getFeatures());
+
+            if (feature) {
+                selectFeature(feature);
+                var padding = getPaddingSize();
+                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+            }
+            else {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.taskErrorValidation = 'none-available';
+                vm.validatingStep = 'selecting';
+            }
+        };
 
         /**
          * clears the currently selected task.  Clears down/resets the vm properties and clears the feature param in the select interaction object.
@@ -236,7 +260,7 @@
             vm.isSelectedMappable = false;
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
-            vm.taskError = '';
+            vm.taskErrorMapping = '';
             vm.taskErrorValidation = '';
             select.getFeatures().clear();
         };
@@ -356,7 +380,7 @@
             var projectId = vm.projectData.projectId;
 
             //reset task errors
-            vm.taskError = '';
+            vm.taskErrorMapping = '';
             vm.taskErrorValidation = '';
             vm.taskLockError = false;
 
@@ -378,7 +402,7 @@
                 vm.selectedTaskData = null;
                 vm.isSelectedMappable = false;
                 vm.isSelectedValidatable = false;
-                vm.taskError = 'task-get-error';
+                vm.taskErrorMapping = 'task-get-error';
                 vm.taskErrorValidation = 'task-get-error';
                 vm.mappingStep = 'viewing';
                 vm.validatingStep = 'viewing';
@@ -524,7 +548,7 @@
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
                 vm.isSelectedMappable = true;
-                vm.taskError = '';
+                vm.taskErrorMapping = '';
                 vm.taskErrorValidation = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = data;
@@ -550,7 +574,7 @@
                 vm.validatingStep = 'locked';
                 vm.selectedTaskData = tasks[0];
                 vm.isSelectedValidatable = true;
-                vm.taskError = '';
+                vm.taskErrorMapping = '';
                 vm.taskLockError = false;
                 vm.lockedTaskData = tasks[0];
             }, function (error) {
@@ -768,7 +792,7 @@
                 vm.selectedTaskData = null;
                 vm.lockedTaskData = null
                 vm.isSelectedValidatable = true;
-                vm.taskError = '';
+                vm.taskErrorMapping = '';
                 vm.taskLockError = false;
 
             }, function (error) {

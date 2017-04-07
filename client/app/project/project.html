@@ -68,11 +68,16 @@
 
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
-                                <button ng-click="projectCtrl.selectRandomTask()"
+                                <button ng-click="projectCtrl.selectRandomTaskMap()"
                                         class="button button--secondary pull-center">
                                     Select a random task
                                 </button>
                             </p>
+                            <div ng-show="projectCtrl.taskErrorMapping === 'none-available'">
+                                <div class="alert alert--danger" role="alert">
+                                    <p>There are no tasks currently available for mapping.</p>
+                                </div>
+                            </div>
                         </div>
                         <!-- task viewing and mapping UI's -->
                         <div ng-show="projectCtrl.mappingStep === 'viewing' || projectCtrl.mappingStep === 'locked'">
@@ -81,7 +86,8 @@
                                 <!-- task information -->
                                 <h2>Mapping</h2>
                                 <h3>Task
-                                    #{{ projectCtrl.selectedTaskData.taskId }} is {{ projectCtrl.selectedTaskData.taskStatus }}
+                                    #{{ projectCtrl.selectedTaskData.taskId }}
+                                    is {{ projectCtrl.selectedTaskData.taskStatus }}
                                     <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_MAPPING'"> by
                                          <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
                                             you
@@ -114,12 +120,7 @@
                                          role="alert">
                                         <p>The selected task is not available for mapping.</p>
                                     </div>
-                                    <div ng-show="projectCtrl.taskError === 'none-available'">
-                                        <div class="alert alert--danger" role="alert">
-                                            <p>There are no tasks currently available for mapping.</p>
-                                        </div>
-                                    </div>
-                                    <div ng-show="projectCtrl.taskError === 'task-get-error'">
+                                    <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'">
                                         <div class="alert alert--danger" role="alert">
                                             <button class="alert__button-dismiss" title="Dismiss alert"
                                                     ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
@@ -141,8 +142,8 @@
                                     <div class="pull-center">
                                         <div class="button-group button-group--horizontal" role="group"
                                              aria-label="other options">
-                                            <button ng-hide="projectCtrl.taskError === 'none-available'"
-                                                    ng-click="projectCtrl.selectRandomTask()"
+                                            <button ng-hide="projectCtrl.taskErrorMapping === 'none-available'"
+                                                    ng-click="projectCtrl.selectRandomTaskMap()"
                                                     class="button button--achromic">
                                                 Select another task
                                             </button>
@@ -218,11 +219,16 @@
                             <p>There are 3 options for choosing a task for validation:</p>
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
-                                <button ng-click="projectCtrl.selectRandomTask()"
+                                <button ng-click="projectCtrl.selectRandomTaskValidate()"
                                         class="button button--secondary pull-center">
                                     Select a random task
                                 </button>
                             </p>
+                            <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
+                                <div class="alert alert--danger" role="alert">
+                                    <p>There are no tasks currently available for validation.</p>
+                                </div>
+                            </div>
                             <div>
                                 <p><strong>Option 3: </strong> Select By user:
                                 </p>
@@ -248,17 +254,22 @@
                                         <td class="heading-alt">Lock</td>
                                     </tr>
                                     </thead>
-                                    <tbody >
+                                    <tbody>
                                     <tr ng-repeat="doneTasks in projectCtrl.tasksForValidation.doneTasks">
                                         <td>{{ doneTasks.user }}</td>
                                         <td>{{ doneTasks.level }}</td>
                                         <td>{{ doneTasks.tasks.length }}</td>
-                                        <td><span am-time-ago="doneTasks.tasks[0].timeStamp | amUtc | amLocal"></span></td>
+                                        <td><span am-time-ago="doneTasks.tasks[0].timeStamp | amUtc | amLocal"></span>
+                                        </td>
                                         <td><span
                                                 am-time-ago="doneTasks.tasks[user.tasks.length-1].timeStamp | amUtc | amLocal"></span>
                                         </td>
                                         <td>
-                                            <button ng-click="projectCtrl.contributorClick(doneTasks)" ng-mouseover="projectCtrl.contributerHighlight(doneTasks, true)" ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">Lock</button>
+                                            <button ng-click="projectCtrl.contributorClick(doneTasks)"
+                                                    ng-mouseover="projectCtrl.contributerHighlight(doneTasks, true)"
+                                                    ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
+                                                Lock
+                                            </button>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -272,7 +283,8 @@
                                 <!-- task information -->
                                 <h2>Validation</h2>
                                 <h3>Task
-                                    #{{ projectCtrl.selectedTaskData.taskId }} is {{ projectCtrl.selectedTaskData.taskStatus }}
+                                    #{{ projectCtrl.selectedTaskData.taskId }}
+                                    is {{ projectCtrl.selectedTaskData.taskStatus }}
                                     <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_VALIDATION'"> by
                                         <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
                                             you
@@ -305,11 +317,6 @@
                                          role="alert">
                                         <p>The selected task is not available for validation.</p>
                                     </div>
-                                    <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
-                                        <div class="alert alert--danger" role="alert">
-                                            <p>There are no tasks currently available for validation.</p>
-                                        </div>
-                                    </div>
                                     <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
                                         <div class="alert alert--danger" role="alert">
                                             <button class="alert__button-dismiss" title="Dismiss alert"
@@ -332,8 +339,8 @@
                                     <div class="pull-center">
                                         <div class="button-group button-group--horizontal" role="group"
                                              aria-label="other options">
-                                            <button ng-hide="projectCtrl.taskError === 'none-available'"
-                                                    ng-click="projectCtrl.selectRandomTask()"
+                                            <button ng-hide="projectCtrl.taskErrorMapping === 'none-available'"
+                                                    ng-click="projectCtrl.selectRandomTaskValidate()"
                                                     class="button button--achromic">
                                                 Select another task
                                             </button>
@@ -487,7 +494,7 @@
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                             <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Invalidated by <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                           <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">Marked as ready <a
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">Marked as ready <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                         </div>
                                         <div>
