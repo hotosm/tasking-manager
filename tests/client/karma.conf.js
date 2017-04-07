@@ -28,7 +28,7 @@ module.exports = function(config) {
       'node_modules/ng-showdown/dist/ng-showdown.js',
       'node_modules/moment/moment.js',
       'node_modules/angular-moment/angular-moment.js',
-      'node_modules/chart.js/dist/chart.js',
+      'node_modules/chart.js/dist/Chart.js',
       'node_modules/angular-chart.js/dist/angular-chart.js',
       'app/*.js',
       'app/**/*.js',
