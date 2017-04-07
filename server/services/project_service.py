@@ -14,22 +14,6 @@ class ProjectServiceError(Exception):
 
 class ProjectService:
 
-    project = Project
-
-    @classmethod
-    def from_project_id(cls, project_id):
-        """
-        Constructs service for supplied project
-        :param project_id: ID of project in scope
-        :raises NotFound if project doesn't exist in the DB
-        """
-        cls.project = Project.get(project_id)
-
-        if cls.project is None:
-            raise NotFound()
-
-        return cls()
-
     @staticmethod
     def get_project_by_id(project_id: int) -> Project:
         project = Project.get(project_id)
@@ -120,3 +104,7 @@ class ProjectService:
         if len(results.results) == 0:
             raise NotFound()
         return results
+
+    @staticmethod
+    def get_mapped_tasks_by_user(project_id: int):
+        project = ProjectService.get_project_by_id(project_id)
