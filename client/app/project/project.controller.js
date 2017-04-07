@@ -21,21 +21,25 @@
         vm.currentTab = '';
         vm.mappingStep = '';
         vm.validatingStep = '';
+
+        //error control
         vm.taskError = '';
         vm.taskErrorValidation = '';
         vm.taskLockError = false;
         vm.taskUnLockError = false;
-        vm.isAuthorized = false;
-        vm.selectedEditor = '';
         vm.taskLockErrorMessage = '';
+
+        //authorization
+        vm.isAuthorized = false;
 
         //selected task
         vm.selectedTaskData = null;
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
 
-        //locked task
+        //locking/unlocking
         vm.lockedTaskData = null;
+
 
         //multi-validation
         vm.multiSelectedTasksData = [];
@@ -49,6 +53,7 @@
 
         //editor
         vm.editorStartError = '';
+        vm.selectedEditor = '';
 
         //interaction
         var select = new ol.interaction.Select({
@@ -163,8 +168,8 @@
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
-        $scope.$on('$locationChangeStart', function(){
-             if (angular.isDefined(autoRefresh)) {
+        $scope.$on('$locationChangeStart', function () {
+            if (angular.isDefined(autoRefresh)) {
                 $interval.cancel(autoRefresh);
                 autoRefresh = undefined;
             }
@@ -393,8 +398,6 @@
             var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
             vm.isSelectedMappable = isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY';
             vm.isSelectedValidatable = isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED';
-            vm.taskError = vm.isSelectedMappable ? '' : 'task-not-mappable';
-            vm.taskErrorValidation = vm.isSelectedValidatable ? '' : 'task-not-validatable';
             vm.selectedTaskData = data;
 
             //jump to locked step if mappable and locked by me
