@@ -10,6 +10,7 @@
         .controller('contributeController', ['mapService', 'searchService', 'projectMapService', contributeController]);
 
     function contributeController(mapService, searchService, projectMapService) {
+
         var vm = this;
 
         vm.results = [];
@@ -49,6 +50,21 @@
                 projectMapService.showProjectsOnMap(vm.results);
             });
         }
+
+        /**
+         * Set the mapper level
+         * @param level
+         */
+        vm.setMapperLevel = function(level){
+            vm.mapperLevel = level;
+        };
+
+        /**
+         * Search projects
+         */
+        vm.search = function(){
+            searchProjects();
+        };
 
         /**
          * Set the mapper level

@@ -123,7 +123,6 @@
          * Highlight project on map by showing a highlights layer
          */
         vm.highlightProjectOnMap = function(id){
-            console.log(vm.projects);
             projectMapService.highlightProjectOnMap(vm.projects, id);
         };
     }
