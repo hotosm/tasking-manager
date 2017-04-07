@@ -87,3 +87,7 @@ class ValidatorService:
         task_dtos.tasks = dtos
 
         return task_dtos
+
+    @staticmethod
+    def get_mapped_tasks_by_user(project_id: int):
+        mapped_tasks = Task.get_mapped_tasks_by_user(project_id)

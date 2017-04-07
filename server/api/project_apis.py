@@ -145,39 +145,3 @@ class HasUserTaskOnProject(Resource):
             error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
-
-
-class MappedTasksByUser(Resource):
-
-    def get(self, project_id):
-        """
-        Get mapped tasks grouped by user
-        ---
-        tags:
-            - validation
-        produces:
-            - application/json
-        parameters:
-            - name: project_id
-              in: path
-              description: The ID of the project the task is associated with
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: Task user is working on
-            404:
-                description: Project not found
-            500:
-                description: Internal Server Error
-        """
-        try:
-            mapped_tasks = ProjectService.get_mapped_tasks_by_user(project_id)
-            return mapped_tasks.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not found"}, 404
-        except Exception as e:
-            error_msg = f'Task Lock API - unhandled error: {str(e)}'
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500

@@ -104,7 +104,3 @@ class ProjectService:
         if len(results.results) == 0:
             raise NotFound()
         return results
-
-    @staticmethod
-    def get_mapped_tasks_by_user(project_id: int):
-        project = ProjectService.get_project_by_id(project_id)
