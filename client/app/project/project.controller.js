@@ -454,17 +454,12 @@
             var unLockPromise = taskService.unLockTaskMapping(projectId, taskId, comment, status);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 refreshProject(projectId);
-                if (status == 'MAPPED') {
-                    vm.lockedTaskData = null;
-                    vm.taskLockError = false;
-                    vm.clearCurrentSelection();
-                }
-                else {
-                    vm.lockedTaskData = null;
-                    vm.taskLockError = false;
-                    refreshCurrentSelection(data);
-                }
+                vm.clearCurrentSelection();
+
             }, function (error) {
                 onLockUnLockError(projectId, taskId, error);
             });
