@@ -258,12 +258,11 @@
          * clears the currently selected task.  Clears down/resets the vm properties and clears the feature param in the select interaction object.
          */
         vm.clearCurrentSelection = function () {
-            vm.selectedTaskData = null;
-            vm.isSelectedMappable = false;
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
-            vm.taskErrorMapping = '';
-            vm.taskErrorValidation = '';
             select.getFeatures().clear();
         };
 
