@@ -140,8 +140,8 @@ class HasUserTaskOnProject(Resource):
             locked_tasks = ProjectService.get_task_for_logged_in_user(project_id, tm.authenticated_user_id)
             return locked_tasks.to_primitive(), 200
         except NotFound:
-            return {"Error": "Task Not Found"}, 404
+            return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

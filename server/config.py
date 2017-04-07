@@ -1,6 +1,5 @@
 import logging
 import os
-from server.models.postgis.utils import DateTimeEncoder
 
 
 class EnvironmentConfig:
