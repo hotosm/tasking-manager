@@ -232,6 +232,7 @@
                 vm.resetTaskData();
                 vm.taskErrorMapping = 'none-available';
                 vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
             }
         };
 
@@ -248,6 +249,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 vm.taskErrorValidation = 'none-available';
+                vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
             }
         };
@@ -380,9 +382,9 @@
             var projectId = vm.projectData.projectId;
 
             //reset task errors
-            vm.taskErrorMapping = '';
-            vm.taskErrorValidation = '';
-            vm.taskLockError = false;
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
 
             // get full task from task service call
             var taskPromise = taskService.getTask(projectId, taskId);
@@ -399,9 +401,6 @@
 
             }, function () {
                 // task not returned successfully
-                vm.selectedTaskData = null;
-                vm.isSelectedMappable = false;
-                vm.isSelectedValidatable = false;
                 vm.taskErrorMapping = 'task-get-error';
                 vm.taskErrorValidation = 'task-get-error';
                 vm.mappingStep = 'viewing';
