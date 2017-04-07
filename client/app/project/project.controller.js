@@ -481,9 +481,10 @@
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 refreshProject(projectId);
-                vm.lockedTaskData = null;
-                vm.taskLockError = false;
                 vm.clearCurrentSelection();
             }, function (error) {
                 onLockUnLockError(projectId, taskId, error);
@@ -508,19 +509,18 @@
                 };
             });
 
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
+
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
             unLockPromise.then(function (data) {
                 refreshProject(projectId);
-                vm.multiLockedTasks = null;
-                vm.taskUnLockError = false;
                 vm.clearCurrentSelection();
             }, function (error) {
                 refreshProject(projectId);
-                vm.multiLockedTasks = null;
-                vm.taskUnLockError = true;
                 select.getFeatures().clear();
-
             });
         };
 
