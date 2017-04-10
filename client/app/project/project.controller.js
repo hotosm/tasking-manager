@@ -184,7 +184,7 @@
             autoRefresh = $interval(function () {
                 refreshProject(id);
                 //TODO do a selected task refesh too
-            }, 10000 );
+            }, 10000);
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -381,16 +381,16 @@
             var taskId = feature.get('taskId');
             var projectId = vm.projectData.projectId;
 
-            //reset task errors
-            vm.resetErrors();
-            vm.resetStatusFlags();
-            vm.resetTaskData();
 
             // get full task from task service call
             var taskPromise = taskService.getTask(projectId, taskId);
             taskPromise.then(function (data) {
                 //task returned successfully
-                refreshCurrentSelection(data);
+                //reset task errors
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                setUpSelectedTask(data);
                 // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
                 // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
                 // tab
@@ -401,6 +401,9 @@
 
             }, function () {
                 // task not returned successfully
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 vm.taskErrorMapping = 'task-get-error';
                 vm.taskErrorValidation = 'task-get-error';
                 vm.mappingStep = 'selecting';
@@ -416,7 +419,7 @@
          * Sets up the view model for the task options and actions for passed in task data object.
          * @param data - task JSON data object
          */
-        function refreshCurrentSelection(data) {
+        function setUpSelectedTask(data) {
             var isLockedByMeMapping = data.taskStatus === 'LOCKED_FOR_MAPPING' && data.lockHolder === vm.user.username;
             var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
             vm.isSelectedMappable = isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY';
@@ -719,7 +722,7 @@
             vm.resetTaskData();
             vm.clearCurrentSelection();
             refreshProject(projectId);
-            if(taskId != null) {
+            if (taskId != null) {
                 onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
             }
             vm.taskLockError = true;
@@ -828,7 +831,7 @@
             });
         }
 
-        vm.resetToSelectingStep = function(){
+        vm.resetToSelectingStep = function () {
             vm.resetErrors();
             vm.resetStatusFlags();
             vm.resetTaskData();
