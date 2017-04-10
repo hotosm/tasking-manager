@@ -303,8 +303,12 @@
             }
         }
 
-        function populateMappedTaskByUserTable(id) {
-            var mappedTasksByUserPromise = taskService.getMappedTasksByUser(id);
+        /**
+         * Updates the data for mapped tasks by user
+         * @param projectId
+         */
+        function populateMappedTaskByUserTable(projectId) {
+            var mappedTasksByUserPromise = taskService.getMappedTasksByUser(projectId);
             mappedTasksByUserPromise.then(function (data) {
                 vm.mappedTasksPerUser = data.mappedTasks;
             }, function () {

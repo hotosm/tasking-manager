@@ -292,6 +292,11 @@
             return null;
         }
 
+        /**
+         * Gets mapped tasks grouped by user and returns a promise
+         * @param projectId
+         * @returns {!jQuery.jqXHR|*|!jQuery.Promise|!jQuery.deferred}
+         */
         function getMappedTasksByUser(projectId){
                      // Returns a promise
             return $http({
