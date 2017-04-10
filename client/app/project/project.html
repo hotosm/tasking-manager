@@ -92,10 +92,22 @@
                             <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                 <!-- task information -->
                                 <h2>Mapping</h2>
-                                <h3>Task
-                                    #{{ projectCtrl.selectedTaskData.taskId }}
-                                    is {{ projectCtrl.selectedTaskData.taskStatus }}
-                                    <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_MAPPING' || projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_VALIDATION' "> by
+                                <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>The task could not be locked for
+                                            mapping. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Please login first.</p>
+                                    </div>
+                                </div>
+                                <div ng-hide="projectCtrl.taskLockError">
+                                    <h3>Task
+                                        #{{ projectCtrl.selectedTaskData.taskId }}
+                                        is {{ projectCtrl.selectedTaskData.taskStatus }}
+                                        <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_MAPPING' || projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_VALIDATION' "> by
                                          <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
                                             you
                                          </span>
@@ -103,31 +115,21 @@
                                             {{ projectCtrl.selectedTaskData.lockHolder }}
                                          </span>
                                     </span>
-                                </h3>
-                                <div ng-show="projectCtrl.selectedTaskData ">
-                                    <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
-                                         class="alert alert--success"
-                                         role="alert">
-                                        <p>This task is available for mapping.</p>
-                                    </div>
-                                </div>
-                                <!-- task error alerts -->
-                                <div>
-                                    <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
-                                        <div class="alert alert--danger" role="alert">
-                                            <p>The task could not be locked for
-                                                mapping. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                    </h3>
+                                    <div ng-show="projectCtrl.selectedTaskData ">
+                                        <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                             class="alert alert--success"
+                                             role="alert">
+                                            <p>This task is available for mapping.</p>
                                         </div>
                                     </div>
-                                    <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
-                                        <div class="alert alert--danger" role="alert">
-                                            <p>Please login first.</p>
+                                    <!-- task error alerts -->
+                                    <div>
+                                        <div ng-show="!projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                             class="alert alert--danger"
+                                             role="alert">
+                                            <p>The selected task is not available for mapping.</p>
                                         </div>
-                                    </div>
-                                    <div ng-show="!projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
-                                         class="alert alert--danger"
-                                         role="alert">
-                                        <p>The selected task is not available for mapping.</p>
                                     </div>
                                 </div>
                                 <!-- task action buttons -->
@@ -159,7 +161,8 @@
                             <!-- task locked UI -->
                             <div ng-show="projectCtrl.mappingStep === 'locked'"><!-- task mapping UI -->
                                 <h3>Task
-                                    #{{ projectCtrl.lockedTaskData.taskId }} is {{ projectCtrl.lockedTaskData.taskStatus }} by
+                                    #{{ projectCtrl.lockedTaskData.taskId }}
+                                    is {{ projectCtrl.lockedTaskData.taskStatus }} by
                                     <span ng-show="projectCtrl.lockedTaskData.lockHolder === projectCtrl.user.username">
                                         you
                                     </span>
@@ -303,10 +306,22 @@
                             <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                 <!-- task information -->
                                 <h2>Validation</h2>
-                                <h3>Task
-                                    #{{ projectCtrl.selectedTaskData.taskId }}
-                                    is {{ projectCtrl.selectedTaskData.taskStatus }}
-                                    <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_MAPPING' || projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_VALIDATION' "> by
+                                <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>The task could not be locked for
+                                            validation. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Please login first.</p>
+                                    </div>
+                                </div>
+                                <div ng-hide="projectCtrl.taskLockError">
+                                    <h3>Task
+                                        #{{ projectCtrl.selectedTaskData.taskId }}
+                                        is {{ projectCtrl.selectedTaskData.taskStatus }}
+                                        <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_MAPPING' || projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_VALIDATION' "> by
                                         <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
                                             you
                                         </span>
@@ -314,37 +329,27 @@
                                             {{ projectCtrl.selectedTaskData.lockHolder }}
                                         </span>
                                     </span>
-                                </h3>
-                                <div ng-show="projectCtrl.selectedTaskData">
-                                    <div ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
-                                         class="alert alert--success"
-                                         role="alert">
-                                        <p>This task is available for validation.</p>
-                                    </div>
-                                </div>
-                                <!-- task error alerts -->
-                                <div>
-                                    <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
-                                        <div class="alert alert--danger" role="alert">
-                                            <p>The task could not be locked for
-                                                validation. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                    </h3>
+                                    <div ng-show="projectCtrl.selectedTaskData">
+                                        <div ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
+                                             class="alert alert--success"
+                                             role="alert">
+                                            <p>This task is available for validation.</p>
                                         </div>
                                     </div>
-                                    <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
-                                        <div class="alert alert--danger" role="alert">
-                                            <p>Please login first.</p>
+                                    <!-- task error alerts -->
+                                    <div>
+                                        <div ng-show="!projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
+                                             class="alert alert--danger"
+                                             role="alert">
+                                            <p>The selected task is not available for validation.</p>
                                         </div>
-                                    </div>
-                                    <div ng-show="!projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
-                                         class="alert alert--danger"
-                                         role="alert">
-                                        <p>The selected task is not available for validation.</p>
                                     </div>
                                 </div>
                                 <!-- task action buttons -->
                                 <div>
                                     <div class="pull-center">
-                                        <button ng-show="projectCtrl.isSelectedValidatable"
+                                        <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
                                                 class="button button--secondary button--large"
                                                 ng-click="projectCtrl.lockSelectedTaskValidation()">
                                             Start Validating
@@ -369,8 +374,9 @@
                             </div>
                             <!-- task locked UI -->
                             <div ng-show="projectCtrl.validatingStep === 'locked'"><!-- task mapping UI -->
-                                 <h3>Task
-                                    #{{ projectCtrl.lockedTaskData.taskId }} is {{ projectCtrl.lockedTaskData.taskStatus }} by
+                                <h3>Task
+                                    #{{ projectCtrl.lockedTaskData.taskId }}
+                                    is {{ projectCtrl.lockedTaskData.taskStatus }} by
                                     <span ng-show="projectCtrl.lockedTaskData.lockHolder === projectCtrl.user.username">
                                         you
                                     </span>

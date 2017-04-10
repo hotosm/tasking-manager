@@ -717,13 +717,9 @@
         function onLockError(projectId, taskId, error) {
             // Could not lock task
             // Refresh the map and selected task.
-            vm.resetErrors();
-            vm.resetStatusFlags();
-            vm.resetTaskData();
-            vm.clearCurrentSelection();
             refreshProject(projectId);
             if (taskId != null) {
-                onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
+                //onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
             }
             vm.taskLockError = true;
             // Check if it is an unauthorized error. If so, display appropriate message
