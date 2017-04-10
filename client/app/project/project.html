@@ -64,7 +64,7 @@
                         <!-- select UI -->
                         <div ng-show="projectCtrl.mappingStep === 'selecting'">
                             <h3>Choose a task</h3>
-                            <p>There are 2 options for choosing a task for mapping:</p>
+                            <p>Choose a task for mapping:</p>
 
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
@@ -232,7 +232,7 @@
                         <!-- select UI -->
                         <div ng-show="projectCtrl.validatingStep === 'selecting'">
                             <h3>Select for validation</h3>
-                            <p>There are 3 options for choosing a task for validation:</p>
+                            <p>Choose a task for validation:</p>
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
                                 <button ng-click="projectCtrl.selectRandomTaskValidate()"
@@ -253,7 +253,7 @@
                                     <p>there was an error retrieving the task from the server.</p>
                                 </div>
                             </div>
-                            <div>
+                            <div ng-show="projectCtrl.mappedTasksPerUser.length > 0">
                                 <p><strong>Option 3: </strong> Select By user:
                                 </p>
                                 <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
