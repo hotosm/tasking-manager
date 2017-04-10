@@ -423,7 +423,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(id);
+                populateMappedTaskByUserTable(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -453,7 +453,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(id);
+                populateMappedTaskByUserTable(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -491,7 +491,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(id);
+                populateMappedTaskByUserTable(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -516,7 +516,7 @@
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(id);
+                populateMappedTaskByUserTable(projectId);
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
@@ -543,7 +543,7 @@
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(id);
+                populateMappedTaskByUserTable(projectId);
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'locked';
                 vm.selectedTaskData = tasks[0];
