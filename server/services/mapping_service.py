@@ -105,7 +105,7 @@ class MappingService:
 
         for poly in task_geom:
             for point in poly.exterior.coords:
-                ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+                ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1]))).text = ' '
 
                 # Append wpt elements to end of doc
                 wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
