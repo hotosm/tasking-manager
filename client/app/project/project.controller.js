@@ -568,7 +568,7 @@
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
             }, function (error) {
-                onLockError(projectId, taskId, error);
+                onLockError(projectId, error);
             });
         };
 
@@ -594,7 +594,7 @@
                 vm.isSelectedValidatable = true;
                 vm.lockedTaskData = tasks[0];
             }, function (error) {
-                onLockError(projectId, taskId, error);
+                onLockError(projectId, error);
             });
         };
 
@@ -724,13 +724,10 @@
          * @param taskId
          * @param error
          */
-        function onLockError(projectId, taskId, error) {
+        function onLockError(projectId, error) {
             // Could not lock task
             // Refresh the map and selected task.
             refreshProject(projectId);
-            if (taskId != null) {
-                //onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
-            }
             vm.taskLockError = true;
             // Check if it is an unauthorized error. If so, display appropriate message
             if (error.status == 401) {
@@ -833,7 +830,7 @@
                 vm.isSelectedValidatable = true;
 
             }, function (error) {
-                onLockError(vm.projectData.projectId, null, error)
+                onLockError(vm.projectData.projectId, error)
             });
         }
 
