@@ -271,9 +271,8 @@
                                     <thead>
                                     <tr>
                                         <td class="heading-alt">Contributer</td>
-
+                                        <td class="heading-alt">Level</td>
                                         <td class="heading-alt">Mapped</td>
-
                                         <td class="heading-alt">Newest</td>
                                         <td class="heading-alt">Lock</td>
                                     </tr>
@@ -281,6 +280,7 @@
                                     <tbody>
                                     <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser">
                                         <td><a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}</td>
+                                        <td>{{doneTasks.mappingLevel }}</td>
                                         <td>{{ doneTasks.mappedTaskCount }}</td>
                                         <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
                                         </td>
