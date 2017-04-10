@@ -5,7 +5,7 @@ from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
-from server.models.postgis.statuses import TaskStatus
+from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, NotFound
 
@@ -231,7 +231,8 @@ class Task(db.Model):
         """ Gets all mapped tasks for supplied project grouped by user"""
 
         # Raw SQL is easier to understand that SQL alchemy here :)
-        sql = """select u.username, count(1), json_agg(t.id), max(th.action_date) last_seen
+        sql = """select u.username, u.mapping_level, count(distinct(t.id)), json_agg(distinct(t.id)),
+                        max(th.action_date) last_seen
                   from tasks t,
                        task_history th,
                        users u
@@ -241,7 +242,7 @@ class Task(db.Model):
                    and t.project_id = {0}
                    and t.task_status = 2
                    and th.action_text = 'MAPPED'
-                 group by u.username""".format(project_id)
+                 group by u.username, u.mapping_level""".format(project_id)
 
         results = db.engine.execute(sql)
         if results.rowcount == 0:
@@ -251,9 +252,10 @@ class Task(db.Model):
         for row in results:
             user_mapped = MappedTasksByUser()
             user_mapped.username = row[0]
-            user_mapped.mapped_task_count = row[1]
-            user_mapped.tasks_mapped = row[2]
-            user_mapped.last_seen = row[3]
+            user_mapped.mapping_level = MappingLevel(row[1]).name
+            user_mapped.mapped_task_count = row[2]
+            user_mapped.tasks_mapped = row[3]
+            user_mapped.last_seen = row[4]
 
             mapped_tasks.append(user_mapped)
 
