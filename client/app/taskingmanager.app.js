@@ -111,6 +111,12 @@
                     templateUrl: 'app/admin/dashboard/dashboard.html',
                     controller: 'dashboardController',
                     controllerAs: 'dashboardCtrl'
+                })
+   
+                .when('/admin/users', {
+                    templateUrl: 'app/admin/users/users.html',
+                    controller: 'usersController',
+                    controllerAs: 'usersCtrl'
                 });
             
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them

@@ -11,7 +11,7 @@
         <div ng-show="accountNavCtrl.showDropdown" class="drop__content">
             <ul class="drop__menu drop__menu--iconified" role="menu">
                 <li>
-                    <a title="Your profile" class="drop__menu-item" ng-click="accountNavCtrl.navigateToProfile()">
+                    <a title="Your profile" class="drop__menu-item" ng-click="accountNavCtrl.goToProfile()">
                         Your profile
                     </a>
                 </li>
@@ -23,6 +23,11 @@
             </ul>
             <ul ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'"
                 class="drop__menu drop__menu--iconified" role="menu">
+                <li ng-show="accountNavCtrl.account.role === 'ADMIN' || accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="User list" class="drop__menu-item" ng-click="accountNavCtrl.goToUserList()">
+                        User list
+                    </a>
+                </li>
                 <li ng-show="accountNavCtrl.account.role === 'ADMIN'">
                     <a title="Manage licences" class="drop__menu-item" ng-click="accountNavCtrl.goToManageLicenses()">
                         Manage licences

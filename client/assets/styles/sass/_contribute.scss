@@ -49,19 +49,3 @@
     padding: 1rem;
   }
 }
-
-.pagination {
-    list-style: none;
-  >li {
-    @extend .button--achromic;
-    display: inline;
-    cursor: pointer;
-    padding: 0.5rem;
-    a {
-      color: black;
-    }
-  }
-  >li.active {
-    @extend .button--active;
-  }
-}

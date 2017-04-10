@@ -60,7 +60,7 @@
         /**
          * Navigate to the user's profile
          */
-        vm.navigateToProfile = function(){
+        vm.goToProfile = function(){
             $location.path('user/' + vm.account.username);
             vm.showDropdown = false;
         };
@@ -79,7 +79,7 @@
         vm.goToManageLicenses = function(){
             $location.path('admin/licenses');
             vm.showDropdown = false;
-        }
+        };
 
         /**
          * Navigate to the project dashboard page
@@ -87,6 +87,14 @@
         vm.goToProjectDashboard = function(){
             $location.path('admin/dashboard');
             vm.showDropdown = false;
-        }
+        };
+
+        /**
+         * Navigate to the user list page
+         */
+        vm.goToUserList = function(){
+            $location.path('admin/users');
+            vm.showDropdown = false;
+        };
     }
 })();
