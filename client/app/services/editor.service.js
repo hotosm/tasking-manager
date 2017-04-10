@@ -141,8 +141,7 @@
          * @param gpxUrl
          */
         function getGPXUrl(projectId, taskIds){
-            var url = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds;
-            var gpxUrl = encodeURIComponent(url);
+            var gpxUrl = encodeURIComponent(configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=') + taskIds;
             return gpxUrl;
         }
     }
