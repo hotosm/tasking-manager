@@ -141,10 +141,8 @@
          * @param gpxUrl
          */
         function getGPXUrl(projectId, taskIds){
-
-            var gpxUrl = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx.gpx?tasks=' + taskIds;
-            //var gpxUrl = "http://tasks.hotosm.org/project/2782/task/162.gpx";
-            console.log(gpxUrl);
+            var url = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds;
+            var gpxUrl = encodeURIComponent(url);
             return gpxUrl;
         }
     }

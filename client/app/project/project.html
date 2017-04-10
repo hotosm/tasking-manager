@@ -172,46 +172,56 @@
                                 </h3>
                                 <p></p>
                                 <div class="form__group">
-                                    <div>
-                                        <select ng-model="projectCtrl.selectedEditor">
-                                            <option value="ideditor" selected="true">ID Editor</option>
+                                    <div class="form__input-group">
+                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                            <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
-                                        <button class="button button--secondary"
+                                        <span class="form__input-group-button">
+                                            <button class="button button--secondary"
                                                 ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
-                                            Start Editor
-                                        </button>
-                                        <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following
-                                            .gpx file and load it in JOSM to see the task boundary.
-                                        </div>
-                                        <div ng-show="projectCtrl.editorStartError === 'josm-error'">
-                                            <div class="alert alert--danger" role="alert">
-                                                <button class="alert__button-dismiss" title="Dismiss alert"
-                                                        ng-click="projectCtrl.editorStartError = ''">
-                                                    <span>Dismiss</span>
-                                                </button>
-                                                <p>JOSM remote control did not respond. Do you have JOSM running and
-                                                    configured to be controlled remotely?</p>
-                                            </div>
-                                        </div>
+                                                Start Editor
+                                            </button>
+                                        </span>
                                     </div>
+                                </div>
+                                <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following
+                                    .gpx file and load it in JOSM to see the task boundary.
+                                </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-error'">
+                                    <div class="alert alert--danger" role="alert">
+                                        <button class="alert__button-dismiss" title="Dismiss alert"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>Dismiss</span>
+                                        </button>
+                                        <p>JOSM remote control did not respond. Do you have JOSM running and
+                                            configured to be controlled remotely?</p>
+                                    </div>
+                                </div>
+                                <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment"></textarea>
                                 </div>
-                                <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'READY')">
-                                    Stop Mapping
-                                </button>
-                                <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')">
-                                    Mark as Mapped
-                                </button>
-                                <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
-                                    Mark as Bad Imagery
-                                </button>
+                                <div class="form__group pull-center">
+                                    <button class="button button--achromic"
+                                            ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'READY')">
+                                        Stop Mapping
+                                    </button>
+                                </div>
+                                <div class="form__group pull-center">
+                                    <div class="button-group button-group--horizontal" role="group">
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')">
+                                            Mark as Mapped
+                                        </button>
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
+                                            Mark as Bad Imagery
+                                        </button>
+                                    </div>
+                                </div>
                                 <div ng-show="projectCtrl.taskUnLockError">
                                     <div>
                                         <div class="alert alert--danger" role="alert">
@@ -386,36 +396,46 @@
                                 </h3>
                                 <p></p>
                                 <div class="form__group">
-                                    <div>
-                                        <select ng-model="projectCtrl.selectedEditor">
-                                            <option value="ideditor" selected="true">ID Editor</option>
+                                    <div class="form__input-group">
+                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                            <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
-                                        <button class="button button--secondary"
-                                                ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
-                                            Start Editor
-                                        </button>
-                                        <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following .gpx
-                                            file and load it in JOSM to see the task boundary.
-                                        </div>
+                                        <span class="form__input-group-button">
+                                            <button class="button button--secondary"
+                                                    ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                                    Start Editor
+                                            </button>
+                                        </span>
                                     </div>
-                                    <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
-                                              placeholder="Leave a comment"></textarea>
                                 </div>
-                                <button class="button button--secondary"
+                                <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following .gpx
+                                        file and load it in JOSM to see the task boundary.
+                                </div>
+                                <div class="form__group">
+                                    <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                          placeholder="Leave a comment"></textarea>
+                                </div>
+                                <div class="form__group pull-center">
+                                    <button class="button button--achromic"
                                         ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'MAPPED')">
-                                    Stop Validating
-                                </button>
-                                <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'VALIDATED')">
-                                    Mark as Valid
-                                </button>
-                                <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'INVALIDATED')">
-                                    Mark as Invalid
-                                </button>
+                                        Stop Validating
+                                    </button>
+                                </div>
+                                <div class="form__group pull-center">
+                                    <div class="button-group button-group--horizontal" role="group">
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'VALIDATED')">
+                                            Mark as Valid
+                                        </button>
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'INVALIDATED')">
+                                            Mark as Invalid
+                                        </button>
+                                    </div>
+                                </div>
                                 <div ng-show="projectCtrl.taskUnLockError">
                                     <div>
                                         <div class="alert alert--danger" role="alert">
@@ -435,37 +455,47 @@
                                 </p>
                                 <p></p>
                                 <div class="form__group">
-                                    <div>
-                                        <select ng-model="projectCtrl.selectedEditor">
-                                            <option value="ideditor" selected="true">ID Editor</option>
+                                    <div class="form__input-group">
+                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                            <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
                                             <option value="fieldpapers">Field papers</option>
                                         </select>
-                                        <button class="button button--secondary"
+                                        <span class="form__input-group-button">
+                                            <button class="button button--secondary"
                                                 ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
-                                            Start Editor
-                                        </button>
-                                        <div ng-show="projectCtrl.selectedEditor === 'josm'">You will need to download
-                                            the OSM data to JOSM manually. Download the following .gpx file and load it
-                                            in JOSM to see the task boundaries.
-                                        </div>
+                                                Start Editor
+                                            </button>
+                                        </span>
                                     </div>
+                                </div>
+                                <div ng-show="projectCtrl.selectedEditor === 'josm'">You will need to download
+                                    the OSM data to JOSM manually. Download the following .gpx file and load it
+                                    in JOSM to see the task boundaries.
+                                </div>
+                                <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment on all tasks"></textarea>
                                 </div>
-                                <button class="button button--secondary"
+                                <div class="form__group pull-center">
+                                    <button class="button button--secondary"
                                         ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
-                                    Stop Validating
-                                </button>
-                                <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'VALIDATED')">
-                                    Mark all as Valid
-                                </button>
-                                <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'INVALIDATED')">
-                                    Mark all as Invalid
-                                </button>
+                                        Stop Validating
+                                    </button>
+                                </div>
+                                <div class="form__group pull-center">
+                                    <div class="button-group button-group--horizontal" role="group">
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'VALIDATED')">
+                                            Mark all as Valid
+                                        </button>
+                                        <button class="button button--secondary"
+                                                ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'INVALIDATED')">
+                                            Mark all as Invalid
+                                        </button>
+                                    </div>
+                                </div>
                                 <div ng-show="projectCtrl.taskUnLockError">
                                     <div>
                                         <div class="alert alert--danger" role="alert">
