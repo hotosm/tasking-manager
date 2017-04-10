@@ -346,7 +346,7 @@
                 vm.taskVectorLayer = new ol.layer.Vector({
                     source: source,
                     name: 'tasks',
-                    style: styleService.getTaskStyleFunction
+                    style: styleService.getTaskStyle
                 });
                 vm.map.addLayer(vm.taskVectorLayer);
             } else {
