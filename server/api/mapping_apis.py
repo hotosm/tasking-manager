@@ -1,3 +1,4 @@
+from flask import Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
@@ -191,6 +192,52 @@ class UnlockTaskForMappingAPI(Resource):
             return {"Error": "Task Not Found"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
+        except Exception as e:
+            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class TasksAsGPX(Resource):
+
+    def get(self, project_id):
+        """
+        Get tasks as GPX
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/xml
+        parameters:
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - in: query
+              name: tasks
+              type: string
+              default: 1,2
+        responses:
+            200:
+                description: Task user is working on
+            400:
+                description: Task user is working on
+            404:
+                description: No mapped tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            tasks = request.args.get('tasks')
+            if tasks is None:
+                return {"Error": 'No tasks supplied in querystring'}, 400
+
+            xml = MappingService.generate_gpx(project_id, tasks)
+            return Response(xml, mimetype='text/xml', status=200)
+        except NotFound:
+            return {"Error": "No mapped tasks"}, 404
         except Exception as e:
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

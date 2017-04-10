@@ -1,4 +1,6 @@
+import xml.etree.ElementTree as ET
 from flask import current_app
+from geoalchemy2 import shape
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound
@@ -72,3 +74,40 @@ class MappingService:
 
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
         return task.as_dto()
+
+    @staticmethod
+    def generate_gpx(project_id, task_ids):
+
+        # TODO handle multiple tasks
+        task_id = task_ids.split(',', 1)[0]
+
+        task = MappingService.get_task(task_id, project_id)
+        task_geom = shape.to_shape(task.geometry)
+
+        root = ET.Element('gpx', attrib=dict(xmlns='http://topografix.com/GPX/1/1', version='1.1',
+                                             creator='HOT Tasking Manager'))
+
+        # Create GPX Metadata element
+        metadata = ET.Element('metadata')
+        link = ET.SubElement(metadata, 'link', attrib=dict(href='https://github.com/hotosm/tasking-manager'))
+        ET.SubElement(link, 'text').text = 'HOT Tasking Manager'
+        root.append(metadata)
+
+        # Create trk element
+        trk = ET.Element('trk')
+        root.append(trk)
+
+        ET.SubElement(trk, 'name').text = f'Task for project {task.project_id}. Do not edit outside of this box!'
+        trkseg = ET.SubElement(trk, 'trkseg')
+
+        for poly in task_geom:
+            for point in poly.exterior.coords:
+                ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+
+                # Append wpt elements to end of doc
+                wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+                ET.SubElement(wpt, 'name').text = 'Do not edit outside of this box!'
+                root.append(wpt)
+
+        xml_gpx = ET.tostring(root, encoding='utf8', method='xml')
+        return xml_gpx

@@ -1,18 +1,15 @@
 import os
 import unittest
 import geojson
-import json
 from server import create_app
-from server.models.dtos.project_dto import DraftProjectDTO
-from server.models.postgis.project import Project, AreaOfInterest, Task, ProjectDTO, ProjectInfoDTO, ProjectStatus, ProjectPriority
-from server.models.postgis.user import User
-
-TEST_USER_ID = 7777777
+from server.models.postgis.project import Task, ProjectDTO, ProjectInfoDTO, ProjectStatus, ProjectPriority
+from tests.server.helpers.test_helpers import create_canned_project
 
 
 class TestProject(unittest.TestCase):
     skip_tests = False
     test_project = None
+    test_user = None
 
     @classmethod
     def setUpClass(cls):
@@ -33,22 +30,14 @@ class TestProject(unittest.TestCase):
         if self.skip_tests:
             return
 
-        # Setup test user
-        test_user = User()
-        test_user.id = TEST_USER_ID
-        test_user.username = 'Thinkwhere TEST'
-        test_user.mapping_level = 1
-        test_user.create()
-
-        self.create_test_project()
+        self.test_project, self.test_user = create_canned_project()
 
     def tearDown(self):
         if self.skip_tests:
             return
 
         self.test_project.delete()
-        user = User().get_by_id(TEST_USER_ID)
-        user.delete()
+        self.test_user.delete()
         self.ctx.pop()
 
     def test_project_can_be_persisted_to_db(self):
@@ -126,30 +115,6 @@ class TestProject(unittest.TestCase):
         self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
                          'English translation should be returned as Italian name was not provided')
 
-    def create_test_project(self):
-        """ Helper function that creates a valid test project in the db """
-        if self.skip_tests:
-            return
-
-        multipoly_geojson = json.loads('{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],'
-                                       '[-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12},'
-                                       '"type": "MultiPolygon"}')
-
-        task_feature = geojson.loads('{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'
-                                     '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "type": "MultiPolygon"},'
-                                     '"properties": {"x": 2402, "y": 1736, "zoom": 12}, "type": "Feature"}')
-
-        test_aoi = AreaOfInterest(multipoly_geojson)
-
-        test_project_dto = DraftProjectDTO()
-        test_project_dto.project_name = 'Test'
-        test_project_dto.user_id = TEST_USER_ID
-
-        self.test_project = Project()
-        self.test_project.create_draft_project(test_project_dto, test_aoi)
-        self.test_project.tasks.append(Task.from_geojson_feature(1, task_feature))
-        self.test_project.create()
-
     def update_project_with_info(self):
 
         locales = []
@@ -169,4 +134,3 @@ class TestProject(unittest.TestCase):
         test_dto.mapper_level = 'BEGINNER'
 
         self.test_project.update(test_dto)
-
