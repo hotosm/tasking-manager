@@ -59,68 +59,53 @@
             style: styleService.getSelectedTaskStyle
         });
 
-        vm.tasksForValidation = {
-            doneTasks: [
+        vm.mappedTasksPerUser =
+            [
                 {
-                    user: 'feenster',
-                    level: 'beginner',
-                    tasks: [
-                        {
-                            taskId: 7,
-                            timeStamp: '2017-03-10T14:43:27.02348'
-                        },
-                        {
-                            taskId: 38,
-                            timeStamp: '2017-03-15T14:43:27.02348'
-                        }
-                    ]
+                    "username": "popeln",
+                    "mappedTaskCount": 3,
+                    "tasksMapped": [
+                        244,
+                        305,
+                        135
+                    ],
+                    "lastSeen": "2017-04-10T10:32:50.672448"
                 },
                 {
-                    user: 'hunter',
-                    level: 'intermediate',
-                    tasks: [
-                        {
-                            taskId: 4,
-                            timeStamp: '2017-03-30T15:10:27.02348'
-                        },
-                        {
-                            taskId: 5,
-                            timeStamp: '2017-03-30T15:11:27.02348'
-                        },
-                        {
-                            taskId: 6,
-                            timeStamp: '2017-03-30T15:12:27.02348'
-                        },
-                        {
-                            taskId: 7,
-                            timeStamp: '2017-03-30T15:13:27.02348'
-                        }
-                    ]
-                },
+                    "username": "LindaA1",
+                    "mappedTaskCount": 4,
+                    "tasksMapped": [
+                        180,
+                        194,
+                        181,
+                        167
+                    ],
+                    "lastSeen": "2017-04-10T10:33:26.753692"
+                }
+                ,
                 {
-                    user: 'alblas',
-                    level: 'advance',
-                    tasks: [
-                        {
-                            taskId: 8,
-                            timeStamp: '2017-03-30T10:43:27.02348'
-                        },
-                        {
-                            taskId: 9,
-                            timeStamp: '2017-03-30T12:43:27.02348'
-                        },
-                        {
-                            taskId: 10,
-                            timeStamp: '2017-03-30T14:43:27.02348'
-                        },
-                        {
-                            taskId: 11,
-                            timeStamp: '2017-03-30T18:43:27.02348'
-                        }
-                    ]
+                    "username": "thinkWhereTester",
+                    "mappedTaskCount": 4,
+                    "tasksMapped": [
+                        113,
+                        295,
+                        213,
+                        129
+                    ],
+                    "lastSeen": "2017-04-10T10:33:31.723409"
+                }
+                ,
+                {
+                    "username": "Ian Feeney",
+                    "mappedTaskCount": 2,
+                    "tasksMapped": [
+                        46,
+                        47
+                    ],
+                    "lastSeen": "2017-04-10T10:28:34.718474"
                 }
             ]
-        }
+
 
         //bound from the html
         vm.comment = '';
@@ -777,13 +762,9 @@
 
         /**
          * Higlights the set of tasks on the map
-         * @param doneTasks
+         * @param array of task ids
          */
-        vm.contributerHighlight = function (doneTasks) {
-            // get an array of the 'done' task id's that have been clicked
-            var doneTaskIds = doneTasks.tasks.map(function (task) {
-                return task.taskId;
-            });
+        vm.contributerHighlight = function (doneTaskIds) {
             //highlight features
             var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), doneTaskIds);
             vm.highlightVectorLayer.getSource().addFeatures(features);
@@ -791,17 +772,12 @@
 
         /**
          * Locks the set of tasks for validation
-         * @param doneTasks
+         * @param array of task ids
          */
-        vm.contributorClick = function (doneTasks) {
+        vm.contributorClick = function (doneTaskIds) {
             select.getFeatures().clear();
 
-            // get an array of the 'done' task id's that have been clicked
-            var doneTaskIds = doneTasks.tasks.map(function (task) {
-                return task.taskId;
-            });
-
-            //use doneTaskIds to get corresponding subset of tasks for selection from the project
+                      //use doneTaskIds to get corresponding subset of tasks for selection from the project
             var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
                 if (doneTaskIds.includes(task.properties.taskId)) {
                     return task;

@@ -20,7 +20,8 @@
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
             getTaskFeatureById: getTaskFeatureById,
-            getTaskFeaturesByIds: getTaskFeaturesByIds
+            getTaskFeaturesByIds: getTaskFeaturesByIds,
+            getMappedTasksByUser: getMappedTasksByUser
         };
 
         return service;
@@ -289,6 +290,25 @@
                 return candidates;
             }
             return null;
+        }
+
+        function getMappedTasksByUser(projectId){
+                     // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + projectId + '/mapped-tasks-by-user',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
         }
     }
 })();

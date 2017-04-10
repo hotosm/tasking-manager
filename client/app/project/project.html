@@ -271,28 +271,24 @@
                                     <thead>
                                     <tr>
                                         <td class="heading-alt">Contributer</td>
-                                        <td class="heading-alt">Level</td>
+
                                         <td class="heading-alt">Mapped</td>
-                                        <td class="heading-alt">Oldest</td>
+
                                         <td class="heading-alt">Newest</td>
                                         <td class="heading-alt">Lock</td>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="doneTasks in projectCtrl.tasksForValidation.doneTasks">
-                                        <td>{{ doneTasks.user }}</td>
-                                        <td>{{ doneTasks.level }}</td>
-                                        <td>{{ doneTasks.tasks.length }}</td>
-                                        <td><span am-time-ago="doneTasks.tasks[0].timeStamp | amUtc | amLocal"></span>
-                                        </td>
-                                        <td><span
-                                                am-time-ago="doneTasks.tasks[user.tasks.length-1].timeStamp | amUtc | amLocal"></span>
+                                    <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser">
+                                        <td><a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}</td>
+                                        <td>{{ doneTasks.mappedTaskCount }}</td>
+                                        <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
                                         </td>
                                         <td>
-                                            <button ng-click="projectCtrl.contributorClick(doneTasks)"
-                                                    ng-mouseover="projectCtrl.contributerHighlight(doneTasks, true)"
+                                            <button ng-click="projectCtrl.contributorClick(doneTasks.tasksMapped)"
+                                                    ng-mouseover="projectCtrl.contributerHighlight(doneTasks.tasksMapped, true)"
                                                     ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
-                                                Lock
+                                                Start Validating
                                             </button>
                                         </td>
                                     </tr>
