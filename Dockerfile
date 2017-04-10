@@ -1,5 +1,9 @@
 FROM python:3.6
 
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y libgeos-c1 libgeos-dev
+
 # Add and install Python modules
 ADD requirements.txt /src/requirements.txt
 RUN cd /src; pip install -r requirements.txt
