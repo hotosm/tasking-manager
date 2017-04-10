@@ -32,3 +32,23 @@ hr {
 .tr-hover:hover {
   background-color: rgba($base-color, 0.1);
 }
+
+
+.pagination {
+    list-style: none;
+  > li {
+    > a {
+      cursor: pointer;
+      padding: 1rem;
+    }
+    @extend .button--achromic;
+    display: inline;
+    padding: 0.5rem;
+    a {
+      color: black;
+    }
+  }
+  > li.active {
+    @extend .button--active;
+  }
+}
