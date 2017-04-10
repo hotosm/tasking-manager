@@ -285,8 +285,8 @@
                                         <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
                                         </td>
                                         <td>
-                                            <button ng-click="projectCtrl.contributorClick(doneTasks.tasksMapped)"
-                                                    ng-mouseover="projectCtrl.contributerHighlight(doneTasks.tasksMapped, true)"
+                                            <button ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
+                                                    ng-mouseover="projectCtrl.highlightTasks(doneTasks.tasksMapped, true)"
                                                     ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
                                                 Start Validating
                                             </button>

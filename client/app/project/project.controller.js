@@ -764,7 +764,7 @@
          * Higlights the set of tasks on the map
          * @param array of task ids
          */
-        vm.contributerHighlight = function (doneTaskIds) {
+        vm.highlightTasks = function (doneTaskIds) {
             //highlight features
             var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), doneTaskIds);
             vm.highlightVectorLayer.getSource().addFeatures(features);
@@ -774,7 +774,7 @@
          * Locks the set of tasks for validation
          * @param array of task ids
          */
-        vm.contributorClick = function (doneTaskIds) {
+        vm.lockTasksForValidation = function (doneTaskIds) {
             select.getFeatures().clear();
 
                       //use doneTaskIds to get corresponding subset of tasks for selection from the project
