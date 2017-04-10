@@ -77,10 +77,10 @@ class MappingService:
         return task.as_dto()
 
     @staticmethod
-    def generate_gpx(project_id, task_ids):
+    def generate_gpx(project_id, task_id):
 
         # TODO handle multiple tasks
-        task_id = task_ids.split(',', 1)[0]
+        #task_id = task_ids.split(',', 1)[0]
 
         task = MappingService.get_task(task_id, project_id)
         task_geom = shape.to_shape(task.geometry)
