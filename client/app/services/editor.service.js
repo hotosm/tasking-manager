@@ -59,13 +59,12 @@
                 // url is supposed to look like tms[22]:http://hiu...
                 var urlForImagery = imageryUrl.substring(imageryUrl.indexOf('http'));
                 urlForImagery = urlForImagery.replace('zoom', 'z');
-                //url += "&background=custom:" + encodeURIComponent(urlForImagery);
+                url += "&background=custom:" + encodeURIComponent(urlForImagery);
             }
             // Add GPX
             if (typeof projectId != "undefined" && projectId !== '' && typeof taskId != "undefined" && taskId !== '') {
                 url += "&gpx=" + getGPXUrl(projectId, taskId);
             }
-            console.log(url);
             $window.open(url);
         }
 
