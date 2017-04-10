@@ -30,14 +30,6 @@
         vm.taskUnLockError = false;
         vm.taskUnLockErrorMessage = '';
 
-        vm.resetErrors = function () {
-            vm.taskErrorMapping = '';
-            vm.taskErrorValidation = '';
-            vm.taskLockError = false;
-            vm.taskLockErrorMessage = '';
-            vm.taskUnLockError = false;
-            vm.taskUnLockErrorMessage = '';
-        }
 
         //authorization
         vm.isAuthorized = false;
@@ -46,24 +38,12 @@
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
 
-        vm.resetStatusFlags = function () {
-            vm.isSelectedMappable = false;
-            vm.isSelectedValidatable = false;
-        }
 
         //task data
         vm.selectedTaskData = null;
         vm.lockedTaskData = null;
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
-
-        vm.resetTaskData = function () {
-            vm.selectedTaskData = null;
-            vm.lockedTaskData = null;
-            vm.multiSelectedTasksData = [];
-            vm.multiLockedTasks = [];
-        }
-
 
         //project display text
         vm.description = '';
@@ -205,6 +185,36 @@
             // padding to makes sure there is plenty of clear space around feature on map to keep visual
             // context of feature location
             return vm.map.getSize()[1] * 0.3;
+        }
+
+        /**
+         * convenience method to reset task data controller properties
+         */
+        vm.resetTaskData = function () {
+            vm.selectedTaskData = null;
+            vm.lockedTaskData = null;
+            vm.multiSelectedTasksData = [];
+            vm.multiLockedTasks = [];
+        }
+
+        /**
+         * convenience method to reset task status controller properties
+         */
+        vm.resetStatusFlags = function () {
+            vm.isSelectedMappable = false;
+            vm.isSelectedValidatable = false;
+        }
+
+        /**
+         * convenience method to reset error controller properties
+         */
+        vm.resetErrors = function () {
+            vm.taskErrorMapping = '';
+            vm.taskErrorValidation = '';
+            vm.taskLockError = false;
+            vm.taskLockErrorMessage = '';
+            vm.taskUnLockError = false;
+            vm.taskUnLockErrorMessage = '';
         }
 
 
@@ -835,6 +845,27 @@
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
 
+        }
+
+        vm.resetTaskData = function () {
+            vm.selectedTaskData = null;
+            vm.lockedTaskData = null;
+            vm.multiSelectedTasksData = [];
+            vm.multiLockedTasks = [];
+        }
+
+        vm.resetStatusFlags = function () {
+            vm.isSelectedMappable = false;
+            vm.isSelectedValidatable = false;
+        }
+
+        vm.resetErrors = function () {
+            vm.taskErrorMapping = '';
+            vm.taskErrorValidation = '';
+            vm.taskLockError = false;
+            vm.taskLockErrorMessage = '';
+            vm.taskUnLockError = false;
+            vm.taskUnLockErrorMessage = '';
         }
     }
 })
