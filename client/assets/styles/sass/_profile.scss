@@ -23,7 +23,7 @@
 }
 
 /* ==========================================================================
-   Dashboard stats
+   Stats
    ========================================================================== */
 .section__inverse--stats {
   background-color: rgba($base-color, 0.9);
@@ -36,9 +36,7 @@
   .stats__card {
     display: inline-block;
     margin: 1rem auto;
-    /*width: 250px;*/
-    width: 33%;
-    padding: 0rem 3rem;
+    width: 250px;
   }
 
   .stats__card--amount {
