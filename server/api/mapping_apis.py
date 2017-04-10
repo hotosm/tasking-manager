@@ -231,11 +231,11 @@ class TasksAsGPX(Resource):
         """
         try:
             current_app.logger.debug('GPX Called')
-            # tasks = request.args.get('tasks')
-            # if tasks is None:
-            #     return {"Error": 'No tasks supplied in querystring'}, 400
+            tasks = request.args.get('tasks')
+            if tasks is None:
+                return {"Error": 'No tasks supplied in querystring'}, 400
 
-            xml = MappingService.generate_gpx(project_id, 29)
+            xml = MappingService.generate_gpx(project_id, tasks)
             return Response(xml, mimetype='text/xml', status=200)
         except NotFound:
             return {"Error": "No mapped tasks"}, 404

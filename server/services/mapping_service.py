@@ -77,10 +77,10 @@ class MappingService:
         return task.as_dto()
 
     @staticmethod
-    def generate_gpx(project_id, task_id):
+    def generate_gpx(project_id, task_ids):
 
         # TODO handle multiple tasks
-        #task_id = task_ids.split(',', 1)[0]
+        task_id = task_ids.split(',', 1)[0]
 
         task = MappingService.get_task(task_id, project_id)
         task_geom = shape.to_shape(task.geometry)
@@ -105,19 +105,12 @@ class MappingService:
 
         for poly in task_geom:
             for point in poly.exterior.coords:
-                ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1]))).text = ' '
+                ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
 
                 # Append wpt elements to end of doc
                 wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
                 ET.SubElement(wpt, 'name').text = 'Do not edit outside of this box!'
                 root.append(wpt)
 
-        #iain = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n'
         xml_gpx = ET.tostring(root, encoding='utf8')
-
-        #abi = xml_gpx.decode('utf-8')
-
-        #test = iain + abi
-
-
         return xml_gpx
