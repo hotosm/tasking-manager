@@ -9,8 +9,7 @@ from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProj
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, \
-    ST_AsGeoJSON
+from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid
 
 
 class AreaOfInterest(db.Model):

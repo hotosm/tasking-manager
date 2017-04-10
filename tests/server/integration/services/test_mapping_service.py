@@ -47,4 +47,4 @@ class TestAuthenticationService(unittest.TestCase):
         mock_task.return_value = task
 
         # TODO test generated xml
-        MappingService.generate_gpx(1, 1)
+        MappingService.generate_gpx(1, '1,2')
