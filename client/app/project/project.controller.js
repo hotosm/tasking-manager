@@ -23,28 +23,27 @@
         vm.validatingStep = '';
 
         //error control
-        vm.taskError = '';
+        vm.taskErrorMapping = '';
         vm.taskErrorValidation = '';
         vm.taskLockError = false;
-        vm.taskUnLockError = false;
         vm.taskLockErrorMessage = '';
+        vm.taskUnLockError = false;
+        vm.taskUnLockErrorMessage = '';
+
 
         //authorization
         vm.isAuthorized = false;
 
-        //selected task
-        vm.selectedTaskData = null;
+        //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
 
-        //locking/unlocking
+
+        //task data
+        vm.selectedTaskData = null;
         vm.lockedTaskData = null;
-
-
-        //multi-validation
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
-
 
         //project display text
         vm.description = '';
@@ -163,7 +162,8 @@
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
-                refreshProject(id)
+                refreshProject(id);
+                //TODO do a selected task refesh too
             }, 10000);
         }
 
@@ -187,6 +187,36 @@
             return vm.map.getSize()[1] * 0.3;
         }
 
+        /**
+         * convenience method to reset task data controller properties
+         */
+        vm.resetTaskData = function () {
+            vm.selectedTaskData = null;
+            vm.lockedTaskData = null;
+            vm.multiSelectedTasksData = [];
+            vm.multiLockedTasks = [];
+        }
+
+        /**
+         * convenience method to reset task status controller properties
+         */
+        vm.resetStatusFlags = function () {
+            vm.isSelectedMappable = false;
+            vm.isSelectedValidatable = false;
+        }
+
+        /**
+         * convenience method to reset error controller properties
+         */
+        vm.resetErrors = function () {
+            vm.taskErrorMapping = '';
+            vm.taskErrorValidation = '';
+            vm.taskLockError = false;
+            vm.taskLockErrorMessage = '';
+            vm.taskUnLockError = false;
+            vm.taskUnLockErrorMessage = '';
+        }
+
 
         /**
          * Make the passed in feature the selected feature and ensure view and map updates for selected feature
@@ -201,14 +231,8 @@
         /**
          * Sets up a randomly selected task as the currently selected task
          */
-        vm.selectRandomTask = function () {
-            var feature = null;
-            if (vm.currentTab === 'mapping') {
-                feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
-            }
-            else if (vm.currentTab === 'validation') {
-                feature = taskService.getRandomTaskFeatureForValidation(vm.taskVectorLayer.getSource().getFeatures());
-            }
+        vm.selectRandomTaskMap = function () {
+            var feature = taskService.getRandomMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
 
             if (feature) {
                 selectFeature(feature);
@@ -216,28 +240,39 @@
                 vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
             }
             else {
-                vm.selectedTaskData = null;
-                vm.isSelectedMappable = false;
-                vm.isSelectedValidatable = false;
-                vm.taskError = 'none-available';
-                vm.taskErrorValidation = 'none-available';
-                vm.taskLockError = false;
-                vm.mappingStep = vm.currentTab === 'mapping' ? 'viewing' : 'selecting';
-                vm.validatingStep = vm.currentTab === 'validation' ? 'viewing' : 'selecting';
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.taskErrorMapping = 'none-available';
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
             }
         };
 
+        vm.selectRandomTaskValidate = function () {
+            var feature = taskService.getRandomTaskFeatureForValidation(vm.taskVectorLayer.getSource().getFeatures());
+
+            if (feature) {
+                selectFeature(feature);
+                var padding = getPaddingSize();
+                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+            }
+            else {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.taskErrorValidation = 'none-available';
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+            }
+        };
 
         /**
          * clears the currently selected task.  Clears down/resets the vm properties and clears the feature param in the select interaction object.
          */
         vm.clearCurrentSelection = function () {
-            vm.selectedTaskData = null;
-            vm.isSelectedMappable = false;
-            vm.mappingStep = 'selecting';
-            vm.validatingStep = 'selecting';
-            vm.taskError = '';
-            vm.taskErrorValidation = '';
+            // vm.mappingStep = 'selecting';
+            // vm.validatingStep = 'selecting';
             select.getFeatures().clear();
         };
 
@@ -283,6 +318,7 @@
                 //project returned successfully
                 vm.projectData = data;
                 addProjectTasksToMap(vm.projectData.tasks, false);
+                //TODO: move the selected task refresh to a separate function so it can be called separately
                 if (vm.selectedTaskData) {
                     var selectedFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), vm.selectedTaskData.taskId);
                     //this just forces the selected styling to apply
@@ -355,16 +391,16 @@
             var taskId = feature.get('taskId');
             var projectId = vm.projectData.projectId;
 
-            //reset task errors
-            vm.taskError = '';
-            vm.taskErrorValidation = '';
-            vm.taskLockError = false;
 
             // get full task from task service call
             var taskPromise = taskService.getTask(projectId, taskId);
             taskPromise.then(function (data) {
                 //task returned successfully
-                refreshCurrentSelection(data);
+                //reset task errors
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                setUpSelectedTask(data);
                 // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
                 // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
                 // tab
@@ -375,13 +411,13 @@
 
             }, function () {
                 // task not returned successfully
-                vm.selectedTaskData = null;
-                vm.isSelectedMappable = false;
-                vm.isSelectedValidatable = false;
-                vm.taskError = 'task-get-error';
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.taskErrorMapping = 'task-get-error';
                 vm.taskErrorValidation = 'task-get-error';
-                vm.mappingStep = 'viewing';
-                vm.validatingStep = 'viewing';
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
                 if (vm.currentTab === 'description' || vm.currentTab !== 'instructions') {
                     //prioritise mapping
                     vm.currentTab = 'mapping';
@@ -393,7 +429,7 @@
          * Sets up the view model for the task options and actions for passed in task data object.
          * @param data - task JSON data object
          */
-        function refreshCurrentSelection(data) {
+        function setUpSelectedTask(data) {
             var isLockedByMeMapping = data.taskStatus === 'LOCKED_FOR_MAPPING' && data.lockHolder === vm.user.username;
             var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
             vm.isSelectedMappable = isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY';
@@ -432,19 +468,16 @@
             var unLockPromise = taskService.unLockTaskMapping(projectId, taskId, comment, status);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 refreshProject(projectId);
-                if (status == 'MAPPED') {
-                    vm.lockedTaskData = null;
-                    vm.taskLockError = false;
-                    vm.clearCurrentSelection();
-                }
-                else {
-                    vm.lockedTaskData = null;
-                    vm.taskLockError = false;
-                    refreshCurrentSelection(data);
-                }
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+
             }, function (error) {
-                onLockUnLockError(projectId, taskId, error);
+                onUnLockError(projectId, error);
             });
         };
 
@@ -464,12 +497,15 @@
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 refreshProject(projectId);
-                vm.lockedTaskData = null;
-                vm.taskLockError = false;
                 vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
             }, function (error) {
-                onLockUnLockError(projectId, taskId, error);
+                onUnLockError(projectId, error);
             });
         };
 
@@ -486,24 +522,27 @@
             var tasks = data.map(function (task) {
                 return {
                     comment: comment,
-                    status: status ? status : task.taskStatus,
+                    status: status,
                     taskId: task.taskId
                 };
             });
 
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
+
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 refreshProject(projectId);
-                vm.multiLockedTasks = null;
-                vm.taskUnLockError = false;
                 vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
             }, function (error) {
-                refreshProject(projectId);
-                vm.multiLockedTasks = null;
-                vm.taskUnLockError = true;
-                select.getFeatures().clear();
-
+                onUnLockError(projectId, error);
             });
         };
 
@@ -517,6 +556,9 @@
             // - try to lock the task, call returns a promise
             var lockPromise = taskService.lockTaskMapping(projectId, taskId);
             lockPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
@@ -524,12 +566,9 @@
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
                 vm.isSelectedMappable = true;
-                vm.taskError = '';
-                vm.taskErrorValidation = '';
-                vm.taskLockError = false;
                 vm.lockedTaskData = data;
             }, function (error) {
-                onLockUnLockError(projectId, taskId, error);
+                onLockError(projectId, error);
             });
         };
 
@@ -543,6 +582,9 @@
             // - try to lock the task, call returns a promise
             var lockPromise = taskService.lockTasksValidation(projectId, taskIds);
             lockPromise.then(function (tasks) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
@@ -550,11 +592,9 @@
                 vm.validatingStep = 'locked';
                 vm.selectedTaskData = tasks[0];
                 vm.isSelectedValidatable = true;
-                vm.taskError = '';
-                vm.taskLockError = false;
                 vm.lockedTaskData = tasks[0];
             }, function (error) {
-                onLockUnLockError(projectId, taskId, error);
+                onLockError(projectId, error);
             });
         };
 
@@ -684,11 +724,10 @@
          * @param taskId
          * @param error
          */
-        function onLockUnLockError(projectId, taskId, error) {
-            // Could not unlock/lock task
+        function onLockError(projectId, error) {
+            // Could not lock task
             // Refresh the map and selected task.
             refreshProject(projectId);
-            onTaskSelection(taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId));
             vm.taskLockError = true;
             // Check if it is an unauthorized error. If so, display appropriate message
             if (error.status == 401) {
@@ -697,8 +736,28 @@
             else {
                 // Another error occurred.
                 vm.isAuthorized = true;
+                vm.taskLockErrorMessage = error.data.Error;
             }
+        }
 
+        function onUnLockError(projectId, error) {
+            // Could not lock task
+            // Refresh the map and selected task.
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
+            vm.clearCurrentSelection();
+            refreshProject(projectId);
+            vm.taskUnLockError = true;
+            // Check if it is an unauthorized error. If so, display appropriate message
+            if (error.status == 401) {
+                vm.isAuthorized = false;
+            }
+            else {
+                // Another error occurred.
+                vm.isAuthorized = true;
+                vm.taskUnLockErrorMessage = error.data.Error;
+            }
         }
 
         /**
@@ -760,30 +819,50 @@
             lockPromise.then(function (tasks) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 refreshProject(vm.projectData.projectId);
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'multi-locked';
                 vm.multiSelectedTasksData = tasks;
                 vm.multiLockedTasks = tasks;
-                vm.selectedTaskData = null;
-                vm.lockedTaskData = null
                 vm.isSelectedValidatable = true;
-                vm.taskError = '';
-                vm.taskLockError = false;
 
             }, function (error) {
-                refreshProject(vm.projectData.projectId);
-                vm.taskLockError = true;
-                // Check if it is an unauthorized error. If so, display appropriate message
-                if (error.status == 401) {
-                    vm.isAuthorized = false;
-                }
-                else {
-                    // Another error occurred.
-                    vm.isAuthorized = true;
-                    vm.taskLockErrorMessage = error.data.Error;
-                }
+                onLockError(vm.projectData.projectId, error)
             });
+        }
+
+        vm.resetToSelectingStep = function () {
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
+            vm.clearCurrentSelection();
+            vm.mappingStep = 'selecting';
+            vm.validatingStep = 'selecting';
+
+        }
+
+        vm.resetTaskData = function () {
+            vm.selectedTaskData = null;
+            vm.lockedTaskData = null;
+            vm.multiSelectedTasksData = [];
+            vm.multiLockedTasks = [];
+        }
+
+        vm.resetStatusFlags = function () {
+            vm.isSelectedMappable = false;
+            vm.isSelectedValidatable = false;
+        }
+
+        vm.resetErrors = function () {
+            vm.taskErrorMapping = '';
+            vm.taskErrorValidation = '';
+            vm.taskLockError = false;
+            vm.taskLockErrorMessage = '';
+            vm.taskUnLockError = false;
+            vm.taskUnLockErrorMessage = '';
         }
     }
 })
