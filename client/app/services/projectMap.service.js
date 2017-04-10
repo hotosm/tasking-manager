@@ -6,9 +6,9 @@
 
     angular
         .module('taskingManager')
-        .service('projectMapService', [projectMapService]);
+        .service('projectMapService', ['styleService', projectMapService]);
 
-    function projectMapService() {
+    function projectMapService(styleService) {
         
         var map = null;
         var projectVectorSource = null;
@@ -38,23 +38,7 @@
          * @private
          */
         function addProjectsVectorLayer_(){
-
-            var fill = new ol.style.Fill({
-                color: [255, 0, 0, 0.5],
-                width: 1
-            });
-            var stroke = new ol.style.Stroke({
-                color: [255, 0, 0, 1],
-                width: 1
-            });
-            var style = new ol.style.Style({
-                image: new ol.style.Circle({
-                    fill: fill,
-                    stroke: stroke,
-                    radius: 5
-                })
-            });
-
+            var style = styleService.getProjectStyle();
             projectVectorSource = new ol.source.Vector();
             var vectorLayer = new ol.layer.Vector({
                 source: projectVectorSource,
@@ -69,22 +53,7 @@
          */
         function addHighlightsVectorLayer_(){
             
-            var fill = new ol.style.Fill({
-                color: [255, 0, 0, 1],
-                width: 1
-            });
-            var stroke = new ol.style.Stroke({
-                color: [255, 0, 0, 1],
-                width: 1
-            });
-            var highlightStyle = new ol.style.Style({
-                image: new ol.style.Circle({
-                    fill: fill,
-                    stroke: stroke,
-                    radius: 8
-                })
-            });
-
+            var highlightStyle = styleService.getHighlightedProjectStyle();
             projectHighlightVectorSource = new ol.source.Vector();
             var highlightLayer = new ol.layer.Vector({
                 source: projectHighlightVectorSource,
