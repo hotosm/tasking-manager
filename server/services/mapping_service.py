@@ -1,3 +1,4 @@
+import datetime
 import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
@@ -83,6 +84,7 @@ class MappingService:
 
         task = MappingService.get_task(task_id, project_id)
         task_geom = shape.to_shape(task.geometry)
+        timestamp = datetime.datetime.utcnow()
 
         root = ET.Element('gpx', attrib=dict(xmlns='http://topografix.com/GPX/1/1', version='1.1',
                                              creator='HOT Tasking Manager'))
@@ -91,6 +93,7 @@ class MappingService:
         metadata = ET.Element('metadata')
         link = ET.SubElement(metadata, 'link', attrib=dict(href='https://github.com/hotosm/tasking-manager'))
         ET.SubElement(link, 'text').text = 'HOT Tasking Manager'
+        ET.SubElement(metadata, 'time').text = timestamp.isoformat()
         root.append(metadata)
 
         # Create trk element
