@@ -1,3 +1,4 @@
+from flask import Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
@@ -206,7 +207,7 @@ class TasksAsGPX(Resource):
         tags:
             - mapping
         produces:
-            - application/json
+            - application/xml
         parameters:
             - name: project_id
               in: path
@@ -214,8 +215,14 @@ class TasksAsGPX(Resource):
               required: true
               type: integer
               default: 1
+            - in: query
+              name: tasks
+              type: string
+              default: 1,2
         responses:
             200:
+                description: Task user is working on
+            400:
                 description: Task user is working on
             404:
                 description: No mapped tasks
@@ -223,8 +230,12 @@ class TasksAsGPX(Resource):
                 description: Internal Server Error
         """
         try:
-            mapped_tasks = MappingService.generate_gpx(project_id, 1)
-            return mapped_tasks.to_primitive(), 200
+            tasks = request.args.get('tasks')
+            if tasks is None:
+                return {"Error": 'No tasks supplied in querystring'}, 400
+
+            xml = MappingService.generate_gpx(project_id, tasks)
+            return Response(xml, mimetype='text/xml', status=200)
         except NotFound:
             return {"Error": "No mapped tasks"}, 404
         except Exception as e:

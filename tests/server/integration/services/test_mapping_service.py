@@ -40,7 +40,11 @@ class TestAuthenticationService(unittest.TestCase):
 
     @patch.object(MappingService, 'get_task')
     def test_gpx(self, mock_task):
+        if self.skip_tests:
+            return
+
         task = Task.get(1, self.test_project.id)
         mock_task.return_value = task
 
+        # TODO test generated xml
         MappingService.generate_gpx(1, 1)
