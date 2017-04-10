@@ -1,0 +1,116 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Dashboard - projects
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                     <div class="dashboard-container">
+                         <div class="filter">
+                             <h2>Filter projects</h2>
+                             <form class="form">
+                                 <div class="form__group">
+                                     <label class="form__label" for="form-name">ID</label>
+                                     <input type="text" class="form__control form__control--medium"
+                                            placeholder="Filter on ID" ng-model="dashboardCtrl.searchText.id"/>
+                                 </div>
+                                 <div class="form__group">
+                                     <label class="form__label" for="form-name">Name</label>
+                                     <input type="text" class="form__control form__control--medium"
+                                            placeholder="Filter on name" ng-model="dashboardCtrl.searchText.name"/>
+                                 </div>
+                                 <div class="form__group">
+                                     <label class="form__label" for="form-name">Portfolio</label>
+                                     <input type="text" class="form__control form__control--medium"
+                                            placeholder="Filter on portfolio" ng-model="dashboardCtrl.searchText.portfolio"/>
+                                 </div>
+                                 <div class="form__group">
+                                     <label class="form__label" for="form-name">Created by</label>
+                                     <input type="text" class="form__control form__control--medium"
+                                            placeholder="Filter on created by" ng-model="dashboardCtrl.searchText.createdBy"/>
+                                 </div>
+                             </form>
+                         </div>
+                         <div class="results">
+                             <table class="table table-project-dashboard">
+                                <thead>
+                                <tr>
+                                    <th ng-click="dashboardCtrl.sortBy('id')">
+                                        <a class="table__sort table__sort--none" title="Sort column"><span>#</span></a>
+                                    </th>
+                                    <th ng-click="dashboardCtrl.sortBy('name')">
+                                        <a class="table__sort table__sort--none" title="Sort column"><span>Name</span></a>
+                                    </th>
+                                    <th ng-click="dashboardCtrl.sortBy('portfolio')">
+                                        <a class="table__sort table__sort--none" title="Sort column"><span>Portfolio</span></a>
+                                    </th>
+                                    <th ng-click="dashboardCtrl.sortBy('percentageMapped')">
+                                        <a class="table__sort table__sort--none" title="Sort column"><span>% mapped</span></a>
+                                    </th>
+                                    <th ng-click="dashboardCtrl.sortBy('percentageValidated')">
+                                        <a class="table__sort table__sort--none" title="Sort column"><span>% validated</span></a>
+                                    </th>
+                                    <th ng-click="dashboardCtrl.sortBy('createdBy')">
+                                        <a class="table__sort table__sort--none" title="Sort column"><span>Created by</span></a>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="pointer"
+                                        ng-repeat="project in dashboardCtrl.projects | filter:dashboardCtrl.searchText | orderBy:dashboardCtrl.propertyName:dashboardCtrl.reverse"
+                                        ng-class="project === dashboardCtrl.selectedProject ? 'selected' : ''"
+                                        ng-click="dashboardCtrl.selectProject(project.id)">
+                                        <td>{{ project.id }}</td>
+                                        <td>{{ project.name }}</td>
+                                        <td>{{ project.portfolio }}</td>
+                                        <td>{{ project.percentageMapped }}</td>
+                                        <td>{{ project.percentageValidated }}</td>
+                                        <td>{{ project.createdBy }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div>
+                        <h2>Stats</h2>
+                        <h6 class="heading-alt">{{ dashboardCtrl.selectedProject.name }}</h6>
+                        <div class="section__project-dashboard--stats">
+                            <div class="stats__card">
+                                <h3>Tasks mapped</h3>
+                                <canvas class="chart chart-pie"
+                                        chart-data="dashboardCtrl.mappedData" chart-labels="dashboardCtrl.mappedLabels"
+                                        chart-options="{legend: {display: true, position: 'bottom'}}">
+                                </canvas>
+                            </div>
+                            <div class="stats__card">
+                                 <h3>Tasks validated</h3>
+                                <canvas class="chart chart-pie"
+                                        chart-data="dashboardCtrl.validatedData" chart-labels="dashboardCtrl.validatedLabels"
+                                        chart-options="{legend: {display: true, position: 'bottom'}}">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div id="map" class="map-container"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

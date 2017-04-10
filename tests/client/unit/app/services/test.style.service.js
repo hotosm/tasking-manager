@@ -48,7 +48,7 @@ describe('style.service', function () {
         });
 
         // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
+        var style = styleService.getTaskStyle(taskFeature)
 
         // assert
         expect(style).toEqual(expectedStyle);
@@ -71,7 +71,7 @@ describe('style.service', function () {
         });
 
         // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
+        var style = styleService.getTaskStyle(taskFeature)
 
         // assert
         expect(style).toEqual(expectedStyle);
@@ -94,7 +94,7 @@ describe('style.service', function () {
         });
 
         // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
+        var style = styleService.getTaskStyle(taskFeature)
 
         // assert
         expect(style).toEqual(expectedStyle);
@@ -117,7 +117,7 @@ describe('style.service', function () {
         });
 
         // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
+        var style = styleService.getTaskStyle(taskFeature)
 
         // assert
         expect(style).toEqual(expectedStyle);
@@ -140,7 +140,7 @@ describe('style.service', function () {
         });
 
         // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
+        var style = styleService.getTaskStyle(taskFeature)
 
         // assert
         expect(style).toEqual(expectedStyle);
@@ -163,7 +163,7 @@ describe('style.service', function () {
         });
 
         // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
+        var style = styleService.getTaskStyle(taskFeature)
 
         // assert
         expect(style).toEqual(expectedStyle);
@@ -176,7 +176,7 @@ describe('style.service', function () {
         });
 
         // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
+        var style = styleService.getTaskStyle(taskFeature)
 
         // assert
         expect(style).toEqual(DEFAULT_STYLE);
@@ -189,7 +189,7 @@ describe('style.service', function () {
         });
 
         // act
-        var style = styleService.getTaskStyleFunction(taskFeature)
+        var style = styleService.getTaskStyle(taskFeature)
 
         // assert
         expect(style).toEqual(DEFAULT_STYLE);

@@ -57,7 +57,7 @@
 
         //interaction
         var select = new ol.interaction.Select({
-            style: styleService.getSelectedStyleFunction
+            style: styleService.getSelectedTaskStyle
         });
 
         vm.tasksForValidation = {
@@ -261,7 +261,7 @@
                     vm.highlightVectorLayer = new ol.layer.Vector({
                         source: source,
                         name: 'highlight',
-                        style: styleService.getHighlightedStyleFunction
+                        style: styleService.getHighlightedTaskStyle
                     });
                     vm.map.addLayer(vm.highlightVectorLayer);
                 } else {

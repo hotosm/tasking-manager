@@ -44,9 +44,11 @@
         // var styleCache = {};
 
         var service = {
-            getTaskStyleFunction: getTaskStyleFunction,
-            getSelectedStyleFunction: getSelectedStyleFunction,
-            getHighlightedStyleFunction: getHighlightedStyleFunction
+            getTaskStyle: getTaskStyle,
+            getSelectedTaskStyle: getSelectedTaskStyle,
+            getHighlightedTaskStyle: getHighlightedTaskStyle,
+            getProjectStyle: getProjectStyle,
+            getHighlightedProjectStyle: getHighlightedProjectStyle
         };
 
         return service;
@@ -56,7 +58,7 @@
          * @param feature - feature to be styled
          * @returns {ol.style.Style}
          */
-        function getTaskStyleFunction(feature) {
+        function getTaskStyle(feature) {
 
             // Get the feature's properties that control styling
             var status = feature.get('taskStatus');
@@ -102,7 +104,7 @@
          * @param feature - feature to be styled
          * @returns {ol.style.Style}
          */
-        function getHighlightedStyleFunction(feature) {
+        function getHighlightedTaskStyle() {
             return new ol.style.Style({
                 fill: new ol.style.Fill({
                     color: [225, 225, 225, 0]
@@ -119,12 +121,58 @@
          * @param feature - feature to be styled
          * @returns {ol.style.Style}
          */
-        function getSelectedStyleFunction(feature) {
+        function getSelectedTaskStyle(feature) {
             // get the base style for the feature and override it's stroke only.
-            var baseStyle = getTaskStyleFunction(feature);
+            var baseStyle = getTaskStyle(feature);
             baseStyle.getStroke().setColor(STROKE_COLOUR_SELECTED);
             baseStyle.getStroke().setWidth(STROKE_WIDTH_SELECTED);
             return baseStyle;
+        }
+
+        /**
+         * OpenLayers style function for showing a project (point) on the map
+         * @returns {ol.style.Style}
+         */
+        function getProjectStyle(){
+            var fill = new ol.style.Fill({
+                color: [255, 0, 0, 0.5], // red
+                width: 1
+            });
+            var stroke = new ol.style.Stroke({
+                color: [255, 0, 0, 1], // red
+                width: 1
+            });
+            var style = new ol.style.Style({
+                image: new ol.style.Circle({
+                    fill: fill,
+                    stroke: stroke,
+                    radius: 5
+                })
+            });
+            return style;
+        }
+
+        /**
+         * OpenLayers style function for highlighting a project (point) on the map
+         * @returns {ol.style.Style}
+         */
+        function getHighlightedProjectStyle(){
+            var fill = new ol.style.Fill({
+                color: [255, 0, 0, 1], // red
+                width: 1
+            });
+            var stroke = new ol.style.Stroke({
+                color: [255, 0, 0, 1], // red
+                width: 1
+            });
+            var highlightStyle = new ol.style.Style({
+                image: new ol.style.Circle({
+                    fill: fill,
+                    stroke: stroke,
+                    radius: 8
+                })
+            });
+            return highlightStyle;
         }
     }
 })();

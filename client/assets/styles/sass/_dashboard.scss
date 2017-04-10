@@ -1,42 +1,45 @@
-.profile-container {
+.dashboard-container {
   @include column(12/12);
 
-  .details {
-    @include column(12/12);
-    @include media(medium-up) {
-      @include column(8/12);
-    }
-  }
-
-  .roles {
-    padding-top: 3rem;
+  .filter {
     @include column(12/12);
     @include media(medium-up) {
       @include column(4/12);
     }
   }
+
+  .results {
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(8/12);
+    }
+    max-height: 500px;
+    overflow-y: auto;
+  }
 }
 
-.profile-projects-list {
-  max-height: 300px;
-  overflow-y: auto
+.table-project-dashboard {
+  font-size: small;
+  .selected {
+    background-color: rgba($base-color, 0.1);
+  }
 }
 
 /* ==========================================================================
-   Stats
+   Dashboard stats
    ========================================================================== */
-.section__inverse--stats {
-  background-color: rgba($base-color, 0.9);
-  color: #eee;
+.section__project-dashboard--stats {
   text-align: center;
   left: 0;
   width: 100%;
   clear: both;
   padding: 2rem 0;
+
   .stats__card {
     display: inline-block;
     margin: 1rem auto;
-    width: 250px;
+    width: 33%;
+    padding: 0rem 2rem;
   }
 
   .stats__card--amount {
@@ -50,4 +53,3 @@
     line-height: 18px;
   }
 }
-
