@@ -112,12 +112,12 @@ class MappingService:
                 ET.SubElement(wpt, 'name').text = 'Do not edit outside of this box!'
                 root.append(wpt)
 
-        iain = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n'
-        xml_gpx = ET.tostring(root, encoding='UTF-8')
+        #iain = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n'
+        xml_gpx = ET.tostring(root, encoding='utf8')
 
-        abi = xml_gpx.decode('utf-8')
+        #abi = xml_gpx.decode('utf-8')
 
-        test = iain + abi
+        #test = iain + abi
 
 
-        return test
+        return xml_gpx

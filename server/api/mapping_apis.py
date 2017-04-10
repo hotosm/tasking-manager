@@ -236,7 +236,7 @@ class TasksAsGPX(Resource):
             #     return {"Error": 'No tasks supplied in querystring'}, 400
 
             xml = MappingService.generate_gpx(project_id, 29)
-            return Response(xml, status=200)
+            return Response(xml, mimetype='text/xml', status=200)
         except NotFound:
             return {"Error": "No mapped tasks"}, 404
         except Exception as e:
