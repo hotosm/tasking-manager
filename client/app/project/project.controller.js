@@ -59,52 +59,7 @@
             style: styleService.getSelectedTaskStyle
         });
 
-        vm.mappedTasksPerUser =
-            [
-                {
-                    "username": "popeln",
-                    "mappedTaskCount": 3,
-                    "tasksMapped": [
-                        244,
-                        305,
-                        135
-                    ],
-                    "lastSeen": "2017-04-10T10:32:50.672448"
-                },
-                {
-                    "username": "LindaA1",
-                    "mappedTaskCount": 4,
-                    "tasksMapped": [
-                        180,
-                        194,
-                        181,
-                        167
-                    ],
-                    "lastSeen": "2017-04-10T10:33:26.753692"
-                }
-                ,
-                {
-                    "username": "thinkWhereTester",
-                    "mappedTaskCount": 4,
-                    "tasksMapped": [
-                        113,
-                        295,
-                        213,
-                        129
-                    ],
-                    "lastSeen": "2017-04-10T10:33:31.723409"
-                }
-                ,
-                {
-                    "username": "Ian Feeney",
-                    "mappedTaskCount": 2,
-                    "tasksMapped": [
-                        46,
-                        47
-                    ],
-                    "lastSeen": "2017-04-10T10:28:34.718474"
-                }
-            ]
+        vm.mappedTasksPerUser = [];
 
 
         //bound from the html
@@ -144,10 +99,12 @@
 
             var id = $routeParams.id;
             initialiseProject(id);
+            populateMappedTaskByUserTable(id);
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
                 refreshProject(id);
+                populateMappedTaskByUserTable(id);
                 //TODO do a selected task refesh too
             }, 10000);
         }
@@ -346,6 +303,15 @@
             }
         }
 
+        function populateMappedTaskByUserTable(id) {
+            var mappedTasksByUserPromise = taskService.getMappedTasksByUser(id);
+            mappedTasksByUserPromise.then(function (data) {
+                vm.mappedTasksPerUser = data.mappedTasks;
+            }, function () {
+                vm.mappedTasksPerUser = [];
+            });
+        }
+
         /**
          * Adds the aoi feature to the map
          * @param aoi
@@ -457,6 +423,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
+                populateMappedTaskByUserTable(id);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -486,6 +453,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
+                populateMappedTaskByUserTable(id);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -523,6 +491,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
+                populateMappedTaskByUserTable(id);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -547,6 +516,7 @@
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
+                populateMappedTaskByUserTable(id);
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
@@ -573,6 +543,7 @@
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
+                populateMappedTaskByUserTable(id);
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'locked';
                 vm.selectedTaskData = tasks[0];
@@ -777,7 +748,7 @@
         vm.lockTasksForValidation = function (doneTaskIds) {
             select.getFeatures().clear();
 
-                      //use doneTaskIds to get corresponding subset of tasks for selection from the project
+            //use doneTaskIds to get corresponding subset of tasks for selection from the project
             var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
                 if (doneTaskIds.includes(task.properties.taskId)) {
                     return task;
