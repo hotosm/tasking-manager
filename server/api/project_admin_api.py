@@ -340,6 +340,14 @@ class ProjectInvalidateAll(Resource):
               required: true
               type: integer
               default: 1
+            - in: body
+              name: body
+              description: JSON object for creating draft project
+              schema:
+                  properties:
+                      comment:
+                          type: string
+                          default: Invalidate all comment goes here  
         responses:
             200:
                 description: All mapped tasks invalidated
@@ -349,7 +357,7 @@ class ProjectInvalidateAll(Resource):
                 description: Internal Server Error
         """
         try:
-            ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id)
+            ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id, request.json.get('comment'))
             return {"Success": "All tasks invalidated"}, 200
         except NotFound:
             return {"Error": "No comments found"}, 404
@@ -384,6 +392,14 @@ class ProjectValidateAll(Resource):
               required: true
               type: integer
               default: 1
+            - in: body
+              name: body
+              description: JSON object for creating draft project
+              schema:
+                  properties:
+                      comment:
+                          type: string
+                          default: Validate all comment goes here  
         responses:
             200:
                 description: All mapped tasks validated
@@ -393,7 +409,7 @@ class ProjectValidateAll(Resource):
                 description: Internal Server Error
         """
         try:
-            ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
+            ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id, request.json.get('comment'))
             return {"Success": "All tasks validated"}, 200
         except NotFound:
             return {"Error": "No comments found"}, 404
