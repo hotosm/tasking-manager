@@ -69,6 +69,16 @@ class ProjectAdminService:
         return project
 
     @staticmethod
+    def delete_project(project_id: int):
+        """ Deletes project if it has no completed tasks """
+        project = ProjectAdminService._get_project_by_id(project_id)
+
+        if project.can_be_deleted():
+            project.delete()
+        else:
+            raise ProjectAdminServiceError('Project has mapped tasks, cannot be deleted')
+
+    @staticmethod
     def _attach_tasks_to_project(draft_project: Project, tasks_geojson):
         """
         Validates then iterates over the array of tasks and attach them to the draft project

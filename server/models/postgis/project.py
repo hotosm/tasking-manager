@@ -6,7 +6,7 @@ from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO, \
     ProjectSearchResultDTO, ProjectSearchResultsDTO
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid
@@ -224,6 +224,14 @@ class Project(db.Model):
         """ Deletes the current model from the DB """
         db.session.delete(self)
         db.session.commit()
+
+    def can_be_deleted(self) -> bool:
+        """ Projects can be deleted if they have no mapped work """
+        task_count = self.tasks.filter(Task.task_status != TaskStatus.READY.value).count()
+        if task_count == 0:
+            return True
+        else:
+            return False
 
     def get_locked_tasks_for_user(self, user_id: int):
         """ Gets tasks on project owned by specifed user id"""
