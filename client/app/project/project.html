@@ -64,7 +64,7 @@
                         <!-- select UI -->
                         <div ng-show="projectCtrl.mappingStep === 'selecting'">
                             <h3>Choose a task</h3>
-                            <p>There are 2 options for choosing a task for mapping:</p>
+                            <p>Choose a task for mapping:</p>
 
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
@@ -242,7 +242,7 @@
                         <!-- select UI -->
                         <div ng-show="projectCtrl.validatingStep === 'selecting'">
                             <h3>Select for validation</h3>
-                            <p>There are 3 options for choosing a task for validation:</p>
+                            <p>Choose a task for validation:</p>
                             <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                             <p><strong>Option 2: </strong>
                                 <button ng-click="projectCtrl.selectRandomTaskValidate()"
@@ -263,7 +263,7 @@
                                     <p>there was an error retrieving the task from the server.</p>
                                 </div>
                             </div>
-                            <div>
+                            <div ng-show="projectCtrl.mappedTasksPerUser.length > 0">
                                 <p><strong>Option 3: </strong> Select By user:
                                 </p>
                                 <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
@@ -283,26 +283,22 @@
                                         <td class="heading-alt">Contributer</td>
                                         <td class="heading-alt">Level</td>
                                         <td class="heading-alt">Mapped</td>
-                                        <td class="heading-alt">Oldest</td>
                                         <td class="heading-alt">Newest</td>
                                         <td class="heading-alt">Lock</td>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="doneTasks in projectCtrl.tasksForValidation.doneTasks">
-                                        <td>{{ doneTasks.user }}</td>
-                                        <td>{{ doneTasks.level }}</td>
-                                        <td>{{ doneTasks.tasks.length }}</td>
-                                        <td><span am-time-ago="doneTasks.tasks[0].timeStamp | amUtc | amLocal"></span>
-                                        </td>
-                                        <td><span
-                                                am-time-ago="doneTasks.tasks[user.tasks.length-1].timeStamp | amUtc | amLocal"></span>
+                                    <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser">
+                                        <td><a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}</td>
+                                        <td>{{doneTasks.mappingLevel }}</td>
+                                        <td>{{ doneTasks.mappedTaskCount }}</td>
+                                        <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
                                         </td>
                                         <td>
-                                            <button ng-click="projectCtrl.contributorClick(doneTasks)"
-                                                    ng-mouseover="projectCtrl.contributerHighlight(doneTasks, true)"
+                                            <button ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
+                                                    ng-mouseover="projectCtrl.highlightTasks(doneTasks.tasksMapped, true)"
                                                     ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
-                                                Lock
+                                                Start Validating
                                             </button>
                                         </td>
                                     </tr>
