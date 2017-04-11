@@ -176,7 +176,7 @@ class ProjectAdminAPI(Resource):
                           default: Buildings only
                       dueDate:
                          type: date
-                         default: 2017-07-27
+                         default: "2017-07-27"
                       imagery:
                           type: string
                           default: http//www.bing.com/maps/
@@ -209,7 +209,7 @@ class ProjectAdminAPI(Resource):
             ProjectAdminService.update_project(project_dto)
             return {"Status": "Updated"}, 200
         except NotFound:
-            return {"Error": "Task Not Found"}, 404
+            return {"Error": "Project Not Found"}, 404
         except ProjectAdminServiceError as e:
             return {"error": str(e)}, 400
         except Exception as e:

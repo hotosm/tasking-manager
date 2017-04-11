@@ -202,6 +202,10 @@ class Project(db.Model):
         self.enforce_validator_role = project_dto.enforce_validator_role
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
+        self.entities_to_map = project_dto.entities_to_map
+        self.changeset_comment = project_dto.changeset_comment
+        self.due_date = project_dto.due_date
+        self.imagery = project_dto.imagery
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
