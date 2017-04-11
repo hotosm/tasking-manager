@@ -203,6 +203,14 @@ class Task(db.Model):
         self.locked_by = user_id
         self.update()
 
+    @staticmethod
+    def validate_invalidate_all(project_id: int, user_id: int, status: TaskStatus):
+        """ Invalidates all mapped tasks on a project """
+        mapped_tasks = Task.query.filter_by(project_id=project_id, task_status=TaskStatus.MAPPED.value).all()
+        for task in mapped_tasks:
+            task.lock_task_for_validating(user_id)
+            task.unlock_task(user_id, status)
+
     def unlock_task(self, user_id, new_state=None, comment=None):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:

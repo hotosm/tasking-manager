@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType, BooleanType, DateType, DateTimeType
+from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority
@@ -61,7 +61,7 @@ class ProjectDTO(Model):
     private = BooleanType(required=True)
     entities_to_map = StringType(serialized_name='entitiesToMap')
     changeset_comment = StringType(serialized_name='changesetComment')
-    due_date = DateType(serialized_name='dueDate')
+    due_date = DateTimeType(serialized_name='dueDate')
     imagery = StringType()
 
 
