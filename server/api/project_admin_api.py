@@ -168,6 +168,18 @@ class ProjectAdminAPI(Resource):
                       private:
                           type: boolean
                           default: false
+                      changesetComment:
+                          type: string
+                          default: hotosm-project-1
+                      entitiesToMap:
+                          type: string
+                          default: Buildings only
+                      dueDate:
+                         type: date
+                         default: 2017-07-27
+                      imagery:
+                          type: string
+                          default: http//www.bing.com/maps/
                       projectInfoLocales:
                           type: array
                           items:

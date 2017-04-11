@@ -155,6 +155,12 @@ class Project(db.Model):
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
 
+    # TODO check these when have DB access
+    entities_to_map = db.Column(db.String)
+    changeset_comment = db.Column(db.String)
+    due_date = db.Column(db.DateTime)
+    imagery = db.Column(db.String)
+
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
