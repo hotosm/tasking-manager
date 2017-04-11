@@ -95,11 +95,11 @@ class ValidatorService:
         return mapped_tasks
 
     @staticmethod
-    def invalidate_all_tasks(project_id: int, user_id: int):
+    def invalidate_all_tasks(project_id: int, user_id: int, comment: str):
         """ Invalidates all mapped tasks on a project"""
-        Task.validate_invalidate_all(project_id, user_id, TaskStatus.INVALIDATED)
+        Task.validate_invalidate_all(project_id, user_id, comment, TaskStatus.INVALIDATED)
 
     @staticmethod
-    def validate_all_tasks(project_id: int, user_id: int):
+    def validate_all_tasks(project_id: int, user_id: int, comment: str):
         """ Validates all mapped tasks on a project"""
-        Task.validate_invalidate_all(project_id, user_id, TaskStatus.VALIDATED)
+        Task.validate_invalidate_all(project_id, user_id, comment, TaskStatus.VALIDATED)
