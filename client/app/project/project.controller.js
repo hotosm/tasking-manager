@@ -352,7 +352,7 @@
             mappedTasksByUserPromise.then(function (mappedTasks) {
                 vm.lockedTasksForCurrentUser = mappedTasks;
                 vm.lockedByCurrentUserVectorLayer.getSource().clear();
-                if (vm.lockedTasksForCurrentUser > 0) {
+                if (vm.lockedTasksForCurrentUser.length > 0) {
                     var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser);
                     vm.lockedByCurrentUserVectorLayer.getSource().addFeatures(features);
                 }
@@ -443,8 +443,8 @@
         function setUpSelectedTask(data) {
             var isLockedByMeMapping = data.taskStatus === 'LOCKED_FOR_MAPPING' && data.lockHolder === vm.user.username;
             var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
-            vm.isSelectedMappable = isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY';
-            vm.isSelectedValidatable = isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED';
+            vm.isSelectedMappable = (isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
+            vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED');
             vm.selectedTaskData = data;
 
             //jump to locked step if mappable and locked by me
