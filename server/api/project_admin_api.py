@@ -391,7 +391,7 @@ class ProjectValidateAll(Resource):
         """
         try:
             ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
-            return {"Success": "All tasks invalidated"}, 200
+            return {"Success": "All tasks validated"}, 200
         except NotFound:
             return {"Error": "No comments found"}, 404
         except Exception as e:
