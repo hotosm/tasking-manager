@@ -155,6 +155,12 @@ class Project(db.Model):
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
 
+    # TODO check these when have DB access
+    entities_to_map = db.Column(db.String)
+    changeset_comment = db.Column(db.String)
+    due_date = db.Column(db.DateTime)
+    imagery = db.Column(db.String)
+
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
@@ -196,6 +202,10 @@ class Project(db.Model):
         self.enforce_validator_role = project_dto.enforce_validator_role
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
+        self.entities_to_map = project_dto.entities_to_map
+        self.changeset_comment = project_dto.changeset_comment
+        self.due_date = project_dto.due_date
+        self.imagery = project_dto.imagery
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
@@ -237,6 +247,10 @@ class Project(db.Model):
                                    Project.enforce_validator_role,
                                    Project.enforce_mapper_level,
                                    Project.private,
+                                   Project.changeset_comment,
+                                   Project.entities_to_map,
+                                   Project.imagery,
+                                   Project.due_date,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -252,6 +266,10 @@ class Project(db.Model):
         base_dto.enforce_validator_role = project.enforce_validator_role
         base_dto.private = project.private
         base_dto.mapper_level = MappingLevel(project.mapper_level).name
+        base_dto.entities_to_map = project.entities_to_map
+        base_dto.changeset_comment = project.changeset_comment
+        base_dto.due_date = project.due_date
+        base_dto.imagery = project.imagery
 
         return project, base_dto
 
