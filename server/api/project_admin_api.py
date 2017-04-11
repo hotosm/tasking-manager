@@ -292,11 +292,11 @@ class ProjectCommentsAPI(Resource):
               default: 1
         responses:
             200:
-                description: Project found
+                description: Comments found
             401:
                 description: Unauthorized - Invalid credentials
             404:
-                description: Project not found
+                description: No comments found
             500:
                 description: Internal Server Error
         """
