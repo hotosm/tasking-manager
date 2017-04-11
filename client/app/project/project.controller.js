@@ -659,7 +659,6 @@
 
             var selectedFeatures = select.getFeatures();
             var taskCount = selectedFeatures.getArray().length;
-            console.log(taskCount);
             var extent = geospatialService.getBoundingExtentFromFeatures(selectedFeatures.getArray());
             // Zoom to the extent to get the right zoom level for the editorsgit commit -a
             vm.map.getView().fit(extent);
@@ -672,8 +671,13 @@
             var center = ol.proj.transform(geospatialService.getCenterOfExtent(extent), 'EPSG:3857', 'EPSG:4326');
             // TODO licence agreement
             if (editor === 'ideditor') {
-                // TODO: GPX file + imageryURL
-                editorService.launchIdEditor(center, changesetComment);
+                editorService.launchIdEditor(
+                    center,
+                    changesetComment,
+                    imageryUrl,
+                    vm.projectData.projectId,
+                    vm.selectedTaskData.taskId
+                );
             }
             else if (editor === 'potlatch2') {
                 editorService.launchPotlatch2Editor(center);

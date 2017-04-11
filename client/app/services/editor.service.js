@@ -6,9 +6,9 @@
 
     angular
         .module('taskingManager')
-        .service('editorService', ['$window', 'mapService', editorService]);
+        .service('editorService', ['$window', 'mapService', 'configService', editorService]);
 
-    function editorService($window, mapService) {
+    function editorService($window, mapService, configService) {
 
         var service = {
             sendJOSMCmd: sendJOSMCmd,
@@ -45,13 +45,26 @@
          * Lauch the iD editor
          * @param centroid
          * @param changesetComment
+         * @param imageryUrl
+         * @param gpx
          */
-        function launchIdEditor(centroid, changesetComment){
+        function launchIdEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
             var base = 'http://www.openstreetmap.org/edit?editor=id&';
             var zoom = mapService.getOSMMap().getView().getZoom();
             var url = base + '#map=' +
                         [zoom, centroid[1], centroid[0]].join('/') +
-                        '&comment=' + changesetComment;
+                        '&comment=' + encodeURIComponent(changesetComment);
+            // Add imagery
+            if (typeof imageryUrl != "undefined" && imageryUrl !== '') {
+                // url is supposed to look like tms[22]:http://hiu...
+                var urlForImagery = imageryUrl.substring(imageryUrl.indexOf('http'));
+                urlForImagery = urlForImagery.replace('zoom', 'z');
+                url += "&background=custom:" + encodeURIComponent(urlForImagery);
+            }
+            // Add GPX
+            if (typeof projectId != "undefined" && projectId !== '' && typeof taskId != "undefined" && taskId !== '') {
+                url += "&gpx=" + getGPXUrl(projectId, taskId);
+            }
             $window.open(url);
         }
 
@@ -118,6 +131,17 @@
                 success = false;
             }
             return success;
+        }
+
+        /**
+         * Format the GPX url for the project ID and taskIds
+         * @param projectId
+         * @param taskIds (comma separated)
+         * @returns gpxUrl
+         */
+        function getGPXUrl(projectId, taskIds){
+            var gpxUrl = encodeURIComponent(configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=') + taskIds;
+            return gpxUrl;
         }
     }
 })();
