@@ -14,6 +14,7 @@
         vm.projectData = null;
         vm.taskVectorLayer = null;
         vm.highlightVectorLayer = null;
+        vm.lockedByCurrentUserVectorLayer = null;
         vm.map = null;
         vm.user = {};
 
@@ -60,6 +61,7 @@
         });
 
         vm.mappedTasksPerUser = [];
+        vm.lockedTasksForCurrentUser = [];
 
 
         //bound from the html
@@ -99,12 +101,12 @@
 
             var id = $routeParams.id;
             initialiseProject(id);
-            populateMappedTaskByUserTable(id);
+            updateMappedTaskPerUser(id);
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
                 refreshProject(id);
-                populateMappedTaskByUserTable(id);
+                updateMappedTaskPerUser(id);
                 //TODO do a selected task refesh too
             }, 10000);
         }
@@ -242,6 +244,20 @@
                 $scope.instructions = data.projectInfo.instructions;
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+
+                //add a layer for users locked tasks
+                if (!vm.lockedByCurrentUserVectorLayer) {
+                    var source = new ol.source.Vector();
+                    vm.lockedByCurrentUserVectorLayer = new ol.layer.Vector({
+                        source: source,
+                        name: 'lockedByCurrentUser',
+                        style: styleService.getLockedByCurrentUserTaskStyle
+                    });
+                    vm.map.addLayer(vm.lockedByCurrentUserVectorLayer);
+                } else {
+                    vm.lockedByCurrentUserVectorLayer.getSource().clear();
+                }
+
                 //add a layer for task highlighting
                 if (!vm.highlightVectorLayer) {
                     var source = new ol.source.Vector();
@@ -308,6 +324,11 @@
 
             var taskFeatures = geospatialService.getFeaturesFromGeoJSON(tasks);
             source.addFeatures(taskFeatures);
+
+            //add locked tasks to the locked tasks vector layer
+            var projectId = vm.projectData.projectId;
+            updateLockedTasksForCurrentUser(projectId);
+
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
             }
@@ -317,12 +338,27 @@
          * Updates the data for mapped tasks by user
          * @param projectId
          */
-        function populateMappedTaskByUserTable(projectId) {
+        function updateMappedTaskPerUser(projectId) {
             var mappedTasksByUserPromise = taskService.getMappedTasksByUser(projectId);
             mappedTasksByUserPromise.then(function (data) {
                 vm.mappedTasksPerUser = data.mappedTasks;
             }, function () {
                 vm.mappedTasksPerUser = [];
+            });
+        }
+
+        function updateLockedTasksForCurrentUser(projectId) {
+            var mappedTasksByUserPromise = taskService.getLockedTasksForCurrentUser(projectId);
+            mappedTasksByUserPromise.then(function (mappedTasks) {
+                vm.lockedTasksForCurrentUser = mappedTasks;
+                vm.lockedByCurrentUserVectorLayer.getSource().clear();
+                if (vm.lockedTasksForCurrentUser > 0) {
+                    var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser);
+                    vm.lockedByCurrentUserVectorLayer.getSource().addFeatures(features);
+                }
+            }, function () {
+                vm.lockedByCurrentUserVectorLayer.getSource().clear();
+                vm.lockedTasksForCurrentUser = [];
             });
         }
 
@@ -452,7 +488,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -487,7 +523,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -530,7 +566,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -560,7 +596,7 @@
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
@@ -592,7 +628,7 @@
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'locked';
                 vm.selectedTaskData = tasks[0];
