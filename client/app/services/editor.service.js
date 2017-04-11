@@ -55,14 +55,14 @@
                         [zoom, centroid[1], centroid[0]].join('/') +
                         '&comment=' + encodeURIComponent(changesetComment);
             // Add imagery
-            if (typeof imageryUrl != "undefined" && imageryUrl !== '') {
+            if (imageryUrl && imageryUrl !== '') {
                 // url is supposed to look like tms[22]:http://hiu...
                 var urlForImagery = imageryUrl.substring(imageryUrl.indexOf('http'));
                 urlForImagery = urlForImagery.replace('zoom', 'z');
                 url += "&background=custom:" + encodeURIComponent(urlForImagery);
             }
             // Add GPX
-            if (typeof projectId != "undefined" && projectId !== '' && typeof taskId != "undefined" && taskId !== '') {
+            if (projectId && projectId !== '' && taskId && taskId !== '') {
                 url += "&gpx=" + getGPXUrl(projectId, taskId);
             }
             $window.open(url);
