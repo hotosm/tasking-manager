@@ -317,8 +317,13 @@
             });
         }
 
+        /**
+         * Gets ids of tasks which are locked by the current user
+         * @param projectId
+         * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
+         */
         function getLockedTasksForCurrentUser(projectId) {
-                        // Returns a promise
+            // Returns a promise
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/project/' + projectId + '/has-user-locked-tasks',

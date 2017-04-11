@@ -347,6 +347,10 @@
             });
         }
 
+        /**
+         * Updates the map and contoller data for tasks locked by current user
+         * @param projectId
+         */
         function updateLockedTasksForCurrentUser(projectId) {
             var mappedTasksByUserPromise = taskService.getLockedTasksForCurrentUser(projectId);
             mappedTasksByUserPromise.then(function (mappedTasks) {
