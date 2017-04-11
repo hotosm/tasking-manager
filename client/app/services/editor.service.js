@@ -137,7 +137,7 @@
          * Format the GPX url for the project ID and taskIds
          * @param projectId
          * @param taskIds (comma separated)
-         * @param gpxUrl
+         * @returns gpxUrl
          */
         function getGPXUrl(projectId, taskIds){
             var gpxUrl = encodeURIComponent(configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=') + taskIds;
