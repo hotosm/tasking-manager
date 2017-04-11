@@ -63,6 +63,7 @@ class ProjectDTO(Model):
     changeset_comment = StringType(serialized_name='changesetComment')
     due_date = DateTimeType(serialized_name='dueDate')
     imagery = StringType()
+    josm_preset = StringType(serialized_name='josmPreset')
 
 
 class ProjectSearchDTO(Model):

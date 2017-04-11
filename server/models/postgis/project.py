@@ -160,6 +160,7 @@ class Project(db.Model):
     changeset_comment = db.Column(db.String)
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
+    josm_preset = db.Column(db.String)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
@@ -206,6 +207,7 @@ class Project(db.Model):
         self.changeset_comment = project_dto.changeset_comment
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
+        self.josm_preset = project_dto.josm_preset
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
@@ -259,6 +261,7 @@ class Project(db.Model):
                                    Project.entities_to_map,
                                    Project.imagery,
                                    Project.due_date,
+                                   Project.josm_preset,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -268,6 +271,7 @@ class Project(db.Model):
         base_dto = ProjectDTO()
         base_dto.project_id = project_id
         base_dto.project_status = ProjectStatus(project.status).name
+        base_dto.default_locale = project.default_locale
         base_dto.project_priority = ProjectPriority(project.priority).name
         base_dto.area_of_interest = geojson.loads(project.geojson)
         base_dto.enforce_mapper_level = project.enforce_mapper_level
@@ -278,6 +282,7 @@ class Project(db.Model):
         base_dto.changeset_comment = project.changeset_comment
         base_dto.due_date = project.due_date
         base_dto.imagery = project.imagery
+        base_dto.josm_preset = project.josm_preset
 
         return project, base_dto
 
