@@ -247,6 +247,10 @@ class Project(db.Model):
                                    Project.enforce_validator_role,
                                    Project.enforce_mapper_level,
                                    Project.private,
+                                   Project.changeset_comment,
+                                   Project.entities_to_map,
+                                   Project.imagery,
+                                   Project.due_date,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -262,6 +266,10 @@ class Project(db.Model):
         base_dto.enforce_validator_role = project.enforce_validator_role
         base_dto.private = project.private
         base_dto.mapper_level = MappingLevel(project.mapper_level).name
+        base_dto.entities_to_map = project.entities_to_map
+        base_dto.changeset_comment = project.changeset_comment
+        base_dto.due_date = project.due_date
+        base_dto.imagery = project.imagery
 
         return project, base_dto
 
