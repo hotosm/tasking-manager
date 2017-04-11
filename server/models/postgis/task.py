@@ -5,6 +5,7 @@ from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
+from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, NotFound
@@ -70,6 +71,29 @@ class TaskHistory(db.Model):
         # Cast duration to isoformat for later transmission via api
         last_locked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
         db.session.commit()
+
+    @staticmethod
+    def get_all_comments(project_id: int) -> ProjectCommentsDTO:
+        """ Gets all comments for the supplied project_id"""
+
+        comments = db.session.query(TaskHistory.action_date,
+                                    TaskHistory.action_text,
+                                    User.username)\
+            .join(User)\
+            .filter(TaskHistory.project_id == project_id, TaskHistory.action == TaskAction.COMMENT.name).all()
+
+        comment_list = []
+        for comment in comments:
+            dto = ProjectComment()
+            dto.comment = comment.action_text
+            dto.comment_date = comment.action_date
+            dto.user_name = comment.username
+            comment_list.append(dto)
+
+        comments_dto = ProjectCommentsDTO()
+        comments_dto.comments = comment_list
+
+        return comments_dto
 
 
 class Task(db.Model):

@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType, BooleanType, DateType
+from schematics.types import StringType, BaseType, IntType, BooleanType, DateType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority
@@ -88,4 +88,17 @@ class ProjectSearchResultsDTO(Model):
 
 
 class LockedTasksForUser(Model):
+    """ Describes all tasks locked by an individual user"""
     locked_tasks = ListType(IntType, serialized_name='lockedTasks')
+
+
+class ProjectComment(Model):
+    """ Describes an individual user comment on a project task """
+    comment = StringType()
+    comment_date = DateTimeType(serialized_name='commentDate')
+    user_name = StringType(serialized_name='userName')
+
+
+class ProjectCommentsDTO(Model):
+    """ Contains all comments on a project """
+    comments = ListType(ModelType(ProjectComment))

@@ -1,8 +1,9 @@
 import json
 import geojson
 from flask import current_app
-from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
+from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
 from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, ProjectStatus
+from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData
 
 
@@ -77,6 +78,16 @@ class ProjectAdminService:
             project.delete()
         else:
             raise ProjectAdminServiceError('Project has mapped tasks, cannot be deleted')
+
+    @staticmethod
+    def get_all_comments(project_id: int) -> ProjectCommentsDTO:
+        """ Gets all comments mappers, validators have added to tasks associated with project """
+        comments = TaskHistory.get_all_comments(project_id)
+
+        if len(comments.comments) == 0:
+            raise NotFound('No comments found on project')
+
+        return comments
 
     @staticmethod
     def _attach_tasks_to_project(draft_project: Project, tasks_geojson):
