@@ -177,10 +177,13 @@ class ProjectAdminAPI(Resource):
                           default: Buildings only
                       dueDate:
                          type: date
-                         default: "2017-07-27"
+                         default: "2017-04-11T12:38:49"
                       imagery:
                           type: string
                           default: http//www.bing.com/maps/
+                      josmPreset:
+                          type: string
+                          default: josm preset goes here
                       projectInfoLocales:
                           type: array
                           items:
