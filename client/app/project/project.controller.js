@@ -182,6 +182,11 @@
                 vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
             }
             else {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -200,6 +205,11 @@
                 vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
             }
             else {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -352,6 +362,11 @@
             taskPromise.then(function (data) {
                 //task returned successfully
                 //reset task errors
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -366,6 +381,11 @@
 
             }, function () {
                 // task not returned successfully
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a sinhle function call was cinsidered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -423,6 +443,11 @@
             var unLockPromise = taskService.unLockTaskMapping(projectId, taskId, comment, status);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -453,6 +478,11 @@
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -491,6 +521,11 @@
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
             unLockPromise.then(function (data) {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -514,6 +549,11 @@
             // - try to lock the task, call returns a promise
             var lockPromise = taskService.lockTaskMapping(projectId, taskId);
             lockPromise.then(function (data) {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -541,6 +581,11 @@
             // - try to lock the task, call returns a promise
             var lockPromise = taskService.lockTasksValidation(projectId, taskIds);
             lockPromise.then(function (tasks) {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -703,6 +748,11 @@
         function onUnLockError(projectId, error) {
             // Could not lock task
             // Refresh the map and selected task.
+            //TODO - The following reset lines are repeated in several places in this file.
+            //Refactoring to a single function call was considered, however it was decided that the ability to
+            //call the resets individually was desirable and would help readability.
+            //The downside is that any change will have to be replicated in several places.
+            //A fundamental refactor of this controller should be considered at some stage.
             vm.resetErrors();
             vm.resetStatusFlags();
             vm.resetTaskData();
@@ -770,6 +820,11 @@
             lockPromise.then(function (tasks) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -786,6 +841,11 @@
         }
 
         vm.resetToSelectingStep = function () {
+            //TODO - The following reset lines are repeated in several places in this file.
+            //Refactoring to a single function call was considered, however it was decided that the ability to
+            //call the resets individually was desirable and would help readability.
+            //The downside is that any change will have to be replicated in several places.
+            //A fundamental refactor of this controller should be considered at some stage.
             vm.resetErrors();
             vm.resetStatusFlags();
             vm.resetTaskData();
