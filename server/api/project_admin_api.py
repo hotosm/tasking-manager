@@ -112,7 +112,7 @@ class ProjectAdminAPI(Resource):
             project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
             return project_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "Task Not Found"}, 404
+            return {"Error": "Project Not Found"}, 404
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
@@ -212,6 +212,53 @@ class ProjectAdminAPI(Resource):
             return {"Error": "Project Not Found"}, 404
         except ProjectAdminServiceError as e:
             return {"error": str(e)}, 400
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def delete(self, project_id):
+        """
+        Deletes a Tasking-Manager project
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Project deleted
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden - users have submitted mapping
+            404:
+                description: Project not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            ProjectAdminService.delete_project(project_id)
+            return {"Success": "Project deleted"}, 200
+        except ProjectAdminServiceError:
+            return {"Error": "Project has some mapping"}, 403
+        except NotFound:
+            return {"Error": "Project Not Found"}, 404
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
