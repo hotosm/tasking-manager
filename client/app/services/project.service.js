@@ -44,7 +44,8 @@
             getProject: getProject,
             getProjectMetadata: getProjectMetadata,
             updateProject: updateProject,
-            deleteProject: deleteProject
+            deleteProject: deleteProject,
+            getCommentsForProject: getCommentsForProject
         };
 
         return service;
@@ -463,6 +464,29 @@
                 // or server returns response with an error status.
                 return $q.reject("error");
             })
+        }
+
+        /**
+         * Get comments for a project
+         * @param id
+         * @returns {*|!jQuery.jqXHR|!jQuery.deferred|!jQuery.Promise}
+         */
+        function getCommentsForProject(id){
+
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/admin/project/' + id + '/comments',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
         }
     }
 })();
