@@ -44,18 +44,42 @@
                         </section>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
-                        <button class="button button--secondary pull-right"
-                                ng-click="projectCtrl.currentTab = 'mapping'">Map
-                            <i class="oam-ds-icon-sm-chevron-right"></i>
-                        </button>
 
                         <button class="button button--secondary pull-right"
                                 ng-click="projectCtrl.currentTab = 'validation'">Validate
                             <i class="oam-ds-icon-sm-chevron-right"></i>
                         </button>
 
+                        <button class="button button--secondary pull-right"
+                                ng-click="projectCtrl.currentTab = 'mapping'">Map
+                            <i class="oam-ds-icon-sm-chevron-right"></i>
+                        </button>
+
                         <section>
                             <h2>Instructions</h2>
+                            <div ng-init="showEntitiesHelp = false">
+                                <strong>Entities to Map <i ng-click="showEntitiesHelp = !showEntitiesHelp"
+                                                       class="oam-ds-icon-circle-question pointer"></i></strong>
+                                <div ng-show="showEntitiesHelp">
+                                    <small><em>The list of elements we ask you to map</em></small>
+                                </div>
+                                <div><code>{{ projectCtrl.projectData.entitiesToMap }}</code></div>
+                            </div>
+                            <hr/>
+                            <div ng-init="showChangesetCommentHelp = false">
+                                <strong>Changeset Comment <i ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
+                                                         class="oam-ds-icon-circle-question pointer"></i></strong>
+                                <div ng-show="showChangesetCommentHelp">
+                                    <small><em>The default comment entered when uploaded data to the OSM database. When
+                                        saving your work,
+                                        please leave the default comment but add what you actually mapped, for example
+                                        "added
+                                        buildings and a residential road"
+                                    </em></small>
+                                </div>
+                                <div><code>{{ projectCtrl.projectData.changesetComment }}</code></div>
+                            </div>
+                            <hr/>
                             <p ng-bind-html="instructions"></p>
                         </section>
 
