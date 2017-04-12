@@ -427,8 +427,11 @@
                                     <p>The date after which the project will automatically be archived.</p>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">JOSM preset (TODO)</label>
-                                    <input type="file" class="form__control"/>
+                                    <label class="form__label">JOSM preset</label>
+                                    <input type="file" class="form__control" fileread="editProjectCtrl.project.josmPreset"/>
+                                    <p ng-show="editProjectCtrl.project.josmPreset">
+                                        A JOSM Preset has already been added to this project.
+                                    </p>
                                 </div>
                             </fieldset>
                         </div>
