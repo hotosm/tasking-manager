@@ -25,10 +25,11 @@
         });
 
         var FILL_COLOUR_READY = [223, 223, 223, 0.1];//very light grey, 0.1 opacity
-        var FILL_COLOUR_INVALIDATED = [255, 0, 0, 0.4];//red, 0.4 opacity
-        var FILL_COLOUR_MAPPED = [255, 165, 0, 0.4];//orange, 0.4 opacity
+        var FILL_COLOUR_INVALIDATED = [233, 11, 67, 0.4];//red, 0.4 opacity
+        var FILL_COLOUR_MAPPED = [255, 198, 12, 0.4];//orange, 0.4 opacity
         var FILL_COLOUR_VALIDATED = [0, 128, 0, 0.4];//green, 0.4 opacity
-        var FILL_COLOUR_LOCKED = [30, 144, 255, 0.4];//blue, 0.4 opacity
+        var FILL_COLOUR_LOCKED_FOR_MAPPING = [18, 89, 240, 0.4];//blue, 0.4 opacity
+        var FILL_COLOUR_LOCKED_FOR_VALIDATION = [18, 89, 240, 0.4];//blue, 0.4 opacity
         var FILL_COLOUR_BADIMAGERY = [0, 0, 0, 0.4];//black, 0.4 opacity
 
         var STROKE_COLOUR = [84, 84, 84, 0.7];//grey, 0.7 opacity
@@ -67,8 +68,11 @@
             // calculate the fill colour and opacity settings based on status, use rgba because this is the way to
             // set opacity in OL3, but also better for cross browser than named colors
             var fillColor = null;
-            if (status === 'LOCKED_FOR_MAPPING' || status === 'LOCKED_FOR_VALIDATION') {
-                fillColor = FILL_COLOUR_LOCKED;
+            if (status === 'LOCKED_FOR_MAPPING') {
+                fillColor = FILL_COLOUR_LOCKED_FOR_MAPPING;
+            }
+            else if (status === 'LOCKED_FOR_VALIDATION') {
+                fillColor = FILL_COLOUR_LOCKED_FOR_VALIDATION;
             }
             else if (status === 'READY') {
                 fillColor = FILL_COLOUR_READY;
@@ -125,10 +129,10 @@
         function getLockedByCurrentUserTaskStyle() {
             return new ol.style.Style({
                 fill: new ol.style.Fill({
-                    color: [30, 144, 255, 0]
+                    color: [18, 89, 240, 0]
                 }),
                 stroke: new ol.style.Stroke({
-                    color: [30, 144, 255, 1],
+                    color: [18, 89, 240, 1],
                     width: 4
                 })
             });
