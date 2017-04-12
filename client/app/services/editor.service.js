@@ -149,7 +149,6 @@
             // If it is not a full path, then it must be relative and for the GPX callback to work it needs
             // a full URL so get the current host and append it
             // Check if it is a full URL
-            var gpxUrl = 'api/v1/project/111/tasks_as_gpx?tasks=4';
             var fullUrl = gpxUrl.indexOf('http');
             if (fullUrl == -1){
                 // Not a full URL - so add the absolute part
