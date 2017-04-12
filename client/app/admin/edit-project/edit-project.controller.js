@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', editProjectController]);
 
-    function editProjectController($scope, $routeParams, $showdown, mapService, drawService, projectService, geospatialService, accountService, authService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, mapService, drawService, projectService, geospatialService, accountService, authService) {
         var vm = this;
         vm.currentSection = '';
 
@@ -215,9 +215,13 @@
 
         /**
          * Set the delete confirmation modal to visible/invisible
+         * @param showModal
          */
-        vm.showDeleteConfirmation = function(boolean){
-            vm.showDeleteConfirmationModal = boolean;
+        vm.showDeleteConfirmation = function(showModal){
+            vm.showDeleteConfirmationModal = showModal;
+            if (!showModal && vm.deleteProjectSuccess){
+                $location.path('/');
+            }
         };
 
         /**
