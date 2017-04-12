@@ -43,7 +43,8 @@
             splitTasks: splitTasks,
             getProject: getProject,
             getProjectMetadata: getProjectMetadata,
-            updateProject: updateProject
+            updateProject: updateProject,
+            deleteProject: deleteProject
         };
 
         return service;
@@ -429,6 +430,29 @@
                 method: 'POST',
                 url: configService.tmAPI + '/admin/project/' + id,
                 data: projectData,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously 
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Deletes a project
+         * @param id
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function deleteProject(id){
+            
+            // Returns a promise
+            return $http({
+                method: 'DELETE',
+                url: configService.tmAPI + '/admin/project/' + id,
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously 

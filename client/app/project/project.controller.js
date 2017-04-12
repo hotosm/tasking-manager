@@ -708,10 +708,8 @@
             // Zoom to the extent to get the right zoom level for the editorsgit commit -a
             vm.map.getView().fit(extent);
             var extentTransformed = geospatialService.transformExtentToLatLonArray(extent);
-            var imageryUrl = 'tms[22]:https://api.mapbox.com/v4/digitalglobe.2lnp1jee/{z}/{x}/{y}.png?' +
-                'access_token=pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNpd3A2OTAwODAwNGUyenFuN' +
-                'TkyZjRkeWsifQ.Y44JcpYP9gXsZD3p5KBZbA'; // TODO: get imagery URL from project
-            var changesetComment = '#TODO #CHANGSET_COMMENT'; // TODO: get changeset comment from project
+            var imageryUrl = vm.projectData.imagery;
+            var changesetComment = vm.projectData.changesetComment;
             // get center in the right projection
             var center = ol.proj.transform(geospatialService.getCenterOfExtent(extent), 'EPSG:3857', 'EPSG:4326');
             // TODO licence agreement
@@ -721,7 +719,7 @@
                     changesetComment,
                     imageryUrl,
                     vm.projectData.projectId,
-                    vm.selectedTaskData.taskId
+                    vm.getSelectTaskIds()
                 );
             }
             else if (editor === 'potlatch2') {
@@ -815,16 +813,19 @@
         }
 
         /**
-         * Convenience method to get comma separated list of task ids from multiLockedTasks
+         * Convenience method to get comma separated list of currently selected tasks ids
          * @returns {*}
          */
         vm.getSelectTaskIds = function () {
-            if (vm.multiLockedTasks) {
+            if (vm.multiLockedTasks && vm.multiLockedTasks.length > 0) {
                 var data = vm.multiLockedTasks;
                 var tasks = data.map(function (task) {
                     return task.taskId;
                 });
                 return tasks.join(',');
+            }
+            else if(vm.lockedTaskData){
+                return vm.lockedTaskData.taskId;
             }
             return null;
         }

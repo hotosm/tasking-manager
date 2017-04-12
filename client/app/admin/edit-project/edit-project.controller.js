@@ -13,10 +13,8 @@
         var vm = this;
         vm.currentSection = '';
 
-        // Mapping
-        vm.map = null;
-
         // Priority areas: interactions
+        vm.map = null;
         vm.modifyInteraction = null;
         vm.drawPolygonInteraction = null;
         vm.drawRectangleInteraction = null;
@@ -34,13 +32,16 @@
         ];
 
         vm.project = {};
-        vm.defaultLocale = 'en';
+        vm.project.defaultLocale = 'en';
         vm.descriptionLanguage = 'en';
         vm.shortDescriptionLanguage = 'en';
         vm.nameLanguage = 'en';
         vm.instructionsLanguage = 'en';
 
         vm.descriptionHTML = '';
+        
+        // Delete
+        vm.showDeleteConfirmationModal = false;
         
         activate();
 
@@ -81,40 +82,40 @@
             vm.updateProjectFail = false;
             vm.updateProjectSuccess = false;
 
+            var requiredFieldsMissing = checkRequiredFields();
+
             // Prepare the data for sending to API by removing any locales with no fields
-            // TODO: move to service
-            for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
-                var info = vm.project.projectInfoLocales[i];
-                var populatedLocale = false;
-
-                if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== ''){
-                    // Convert to HTML using the showdown library
-                    info.description = $showdown.makeHtml(info.description);
-                    info.shortDescription = $showdown.makeHtml(info.shortDescription);
-                    info.instructions = $showdown.makeHtml(info.instructions);
-                    populatedLocale = true;
+            if (!requiredFieldsMissing){
+                for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
+                    var info = vm.project.projectInfoLocales[i];
+                    var populatedLocale = false;
+                    if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== '') {
+                        // Convert to HTML using the showdown library
+                        info.description = $showdown.makeHtml(info.description);
+                        info.shortDescription = $showdown.makeHtml(info.shortDescription);
+                        info.instructions = $showdown.makeHtml(info.instructions);
+                        populatedLocale = true;
+                    }
+                    // if no fields for this locale are populated, remove from array
+                    if (!populatedLocale) {
+                        vm.project.projectInfoLocales.splice(i, 1);
+                        // decrease the counter because there is one less item in the array
+                        i--;
+                    }
                 }
-                // if no fields for this locale are populated, remove from array
-                if (!populatedLocale){
-                    vm.project.projectInfoLocales.splice(i, 1);
-                    // decrease the counter because there is one less item in the array
-                    i--;
-                }
+                var resultsPromise = projectService.updateProject(vm.project.projectId, vm.project);
+                resultsPromise.then(function (data) {
+                    // Project updated successfully
+                    vm.updateProjectFail = false;
+                    vm.updateProjectSuccess = true;
+                    // Reset the page elements
+                    getProjectMetadata(vm.project.projectId);
+                }, function () {
+                    // Project not updated successfully
+                    vm.updateProjectFail = true;
+                    vm.updateProjectSuccess = false;
+                });
             }
-            vm.project.defaultLocale = vm.defaultLocale;
-
-            var resultsPromise = projectService.updateProject(vm.project.projectId, vm.project);
-            resultsPromise.then(function (data) {
-                // Project updated successfully
-                vm.updateProjectFail = false;
-                vm.updateProjectSuccess = true;
-                // Reset the page elements 
-                getProjectMetadata(vm.project.projectId);
-            }, function(){
-                // Project not updated successfully
-                vm.updateProjectFail = true;
-                vm.updateProjectSuccess = false;
-            });
         };
 
         /**
@@ -153,7 +154,11 @@
          * @param language
          */
         vm.changeDefaultLocale = function(language){
-            vm.defaultLocale = language;
+            vm.project.defaultLocale = language;
+            vm.nameMissing = false;
+            vm.descriptionMissing = false;
+            vm.shortDescriptionMissing = false;
+            vm.instructionsMissing = false;
         };
 
         /**
@@ -207,6 +212,73 @@
         vm.setMapperLevel = function(level){
             vm.project.mapperLevel = level;
         };
+
+        /**
+         * Set the delete confirmation modal to visible/invisible
+         */
+        vm.showDeleteConfirmation = function(boolean){
+            vm.showDeleteConfirmationModal = boolean;
+        };
+
+        /**
+         * Navigate to the homepage
+         */
+        vm.goToHome = function(){
+            $location.path('/');
+        };
+        
+        /**
+         * Delete a project
+         */
+        vm.deleteProject = function(){
+            vm.deleteProjectFail = false;
+            vm.deleteProjectSuccess = false;
+            var resultsPromise = projectService.deleteProject(vm.project.projectId);
+            resultsPromise.then(function () {
+                // Project deleted successfully
+                vm.deleteProjectFail = false;
+                vm.deleteProjectSuccess = true;
+                // Reset the page elements
+                getProjectMetadata(vm.project.projectId);
+            }, function(){
+                // Project not deleted successfully
+                vm.deleteProjectFail = true;
+                vm.deleteProjectSuccess = false;
+            });
+        };
+
+        /**
+         * Check the required fields for the default locale
+         * @return boolean if something is missing (description, short description or instructions for the default locale
+         */
+        function checkRequiredFields(){
+            vm.nameMissing = false;
+            vm.descriptionMissing = false;
+            vm.shortDescriptionMissing = false;
+            vm.instructionsMissing = false;
+            vm.instructionsMissing = false;
+            for (var i = 0; i < vm.project.projectInfoLocales.length; i++) {
+                if (vm.project.projectInfoLocales[i].locale === vm.project.defaultLocale) {
+                    // check that the name, short description, description and instructions are populated for the default locale
+                    var info = vm.project.projectInfoLocales[i];
+                    if (typeof info.name == 'undefined' || info.name === ''){
+                        vm.nameMissing = true;
+                    }
+                    if (typeof info.description == 'undefined' || info.description === ''){
+                        vm.descriptionMissing = true;
+                    }
+                    if (typeof info.shortDescription == 'undefined' || info.shortDescription === ''){
+                        vm.shortDescriptionMissing = true;
+                    }
+                    if (typeof info.instructions == 'undefined' || info.instructions === ''){
+                        vm.instructionsMissing = true;
+                    }
+                    break;
+                }
+            }
+            var somethingMissing = vm.name || vm.descriptionMissing || vm.shortDescriptionMissing || vm.instructionsMissing;
+            return somethingMissing;
+        }
 
         /**
          * Priority areas: set interactions to active/inactive
@@ -343,6 +415,7 @@
                         vm.project.projectInfoLocales.push(locale);
                     }
                 }
+                vm.project.dueDate = new Date(vm.project.dueDate);
                 addAOIToMap();
             }, function(){
                // TODO

@@ -52,3 +52,11 @@ hr {
     @extend .button--active;
   }
 }
+
+.modal-tm {
+  .modal__inner {
+    .modal__body {
+      text-align: center;
+    }
+  }
+}

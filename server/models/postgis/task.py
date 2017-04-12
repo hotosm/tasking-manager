@@ -203,10 +203,19 @@ class Task(db.Model):
         self.locked_by = user_id
         self.update()
 
+    @staticmethod
+    def validate_invalidate_all(project_id: int, user_id: int, comment: str, status: TaskStatus):
+        """ Invalidates all mapped tasks on a project """
+        mapped_tasks = Task.query.filter_by(project_id=project_id, task_status=TaskStatus.MAPPED.value).all()
+        for task in mapped_tasks:
+            task.lock_task_for_validating(user_id)
+            task.unlock_task(user_id, status, comment)
+
     def unlock_task(self, user_id, new_state=None, comment=None):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
             # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
+            # TODO send comment as message to user
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)

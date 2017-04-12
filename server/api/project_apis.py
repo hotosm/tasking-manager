@@ -1,4 +1,3 @@
-import json
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import ProjectSearchDTO

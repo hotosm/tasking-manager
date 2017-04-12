@@ -433,6 +433,16 @@
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following .gpx
                                     file and load it in JOSM to see the task boundary.
                                 </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-error'">
+                                    <div class="alert alert--danger" role="alert">
+                                        <button class="alert__button-dismiss" title="Dismiss alert"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>Dismiss</span>
+                                        </button>
+                                        <p>JOSM remote control did not respond. Do you have JOSM running and
+                                            configured to be controlled remotely?</p>
+                                    </div>
+                                </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
                                               placeholder="Leave a comment"></textarea>
@@ -490,9 +500,20 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div ng-show="projectCtrl.selectedEditor === 'josm'">You will need to download
-                                    the OSM data to JOSM manually. Download the following .gpx file and load it
+                                <div ng-show="projectCtrl.selectedEditor === 'josm'">Since you have multiple tasks
+                                    selected you will need to download
+                                    the OSM data in JOSM manually. Download the following .gpx file and load it
                                     in JOSM to see the task boundaries.
+                                </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-error'">
+                                    <div class="alert alert--danger" role="alert">
+                                        <button class="alert__button-dismiss" title="Dismiss alert"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>Dismiss</span>
+                                        </button>
+                                        <p>JOSM remote control did not respond. Do you have JOSM running and
+                                            configured to be controlled remotely?</p>
+                                    </div>
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"

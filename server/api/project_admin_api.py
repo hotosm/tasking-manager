@@ -4,6 +4,7 @@ from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.services.authentication_service import token_auth, tm
 from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData, \
     ProjectAdminServiceError, NotFound
+from server.services.validator_service import ValidatorService
 
 
 class ProjectAdminAPI(Resource):
@@ -176,10 +177,13 @@ class ProjectAdminAPI(Resource):
                           default: Buildings only
                       dueDate:
                          type: date
-                         default: "2017-07-27"
+                         default: "2017-04-11T12:38:49"
                       imagery:
                           type: string
                           default: http//www.bing.com/maps/
+                      josmPreset:
+                          type: string
+                          default: josm preset goes here
                       projectInfoLocales:
                           type: array
                           items:
@@ -303,6 +307,110 @@ class ProjectCommentsAPI(Resource):
         try:
             comments_dto = ProjectAdminService.get_all_comments(project_id)
             return comments_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No comments found"}, 404
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class ProjectInvalidateAll(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Invalidate all mapped tasks on a project
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              description: JSON object for creating draft project
+              schema:
+                  properties:
+                      comment:
+                          type: string
+                          default: Invalidate all comment goes here  
+        responses:
+            200:
+                description: All mapped tasks invalidated
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id, request.json.get('comment'))
+            return {"Success": "All tasks invalidated"}, 200
+        except NotFound:
+            return {"Error": "No comments found"}, 404
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class ProjectValidateAll(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Validate all mapped tasks on a project
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              description: JSON object for creating draft project
+              schema:
+                  properties:
+                      comment:
+                          type: string
+                          default: Validate all comment goes here  
+        responses:
+            200:
+                description: All mapped tasks validated
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id, request.json.get('comment'))
+            return {"Success": "All tasks validated"}, 200
         except NotFound:
             return {"Error": "No comments found"}, 404
         except Exception as e:
