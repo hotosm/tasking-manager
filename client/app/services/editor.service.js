@@ -145,16 +145,16 @@
          * @returns string - gpxUrl
          */
         function getGPXUrl(projectId, taskIds){
-            var gpxUrl = encodeURIComponent(configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=') + taskIds;
+            var gpxUrl = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds;
             // If it is not a full path, then it must be relative and for the GPX callback to work it needs
             // a full URL so get the current host and append it
             // Check if it is a full URL
             var fullUrl = gpxUrl.indexOf('http');
             if (fullUrl == -1){
                 // Not a full URL - so add the absolute part
-                gpxUrl = $location.host() + gpxUrl;
+                gpxUrl = $location.protocol() + '://' + $location.host() + gpxUrl;
             }
-            return gpxUrl;
+            return encodeURIComponent(gpxUrl);
         }
     }
 })();
