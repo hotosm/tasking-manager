@@ -679,7 +679,7 @@
                     changesetComment,
                     imageryUrl,
                     vm.projectData.projectId,
-                    vm.selectedTaskData.taskId
+                    vm.getSelectTaskIds()
                 );
             }
             else if (editor === 'potlatch2') {
@@ -773,16 +773,19 @@
         }
 
         /**
-         * Convenience method to get comma separated list of task ids from multiLockedTasks
+         * Convenience method to get comma separated list of currently selected tasks ids
          * @returns {*}
          */
         vm.getSelectTaskIds = function () {
-            if (vm.multiLockedTasks) {
+            if (vm.multiLockedTasks && vm.multiLockedTasks.length > 0) {
                 var data = vm.multiLockedTasks;
                 var tasks = data.map(function (task) {
                     return task.taskId;
                 });
                 return tasks.join(',');
+            }
+            else if(vm.lockedTaskData){
+                return vm.lockedTaskData.taskId;
             }
             return null;
         }

@@ -173,7 +173,8 @@
                                 <p></p>
                                 <div class="form__group">
                                     <div class="form__input-group">
-                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                        <select class="form__control form__control__medium"
+                                                ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -181,7 +182,7 @@
                                         </select>
                                         <span class="form__input-group-button">
                                             <button class="button button--secondary"
-                                                ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                                    ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                                 Start Editor
                                             </button>
                                         </span>
@@ -290,7 +291,7 @@
                                     <tbody>
                                     <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser">
                                         <td><a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}</td>
-                                        <td>{{doneTasks.mappingLevel }}</td>
+                                        <td>{{ doneTasks.mappingLevel }}</td>
                                         <td>{{ doneTasks.mappedTaskCount }}</td>
                                         <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
                                         </td>
@@ -393,7 +394,8 @@
                                 <p></p>
                                 <div class="form__group">
                                     <div class="form__input-group">
-                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                        <select class="form__control form__control__medium"
+                                                ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -408,15 +410,25 @@
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following .gpx
-                                        file and load it in JOSM to see the task boundary.
+                                    file and load it in JOSM to see the task boundary.
+                                </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-error'">
+                                    <div class="alert alert--danger" role="alert">
+                                        <button class="alert__button-dismiss" title="Dismiss alert"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>Dismiss</span>
+                                        </button>
+                                        <p>JOSM remote control did not respond. Do you have JOSM running and
+                                            configured to be controlled remotely?</p>
+                                    </div>
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
-                                          placeholder="Leave a comment"></textarea>
+                                              placeholder="Leave a comment"></textarea>
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
-                                        ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'MAPPED')">
+                                            ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'MAPPED')">
                                         Stop Validating
                                     </button>
                                 </div>
@@ -452,7 +464,8 @@
                                 <p></p>
                                 <div class="form__group">
                                     <div class="form__input-group">
-                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                        <select class="form__control form__control__medium"
+                                                ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -460,15 +473,26 @@
                                         </select>
                                         <span class="form__input-group-button">
                                             <button class="button button--secondary"
-                                                ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                                    ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                                 Start Editor
                                             </button>
                                         </span>
                                     </div>
                                 </div>
-                                <div ng-show="projectCtrl.selectedEditor === 'josm'">You will need to download
-                                    the OSM data to JOSM manually. Download the following .gpx file and load it
+                                <div ng-show="projectCtrl.selectedEditor === 'josm'">Since you have multiple tasks
+                                    selected you will need to download
+                                    the OSM data in JOSM manually. Download the following .gpx file and load it
                                     in JOSM to see the task boundaries.
+                                </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-error'">
+                                    <div class="alert alert--danger" role="alert">
+                                        <button class="alert__button-dismiss" title="Dismiss alert"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>Dismiss</span>
+                                        </button>
+                                        <p>JOSM remote control did not respond. Do you have JOSM running and
+                                            configured to be controlled remotely?</p>
+                                    </div>
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
@@ -476,7 +500,7 @@
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
+                                            ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
                                         Stop Validating
                                     </button>
                                 </div>
