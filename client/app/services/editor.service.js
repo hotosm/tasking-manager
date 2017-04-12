@@ -6,9 +6,9 @@
 
     angular
         .module('taskingManager')
-        .service('editorService', ['$window', 'mapService', 'configService', editorService]);
+        .service('editorService', ['$window', '$location', 'mapService', 'configService', editorService]);
 
-    function editorService($window, mapService, configService) {
+    function editorService($window, $location, mapService, configService) {
 
         var service = {
             sendJOSMCmd: sendJOSMCmd,
@@ -52,8 +52,13 @@
             var base = 'http://www.openstreetmap.org/edit?editor=id&';
             var zoom = mapService.getOSMMap().getView().getZoom();
             var url = base + '#map=' +
-                        [zoom, centroid[1], centroid[0]].join('/') +
-                        '&comment=' + encodeURIComponent(changesetComment);
+                        [zoom, centroid[1], centroid[0]].join('/');
+            // Add changeset comment
+            var changeset = ''; // default to empty string
+            if (changesetComment && changesetComment !== ''){
+                changeset = changesetComment;
+            }
+            url += '&comment=' + encodeURIComponent(changeset);
             // Add imagery
             if (imageryUrl && imageryUrl !== '') {
                 // url is supposed to look like tms[22]:http://hiu...
@@ -137,10 +142,18 @@
          * Format the GPX url for the project ID and taskIds
          * @param projectId
          * @param taskIds (comma separated)
-         * @returns gpxUrl
+         * @returns string - gpxUrl
          */
         function getGPXUrl(projectId, taskIds){
             var gpxUrl = encodeURIComponent(configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=') + taskIds;
+            // If it is not a full path, then it must be relative and for the GPX callback to work it needs
+            // a full URL so get the current host and append it
+            // Check if it is a full URL
+            var fullUrl = gpxUrl.indexOf('http');
+            if (fullUrl == -1){
+                // Not a full URL - so add the absolute part
+                gpxUrl = $location.host() + gpxUrl;
+            }
             return gpxUrl;
         }
     }
