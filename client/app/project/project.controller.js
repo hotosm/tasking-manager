@@ -835,7 +835,7 @@
                 });
                 return tasks.join(',');
             }
-            else if(vm.lockedTaskData){
+            else if (vm.lockedTaskData) {
                 return vm.lockedTaskData.taskId;
             }
             return null;
@@ -860,9 +860,9 @@
 
             //use doneTaskIds to get corresponding subset of tasks for selection from the project
             var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
-                if (doneTaskIds.includes(task.properties.taskId)) {
-                    return task;
-                }
+                var i = doneTaskIds.indexOf(task.properties.taskId);
+                if (i !== -1)
+                    return doneTaskIds[i];
             });
 
             //select each one by one
