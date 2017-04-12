@@ -48,7 +48,8 @@
             getSelectedTaskStyle: getSelectedTaskStyle,
             getHighlightedTaskStyle: getHighlightedTaskStyle,
             getProjectStyle: getProjectStyle,
-            getHighlightedProjectStyle: getHighlightedProjectStyle
+            getHighlightedProjectStyle: getHighlightedProjectStyle,
+            getLockedByCurrentUserTaskStyle: getLockedByCurrentUserTaskStyle
         };
 
         return service;
@@ -100,7 +101,7 @@
         }
 
         /**
-         * OpenLayers style function.  Creates a features on the highlight layer.
+         * OpenLayers style function.  Creates style for features on the highlight layer.
          * @param feature - feature to be styled
          * @returns {ol.style.Style}
          */
@@ -111,6 +112,23 @@
                 }),
                 stroke: new ol.style.Stroke({
                     color: [0, 0, 0, 1],
+                    width: 4
+                })
+            });
+        }
+
+        /**
+         * OpenLayers style function.  Creates styles for features on the tasks locked by current user layer.
+         * @param feature - feature to be styled
+         * @returns {ol.style.Style}
+         */
+        function getLockedByCurrentUserTaskStyle() {
+            return new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: [30, 144, 255, 0]
+                }),
+                stroke: new ol.style.Stroke({
+                    color: [30, 144, 255, 1],
                     width: 4
                 })
             });
@@ -133,7 +151,7 @@
          * OpenLayers style function for showing a project (point) on the map
          * @returns {ol.style.Style}
          */
-        function getProjectStyle(){
+        function getProjectStyle() {
             var fill = new ol.style.Fill({
                 color: [255, 0, 0, 0.5], // red
                 width: 1
@@ -156,7 +174,7 @@
          * OpenLayers style function for highlighting a project (point) on the map
          * @returns {ol.style.Style}
          */
-        function getHighlightedProjectStyle(){
+        function getHighlightedProjectStyle() {
             var fill = new ol.style.Fill({
                 color: [255, 0, 0, 1], // red
                 width: 1

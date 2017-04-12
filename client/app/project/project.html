@@ -64,26 +64,36 @@
                         <!-- select UI -->
                         <div ng-show="projectCtrl.mappingStep === 'selecting'">
                             <h3>Choose a task</h3>
-                            <p>Choose a task for mapping:</p>
-
-                            <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
-                            <p><strong>Option 2: </strong>
-                                <button ng-click="projectCtrl.selectRandomTaskMap()"
-                                        class="button button--secondary pull-center">
-                                    Select a random task
-                                </button>
-                            </p>
-                            <div ng-show="projectCtrl.taskErrorMapping === 'none-available'">
-                                <div class="alert alert--danger" role="alert">
-                                    <p>There are no tasks currently available for mapping.</p>
-                                </div>
-                            </div>
-                            <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'" class="alert alert--danger"
+                            <div ng-show="projectCtrl.lockedTasksForCurrentUser.length > 0"
+                                 class="alert alert--warning"
                                  role="alert">
-                                <button class="alert__button-dismiss" title="Dismiss alert"
-                                        ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
-                                </button>
-                                <p>There was an error retrieving the task from the server.</p>
+                                <p>You cannot select tasks for mapping because you already have one or more tasks
+                                    locked. Use the map to re-select and complete these tasks to allow new tasks to be
+                                    selected.</p>
+                            </div>
+                            <div ng-hide="projectCtrl.lockedTasksForCurrentUser.length > 0">
+                                <p>Choose a task for mapping:</p>
+
+                                <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
+                                <p><strong>Option 2: </strong>
+                                    <button ng-click="projectCtrl.selectRandomTaskMap()"
+                                            class="button button--secondary pull-center">
+                                        Select a random task
+                                    </button>
+                                </p>
+                                <div ng-show="projectCtrl.taskErrorMapping === 'none-available'">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>There are no tasks currently available for mapping.</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'"
+                                     class="alert alert--danger"
+                                     role="alert">
+                                    <button class="alert__button-dismiss" title="Dismiss alert"
+                                            ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
+                                    </button>
+                                    <p>There was an error retrieving the task from the server.</p>
+                                </div>
                             </div>
                         </div>
                         <!-- task viewing and mapping UI's -->
@@ -92,22 +102,10 @@
                             <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                 <!-- task information -->
                                 <h2>Mapping</h2>
-                                <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
-                                    <div class="alert alert--danger" role="alert">
-                                        <p>The task could not be locked for
-                                            mapping. {{ projectCtrl.taskLockErrorMessage }}</p>
-                                    </div>
-                                </div>
-                                <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
-                                    <div class="alert alert--danger" role="alert">
-                                        <p>Please login first.</p>
-                                    </div>
-                                </div>
-                                <div ng-hide="projectCtrl.taskLockError">
-                                    <h3>Task
-                                        #{{ projectCtrl.selectedTaskData.taskId }}
-                                        is {{ projectCtrl.selectedTaskData.taskStatus }}
-                                        <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_MAPPING' || projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_VALIDATION' "> by
+                                <h3>Task
+                                    #{{ projectCtrl.selectedTaskData.taskId }}
+                                    is {{ projectCtrl.selectedTaskData.taskStatus }}
+                                    <span ng-show="projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_MAPPING' || projectCtrl.selectedTaskData.taskStatus === 'LOCKED_FOR_VALIDATION' "> by
                                          <span ng-show="projectCtrl.selectedTaskData.lockHolder === projectCtrl.user.username">
                                             you
                                          </span>
@@ -115,45 +113,68 @@
                                             {{ projectCtrl.selectedTaskData.lockHolder }}
                                          </span>
                                     </span>
-                                    </h3>
-                                    <div ng-show="projectCtrl.selectedTaskData ">
-                                        <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
-                                             class="alert alert--success"
-                                             role="alert">
-                                            <p>This task is available for mapping.</p>
-                                        </div>
-                                    </div>
-                                    <!-- task error alerts -->
-                                    <div>
-                                        <div ng-show="!projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
-                                             class="alert alert--danger"
-                                             role="alert">
-                                            <p>The selected task is not available for mapping.</p>
-                                        </div>
-                                    </div>
+                                </h3>
+                                <div ng-show="projectCtrl.lockedTasksForCurrentUser.length > 0"
+                                     class="alert alert--warning"
+                                     role="alert">
+                                    <p>You cannot select tasks for mapping because you already have one or more tasks
+                                        locked. Use the map to re-select and complete these tasks to allow new tasks to
+                                        be selected.</p>
                                 </div>
-                                <!-- task action buttons -->
-                                <div>
-                                    <div class="pull-center">
-                                        <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
-                                                class="button button--secondary button--large"
-                                                ng-click="projectCtrl.lockSelectedTaskMapping()">
-                                            Start Mapping
-                                        </button>
+                                <div ng-hide="projectCtrl.lockedTasksForCurrentUser.length > 0">
+                                    <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>The task could not be locked for
+                                                mapping. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                        </div>
                                     </div>
-                                    <hr/>
-                                    <div class="pull-center">
-                                        <div class="button-group button-group--horizontal" role="group"
-                                             aria-label="other options">
-                                            <button ng-hide="projectCtrl.taskErrorMapping === 'none-available'"
-                                                    ng-click="projectCtrl.selectRandomTaskMap()"
-                                                    class="button button--achromic">
-                                                Select another task
+                                    <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>Please login first.</p>
+                                        </div>
+                                    </div>
+                                    <div ng-hide="projectCtrl.taskLockError">
+
+
+                                        <div ng-show="projectCtrl.selectedTaskData ">
+                                            <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                                 class="alert alert--success"
+                                                 role="alert">
+                                                <p>This task is available for mapping.</p>
+                                            </div>
+                                        </div>
+                                        <!-- task error alerts -->
+                                        <div>
+                                            <div ng-show="!projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                                 class="alert alert--danger"
+                                                 role="alert">
+                                                <p>The selected task is not available for mapping.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- task action buttons -->
+                                    <div>
+                                        <div class="pull-center">
+                                            <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                                    class="button button--secondary button--large"
+                                                    ng-click="projectCtrl.lockSelectedTaskMapping()">
+                                                Start Mapping
                                             </button>
-                                            <button class="button button--achromic"
-                                                    ng-click="projectCtrl.resetToSelectingStep()">
-                                                Cancel
-                                            </button>
+                                        </div>
+                                        <hr/>
+                                        <div class="pull-center">
+                                            <div class="button-group button-group--horizontal" role="group"
+                                                 aria-label="other options">
+                                                <button ng-hide="projectCtrl.taskErrorMapping === 'none-available'"
+                                                        ng-click="projectCtrl.selectRandomTaskMap()"
+                                                        class="button button--achromic">
+                                                    Select another task
+                                                </button>
+                                                <button class="button button--achromic"
+                                                        ng-click="projectCtrl.resetToSelectingStep()">
+                                                    Cancel
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

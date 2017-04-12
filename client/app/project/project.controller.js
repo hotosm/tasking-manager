@@ -14,6 +14,7 @@
         vm.projectData = null;
         vm.taskVectorLayer = null;
         vm.highlightVectorLayer = null;
+        vm.lockedByCurrentUserVectorLayer = null;
         vm.map = null;
         vm.user = {};
 
@@ -60,6 +61,7 @@
         });
 
         vm.mappedTasksPerUser = [];
+        vm.lockedTasksForCurrentUser = [];
 
 
         //bound from the html
@@ -99,12 +101,12 @@
 
             var id = $routeParams.id;
             initialiseProject(id);
-            populateMappedTaskByUserTable(id);
+            updateMappedTaskPerUser(id);
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
                 refreshProject(id);
-                populateMappedTaskByUserTable(id);
+                updateMappedTaskPerUser(id);
                 //TODO do a selected task refesh too
             }, 10000);
         }
@@ -242,6 +244,20 @@
                 $scope.instructions = data.projectInfo.instructions;
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+
+                //add a layer for users locked tasks
+                if (!vm.lockedByCurrentUserVectorLayer) {
+                    var source = new ol.source.Vector();
+                    vm.lockedByCurrentUserVectorLayer = new ol.layer.Vector({
+                        source: source,
+                        name: 'lockedByCurrentUser',
+                        style: styleService.getLockedByCurrentUserTaskStyle
+                    });
+                    vm.map.addLayer(vm.lockedByCurrentUserVectorLayer);
+                } else {
+                    vm.lockedByCurrentUserVectorLayer.getSource().clear();
+                }
+
                 //add a layer for task highlighting
                 if (!vm.highlightVectorLayer) {
                     var source = new ol.source.Vector();
@@ -308,6 +324,11 @@
 
             var taskFeatures = geospatialService.getFeaturesFromGeoJSON(tasks);
             source.addFeatures(taskFeatures);
+
+            //add locked tasks to the locked tasks vector layer
+            var projectId = vm.projectData.projectId;
+            updateLockedTasksForCurrentUser(projectId);
+
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
             }
@@ -317,12 +338,31 @@
          * Updates the data for mapped tasks by user
          * @param projectId
          */
-        function populateMappedTaskByUserTable(projectId) {
+        function updateMappedTaskPerUser(projectId) {
             var mappedTasksByUserPromise = taskService.getMappedTasksByUser(projectId);
             mappedTasksByUserPromise.then(function (data) {
                 vm.mappedTasksPerUser = data.mappedTasks;
             }, function () {
                 vm.mappedTasksPerUser = [];
+            });
+        }
+
+        /**
+         * Updates the map and contoller data for tasks locked by current user
+         * @param projectId
+         */
+        function updateLockedTasksForCurrentUser(projectId) {
+            var mappedTasksByUserPromise = taskService.getLockedTasksForCurrentUser(projectId);
+            mappedTasksByUserPromise.then(function (mappedTasks) {
+                vm.lockedTasksForCurrentUser = mappedTasks;
+                vm.lockedByCurrentUserVectorLayer.getSource().clear();
+                if (vm.lockedTasksForCurrentUser.length > 0) {
+                    var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser);
+                    vm.lockedByCurrentUserVectorLayer.getSource().addFeatures(features);
+                }
+            }, function () {
+                vm.lockedByCurrentUserVectorLayer.getSource().clear();
+                vm.lockedTasksForCurrentUser = [];
             });
         }
 
@@ -407,8 +447,8 @@
         function setUpSelectedTask(data) {
             var isLockedByMeMapping = data.taskStatus === 'LOCKED_FOR_MAPPING' && data.lockHolder === vm.user.username;
             var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
-            vm.isSelectedMappable = isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY';
-            vm.isSelectedValidatable = isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED';
+            vm.isSelectedMappable = (isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
+            vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED');
             vm.selectedTaskData = data;
 
             //jump to locked step if mappable and locked by me
@@ -452,7 +492,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -487,7 +527,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -530,7 +570,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
@@ -560,7 +600,7 @@
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
                 vm.selectedTaskData = data;
@@ -592,7 +632,7 @@
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
                 refreshProject(projectId);
-                populateMappedTaskByUserTable(projectId);
+                updateMappedTaskPerUser(projectId);
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'locked';
                 vm.selectedTaskData = tasks[0];
