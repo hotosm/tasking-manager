@@ -14,10 +14,10 @@ describe('style.service', function () {
     });
 
        var FILL_COLOUR_READY = [223,223,223,0.1];//very light grey, 0.1 opacity
-        var FILL_COLOUR_INVALIDATED = [255,0,0,0.4];//red, 0.4 opacity
-        var FILL_COLOUR_DONE = [255,165,0,0.4];//orange, 0.4 opacity
+        var FILL_COLOUR_INVALIDATED = [233, 11, 67, 0.4];//red, 0.4 opacity
+        var FILL_COLOUR_DONE = [255, 198, 12, 0.4];//orange, 0.4 opacity
         var FILL_COLOUR_VALIDATED = [0,128,0,0.4];//green, 0.4 opacity
-        var FILL_COLOUR_LOCKED = [30,144,255,0.4];//blue, 0.4 opacity
+        var FILL_COLOUR_LOCKED = [18, 89, 240, 0.4];//blue, 0.4 opacity
         var FILL_COLOUR_BADIMAGERY = [0,0,0,0.4];//black, 0.4 opacity
 
         var STROKE_COLOUR = [84,84,84,0.7];//grey, 0.7 opacity
