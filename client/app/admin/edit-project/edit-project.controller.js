@@ -86,6 +86,7 @@
 
             // Prepare the data for sending to API by removing any locales with no fields
             if (!requiredFieldsMissing){
+                vm.project.josmPreset = vm.josmPreset;
                 for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
                     var info = vm.project.projectInfoLocales[i];
                     var populatedLocale = false;
