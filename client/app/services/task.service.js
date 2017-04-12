@@ -282,8 +282,10 @@
                     if (item instanceof ol.Feature) {
                         // safe to use the function
                         var taskId = item.get('taskId');
-                        if (ids.includes(taskId))
-                            return item;
+                        var i = ids.indexOf(taskId);
+
+                        if (i !== -1)
+                            return ids[i];
                     }
                 });
             }
