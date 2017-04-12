@@ -106,7 +106,7 @@
                 refreshProject(id);
                 populateMappedTaskByUserTable(id);
                 //TODO do a selected task refesh too
-            }, 10000);
+            }, 1000000);
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -276,6 +276,17 @@
                     //this just forces the selected styling to apply
                     select.getFeatures().clear();
                     select.getFeatures().push(selectedFeature);
+                }
+                else if (vm.multiSelectedTasksData.length > 0) {
+                    var tasks = vm.multiSelectedTasksData.map(function (task) {
+                        return task.taskId;
+                    });
+                    var selectedFeatures = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), tasks);
+                    select.getFeatures().clear();
+                    selectedFeatures.forEach(function (feature) {
+                            select.getFeatures().push(feature);
+                        }
+                    )
                 }
 
             }, function () {
@@ -817,7 +828,7 @@
                 select.getFeatures().push(feature);
             });
 
-            //TODO: put the UI in to locked for multi validation mode
+            //put the UI in to locked for multi validation mode
             var lockPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
             lockPromise.then(function (tasks) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime

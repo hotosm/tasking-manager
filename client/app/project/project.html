@@ -173,7 +173,8 @@
                                 <p></p>
                                 <div class="form__group">
                                     <div class="form__input-group">
-                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                        <select class="form__control form__control__medium"
+                                                ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -181,7 +182,7 @@
                                         </select>
                                         <span class="form__input-group-button">
                                             <button class="button button--secondary"
-                                                ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                                    ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                                 Start Editor
                                             </button>
                                         </span>
@@ -290,7 +291,7 @@
                                     <tbody>
                                     <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser">
                                         <td><a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}</td>
-                                        <td>{{doneTasks.mappingLevel }}</td>
+                                        <td>{{ doneTasks.mappingLevel }}</td>
                                         <td>{{ doneTasks.mappedTaskCount }}</td>
                                         <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
                                         </td>
@@ -393,7 +394,8 @@
                                 <p></p>
                                 <div class="form__group">
                                     <div class="form__input-group">
-                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                        <select class="form__control form__control__medium"
+                                                ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -408,15 +410,15 @@
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following .gpx
-                                        file and load it in JOSM to see the task boundary.
+                                    file and load it in JOSM to see the task boundary.
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
-                                          placeholder="Leave a comment"></textarea>
+                                              placeholder="Leave a comment"></textarea>
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
-                                        ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'MAPPED')">
+                                            ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'MAPPED')">
                                         Stop Validating
                                     </button>
                                 </div>
@@ -447,12 +449,13 @@
 
                             </div>
                             <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
-                                <p>You have the following tasks locked:<span>{{ projectCtrl.getSelectTaskIds() }}</span>
-                                </p>
-                                <p></p>
+                                <h2>Multi Task Validation</h2>
+                                <h3>Tasks ID's {{ projectCtrl.getSelectTaskIds() }} are LOCKED_FOR_VALIDATION by you.
+                                </h3>
                                 <div class="form__group">
                                     <div class="form__input-group">
-                                        <select class="form__control form__control__medium" ng-model="projectCtrl.selectedEditor">
+                                        <select class="form__control form__control__medium"
+                                                ng-model="projectCtrl.selectedEditor">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -460,7 +463,7 @@
                                         </select>
                                         <span class="form__input-group-button">
                                             <button class="button button--secondary"
-                                                ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                                    ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
                                                 Start Editor
                                             </button>
                                         </span>
@@ -475,8 +478,8 @@
                                               placeholder="Leave a comment on all tasks"></textarea>
                                 </div>
                                 <div class="form__group pull-center">
-                                    <button class="button button--secondary"
-                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
+                                    <button class="button button--achromic"
+                                            ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
                                         Stop Validating
                                     </button>
                                 </div>
