@@ -424,7 +424,6 @@
          * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
          */
         function updateProject(id, projectData){
-            console.log("update project");
             
             // Returns a promise
             return $http({

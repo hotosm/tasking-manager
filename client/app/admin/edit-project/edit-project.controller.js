@@ -7,7 +7,7 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', editProjectController])
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', editProjectController]);
 
     function editProjectController($scope, $location, $routeParams, $showdown, mapService, drawService, projectService, geospatialService, accountService, authService) {
         var vm = this;
@@ -86,6 +86,7 @@
 
             // Prepare the data for sending to API by removing any locales with no fields
             if (!requiredFieldsMissing){
+                vm.project.josmPreset = vm.josmPreset;
                 for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
                     var info = vm.project.projectInfoLocales[i];
                     var populatedLocale = false;
