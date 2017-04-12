@@ -293,6 +293,17 @@
                     select.getFeatures().clear();
                     select.getFeatures().push(selectedFeature);
                 }
+                else if (vm.multiSelectedTasksData.length > 0) {
+                    var tasks = vm.multiSelectedTasksData.map(function (task) {
+                        return task.taskId;
+                    });
+                    var selectedFeatures = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), tasks);
+                    select.getFeatures().clear();
+                    selectedFeatures.forEach(function (feature) {
+                            select.getFeatures().push(feature);
+                        }
+                    )
+                }
 
             }, function () {
                 // project not returned successfully
@@ -860,7 +871,7 @@
                 select.getFeatures().push(feature);
             });
 
-            //TODO: put the UI in to locked for multi validation mode
+            //put the UI in to locked for multi validation mode
             var lockPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
             lockPromise.then(function (tasks) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime

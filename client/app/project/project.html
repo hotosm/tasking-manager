@@ -480,9 +480,9 @@
 
                             </div>
                             <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
-                                <p>You have the following tasks locked:<span>{{ projectCtrl.getSelectTaskIds() }}</span>
-                                </p>
-                                <p></p>
+                                <h2>Multi Task Validation</h2>
+                                <h3>Tasks ID's {{ projectCtrl.getSelectTaskIds() }} are LOCKED_FOR_VALIDATION by you.
+                                </h3>
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
@@ -520,7 +520,7 @@
                                               placeholder="Leave a comment on all tasks"></textarea>
                                 </div>
                                 <div class="form__group pull-center">
-                                    <button class="button button--secondary"
+                                    <button class="button button--achromic"
                                             ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
                                         Stop Validating
                                     </button>
