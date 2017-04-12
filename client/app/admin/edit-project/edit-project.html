@@ -452,8 +452,14 @@
                                     <div class="alert alert--warning" role="alert">
                                         <p><strong>Warning:</strong> This cannot be undone.</p>
                                     </div>
-                                    <button class="button button--secondary" type="button">Invalidate all tasks</button>
-                                    <button class="button button--secondary" type="button">Validate all tasks</button>
+                                    <button class="button button--secondary" type="button"
+                                        ng-click="editProjectCtrl.showInvalidateConfirmation(true)">
+                                        Invalidate all tasks
+                                    </button>
+                                    <button class="button button--secondary" type="button"
+                                        ng-click="editProjectCtrl.showValidateConfirmation(true)">
+                                        Validate all tasks
+                                    </button>
                                 </div>
                                 <div class="form__group">
                                     <label class="form__label">Delete project</label>
@@ -461,7 +467,10 @@
                                     <div class="alert alert--warning" role="alert">
                                         <p><strong>Warning:</strong> This cannot be undone.</p>
                                     </div>
-                                    <button class="button button--secondary" type="button" ng-click="editProjectCtrl.showDeleteConfirmation(true)">Delete project</button>
+                                    <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.showDeleteConfirmation(true)">
+                                        Delete project
+                                    </button>
                                 </div>
                             </fieldset>
                         </div>
@@ -537,3 +546,96 @@
     </button>
 </section>
 <!-- delete project confirmation modal -->
+
+<!-- invalidate tasks confirmation modal -->
+<section class="modal" ng-show="editProjectCtrl.showInvalidateConfirmationModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">Are you sure you want to invalidate tasks?</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div ng-hide="editProjectCtrl.invalidateTasksSuccess">
+                <p>
+                    This will mark all tasks currently marked as 'mapped' as invalid. Please use this only if you are sure
+                    of what you are doing.
+                </p>
+                <p>Please leave a comment. It will be displayed in all the invalidated tasks and sent as the
+                invalidation comment to users.</p>
+                <textarea type="text" class="form__control" rows="4"
+                       ng-model="invalidateComment"
+                       placeholder="comment">
+                </textarea>
+            </div>
+            <p ng-show="editProjectCtrl.invalidateTasksSuccess">
+                The tasks were invalidated successfully.
+            </p>
+            <p ng-show="editProjectCtrl.invalidateTasksFail" class="error">
+                The tasks were not invalidated successfully.
+            </p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="editProjectCtrl.invalidateTasksSuccess">
+                <button class="button button--achromic" type="button"
+                        ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Cancel
+                </button>
+                <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.invalidateAllTasks(invalidateComment)">Invalidate all done tasks
+                </button>
+            </div>
+            <div ng-show="editProjectCtrl.invalidateTasksSuccess">
+                 <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Close message
+                </button>
+            </div>
+        </footer>
+    </div>
+    <button class="modal__button-dismiss" title="Close" ng-click="editProjectCtrl.showInvalidateConfirmation(false)">
+        Dismiss
+    </button>
+</section>
+<!-- invalidate tasks confirmation modal -->
+
+<!-- validate tasks confirmation modal -->
+<section class="modal modal-tm" ng-show="editProjectCtrl.showValidateConfirmationModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">Are you sure you want to mark all tasks as valid?</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div ng-hide="editProjectCtrl.validateTasksSuccess">
+                <p>
+                    This will mark all tasks valid. Please use this only if you are sure of what you are doing.
+                </p>
+            </div>
+            <p ng-show="editProjectCtrl.validateTasksSuccess">
+                The tasks were marked validated successfully.
+            </p>
+            <p ng-show="editProjectCtrl.validateTasksFail" class="error">
+                The tasks were not marked validated successfully.
+            </p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="editProjectCtrl.validateTasksSuccess">
+                <button class="button button--achromic" type="button"
+                        ng-click="editProjectCtrl.showValidateConfirmation(false)">Cancel
+                </button>
+                <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.validateAllTasks()">Validate all tasks
+                </button>
+            </div>
+            <div ng-show="editProjectCtrl.validateTasksSuccess">
+                 <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.showValidateConfirmation(false)">Close message
+                </button>
+            </div>
+        </footer>
+    </div>
+    <button class="modal__button-dismiss" title="Close" ng-click="editProjectCtrl.showValidateConfirmation(false)">
+        Dismiss
+    </button>
+</section>
+<!-- validate tasks confirmation modal -->

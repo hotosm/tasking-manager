@@ -44,7 +44,9 @@
             getProject: getProject,
             getProjectMetadata: getProjectMetadata,
             updateProject: updateProject,
-            deleteProject: deleteProject
+            deleteProject: deleteProject,
+            invalidateAllTasks: invalidateAllTasks,
+            validateAllTasks: validateAllTasks
         };
 
         return service;
@@ -456,6 +458,54 @@
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously 
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Invalidate all tasks on the project
+         * @param projectId
+         * @param comment
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function invalidateAllTasks(projectId, comment){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/invalidate-all',
+                data: {comment: comment},
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Validate all tasks on the project
+         * @param projectId
+         * @param comment
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function validateAllTasks(projectId, comment){
+             // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/validate-all',
+                data: {comment: comment},
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
                 // when the response is available
                 return response.data;
             }, function errorCallback() {

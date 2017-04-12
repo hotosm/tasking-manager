@@ -42,6 +42,14 @@
         
         // Delete
         vm.showDeleteConfirmationModal = false;
+
+        // Error messages
+        vm.deleteProjectFail = false;
+        vm.deleteProjectSuccess = false;
+        vm.invalidateTasksFail = false;
+        vm.invalidateTasksSuccess = false;
+        vm.validateTasksFail = false;
+        vm.validateTasksSuccess = false;
         
         activate();
 
@@ -215,6 +223,13 @@
         };
 
         /**
+         * Navigate to the homepage
+         */
+        vm.goToHome = function(){
+            $location.path('/');
+        };
+
+        /**
          * Set the delete confirmation modal to visible/invisible
          * @param showModal
          */
@@ -223,13 +238,6 @@
             if (!showModal && vm.deleteProjectSuccess){
                 $location.path('/');
             }
-        };
-
-        /**
-         * Navigate to the homepage
-         */
-        vm.goToHome = function(){
-            $location.path('/');
         };
         
         /**
@@ -250,6 +258,60 @@
                 vm.deleteProjectFail = true;
                 vm.deleteProjectSuccess = false;
             });
+        };
+
+        /**
+         * Set the invalidate confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showInvalidateConfirmation = function(showModal){
+            vm.showInvalidateConfirmationModal = showModal;
+        };
+
+        /**
+         * Invalidate all tasks on a project
+         * @param comment
+         */
+        vm.invalidateAllTasks = function(comment){
+            vm.invalidateTasksFail = false;
+            vm.invalidateTasksSuccess = false;
+            var resultsPromise = projectService.invalidateAllTasks(vm.project.projectId, comment);
+            resultsPromise.then(function (){
+                // Tasks invalidated successfully
+                vm.invalidateTasksFail = false;
+                vm.invalidateTasksSuccess = true;
+            }, function(){
+                // Tasks not invalidated successfully
+                vm.invalidateTasksFail = true;
+                vm.invalidateTasksSuccess = false;
+            })
+        };
+
+        /**
+         * Set the validate confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showValidateConfirmation = function(showModal){
+            vm.showValidateConfirmationModal = showModal;
+        };
+
+        /**
+         * Validate all tasks on a project
+         * @param comment
+         */
+        vm.validateAllTasks = function(comment){
+            vm.validateTasksFail = false;
+            vm.validateTasksSuccess = false;
+            var resultsPromise = projectService.validateAllTasks(vm.project.projectId, comment);
+            resultsPromise.then(function(){
+                // Tasks validated successfully
+                vm.validateTasksFail = false;
+                vm.validateTasksSuccess = true;
+            }, function(){
+                // Tasks not validated successfully
+                vm.validateTasksFail = true;
+                vm.validateTasksSuccess = false;
+            })
         };
 
         /**
