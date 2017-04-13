@@ -7,16 +7,16 @@
      */
     angular
         .module('taskingManager')
-        .controller('dashboardController', ['mapService', 'projectMapService', dashboardController]);
+        .controller('dashboardController', ['mapService', 'projectMapService', 'projectService', dashboardController]);
 
-    function dashboardController(mapService, projectMapService) {
+    function dashboardController(mapService, projectMapService, projectService) {
         var vm = this;
 
         // TODO: get projects + mapper level stats from the API.
         vm.projects = [
             {
-                id: 1,
-                name: 'Osun State Road Network Mapping for Vaccine Delivery Routing, Nigeria',
+                id: 186,
+                name: 'Hardcoded project name',
                 portfolio: 'Name of portfolio',
                 percentageMapped: '45',
                 percentageValidated: '33',
@@ -26,8 +26,19 @@
                 }
             },
             {
-                id: 2,
-                name: 'Missing Maps - Goma, RDC - Water and Sanitation',
+                id: 236,
+                name: 'Hardcoded project name 2',
+                portfolio: 'Name of portfolio',
+                percentageMapped: '66',
+                percentageValidated: '11',
+                createdBy: 'IF',
+                aoiCentroid: {
+                    coordinates: [-51.3464801406698, -11.5096335806906]
+                }
+            },
+            {
+                id: 159,
+                name: 'Hardcoded project name 3',
                 portfolio: 'Name of portfolio',
                 percentageMapped: '66',
                 percentageValidated: '11',
@@ -45,6 +56,9 @@
         vm.validatedData = [];
         vm.validatedLabels = [];
 
+        // Comments
+        vm.projectComments = [];
+
         // Filter
         vm.searchText = {};
        
@@ -60,6 +74,7 @@
             //TODO: get projects from API
             if (vm.projects) {
                 var lastProjectIndex = vm.projects.length - 1;
+                // TODO: look at ordering and which one to select by default
                 setGraphVariables(lastProjectIndex);
                 projectMapService.initialise(vm.map);
                 projectMapService.showProjectsOnMap(vm.projects);
@@ -72,6 +87,7 @@
          * @param projectId
          */
         vm.selectProject = function(projectId){
+            vm.projectComments = [];
             var index = -1;
             for (var i = 0; i < vm.projects.length; i++){
                 if (vm.projects[i].id == projectId){
@@ -80,6 +96,7 @@
             }
             if (index != -1){
                 setGraphVariables(index);
+                setComments(projectId);
                 projectMapService.highlightProjectOnMap(vm.projects, projectId);
             }
         };
@@ -105,6 +122,19 @@
             // Tasks validated
             vm.validatedData = [vm.selectedProject.percentageValidated, 100 - vm.selectedProject.percentageValidated];
             vm.validatedLabels = ['Validated', 'Not validated'];
+        }
+
+        /**
+         * Set the project's comments
+         * @param projectId
+         */
+        function setComments(projectId){
+            var resultsPromise = projectService.getCommentsForProject(projectId);
+            resultsPromise.then(function (data) {
+                vm.projectComments = data.comments;
+            }, function(){
+               // TODO
+            });
         }
     }
 })();

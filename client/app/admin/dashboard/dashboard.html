@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Dashboard - projects
+                    Dashboard - projects (TODO)
                 </h1>
             </div>
         </header>
@@ -94,7 +94,7 @@
                                 </canvas>
                             </div>
                             <div class="stats__card">
-                                 <h3>Tasks validated</h3>
+                                <h3>Tasks validated</h3>
                                 <canvas class="chart chart-pie"
                                         chart-data="dashboardCtrl.validatedData" chart-labels="dashboardCtrl.validatedLabels"
                                         chart-options="{legend: {display: true, position: 'bottom'}}">
@@ -109,6 +109,35 @@
             <div class="section__body">
                 <div class="inner">
                     <div id="map" class="map-container"></div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <h2>Comments by users</h2>
+                      <h6 class="heading-alt">{{ dashboardCtrl.selectedProject.name }}</h6>
+                    <div ng-show="dashboardCtrl.projectComments.length < 1">
+                        No comments for this project.
+                    </div>
+                    <div ng-show="dashboardCtrl.projectComments.length > 0">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Comment</th>
+                                    <th>When</th>
+                                    <th>By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="comment in dashboardCtrl.projectComments | orderBy: '-commentDate'">
+                                    <td>{{ comment.comment }}</td>
+                                    <td><span am-time-ago="comment.commentDate | amUtc | amLocal"></span></td>
+                                    <td><a href="/user/{{ comment.userName }}" target="_blank">{{ comment.userName }}</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

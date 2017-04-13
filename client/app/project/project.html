@@ -248,7 +248,9 @@
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                              maxlength="projectCtrl.maxlengthComment"
                                               placeholder="Leave a comment"></textarea>
+                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}</p>
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
@@ -469,7 +471,9 @@
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                              maxlength="projectCtrl.maxlengthComment"
                                               placeholder="Leave a comment"></textarea>
+                                    <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}</p>
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
@@ -541,7 +545,9 @@
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                              maxlenght="projectCtrl.maxlengthComment"
                                               placeholder="Leave a comment on all tasks"></textarea>
+                                    <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}</p>
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
