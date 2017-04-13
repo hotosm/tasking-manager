@@ -234,7 +234,7 @@
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following
-                                    .gpx file and load it in JOSM to see the task boundary.
+                                    <a href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a> and load it in JOSM to see the task boundary.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                     <div class="alert alert--danger" role="alert">
@@ -456,8 +456,9 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following .gpx
+                                <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following <a href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a>
                                     file and load it in JOSM to see the task boundary.
+                                    {{ projectCtrl.getGpxDownloadURL() }}
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                     <div class="alert alert--danger" role="alert">
@@ -530,7 +531,7 @@
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Since you have multiple tasks
                                     selected you will need to download
-                                    the OSM data in JOSM manually. Download the following .gpx file and load it
+                                    the OSM data in JOSM manually. Download the following <a href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a> file and load it
                                     in JOSM to see the task boundaries.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
