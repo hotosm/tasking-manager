@@ -184,6 +184,11 @@ class ProjectAdminAPI(Resource):
                       josmPreset:
                           type: string
                           default: josm preset goes here
+                      mappingTypes:
+                          type: array
+                          items:
+                              type: string
+                          default: [BUILDINGS, ROADS]
                       projectInfoLocales:
                           type: array
                           items:

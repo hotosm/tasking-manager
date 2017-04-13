@@ -27,6 +27,9 @@ def is_known_project_priority(value):
 
 def is_known_mapping_type(value):
     """ Validates Mapping Type is known value"""
+    if type(value) == list:
+        return  # Don't validate the entire list, just the individual values
+
     try:
         MappingTypes[value.upper()]
     except KeyError:
