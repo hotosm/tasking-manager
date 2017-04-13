@@ -1,4 +1,6 @@
-from flask import Response
+import io
+from distutils.util import strtobool
+from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
@@ -219,6 +221,10 @@ class TasksAsGPX(Resource):
               name: tasks
               type: string
               default: 1,2
+            - in: query
+              name: as_file
+              type: boolean
+              default: False 
         responses:
             200:
                 description: Task user is working on
@@ -232,10 +238,16 @@ class TasksAsGPX(Resource):
         try:
             current_app.logger.debug('GPX Called')
             tasks = request.args.get('tasks')
+            as_file = strtobool(request.args.get('as_file'))
             if tasks is None:
                 return {"Error": 'No tasks supplied in querystring'}, 400
 
             xml = MappingService.generate_gpx(project_id, tasks)
+
+            if as_file:
+                return send_file(io.BytesIO(xml), mimetype='text.xml', as_attachment=True,
+                                 attachment_filename=f'HOT-project-{project_id}.gpx')
+
             return Response(xml, mimetype='text/xml', status=200)
         except NotFound:
             return {"Error": "No mapped tasks"}, 404
