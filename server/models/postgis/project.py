@@ -292,11 +292,12 @@ class Project(db.Model):
         base_dto.imagery = project.imagery
         base_dto.josm_preset = project.josm_preset
 
-        mapping_types = []
-        for type in project.mapping_types:
-            mapping_types.append(MappingTypes(type).name)
+        if project.mapping_types:
+            mapping_types = []
+            for mapping_type in project.mapping_types:
+                mapping_types.append(MappingTypes(mapping_type).name)
 
-        base_dto.mapping_types = mapping_types
+            base_dto.mapping_types = mapping_types
 
         return project, base_dto
 
