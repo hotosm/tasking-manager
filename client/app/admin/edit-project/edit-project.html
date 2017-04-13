@@ -552,21 +552,15 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Are you sure you want to invalidate tasks?</h1>
+                <h1 class="modal__title">Are you sure you want to invalidate all tasks?</h1>
             </div>
         </header>
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.invalidateTasksSuccess">
                 <p>
-                    This will mark all tasks currently marked as 'mapped' as invalid. Please use this only if you are sure
+                    This will mark all tasks as invalid. Please use this only if you are sure
                     of what you are doing.
                 </p>
-                <p>Please leave a comment. It will be displayed in all the invalidated tasks and sent as the
-                invalidation comment to users.</p>
-                <textarea type="text" class="form__control" rows="4"
-                       ng-model="invalidateComment"
-                       placeholder="comment">
-                </textarea>
             </div>
             <p ng-show="editProjectCtrl.invalidateTasksSuccess">
                 The tasks were invalidated successfully.
@@ -581,7 +575,7 @@
                         ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Cancel
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.invalidateAllTasks(invalidateComment)">Invalidate all done tasks
+                        ng-click="editProjectCtrl.invalidateAllTasks()">Invalidate all done tasks
                 </button>
             </div>
             <div ng-show="editProjectCtrl.invalidateTasksSuccess">
@@ -608,7 +602,7 @@
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.validateTasksSuccess">
                 <p>
-                    This will mark all tasks valid. Please use this only if you are sure of what you are doing.
+                    This will mark all tasks (except 'bad imagery' tasks) as valid. Please use this only if you are sure of what you are doing.
                 </p>
             </div>
             <p ng-show="editProjectCtrl.validateTasksSuccess">
