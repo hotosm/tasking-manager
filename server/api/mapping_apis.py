@@ -220,10 +220,12 @@ class TasksAsGPX(Resource):
             - in: query
               name: tasks
               type: string
+              description: List of tasks required
               default: 1,2
             - in: query
               name: as_file
               type: boolean
+              description: Set to true if file download preferred
               default: False 
         responses:
             200:
