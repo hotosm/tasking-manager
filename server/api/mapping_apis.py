@@ -241,7 +241,7 @@ class TasksAsGPX(Resource):
         try:
             current_app.logger.debug('GPX Called')
             tasks = request.args.get('tasks')
-            as_file = strtobool(request.args.get('as_file'))
+            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
             if tasks is None:
                 return {"Error": 'No tasks supplied in querystring'}, 400
 

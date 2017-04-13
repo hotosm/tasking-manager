@@ -77,14 +77,13 @@ class MappingService:
         return task.as_dto()
 
     @staticmethod
-    def generate_gpx(project_id, task_ids):
-
-        # TODO handle multiple tasks
-        task_id = task_ids.split(',', 1)[0]
-
-        task = MappingService.get_task(task_id, project_id)
-        task_geom = shape.to_shape(task.geometry)
-        timestamp = datetime.datetime.utcnow()
+    def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
+        """ 
+        Creates a GPX file for supplied tasks.  You can use the following URL to test locally:
+        http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v1/project/111/tasks_as_gpx%3Ftasks=2
+        """
+        if timestamp is None:
+            timestamp = datetime.datetime.utcnow()
 
         root = ET.Element('gpx', attrib=dict(xmlns='http://topografix.com/GPX/1/1', version='1.1',
                                              creator='HOT Tasking Manager'))
@@ -99,18 +98,23 @@ class MappingService:
         # Create trk element
         trk = ET.Element('trk')
         root.append(trk)
+        ET.SubElement(trk, 'name').text = f'Task for project {project_id}. Do not edit outside of this box!'
 
-        ET.SubElement(trk, 'name').text = f'Task for project {task.project_id}. Do not edit outside of this box!'
-        trkseg = ET.SubElement(trk, 'trkseg')
+        # Construct trkseg elements
+        task_ids = map(int, task_ids_str.split(','))
+        tasks = Task.get_tasks(project_id, task_ids)
+        for task in tasks:
+            task_geom = shape.to_shape(task.geometry)
+            trkseg = ET.SubElement(trk, 'trkseg')
 
-        for poly in task_geom:
-            for point in poly.exterior.coords:
-                ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+            for poly in task_geom:
+                for point in poly.exterior.coords:
+                    ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
 
-                # Append wpt elements to end of doc
-                wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
-                ET.SubElement(wpt, 'name').text = 'Do not edit outside of this box!'
-                root.append(wpt)
+                    # Append wpt elements to end of doc
+                    wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+                    ET.SubElement(wpt, 'name').text = 'Do not edit outside of this box!'
+                    root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
