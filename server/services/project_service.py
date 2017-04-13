@@ -1,6 +1,6 @@
 from flask import current_app
 from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO, LockedTasksForUser
-from server.models.postgis.project import Project, ProjectStatus, MappingLevel
+from server.models.postgis.project import Project, ProjectStatus, MappingLevel, MappingTypes
 from server.models.postgis.utils import NotFound
 from server.services.user_service import UserService
 
@@ -115,5 +115,17 @@ class ProjectService:
 
         if search_dto.mapper_level:
             sql = f'{sql} and p.mapper_level = {MappingLevel[search_dto.mapper_level].value}'
+
+        if search_dto.mapping_types:
+            count = 0
+            mapping_type_array = ''
+            for mapping_type in search_dto.mapping_types:
+                if count > 0:
+                    mapping_type_array += ','
+
+                mapping_type_array += str(MappingTypes[mapping_type].value)
+                count += 1
+
+            sql = f'{sql} and ARRAY[{mapping_type_array}] && p.mapping_types'
 
         return sql

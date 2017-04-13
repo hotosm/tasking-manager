@@ -73,6 +73,10 @@ class ProjectSearchAPI(Resource):
               name: mapperLevel
               type: string
               default: BEGINNER
+            - in: query
+              name: mappingTypes
+              type: string
+              default: ROADS,BUILDINGS
         responses:
             200:
                 description: Projects found
@@ -85,6 +89,10 @@ class ProjectSearchAPI(Resource):
             search_dto = ProjectSearchDTO()
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             search_dto.mapper_level = request.args.get('mapperLevel')
+
+            mapping_types_str = request.args.get('mappingTypes')
+            if mapping_types_str:
+                search_dto.mapping_types = map(str, mapping_types_str.split(','))  # Extract list from string
             search_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
