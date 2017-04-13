@@ -99,12 +99,21 @@ class ProjectService:
         """ Find all projects that match the serach criteria"""
         # TODO going to have to look at caching here
 
-        results = Project.get_projects_by_seach_criteria(search_dto)
+        sql = ProjectService.generate_search_sql(search_dto)
+        results = Project.get_projects_by_seach_criteria(sql, search_dto.preferred_locale)
 
-        if len(results.results) == 0:
-            raise NotFound()
         return results
 
     @staticmethod
-    def generate_search_xml(search_dto: ProjectSearchDTO):
-        pass
+    def generate_search_sql(search_dto: ProjectSearchDTO) -> str:
+
+        sql = """select p.id, p.mapper_level, p.priority, p.default_locale, st_asgeojson(a.centroid)
+                   from projects p,
+                        areas_of_interest a
+                  where p.id = a.id
+                    and p.status = {0}""".format(ProjectStatus.PUBLISHED.value)
+
+        if search_dto.mapper_level:
+            sql = f'{sql} and p.mapper_level = {MappingLevel[search_dto.mapper_level].value}'
+
+        return sql
