@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'configService','mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
+        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
 
-    function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
+    function projectController($interval, $scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -936,9 +936,7 @@
          * @returns {string}
          */
         vm.getGpxDownloadURL = function(){
-
-            return configService.tmAPI + '/project/' + vm.projectData.projectId + '/tasks_as_gpx?tasks='+vm.getSelectTaskIds()+'&as_file=true';
-
+            return editorService.getGPXUrl(vm.projectData.projectId, vm.getSelectTaskIds(), true);
         }
     }
 })

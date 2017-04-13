@@ -14,7 +14,8 @@
             sendJOSMCmd: sendJOSMCmd,
             launchFieldPapersEditor: launchFieldPapersEditor,
             launchPotlatch2Editor: launchPotlatch2Editor,
-            launchIdEditor: launchIdEditor
+            launchIdEditor: launchIdEditor,
+            getGPXUrl: getGPXUrl
         };
 
         return service;
@@ -46,7 +47,8 @@
          * @param centroid
          * @param changesetComment
          * @param imageryUrl
-         * @param gpx
+         * @param projectId
+         * @param taskId
          */
         function launchIdEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
             var base = 'http://www.openstreetmap.org/edit?editor=id&';
@@ -142,10 +144,11 @@
          * Format the GPX url for the project ID and taskIds
          * @param projectId
          * @param taskIds (comma separated)
+         * @param as_file {true|false}
          * @returns string - gpxUrl
          */
-        function getGPXUrl(projectId, taskIds){
-            var gpxUrl = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds;
+        function getGPXUrl(projectId, taskIds, as_file){
+            var gpxUrl = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds + '&as_file='+(as_file?true:false);
             // If it is not a full path, then it must be relative and for the GPX callback to work it needs
             // a full URL so get the current host and append it
             // Check if it is a full URL
