@@ -930,6 +930,14 @@
             vm.taskUnLockError = false;
             vm.taskUnLockErrorMessage = '';
         }
+
+        /**
+         * Create the url for downloading the currently selected tasks as a gpx file
+         * @returns {string}
+         */
+        vm.getGpxDownloadURL = function(){
+            return editorService.getGPXUrl(vm.projectData.projectId, vm.getSelectTaskIds(), true);
+        }
     }
 })
 ();
