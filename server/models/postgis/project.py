@@ -6,7 +6,7 @@ from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO, \
     ProjectSearchResultDTO, ProjectSearchResultsDTO
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid
@@ -210,6 +210,12 @@ class Project(db.Model):
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
 
+        # Cast MappingType strings to int array
+        type_array = []
+        for mapping_type in project_dto.mapping_types:
+            type_array.append(MappingTypes[mapping_type].value)
+        self.mapping_types = type_array
+
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
 
@@ -263,6 +269,7 @@ class Project(db.Model):
                                    Project.imagery,
                                    Project.due_date,
                                    Project.josm_preset,
+                                   Project.mapping_types,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -283,7 +290,13 @@ class Project(db.Model):
         base_dto.changeset_comment = project.changeset_comment
         base_dto.due_date = project.due_date
         base_dto.imagery = project.imagery
+        base_dto.josm_preset = project.josm_preset
 
+        mapping_types = []
+        for type in project.mapping_types:
+            mapping_types.append(MappingTypes(type).name)
+
+        base_dto.mapping_types = mapping_types
 
         return project, base_dto
 
