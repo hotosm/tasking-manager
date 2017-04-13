@@ -17,6 +17,7 @@
         vm.lockedByCurrentUserVectorLayer = null;
         vm.map = null;
         vm.user = {};
+        vm.maxlengthComment = 500;
 
         // tab and view control
         vm.currentTab = '';
@@ -30,16 +31,14 @@
         vm.taskLockErrorMessage = '';
         vm.taskUnLockError = false;
         vm.taskUnLockErrorMessage = '';
-
-
+        
         //authorization
         vm.isAuthorized = false;
 
         //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
-
-
+        
         //task data
         vm.selectedTaskData = null;
         vm.lockedTaskData = null;
@@ -930,6 +929,14 @@
             vm.taskLockErrorMessage = '';
             vm.taskUnLockError = false;
             vm.taskUnLockErrorMessage = '';
+        }
+
+        /**
+         * Create the url for downloading the currently selected tasks as a gpx file
+         * @returns {string}
+         */
+        vm.getGpxDownloadURL = function(){
+            return editorService.getGPXUrl(vm.projectData.projectId, vm.getSelectTaskIds(), true);
         }
     }
 })

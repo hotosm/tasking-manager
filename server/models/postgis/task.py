@@ -2,6 +2,7 @@ import datetime
 import geojson
 from enum import Enum
 from geoalchemy2 import Geometry
+from typing import List
 from server import db
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
@@ -151,7 +152,7 @@ class Task(db.Model):
         return task
 
     @staticmethod
-    def get(task_id, project_id):
+    def get(task_id: int, project_id: int):
         """
         Gets specified task
         :param task_id: task ID in scope
@@ -159,6 +160,11 @@ class Task(db.Model):
         :return: Task if found otherwise None
         """
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
+
+    @staticmethod
+    def get_tasks(project_id: int, task_ids: List[int]):
+        """ Get all tasks that match supplied list """
+        return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids))
 
     def is_mappable(self):
         """ Determines if task in scope is in suitable state for mapping """
