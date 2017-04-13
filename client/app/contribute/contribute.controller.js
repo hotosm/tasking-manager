@@ -24,7 +24,7 @@
         vm.resultsView = 'grid';
         
         // Search parameters
-        vm.mapperLevel = 'BEGINNER'; // default to all
+        vm.mapperLevel = 'BEGINNER'; // default to beginner
 
         activate();
 
