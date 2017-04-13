@@ -220,6 +220,7 @@ class TasksAsGPX(Resource):
             - in: query
               name: tasks
               type: string
+              required: true
               description: List of tasks required
               default: 1,2
             - in: query
