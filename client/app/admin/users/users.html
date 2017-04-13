@@ -39,7 +39,11 @@
                                 </tr>
                                 </tbody>
                             </table>
-                            <ul ng-show="usersCtrl.users.length > 0" uib-pagination items-per-page="usersCtrl.itemsPerPage"
+                            <ul ng-show="usersCtrl.users.length > 0" uib-pagination
+                                max-size="3"
+                                boundary-link-numbers="true"
+                                rotate="false"
+                                items-per-page="usersCtrl.itemsPerPage"
                                 total-items="usersCtrl.users.length"
                                 ng-model="usersCtrl.currentPage"></ul>
                         </div>

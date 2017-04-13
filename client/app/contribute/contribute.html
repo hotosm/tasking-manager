@@ -35,6 +35,11 @@
                                         <div class="button-group button-group--horizontal" role="group"
                                              aria-label="choose mapping difficulty">
                                             <button class="button button--achromic" type="button"
+                                                ng-click="contributeCtrl.setMapperLevel('')"
+                                                ng-class="contributeCtrl.mapperLevel === '' ? 'button--active' : ''">
+                                                All
+                                            </button>
+                                            <button class="button button--achromic" type="button"
                                                 ng-click="contributeCtrl.setMapperLevel('BEGINNER')"
                                                 ng-class="contributeCtrl.mapperLevel === 'BEGINNER' ? 'button--active' : ''">
                                                 Beginner
@@ -124,7 +129,11 @@
                                                 </section>
                                             </div>
                                         </div>
-                                        <ul ng-show="contributeCtrl.results.length > 0" uib-pagination items-per-page="contributeCtrl.itemsPerPage"
+                                        <ul ng-show="contributeCtrl.results.length > 0" uib-pagination
+                                            max-size="3"
+                                            boundary-link-numbers="true"
+                                            rotate="false"
+                                            items-per-page="contributeCtrl.itemsPerPage"
                                             total-items="contributeCtrl.results.length"
                                             ng-model="contributeCtrl.currentPage"></ul>
                                     </div>
