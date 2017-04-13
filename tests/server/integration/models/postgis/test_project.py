@@ -106,6 +106,7 @@ class TestProject(unittest.TestCase):
         test_dto.default_locale = 'en'
         test_dto.project_info_locales = locales
         test_dto.mapper_level = 'BEGINNER'
+        test_dto.mapping_types = ['ROADS']
 
         # Act - Create empty italian translation
         self.test_project.update(test_dto)
@@ -132,5 +133,6 @@ class TestProject(unittest.TestCase):
         test_dto.default_locale = 'en'
         test_dto.project_info_locales = locales
         test_dto.mapper_level = 'BEGINNER'
+        test_dto.mapping_types = ['ROADS']
 
         self.test_project.update(test_dto)
