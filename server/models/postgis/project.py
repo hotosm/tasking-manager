@@ -161,6 +161,7 @@ class Project(db.Model):
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
+    mapping_types = db.Column(db.ARRAY(db.Integer))
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
@@ -282,7 +283,7 @@ class Project(db.Model):
         base_dto.changeset_comment = project.changeset_comment
         base_dto.due_date = project.due_date
         base_dto.imagery = project.imagery
-        base_dto.josm_preset = project.josm_preset
+
 
         return project, base_dto
 

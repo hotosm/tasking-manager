@@ -34,3 +34,12 @@ class MappingLevel(Enum):
     BEGINNER = 1
     INTERMEDIATE = 2
     ADVANCED = 3
+
+
+class MappingTypes(Enum):
+    """ Enum describing types of mapping a project may specify"""
+    ROADS = 1
+    BUILDINGS = 2
+    WATERWAYS = 3
+    LAND_USE = 4
+    OTHER = 5

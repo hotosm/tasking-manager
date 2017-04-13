@@ -3,7 +3,7 @@ from schematics.exceptions import ValidationError
 from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes
 
 
 def is_known_project_status(value):
@@ -23,6 +23,16 @@ def is_known_project_priority(value):
         raise ValidationError(f'Unknown projectStatus: {value} Valid values are {ProjectPriority.LOW.name}, '
                               f'{ProjectPriority.MEDIUM.name}, {ProjectPriority.HIGH.name}, '
                               f'{ProjectPriority.URGENT.HIGH}')
+
+
+def is_known_mapping_type(value):
+    """ Validates Mapping Type is known value"""
+    try:
+        MappingTypes[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown mappingType: {value} Valid values are {MappingTypes.ROADS.name}, '
+                              f'{MappingTypes.BUILDINGS.name}, {MappingTypes.WATERWAYS.name}, '
+                              f'{MappingTypes.LAND_USE.name}, {MappingTypes.OTHER.name}')
 
 
 class DraftProjectDTO(Model):
@@ -63,7 +73,8 @@ class ProjectDTO(Model):
     changeset_comment = StringType(serialized_name='changesetComment')
     due_date = DateTimeType(serialized_name='dueDate')
     imagery = StringType()
-    josm_preset = StringType(serialized_name='josmPreset')
+    josm_preset = StringType(serialized_name='josmPreset', serialize_when_none=False)
+    mapping_types = ListType(StringType, serialized_name='mappingTypes', validators=[is_known_mapping_type])
 
 
 class ProjectSearchDTO(Model):

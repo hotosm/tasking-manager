@@ -104,3 +104,7 @@ class ProjectService:
         if len(results.results) == 0:
             raise NotFound()
         return results
+
+    @staticmethod
+    def generate_search_xml(search_dto: ProjectSearchDTO):
+        pass
