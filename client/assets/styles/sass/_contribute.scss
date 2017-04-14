@@ -1,17 +1,17 @@
 .contribute-container {
-  @include column(12/12);
+  @include column(24/24);
 
   .search {
-    @include column(12/12);
+    @include column(24/24);
     @include media(medium-up) {
-      @include column(4/12);
+      @include column(9/24);
     }
   }
 
   .search-results {
-    @include column(12/12);
+    @include column(24/24);
     @include media(medium-up) {
-      @include column(8/12);
+      @include column(15/24);
     }
     .list {
       max-height: 500px;
@@ -41,7 +41,7 @@
   }
 
   &__card {
-    width: 350px;
+    width: 330px;
     margin-bottom: 2rem;
   }
 

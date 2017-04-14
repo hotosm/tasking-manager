@@ -81,8 +81,11 @@
 
             vm.updateProjectFail = false;
             vm.updateProjectSuccess = false;
-
-            var requiredFieldsMissing = checkRequiredFields();
+            
+            // Only check required fields when
+            if (vm.project.projectStatus === 'PUBLISHED') {
+                var requiredFieldsMissing = checkRequiredFields();
+            }
 
             // Prepare the data for sending to API by removing any locales with no fields
             if (!requiredFieldsMissing){
@@ -420,7 +423,9 @@
                         vm.project.projectInfoLocales.push(locale);
                     }
                 }
-                vm.project.dueDate = new Date(vm.project.dueDate);
+                if (vm.project.dueDate) {
+                    vm.project.dueDate = new Date(vm.project.dueDate);
+                }
                 addAOIToMap();
             }, function(){
                // TODO

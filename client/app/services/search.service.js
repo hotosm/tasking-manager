@@ -25,7 +25,9 @@
             
             var searchParams = {};
             // default to beginner
-            searchParams.mapperLevel = mapperLevel || 'BEGINNER';
+            if (mapperLevel){
+                searchParams.mapperLevel = mapperLevel;
+            }
             
             // Returns a promise
             return $http({
