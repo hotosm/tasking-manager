@@ -81,6 +81,10 @@ class ProjectSearchAPI(Resource):
               name: organisationTag
               type: string
               default: red cross
+            - in: query
+              name: campaignTag
+              type: string
+              default: malaria
         responses:
             200:
                 description: Projects found
@@ -94,6 +98,7 @@ class ProjectSearchAPI(Resource):
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             search_dto.mapper_level = request.args.get('mapperLevel')
             search_dto.organisation_tag = request.args.get('organisationTag')
+            search_dto.campaign_tag = request.args.get('campaignTag')
 
             mapping_types_str = request.args.get('mappingTypes')
             if mapping_types_str:

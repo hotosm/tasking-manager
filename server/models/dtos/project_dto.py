@@ -88,6 +88,7 @@ class ProjectSearchDTO(Model):
     mapper_level = StringType(validators=[is_known_mapping_level])
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     organisation_tag = StringType()
+    campaign_tag = StringType()
 
 
 class ProjectSearchResultDTO(Model):
@@ -100,6 +101,7 @@ class ProjectSearchResultDTO(Model):
     priority = StringType(required=True)
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
     organisation_tag = StringType(serialized_name='organisationTag')
+    campaign_tag = StringType(serialized_name='campaignTag')
 
 
 class ProjectSearchResultsDTO(Model):

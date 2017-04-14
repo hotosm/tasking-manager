@@ -356,6 +356,7 @@ class Project(db.Model):
             result_dto.short_description = project_info_dto.short_description
             result_dto.aoi_centroid = geojson.loads(row[4])
             result_dto.organisation_tag = row[5]
+            result_dto.campaign_tag = row[6]
 
             results_list.append(result_dto)
 
