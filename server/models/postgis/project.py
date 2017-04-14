@@ -279,6 +279,8 @@ class Project(db.Model):
                                    Project.due_date,
                                    Project.josm_preset,
                                    Project.mapping_types,
+                                   Project.campaign_tag,
+                                   Project.organisation_tag,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -300,6 +302,8 @@ class Project(db.Model):
         base_dto.due_date = project.due_date
         base_dto.imagery = project.imagery
         base_dto.josm_preset = project.josm_preset
+        base_dto.campaign_tag = project.campaign_tag
+        base_dto.organisation_tag = project.organisation_tag
 
         if project.mapping_types:
             mapping_types = []
