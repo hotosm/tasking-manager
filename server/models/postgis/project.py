@@ -211,6 +211,14 @@ class Project(db.Model):
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
 
+        if project_dto.organisation_tag:
+            org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
+            self.organisation_tag = org_tag
+
+        if project_dto.campaign_tag:
+            camp_tag = Tags.upsert_campaign_tag(project_dto.campaign_tag)
+            self.campaign_tag = camp_tag
+
         # Cast MappingType strings to int array
         type_array = []
         for mapping_type in project_dto.mapping_types:
@@ -342,9 +350,6 @@ class Project(db.Model):
             result_dto.priority = ProjectPriority(row[2]).name
             result_dto.mapper_level = MappingLevel(row[1]).name
             result_dto.short_description = project_info_dto.short_description
-
-            # Get AOI centroid as geoJson
-            #centroid_str = db.session.scalar(project.area_of_interest.centroid.ST_AsGeoJSON())
             result_dto.aoi_centroid = geojson.loads(row[4])
 
             results_list.append(result_dto)
