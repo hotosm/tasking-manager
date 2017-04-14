@@ -85,8 +85,9 @@ class ProjectDTO(Model):
 class ProjectSearchDTO(Model):
     """ Describes the criteria users use to filter active projects"""
     preferred_locale = StringType(required=True, default='en')
-    mapper_level = StringType(required=True, serialized_name='mapperLevel', validators=[is_known_mapping_level])
-    mapping_types = ListType(StringType, serialized_name='mappingTypes', validators=[is_known_mapping_type])
+    mapper_level = StringType(validators=[is_known_mapping_level])
+    mapping_types = ListType(StringType, validators=[is_known_mapping_type])
+    organisation_tag = StringType()
 
 
 class ProjectSearchResultDTO(Model):
@@ -98,6 +99,7 @@ class ProjectSearchResultDTO(Model):
     mapper_level = StringType(required=True, serialized_name='mapperLevel')
     priority = StringType(required=True)
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
+    organisation_tag = StringType(serialized_name='organisationTag')
 
 
 class ProjectSearchResultsDTO(Model):

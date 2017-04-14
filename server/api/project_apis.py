@@ -77,6 +77,10 @@ class ProjectSearchAPI(Resource):
               name: mappingTypes
               type: string
               default: ROADS,BUILDINGS
+            - in: query
+              name: organisationTag
+              type: string
+              default: red cross
         responses:
             200:
                 description: Projects found
@@ -89,6 +93,7 @@ class ProjectSearchAPI(Resource):
             search_dto = ProjectSearchDTO()
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             search_dto.mapper_level = request.args.get('mapperLevel')
+            search_dto.organisation_tag = request.args.get('organisationTag')
 
             mapping_types_str = request.args.get('mappingTypes')
             if mapping_types_str:

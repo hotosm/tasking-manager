@@ -355,6 +355,7 @@ class Project(db.Model):
             result_dto.mapper_level = MappingLevel(row[1]).name
             result_dto.short_description = project_info_dto.short_description
             result_dto.aoi_centroid = geojson.loads(row[4])
+            result_dto.organisation_tag = row[5]
 
             results_list.append(result_dto)
 
