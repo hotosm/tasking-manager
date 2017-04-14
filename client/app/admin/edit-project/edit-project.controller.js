@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $showdown, mapService, drawService, projectService, geospatialService, accountService, authService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService) {
         var vm = this;
         vm.currentSection = '';
 
@@ -30,6 +30,15 @@
         vm.locales = [
             'nl', 'en'
         ];
+
+        // Types of mapping
+        vm.mappingTypes = {
+            buildings: false,
+            roads: false,
+            waterways: false,
+            landuse: false,
+            other: false
+        };
 
         vm.project = {};
         vm.project.defaultLocale = 'en';
@@ -97,6 +106,7 @@
 
             // Prepare the data for sending to API by removing any locales with no fields
             if (!requiredFieldsMissing){
+                vm.project.mappingTypes = getMappingTypesArray();
                 vm.project.josmPreset = vm.josmPreset;
                 for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
                     var info = vm.project.projectInfoLocales[i];
@@ -215,6 +225,14 @@
             setInteractionsInactive_();
             vm.deletePriority = true;
             vm.selectInteraction.setActive(true);
+        };
+
+        /**
+         * Priority areas: delete all priority areas
+         */
+        vm.clearAllPriorityAreas = function(){
+            setInteractionsInactive_();
+            vm.source.clear();
         };
 
         /**
@@ -447,7 +465,9 @@
                 $scope.$apply(vm.numberOfPriorityAreas++);
             });
             vm.source.on('removefeature', function(){
-                $scope.$apply(vm.numberOfPriorityAreas--);
+                $timeout(function() {
+                    $scope.$apply(vm.numberOfPriorityAreas--);
+                });
             });
         }
 
@@ -488,6 +508,7 @@
                 if (vm.project.dueDate) {
                     vm.project.dueDate = new Date(vm.project.dueDate);
                 }
+                populateTypesOfMapping();
                 addAOIToMap();
             }, function(){
                // TODO
@@ -537,6 +558,53 @@
 
             // Zoom to the extent of the AOI
             vm.map.getView().fit(source.getExtent());
+        }
+
+        /**
+         * Populate the types of mapping fields by checking which tags exist
+         * in the mappingTypes array on the project
+         */
+        function populateTypesOfMapping(){
+            if (vm.project.mappingTypes) {
+                if (vm.project.mappingTypes.indexOf("ROADS") != -1) {
+                    vm.mappingTypes.roads = true;
+                }
+                if (vm.project.mappingTypes.indexOf("BUILDINGS") != -1) {
+                    vm.mappingTypes.buildings = true;
+                }
+                if (vm.project.mappingTypes.indexOf("WATERWAYS") != -1) {
+                    vm.mappingTypes.waterways = true;
+                }
+                if (vm.project.mappingTypes.indexOf("LAND_USE") != -1) {
+                    vm.mappingTypes.landuse = true;
+                }
+                if (vm.project.mappingTypes.indexOf("OTHER") != -1) {
+                    vm.mappingTypes.other = true;
+                }
+            }
+        }
+
+        /**
+         * Get mapping types in array
+         */
+        function getMappingTypesArray(){
+            var mappingTypesArray = [];
+            if (vm.mappingTypes.roads){
+                mappingTypesArray.push("ROADS");
+            }
+            if (vm.mappingTypes.buildings){
+                mappingTypesArray.push("BUILDINGS");
+            }
+            if (vm.mappingTypes.waterways) {
+                mappingTypesArray.push("WATERWAYS");
+            }
+            if (vm.mappingTypes.landuse){
+                mappingTypesArray.push("LAND_USE");
+            }
+            if (vm.mappingTypes.other){
+                mappingTypesArray.push("OTHER");
+            }
+            return mappingTypesArray;
         }
     }
 })();

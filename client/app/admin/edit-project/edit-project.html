@@ -255,21 +255,21 @@
                                         on. You can enforce the level required for mapping in the permissions section.</p>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">Type(s) of mapping (TODO)</label>
+                                    <label class="form__label">Type(s) of mapping</label>
                                     <label class="form__option">
-                                        <input type="checkbox"/>Roads
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.roads"/>Roads
                                     </label>
                                     <label class="form__option">
-                                        <input type="checkbox"/>Buildings
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.buildings"/>Buildings
                                     </label>
                                     <label class="form__option">
-                                        <input type="checkbox"/>Waterways
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.waterways"/>Waterways
                                     </label>
                                     <label class="form__option">
-                                        <input type="checkbox"/>Land use
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.landuse"/>Land use
                                     </label>
                                     <label class="form__option">
-                                        <input type="checkbox"/>Other
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.other"/>Other
                                     </label>
                                 </div>
                                 <div class="form__group">
@@ -307,7 +307,6 @@
                                 <div class="form__group">
                                     <label class="form__label">URL to service</label>
                                     <input type="text" class="form__control form__control--medium"
-                                           required
                                            name="imagery"
                                         ng-model="editProjectCtrl.project.imagery"/>
                                     <p>Note: follow this format for TMS URLs: tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png</p>
@@ -348,6 +347,8 @@
                                 <button class="button button--achromic"
                                         ng-class="editProjectCtrl.deletePriority ? 'button--active' : ''"
                                         ng-click="editProjectCtrl.deletePriorityArea()">Delete</button>
+                                <button class="button button--base"
+                                        ng-click="editProjectCtrl.clearAllPriorityAreas()">Clear all</button>
                             </div>
                             <div id="map" class="map-container"></div>
                         </div>
