@@ -7,6 +7,7 @@ from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO, \
     ProjectSearchResultDTO, ProjectSearchResultsDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
+from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
@@ -150,18 +151,18 @@ class Project(db.Model):
     default_locale = db.Column(db.String(10),
                                default='en')  # The locale that is returned if requested locale not available
     author_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
-    mapper_level = db.Column(db.Integer, default=1, nullable=False)  # Mapper level project is suitable for
+    mapper_level = db.Column(db.Integer, default=1, nullable=False, index=True)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
-
-    # TODO check these when have DB access
     entities_to_map = db.Column(db.String)
     changeset_comment = db.Column(db.String)
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
-    mapping_types = db.Column(db.ARRAY(db.Integer))
+    mapping_types = db.Column(db.ARRAY(db.Integer), index=True)
+    organisation = db.Column(db.String, index=True)
+    campaign = db.Column(db.String, index=True)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
