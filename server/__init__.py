@@ -85,7 +85,7 @@ def init_flask_restful_routes(app):
     api = Api(app)
 
     from server.api.health_check_api import HealthCheckAPI
-    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, TasksAsGPX
+    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, TasksAsGPX, TasksAsOSM
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll
     from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
     from server.api.swagger_docs_api import SwaggerDocsAPI
@@ -101,6 +101,7 @@ def init_flask_restful_routes(app):
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
     api.add_resource(MappedTasksByUser,             '/api/v1/project/<int:project_id>/mapped-tasks-by-user')
     api.add_resource(TasksAsGPX,                    '/api/v1/project/<int:project_id>/tasks_as_gpx')
+    api.add_resource(TasksAsOSM,                    '/api/v1/project/<int:project_id>/tasks-as-osm-xml')
     api.add_resource(LockTaskForMappingAPI,         '/api/v1/project/<int:project_id>/task/<int:task_id>/lock-for-mapping')
     api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project', endpoint="create_project", methods=['PUT'])
     api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project/<int:project_id>', methods=['GET', 'POST', 'DELETE'])

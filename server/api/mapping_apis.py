@@ -230,9 +230,9 @@ class TasksAsGPX(Resource):
               default: False 
         responses:
             200:
-                description: Task user is working on
+                description: GPX XML
             400:
-                description: Task user is working on
+                description: Client error
             404:
                 description: No mapped tasks
             500:
@@ -258,3 +258,40 @@ class TasksAsGPX(Resource):
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+
+
+class TasksAsOSM(Resource):
+
+    def get(self, project_id):
+        """
+        Get tasks as OSM XML
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/xml
+        parameters:
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - in: query
+              name: tasks
+              type: string
+              required: true
+              description: List of tasks required
+              default: 1,2
+        responses:
+            200:
+                description: OSM XML
+            400:
+                description: Client Error
+            404:
+                description: No mapped tasks
+            500:
+                description: Internal Server Error
+        """
+        xml = MappingService.generate_osm_xml()
+        return Response(xml, mimetype='text/xml', status=200)
