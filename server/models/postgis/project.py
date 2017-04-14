@@ -7,6 +7,7 @@ from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO, \
     ProjectSearchResultDTO, ProjectSearchResultsDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
+from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
@@ -150,18 +151,18 @@ class Project(db.Model):
     default_locale = db.Column(db.String(10),
                                default='en')  # The locale that is returned if requested locale not available
     author_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
-    mapper_level = db.Column(db.Integer, default=1, nullable=False)  # Mapper level project is suitable for
+    mapper_level = db.Column(db.Integer, default=1, nullable=False, index=True)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
-
-    # TODO check these when have DB access
     entities_to_map = db.Column(db.String)
     changeset_comment = db.Column(db.String)
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
-    mapping_types = db.Column(db.ARRAY(db.Integer))
+    mapping_types = db.Column(db.ARRAY(db.Integer), index=True)
+    organisation_tag = db.Column(db.String, index=True)
+    campaign_tag = db.Column(db.String, index=True)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
@@ -209,6 +210,14 @@ class Project(db.Model):
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
+
+        if project_dto.organisation_tag:
+            org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
+            self.organisation_tag = org_tag
+
+        if project_dto.campaign_tag:
+            camp_tag = Tags.upsert_campaign_tag(project_dto.campaign_tag)
+            self.campaign_tag = camp_tag
 
         # Cast MappingType strings to int array
         type_array = []
@@ -270,6 +279,8 @@ class Project(db.Model):
                                    Project.due_date,
                                    Project.josm_preset,
                                    Project.mapping_types,
+                                   Project.campaign_tag,
+                                   Project.organisation_tag,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -291,6 +302,8 @@ class Project(db.Model):
         base_dto.due_date = project.due_date
         base_dto.imagery = project.imagery
         base_dto.josm_preset = project.josm_preset
+        base_dto.campaign_tag = project.campaign_tag
+        base_dto.organisation_tag = project.organisation_tag
 
         if project.mapping_types:
             mapping_types = []
@@ -341,9 +354,6 @@ class Project(db.Model):
             result_dto.priority = ProjectPriority(row[2]).name
             result_dto.mapper_level = MappingLevel(row[1]).name
             result_dto.short_description = project_info_dto.short_description
-
-            # Get AOI centroid as geoJson
-            #centroid_str = db.session.scalar(project.area_of_interest.centroid.ST_AsGeoJSON())
             result_dto.aoi_centroid = geojson.loads(row[4])
 
             results_list.append(result_dto)
