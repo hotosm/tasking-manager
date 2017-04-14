@@ -936,11 +936,9 @@
          * @returns {string}
          */
         vm.getGpxDownloadURL = function(){
-            //return editorService.getGPXUrl(vm.projectData.projectId, vm.getSelectTaskIds(), true);
             if(vm.projectData && vm.getSelectTaskIds()) {
                 return configService.tmAPI + '/project/' + vm.projectData.projectId + '/tasks_as_gpx?tasks=' + vm.getSelectTaskIds() + '&as_file=true';            }
             else return '';
-
         }
     }
 })
