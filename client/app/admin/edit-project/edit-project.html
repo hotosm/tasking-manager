@@ -576,6 +576,11 @@
                     This will mark all tasks as invalid. Please use this only if you are sure
                     of what you are doing.
                 </p>
+                <textarea type="text" class="form__control" rows="4"
+                       ng-model="invalidateComment"
+                          placeholder="comment">
+                </textarea>
+                <p>The comment will be displayed on the invalidated tasks.</p>
             </div>
             <p ng-show="editProjectCtrl.invalidateTasksSuccess">
                 The tasks were invalidated successfully.
@@ -590,7 +595,7 @@
                         ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Cancel
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.invalidateAllTasks()">Invalidate all tasks
+                        ng-click="editProjectCtrl.invalidateAllTasks(invalidateComment)">Invalidate all tasks
                 </button>
             </div>
             <div ng-show="editProjectCtrl.invalidateTasksSuccess">
@@ -622,6 +627,11 @@
                 <p>
                     This will mark all tasks (except 'bad imagery' tasks) as valid. Please use this only if you are sure of what you are doing.
                 </p>
+                <textarea type="text" class="form__control" rows="4"
+                       ng-model="validateComment"
+                          placeholder="comment">
+                </textarea>
+                <p>The comment will be displayed on the validated tasks.</p>
             </div>
             <p ng-show="editProjectCtrl.validateTasksSuccess">
                 The tasks were marked validated successfully.
@@ -636,7 +646,7 @@
                         ng-click="editProjectCtrl.showValidateConfirmation(false)">Cancel
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.validateAllTasks()">Validate all tasks
+                        ng-click="editProjectCtrl.validateAllTasks(validateComment)">Validate all tasks
                 </button>
             </div>
             <div ng-show="editProjectCtrl.validateTasksSuccess">

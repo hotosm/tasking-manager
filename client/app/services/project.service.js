@@ -471,14 +471,15 @@
         /**
          * Invalidate all tasks on the project
          * @param projectId
+         * @param comment
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
-        function invalidateAllTasks(projectId){
+        function invalidateAllTasks(projectId, comment){
             // Returns a promise
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/admin/project/' + projectId + '/invalidate-all',
-                data: {comment: ''},
+                data: {comment: comment},
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
@@ -494,14 +495,15 @@
         /**
          * Validate all tasks on the project
          * @param projectId
+         * @param comment
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
-        function validateAllTasks(projectId) {
+        function validateAllTasks(projectId, comment) {
             // Returns a promise
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/admin/project/' + projectId + '/validate-all',
-                data: {comment: ''},
+                data: {comment: comment},
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

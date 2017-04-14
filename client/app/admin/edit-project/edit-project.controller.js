@@ -272,10 +272,10 @@
          * Invalidate all tasks on a project
          * @param comment
          */
-        vm.invalidateAllTasks = function(){
+        vm.invalidateAllTasks = function(comment){
             vm.invalidateTasksFail = false;
             vm.invalidateTasksSuccess = false;
-            var resultsPromise = projectService.invalidateAllTasks(vm.project.projectId);
+            var resultsPromise = projectService.invalidateAllTasks(vm.project.projectId, comment);
             resultsPromise.then(function (){
                 // Tasks invalidated successfully
                 vm.invalidateTasksFail = false;
@@ -299,10 +299,10 @@
          * Validate all tasks on a project
          * @param comment
          */
-        vm.validateAllTasks = function(){
+        vm.validateAllTasks = function(comment){
             vm.validateTasksFail = false;
             vm.validateTasksSuccess = false;
-            var resultsPromise = projectService.validateAllTasks(vm.project.projectId);
+            var resultsPromise = projectService.validateAllTasks(vm.project.projectId, comment);
             resultsPromise.then(function(){
                 // Tasks validated successfully
                 vm.validateTasksFail = false;
