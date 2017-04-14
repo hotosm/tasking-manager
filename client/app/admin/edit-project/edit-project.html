@@ -447,18 +447,18 @@
                                 </div>
                                 <div class="form__group">
                                     <label class="form__label">(In)validation</label>
-                                    <p>Use this if project instructions have changed, or if for some
+                                    <p>Use this if for some
                                         reason you need to (in)validate all tasks in a single step.</p>
                                     <div class="alert alert--warning" role="alert">
                                         <p><strong>Warning:</strong> This cannot be undone.</p>
                                     </div>
                                     <button class="button button--secondary" type="button"
                                         ng-click="editProjectCtrl.showInvalidateConfirmation(true)">
-                                        Invalidate all tasks
+                                        Invalidate all tasks (TODO)
                                     </button>
                                     <button class="button button--secondary" type="button"
                                         ng-click="editProjectCtrl.showValidateConfirmation(true)">
-                                        Validate all tasks
+                                        Validate all tasks (TODO)
                                     </button>
                                 </div>
                                 <div class="form__group">
@@ -475,6 +475,16 @@
                             </fieldset>
                         </div>
                             <!--/ settings -->
+                            <div>
+                                <div class="pull-right">
+                                    <div class="form__group">
+                                        <a class="button button--achromic" role="button"
+                                           href="/project/{{ editProjectCtrl.project.projectId }}">
+                                            Go to project
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                             <div ng-show="editProjectCtrl.currentSection !== 'actions'">
                                 <div class="pull-right">
                                     <div class="form__group">
@@ -548,15 +558,18 @@
 <!-- delete project confirmation modal -->
 
 <!-- invalidate tasks confirmation modal -->
-<section class="modal" ng-show="editProjectCtrl.showInvalidateConfirmationModal">
+<section class="modal modal-tm" ng-show="editProjectCtrl.showInvalidateConfirmationModal">
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Are you sure you want to invalidate all tasks?</h1>
+                <h1 class="modal__title">Confirm invalidation</h1>
             </div>
         </header>
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.invalidateTasksSuccess">
+                <p>
+                    Are you sure you want to invalidate all tasks?
+                </p>
                 <p>
                     This will mark all tasks as invalid. Please use this only if you are sure
                     of what you are doing.
@@ -575,7 +588,7 @@
                         ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Cancel
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.invalidateAllTasks()">Invalidate all done tasks
+                        ng-click="editProjectCtrl.invalidateAllTasks()">Invalidate all tasks
                 </button>
             </div>
             <div ng-show="editProjectCtrl.invalidateTasksSuccess">
@@ -596,11 +609,14 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Are you sure you want to mark all tasks as valid?</h1>
+                <h1 class="modal__title">Confirm validation</h1>
             </div>
         </header>
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.validateTasksSuccess">
+                <p>
+                    Are you sure you want to validate all tasks?
+                </p>
                 <p>
                     This will mark all tasks (except 'bad imagery' tasks) as valid. Please use this only if you are sure of what you are doing.
                 </p>
