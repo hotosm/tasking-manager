@@ -16,7 +16,7 @@ class Tags(db.Model):
         org_tag = Tags.query.filter_by(organisations=organisation_tag.lower()).one_or_none()
 
         if org_tag is not None:
-            return org_tag
+            return org_tag.organisations
 
         tag = Tags()
         tag.organisations = organisation_tag.lower()
@@ -29,7 +29,7 @@ class Tags(db.Model):
         camp_tag = Tags.query.filter_by(campaigns=campaign_tag.lower()).one_or_none()
 
         if camp_tag is not None:
-            return camp_tag
+            return camp_tag.campaigns
 
         tag = Tags()
         tag.campaigns = campaign_tag.lower()
