@@ -12,25 +12,10 @@
                 <div class="inner">
                     <div class="contribute-container">
                         <div class="search">
-                            <h2>Search projects</h2>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam feugiat consequat
-                                lectus. Donec ex orci, euismod auctor purus sit amet, lacinia faucibus elit. Cum sociis
-                                natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam consequat
-                                quam in orci interdum suscipit. Nulla congue ligula eget augue ultricies, in varius elit
-                                dignissim.
-                            </p>
                             <form class="form">
                                 <fieldset class="form__fieldset">
-                                    <div class="form__group">
-                                        <label class="form__label">Organisation (TODO)</label>
-                                        <select class="form__control">
-                                            <option value="all">All</option>
-                                            <option value="hot">HOT</option>
-                                            <option value="msf">MSF</option>
-                                            <option value="...">...</option>
-                                        </select>
-                                    </div>
-                                    <div class="form__group">
+                                     <h2>Filter</h2>
+                                     <div class="form__group">
                                         <label class="form__label">Mapping difficulty</label>
                                         <div class="button-group button-group--horizontal" role="group"
                                              aria-label="choose mapping difficulty">
@@ -53,6 +38,22 @@
                                                 ng-class="contributeCtrl.mapperLevel === 'ADVANCED' ? 'button--active' : ''">
                                                 Advanced</button>
                                         </div>
+                                    </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Organisation</label>
+                                        <select class="form__control" ng-model="contributeCtrl.searchOrganisation"
+                                                ng-repeat="organisation in contributeCtrl.organisations">
+                                            <option value=""></option>
+                                            <option value="{{ organisation }}">{{ organisation }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Campaign</label>
+                                        <select class="form__control" ng-model="contributeCtrl.searchCampaign"
+                                                ng-repeat="campaign in contributeCtrl.campaigns">
+                                            <option value=""></option>
+                                            <option value="{{ campaign }}">{{ campaign }}</option>
+                                        </select>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Type(s) of mapping</label>
