@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
+        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
 
-    function projectController($interval, $scope, $routeParams, $window, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
+    function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -742,7 +742,7 @@
                 // TODO licence agreement
                 var changesetSource = "Bing";
                 var hasImagery = false;
-                if (typeof imageryUrl != "undefined" && imageryUrl !== '') {
+                if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
                     changesetSource = imageryUrl;
                     hasImagery = true;
                 }
@@ -936,7 +936,11 @@
          * @returns {string}
          */
         vm.getGpxDownloadURL = function(){
-            return editorService.getGPXUrl(vm.projectData.projectId, vm.getSelectTaskIds(), true);
+            //return editorService.getGPXUrl(vm.projectData.projectId, vm.getSelectTaskIds(), true);
+            if(vm.projectData && vm.getSelectTaskIds()) {
+                return configService.tmAPI + '/project/' + vm.projectData.projectId + '/tasks_as_gpx?tasks=' + vm.getSelectTaskIds() + '&as_file=true';            }
+            else return '';
+
         }
     }
 })
