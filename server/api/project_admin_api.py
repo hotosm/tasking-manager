@@ -189,6 +189,12 @@ class ProjectAdminAPI(Resource):
                           items:
                               type: string
                           default: [BUILDINGS, ROADS]
+                      campaignTag:
+                          type: string
+                          default: malaria
+                      organisationTag:
+                          type: string
+                          default: red cross
                       projectInfoLocales:
                           type: array
                           items:

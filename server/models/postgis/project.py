@@ -161,8 +161,8 @@ class Project(db.Model):
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
     mapping_types = db.Column(db.ARRAY(db.Integer), index=True)
-    organisation = db.Column(db.String, index=True)
-    campaign = db.Column(db.String, index=True)
+    organisation_tag = db.Column(db.String, index=True)
+    campaign_tag = db.Column(db.String, index=True)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
