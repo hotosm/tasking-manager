@@ -21,13 +21,7 @@
          * @param mapperLevel
          * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
          */
-        function searchProjects(mapperLevel){
-            
-            var searchParams = {};
-            // default to beginner
-            if (mapperLevel){
-                searchParams.mapperLevel = mapperLevel;
-            }
+        function searchProjects(searchParams){
             
             // Returns a promise
             return $http({
