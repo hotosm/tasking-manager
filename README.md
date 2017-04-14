@@ -47,13 +47,13 @@ Following must be available locally:
 ### Build the Server
 * Create a Python Virtual Environment, using Python 3.6:
     * ```python -m venv ./venv```
-* Activate your virtual environment:
+* Activate your virtual environment and install dependencies:
     * Linux/Mac:
         * ```. ./venv/bin/activate```
-    * Windows:
+        * ```pip install -r requirements.txt```
+    * Windows (use installer because of precompiled libs):
         * ```.\venv\scripts\activate```
-* Install all dependencies:
-    * ```pip install -r requirements.txt```
+        * ```.\devops\win\install.bat```
         
 ### Environment vars:
 As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
