@@ -1,4 +1,5 @@
 from server import db
+from server.models.dtos.tags_dto import TagsDTO
 
 
 class Tags(db.Model):
@@ -36,3 +37,21 @@ class Tags(db.Model):
         db.session.add(tag)
         db.session.commit()
         return campaign_tag.lower()
+
+    @staticmethod
+    def get_all_organisations():
+        """ Get all org tags in DB """
+        result = db.session.query(Tags.organisations).filter(Tags.organisations.isnot(None))
+
+        dto = TagsDTO()
+        dto.tags = [r for r, in result]
+        return dto
+
+    @staticmethod
+    def get_all_campaigns():
+        """ Get all campaign tags in DB """
+        result = db.session.query(Tags.campaigns).filter(Tags.campaigns.isnot(None))
+
+        dto = TagsDTO()
+        dto.tags = [r for r, in result]
+        return dto
