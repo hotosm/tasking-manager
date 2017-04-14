@@ -25,6 +25,11 @@
         
         // Search parameters
         vm.mapperLevel = 'BEGINNER'; // default to beginner
+        vm.searchRoads = false;
+        vm.searchBuildings = false;
+        vm.searchWaterways = false;
+        vm.searchLanduse = false;
+        vm.searchOther = false;
 
         activate();
 
@@ -39,7 +44,26 @@
          * Search projects with search parameters
          */
         function searchProjects(){
-            var resultsPromise = searchService.searchProjects(vm.mapperLevel);
+            vm.mappingTypes = [];
+            if (vm.searchRoads){
+                vm.mappingTypes.push("ROADS");
+            }
+            if (vm.searchBuildings){
+                vm.mappingTypes.push("BUILDINGS");
+            }
+            if (vm.searchWaterways){
+                vm.mappingTypes.push("WATERWAYS");
+            }
+            if (vm.searchLanduse){
+                vm.mappingTypes.push("LANDUSE");
+            }
+            if (vm.searchOther){
+                vm.mappingTypes.push("OTHER");
+            }
+            var resultsPromise = searchService.searchProjects(
+                vm.mapperLevel,
+                vm.mappingTypes
+            );
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
