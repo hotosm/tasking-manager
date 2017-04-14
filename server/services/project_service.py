@@ -108,7 +108,7 @@ class ProjectService:
     def generate_search_sql(search_dto: ProjectSearchDTO) -> str:
 
         sql = """select p.id, p.mapper_level, p.priority, p.default_locale, st_asgeojson(a.centroid),
-                        p.organisation_tag
+                        p.organisation_tag, p.campaign_tag
                    from projects p,
                         areas_of_interest a
                   where p.id = a.id
@@ -119,6 +119,9 @@ class ProjectService:
 
         if search_dto.organisation_tag:
             sql = f"{sql} and p.organisation_tag = '{search_dto.organisation_tag}'"
+
+        if search_dto.campaign_tag:
+            sql = f"{sql} and p.campaign_tag = '{search_dto.campaign_tag}'"
 
         if search_dto.mapping_types:
             count = 0
