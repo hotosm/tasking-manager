@@ -20,8 +20,7 @@ class Tags(db.Model):
 
         tag = Tags()
         tag.organisations = organisation_tag.lower()
-        db.session.add(tag)
-        db.session.commit()
+        db.session.add(tag)  # Note no commit here, done as part of project update transaction
         return organisation_tag.lower()
 
     @staticmethod
@@ -34,8 +33,7 @@ class Tags(db.Model):
 
         tag = Tags()
         tag.campaigns = campaign_tag.lower()
-        db.session.add(tag)
-        db.session.commit()
+        db.session.add(tag)  # Note no commit here, done as part of project update transaction
         return campaign_tag.lower()
 
     @staticmethod
