@@ -7,11 +7,12 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService) {
         var vm = this;
         vm.currentSection = '';
+        vm.editForm = {};
 
         // Priority areas: interactions
         vm.map = null;
@@ -39,6 +40,12 @@
             landuse: false,
             other: false
         };
+
+        // Tags
+        vm.organisationTags = [];
+        vm.campaignsTags = [];
+        vm.projectOrganisationTag = [];
+        vm.projectCampaignTag = [];
 
         vm.project = {};
         vm.project.defaultLocale = 'en';
@@ -85,6 +92,8 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             addInteractions();
+            setOrganisationTags();
+            setCampaignTags();
 
             getProjectMetadata(id);
 
@@ -104,8 +113,12 @@
                 var requiredFieldsMissing = checkRequiredFields();
             }
 
+            // Only one tag is allowed at the moment so get the first item
+            vm.project.organisationTag = vm.projectOrganisationTag[0].text;
+            vm.project.campaignTag = vm.projectCampaignTag[0].text;
+
             // Prepare the data for sending to API by removing any locales with no fields
-            if (!requiredFieldsMissing){
+            if (!requiredFieldsMissing && vm.editForm.$valid){
                 vm.project.mappingTypes = getMappingTypesArray();
                 vm.project.josmPreset = vm.josmPreset;
                 for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
@@ -336,6 +349,23 @@
         };
 
         /**
+         * Get organisation tags
+         * @returns {Array|*}
+         */
+        vm.getOrganisationTags = function(){
+            return vm.organisationTags;
+        };
+
+        /**
+         * Get campaign tags
+          * @returns {Array|*}
+          * @returns {Array|*}
+         */
+        vm.getCampaignTags = function(){
+            return vm.campaignTags;
+        };
+
+        /**
          * Check the required fields for the default locale
          * @return boolean if something is missing (description, short description or instructions for the default locale
          */
@@ -510,6 +540,12 @@
                 }
                 populateTypesOfMapping();
                 addAOIToMap();
+                if (vm.project.organisationTag) {
+                    vm.projectOrganisationTag = [vm.project.organisationTag];
+                }
+                if (vm.project.campaignTag) {
+                    vm.projectCampaignTag = [vm.project.campaignTag];
+                }
             }, function(){
                // TODO
             });
@@ -605,6 +641,34 @@
                 mappingTypesArray.push("OTHER");
             }
             return mappingTypesArray;
+        }
+
+         /**
+         * Set organisation tags
+         */
+        function setOrganisationTags() {
+            var resultsPromise = tagService.getOrganisationTags();
+            resultsPromise.then(function (data) {
+                // On success, set the projects results
+                vm.organisationTags = data.tags;
+            }, function () {
+                // On error
+                vm.organisationTags = [];
+            });
+        }
+
+        /**
+         * Set campaign tags
+         */
+        function setCampaignTags(){
+            var resultsPromise = tagService.getCampaignTags();
+            resultsPromise.then(function (data) {
+                // On success, set the projects results
+                vm.campaignTags = data.tags;
+            }, function () {
+                // On error
+                vm.campaignTags = [];
+            });
         }
     }
 })();

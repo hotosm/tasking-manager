@@ -37,6 +37,7 @@
     "moment": "^2.18.0",
     "ng-file-upload": "^12.2.13",
     "ng-showdown": "^1.1.0",
+    "ng-tags-input": "^3.1.2",
     "node-bourbon": "^4.2.8",
     "oam-design-system": "git+https://github.com/hotosm/oam-design-system.git",
     "ol3-geocoder": "^2.5.0",
