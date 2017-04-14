@@ -527,11 +527,13 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Are you sure you want to delete this project?</h1>
+                <h1 class="modal__title">Delete project</h1>
             </div>
         </header>
         <div class="modal__body">
-            <p ng-hide="editProjectCtrl.deleteProjectSuccess">You cannot undo deleting a project.</p>
+            <p ng-hide="editProjectCtrl.deleteProjectSuccess">
+                Are you sure you want to delete this project? You cannot undo deleting a project.
+            </p>
             <p ng-show="editProjectCtrl.deleteProjectSuccess">The project was deleted successfully.</p>
             <p ng-show="editProjectCtrl.deleteProjectFail" class="error">The project was not deleted successfully. This project might have some contributions.</p>
         </div>
@@ -562,13 +564,13 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Confirm invalidation</h1>
+                <h1 class="modal__title">Task invalidation</h1>
             </div>
         </header>
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.invalidateTasksSuccess">
                 <p>
-                    Are you sure you want to invalidate all tasks?
+                    Are you sure you want to invalidate all tasks? You cannot undo this.
                 </p>
                 <p>
                     This will mark all tasks as invalid. Please use this only if you are sure
@@ -609,13 +611,13 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Confirm validation</h1>
+                <h1 class="modal__title">Task validation</h1>
             </div>
         </header>
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.validateTasksSuccess">
                 <p>
-                    Are you sure you want to validate all tasks?
+                    Are you sure you want to validate all tasks? You cannot undo this.
                 </p>
                 <p>
                     This will mark all tasks (except 'bad imagery' tasks) as valid. Please use this only if you are sure of what you are doing.
