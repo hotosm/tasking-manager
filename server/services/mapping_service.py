@@ -118,3 +118,10 @@ class MappingService:
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
+
+    @staticmethod
+    def generate_osm_xml():
+        # TODO remove or productionise
+        tree = ET.parse('osm_sample.xml')
+        root = tree.getroot()
+        return ET.tostring(root, encoding='utf8')
