@@ -114,8 +114,14 @@
             }
 
             // Only one tag is allowed at the moment so get the first item
-            vm.project.organisationTag = vm.projectOrganisationTag[0].text;
-            vm.project.campaignTag = vm.projectCampaignTag[0].text;
+            vm.project.organisationTag = null;
+            vm.project.campaignTag = null;
+            if (vm.projectOrganisationTag[0]) {
+                vm.project.organisationTag = vm.projectOrganisationTag[0].text;
+            }
+            if (vm.projectCampaignTag[0]) {
+                vm.project.campaignTag = vm.projectCampaignTag[0].text;
+            }
 
             // Prepare the data for sending to API by removing any locales with no fields
             if (!requiredFieldsMissing && vm.editForm.$valid){
