@@ -468,15 +468,15 @@
                             </fieldset>
                         </div>
                             <!--/ settings -->
-                            <div ng-show="editProjectCtrl.currentSection !== 'actions'">
-                                <div class="pull-right">
-                                    <div class="form__group">
-                                        <a class="button button--achromic" role="button"
-                                           href="/project/{{ editProjectCtrl.project.projectId }}">
-                                            Go to project
-                                        </a>
-                                    </div>
+                            <div class="pull-right">
+                                <div class="form__group">
+                                    <a class="button button--achromic" role="button"
+                                       href="/project/{{ editProjectCtrl.project.projectId }}">
+                                        Go to project
+                                    </a>
                                 </div>
+                            </div>
+                            <div ng-show="editProjectCtrl.currentSection !== 'actions'">
                                 <div class="pull-right">
                                     <div class="form__group">
                                         <button class="button button--primary" type="button"
@@ -570,7 +570,7 @@
                     Are you sure you want to invalidate all tasks? You cannot undo this.
                 </p>
                 <p>
-                    This will mark all tasks (except 'ready' tasks) as invalid. Please use this only if you are sure
+                    This will mark all tasks (except 'ready' and 'bad imagery' tasks) as invalid. Please use this only if you are sure
                     of what you are doing.
                 </p>
                 <textarea type="text" class="form__control" rows="4"
