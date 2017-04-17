@@ -277,7 +277,7 @@
                                     <p>Only one organisation tag is allowed.</p>
                                     <tags-input ng-model="editProjectCtrl.projectOrganisationTag"
                                         name="organisationTag" placeholder="choose from existing tags or create a new one"
-                                        max-tags="1">
+                                        replace-spaces-with-dashes="false" max-tags="1">
                                         <auto-complete source="editProjectCtrl.getOrganisationTags($query)"></auto-complete>
                                     </tags-input>
                                 </div>
@@ -285,7 +285,8 @@
                                     <label class="form__label">Campaign tag</label>
                                     <p>Only one campaign tag is allowed.</p>
                                     <tags-input ng-model="editProjectCtrl.projectCampaignTag"
-                                        name="campaignTag" placeholder="choose from existing tags or create a new one" max-tags="1">
+                                        name="campaignTag" placeholder="choose from existing tags or create a new one"
+                                                replace-spaces-with-dashes="false" max-tags="1">
                                         <auto-complete source="editProjectCtrl.getCampaignTags($query)"></auto-complete>
                                     </tags-input>
                                 </div>
