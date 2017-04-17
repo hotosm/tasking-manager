@@ -409,7 +409,8 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="form__group">
+                                <!-- hide project due date and JOSM preset for now -->
+                                <!--<div class="form__group">
                                     <label class="form__label">Project due date (dd/mm/yyyy)</label>
                                     <div class="form__input-group">
                                         <input type="date" class="form__control form__control--medium"
@@ -425,7 +426,7 @@
                                     <p ng-show="editProjectCtrl.project.josmPreset">
                                         A JOSM Preset has already been added to this project.
                                     </p>
-                                </div>
+                                </div>-->
                             </fieldset>
                         </div>
                             <!--/ settings -->
@@ -573,11 +574,6 @@
                     This will mark all tasks (except 'ready' and 'bad imagery' tasks) as invalid. Please use this only if you are sure
                     of what you are doing.
                 </p>
-                <textarea type="text" class="form__control" rows="4"
-                       ng-model="invalidateComment"
-                          placeholder="comment">
-                </textarea>
-                <p>The comment will be displayed on the invalidated tasks.</p>
             </div>
             <p ng-show="editProjectCtrl.invalidateTasksSuccess">
                 The tasks were invalidated successfully.
@@ -592,8 +588,9 @@
                         ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Cancel
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.invalidateAllTasks(invalidateComment)">Invalidate all tasks
+                        ng-click="editProjectCtrl.invalidateAllTasks()">Invalidate all tasks
                 </button>
+                <span ng-show="editProjectCtrl.invalidateInProgress">Invalidating...</span>
             </div>
             <div ng-show="editProjectCtrl.invalidateTasksSuccess">
                  <button class="button button--base" type="button"
@@ -624,11 +621,6 @@
                 <p>
                     This will mark all tasks (except 'bad imagery') as valid. Please use this only if you are sure of what you are doing.
                 </p>
-                <textarea type="text" class="form__control" rows="4"
-                       ng-model="validateComment"
-                          placeholder="comment">
-                </textarea>
-                <p>The comment will be displayed on the validated tasks.</p>
             </div>
             <p ng-show="editProjectCtrl.validateTasksSuccess">
                 The tasks were marked validated successfully.
@@ -643,8 +635,9 @@
                         ng-click="editProjectCtrl.showValidateConfirmation(false)">Cancel
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.validateAllTasks(validateComment)">Validate all tasks
+                        ng-click="editProjectCtrl.validateAllTasks()">Validate all tasks
                 </button>
+                <span ng-show="editProjectCtrl.validateInProgress">Validating...</span>
             </div>
             <div ng-show="editProjectCtrl.validateTasksSuccess">
                  <button class="button button--base" type="button"

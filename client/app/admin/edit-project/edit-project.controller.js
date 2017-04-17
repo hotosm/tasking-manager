@@ -312,18 +312,21 @@
          * Invalidate all tasks on a project
          * @param comment
          */
-        vm.invalidateAllTasks = function(comment){
+        vm.invalidateAllTasks = function(){
+            vm.invalidateInProgress = true;
             vm.invalidateTasksFail = false;
             vm.invalidateTasksSuccess = false;
-            var resultsPromise = projectService.invalidateAllTasks(vm.project.projectId, comment);
+            var resultsPromise = projectService.invalidateAllTasks(vm.project.projectId);
             resultsPromise.then(function (){
                 // Tasks invalidated successfully
                 vm.invalidateTasksFail = false;
                 vm.invalidateTasksSuccess = true;
+                vm.invalidateInProgress = false;
             }, function(){
                 // Tasks not invalidated successfully
                 vm.invalidateTasksFail = true;
                 vm.invalidateTasksSuccess = false;
+                vm.invalidateInProgress = false;
             })
         };
 
@@ -339,18 +342,21 @@
          * Validate all tasks on a project
          * @param comment
          */
-        vm.validateAllTasks = function(comment){
+        vm.validateAllTasks = function(){
+            vm.validateInProgress = true;
             vm.validateTasksFail = false;
             vm.validateTasksSuccess = false;
-            var resultsPromise = projectService.validateAllTasks(vm.project.projectId, comment);
+            var resultsPromise = projectService.validateAllTasks(vm.project.projectId);
             resultsPromise.then(function(){
                 // Tasks validated successfully
                 vm.validateTasksFail = false;
                 vm.validateTasksSuccess = true;
+                vm.validateInProgress = false;
             }, function(){
                 // Tasks not validated successfully
                 vm.validateTasksFail = true;
                 vm.validateTasksSuccess = false;
+                vm.validateInProgress = false;
             })
         };
 
