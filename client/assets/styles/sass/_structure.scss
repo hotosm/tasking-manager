@@ -70,7 +70,7 @@
       vertical-align: top;
 
       &:before {
-        @extend %oam-ds-icon-hamburger-menu;
+        @extend %hot-ds-icon-hamburger-menu;
       }
 
       @include media(medium-up) {
