@@ -235,7 +235,7 @@
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following
-                                    <a href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a> and load it in JOSM to
+                                    <a ng-href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a> and load it in JOSM to
                                     see the task boundary.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
@@ -460,7 +460,7 @@
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following <a
-                                        href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a>
+                                        ng-href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a>
                                     file and load it in JOSM to see the task boundary.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
@@ -535,7 +535,7 @@
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Since you have multiple tasks
                                     the OSM data in JOSM manually. Download the following <a
-                                            href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a> file and load it
+                                            ng-href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a> file and load it
                                     in JOSM to see the task boundaries.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
