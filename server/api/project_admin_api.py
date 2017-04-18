@@ -435,6 +435,12 @@ class ProjectsForAdminAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
         responses:
             200:
                 description: All mapped tasks validated
@@ -443,4 +449,13 @@ class ProjectsForAdminAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        pass
+        try:
+            admin_projects = ProjectAdminService.get_projects_for_admin(tm.authenticated_user_id,
+                                                                        request.environ.get('HTTP_ACCEPT_LANGUAGE'))
+            return admin_projects.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No comments found"}, 404
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

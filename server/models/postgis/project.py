@@ -4,8 +4,8 @@ from flask import current_app
 from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO, \
-    ProjectSearchResultDTO, ProjectSearchResultsDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchResultDTO, \
+    ProjectSearchResultsDTO, PMProject, PMDashboardDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
@@ -273,19 +273,36 @@ class Project(db.Model):
 
         return locked_tasks
 
-    @staticmethod
-    def get_projects_for_admin(admin_id: int):
+
+    def get_projects_for_admin(self, admin_id: int, preferred_locale: str):
         """ Get projects for admin """
-        projects = db.Session.query(Project.id,
-                                    Project.status,
-                                    Project.campaign_tag,
-                                    Project.total_tasks,
-                                    Project.tasks_mapped,
-                                    Project.tasks_validated,
-                                    Project.created,
-                                    Project.last_updated,
-                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson'))\
+        admins_projects = db.session.query(Project.id,
+                                           Project.status,
+                                           Project.campaign_tag,
+                                           Project.total_tasks,
+                                           Project.tasks_mapped,
+                                           Project.tasks_validated,
+                                           Project.created,
+                                           Project.last_updated,
+                                           Project.default_locale,
+                                           AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson'))\
             .join(AreaOfInterest).filter(Project.author_id == admin_id).all()
+
+        if admins_projects is None:
+            raise NotFound('No projects found for admin')
+
+        draft_projects = []
+        active_projects = []
+        archived_projects = []
+        for project in admins_projects:
+            pm_project = PMProject()
+            pm_project.project_id = project.id
+            pm_project.campaign_tag = project.campaign_tag
+            pm_project.created = project.created
+            pm_project.last_updated = project.last_updated
+
+            project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
+            pm_project.name = project_info.name
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """

@@ -141,5 +141,5 @@ class ProjectAdminService:
         return True  # Indicates valid default locale for unit testing
 
     @staticmethod
-    def get_projects_for_admin(admin_id: int):
-        pass
+    def get_projects_for_admin(admin_id: int, preferred_locale: str):
+        Project().get_projects_for_admin(admin_id, preferred_locale)
