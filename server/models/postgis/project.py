@@ -285,7 +285,7 @@ class Project(db.Model):
                                            Project.created,
                                            Project.last_updated,
                                            Project.default_locale,
-                                           AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson'))\
+                                           AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
             .join(AreaOfInterest).filter(Project.author_id == admin_id).all()
 
         if admins_projects is None:
@@ -298,6 +298,7 @@ class Project(db.Model):
             pm_project.campaign_tag = project.campaign_tag
             pm_project.created = project.created
             pm_project.last_updated = project.last_updated
+            pm_project.aoi_centroid = geojson.loads(project.geojson)
 
             pm_project.percent_mapped = round((project.tasks_mapped / project.total_tasks) * 100, 0)
             pm_project.percent_validated = round((project.tasks_validated / project.total_tasks) * 100, 0)
