@@ -160,9 +160,17 @@ class Project(db.Model):
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
+    last_updated = db.Column(db.DateTime, default=timestamp)
+
+    # Tags
     mapping_types = db.Column(db.ARRAY(db.Integer), index=True)
     organisation_tag = db.Column(db.String, index=True)
     campaign_tag = db.Column(db.String, index=True)
+
+    # Stats
+    total_tasks = db.Column(db.Integer)
+    tasks_mapped = db.Column(db.Integer, default=0)
+    tasks_validated = db.Column(db.Integer, default=0)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
@@ -264,6 +272,20 @@ class Project(db.Model):
             locked_tasks.append(task.id)
 
         return locked_tasks
+
+    @staticmethod
+    def get_projects_for_admin(admin_id: int):
+        """ Get projects for admin """
+        projects = db.Session.query(Project.id,
+                                    Project.status,
+                                    Project.campaign_tag,
+                                    Project.total_tasks,
+                                    Project.tasks_mapped,
+                                    Project.tasks_validated,
+                                    Project.created,
+                                    Project.last_updated,
+                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson'))\
+            .join(AreaOfInterest).filter(Project.author_id == admin_id).all()
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """

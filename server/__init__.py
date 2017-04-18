@@ -86,7 +86,7 @@ def init_flask_restful_routes(app):
 
     from server.api.health_check_api import HealthCheckAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, TasksAsGPX, TasksAsOSM
-    from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll
+    from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.authentication_apis import LoginAPI, OAuthAPI
@@ -108,6 +108,7 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectCommentsAPI,            '/api/v1/admin/project/<int:project_id>/comments')
     api.add_resource(ProjectInvalidateAll,          '/api/v1/admin/project/<int:project_id>/invalidate-all')
     api.add_resource(ProjectValidateAll,            '/api/v1/admin/project/<int:project_id>/validate-all')
+    api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
     api.add_resource(MappingTaskAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>')
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')

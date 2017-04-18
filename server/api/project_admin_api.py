@@ -400,6 +400,8 @@ class ProjectValidateAll(Resource):
                 description: All mapped tasks validated
             401:
                 description: Unauthorized - Invalid credentials
+            404:
+                description: Admin has no projects
             500:
                 description: Internal Server Error
         """
@@ -412,3 +414,33 @@ class ProjectValidateAll(Resource):
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class ProjectsForAdminAPI(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def get(self):
+        """
+        Get all projects for logged in admin
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            200:
+                description: All mapped tasks validated
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        pass
