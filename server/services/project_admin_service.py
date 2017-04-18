@@ -139,3 +139,7 @@ class ProjectAdminService:
                 raise(ProjectAdminServiceError(f'{attr} not provided for Default Locale'))
 
         return True  # Indicates valid default locale for unit testing
+
+    @staticmethod
+    def get_projects_for_admin(admin_id: int):
+        pass

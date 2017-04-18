@@ -124,3 +124,21 @@ class ProjectComment(Model):
 class ProjectCommentsDTO(Model):
     """ Contains all comments on a project """
     comments = ListType(ModelType(ProjectComment))
+
+
+class PMProject(Model):
+    """ Model used for PM dashboard """
+    project_id = IntType(required=True, serialized_name='projectId')
+    name = StringType()
+    campaign_tag = StringType(serialized_name='campaignTag')
+    percent_mapped = IntType(serialized_name='percentMapped')
+    percent_validated = IntType(serialized_name='percentValidated')
+    created = DateTimeType()
+    last_updated = DateTimeType(serialized_name='lastUpdated')
+
+
+class PMDashboardDTO(Model):
+    """ DTO for constructing the PM Dashboard """
+    draft_projects = ListType(ModelType(PMProject), serialized_name='draftProjects')
+    active_projects = ListType(ModelType(PMProject), serialized_name='activeProjects')
+    archived_projects = ListType(ModelType(PMProject), serialized_name='archivedProjects')
