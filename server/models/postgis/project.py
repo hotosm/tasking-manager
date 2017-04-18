@@ -214,10 +214,14 @@ class Project(db.Model):
         if project_dto.organisation_tag:
             org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
             self.organisation_tag = org_tag
+        else:
+            self.organisation_tag = None  # Set to none, for cases where a tag could have been removed
 
         if project_dto.campaign_tag:
             camp_tag = Tags.upsert_campaign_tag(project_dto.campaign_tag)
             self.campaign_tag = camp_tag
+        else:
+            self.campaign_tag = None  # Set to none, for cases where a tag could have been removed
 
         # Cast MappingType strings to int array
         type_array = []
