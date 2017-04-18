@@ -135,6 +135,7 @@ class PMProject(Model):
     percent_validated = IntType(serialized_name='percentValidated')
     created = DateTimeType()
     last_updated = DateTimeType(serialized_name='lastUpdated')
+    aoi_centroid = BaseType(serialized_name='aoiCentroid')
 
 
 class PMDashboardDTO(Model):
