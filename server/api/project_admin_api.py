@@ -362,8 +362,6 @@ class ProjectInvalidateAll(Resource):
         try:
             ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks invalidated"}, 200
-        except NotFound:
-            return {"Error": "No comments found"}, 404
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
@@ -406,6 +404,51 @@ class ProjectValidateAll(Resource):
         try:
             ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks validated"}, 200
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class ProjectsForAdminAPI(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def get(self):
+        """
+        Get all projects for logged in admin
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+        responses:
+            200:
+                description: All mapped tasks validated
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Admin has no projects
+            500:
+                description: Internal Server Error
+        """
+        try:
+            admin_projects = ProjectAdminService.get_projects_for_admin(tm.authenticated_user_id,
+                                                                        request.environ.get('HTTP_ACCEPT_LANGUAGE'))
+            return admin_projects.to_primitive(), 200
         except NotFound:
             return {"Error": "No comments found"}, 404
         except Exception as e:
