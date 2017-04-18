@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Dashboard - projects (TODO)
+                    Dashboard - your projects
                 </h1>
             </div>
         </header>
@@ -11,70 +11,203 @@
             <div class="section__body">
                 <div class="inner">
                      <div class="dashboard-container">
-                         <div class="filter">
-                             <h2>Filter projects</h2>
+                         <div>
+                             <h3>Filter</h3>
                              <form class="form">
                                  <div class="form__group">
-                                     <label class="form__label" for="form-name">ID</label>
                                      <input type="text" class="form__control form__control--medium"
-                                            placeholder="Filter on ID" ng-model="dashboardCtrl.searchText.id"/>
-                                 </div>
-                                 <div class="form__group">
-                                     <label class="form__label" for="form-name">Name</label>
-                                     <input type="text" class="form__control form__control--medium"
-                                            placeholder="Filter on name" ng-model="dashboardCtrl.searchText.name"/>
-                                 </div>
-                                 <div class="form__group">
-                                     <label class="form__label" for="form-name">Portfolio</label>
-                                     <input type="text" class="form__control form__control--medium"
-                                            placeholder="Filter on portfolio" ng-model="dashboardCtrl.searchText.portfolio"/>
-                                 </div>
-                                 <div class="form__group">
-                                     <label class="form__label" for="form-name">Created by</label>
-                                     <input type="text" class="form__control form__control--medium"
-                                            placeholder="Filter on created by" ng-model="dashboardCtrl.searchText.createdBy"/>
+                                            size="500"
+                                            placeholder="Filter projects (on name, campaign, ...)" ng-model="dashboardCtrl.searchText"/>
                                  </div>
                              </form>
                          </div>
-                         <div class="results">
-                             <table class="table table-project-dashboard">
-                                <thead>
-                                <tr>
-                                    <th ng-click="dashboardCtrl.sortBy('id')">
-                                        <a class="table__sort table__sort--none" title="Sort column"><span>#</span></a>
-                                    </th>
-                                    <th ng-click="dashboardCtrl.sortBy('name')">
-                                        <a class="table__sort table__sort--none" title="Sort column"><span>Name</span></a>
-                                    </th>
-                                    <th ng-click="dashboardCtrl.sortBy('portfolio')">
-                                        <a class="table__sort table__sort--none" title="Sort column"><span>Portfolio</span></a>
-                                    </th>
-                                    <th ng-click="dashboardCtrl.sortBy('percentageMapped')">
-                                        <a class="table__sort table__sort--none" title="Sort column"><span>% mapped</span></a>
-                                    </th>
-                                    <th ng-click="dashboardCtrl.sortBy('percentageValidated')">
-                                        <a class="table__sort table__sort--none" title="Sort column"><span>% validated</span></a>
-                                    </th>
-                                    <th ng-click="dashboardCtrl.sortBy('createdBy')">
-                                        <a class="table__sort table__sort--none" title="Sort column"><span>Created by</span></a>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="pointer"
-                                        ng-repeat="project in dashboardCtrl.projects | filter:dashboardCtrl.searchText | orderBy:dashboardCtrl.propertyName:dashboardCtrl.reverse"
-                                        ng-class="project === dashboardCtrl.selectedProject ? 'selected' : ''"
-                                        ng-click="dashboardCtrl.selectProject(project.id)">
-                                        <td>{{ project.id }}</td>
-                                        <td>{{ project.name }}</td>
-                                        <td>{{ project.portfolio }}</td>
-                                        <td>{{ project.percentageMapped }}</td>
-                                        <td>{{ project.percentageValidated }}</td>
-                                        <td>{{ project.createdBy }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                         <hr>
+                         <!-- active projects -->
+                         <h3 class="pointer" ng-click="dashboardCtrl.toggleActive()">
+                             <span ng-show="!dashboardCtrl.showActive">+</span>
+                             <span ng-show="dashboardCtrl.showActive">-</span>
+                             Active
+                         </h3>
+                         <div ng-show="dashboardCtrl.showActive">
+                             <p ng-show="!dashboardCtrl.projects.activeProjects">No active projects.</p>
+                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.activeProjects">
+                                 <table ng-show="dashboardCtrl.projects.activeProjects" class="table">
+                                 <thead>
+                                 <tr>
+                                     <th ng-click="dashboardCtrl.sortBy('projectId')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>#</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('name')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Name</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('campaignTag')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Campaign</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('percentMapped')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>% mapped</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('percentValidated')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>% validated</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('created')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Created</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('lastUpdated')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
+                                     </th>
+                                     <th></th>
+                                 </tr>
+                                 </thead>
+                                 <tbody>
+                                 <tr ng-repeat="project in dashboardCtrl.projects.activeProjects | filter:dashboardCtrl.searchText | orderBy:dashboardCtrl.propertyName:dashboardCtrl.reverse">
+                                     <td>{{ project.projectId }}</td>
+                                     <td>
+                                         <a ng-href="/project/{{ project.projectId }}">{{ project.name }}</a>
+                                     </td>
+                                     <td>{{ project.campaignTag }}</td>
+                                     <td>{{ project.percentMapped }}</td>
+                                     <td>{{ project.percentValidated }}</td>
+                                     <td>
+                                         <span am-time-ago="project.created | amUtc | amLocal"></span>
+                                     </td>
+                                     <td>
+                                         <span am-time-ago="project.lastUpdated | amUtc | amLocal"></span>
+                                     </td>
+                                     <td>
+                                         <a class="button button--primary button--small"
+                                            ng-href="/project/{{ project.projectId }}/dashboard">dashboard
+                                         </a>
+                                     </td>
+                                 </tr>
+                                 </tbody>
+                             </table>
+                             </div>
                          </div>
+                         <!-- active projects -->
+                         <!-- draft projects -->
+                         <h3 class="pointer" ng-click="dashboardCtrl.toggleDraft()">
+                             <span ng-show="!dashboardCtrl.showDraft">+</span>
+                             <span ng-show="dashboardCtrl.showDraft">-</span>
+                             Draft
+                         </h3>
+                         <div ng-show="dashboardCtrl.showDraft">
+                             <p ng-show="!dashboardCtrl.projects.draftProjects">No draft projects.</p>
+                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.draftProjects">
+                                <table class="table">
+                                 <thead>
+                                 <tr>
+                                     <th ng-click="dashboardCtrl.sortBy('projectId')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>#</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('name')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Name</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('campaignTag')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Campaign</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('percentMapped')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>% mapped</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('percentValidated')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>% validated</span></a>
+                                     </th>
+                                      <th ng-click="dashboardCtrl.sortBy('created')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Created</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('lastUpdated')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
+                                     </th>
+                                     <th></th>
+                                 </tr>
+                                 </thead>
+                                 <tbody>
+                                 <tr ng-repeat="project in dashboardCtrl.projects.draftProjects | filter:dashboardCtrl.searchText | orderBy:dashboardCtrl.propertyName:dashboardCtrl.reverse">
+                                     <td>{{ project.projectId }}</td>
+                                     <td>
+                                         <a ng-href="/admin/edit-project/{{ project.projectId }}">{{ project.name }}</a>
+                                     </td>
+                                     <td>{{ project.campaignTag }}</td>
+                                     <td>{{ project.percentMapped }}</td>
+                                     <td>{{ project.percentValidated }}</td>
+                                     <td>
+                                         <span am-time-ago="project.created | amUtc | amLocal"></span>
+                                     </td>
+                                     <td>
+                                         <span am-time-ago="project.lastUpdated | amUtc | amLocal"></span>
+                                     </td>
+                                     <td>
+                                         <a class="button button--primary button--small"
+                                            ng-href="/project/{{ project.projectId }}/dashboard">dashboard
+                                         </a>
+                                     </td>
+                                 </tr>
+                                 </tbody>
+                             </table>
+                             </div>
+                         </div>
+                          <!-- draft projects -->
+                          <!-- archived projects -->
+                         <h3 class="pointer" ng-click="dashboardCtrl.toggleArchived()">
+                             <span ng-show="!dashboardCtrl.showArchived">+</span>
+                             <span ng-show="dashboardCtrl.showArchived">-</span>
+                             Archived
+                         </h3>
+                           <div ng-show="dashboardCtrl.showArchived">
+                             <p ng-show="!dashboardCtrl.projects.archivedProjects">No active projects.</p>
+                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.archivedProjects">
+                                 <table ng-show="dashboardCtrl.projects.archivedProjects" class="table">
+                                 <thead>
+                                 <tr>
+                                     <th ng-click="dashboardCtrl.sortBy('projectId')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>#</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('name')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Name</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('campaignTag')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Campaign</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('percentMapped')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>% mapped</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('percentValidated')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>% validated</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('created')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Created</span></a>
+                                     </th>
+                                     <th ng-click="dashboardCtrl.sortBy('lastUpdated')">
+                                         <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
+                                     </th>
+                                     <th></th>
+                                 </tr>
+                                 </thead>
+                                 <tbody>
+                                 <tr ng-repeat="project in dashboardCtrl.projects.archivedProjects | filter:dashboardCtrl.searchText | orderBy:dashboardCtrl.propertyName:dashboardCtrl.reverse">
+                                     <td>{{ project.projectId }}</td>
+                                     <td>
+                                         <a ng-href="/admin/edit-project/{{ project.projectId }}">{{ project.name }}</a>
+                                     </td>
+                                     <td>{{ project.campaignTag }}</td>
+                                     <td>{{ project.percentMapped }}</td>
+                                     <td>{{ project.percentValidated }}</td>
+                                     <td>
+                                         <span am-time-ago="project.created | amUtc | amLocal"></span>
+                                     </td>
+                                     <td>
+                                         <span am-time-ago="project.lastUpdated | amUtc | amLocal"></span>
+                                     </td>
+                                     <td>
+                                         <a class="button button--primary button--small"
+                                            ng-href="/project/{{ project.projectId }}/dashboard">dashboard
+                                         </a>
+                                     </td>
+                                 </tr>
+                                 </tbody>
+                             </table>
+                             </div>
+                         </div>
+                         <!-- archived projects -->
                      </div>
                 </div>
             </div>
@@ -82,62 +215,7 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <div>
-                        <h2>Stats</h2>
-                        <h6 class="heading-alt">{{ dashboardCtrl.selectedProject.name }}</h6>
-                        <div class="section__project-dashboard--stats">
-                            <div class="stats__card">
-                                <h3>Tasks mapped</h3>
-                                <canvas class="chart chart-pie"
-                                        chart-data="dashboardCtrl.mappedData" chart-labels="dashboardCtrl.mappedLabels"
-                                        chart-options="{legend: {display: true, position: 'bottom'}}">
-                                </canvas>
-                            </div>
-                            <div class="stats__card">
-                                <h3>Tasks validated</h3>
-                                <canvas class="chart chart-pie"
-                                        chart-data="dashboardCtrl.validatedData" chart-labels="dashboardCtrl.validatedLabels"
-                                        chart-options="{legend: {display: true, position: 'bottom'}}">
-                                </canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="section-container">
-            <div class="section__body">
-                <div class="inner">
                     <div id="map" class="map-container"></div>
-                </div>
-            </div>
-        </div>
-        <div class="section-container">
-            <div class="section__body">
-                <div class="inner">
-                    <h2>Comments by users</h2>
-                      <h6 class="heading-alt">{{ dashboardCtrl.selectedProject.name }}</h6>
-                    <div ng-show="dashboardCtrl.projectComments.length < 1">
-                        No comments for this project.
-                    </div>
-                    <div ng-show="dashboardCtrl.projectComments.length > 0">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Comment</th>
-                                    <th>When</th>
-                                    <th>By</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="comment in dashboardCtrl.projectComments | orderBy: '-commentDate'">
-                                    <td>{{ comment.comment }}</td>
-                                    <td><span am-time-ago="comment.commentDate | amUtc | amLocal"></span></td>
-                                    <td><a href="/user/{{ comment.userName }}" target="_blank">{{ comment.userName }}</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
