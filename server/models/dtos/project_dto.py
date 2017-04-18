@@ -139,6 +139,13 @@ class PMProject(Model):
 
 class PMDashboardDTO(Model):
     """ DTO for constructing the PM Dashboard """
-    draft_projects = ListType(ModelType(PMProject), serialized_name='draftProjects', default=[])
-    active_projects = ListType(ModelType(PMProject), serialized_name='activeProjects', default=[])
-    archived_projects = ListType(ModelType(PMProject), serialized_name='archivedProjects', default=[])
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.draft_projects = []
+        self.archived_projects = []
+        self.active_projects = []
+
+    draft_projects = ListType(ModelType(PMProject), serialized_name='draftProjects')
+    active_projects = ListType(ModelType(PMProject), serialized_name='activeProjects')
+    archived_projects = ListType(ModelType(PMProject), serialized_name='archivedProjects')
