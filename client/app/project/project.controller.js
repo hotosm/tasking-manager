@@ -31,14 +31,14 @@
         vm.taskLockErrorMessage = '';
         vm.taskUnLockError = false;
         vm.taskUnLockErrorMessage = '';
-        
+
         //authorization
         vm.isAuthorized = false;
 
         //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
-        
+
         //task data
         vm.selectedTaskData = null;
         vm.lockedTaskData = null;
@@ -65,6 +65,10 @@
 
         //bound from the html
         vm.comment = '';
+
+        //table sorting control
+        vm.propertyName = 'username';
+        vm.reverse = true;
 
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
@@ -935,11 +939,21 @@
          * Create the url for downloading the currently selected tasks as a gpx file
          * @returns {string}
          */
-        vm.getGpxDownloadURL = function(){
-            if(vm.projectData && vm.getSelectTaskIds()) {
-                return configService.tmAPI + '/project/' + vm.projectData.projectId + '/tasks_as_gpx?tasks=' + vm.getSelectTaskIds() + '&as_file=true';            }
+        vm.getGpxDownloadURL = function () {
+            if (vm.projectData && vm.getSelectTaskIds()) {
+                return configService.tmAPI + '/project/' + vm.projectData.projectId + '/tasks_as_gpx?tasks=' + vm.getSelectTaskIds() + '&as_file=true';
+            }
             else return '';
         }
+
+        /**
+         * Sorts the table by property name
+         * @param propertyName
+         */
+        vm.sortBy = function (propertyName) {
+            vm.reverse = (vm.propertyName === propertyName) ? !vm.reverse : false;
+            vm.propertyName = propertyName;
+        };
     }
 })
 ();
