@@ -41,18 +41,18 @@
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Organisation</label>
-                                        <select class="form__control" ng-model="contributeCtrl.searchOrganisation"
-                                                ng-repeat="organisation in contributeCtrl.organisations">
-                                            <option value=""></option>
-                                            <option value="{{ organisation }}">{{ organisation }}</option>
+                                        <select class="form__control" ng-model="contributeCtrl.searchOrganisation">
+                                            <option value="">All</option>
+                                            <option ng-repeat="organisation in contributeCtrl.organisations"
+                                                    value="{{ organisation }}">{{ organisation }}</option>
                                         </select>
                                     </div>
                                     <div class="form__group">
                                         <label class="form__label">Campaign</label>
-                                        <select class="form__control" ng-model="contributeCtrl.searchCampaign"
-                                                ng-repeat="campaign in contributeCtrl.campaigns">
-                                            <option value=""></option>
-                                            <option value="{{ campaign }}">{{ campaign }}</option>
+                                        <select class="form__control" ng-model="contributeCtrl.searchCampaign">
+                                            <option value="">All</option>
+                                            <option ng-repeat="campaign in contributeCtrl.campaigns"
+                                                    value="{{ campaign }}">{{ campaign }}</option>
                                         </select>
                                     </div>
                                     <div class="form__group">

@@ -68,7 +68,7 @@
 
                     <!-- section main content -->
                     <div class="section__main-content">
-                        <form class="form">
+                        <form class="form" name="editProjectCtrl.editForm">
                         <!-- description section -->
                         <div ng-show="editProjectCtrl.currentSection === 'description'">
                             <fieldset class="form__fieldset">
@@ -273,30 +273,22 @@
                                     </label>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">Organisation tag(s) (TODO)</label>
-                                    <input type="text" class="form__control" placeholder="Choose from existing tags"/>
-                                </div>
-                                <div class="form__input-group">
-                                    <input type="text" class="form__control form__control--medium"
-                                           placeholder="Add a new organisation tag">
-                                    <span class="form__input-group-button">
-                                        <button type="submit" class="button button--achromic button--medium">
-                                            <span>Add tag</span>
-                                        </button>
-                                    </span>
+                                    <label class="form__label">Organisation tag</label>
+                                    <p>Only one organisation tag is allowed.</p>
+                                    <tags-input ng-model="editProjectCtrl.projectOrganisationTag"
+                                        name="organisationTag" placeholder="choose from existing tags or create a new one"
+                                        replace-spaces-with-dashes="false" max-tags="1">
+                                        <auto-complete source="editProjectCtrl.getOrganisationTags($query)"></auto-complete>
+                                    </tags-input>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">Portfolio tag(s) (TODO)</label>
-                                    <input type="text" class="form__control" placeholder="Choose from existing tags"/>
-                                </div>
-                                <div class="form__input-group">
-                                    <input type="text" class="form__control form__control--medium"
-                                           placeholder="Add a new portfolio tag">
-                                    <span class="form__input-group-button">
-                                        <button type="submit" class="button button--achromic button--medium">
-                                            <span>Add tag</span>
-                                        </button>
-                                    </span>
+                                    <label class="form__label">Campaign tag</label>
+                                    <p>Only one campaign tag is allowed.</p>
+                                    <tags-input ng-model="editProjectCtrl.projectCampaignTag"
+                                        name="campaignTag" placeholder="choose from existing tags or create a new one"
+                                                replace-spaces-with-dashes="false" max-tags="1">
+                                        <auto-complete source="editProjectCtrl.getCampaignTags($query)"></auto-complete>
+                                    </tags-input>
                                 </div>
                             </fieldset>
                         </div>
@@ -417,7 +409,8 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="form__group">
+                                <!-- hide project due date and JOSM preset for now -->
+                                <!--<div class="form__group">
                                     <label class="form__label">Project due date (dd/mm/yyyy)</label>
                                     <div class="form__input-group">
                                         <input type="date" class="form__control form__control--medium"
@@ -433,7 +426,7 @@
                                     <p ng-show="editProjectCtrl.project.josmPreset">
                                         A JOSM Preset has already been added to this project.
                                     </p>
-                                </div>
+                                </div>-->
                             </fieldset>
                         </div>
                             <!--/ settings -->
@@ -455,11 +448,11 @@
                                     </div>
                                     <button class="button button--secondary" type="button"
                                         ng-click="editProjectCtrl.showInvalidateConfirmation(true)">
-                                        Invalidate all tasks (TODO)
+                                        Invalidate all tasks
                                     </button>
                                     <button class="button button--secondary" type="button"
                                         ng-click="editProjectCtrl.showValidateConfirmation(true)">
-                                        Validate all tasks (TODO)
+                                        Validate all tasks
                                     </button>
                                 </div>
                                 <div class="form__group">
@@ -476,14 +469,12 @@
                             </fieldset>
                         </div>
                             <!--/ settings -->
-                            <div>
-                                <div class="pull-right">
-                                    <div class="form__group">
-                                        <a class="button button--achromic" role="button"
-                                           href="/project/{{ editProjectCtrl.project.projectId }}">
-                                            Go to project
-                                        </a>
-                                    </div>
+                            <div class="pull-right">
+                                <div class="form__group">
+                                    <a class="button button--achromic" role="button"
+                                       href="/project/{{ editProjectCtrl.project.projectId }}">
+                                        Go to project
+                                    </a>
                                 </div>
                             </div>
                             <div ng-show="editProjectCtrl.currentSection !== 'actions'">
@@ -500,18 +491,24 @@
                                         <p class="error" ng-show="editProjectCtrl.updateProjectFail">There was an error updating your project. Please try again.</p>
                                     </div>
                                 </div>
-                                <div>
-                                    <p class="error" ng-show="editProjectCtrl.nameMissing">
+                                <div class="error">
+                                    <p ng-show="editProjectCtrl.nameMissing">
                                         A name for the default locale "{{ editProjectCtrl.project.defaultLocale }}" is missing.
                                     </p>
-                                    <p class="error" ng-show="editProjectCtrl.shortDescriptionMissing">
+                                    <p ng-show="editProjectCtrl.shortDescriptionMissing">
                                         A short description for the default locale "{{ editProjectCtrl.project.defaultLocale }}" is missing.
                                     </p>
-                                    <p class="error" ng-show="editProjectCtrl.descriptionMissing">
+                                    <p ng-show="editProjectCtrl.descriptionMissing">
                                         A description for the default locale "{{ editProjectCtrl.project.defaultLocale }}" is missing.
                                     </p>
-                                    <p class="error" ng-show="editProjectCtrl.instructionsMissing">
+                                    <p ng-show="editProjectCtrl.instructionsMissing">
                                         Instructions for the default locale "{{ editProjectCtrl.project.defaultLocale }}" are missing.
+                                    </p>
+                                    <p ng-show="!editProjectCtrl.editForm.campaignTag.$valid">
+                                        Please make sure you only have one campaign tag.
+                                    </p>
+                                    <p ng-show="!editProjectCtrl.editForm.organisationTag.$valid">
+                                        Please make sure you only have one organisation tag.
                                     </p>
                                 </div>
                             </div>
@@ -553,7 +550,7 @@
                 </button>
             </div>
         </footer>
-    </div>
+    </div>`
     <button class="modal__button-dismiss" title="Close" ng-click="editProjectCtrl.showDeleteConfirmation(false)">
         Dismiss
     </button>
@@ -574,14 +571,9 @@
                     Are you sure you want to invalidate all tasks? You cannot undo this.
                 </p>
                 <p>
-                    This will mark all tasks as invalid. Please use this only if you are sure
+                    This will mark all tasks (except 'ready' and 'bad imagery' tasks) as invalid. Please use this only if you are sure
                     of what you are doing.
                 </p>
-                <textarea type="text" class="form__control" rows="4"
-                       ng-model="invalidateComment"
-                          placeholder="comment">
-                </textarea>
-                <p>The comment will be displayed on the invalidated tasks.</p>
             </div>
             <p ng-show="editProjectCtrl.invalidateTasksSuccess">
                 The tasks were invalidated successfully.
@@ -596,8 +588,9 @@
                         ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Cancel
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.invalidateAllTasks(invalidateComment)">Invalidate all tasks
+                        ng-click="editProjectCtrl.invalidateAllTasks()">Invalidate all tasks
                 </button>
+                <span ng-show="editProjectCtrl.invalidateInProgress">Invalidating...</span>
             </div>
             <div ng-show="editProjectCtrl.invalidateTasksSuccess">
                  <button class="button button--base" type="button"
@@ -626,13 +619,8 @@
                     Are you sure you want to validate all tasks? You cannot undo this.
                 </p>
                 <p>
-                    This will mark all tasks (except 'bad imagery' tasks) as valid. Please use this only if you are sure of what you are doing.
+                    This will mark all tasks (except 'bad imagery') as valid. Please use this only if you are sure of what you are doing.
                 </p>
-                <textarea type="text" class="form__control" rows="4"
-                       ng-model="validateComment"
-                          placeholder="comment">
-                </textarea>
-                <p>The comment will be displayed on the validated tasks.</p>
             </div>
             <p ng-show="editProjectCtrl.validateTasksSuccess">
                 The tasks were marked validated successfully.
@@ -647,8 +635,9 @@
                         ng-click="editProjectCtrl.showValidateConfirmation(false)">Cancel
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.validateAllTasks(validateComment)">Validate all tasks
+                        ng-click="editProjectCtrl.validateAllTasks()">Validate all tasks
                 </button>
+                <span ng-show="editProjectCtrl.validateInProgress">Validating...</span>
             </div>
             <div ng-show="editProjectCtrl.validateTasksSuccess">
                  <button class="button button--base" type="button"

@@ -80,7 +80,7 @@ gulp.task('compile-sass', function () {
         .pipe(sass({
                 outputStyle: 'expanded',
                 precision: 10,
-                includePaths: require('node-bourbon').with('node_modules/jeet/scss', require('oam-design-system/gulp-addons').scssPath)
+                includePaths: require('node-bourbon').with('node_modules/jeet/scss', require('hot-design-system/gulp-addons').scssPath)
             }
         ).on('error', sass.logError))
         .pipe(gulp.dest('assets/styles/css/'));

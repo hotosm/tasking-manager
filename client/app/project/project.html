@@ -31,7 +31,7 @@
                     <div ng-show="projectCtrl.currentTab === 'description'">
                         <button class="button button--secondary pull-right"
                                 ng-click="projectCtrl.currentTab = 'instructions'">
-                            Instructions <i class="oam-ds-icon-sm-chevron-right"></i>
+                            Instructions <i class="hot-ds-icon-sm-chevron-right"></i>
                         </button>
                         <section>
                             <h2>Description</h2>
@@ -47,19 +47,19 @@
 
                         <button class="button button--secondary pull-right"
                                 ng-click="projectCtrl.currentTab = 'validation'">Validate
-                            <i class="oam-ds-icon-sm-chevron-right"></i>
+                            <i class="hot-ds-icon-sm-chevron-right"></i>
                         </button>
 
                         <button class="button button--secondary pull-right"
                                 ng-click="projectCtrl.currentTab = 'mapping'">Map
-                            <i class="oam-ds-icon-sm-chevron-right"></i>
+                            <i class="hot-ds-icon-sm-chevron-right"></i>
                         </button>
 
                         <section>
                             <h2>Instructions</h2>
                             <div ng-init="showEntitiesHelp = false">
                                 <strong>Entities to Map <i ng-click="showEntitiesHelp = !showEntitiesHelp"
-                                                           class="oam-ds-icon-circle-question pointer"></i></strong>
+                                                       class="hot-ds-icon-circle-question pointer"></i></strong>
                                 <div ng-show="showEntitiesHelp">
                                     <small><em>The list of elements we ask you to map</em></small>
                                 </div>
@@ -67,9 +67,8 @@
                             </div>
                             <hr/>
                             <div ng-init="showChangesetCommentHelp = false">
-                                <strong>Changeset Comment <i
-                                        ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
-                                        class="oam-ds-icon-circle-question pointer"></i></strong>
+                                <strong>Changeset Comment <i ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
+                                                         class="hot-ds-icon-circle-question pointer"></i></strong>
                                 <div ng-show="showChangesetCommentHelp">
                                     <small><em>The default comment entered when uploaded data to the OSM database. When
                                         saving your work,
@@ -597,9 +596,9 @@
                                 title="show advanced options">
                                 Advanced
                                 <i ng-show="!showAdvanced"
-                                   class="oam-ds-icon-sm-chevron-down"></i>
+                                   class="hot-ds-icon-sm-chevron-down"></i>
                                 <i ng-show="showAdvanced"
-                                   class="oam-ds-icon-sm-chevron-up"></i>
+                                   class="hot-ds-icon-sm-chevron-up"></i>
                             </h3>
                             <p>Advanced task information and editing options</p>
                         </div>
@@ -616,10 +615,10 @@
                             <div ng-init="showHistory=false">
                                 <h6 class="heading-alt" ng-click="showHistory=!showHistory">History
                                     <i ng-show="!showHistory"
-                                       class="oam-ds-icon-sm-chevron-down">
+                                       class="hot-ds-icon-sm-chevron-down">
                                     </i>
                                     <i ng-show="showHistory"
-                                       class="oam-ds-icon-sm-chevron-up">
+                                       class="hot-ds-icon-sm-chevron-up">
                                     </i>
                                 </h6>
                                 <div class="history">

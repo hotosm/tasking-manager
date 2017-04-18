@@ -30,6 +30,7 @@ module.exports = function(config) {
       'node_modules/angular-moment/angular-moment.js',
       'node_modules/chart.js/dist/Chart.js',
       'node_modules/angular-chart.js/dist/angular-chart.js',
+      'node_modules/ng-tags-input/build/ng-tags-input.js',
       'app/*.js',
       'app/**/*.js',
       '../tests/client/unit/**/*.js'
