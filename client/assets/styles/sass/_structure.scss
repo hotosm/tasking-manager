@@ -84,10 +84,6 @@
       right: $global-spacing * 1.5;
     }
 
-    /*@include media(medium-up) {
-      top: 1.5rem;
-    }*/
-
     @include media(medium-up) {
       display: none;
     }

@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('dashboardController', ['$filter', 'mapService', 'projectMapService', 'projectService', dashboardController]);
+        .controller('dashboardController', ['mapService', 'projectMapService', 'projectService', dashboardController]);
 
-    function dashboardController($filter, mapService, projectMapService, projectService) {
+    function dashboardController(mapService, projectMapService, projectService) {
         var vm = this;
         vm.projects = {};
 
@@ -40,8 +40,6 @@
         function activate(){
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
-            //TODO: get projects from API
-            //TODO: look at ordering
             projectMapService.initialise(vm.map);
             getProjects();
         }
