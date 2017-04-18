@@ -1,7 +1,8 @@
 from flask import current_app
 from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO, LockedTasksForUser
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel, MappingTypes
-from server.models.postgis.utils import NotFound
+from server.models.postgis.statuses import TaskStatus
+from server.models.postgis.utils import NotFound, timestamp
 from server.services.user_service import UserService
 
 
