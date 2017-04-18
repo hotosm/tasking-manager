@@ -139,6 +139,6 @@ class PMProject(Model):
 
 class PMDashboardDTO(Model):
     """ DTO for constructing the PM Dashboard """
-    draft_projects = ListType(ModelType(PMProject), serialized_name='draftProjects')
-    active_projects = ListType(ModelType(PMProject), serialized_name='activeProjects')
-    archived_projects = ListType(ModelType(PMProject), serialized_name='archivedProjects')
+    draft_projects = ListType(ModelType(PMProject), serialized_name='draftProjects', default=[])
+    active_projects = ListType(ModelType(PMProject), serialized_name='activeProjects', default=[])
+    archived_projects = ListType(ModelType(PMProject), serialized_name='archivedProjects', default=[])

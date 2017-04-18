@@ -273,8 +273,8 @@ class Project(db.Model):
 
         return locked_tasks
 
-
-    def get_projects_for_admin(self, admin_id: int, preferred_locale: str):
+    @staticmethod
+    def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
         """ Get projects for admin """
         admins_projects = db.session.query(Project.id,
                                            Project.status,
@@ -291,9 +291,7 @@ class Project(db.Model):
         if admins_projects is None:
             raise NotFound('No projects found for admin')
 
-        draft_projects = []
-        active_projects = []
-        archived_projects = []
+        admin_projects_dto = PMDashboardDTO()
         for project in admins_projects:
             pm_project = PMProject()
             pm_project.project_id = project.id
@@ -301,8 +299,24 @@ class Project(db.Model):
             pm_project.created = project.created
             pm_project.last_updated = project.last_updated
 
+            pm_project.percent_mapped = round((project.tasks_mapped / project.total_tasks) * 100, 0)
+            pm_project.percent_validated = round((project.tasks_validated / project.total_tasks) * 100, 0)
+
             project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
             pm_project.name = project_info.name
+
+            project_status = ProjectStatus(project.status)
+
+            if project_status == ProjectStatus.DRAFT:
+                admin_projects_dto.draft_projects.append(pm_project)
+            elif project_status == ProjectStatus.PUBLISHED:
+                admin_projects_dto.active_projects.append(pm_project)
+            elif project_status == ProjectStatus.ARCHIVED:
+                admin_projects_dto.archived_projects.append(pm_project)
+            else:
+                current_app.logger.error(f'Unexpected state project {project.id}')
+
+        return admin_projects_dto
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """
