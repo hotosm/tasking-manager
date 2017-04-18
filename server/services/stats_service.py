@@ -8,6 +8,11 @@ class StatsService:
 
     @staticmethod
     def update_stats_after_task_state_change(project_id: int, user_id: int, task_status: TaskStatus):
+        """ Update stats when a task has had a state change """
+        if task_status in [TaskStatus.BADIMAGERY, TaskStatus.READY, TaskStatus.LOCKED_FOR_VALIDATION,
+                           TaskStatus.LOCKED_FOR_MAPPING]:
+            return  # No stats to record for these states
+
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_id(user_id)
 
