@@ -234,7 +234,8 @@
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following
-                                    <a href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a> and load it in JOSM to see the task boundary.
+                                    <a ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">gpx file</a> and load it in JOSM to
+                                    see the task boundary.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                     <div class="alert alert--danger" role="alert">
@@ -248,9 +249,10 @@
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
-                                              maxlength="{{projectCtrl.maxlengthComment}}"
+                                              maxlength="{{ projectCtrl.maxlengthComment }}"
                                               placeholder="Leave a comment"></textarea>
-                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }} characters remaining</p>
+                                    <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
+                                        characters remaining</p>
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
@@ -456,9 +458,9 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following <a href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a>
+                                <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following <a
+                                        ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">gpx file</a>
                                     file and load it in JOSM to see the task boundary.
-                                    {{ projectCtrl.getGpxDownloadURL() }}
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                     <div class="alert alert--danger" role="alert">
@@ -472,9 +474,10 @@
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
-                                              maxlength="{{projectCtrl.maxlengthComment}}"
+                                              maxlength="{{ projectCtrl.maxlengthComment }}"
                                               placeholder="Leave a comment"></textarea>
-                                    <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }} characters remaining</p>
+                                    <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
+                                        characters remaining</p>
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
@@ -530,8 +533,8 @@
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Since you have multiple tasks
-                                    selected you will need to download
-                                    the OSM data in JOSM manually. Download the following <a href="{{ projectCtrl.getGpxDownloadURL() }}">gpx file</a> file and load it
+                                    the OSM data in JOSM manually. Download the following <a
+                                            ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">gpx file</a> file and load it
                                     in JOSM to see the task boundaries.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
@@ -546,9 +549,10 @@
                                 </div>
                                 <div class="form__group">
                                     <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
-                                              maxlength="{{projectCtrl.maxlengthComment}}"
+                                              maxlength="{{ projectCtrl.maxlengthComment }}"
                                               placeholder="Leave a comment on all tasks"></textarea>
-                                    <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }} characters remaining</p>
+                                    <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
+                                        characters remaining</p>
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
