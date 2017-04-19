@@ -85,10 +85,6 @@
     }
 
     @include media(medium-up) {
-      top: 1.5rem;
-    }
-
-    @include media(large-up) {
       display: none;
     }
   }
@@ -121,7 +117,7 @@
     padding: $global-spacing ($global-spacing * 2);
   }
 
-  @include media(large-up) {
+  @include media(medium-up) {
     position: initial;
     float: left;
     width: auto;

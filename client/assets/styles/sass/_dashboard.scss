@@ -1,27 +1,20 @@
 .dashboard-container {
   @include column(12/12);
 
-  .filter {
+  .left {
     @include column(12/12);
     @include media(medium-up) {
-      @include column(4/12);
+      @include column(6/12);
     }
   }
 
-  .results {
+  .right {
     @include column(12/12);
     @include media(medium-up) {
-      @include column(8/12);
+      @include column(6/12);
     }
     max-height: 500px;
     overflow-y: auto;
-  }
-}
-
-.table-project-dashboard {
-  font-size: small;
-  .selected {
-    background-color: rgba($base-color, 0.1);
   }
 }
 
@@ -36,7 +29,7 @@
 
   .stats__card {
     display: inline-block;
-    width: 25%;
+    width: 40%;
   }
 
   .stats__card--amount {
@@ -49,4 +42,22 @@
     opacity: .7;
     line-height: 18px;
   }
+}
+
+/* ==========================================================================
+   Dashboard comments
+   ========================================================================== */
+.table-dashboard-comments {
+  table-layout: fixed;
+  .td {
+    word-wrap: break-word;
+  }
+}
+
+/* ==========================================================================
+   Admin - my projects dashboard
+   ========================================================================== */
+.dashboard-my-projects {
+  max-height: 350px;
+  overflow-y: auto;
 }

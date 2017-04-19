@@ -1,0 +1,75 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Activity and Stats (TODO)
+                </h1>
+                <a ng-href="/project/{{ projectDashboardCtrl.project.id }}"
+                   class="heading-alt">{{ projectDashboardCtrl.project.name }}
+                </a>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div class="dashboard-container">
+                        <h2>Stats</h2>
+                        <div class="left">
+                            <div class="section__project-dashboard--stats">
+                                <div class="stats__card">
+                                    <h3>Tasks mapped</h3>
+                                    <canvas class="chart chart-pie"
+                                            chart-data="projectDashboardCtrl.mappedData"
+                                            chart-labels="projectDashboardCtrl.mappedLabels"
+                                            chart-options="{legend: {display: true, position: 'bottom'}}">
+                                    </canvas>
+                                </div>
+                                <div class="stats__card">
+                                    <h3>Tasks validated</h3>
+                                    <canvas class="chart chart-pie"
+                                            chart-data="projectDashboardCtrl.validatedData"
+                                            chart-labels="projectDashboardCtrl.validatedLabels"
+                                            chart-options="{legend: {display: true, position: 'bottom'}}">
+                                    </canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div id="map" class="map-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <h2>Comments by users</h2>
+                      <h6 class="heading-alt">{{ projectDashboardCtrl.selectedProject.name }}</h6>
+                    <div ng-show="projectDashboardCtrl.projectComments.length < 1">
+                        No comments for this project.
+                    </div>
+                    <div ng-show="projectDashboardCtrl.projectComments.length > 0">
+                        <table class="table table-dashboard-comments">
+                            <thead>
+                                <tr>
+                                    <th>Comment</th>
+                                    <th>When</th>
+                                    <th>By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="comment in projectDashboardCtrl.projectComments | orderBy: '-commentDate'">
+                                    <td>{{ comment.comment }}</td>
+                                    <td><span am-time-ago="comment.commentDate | amUtc | amLocal"></span></td>
+                                    <td><a href="/user/{{ comment.userName }}" target="_blank">{{ comment.userName }}</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
