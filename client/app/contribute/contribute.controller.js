@@ -36,6 +36,9 @@
         vm.searchOther = false;
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
+        
+        // Character limit
+        vm.characterLimitShortDescription = 100;
 
         activate();
 
