@@ -14,7 +14,7 @@
 
         // TODO: get projects + mapper level stats from the API.
         vm.project = {
-            id: 236,
+            id: 521,
             name: 'Hardcoded project name',
             portfolio: 'Name of portfolio',
             percentageMapped: '45',
@@ -24,6 +24,46 @@
                 coordinates: [34.3433748084466, 31.003454415691]
             }
         };
+
+        vm.projectActivity = [
+            {
+                username: 'LindaA1',
+                taskId: '45',
+                status: 'MAPPED',
+                timeStamp: '2017-02-14T18:10:16Z'
+            },
+            {
+                username: 'user 2',
+                taskId: '45',
+                status: 'INVALIDATED',
+                timeStamp: '2017-03-14T18:10:16Z'
+            },
+            {
+                username: 'user 67',
+                taskId: '485',
+                status: 'MAPPED',
+                timeStamp: '2015-05-14T18:10:16Z'
+            },
+            {
+                username: 'user 90',
+                taskId: '458',
+                status: 'INVALIDATED',
+                timeStamp: '2015-05-14T18:10:16Z'
+            }
+        ];
+
+        vm.projectContributions = [
+            {
+                username: 'LindaA1',
+                level: 'BEGINNER',
+                mapped: 12
+            },
+            {
+                username: 'popeln',
+                level: 'ADVANCED',
+                mapped: 22
+            }
+        ];
 
         // Stats
         vm.mappedData = [];
