@@ -195,6 +195,10 @@ class Project(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def save(self):
+        """ Save changes to db"""
+        db.session.commit()
+
     @staticmethod
     def get(project_id: int):
         """
