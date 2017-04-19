@@ -288,7 +288,7 @@
                                     <p>there was an error retrieving the task from the server.</p>
                                 </div>
                             </div>
-                            <div ng-show="projectCtrl.mappedTasksPerUser.length > 0">
+                            <div>
                                 <p><strong>Option 3: </strong> Select By user:
                                 </p>
                                 <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
@@ -302,18 +302,19 @@
                                         <p>Please login first.</p>
                                     </div>
                                 </div>
-                                <table class="table--zebra user-activity-for-validation">
+                                <table class="table table-validate_user table--zebra user-activity-for-validation">
                                     <thead>
                                     <tr>
-                                        <td class="heading-alt">Contributer</td>
-                                        <td class="heading-alt">Level</td>
-                                        <td class="heading-alt">Mapped</td>
-                                        <td class="heading-alt">Newest</td>
-                                        <td class="heading-alt">Lock</td>
+                                        <th nowrap ng-click="projectCtrl.sortBy('username')"><a class="table__sort table__sort--none" title="Sort column"><span>Contributer</span></a></th>
+                                        <th nowrap ng-click="projectCtrl.sortBy('mappingLevel')"><a class="table__sort table__sort--none" title="Sort column"><span>Level</span></a></th>
+                                        <th nowrap ng-click="projectCtrl.sortBy('mappedTaskCount')"><a class="table__sort table__sort--none" title="Sort column"><span>Mapped</span></a></th>
+                                        <th nowrap ng-click="projectCtrl.sortBy('lastSeen')"><a class="table__sort table__sort--none" title="Sort column"><span>Newest</span></a></th>
+                                        <th nowrap><span>Lock</span></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser">
+                                    <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser | orderBy:projectCtrl.propertyName:projectCtrl.reverse"
+                                    >
                                         <td><a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}</td>
                                         <td>{{ doneTasks.mappingLevel }}</td>
                                         <td>{{ doneTasks.mappedTaskCount }}</td>

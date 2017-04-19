@@ -6,6 +6,7 @@ from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound
 from server.services.project_service import ProjectService
+from server.services.stats_service import StatsService
 
 
 class MappingServiceError(Exception):
@@ -74,6 +75,7 @@ class MappingService:
             raise MappingServiceError('Can only set status to MAPPED, BADIMAGERY, READY after mapping')
 
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
+        StatsService.update_stats_after_task_state_change(mapped_task.project_id, mapped_task.user_id, new_state)
         return task.as_dto()
 
     @staticmethod

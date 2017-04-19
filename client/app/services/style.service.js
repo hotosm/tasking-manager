@@ -155,13 +155,29 @@
          * OpenLayers style function for showing a project (point) on the map
          * @returns {ol.style.Style}
          */
-        function getProjectStyle() {
+        function getProjectStyle(typeOfProject) {
+            var fillColour = [255, 0, 0, 0.5]; // red
+            var strokeColour = [255, 0, 0, 1]; // red
+            if (typeOfProject){
+                if (typeOfProject === 'active'){
+                    fillColour = [255, 0, 0, 0.5]; // red
+                    strokeColour = [255, 0, 0, 1]; // red
+                }
+                if (typeOfProject === 'draft'){
+                    fillColour = [0, 0, 255, 0.5]; // blue
+                    strokeColour = [0, 0, 255, 1]; // blue
+                }
+                if (typeOfProject === 'archived'){
+                    fillColour = [0, 0, 0, 0.5]; // black
+                    strokeColour = [0, 0, 0, 1]; // black
+                }
+            }
             var fill = new ol.style.Fill({
-                color: [255, 0, 0, 0.5], // red
+                color: fillColour,
                 width: 1
             });
             var stroke = new ol.style.Stroke({
-                color: [255, 0, 0, 1], // red
+                color: strokeColour,
                 width: 1
             });
             var style = new ol.style.Style({

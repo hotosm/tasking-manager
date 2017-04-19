@@ -17,6 +17,7 @@
         var service = {
             initialise: initialise,
             showProjectsOnMap: showProjectsOnMap,
+            showProjectOnMap: showProjectOnMap,
             highlightProjectOnMap: highlightProjectOnMap,
             removeHighlightOnMap: removeHighlightOnMap
         };
@@ -38,11 +39,9 @@
          * @private
          */
         function addProjectsVectorLayer_(){
-            var style = styleService.getProjectStyle();
             projectVectorSource = new ol.source.Vector();
             var vectorLayer = new ol.layer.Vector({
-                source: projectVectorSource,
-                style: style
+                source: projectVectorSource
             });
             map.addLayer(vectorLayer);
         }
@@ -64,20 +63,38 @@
         
         /**
          * Show the projects on the map
+         * @param projects
+         * @param type - for styling purposes, optional
+         * @param dontClear - optional
          */
-        function showProjectsOnMap(projects){
-
-            projectVectorSource.clear();
+        function showProjectsOnMap(projects, type, dontClear){
+            var typeOfProject = '';
+            if (type){
+                typeOfProject = type;
+            }
+            if (!dontClear) {
+                projectVectorSource.clear();
+            }
 
             // iterate over the projects and add the center of the project as a point on the map
             for (var i = 0; i < projects.length; i++){
-                var projectCenter = ol.proj.transform(projects[i].aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
-                var feature = new ol.Feature({
-                    geometry: new ol.geom.Point(projectCenter)
-                });
-                if (projectVectorSource) {
-                    projectVectorSource.addFeature(feature);
-                }
+                showProjectOnMap(projects[i], typeOfProject);
+            }
+        }
+
+        /**
+         * Show project on map
+         * @param project
+         * @param type - optional
+         */
+        function showProjectOnMap(project, type) {
+            var projectCenter = ol.proj.transform(project.aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
+            var feature = new ol.Feature({
+                geometry: new ol.geom.Point(projectCenter)
+            });
+            if (projectVectorSource) {
+                projectVectorSource.addFeature(feature);
+                feature.setStyle(styleService.getProjectStyle(type));
             }
         }
         
