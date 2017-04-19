@@ -20,7 +20,6 @@ class StatsService:
             project.tasks_mapped += 1
             user.tasks_mapped += 1
         elif task_status == TaskStatus.INVALIDATED:
-            project.tasks_mapped -= 1
             user.tasks_invalidated += 1
         elif task_status == TaskStatus.VALIDATED:
             project.tasks_validated += 1
@@ -28,3 +27,5 @@ class StatsService:
 
         project.last_updated = timestamp()
         project.save()  # Will also save user changes, as using same session
+
+        return project, user
