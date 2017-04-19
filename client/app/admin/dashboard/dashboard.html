@@ -35,9 +35,9 @@
                              Active
                          </h3>
                          <div ng-show="dashboardCtrl.showActive">
-                             <p ng-show="!dashboardCtrl.projects.activeProjects">No active projects.</p>
-                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.activeProjects">
-                                 <table ng-show="dashboardCtrl.projects.activeProjects" class="table">
+                             <p ng-show="!dashboardCtrl.projects.activeProjects.length > 0">No active projects.</p>
+                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.activeProjects.length > 0">
+                                 <table class="table">
                                  <thead>
                                  <tr>
                                      <th ng-click="dashboardCtrl.sortBy('projectId')">
@@ -62,6 +62,7 @@
                                          <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
                                      </th>
                                      <th></th>
+                                     <th></th>
                                  </tr>
                                  </thead>
                                  <tbody>
@@ -84,6 +85,11 @@
                                             ng-href="/project/{{ project.projectId }}/dashboard">Activity and Stats
                                          </a>
                                      </td>
+                                     <td>
+                                         <a class="button button--primary button--small"
+                                            ng-href="/admin/edit-project/{{ project.projectId }}">Edit
+                                         </a>
+                                     </td>
                                  </tr>
                                  </tbody>
                              </table>
@@ -97,8 +103,8 @@
                              Draft
                          </h3>
                          <div ng-show="dashboardCtrl.showDraft">
-                             <p ng-show="!dashboardCtrl.projects.draftProjects">No draft projects.</p>
-                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.draftProjects">
+                             <p ng-show="!dashboardCtrl.projects.draftProjects.length > 0">No draft projects.</p>
+                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.draftProjects.length > 0">
                                 <table class="table">
                                  <thead>
                                  <tr>
@@ -124,14 +130,13 @@
                                          <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
                                      </th>
                                      <th></th>
+                                     <th></th>
                                  </tr>
                                  </thead>
                                  <tbody>
                                  <tr ng-repeat="project in dashboardCtrl.projects.draftProjects | filter:dashboardCtrl.searchText | orderBy:dashboardCtrl.propertyName:dashboardCtrl.reverse">
                                      <td>{{ project.projectId }}</td>
-                                     <td>
-                                         <a ng-href="/admin/edit-project/{{ project.projectId }}">{{ project.name }}</a>
-                                     </td>
+                                     <td>{{ project.name }}</td>
                                      <td>{{ project.campaignTag }}</td>
                                      <td>{{ project.percentMapped }}</td>
                                      <td>{{ project.percentValidated }}</td>
@@ -144,6 +149,11 @@
                                      <td>
                                          <a class="button button--primary button--small"
                                             ng-href="/project/{{ project.projectId }}/dashboard">Activity and Stats
+                                         </a>
+                                     </td>
+                                     <td>
+                                         <a class="button button--primary button--small"
+                                            ng-href="/admin/edit-project/{{ project.projectId }}">Edit
                                          </a>
                                      </td>
                                  </tr>
@@ -159,8 +169,8 @@
                              Archived
                          </h3>
                            <div ng-show="dashboardCtrl.showArchived">
-                             <p ng-show="!dashboardCtrl.projects.archivedProjects">No active projects.</p>
-                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.archivedProjects">
+                             <p ng-show="!dashboardCtrl.projects.archivedProjects.length > 0">No active projects.</p>
+                             <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.archivedProjects.length > 0">
                                  <table ng-show="dashboardCtrl.projects.archivedProjects" class="table">
                                  <thead>
                                  <tr>
@@ -186,14 +196,13 @@
                                          <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
                                      </th>
                                      <th></th>
+                                     <th></th>
                                  </tr>
                                  </thead>
                                  <tbody>
                                  <tr ng-repeat="project in dashboardCtrl.projects.archivedProjects | filter:dashboardCtrl.searchText | orderBy:dashboardCtrl.propertyName:dashboardCtrl.reverse">
                                      <td>{{ project.projectId }}</td>
-                                     <td>
-                                         <a ng-href="/admin/edit-project/{{ project.projectId }}">{{ project.name }}</a>
-                                     </td>
+                                     <td>{{ project.name }}</td>
                                      <td>{{ project.campaignTag }}</td>
                                      <td>{{ project.percentMapped }}</td>
                                      <td>{{ project.percentValidated }}</td>
@@ -206,6 +215,11 @@
                                      <td>
                                          <a class="button button--primary button--small"
                                             ng-href="/project/{{ project.projectId }}/dashboard">Activity and Stats
+                                         </a>
+                                     </td>
+                                     <td>
+                                         <a class="button button--primary button--small"
+                                            ng-href="/admin/edit-project/{{ project.projectId }}">Edit
                                          </a>
                                      </td>
                                  </tr>
