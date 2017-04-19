@@ -111,7 +111,7 @@
                 refreshProject(id);
                 updateMappedTaskPerUser(id);
                 //TODO do a selected task refesh too
-            }, 10000);
+            }, 1000000);
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer

@@ -66,15 +66,15 @@
     }
 
     @include media(large-up) {
-      @include span(5/12);
+      @include span(6/12);
     }
 
     @include media(xlarge-up) {
-      @include span(4/12);
+      @include span(5/12);
     }
 
     @include media(xxlarge-up) {
-      @include span(3/12);
+      @include span(4/12);
     }
 
     img {
@@ -92,15 +92,15 @@
     }
 
     @include media(large-up) {
-      @include span(7/12);
+      @include span(6/12);
     }
 
     @include media(xlarge-up) {
-      @include span(8/12);
+      @include span(7/12);
     }
 
     @include media(xxlarge-up) {
-      @include span(9/12);
+      @include span(8/12);
     }
   }
 }
@@ -122,6 +122,10 @@
 
 .user-activity-for-validation{
   font-size: smaller;
+}
+
+.user-activity-for-validation td{
+  padding: 0;
 }
 
 .project-title {
