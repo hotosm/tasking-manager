@@ -48,5 +48,7 @@ class User(db.Model):
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.tasks_mapped = self.tasks_mapped
+        user_dto.tasks_validated = self.tasks_validated
 
         return user_dto
