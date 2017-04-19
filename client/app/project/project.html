@@ -59,7 +59,7 @@
                             <h2>Instructions</h2>
                             <div ng-init="showEntitiesHelp = false">
                                 <strong>Entities to Map <i ng-click="showEntitiesHelp = !showEntitiesHelp"
-                                                       class="hot-ds-icon-circle-question pointer"></i></strong>
+                                                           class="hot-ds-icon-circle-question pointer"></i></strong>
                                 <div ng-show="showEntitiesHelp">
                                     <small><em>The list of elements we ask you to map</em></small>
                                 </div>
@@ -67,8 +67,9 @@
                             </div>
                             <hr/>
                             <div ng-init="showChangesetCommentHelp = false">
-                                <strong>Changeset Comment <i ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
-                                                         class="hot-ds-icon-circle-question pointer"></i></strong>
+                                <strong>Changeset Comment <i
+                                        ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
+                                        class="hot-ds-icon-circle-question pointer"></i></strong>
                                 <div ng-show="showChangesetCommentHelp">
                                     <small><em>The default comment entered when uploaded data to the OSM database. When
                                         saving your work,
@@ -87,36 +88,45 @@
                     <div ng-show="projectCtrl.currentTab === 'mapping'">
                         <!-- select UI -->
                         <div ng-show="projectCtrl.mappingStep === 'selecting'">
-                            <h3>Choose a task</h3>
-                            <div ng-show="projectCtrl.lockedTasksForCurrentUser.length > 0"
-                                 class="alert alert--warning"
-                                 role="alert">
-                                <p>You cannot select tasks for mapping because you already have one or more tasks
-                                    locked. Use the map to re-select and complete these tasks to allow new tasks to be
-                                    selected.</p>
+                            <div>
+                                user mapper level: {{ projectCtrl.user.mappingLevel }} <br/>
+                                project mapper level: {{ projectCtrl.projectData.mapperLevel }} <br/>
+                                project enforce mapper level: {{ projectCtrl.projectData.enforceMapperLevel }} <br/>
+                                user can map: {{ projectCtrl.userCanMap() }}
                             </div>
-                            <div ng-hide="projectCtrl.lockedTasksForCurrentUser.length > 0">
-                                <p>Choose a task for mapping:</p>
-
-                                <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
-                                <p><strong>Option 2: </strong>
-                                    <button ng-click="projectCtrl.selectRandomTaskMap()"
-                                            class="button button--secondary pull-center">
-                                        Select a random task
-                                    </button>
-                                </p>
-                                <div ng-show="projectCtrl.taskErrorMapping === 'none-available'">
-                                    <div class="alert alert--danger" role="alert">
-                                        <p>There are no tasks currently available for mapping.</p>
-                                    </div>
-                                </div>
-                                <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'"
-                                     class="alert alert--danger"
+                            <div>
+                                <h3>Choose a task</h3>
+                                <div ng-show="projectCtrl.lockedTasksForCurrentUser.length > 0"
+                                     class="alert alert--warning"
                                      role="alert">
-                                    <button class="alert__button-dismiss" title="Dismiss alert"
-                                            ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
-                                    </button>
-                                    <p>There was an error retrieving the task from the server.</p>
+                                    <p>You cannot select tasks for mapping because you already have one or more tasks
+                                        locked. Use the map to re-select and complete these tasks to allow new tasks to
+                                        be
+                                        selected.</p>
+                                </div>
+                                <div ng-hide="projectCtrl.lockedTasksForCurrentUser.length > 0">
+                                    <p>Choose a task for mapping:</p>
+
+                                    <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
+                                    <p><strong>Option 2: </strong>
+                                        <button ng-click="projectCtrl.selectRandomTaskMap()"
+                                                class="button button--secondary pull-center">
+                                            Select a random task
+                                        </button>
+                                    </p>
+                                    <div ng-show="projectCtrl.taskErrorMapping === 'none-available'">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>There are no tasks currently available for mapping.</p>
+                                        </div>
+                                    </div>
+                                    <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'"
+                                         class="alert alert--danger"
+                                         role="alert">
+                                        <button class="alert__button-dismiss" title="Dismiss alert"
+                                                ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
+                                        </button>
+                                        <p>There was an error retrieving the task from the server.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -234,7 +244,8 @@
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Download the following
-                                    <a ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">gpx file</a> and load it in JOSM to
+                                    <a ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">gpx file</a> and
+                                    load it in JOSM to
                                     see the task boundary.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
@@ -291,69 +302,76 @@
                     <div ng-show="projectCtrl.currentTab === 'validation'">
                         <!-- select UI -->
                         <div ng-show="projectCtrl.validatingStep === 'selecting'">
-                            <h3>Select for validation</h3>
-                            <p>Choose a task for validation:</p>
-                            <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
-                            <p><strong>Option 2: </strong>
-                                <button ng-click="projectCtrl.selectRandomTaskValidate()"
-                                        class="button button--secondary pull-center">
-                                    Select a random task
-                                </button>
-                            </p>
-                            <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
-                                <div class="alert alert--danger" role="alert">
-                                    <p>There are no tasks currently available for validation.</p>
-                                </div>
+                            <div>
+                                user role: {{ projectCtrl.user.role }} <br/>
+                                project enforce validator role: {{ projectCtrl.projectData.enforveValidatorRole }} <br/>
+                                can user validate: {{ projectCtrl.userCanValidate() }} <br/>
                             </div>
-                            <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
-                                <div class="alert alert--danger" role="alert">
-                                    <button class="alert__button-dismiss" title="Dismiss alert"
-                                            ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
+                            <div>
+                                <h3>Select for validation</h3>
+                                <p>Choose a task for validation:</p>
+                                <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
+                                <p><strong>Option 2: </strong>
+                                    <button ng-click="projectCtrl.selectRandomTaskValidate()"
+                                            class="button button--secondary pull-center">
+                                        Select a random task
                                     </button>
-                                    <p>there was an error retrieving the task from the server.</p>
-                                </div>
-                            </div>
-                            <div ng-show="projectCtrl.mappedTasksPerUser.length > 0">
-                                <p><strong>Option 3: </strong> Select By user:
                                 </p>
-                                <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
+                                <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
                                     <div class="alert alert--danger" role="alert">
-                                        <p>The tasks could not be
-                                            locked. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                        <p>There are no tasks currently available for validation.</p>
                                     </div>
                                 </div>
-                                <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
                                     <div class="alert alert--danger" role="alert">
-                                        <p>Please login first.</p>
+                                        <button class="alert__button-dismiss" title="Dismiss alert"
+                                                ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
+                                        </button>
+                                        <p>there was an error retrieving the task from the server.</p>
                                     </div>
                                 </div>
-                                <table class="table--zebra user-activity-for-validation">
-                                    <thead>
-                                    <tr>
-                                        <td class="heading-alt">Contributer</td>
-                                        <td class="heading-alt">Level</td>
-                                        <td class="heading-alt">Mapped</td>
-                                        <td class="heading-alt">Newest</td>
-                                        <td class="heading-alt">Lock</td>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser">
-                                        <td><a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}</td>
-                                        <td>{{ doneTasks.mappingLevel }}</td>
-                                        <td>{{ doneTasks.mappedTaskCount }}</td>
-                                        <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
-                                        </td>
-                                        <td>
-                                            <button ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
-                                                    ng-mouseover="projectCtrl.highlightTasks(doneTasks.tasksMapped, true)"
-                                                    ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
-                                                Start Validating
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                <div ng-show="projectCtrl.mappedTasksPerUser.length > 0">
+                                    <p><strong>Option 3: </strong> Select By user:
+                                    </p>
+                                    <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>The tasks could not be
+                                                locked. {{ projectCtrl.taskLockErrorMessage }}</p>
+                                        </div>
+                                    </div>
+                                    <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                        <div class="alert alert--danger" role="alert">
+                                            <p>Please login first.</p>
+                                        </div>
+                                    </div>
+                                    <table class="table--zebra user-activity-for-validation">
+                                        <thead>
+                                        <tr>
+                                            <td class="heading-alt">Contributer</td>
+                                            <td class="heading-alt">Level</td>
+                                            <td class="heading-alt">Mapped</td>
+                                            <td class="heading-alt">Newest</td>
+                                            <td class="heading-alt">Lock</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="doneTasks in projectCtrl.mappedTasksPerUser">
+                                            <td><a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}</td>
+                                            <td>{{ doneTasks.mappingLevel }}</td>
+                                            <td>{{ doneTasks.mappedTaskCount }}</td>
+                                            <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
+                                            </td>
+                                            <td>
+                                                <button ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
+                                                        ng-mouseover="projectCtrl.highlightTasks(doneTasks.tasksMapped, true)"
+                                                        ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
+                                                    Start Validating
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                         <!-- task viewing and mapping UI's -->
@@ -534,7 +552,8 @@
                                 </div>
                                 <div ng-show="projectCtrl.selectedEditor === 'josm'">Since you have multiple tasks
                                     the OSM data in JOSM manually. Download the following <a
-                                            ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">gpx file</a> file and load it
+                                            ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">gpx file</a>
+                                    file and load it
                                     in JOSM to see the task boundaries.
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
