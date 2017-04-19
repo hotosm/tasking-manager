@@ -43,7 +43,8 @@
         activate();
 
         function activate() {
-            mapService.createOSMMap('map');
+            var disableScrollZoom = true;
+            mapService.createOSMMap('map', disableScrollZoom);
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
             setOrganisationTags();
