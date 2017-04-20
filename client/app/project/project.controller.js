@@ -23,6 +23,8 @@
         vm.currentTab = '';
         vm.mappingStep = '';
         vm.validatingStep = '';
+        vm.userCanMap = true;
+        vm.userCanValidate = true;
 
         //error control
         vm.taskErrorMapping = '';
@@ -241,8 +243,11 @@
                 $scope.description = data.projectInfo.description;
                 $scope.shortDescription = data.projectInfo.shortDescription;
                 $scope.instructions = data.projectInfo.instructions;
+                vm.userCanMap = projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel );
+                vm.userCanValidate = projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole );
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+
 
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
@@ -940,62 +945,6 @@
                 return configService.tmAPI + '/project/' + vm.projectData.projectId + '/tasks_as_gpx?tasks=' + vm.getSelectTaskIds() + '&as_file=true';
             }
             else return '';
-        }
-
-        function enumerateMapperLevel(level) {
-            var userLevel = -1;
-            switch (level) {
-                case 'BEGINNER':
-                    userLevel = 1;
-                    break;
-                case 'INTERMEDIATE':
-                    userLevel = 1;
-                    break;
-                case 'ADVANCE':
-                    userLevel = 1;
-                    break;
-            }
-            return level;
-        }
-
-        function enumerateRole(level) {
-            var userLevel = -1;
-            switch (level) {
-
-                case 'MAPPER':
-                    userLevel = 0;
-                    break;
-                case 'ADMIN':
-                    userLevel = 1;
-                    break;
-                case 'PROJECT_MANAGER':
-                    userLevel = 2;
-                    break;
-                case 'VALIDATOR':
-                    userLevel = 4;
-                    break;
-            }
-            return level;
-        }
-
-
-        vm.userCanMap = function () {
-            if (vm.projectData.enforceMapperLevel) {
-                var userLevel = enumerateMapperLevel(vm.user.mappingLevel);
-                var projectLevel = enumerateMapperLevel(vm.projectData.mapperLevel);
-                if (userLevel < projectLevel) return false;
-            }
-            return true;
-        }
-
-        vm.userCanValidate = function () {
-            if (vm.projectData.enforceValidatorRole) {
-                var validatorRoles = ['ADMIN', 'PROJECT_MANAGER', 'VALIDATOR'];
-                if (validatorRoles.indexOf(vm.user.role) == -1) {
-                    return false;
-                }
-            }
-            return true;
         }
     }
 })

@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', ['$http', '$q', 'mapService','configService', 'authService', 'geospatialService', projectService]);
+        .service('projectService', ['$http', '$q', 'mapService', 'configService', 'authService', 'geospatialService', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -23,7 +23,7 @@
         var taskGrid = null;
         var aoi = null;
         var projectServiceDefined = null;
-        
+
         // OpenLayers source for the task grid
         var taskGridSource = null;
 
@@ -47,11 +47,13 @@
             deleteProject: deleteProject,
             invalidateAllTasks: invalidateAllTasks,
             validateAllTasks: validateAllTasks,
-            getCommentsForProject: getCommentsForProject
+            getCommentsForProject: getCommentsForProject,
+            userCanMapProject: userCanMapProject,
+            userCanValidateProject: userCanValidateProject
         };
 
         return service;
-        
+
         /**
          * Initialise the draw tools
          */
@@ -66,7 +68,7 @@
         /**
          * Adds a vector layer to the map which is needed for the draw tool
          */
-        function addVectorLayer(){
+        function addVectorLayer() {
             taskGridSource = new ol.source.Vector();
             var vector = new ol.layer.Vector({
                 source: taskGridSource
@@ -128,7 +130,7 @@
          * Return the task grid
          * @returns {*}
          */
-        function getTaskGrid(){
+        function getTaskGrid() {
             return taskGrid;
         }
 
@@ -136,14 +138,14 @@
          * Sets the task grid
          * @param grid
          */
-        function setTaskGrid(grid){
+        function setTaskGrid(grid) {
             taskGrid = grid;
         }
 
         /**
-         * Remove the task grid from the map 
+         * Remove the task grid from the map
          */
-        function removeTaskGrid(){
+        function removeTaskGrid() {
             taskGridSource.clear();
             taskGrid = null;
         }
@@ -155,7 +157,7 @@
          * Use Turf.js to calculate the area of one of the task sizes
          * @returns {number} the size of the task
          */
-        function getTaskSize(){
+        function getTaskSize() {
             var taskGeoJSON = geospatialService.getGeoJSONFromFeature(taskGrid[0]);
             return turf.area(JSON.parse(taskGeoJSON)) / 1000000;
         }
@@ -164,9 +166,9 @@
          * Return the number of tasks in the task grid
          * @returns {number} of tasks in the task grid
          */
-        function getNumberOfTasks(){
+        function getNumberOfTasks() {
             var numberOfTasks = 0;
-            if (taskGrid){
+            if (taskGrid) {
                 numberOfTasks = taskGrid.length;
             }
             return numberOfTasks;
@@ -175,7 +177,7 @@
         /**
          * Add the task grid to the map
          */
-        function addTaskGridToMap(){
+        function addTaskGridToMap() {
             // Add the task grid features to the vector layer on the map
             taskGridSource.addFeatures(taskGrid);
         }
@@ -202,20 +204,20 @@
             return feature;
         }
 
-        /** 
+        /**
          * Set the AOI
          * @param areaOfInterest
          */
-        function setAOI(areaOfInterest){
+        function setAOI(areaOfInterest) {
             aoi = areaOfInterest;
-            
+
         }
 
         /**
          * Get the AOI
          * @returns {*}
          */
-        function getAOI(){
+        function getAOI() {
             return aoi;
         }
 
@@ -225,7 +227,7 @@
          * @param features to be validated {*|ol.Collection.<ol.Feature>|Array.<ol.Feature>}
          * @returns {{valid: boolean, message: string}}
          */
-        function validateAOI(features){
+        function validateAOI(features) {
 
             var validationResult = {
                 valid: true,
@@ -233,7 +235,7 @@
             };
 
             // check we have a non empty array of things
-            if (!features || !features.length || features.length == 0){
+            if (!features || !features.length || features.length == 0) {
                 validationResult.valid = false;
                 validationResult.message = 'NO_FEATURES';
                 return validationResult;
@@ -250,22 +252,22 @@
 
             // check for self-intersections
             for (var featureCount = 0; featureCount < features.length; featureCount++) {
-                if (features[featureCount].getGeometry() instanceof ol.geom.MultiPolygon){
+                if (features[featureCount].getGeometry() instanceof ol.geom.MultiPolygon) {
                     // it should only have one polygon per multipolygon at the moment
                     var polygonsInFeatures = features[featureCount].getGeometry().getPolygons();
                     var hasSelfIntersections;
-                    for (var polyCount = 0; polyCount < polygonsInFeatures.length; polyCount++){
+                    for (var polyCount = 0; polyCount < polygonsInFeatures.length; polyCount++) {
                         var feature = new ol.Feature({
                             geometry: polygonsInFeatures[polyCount]
                         });
                         var selfIntersect = checkFeatureSelfIntersections_(feature);
-                        if (selfIntersect){
+                        if (selfIntersect) {
                             hasSelfIntersections = true;
                             // If only one self intersection exists, return as having self intersections
                             break;
                         }
                     }
-                    if (hasSelfIntersections){
+                    if (hasSelfIntersections) {
                         validationResult.valid = false;
                         validationResult.message = 'SELF_INTERSECTIONS';
                         return validationResult;
@@ -273,7 +275,7 @@
                 }
                 else {
                     var hasSelfIntersections = checkFeatureSelfIntersections_(features[featureCount]);
-                    if (hasSelfIntersections){
+                    if (hasSelfIntersections) {
                         validationResult.valid = false;
                         validationResult.message = 'SELF_INTERSECTIONS';
                         return validationResult;
@@ -288,12 +290,12 @@
          * and updates the task grid.
          * @param drawnPolygon
          */
-        function splitTasks(drawnPolygon){
+        function splitTasks(drawnPolygon) {
 
             var drawnPolygonGeoJSON = geospatialService.getGeoJSONObjectFromFeature(drawnPolygon);
-            
+
             var newTaskGrid = [];
-            for (var i = 0; i < taskGrid.length; i++){
+            for (var i = 0; i < taskGrid.length; i++) {
                 var taskGeoJSON = geospatialService.getGeoJSONObjectFromFeature(taskGrid[i]);
                 // Check if the task intersects with the drawn polygon
                 var intersection = turf.intersect(drawnPolygonGeoJSON, taskGeoJSON);
@@ -304,7 +306,7 @@
                 // If the task does intersect, get the split tasks and add these to the new task grid
                 else {
                     var grid = getSplitTasks(taskGrid[i]);
-                    for (var j = 0; j < grid.length; j++){
+                    for (var j = 0; j < grid.length; j++) {
                         newTaskGrid.push(grid[j]);
                     }
                 }
@@ -320,44 +322,44 @@
          * @param task
          * @returns {*}
          */
-        function getSplitTasks(task){
+        function getSplitTasks(task) {
             // For smaller tasks, increase the zoom level by 1
             var zoomLevel = task.getProperties().zoom + 1;
             var grid = createTaskGrid(task, zoomLevel);
             return grid;
         }
-        
-         /**
+
+        /**
          * Check an individual feature for self intersections with Turf.js
          * Only supports Polygons
          * @param feature - has to be a Polygon
          * @returns {boolean}
          */
-         function checkFeatureSelfIntersections_(feature) {
-             var hasSelfIntersections = false;
-             var featureAsGeoJSON = geospatialService.getGeoJSONObjectFromFeature(feature);
-             if (turf.kinks(featureAsGeoJSON).features.length > 0) {
-                 hasSelfIntersections = true;
-             }
-             return hasSelfIntersections;
-         }
+        function checkFeatureSelfIntersections_(feature) {
+            var hasSelfIntersections = false;
+            var featureAsGeoJSON = geospatialService.getGeoJSONObjectFromFeature(feature);
+            if (turf.kinks(featureAsGeoJSON).features.length > 0) {
+                hasSelfIntersections = true;
+            }
+            return hasSelfIntersections;
+        }
 
         /**
          * Creates a project by calling the API with the AOI, a task grid and a project name
          * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
          */
-        function createProject(projectName){
+        function createProject(projectName) {
 
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
             var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid);
-            
+
             // Get the geometry of the area of interest. It should only have one feature.
             var newProject = {
                 areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
                 projectName: projectName,
                 tasks: taskGridGeoJSON
             };
-            
+
             // Returns a promise
             return $http({
                 method: 'PUT',
@@ -380,7 +382,7 @@
          * @param id - project id
          * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}
          */
-        function getProject(id){
+        function getProject(id) {
 
             // Returns a promise
             return $http({
@@ -403,7 +405,7 @@
          * @param id - project id
          * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}
          */
-        function getProjectMetadata(id){
+        function getProjectMetadata(id) {
 
             // Returns a promise
             return $http({
@@ -422,12 +424,12 @@
         }
 
         /**
-         * Updates a project 
+         * Updates a project
          * @param id
          * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
          */
-        function updateProject(id, projectData){
-            
+        function updateProject(id, projectData) {
+
             // Returns a promise
             return $http({
                 method: 'POST',
@@ -450,8 +452,8 @@
          * @param id
          * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
          */
-        function deleteProject(id){
-            
+        function deleteProject(id) {
+
             // Returns a promise
             return $http({
                 method: 'DELETE',
@@ -474,7 +476,7 @@
          * @param comment
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
-        function invalidateAllTasks(projectId){
+        function invalidateAllTasks(projectId) {
             // Returns a promise
             return $http({
                 method: 'POST',
@@ -514,11 +516,11 @@
             });
         }
 
-         /** Get comments for a project
+        /** Get comments for a project
          * @param id
          * @returns {*|!jQuery.jqXHR|!jQuery.deferred|!jQuery.Promise}
          */
-        function getCommentsForProject(id){
+        function getCommentsForProject(id) {
 
             // Returns a promise
             return $http({
@@ -534,6 +536,59 @@
                 // or server returns response with an error status.
                 return $q.reject("error");
             });
+        }
+
+        /**
+         *
+         * @param levelText
+         * @returns {string|*}
+         */
+        function enumerateMapperLevel(levelText) {
+            var levelEnum = -1;
+            switch (levelText) {
+                case 'BEGINNER':
+                    levelEnum = 1;
+                    break;
+                case 'INTERMEDIATE':
+                    levelEnum = 2;
+                    break;
+                case 'ADVANCED':
+                    levelEnum = 3;
+                    break;
+            }
+            return levelEnum;
+        }
+
+        /**
+         * Convenience function for logic associated with deciding if a user can map on a project
+         * TODO this should be an api call since we should not have business logic in the client
+         * @param userLevel
+         * @param projectLevel
+         * @param enforceLevel
+         * @returns {boolean}
+         */
+        function userCanMapProject( userLevel, projectLevel, enforceLevel ) {
+            if (enforceLevel) {
+                var userLevel = enumerateMapperLevel(userLevel);
+                var projectLevel = enumerateMapperLevel(projectLevel);
+                return (userLevel >= projectLevel);
+            }
+            return true;
+        }
+
+        /**
+         * Convenience function for logic associated with deciding if a user can validate on a project
+         * TODO this should be an api call since we should not have business logic in the client
+         * @param userRole
+         * @param enforceValidateRole*
+         * @returns {boolean}
+         */
+        function userCanValidateProject(userRole, enforceValidateRole) {
+            if(enforceValidateRole) {
+                var validatorRoles = ['ADMIN', 'PROJECT_MANAGER', 'VALIDATOR'];
+                return validatorRoles.indexOf(userRole) != -1;
+            }
+            return true;
         }
     }
 })();
