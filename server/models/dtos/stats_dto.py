@@ -1,6 +1,7 @@
 from schematics import Model
-from schematics.types import StringType, IntType
+from schematics.types import StringType, IntType, BooleanType
 from schematics.types.compound import ListType, ModelType
+from server.models.dtos.mapping_dto import TaskHistoryDTO
 
 
 class UserContribution(Model):
@@ -17,3 +18,24 @@ class ProjectContributionsDTO(Model):
         self.user_contributions = []
 
     user_contributions = ListType(ModelType(UserContribution), serialized_name='userContributions')
+
+
+class Pagination(Model):
+    """ Properties for paginating results """
+    has_next = BooleanType(serialized_name='hasNext')
+    has_prev = BooleanType(serialized_name='hasPrev')
+    next_num = IntType(serialized_name='nextNum')
+    page = IntType()
+    pages = IntType
+    prev_num = IntType(serialized_name='prevNum')
+    per_page = IntType(serialized_name='perPage')
+    total = IntType()
+
+
+class ProjectActivityDTO(Model):
+    def __init__(self):
+        super().__init__()
+        self.activity = []
+
+    pagination = ModelType(Pagination)
+    activity = ListType(ModelType(TaskHistoryDTO))
