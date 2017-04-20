@@ -75,3 +75,46 @@ class StatsActivityAPI(Resource):
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class StatsProjectAPI(Resource):
+
+    def get(self, project_id):
+        """
+        Get Project Stats
+        ---
+        tags:
+          - stats
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Project stats
+            404:
+                description: Not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            preferred_locale = locale if locale else 'en'
+            project_stats = StatsService.get_project_stats(project_id, preferred_locale)
+            return project_stats.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Project not found"}, 404
+        except Exception as e:
+            error_msg = f'unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
