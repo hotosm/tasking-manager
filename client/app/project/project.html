@@ -174,7 +174,7 @@
 
 
                                         <div ng-show="projectCtrl.selectedTaskData ">
-                                            <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                            <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
                                                  class="alert alert--success"
                                                  role="alert">
                                                 <p>This task is available for mapping.</p>
@@ -182,17 +182,28 @@
                                         </div>
                                         <!-- task error alerts -->
                                         <div>
-                                            <div ng-show="!projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                            <div ng-show="!projectCtrl.isSelectedMappable"
                                                  class="alert alert--danger"
                                                  role="alert">
-                                                <p>The selected task is not available for mapping.</p>
+                                                <p>The selected task is not in a status that allows mapping.</p>
+                                            </div>
+                                            <div ng-show="projectCtrl.taskLockError"
+                                                 class="alert alert--danger"
+                                                 role="alert">
+                                                <p>The selected task could be locked.</p>
+                                            </div>
+                                            <div ng-hide="projectCtrl.userCanMap"
+                                                 class="alert alert--danger"
+                                                 role="alert">
+                                                <p>You do not have the required mapping level for this project.</p>
                                             </div>
                                         </div>
+
                                     </div>
                                     <!-- task action buttons -->
                                     <div>
                                         <div class="pull-center">
-                                            <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError"
+                                            <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
                                                     class="button button--secondary button--large"
                                                     ng-click="projectCtrl.lockSelectedTaskMapping()">
                                                 Start Mapping
@@ -202,7 +213,7 @@
                                         <div class="pull-center">
                                             <div class="button-group button-group--horizontal" role="group"
                                                  aria-label="other options">
-                                                <button ng-hide="projectCtrl.taskErrorMapping === 'none-available'"
+                                                <button ng-hide="projectCtrl.taskErrorMapping === 'none-available' || !projectCtrl.userCanMap"
                                                         ng-click="projectCtrl.selectRandomTaskMap()"
                                                         class="button button--achromic">
                                                     Select another task
@@ -413,7 +424,7 @@
                                     </span>
                                     </h3>
                                     <div ng-show="projectCtrl.selectedTaskData">
-                                        <div ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
+                                        <div ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate"
                                              class="alert alert--success"
                                              role="alert">
                                             <p>This task is available for validation.</p>
@@ -421,17 +432,27 @@
                                     </div>
                                     <!-- task error alerts -->
                                     <div>
-                                        <div ng-show="!projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
+                                        <div ng-show="!projectCtrl.isSelectedValidatable"
                                              class="alert alert--danger"
                                              role="alert">
-                                            <p>The selected task is not available for validation.</p>
+                                            <p>The selected task is not in a status that allows validation.</p>
+                                        </div>
+                                        <div ng-show="projectCtrl.taskLockError"
+                                             class="alert alert--danger"
+                                             role="alert">
+                                            <p>The selected task could not be locked.</p>
+                                        </div>
+                                        <div ng-hide="projectCtrl.userCanValidate"
+                                             class="alert alert--danger"
+                                             role="alert">
+                                            <p>You do not have the required role for validation on this project.</p>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- task action buttons -->
                                 <div>
                                     <div class="pull-center">
-                                        <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError"
+                                        <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate"
                                                 class="button button--secondary button--large"
                                                 ng-click="projectCtrl.lockSelectedTaskValidation()">
                                             Start Validating
@@ -441,7 +462,7 @@
                                     <div class="pull-center">
                                         <div class="button-group button-group--horizontal" role="group"
                                              aria-label="other options">
-                                            <button ng-hide="projectCtrl.taskErrorMapping === 'none-available'"
+                                            <button ng-hide="projectCtrl.taskErrorMapping === 'none-available' || !projectCtrl.userCanValidate"
                                                     ng-click="projectCtrl.selectRandomTaskValidate()"
                                                     class="button button--achromic">
                                                 Select another task
