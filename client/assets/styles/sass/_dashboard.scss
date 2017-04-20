@@ -3,11 +3,7 @@
 
   .left {
     .content {
-<<<<<<< HEAD
       max-height: 650px;
-=======
-      max-height: 500px;
->>>>>>> e9193ee79edf1b8c795d8f956a7e719f5c571941
       overflow-y: auto;
     }
     @include column(12/12);
@@ -18,11 +14,7 @@
 
   .right {
     .content {
-<<<<<<< HEAD
       max-height: 650px;
-=======
-      max-height: 500px;
->>>>>>> e9193ee79edf1b8c795d8f956a7e719f5c571941
       overflow-y: auto;
     }
     @include column(12/12);

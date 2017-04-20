@@ -90,7 +90,6 @@
             var resultsPromise = statsService.getProjectActivity(projectId, page);
             resultsPromise.then(function (data) {
                // Return the projects successfully
-                console.log(data.pagination);
                 vm.projectActivityPagination = data.pagination;
                 vm.projectActivity = data.activity;
             }, function(){
