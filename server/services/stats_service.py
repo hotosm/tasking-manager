@@ -1,13 +1,14 @@
 from server import db
-from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution
+from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
+    ProjectActivityDTO
 from server.models.postgis.statuses import TaskStatus
+from server.models.postgis.task import TaskHistory, User
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.user_service import UserService
 
 
 class StatsService:
-
     @staticmethod
     def update_stats_after_task_state_change(project_id: int, user_id: int, task_status: TaskStatus):
         """ Update stats when a task has had a state change """
@@ -33,7 +34,42 @@ class StatsService:
         return project, user
 
     @staticmethod
-    def get_user_contributions(project_id: int):
+    def get_latest_activity(project_id: int, page: int):
+        """ Gets all the activity on a project """
+
+        results = db.session.query(TaskHistory.action, TaskHistory.action_date, TaskHistory.action_text, User.username) \
+            .join(User).filter(TaskHistory.project_id == project_id).order_by(TaskHistory.action_date.desc())\
+            .paginate(page, 10, True)
+
+        if results.total == 0:
+            raise NotFound()
+
+        activity_dto = ProjectActivityDTO()
+        for item in results.items:
+            history = TaskHistoryDTO()
+            history.action = item.action
+            history.action_text = item.action_text
+            history.action_date = item.action_date
+            history.action_by = item.username
+
+            activity_dto.activity.append(history)
+
+        pagination = Pagination()
+        pagination.has_next = results.has_next
+        pagination.has_prev = results.has_prev
+        pagination.next_num = results.next_num
+        pagination.page = results.page
+        pagination.pages = results.pages
+        pagination.prev_num = results.prev_num
+        pagination.per_page = results.per_page
+        pagination.total = results.total
+
+        activity_dto.pagination = pagination
+
+        return activity_dto
+
+    @staticmethod
+    def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
         """ Get all user contributions on a project"""
         contrib_query = '''select m.mapped_by, m.username, m.mapped, v.validated_by, v.username, v.validated
                              from (select t.mapped_by, u.username, count(t.mapped_by) mapped
