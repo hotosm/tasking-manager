@@ -50,8 +50,10 @@
       padding-top: 20px;
       cursor: pointer;
       color: rgba($base-color, 0.6);
-      font-size: 1rem;
-      font-weight: bold
+      font-size: 0.8rem;
+      font-weight: bold;
+      border-top-right-radius: 15px;
+      border-top-left-radius: 15px;
     }
 
    .navigation > .active {

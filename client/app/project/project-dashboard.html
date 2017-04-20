@@ -16,33 +16,40 @@
                     <div class="dashboard-container">
                         <div class="left">
                             <h2>Last activity (TODO)</h2>
-                            <div ng-repeat="item in projectDashboardCtrl.projectActivity | orderBy: '-timeStamp'">
-                            <span>
-                                <a ng-href="/user/{{ item.username }}">{{ item.username }}</a>
-                                marked {{ item.taskId }}
-                                as {{ item.status }}
-                            </span>
-                                <p>
-                                    <em am-time-ago="item.timeStamp | amUtc | amLocal"></em>
-                                </p>
+                            <div class="content">
+                                <div ng-repeat="item in projectDashboardCtrl.projectActivity | orderBy: '-timeStamp'">
+                                <span>
+                                    <a ng-href="/user/{{ item.username }}">{{ item.username }}</a>
+                                    marked {{ item.taskId }}
+                                    as {{ item.status }}
+                                </span>
+                                    <p>
+                                        <em am-time-ago="item.timeStamp | amUtc | amLocal"></em>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                         <div class="right">
-                            <h2>Contributions (TODO)</h2>
-                            <table class="table table-dashboard-comments">
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Mapped</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="item in projectDashboardCtrl.projectContributions | orderBy: '-mapped'">
-                                        <td><a ng-href="/user/{{ item.username }}">{{ item.username }}</a></td>
-                                        <td>{{ item.mapped }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <h2>Contributions</h2>
+                            <div class="content">
+                                <p ng-show="!projectDashboardCtrl.projectContributions.length > 0">No contributions (yet).</p>
+                                <table ng-show="projectDashboardCtrl.projectContributions.length > 0" class="table table-dashboard-comments">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Mapped</th>
+                                            <th>Validated</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in projectDashboardCtrl.projectContributions | orderBy: '-mapped'">
+                                            <td><a ng-href="/user/{{ item.username }}">{{ item.username }}</a></td>
+                                            <td>{{ item.mapped }}</td>
+                                            <td>{{ item.validated }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -55,22 +62,10 @@
                         <h2>Stats</h2>
                         <div class="left">
                             <div class="section__project-dashboard--stats">
-                                <div class="stats__card">
-                                    <h3>Tasks mapped</h3>
-                                    <canvas class="chart chart-pie"
-                                            chart-data="projectDashboardCtrl.mappedData"
-                                            chart-labels="projectDashboardCtrl.mappedLabels"
-                                            chart-options="{legend: {display: true, position: 'bottom'}}">
-                                    </canvas>
-                                </div>
-                                <div class="stats__card">
-                                    <h3>Tasks validated</h3>
-                                    <canvas class="chart chart-pie"
-                                            chart-data="projectDashboardCtrl.validatedData"
-                                            chart-labels="projectDashboardCtrl.validatedLabels"
-                                            chart-options="{legend: {display: true, position: 'bottom'}}">
-                                    </canvas>
-                                </div>
+                                <span class="label">{{ projectDashboardCtrl.project.percentMapped }}% mapped</span>
+                                <uib-progressbar value="projectDashboardCtrl.project.percentMapped"></uib-progressbar>
+                                <span class="label">{{ projectDashboardCtrl.project.percentValidated }}% validated</span>
+                                <uib-progressbar value="projectDashboardCtrl.project.percentValidated"></uib-progressbar>
                             </div>
                         </div>
                         <div class="right">

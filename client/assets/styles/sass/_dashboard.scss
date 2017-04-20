@@ -2,6 +2,10 @@
   @include column(12/12);
 
   .left {
+    .content {
+      max-height: 500px;
+      overflow-y: auto;
+    }
     @include column(12/12);
     @include media(medium-up) {
       @include column(6/12);
@@ -9,12 +13,14 @@
   }
 
   .right {
+    .content {
+      max-height: 500px;
+      overflow-y: auto;
+    }
     @include column(12/12);
     @include media(medium-up) {
       @include column(6/12);
     }
-    max-height: 500px;
-    overflow-y: auto;
   }
 }
 
@@ -26,22 +32,6 @@
   left: 0;
   width: 100%;
   clear: both;
-
-  .stats__card {
-    display: inline-block;
-    width: 40%;
-  }
-
-  .stats__card--amount {
-    font-size: 2em;
-    letter-spacing: -1px;
-  }
-
-  .stats__card--title {
-    letter-spacing: 1px;
-    opacity: .7;
-    line-height: 18px;
-  }
 }
 
 /* ==========================================================================
