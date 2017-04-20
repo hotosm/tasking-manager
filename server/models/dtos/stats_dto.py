@@ -40,8 +40,3 @@ class ProjectActivityDTO(Model):
 
     pagination = ModelType(Pagination)
     activity = ListType(ModelType(TaskHistoryDTO))
-
-
-class ProjectStatsDTO(Model):
-    status = StringType()
-    campaign_tag = StringType(serialized_name='campaignTag')
