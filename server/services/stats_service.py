@@ -14,7 +14,7 @@ class StatsService:
     @staticmethod
     def update_stats_after_task_state_change(project_id: int, user_id: int, task_status: TaskStatus):
         """ Update stats when a task has had a state change """
-        if task_status in [TaskStatus.BADIMAGERY, TaskStatus.READY, TaskStatus.LOCKED_FOR_VALIDATION,
+        if task_status in [TaskStatus.READY, TaskStatus.LOCKED_FOR_VALIDATION,
                            TaskStatus.LOCKED_FOR_MAPPING]:
             return  # No stats to record for these states
 
@@ -26,6 +26,7 @@ class StatsService:
             user.tasks_mapped += 1
         elif task_status == TaskStatus.INVALIDATED:
             user.tasks_invalidated += 1
+            project.tasks_mapped -= 1
         elif task_status == TaskStatus.VALIDATED:
             project.tasks_validated += 1
             user.tasks_validated += 1
@@ -40,7 +41,8 @@ class StatsService:
         """ Gets all the activity on a project """
 
         results = db.session.query(TaskHistory.action, TaskHistory.action_date, TaskHistory.action_text, User.username) \
-            .join(User).filter(TaskHistory.project_id == project_id).order_by(TaskHistory.action_date.desc())\
+            .join(User).filter(TaskHistory.project_id == project_id, TaskHistory.action != 'COMMENT')\
+            .order_by(TaskHistory.action_date.desc())\
             .paginate(page, 10, True)
 
         if results.total == 0:
@@ -71,7 +73,7 @@ class StatsService:
         return activity_dto
 
     @staticmethod
-    def get_project_stats(project_id: int, preferred_locale: str):
+    def get_project_stats(project_id: int, preferred_locale: str) -> PMProject:
         """ Gets stats for the specified project """
         project = db.session.query(Project.id,
                                    Project.status,
