@@ -3,7 +3,7 @@
 
   .left {
     .content {
-      max-height: 500px;
+      max-height: 650px;
       overflow-y: auto;
     }
     @include column(12/12);
@@ -14,7 +14,7 @@
 
   .right {
     .content {
-      max-height: 500px;
+      max-height: 650px;
       overflow-y: auto;
     }
     @include column(12/12);
