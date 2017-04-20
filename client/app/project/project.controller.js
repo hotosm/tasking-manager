@@ -23,6 +23,8 @@
         vm.currentTab = '';
         vm.mappingStep = '';
         vm.validatingStep = '';
+        vm.userCanMap = true;
+        vm.userCanValidate = true;
 
         //error control
         vm.taskErrorMapping = '';
@@ -245,8 +247,11 @@
                 $scope.description = data.projectInfo.description;
                 $scope.shortDescription = data.projectInfo.shortDescription;
                 $scope.instructions = data.projectInfo.instructions;
+                vm.userCanMap = projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel );
+                vm.userCanValidate = projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole );
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+
 
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {

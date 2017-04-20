@@ -188,6 +188,7 @@ class Project(db.Model):
         self.area_of_interest = aoi
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
+        self.last_updated = timestamp()
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -298,19 +299,7 @@ class Project(db.Model):
 
         admin_projects_dto = PMDashboardDTO()
         for project in admins_projects:
-            pm_project = PMProject()
-            pm_project.project_id = project.id
-            pm_project.campaign_tag = project.campaign_tag
-            pm_project.created = project.created
-            pm_project.last_updated = project.last_updated
-            pm_project.aoi_centroid = geojson.loads(project.geojson)
-
-            pm_project.percent_mapped = round((project.tasks_mapped / project.total_tasks) * 100, 0)
-            pm_project.percent_validated = round((project.tasks_validated / project.total_tasks) * 100, 0)
-
-            project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
-            pm_project.name = project_info.name
-
+            pm_project = Project.get_pm_project(project, preferred_locale)
             project_status = ProjectStatus(project.status)
 
             if project_status == ProjectStatus.DRAFT:
@@ -323,6 +312,24 @@ class Project(db.Model):
                 current_app.logger.error(f'Unexpected state project {project.id}')
 
         return admin_projects_dto
+
+    @staticmethod
+    def get_pm_project(project, preferred_locale) -> PMProject:
+        """ Create PMProject object from query results """
+        pm_project = PMProject()
+        pm_project.project_id = project.id
+        pm_project.campaign_tag = project.campaign_tag
+        pm_project.created = project.created
+        pm_project.last_updated = project.last_updated
+        pm_project.aoi_centroid = geojson.loads(project.geojson)
+
+        pm_project.percent_mapped = round((project.tasks_mapped / project.total_tasks) * 100, 0)
+        pm_project.percent_validated = round((project.tasks_validated / project.total_tasks) * 100, 0)
+
+        project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
+        pm_project.name = project_info.name
+
+        return pm_project
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """

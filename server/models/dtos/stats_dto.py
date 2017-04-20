@@ -33,6 +33,7 @@ class Pagination(Model):
 
 
 class ProjectActivityDTO(Model):
+    """ DTO to hold all project activity """
     def __init__(self):
         super().__init__()
         self.activity = []

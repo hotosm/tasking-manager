@@ -12,25 +12,11 @@
     function projectDashboardController($routeParams, mapService, projectMapService, projectService, statsService) {
         var vm = this;
         vm.projectId = 0;
-        
-        // TODO: get projects + mapper level stats from the API.
-        vm.project = {
-            id: 521,
-            name: 'Hardcoded project name',
-            portfolio: 'Name of portfolio',
-            percentMapped: '45',
-            percentValidated: '33',
-            createdBy: 'LindaA1',
-            aoiCentroid: {
-                coordinates: [34.3433748084466, 31.003454415691]
-            }
-        };
 
+        vm.project = {};
         vm.projectActivityPagination = [];
         vm.projectActivity = [];
         vm.projectContributions = [];
-
-        // Comments
         vm.projectComments = [];
 
         activate();
@@ -39,7 +25,6 @@
             vm.projectId = $routeParams.id;
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
-            //TODO: get projects from API
             getProjectStats(vm.projectId);
             getComments(vm.projectId);
             getProjectContributions(vm.projectId);
@@ -97,19 +82,17 @@
         }
 
         /**
-         * Get project activyt
+         * Get project activity
          * @param projectId
          * @param page - optional
          */
         function getProjectActivity(projectId, page){
-            console.log("GET PROJECT ACTIVITY");
             var resultsPromise = statsService.getProjectActivity(projectId, page);
             resultsPromise.then(function (data) {
                // Return the projects successfully
                 console.log(data.pagination);
                 vm.projectActivityPagination = data.pagination;
                 vm.projectActivity = data.activity;
-                console.log(vm.projectActivity);
             }, function(){
                 // an error occurred
                 vm.projectActivityPagination = data.pagination;
