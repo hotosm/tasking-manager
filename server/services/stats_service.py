@@ -34,11 +34,15 @@ class StatsService:
         return project, user
 
     @staticmethod
-    def get_latest_activity(project_id: int):
+    def get_latest_activity(project_id: int, page: int):
+        """ Gets all the activity on a project """
 
         results = db.session.query(TaskHistory.action, TaskHistory.action_date, TaskHistory.action_text, User.username) \
-            .join(User) \
-            .filter(TaskHistory.project_id == project_id).order_by(TaskHistory.action_date.desc()).paginate(1, 10, True)
+            .join(User).filter(TaskHistory.project_id == project_id).order_by(TaskHistory.action_date.desc())\
+            .paginate(page, 10, True)
+
+        if results.total == 0:
+            raise NotFound()
 
         activity_dto = ProjectActivityDTO()
         for item in results.items:

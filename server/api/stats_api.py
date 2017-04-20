@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource, current_app, request
 from server.services.stats_service import StatsService, NotFound
 
 
@@ -55,17 +55,19 @@ class StatsActivityAPI(Resource):
               default: 1
             - in: query
               name: page
+              description: Page of results user requested
               type: integer
         responses:
             200:
-                description: User contributions
+                description: Project activity
             404:
-                description: No contributions
+                description: No activity
             500:
                 description: Internal Server Error
         """
         try:
-            activity = StatsService.get_latest_activity(project_id)
+            page = int(request.args.get('page')) if request.args.get('page') else 1
+            activity = StatsService.get_latest_activity(project_id, page)
             return activity.to_primitive(), 200
         except NotFound:
             return {"Error": "No activity on project"}, 404
