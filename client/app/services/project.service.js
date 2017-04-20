@@ -541,7 +541,7 @@
             }
 
             /**
-             *
+             * enumerate mapper levels
              * @param levelText
              * @returns {string|*}
              */
