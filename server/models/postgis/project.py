@@ -4,8 +4,8 @@ from flask import current_app
 from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchDTO, \
-    ProjectSearchResultDTO, ProjectSearchResultsDTO
+from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchResultDTO, \
+    ProjectSearchResultsDTO, PMProject, PMDashboardDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
@@ -160,9 +160,17 @@ class Project(db.Model):
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
+    last_updated = db.Column(db.DateTime, default=timestamp)
+
+    # Tags
     mapping_types = db.Column(db.ARRAY(db.Integer), index=True)
     organisation_tag = db.Column(db.String, index=True)
     campaign_tag = db.Column(db.String, index=True)
+
+    # Stats
+    total_tasks = db.Column(db.Integer)
+    tasks_mapped = db.Column(db.Integer, default=0)
+    tasks_validated = db.Column(db.Integer, default=0)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
@@ -185,6 +193,10 @@ class Project(db.Model):
         """ Creates and saves the current model to the DB """
         # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
+        db.session.commit()
+
+    def save(self):
+        """ Save changes to db"""
         db.session.commit()
 
     @staticmethod
@@ -210,6 +222,7 @@ class Project(db.Model):
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
+        self.last_updated = timestamp()
 
         if project_dto.organisation_tag:
             org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
@@ -264,6 +277,52 @@ class Project(db.Model):
             locked_tasks.append(task.id)
 
         return locked_tasks
+
+    @staticmethod
+    def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
+        """ Get projects for admin """
+        admins_projects = db.session.query(Project.id,
+                                           Project.status,
+                                           Project.campaign_tag,
+                                           Project.total_tasks,
+                                           Project.tasks_mapped,
+                                           Project.tasks_validated,
+                                           Project.created,
+                                           Project.last_updated,
+                                           Project.default_locale,
+                                           AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
+            .join(AreaOfInterest).filter(Project.author_id == admin_id).all()
+
+        if admins_projects is None:
+            raise NotFound('No projects found for admin')
+
+        admin_projects_dto = PMDashboardDTO()
+        for project in admins_projects:
+            pm_project = PMProject()
+            pm_project.project_id = project.id
+            pm_project.campaign_tag = project.campaign_tag
+            pm_project.created = project.created
+            pm_project.last_updated = project.last_updated
+            pm_project.aoi_centroid = geojson.loads(project.geojson)
+
+            pm_project.percent_mapped = round((project.tasks_mapped / project.total_tasks) * 100, 0)
+            pm_project.percent_validated = round((project.tasks_validated / project.total_tasks) * 100, 0)
+
+            project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
+            pm_project.name = project_info.name
+
+            project_status = ProjectStatus(project.status)
+
+            if project_status == ProjectStatus.DRAFT:
+                admin_projects_dto.draft_projects.append(pm_project)
+            elif project_status == ProjectStatus.PUBLISHED:
+                admin_projects_dto.active_projects.append(pm_project)
+            elif project_status == ProjectStatus.ARCHIVED:
+                admin_projects_dto.archived_projects.append(pm_project)
+            else:
+                current_app.logger.error(f'Unexpected state project {project.id}')
+
+        return admin_projects_dto
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """

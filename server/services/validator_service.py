@@ -4,6 +4,7 @@ from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterVa
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound
 from server.services.project_service import ProjectService
+from server.services.stats_service import StatsService
 
 
 class ValidatatorServiceError(Exception):
@@ -81,6 +82,8 @@ class ValidatorService:
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock['task']
             task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'])
+            StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
+                                                              task_to_unlock['new_state'])
             dtos.append(task.as_dto())
 
         task_dtos = TaskDTOs()

@@ -106,15 +106,18 @@ class ProjectAdminService:
         if is_valid_geojson['valid'] == 'no':
             raise InvalidGeoJson(f"Tasks: Invalid FeatureCollection - {is_valid_geojson['message']}")
 
-        task_id = 1
+        task_count = 1
         for feature in tasks['features']:
             try:
-                task = Task.from_geojson_feature(task_id, feature)
+                task = Task.from_geojson_feature(task_count, feature)
             except (InvalidData, InvalidGeoJson) as e:
                 raise e
 
             draft_project.tasks.append(task)
-            task_id += 1
+            task_count += 1
+
+        task_count -= 1  # Remove last increment before falling out loop
+        draft_project.total_tasks = task_count
 
     @staticmethod
     def _validate_default_locale(default_locale, project_info_locales):
@@ -139,3 +142,8 @@ class ProjectAdminService:
                 raise(ProjectAdminServiceError(f'{attr} not provided for Default Locale'))
 
         return True  # Indicates valid default locale for unit testing
+
+    @staticmethod
+    def get_projects_for_admin(admin_id: int, preferred_locale: str):
+        """ Get all projects for provided admin """
+        return Project.get_projects_for_admin(admin_id, preferred_locale)

@@ -36,7 +36,7 @@
             $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
 
             ChartJsProvider.setOptions({
-                chartColors: ['#D73F3F', '#DCDCDC', '#7A7A7A', '#595959']
+                chartColors: ['#AC3232', '#DCDCDC', '#7A7A7A', '#595959']
             });
 
             $routeProvider
@@ -111,6 +111,12 @@
                     templateUrl: 'app/admin/dashboard/dashboard.html',
                     controller: 'dashboardController',
                     controllerAs: 'dashboardCtrl'
+                })
+                
+                .when('/project/:id/dashboard', {
+                    templateUrl: 'app/project/project-dashboard.html',
+                    controller: 'projectDashboardController',
+                    controllerAs: 'projectDashboardCtrl'
                 })
    
                 .when('/admin/users', {

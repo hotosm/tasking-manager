@@ -31,8 +31,9 @@
          *    - XYZ
          *    - WMS
          * @param targetElement
+         * @param disableScroll - optional - defaults to false
          */
-        function createOSMMap(targetElement){
+        function createOSMMap(targetElement, disableScrollZoom){
             var scaleLineControl = new ol.control.ScaleLine();
 
             map = new ol.Map({
@@ -49,7 +50,16 @@
                     zoom: 2
                 })
             });
-            
+
+            // Disable scroll
+            if (disableScrollZoom){
+                map.getInteractions().forEach(function(interaction) {
+                    if (interaction instanceof ol.interaction.MouseWheelZoom) {
+                    interaction.setActive(false);
+                  }
+                }, this);
+            }
+
             map.addControl(scaleLineControl);
 
             // Add additional layers defined in the config

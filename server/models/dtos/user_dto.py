@@ -18,6 +18,8 @@ class UserDTO(Model):
     username = StringType(required=True)
     role = StringType(required=True)
     mapping_level = StringType(required=True, serialized_name='mappingLevel', validators=[is_known_mapping_level])
+    tasks_mapped = IntType(serialized_name='tasksMapped')
+    tasks_validated = IntType(serialized_name='tasksValidated')
 
 
 class UserOSMDTO(Model):

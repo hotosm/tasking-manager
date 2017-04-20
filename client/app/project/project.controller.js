@@ -68,6 +68,10 @@
         //bound from the html
         vm.comment = '';
 
+        //table sorting control
+        vm.propertyName = 'username';
+        vm.reverse = true;
+
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
 
@@ -946,6 +950,15 @@
             }
             else return '';
         }
+
+        /**
+         * Sorts the table by property name
+         * @param propertyName
+         */
+        vm.sortBy = function (propertyName) {
+            vm.reverse = (vm.propertyName === propertyName) ? !vm.reverse : false;
+            vm.propertyName = propertyName;
+        };
     }
 })
 ();
