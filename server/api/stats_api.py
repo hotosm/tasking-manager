@@ -1,4 +1,5 @@
 from flask_restful import Resource, current_app
+from server.services.stats_service import StatsService, NotFound
 
 
 class StatsContributionsAPI(Resource):
@@ -11,6 +12,12 @@ class StatsContributionsAPI(Resource):
           - stats
         produces:
           - application/json
+        parameters:
+            - name: project_id
+              in: path
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: User contributions
@@ -20,7 +27,10 @@ class StatsContributionsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            pass
+            contributions = StatsService.get_user_contributions(project_id)
+            return contributions.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No contributions on project"}, 404
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

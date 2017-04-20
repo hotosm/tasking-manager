@@ -222,6 +222,7 @@ class Project(db.Model):
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
+        self.last_updated = timestamp()
 
         if project_dto.organisation_tag:
             org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
