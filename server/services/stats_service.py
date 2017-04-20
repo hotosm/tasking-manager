@@ -1,6 +1,8 @@
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
     ProjectActivityDTO
+from server.models.dtos.project_dto import PMProject
+from server.models.postgis.project import Project, AreaOfInterest
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User
 from server.models.postgis.utils import timestamp, NotFound
@@ -34,7 +36,7 @@ class StatsService:
         return project, user
 
     @staticmethod
-    def get_latest_activity(project_id: int, page: int):
+    def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
         """ Gets all the activity on a project """
 
         results = db.session.query(TaskHistory.action, TaskHistory.action_date, TaskHistory.action_text, User.username) \
@@ -67,6 +69,24 @@ class StatsService:
         activity_dto.pagination = pagination
 
         return activity_dto
+
+    @staticmethod
+    def get_project_stats(project_id: int, preferred_locale: str):
+        """ Gets stats for the specified project """
+        project = db.session.query(Project.id,
+                                   Project.status,
+                                   Project.campaign_tag,
+                                   Project.total_tasks,
+                                   Project.tasks_mapped,
+                                   Project.tasks_validated,
+                                   Project.created,
+                                   Project.last_updated,
+                                   Project.default_locale,
+                                   AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
+            .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
+
+        pm_project = Project.get_pm_project(project, preferred_locale)
+        return pm_project
 
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:

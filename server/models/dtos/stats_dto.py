@@ -33,9 +33,15 @@ class Pagination(Model):
 
 
 class ProjectActivityDTO(Model):
+    """ DTO to hold all project activity """
     def __init__(self):
         super().__init__()
         self.activity = []
 
     pagination = ModelType(Pagination)
     activity = ListType(ModelType(TaskHistoryDTO))
+
+
+class ProjectStatsDTO(Model):
+    status = StringType()
+    campaign_tag = StringType(serialized_name='campaignTag')
