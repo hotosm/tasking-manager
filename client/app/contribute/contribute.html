@@ -123,6 +123,12 @@
                                             <div class="project-result__card"
                                                  ng-repeat="project in contributeCtrl.results.slice(((contributeCtrl.currentPage-1)*contributeCtrl.itemsPerPage), ((contributeCtrl.currentPage)*contributeCtrl.itemsPerPage)) track by project.projectId">
                                                 <section class="panel project-result__content">
+                                                     <div class="progress-bar-container">
+                                                         <span class="label">55% mapped</span>
+                                                         <uib-progressbar value="55"></uib-progressbar>
+                                                         <span class="label">30% validated</span>
+                                                         <uib-progressbar value="30"></uib-progressbar>
+                                                    </div>
                                                     <h4>{{ project.name }}</h4>
                                                     <p markdown-to-html=project.shortDescription></p>
                                                     <ul>

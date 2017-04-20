@@ -49,3 +49,16 @@
     padding: 1rem;
   }
 }
+
+.progress-bar-container {
+  float: right;
+  max-width: 100px;
+  .label {
+    font-size: x-small;
+  }
+  /** Override default styling **/
+  .progress {
+    height: 10px !important;
+    margin-bottom: 10px !important;
+  }
+}
