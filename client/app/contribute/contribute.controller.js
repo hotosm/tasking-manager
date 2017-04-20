@@ -36,11 +36,15 @@
         vm.searchOther = false;
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
+        
+        // Character limit
+        vm.characterLimitShortDescription = 100;
 
         activate();
 
         function activate() {
-            mapService.createOSMMap('map');
+            var disableScrollZoom = true;
+            mapService.createOSMMap('map', disableScrollZoom);
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
             setOrganisationTags();
