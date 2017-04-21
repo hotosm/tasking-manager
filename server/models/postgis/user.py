@@ -1,6 +1,7 @@
 from enum import Enum
 from server import db
 from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject
+from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus
 from server.models.postgis.utils import NotFound
 
@@ -78,7 +79,7 @@ class User(db.Model):
             mapped_project.tasks_mapped = row[2]
             mapped_project.tasks_validated = row[3]
 
-            # project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
+            project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
             # pm_project.name = project_info.name
 
             mapped_projects_dto.mapped_projects.append(mapped_project)

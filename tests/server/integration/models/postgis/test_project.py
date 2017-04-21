@@ -2,7 +2,8 @@ import os
 import unittest
 import geojson
 from server import create_app
-from server.models.postgis.project import Task, ProjectDTO, ProjectInfoDTO, ProjectStatus, ProjectPriority
+from server.models.postgis.project import Task, ProjectDTO, ProjectStatus, ProjectPriority
+from server.models.postgis.project_info import ProjectInfoDTO
 from tests.server.helpers.test_helpers import create_canned_project
 
 
