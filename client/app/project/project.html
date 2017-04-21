@@ -14,7 +14,6 @@
                         title="Go to the instructions tab"
                         ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
                         Instructions
-
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'mapping'"
                         title="Go to the mapping tab"
@@ -44,17 +43,14 @@
                         </section>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
-
                         <button class="button button--secondary pull-right"
                                 ng-click="projectCtrl.currentTab = 'validation'">Validate
                             <i class="hot-ds-icon-sm-chevron-right"></i>
                         </button>
-
                         <button class="button button--secondary pull-right"
                                 ng-click="projectCtrl.currentTab = 'mapping'">Map
                             <i class="hot-ds-icon-sm-chevron-right"></i>
                         </button>
-
                         <section>
                             <h2>Instructions</h2>
                             <div ng-init="showEntitiesHelp = false">
@@ -367,7 +363,8 @@
                                             <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
                                             </td>
                                             <td>
-                                                <button ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
+                                                <button class="button button--secondary button--small"
+                                                        ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
                                                         ng-mouseover="projectCtrl.highlightTasks(doneTasks.tasksMapped, true)"
                                                         ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
                                                     Start Validating
@@ -704,11 +701,16 @@
                     </h2>
                 </div>
                 <div>
-
+                    <div class="activity-project-button">
+                         <a ng-href="/project/{{ projectCtrl.projectData.projectId }}/dashboard"
+                           class="button button--secondary">Activity and Stats
+                        </a>
+                    </div>
                     <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'"
                          class="edit-project-button">
-                        <a href="/admin/edit-project/{{ projectCtrl.projectData.projectId }}"
-                           class="button button--secondary">Edit project</a>
+                        <a ng-href="/admin/edit-project/{{ projectCtrl.projectData.projectId }}"
+                           class="button button--secondary">Edit project
+                        </a>
                     </div>
                 </div>
             </div>
