@@ -47,6 +47,7 @@
             mapService.createOSMMap('map', disableScrollZoom);
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
+            projectMapService.showInfoOnHoverOrClick();
             setOrganisationTags();
             setCampaignTags();
             searchProjects(); 
