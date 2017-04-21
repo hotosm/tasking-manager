@@ -86,7 +86,7 @@
          * Show project on map
          * @param project
          * @param type - optional
-         * @param zoomTo - optionl
+         * @param zoomTo - optional
          */
         function showProjectOnMap(project, type, zoomTo) {
             var projectCenter = ol.proj.transform(project.aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
