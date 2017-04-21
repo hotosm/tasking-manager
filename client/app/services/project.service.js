@@ -111,17 +111,13 @@
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
                     var taskFeatureGeoJSON = geospatialService.getGeoJSONFromFeature(taskFeature);
-                    // Check if the generated task feature intersects with the area of interest
-                    var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
-                    // Add the task feature to the array if it intersects
-                    if (intersection) {
-                        taskFeature.setProperties({
-                            'x': x,
-                            'y': y,
-                            'zoom': zoomLevel
-                        });
-                        taskFeatures.push(taskFeature);
-                    }
+                    taskFeature.setProperties({
+                        'x': x,
+                        'y': y,
+                        'zoom': zoomLevel,
+                        'splitable':true
+                    });
+                    taskFeatures.push(taskFeature);
                 }
             }
             return taskFeatures;
@@ -228,10 +224,10 @@
          * @returns {{valid: boolean, message: string}}
          */
         function validateAOI(features) {
-             var validationResult = {
-                 valid: true,
-                 message: ''
-             };
+            var validationResult = {
+                valid: true,
+                message: ''
+            };
 
             // check we have a non empty array of things
             if (!features || !features.length || features.length == 0) {
