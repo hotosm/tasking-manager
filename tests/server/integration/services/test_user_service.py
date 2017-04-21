@@ -8,6 +8,7 @@ from tests.server.helpers.test_helpers import create_canned_project
 class TestAuthenticationService(unittest.TestCase):
     skip_tests = False
     test_user = None
+    test_project = None
 
     @classmethod
     def setUpClass(cls):
@@ -37,10 +38,12 @@ class TestAuthenticationService(unittest.TestCase):
 
     def test_upsert_inserts_project_if_not_exists(self):
         # Arrange
-        UserService.upsert_mapped_projects(self.test_user.id, 1)
+        UserService.upsert_mapped_projects(self.test_user.id, self.test_project.id)
 
         # Act
         projects = UserService.get_mapped_projects(self.test_user.id, 'en')
 
-        iain = projects
+        # Assert
+        mapped_project = projects.mapped_projects[0]
+        self.assertEqual(mapped_project.project_id, self.test_project.id)  # We should find we've mapped the test project
 

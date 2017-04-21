@@ -5,6 +5,7 @@ from typing import Tuple
 import xml.etree.ElementTree as ET
 from server.models.dtos.project_dto import DraftProjectDTO
 from server.models.postgis.project import AreaOfInterest, Project
+from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 
@@ -61,10 +62,15 @@ def create_canned_project() -> Tuple[Project, User]:
     test_project_dto = DraftProjectDTO()
     test_project_dto.project_name = 'Test'
     test_project_dto.user_id = test_user.id
-
     test_project = Project()
     test_project.create_draft_project(test_project_dto, test_aoi)
-    test_project.tasks.append(Task.from_geojson_feature(1, task_feature))
+
+    # Setup test task
+    test_task = Task.from_geojson_feature(1, task_feature)
+    test_task.task_status = TaskStatus.MAPPED.value
+    test_task.mapped_by = test_user.id
+
+    test_project.tasks.append(test_task)
     test_project.create()
 
     return test_project, test_user
