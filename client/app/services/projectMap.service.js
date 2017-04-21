@@ -163,11 +163,13 @@
              * Add a click handler to hide the popup.
              * @return {boolean} Don't follow the href.
              */
-            closer.onclick = function () {
-                overlay.setPosition(undefined);
-                closer.blur();
-                return false;
-            };
+            if (closer){
+                closer.onclick = function () {
+                    overlay.setPosition(undefined);
+                    closer.blur();
+                    return false;
+                };
+            }
 
             map.on('pointermove', function (evt) {
                 if (evt.dragging) {
