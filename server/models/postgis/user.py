@@ -23,6 +23,7 @@ class User(db.Model):
     tasks_mapped = db.Column(db.Integer, default=0)
     tasks_validated = db.Column(db.Integer, default=0)
     tasks_invalidated = db.Column(db.Integer, default=0)
+    projects_mapped = db.Column(db.ARRAY(db.Integer))
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -36,6 +37,18 @@ class User(db.Model):
     def get_by_username(self, username: str):
         """ Return the user for the specified username, or None if not found """
         return User.query.filter_by(username=username).one_or_none()
+
+    @staticmethod
+    def upsert_mapped_projects(user_id: int, project_id: int):
+        user = User.query.filter(User.tasks_mapped.contains([project_id]))
+
+        if user:
+            return  # Already recorded mapping on this project, so safe to return
+
+
+
+
+        pass
 
     def delete(self):
         """ Delete the user in scope from DB """

@@ -91,6 +91,12 @@ class UserService:
         return False
 
     @staticmethod
+    def upsert_mapped_projects(user_id: int, project_id: int):
+        """ Add project to mapped projects if it doesn't exist, otherwise return """
+
+
+
+    @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API

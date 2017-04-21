@@ -171,6 +171,7 @@ class Project(db.Model):
     total_tasks = db.Column(db.Integer)
     tasks_mapped = db.Column(db.Integer, default=0)
     tasks_validated = db.Column(db.Integer, default=0)
+    tasks_bad_imagery = db.Column(db.Integer, default=0)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')

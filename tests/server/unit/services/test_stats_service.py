@@ -21,7 +21,7 @@ class TestStatsService(unittest.TestCase):
         mock_user.return_value = test_user
 
         # Act
-        project, user = StatsService.update_stats_after_task_state_change(1, 1, TaskStatus.MAPPED)
+        project, user = StatsService.update_stats_after_task_state_change(1, 1, TaskStatus.MAPPED, TaskStatus.READY)
 
         # Assert
         self.assertEqual(project.tasks_mapped, 1)
@@ -37,7 +37,8 @@ class TestStatsService(unittest.TestCase):
         mock_user.return_value = test_user
 
         # Act
-        project, user = StatsService.update_stats_after_task_state_change(1, 1, TaskStatus.INVALIDATED)
+        project, user = StatsService.update_stats_after_task_state_change(1, 1, TaskStatus.INVALIDATED,
+                                                                          TaskStatus.MAPPED)
 
         # Assert
         self.assertEqual(user.tasks_invalidated, 1)
@@ -56,7 +57,7 @@ class TestStatsService(unittest.TestCase):
         mock_user.return_value = test_user
 
         # Act
-        project, user = StatsService.update_stats_after_task_state_change(1, 1, TaskStatus.VALIDATED)
+        project, user = StatsService.update_stats_after_task_state_change(1, 1, TaskStatus.VALIDATED, TaskStatus.MAPPED)
 
         # Assert
         self.assertEqual(project.tasks_validated, 1)
