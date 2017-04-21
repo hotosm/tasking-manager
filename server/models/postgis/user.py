@@ -1,8 +1,8 @@
 from enum import Enum
-from sqlalchemy.dialects import postgresql
 from server import db
-from server.models.dtos.user_dto import UserDTO
-from server.models.postgis.statuses import MappingLevel
+from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject
+from server.models.postgis.statuses import MappingLevel, ProjectStatus
+from server.models.postgis.utils import NotFound
 
 
 class UserRole(Enum):
@@ -53,6 +53,37 @@ class User(db.Model):
                   where id = {1}'''.format(project_id, user_id)
 
         db.engine.execute(sql)
+
+    @staticmethod
+    def get_mapped_projects_for_user(user_id: int):
+        sql = '''select p.id, p.status, count(t.mapped_by), count(t.validated_by)
+                   from projects p,
+                        tasks t
+                  where p.id in (select unnest(projects_mapped) from users where id = {0})
+                    and p.id = t.project_id
+                    and t.mapped_by = {0}
+                     or t.validated_by = {0}
+               GROUP BY p.id, p.status'''.format(user_id)
+
+        results = db.engine.execute(sql)
+
+        if results.rowcount == 0:
+            return NotFound()
+
+        mapped_projects_dto = UserMappedProjectsDTO()
+        for row in results:
+            mapped_project = MappedProject()
+            mapped_project.project_id = row[0]
+            mapped_project.status = ProjectStatus(row[1]).name
+            mapped_project.tasks_mapped = row[2]
+            mapped_project.tasks_validated = row[3]
+
+            # project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
+            # pm_project.name = project_info.name
+
+            mapped_projects_dto.mapped_projects.append(mapped_project)
+
+        return mapped_projects_dto
 
     def delete(self):
         """ Delete the user in scope from DB """

@@ -1,7 +1,7 @@
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
     ProjectActivityDTO
-from server.models.dtos.project_dto import PMProject
+from server.models.dtos.project_dto import ProjectSummary
 from server.models.postgis.project import Project, AreaOfInterest
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User
@@ -81,7 +81,7 @@ class StatsService:
         return activity_dto
 
     @staticmethod
-    def get_project_stats(project_id: int, preferred_locale: str) -> PMProject:
+    def get_project_stats(project_id: int, preferred_locale: str) -> ProjectSummary:
         """ Gets stats for the specified project """
         project = db.session.query(Project.id,
                                    Project.status,
@@ -95,7 +95,7 @@ class StatsService:
                                    AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
-        pm_project = Project.get_pm_project(project, preferred_locale)
+        pm_project = Project.get_project_summary(project, preferred_locale)
         return pm_project
 
     @staticmethod

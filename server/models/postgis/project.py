@@ -5,7 +5,7 @@ from typing import Optional, List
 from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchResultDTO, \
-    ProjectSearchResultsDTO, PMProject, PMDashboardDTO
+    ProjectSearchResultsDTO, ProjectSummary, PMDashboardDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
@@ -300,7 +300,7 @@ class Project(db.Model):
 
         admin_projects_dto = PMDashboardDTO()
         for project in admins_projects:
-            pm_project = Project.get_pm_project(project, preferred_locale)
+            pm_project = Project.get_project_summary(project, preferred_locale)
             project_status = ProjectStatus(project.status)
 
             if project_status == ProjectStatus.DRAFT:
@@ -315,9 +315,9 @@ class Project(db.Model):
         return admin_projects_dto
 
     @staticmethod
-    def get_pm_project(project, preferred_locale) -> PMProject:
-        """ Create PMProject object from query results """
-        pm_project = PMProject()
+    def get_project_summary(project, preferred_locale) -> ProjectSummary:
+        """ Create Project Summary model for postgis project object"""
+        pm_project = ProjectSummary()
         pm_project.project_id = project.id
         pm_project.campaign_tag = project.campaign_tag
         pm_project.created = project.created
