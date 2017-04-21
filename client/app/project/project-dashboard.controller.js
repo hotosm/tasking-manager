@@ -11,74 +11,47 @@
 
     function projectDashboardController($routeParams, mapService, projectMapService, projectService, statsService) {
         var vm = this;
+        vm.projectId = 0;
 
-        // TODO: get projects + mapper level stats from the API.
-        vm.project = {
-            id: 521,
-            name: 'Hardcoded project name',
-            portfolio: 'Name of portfolio',
-            percentMapped: '45',
-            percentValidated: '33',
-            createdBy: 'LindaA1',
-            aoiCentroid: {
-                coordinates: [34.3433748084466, 31.003454415691]
-            }
-        };
-
-        vm.projectActivity = [
-            {
-                username: 'LindaA1',
-                taskId: '45',
-                status: 'MAPPED',
-                timeStamp: '2017-02-14T18:10:16Z'
-            },
-            {
-                username: 'user 2',
-                taskId: '45',
-                status: 'INVALIDATED',
-                timeStamp: '2017-03-14T18:10:16Z'
-            },
-            {
-                username: 'user 67',
-                taskId: '485',
-                status: 'MAPPED',
-                timeStamp: '2015-05-14T18:10:16Z'
-            },
-            {
-                username: 'user 90',
-                taskId: '458',
-                status: 'INVALIDATED',
-                timeStamp: '2015-05-14T18:10:16Z'
-            }
-        ];
-
-        vm.projectContributions = [
-            {
-                username: 'LindaA1',
-                level: 'BEGINNER',
-                mapped: 12
-            },
-            {
-                username: 'popeln',
-                level: 'ADVANCED',
-                mapped: 22
-            }
-        ];
-
-        // Comments
+        vm.project = {};
+        vm.projectActivityPagination = [];
+        vm.projectActivity = [];
+        vm.projectContributions = [];
         vm.projectComments = [];
 
         activate();
 
         function activate(){
-            var projectId = $routeParams.id;
+            vm.projectId = $routeParams.id;
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
-            //TODO: get projects from API
-            getComments(projectId);
-            getProjectContributions(projectId);
+            getProjectStats(vm.projectId);
+            getComments(vm.projectId);
+            getProjectContributions(vm.projectId);
+            getProjectActivity(vm.projectId);
             projectMapService.initialise(vm.map);
-            projectMapService.showProjectOnMap(vm.project);
+        }
+
+        /**
+         * Get last activity with page number
+         * @param page
+         */
+        vm.getLastActivity = function(page){
+            getProjectActivity(vm.projectId, page)
+        };
+
+        /**
+         * Get project stats
+         * @param projectId
+         */
+        function getProjectStats(projectId){
+            var resultsPromise = statsService.getProjectStats(projectId);
+            resultsPromise.then(function (data) {
+                vm.project = data;
+                projectMapService.showProjectOnMap(vm.project);
+            }, function(data){
+               // TODO
+            });
         }
 
         /**
@@ -105,6 +78,24 @@
             }, function(){
                 // an error occurred
                 vm.projectContributions = [];
+            });
+        }
+
+        /**
+         * Get project activity
+         * @param projectId
+         * @param page - optional
+         */
+        function getProjectActivity(projectId, page){
+            var resultsPromise = statsService.getProjectActivity(projectId, page);
+            resultsPromise.then(function (data) {
+               // Return the projects successfully
+                vm.projectActivityPagination = data.pagination;
+                vm.projectActivity = data.activity;
+            }, function(){
+                // an error occurred
+                vm.projectActivityPagination = data.pagination;
+                vm.projectActivity = [];
             });
         }
     }

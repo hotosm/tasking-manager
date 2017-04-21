@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Activity and Stats (TODO)
+                    Activity and Stats
                 </h1>
                 <a ng-href="/project/{{ projectDashboardCtrl.project.id }}"
                    class="heading-alt">{{ projectDashboardCtrl.project.name }}
@@ -15,19 +15,38 @@
                 <div class="inner">
                     <div class="dashboard-container">
                         <div class="left">
-                            <h2>Last activity (TODO)</h2>
+                            <h2>Last activity</h2>
                             <div class="content">
-                                <div ng-repeat="item in projectDashboardCtrl.projectActivity | orderBy: '-timeStamp'">
-                                <span>
-                                    <a ng-href="/user/{{ item.username }}">{{ item.username }}</a>
-                                    marked {{ item.taskId }}
-                                    as {{ item.status }}
-                                </span>
+                                <div ng-repeat="item in projectDashboardCtrl.projectActivity">
+                                    <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">Task locked for mapping by <a
+                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                    <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">Task locked for validation by <a
+                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Task marked as bad imagery by <a
+                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">Task mapped by <a
+                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Task validated by <a
+                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Task invalidated by <a
+                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">Task marked as ready by <a
+                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                     <p>
-                                        <em am-time-ago="item.timeStamp | amUtc | amLocal"></em>
+                                        <em am-time-ago="item.actionDate | amUtc | amLocal"></em>
                                     </p>
                                 </div>
                             </div>
+                            <button class="button button--achromic"
+                                    ng-class="!projectDashboardCtrl.projectActivityPagination.hasPrev ? 'disabled' : ''"
+                                    ng-click="projectDashboardCtrl.getLastActivity(projectDashboardCtrl.projectActivityPagination.prevNum)">
+                                Older
+                            </button>
+                            <button class="button button--achromic"
+                                    ng-class="!projectDashboardCtrl.projectActivityPagination.hasNext ? 'disabled' : ''"
+                                    ng-click="projectDashboardCtrl.getLastActivity(projectDashboardCtrl.projectActivityPagination.nextNum)">
+                                Newer
+                            </button>
                         </div>
                         <div class="right">
                             <h2>Contributions</h2>
