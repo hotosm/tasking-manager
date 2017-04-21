@@ -94,7 +94,7 @@
                 vm.projectActivity = data.activity;
             }, function(){
                 // an error occurred
-                vm.projectActivityPagination = data.pagination;
+                vm.projectActivityPagination = [];
                 vm.projectActivity = [];
             });
         }
