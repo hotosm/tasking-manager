@@ -56,8 +56,9 @@ class User(db.Model):
         db.engine.execute(sql)
 
     @staticmethod
-    def get_mapped_projects_for_user(user_id: int):
-        sql = '''select p.id, p.status, count(t.mapped_by), count(t.validated_by)
+    def get_mapped_projects(user_id: int, preferred_locale: str) -> UserMappedProjectsDTO:
+        """ Get all projects a user has mapped on """
+        sql = '''select p.id, p.status, p.default_locale, count(t.mapped_by), count(t.validated_by)
                    from projects p,
                         tasks t
                   where p.id in (select unnest(projects_mapped) from users where id = {0})
@@ -76,11 +77,11 @@ class User(db.Model):
             mapped_project = MappedProject()
             mapped_project.project_id = row[0]
             mapped_project.status = ProjectStatus(row[1]).name
-            mapped_project.tasks_mapped = row[2]
-            mapped_project.tasks_validated = row[3]
+            mapped_project.tasks_mapped = row[3]
+            mapped_project.tasks_validated = row[4]
 
-            project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
-            # pm_project.name = project_info.name
+            project_info = ProjectInfo.get_dto_for_locale(row[0], preferred_locale, row[2])
+            mapped_project.name = project_info.name
 
             mapped_projects_dto.mapped_projects.append(mapped_project)
 

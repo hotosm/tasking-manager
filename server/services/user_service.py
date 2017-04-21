@@ -96,9 +96,9 @@ class UserService:
         User.upsert_mapped_projects(user_id, project_id)
 
     @staticmethod
-    def get_mapped_projects(user_id: int):
+    def get_mapped_projects(user_id: int, preferred_locale: str):
         """ Gets all projects a user has mapped or validated on """
-        User.get_mapped_projects()
+        return User.get_mapped_projects(user_id, preferred_locale)
 
     @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:

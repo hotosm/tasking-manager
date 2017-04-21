@@ -1,9 +1,8 @@
 import os
 import unittest
-from unittest.mock import patch
 from server import create_app
 from server.services.user_service import UserService
-from tests.server.helpers.test_helpers import create_canned_user
+from tests.server.helpers.test_helpers import create_canned_project
 
 
 class TestAuthenticationService(unittest.TestCase):
@@ -26,17 +25,22 @@ class TestAuthenticationService(unittest.TestCase):
         self.ctx = self.app.app_context()
         self.ctx.push()
 
-        self.test_user = create_canned_user()
+        self.test_project, self.test_user = create_canned_project()
 
     def tearDown(self):
         if self.skip_tests:
             return
 
+        self.test_project.delete()
         self.test_user.delete()
         self.ctx.pop()
 
     def test_upsert_inserts_project_if_not_exists(self):
         # Arrange
         UserService.upsert_mapped_projects(self.test_user.id, 1)
-        iain = 1
+
+        # Act
+        projects = UserService.get_mapped_projects(self.test_user.id, 'en')
+
+        iain = projects
 
