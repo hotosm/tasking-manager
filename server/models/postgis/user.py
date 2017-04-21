@@ -1,4 +1,5 @@
 from enum import Enum
+from sqlalchemy.dialects import postgresql
 from server import db
 from server.models.dtos.user_dto import UserDTO
 from server.models.postgis.statuses import MappingLevel
@@ -40,15 +41,18 @@ class User(db.Model):
 
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
-        user = User.query.filter(User.tasks_mapped.contains([project_id]))
+        """ Adds projects to mapped_projects if it doesn't exist """
+        sql = "select * from users where id = {0} and projects_mapped @> '{{{1}}}'".format(user_id, project_id)
+        result = db.engine.execute(sql)
 
-        if user:
-            return  # Already recorded mapping on this project, so safe to return
+        if result.rowcount > 0:
+            return  # User has previously mapped this project so return
 
+        sql = '''update users
+                    set projects_mapped = array_append(projects_mapped, {0})
+                  where id = {1}'''.format(project_id, user_id)
 
-
-
-        pass
+        db.engine.execute(sql)
 
     def delete(self):
         """ Delete the user in scope from DB """

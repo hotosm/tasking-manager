@@ -93,8 +93,12 @@ class UserService:
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
         """ Add project to mapped projects if it doesn't exist, otherwise return """
+        User.upsert_mapped_projects(user_id, project_id)
 
-
+    @staticmethod
+    def get_mapped_projects(user_id: int):
+        """ Gets all projects a user has mapped or validated on """
+        User.get_mapped_projects()
 
     @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:
