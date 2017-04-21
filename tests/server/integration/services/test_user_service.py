@@ -41,7 +41,7 @@ class TestAuthenticationService(unittest.TestCase):
         UserService.upsert_mapped_projects(self.test_user.id, self.test_project.id)
 
         # Act
-        projects = UserService.get_mapped_projects(self.test_user.id, 'en')
+        projects = UserService.get_mapped_projects(self.test_user.username, 'en')
 
         # Assert
         mapped_project = projects.mapped_projects[0]

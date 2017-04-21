@@ -92,7 +92,7 @@ def init_flask_restful_routes(app):
     from server.api.authentication_apis import LoginAPI, OAuthAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.user_apis import UserAPI, UserOSMAPI
+    from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, MappedTasksByUser
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
@@ -120,6 +120,7 @@ def init_flask_restful_routes(app):
     api.add_resource(CampaignsTagsAPI,              '/api/v1/tags/campaigns')
     api.add_resource(OrganisationTagsAPI,           '/api/v1/tags/organisations')
     api.add_resource(UserAPI,                       '/api/v1/user/<string:username>')
+    api.add_resource(UserMappedProjects,            '/api/v1/user/<string:username>/mapped-projects')
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
