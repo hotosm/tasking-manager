@@ -7,10 +7,11 @@ from server.models.postgis.user import User
 
 class TestStatsService(unittest.TestCase):
 
+    @patch.object(UserService, 'upsert_mapped_projects')
     @patch.object(Project, 'save')
     @patch.object(UserService, 'get_user_by_id')
     @patch.object(ProjectService, 'get_project_by_id')
-    def test_update_after_mapping_increments_counter(self, mock_project, mock_user, mock_save):
+    def test_update_after_mapping_increments_counter(self, mock_project, mock_user, mock_save, mock_upsert):
         # Arrange
         test_project = Project()
         test_project.tasks_mapped = 0
@@ -27,10 +28,11 @@ class TestStatsService(unittest.TestCase):
         self.assertEqual(project.tasks_mapped, 1)
         self.assertEqual(user.tasks_mapped, 1)
 
+    @patch.object(UserService, 'upsert_mapped_projects')
     @patch.object(Project, 'save')
     @patch.object(UserService, 'get_user_by_id')
     @patch.object(ProjectService, 'get_project_by_id')
-    def test_update_after_invalidating_increments_counter(self, mock_project, mock_user, mock_save):
+    def test_update_after_invalidating_increments_counter(self, mock_project, mock_user, mock_save, mock_upsert):
         # Arrange
         test_user = User()
         test_user.tasks_invalidated = 0
@@ -43,10 +45,11 @@ class TestStatsService(unittest.TestCase):
         # Assert
         self.assertEqual(user.tasks_invalidated, 1)
 
+    @patch.object(UserService, 'upsert_mapped_projects')
     @patch.object(Project, 'save')
     @patch.object(UserService, 'get_user_by_id')
     @patch.object(ProjectService, 'get_project_by_id')
-    def test_update_after_validating_increments_counter(self, mock_project, mock_user, mock_save):
+    def test_update_after_validating_increments_counter(self, mock_project, mock_user, mock_save, mock_upsert):
         # Arrange
         test_project = Project()
         test_project.tasks_validated = 0

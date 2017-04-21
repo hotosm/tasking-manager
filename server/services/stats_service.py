@@ -39,6 +39,7 @@ class StatsService:
         elif new_state == TaskStatus.BADIMAGERY:
             project.tasks_bad_imagery += 1
 
+        UserService.upsert_mapped_projects(user_id, project_id)
         project.last_updated = timestamp()
         project.save()  # Will also save user changes, as using same session
 
