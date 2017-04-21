@@ -22,9 +22,9 @@ class StatsService:
         user = UserService.get_user_by_id(user_id)
 
         if new_state == TaskStatus.MAPPED:
-            project.tasks_mapped += 1
-            user.tasks_mapped += 1
+            StatsService._set_counters_after_mapping(project, user)
         elif new_state == TaskStatus.INVALIDATED:
+
             if current_state == TaskStatus.BADIMAGERY:
                 project.tasks_bad_imagery -= 1
             elif current_state == TaskStatus.MAPPED:
@@ -32,10 +32,13 @@ class StatsService:
             elif current_state == TaskStatus.VALIDATED:
                 project.tasks_mapped -= 1
                 project.tasks_validated -= 1
+
             user.tasks_invalidated += 1
+
         elif new_state == TaskStatus.VALIDATED:
             project.tasks_validated += 1
             user.tasks_validated += 1
+
         elif new_state == TaskStatus.BADIMAGERY:
             project.tasks_bad_imagery += 1
 
@@ -44,6 +47,18 @@ class StatsService:
         project.save()  # Will also save user changes, as using same session
 
         return project, user
+
+    @staticmethod
+    def _set_counters_after_mapping(project: Project, user: User):
+        """ Set counters after user has mapped a task """
+        project.tasks_mapped += 1
+        user.tasks_mapped += 1
+
+    @staticmethod
+    def _set_counters_after_validated(project: Project, user: User):
+        """ Set counters after user has mapped a task """
+        project.tasks_validated += 1
+        user.tasks_validated += 1
 
     @staticmethod
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
