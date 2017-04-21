@@ -48,7 +48,7 @@
             var resultsPromise = statsService.getProjectStats(projectId);
             resultsPromise.then(function (data) {
                 vm.project = data;
-                projectMapService.showProjectOnMap(vm.project);
+                projectMapService.showProjectOnMap(vm.project, false, true);
             }, function(data){
                // TODO
             });
