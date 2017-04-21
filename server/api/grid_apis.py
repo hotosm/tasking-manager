@@ -2,6 +2,7 @@ from flask_restful import Resource, current_app, request
 from server.services.grid_service import GridService
 from server.services.authentication_service import token_auth, tm
 from server.models.dtos.grid_dto import GridDTO
+from schematics.exceptions import DataError
 
 
 class IntersectingTilesAPI(Resource):
@@ -45,13 +46,21 @@ class IntersectingTilesAPI(Resource):
         responses:
             200:
                 description: Intersecting tasks found successfully
+            400:
+                description: Client Error - Invalid Request
             500:
                 description: Internal Server Error
         """
         try:
             json = request.get_json()
             grid_dto = GridDTO(json)
-            grid = GridService.find_intersecting_tiles_in_grid(grid_dto.grid, grid_dto.area_of_interest)
+            grid_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            grid = GridService.trim_grid_to_aoi(grid_dto)
             return grid, 200
         except Exception as e:
             error_msg = f'IntersectingTiles GET API - unhandled error: {str(e)}'

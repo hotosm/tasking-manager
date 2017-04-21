@@ -69,7 +69,7 @@ class TestGridService(unittest.TestCase):
         aoi_polygon = shape(aoi)
 
         # act
-        intersects = GridService.geometries_intersect(task_polygon, aoi_polygon)
+        intersects = GridService._geometries_intersect(task_polygon, aoi_polygon)
 
         # assert
         self.assertEquals(intersects, True)
@@ -857,7 +857,7 @@ class TestGridService(unittest.TestCase):
         }
 
         # act
-        intersecting_tasks = GridService.find_intersecting_tiles_in_grid(tasks, aoi)
+        intersecting_tasks = GridService._find_intersecting_tiles_in_grid(tasks, aoi)
 
         # assert
         self.assertEquals(intersecting_tasks, expected)
