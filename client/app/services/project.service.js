@@ -111,17 +111,14 @@
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
                     var taskFeatureGeoJSON = geospatialService.getGeoJSONFromFeature(taskFeature);
-                   // Check if the generated task feature intersects with the area of interest
-                   var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
-                   // Add the task feature to the array if it intersects
-                   if (intersection) {
-                        taskFeature.setProperties({
-                            'x': x,
-                            'y': y,
-                            'zoom': zoomLevel
-                        });
-                        taskFeatures.push(taskFeature);
-                    }
+                    taskFeature.setProperties({
+                        'x': x,
+                        'y': y,
+                        'zoom': zoomLevel,
+                        'splittable': true
+                    });
+                    taskFeatures.push(taskFeature);
+
                 }
             }
             return taskFeatures;
