@@ -12,13 +12,13 @@
                 <li ng-class="createProjectCtrl.showWizardStep('area') ? 'completed' : ''">
                     <span class="bubble"></span>Step 1
                 </li>
-                 <li ng-class="createProjectCtrl.showWizardStep('tasks') ? 'completed' : ''">
+                <li ng-class="createProjectCtrl.showWizardStep('tasks') ? 'completed' : ''">
                     <span class="bubble"></span>Step 2
                 </li>
                 <li ng-class="createProjectCtrl.showWizardStep('taskSize') ? 'completed' : ''">
                     <span class="bubble"></span>Step 3
                 </li>
-                 <li ng-class="createProjectCtrl.showWizardStep('review') ? 'completed' : ''">
+                <li ng-class="createProjectCtrl.showWizardStep('review') ? 'completed' : ''">
                     <span class="bubble"></span>Step 4
                 </li>
             </ul>
@@ -27,19 +27,22 @@
                     <h2>Step 1: define area</h2>
                     <form class="form">
                         <div class="form__group">
-                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
+                            <button class="button button--achromic" type="button"
+                                    ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
                             <p>Draw the area of interest on the map.</p>
                             <div>
                                 <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
                                     No area of interest has been drawn.
                                 </span>
-                                <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
+                                <span class="error"
+                                      ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
                                     The area of interest contains self intersections.
                                 </span>
                             </div>
                         </div>
                         <div class="form__group">
-                            <div class="button button--achromic" ngf-select="createProjectCtrl.import($file)">Import</div>
+                            <div class="button button--achromic" ngf-select="createProjectCtrl.import($file)">Import
+                            </div>
                             <p>Import a GeoJSON, KML, or zipped SHP file.</p>
                             <div>
                                 <span class="error" ng-show="createProjectCtrl.isImportError">
@@ -48,14 +51,16 @@
                             </div>
                         </div>
                         <div class="form__group">
-                            <p>Want to use an .osm file instead? You can use <a href="http://geojson.io" target="_blank">GeoJSON.io</a>
+                            <p>Want to use an .osm file instead? You can use <a href="http://geojson.io"
+                                                                                target="_blank">GeoJSON.io</a>
                                 to convert it to GeoJSON.</p>
                         </div>
                     </form>
-                    <hr />
+                    <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--secondary pull-right" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">
+                            <button class="button button--secondary pull-right" type="button"
+                                    ng-click="createProjectCtrl.setWizardStep('tasks')">
                                 <span>Next</span>
                             </button>
                         </div>
@@ -64,16 +69,16 @@
                 <div ng-show="createProjectCtrl.currentStep === 'tasks'" class="content">
                     <h2>Step 2: define tasks</h2>
                     <form class="form">
-                         <div class="button-group button-group--horizontal" role="group">
-                             <button class="button button--achromic" type="button"
-                                     ng-class="createProjectCtrl.isTaskGrid ? 'button--active': ''"
-                                     ng-click="createProjectCtrl.createTaskGrid()">
-                                 Square grid
-                             </button>
-                             <button class="button button--achromic" type="button">
-                                 Arbitrary
-                             </button>
-                         </div>
+                        <div class="button-group button-group--horizontal" role="group">
+                            <button class="button button--achromic" type="button"
+                                    ng-class="createProjectCtrl.isTaskGrid ? 'button--active': ''"
+                                    ng-click="createProjectCtrl.createTaskGrid()">
+                                Square grid
+                            </button>
+                            <button class="button button--achromic" type="button">
+                                Arbitrary (TODO)
+                            </button>
+                        </div>
                     </form>
                     <hr/>
                     <div class="navigation-steps">
@@ -115,44 +120,68 @@
                                     ng-click="createProjectCtrl.drawAndSplitAreaPoint()">Split (point)
                             </button>
                             <button class="button button--achromic" type="button"
-                                ng-click="createProjectCtrl.changeSizeTaskGrid(0)">Reset
+                                    ng-click="createProjectCtrl.changeSizeTaskGrid(0)">Reset
                             </button>
                         </div>
                         <hr/>
                         <p>A new project will be created with {{ createProjectCtrl.numberOfTasks }} tasks.</p>
-                        <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks | number : 2 }} km<sup>2</sup>.</p>
+                        <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks | number : 2 }}
+                            km<sup>2</sup>.</p>
                         <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                              class="alert alert--warning" role="alert">
-                          <p><strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required
-                              please make the area of interest smaller.
-                          </p>
+                            <p><strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required
+                                please make the area of interest smaller.
+                            </p>
                         </div>
                         <div ng-show="createProjectCtrl.sizeOfTasks > createProjectCtrl.MAX_SIZE_OF_TASKS"
                              class="alert alert--warning" role="alert">
-                          <p><strong>Warning:</strong> It is recommended to keep the size of the tasks small.
-                              Please review the size of the tasks and/or consider creating multiple
-                              projects.
-                          </p>
+                            <p><strong>Warning:</strong> It is recommended to keep the size of the tasks small.
+                                Please review the size of the tasks and/or consider creating multiple
+                                projects.
+                            </p>
                         </div>
                     </div>
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--secondary" type="button" ng-click="createProjectCtrl.setWizardStep('tasks')">
+                            <button class="button button--secondary" type="button"
+                                    ng-click="createProjectCtrl.setWizardStep('tasks')">
                                 <span>Previous</span>
                             </button>
-                            <button class="button button--secondary" type="button" ng-click="createProjectCtrl.setWizardStep('review')">
+                            <button class="button button--secondary" type="button"
+                                    ng-click="createProjectCtrl.setWizardStep('trim')">
+                                <span>Next</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="createProjectCtrl.currentStep === 'trim'" class="content">
+                    <h2>Step 4: trim tasks</h2>
+                    <input type="checkbox" checked="{{ projectCtrl.clipTasksToAoi }}" onclick="projectCtrl.clipTasksToAoi==!projectCtrl.clipTasksToAoi"/> Clip
+                    <button class="button button--achromic" type="button"
+                            ng-click="createProjectCtrl.trimTaskGrid()">
+                        Trim
+                    </button>
+                    <div class="navigation-steps">
+                        <div class="button-group button-group--horizontal" role="group">
+                            <button class="button button--secondary button" type="button"
+                                    ng-click="createProjectCtrl.setWizardStep('taskSize')">
+                                <span>Previous</span>
+                            </button>
+                            <button class="button button--secondary" type="button"
+                                    ng-click="createProjectCtrl.setWizardStep('review')">
                                 <span>Next</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'review'" class="content">
-                    <h2>Step 4: review</h2>
+                    <h2>Step 5: review</h2>
                     <form class="form" name="createProjectCtrl.projectNameForm">
                         <div class="form__group">
                             <label class="form__label" for="projectName">Project name</label>
-                            <input type="text" class="form__control form__control--medium" id="projectName" name="projectName"
+                            <input type="text" class="form__control form__control--medium" id="projectName"
+                                   name="projectName"
                                    ng-class="{ 'ng-touched': createProjectCtrl.projectNameForm.submitted }" required
                                    ng-model="createProjectCtrl.projectName"
                             />
@@ -174,10 +203,12 @@
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--secondary button" type="button" ng-click="createProjectCtrl.setWizardStep('taskSize')">
+                            <button class="button button--secondary button" type="button"
+                                    ng-click="createProjectCtrl.setWizardStep('trim')">
                                 <span>Previous</span>
                             </button>
-                            <button class="button button--primary" type="button" ng-click="createProjectCtrl.createProject()">
+                            <button class="button button--primary" type="button"
+                                    ng-click="createProjectCtrl.createProject()">
                                 <span>Create</span>
                             </button>
                         </div>

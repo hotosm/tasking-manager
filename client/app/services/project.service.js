@@ -50,7 +50,8 @@
             getCommentsForProject: getCommentsForProject,
             userCanMapProject: userCanMapProject,
             userCanValidateProject: userCanValidateProject,
-            getMyProjects: getMyProjects
+            getMyProjects: getMyProjects,
+            trimTaskGrid: trimTaskGrid
         };
 
         return service;
@@ -122,6 +123,10 @@
                 }
             }
             return taskFeatures;
+        }
+
+        function trimTasksToAOI(taskGrid, aoi, clip) {
+
         }
 
         /**
@@ -606,6 +611,35 @@
                 // or server returns response with an error status.
                 return $q.reject("error");
             });
+        }
+
+        function trimTaskGrid(clipTasksToAoi) {
+            var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
+            var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid);
+
+            // Get the geometry of the area of interest. It should only have one feature.
+            var gridAndAoi = {
+                areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
+                clipToAoi: clipTasksToAoi,
+                grid: taskGridGeoJSON
+            };
+
+            // Returns a promise
+            return $http({
+                method: 'PUT',
+                url: configService.tmAPI + '/grid/intersecting-tiles',
+                data: gridAndAoi,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+
         }
     }
 })();
