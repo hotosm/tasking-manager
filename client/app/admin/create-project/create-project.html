@@ -157,7 +157,7 @@
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'trim'" class="content">
                     <h2>Step 4: trim tasks</h2>
-                    <input type="checkbox" checked="{{ projectCtrl.clipTasksToAoi }}" onclick="projectCtrl.clipTasksToAoi==!projectCtrl.clipTasksToAoi"/> Clip
+                    <input type="checkbox" checked="{{ projectCtrl.clipTasksToAoi }}" ng-click="createProjectCtrl.toggleClipTasksToAoi()"/> Clip
                     <button class="button button--achromic" type="button"
                             ng-click="createProjectCtrl.trimTaskGrid()">
                         Trim

@@ -414,6 +414,10 @@
             }
         }
 
+        vm.toggleClipTasksToAoi = function(){
+            vm.clipTasksToAoi = !vm.clipTasksToAoi;
+        }
+
 
     }
 })();
