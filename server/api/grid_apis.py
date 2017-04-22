@@ -26,9 +26,12 @@ class IntersectingTilesAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object containing aoi and tasks
+              description: JSON object containing aoi and tasks and bool flag for controlling clip grid to aoi
               schema:
                   properties:
+                      clipToAoi:
+                        type: boolean
+                        default: true
                       areaOfInterest:
                           schema:
                               $ref: "#/definitions/GeoJsonMultiPolygon"
