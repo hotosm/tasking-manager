@@ -6,7 +6,7 @@ from server.models.dtos.grid_dto import GridDTO
 
 class TestGridService(unittest.TestCase):
 
-    def test_geometries_intersect(self):
+    def test_intersect(self):
         # arrange
         task = {
                         "type": "MultiPolygon",
@@ -70,7 +70,66 @@ class TestGridService(unittest.TestCase):
         aoi_polygon = shape(aoi)
 
         # act
-        intersects = GridService._geometries_intersect(task_polygon, aoi_polygon)
+        intersects = GridService._intersect(task_polygon, aoi_polygon)
+
+        # assert
+        self.assertEquals(intersects, True)
+
+    def test_contains(self):
+        # arrange
+        task = {
+                        "type": "MultiPolygon",
+                        "coordinates": [
+                            [
+                                [
+                                    [
+                                        1,1
+                                    ],
+                                    [
+                                        2,1
+                                    ],
+                                    [
+                                        2,2
+                                    ],
+                                    [
+                                        1,2
+                                    ],
+                                    [
+                                        1,1
+                                    ]
+                                ]
+                            ]
+                        ]
+                    }
+        task_polygon = shape(task)
+        aoi = {
+            "type": "MultiPolygon",
+            "coordinates": [
+                [
+                    [
+                        [
+                            0,0
+                        ],
+                        [
+                            0,20
+                        ],
+                        [
+                            20,20
+                        ],
+                        [
+                            20,0
+                        ],
+                        [
+                            0,0
+                        ]
+                    ]
+                ]
+            ]
+        }
+        aoi_polygon = shape(aoi)
+
+        # act
+        intersects = GridService._contains(task_polygon, aoi_polygon)
 
         # assert
         self.assertEquals(intersects, True)

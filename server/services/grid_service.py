@@ -13,7 +13,7 @@ class GridService:
         return GridService._find_intersecting_tiles_in_grid(grid, aoi)
 
     @staticmethod
-    def _geometries_intersect(tile: shape, aoi: shape) -> bool:
+    def _intersect(tile: shape, aoi: shape) -> bool:
         """
         Takes two shapes and returns True if the intersect, False if not
         :param tile: shapely.geometry.shape
@@ -23,6 +23,18 @@ class GridService:
         prepared_geometry = prep(aoi)
         intersects = prepared_geometry.intersects(tile)
         return intersects
+
+    @staticmethod
+    def _contains(tile: shape, aoi: shape) -> bool:
+        """
+        Takes two shapes and returns True if the intersect, False if not
+        :param tile: shapely.geometry.shape
+        :param aoi: shapely.geometry.shape
+        :return: bool
+        """
+        prepared_geometry = prep(aoi)
+        contains = prepared_geometry.contains(tile)
+        return contains
 
     @staticmethod
     def _find_intersecting_tiles_in_grid(grid: geojson.FeatureCollection, aoi: geojson.MultiPolygon) -> geojson.FeatureCollection:
@@ -36,6 +48,6 @@ class GridService:
         intersecting_features = []
         for feature in grid['features']:
             tile = shape(feature['geometry'])
-            if(GridService._geometries_intersect(tile, aoi_polygon)):
+            if(GridService._intersect(tile, aoi_polygon)):
                 intersecting_features.append(feature)
         return geojson.FeatureCollection(intersecting_features)
