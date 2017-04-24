@@ -31,8 +31,8 @@ class StatsService:
 
         UserService.upsert_mapped_projects(user_id, project_id)
         project.last_updated = timestamp()
-        #project.save()  # Will also save user changes, as using same session
 
+        # Transaction will be saved when task is saved
         return project, user
 
     @staticmethod
