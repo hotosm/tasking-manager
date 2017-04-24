@@ -11,6 +11,7 @@
 
     function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
+        vm.id = 0;
         vm.projectData = null;
         vm.taskVectorLayer = null;
         vm.highlightVectorLayer = null;
@@ -104,14 +105,14 @@
                 });
             });
 
-            var id = $routeParams.id;
-            initialiseProject(id);
-            updateMappedTaskPerUser(id);
+            vm.id = $routeParams.id;
+            initialiseProject(vm.id);
+            updateMappedTaskPerUser(vm.id);
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
-                refreshProject(id);
-                updateMappedTaskPerUser(id);
+                refreshProject(vm.id);
+                updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refesh too
             }, 10000);
         }
