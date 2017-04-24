@@ -20,11 +20,11 @@ class User(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True, index=True)
     username = db.Column(db.String, unique=True)
-    role = db.Column(db.Integer, default=0)
-    mapping_level = db.Column(db.Integer, default=1)
-    tasks_mapped = db.Column(db.Integer, default=0)
-    tasks_validated = db.Column(db.Integer, default=0)
-    tasks_invalidated = db.Column(db.Integer, default=0)
+    role = db.Column(db.Integer, default=0, nullable=False)
+    mapping_level = db.Column(db.Integer, default=1, nullable=False)
+    tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
+    tasks_validated = db.Column(db.Integer, default=0, nullable=False)
+    tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
     projects_mapped = db.Column(db.ARRAY(db.Integer))
 
     def create(self):

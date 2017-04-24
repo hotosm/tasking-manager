@@ -1,16 +1,18 @@
 """empty message
 
-Revision ID: cdd3de0cd655
+Revision ID: 8aa8f8d6a0c3
 Revises: 
-Create Date: 2017-03-30 11:31:04.016799
+Create Date: 2017-04-24 10:24:46.888136
 
 """
 from alembic import op
 import sqlalchemy as sa
 import geoalchemy2
+from sqlalchemy import Integer
+
 
 # revision identifiers, used by Alembic.
-revision = 'cdd3de0cd655'
+revision = '8aa8f8d6a0c3'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,11 +26,23 @@ def upgrade():
     sa.Column('centroid', geoalchemy2.types.Geometry(geometry_type='POINT', srid=4326), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('tags',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('organisations', sa.String(), nullable=True),
+    sa.Column('campaigns', sa.String(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('campaigns'),
+    sa.UniqueConstraint('organisations')
+    )
     op.create_table('users',
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('username', sa.String(), nullable=True),
-    sa.Column('role', sa.Integer(), nullable=True),
-    sa.Column('mapping_level', sa.Integer(), nullable=True),
+    sa.Column('role', sa.Integer(), nullable=False),
+    sa.Column('mapping_level', sa.Integer(), nullable=False),
+    sa.Column('tasks_mapped', sa.Integer(), nullable=False),
+    sa.Column('tasks_validated', sa.Integer(), nullable=False),
+    sa.Column('tasks_invalidated', sa.Integer(), nullable=False),
+    sa.Column('projects_mapped', sa.ARRAY(Integer()), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
     )
@@ -45,10 +59,27 @@ def upgrade():
     sa.Column('enforce_mapper_level', sa.Boolean(), nullable=True),
     sa.Column('enforce_validator_role', sa.Boolean(), nullable=True),
     sa.Column('private', sa.Boolean(), nullable=True),
+    sa.Column('entities_to_map', sa.String(), nullable=True),
+    sa.Column('changeset_comment', sa.String(), nullable=True),
+    sa.Column('due_date', sa.DateTime(), nullable=True),
+    sa.Column('imagery', sa.String(), nullable=True),
+    sa.Column('josm_preset', sa.String(), nullable=True),
+    sa.Column('last_updated', sa.DateTime(), nullable=True),
+    sa.Column('mapping_types', sa.ARRAY(Integer()), nullable=True),
+    sa.Column('organisation_tag', sa.String(), nullable=True),
+    sa.Column('campaign_tag', sa.String(), nullable=True),
+    sa.Column('total_tasks', sa.Integer(), nullable=False),
+    sa.Column('tasks_mapped', sa.Integer(), nullable=False),
+    sa.Column('tasks_validated', sa.Integer(), nullable=False),
+    sa.Column('tasks_bad_imagery', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['aoi_id'], ['areas_of_interest.id'], ),
     sa.ForeignKeyConstraint(['author_id'], ['users.id'], name='fk_users'),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_index(op.f('ix_projects_campaign_tag'), 'projects', ['campaign_tag'], unique=False)
+    op.create_index(op.f('ix_projects_mapper_level'), 'projects', ['mapper_level'], unique=False)
+    op.create_index(op.f('ix_projects_mapping_types'), 'projects', ['mapping_types'], unique=False)
+    op.create_index(op.f('ix_projects_organisation_tag'), 'projects', ['organisation_tag'], unique=False)
     op.create_table('project_info',
     sa.Column('project_id', sa.Integer(), nullable=False),
     sa.Column('locale', sa.String(length=10), nullable=False),
@@ -68,10 +99,13 @@ def upgrade():
     sa.Column('zoom', sa.Integer(), nullable=False),
     sa.Column('geometry', geoalchemy2.types.Geometry(geometry_type='MULTIPOLYGON', srid=4326), nullable=True),
     sa.Column('task_status', sa.Integer(), nullable=True),
-    sa.Column('task_locked', sa.Boolean(), nullable=True),
-    sa.Column('lock_holder_id', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['lock_holder_id'], ['users.id'], name='fk_users'),
+    sa.Column('locked_by', sa.BigInteger(), nullable=True),
+    sa.Column('mapped_by', sa.BigInteger(), nullable=True),
+    sa.Column('validated_by', sa.BigInteger(), nullable=True),
+    sa.ForeignKeyConstraint(['locked_by'], ['users.id'], name='fk_users_locked'),
+    sa.ForeignKeyConstraint(['mapped_by'], ['users.id'], name='fk_users_mapper'),
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
+    sa.ForeignKeyConstraint(['validated_by'], ['users.id'], name='fk_users_validator'),
     sa.PrimaryKeyConstraint('id', 'project_id')
     )
     op.create_index(op.f('ix_tasks_project_id'), 'tasks', ['project_id'], unique=False)
@@ -102,8 +136,13 @@ def downgrade():
     op.drop_table('tasks')
     op.drop_index('idx_project_info composite', table_name='project_info')
     op.drop_table('project_info')
+    op.drop_index(op.f('ix_projects_organisation_tag'), table_name='projects')
+    op.drop_index(op.f('ix_projects_mapping_types'), table_name='projects')
+    op.drop_index(op.f('ix_projects_mapper_level'), table_name='projects')
+    op.drop_index(op.f('ix_projects_campaign_tag'), table_name='projects')
     op.drop_table('projects')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_table('users')
+    op.drop_table('tags')
     op.drop_table('areas_of_interest')
     # ### end Alembic commands ###
