@@ -79,8 +79,8 @@ class TaskHistory(db.Model):
 
         comments = db.session.query(TaskHistory.action_date,
                                     TaskHistory.action_text,
-                                    User.username)\
-            .join(User)\
+                                    User.username) \
+            .join(User) \
             .filter(TaskHistory.project_id == project_id, TaskHistory.action == TaskAction.COMMENT.name).all()
 
         comment_list = []
@@ -95,6 +95,17 @@ class TaskHistory(db.Model):
         comments_dto.comments = comment_list
 
         return comments_dto
+
+    @staticmethod
+    def get_last_status(project_id: int, task_id: int):
+        """ Get the last status the task was set to"""
+        result = db.session.query(TaskHistory.action_text) \
+            .filter(TaskHistory.project_id == project_id,
+                    TaskHistory.task_id == task_id,
+                    TaskHistory.action == TaskAction.STATE_CHANGE.name) \
+            .order_by(TaskHistory.action_date.desc()).first()
+
+        return TaskStatus[result[0]]
 
 
 class Task(db.Model):
@@ -214,7 +225,7 @@ class Task(db.Model):
         """ Invalidates all project tasks, except Ready and Bad Imagery """
         mapped_tasks = Task.query.filter(Task.project_id == project_id,
                                          ~Task.task_status.in_([TaskStatus.READY.value,
-                                                               TaskStatus.BADIMAGERY.value])).all()
+                                                                TaskStatus.BADIMAGERY.value])).all()
         for task in mapped_tasks:
             task.lock_task_for_validating(user_id)
             task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
