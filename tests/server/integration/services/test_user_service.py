@@ -37,6 +37,9 @@ class TestAuthenticationService(unittest.TestCase):
         self.ctx.pop()
 
     def test_upsert_inserts_project_if_not_exists(self):
+        if self.skip_tests:
+            return
+
         # Arrange
         UserService.upsert_mapped_projects(self.test_user.id, self.test_project.id)
 
