@@ -64,6 +64,7 @@ def create_canned_project() -> Tuple[Project, User]:
     test_project_dto.user_id = test_user.id
     test_project = Project()
     test_project.create_draft_project(test_project_dto, test_aoi)
+    test_project.total_tasks = 1
 
     # Setup test task
     test_task = Task.from_geojson_feature(1, task_feature)
