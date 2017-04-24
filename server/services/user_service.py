@@ -103,7 +103,13 @@ class UserService:
 
     @staticmethod
     def add_role_to_user(admin_user_id: int, username: str, role: str):
-
+        """
+        Add role to user
+        :param admin_user_id: ID of admin attempting to add the role 
+        :param username: Username of user the role should be added to
+        :param role: The requested role
+        :raises UserServiceError
+        """
         try:
             requested_role = UserRole[role.upper()]
         except KeyError:
