@@ -102,6 +102,23 @@ class UserService:
         return User.get_mapped_projects(user.id, preferred_locale)
 
     @staticmethod
+    def add_role_to_user(admin_user_id: int, username: str, role: str):
+
+
+        requested_role = UserRole[role]
+
+        if reqested_role.upper() not in [UserRole.PROJECT_MANAGER.name, UserRole.VALIDATOR.name, UserRole.ADMIN.name]:
+            raise UserServiceError('Unexpected Role name')
+
+        admin = UserService.get_user_by_id(admin_user_id)
+        admin_role = UserRole(admin.role)
+
+        if admin_role == UserRole.PROJECT_MANAGER and reqe
+
+
+
+
+    @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API
