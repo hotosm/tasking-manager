@@ -1,0 +1,33 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Messages - inbox (TODO)
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>From</th>
+                            <th>Subject</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="message in inboxCtrl.messages">
+                            <td><a ng-href="user/{{ message.username }}">{{ message.username }}</a></td>
+                            <td><a ng-href="message/{{ message.id }}">{{ message.subject }}</a></td>
+                            <td><span am-time-ago="message.date | amUtc | amLocal"></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

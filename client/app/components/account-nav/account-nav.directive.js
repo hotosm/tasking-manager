@@ -96,5 +96,13 @@
             $location.path('admin/users');
             vm.showDropdown = false;
         };
+
+        /**
+         * Go to the messages page
+         */
+        vm.goToMessages = function(){
+            $location.path('inbox');
+            vm.showDropdown = false;
+        }
     }
 })();
