@@ -125,10 +125,6 @@
             return taskFeatures;
         }
 
-        function trimTasksToAOI(taskGrid, aoi, clip) {
-
-        }
-
         /**
          * Return the task grid
          * @returns {*}

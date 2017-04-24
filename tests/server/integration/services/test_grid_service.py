@@ -1,12 +1,38 @@
+import os
 import unittest
 from server.services.grid_service import GridService
 from shapely.geometry import shape
 from server.models.dtos.grid_dto import GridDTO
+from server import create_app
 import geojson
 import json
 
 
 class TestGridService(unittest.TestCase):
+
+    skip_tests = False
+
+    @classmethod
+    def setUpClass(cls):
+        env = os.getenv('SHIPPABLE', 'false')
+
+        # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
+        if env == 'true':
+            cls.skip_tests = True
+
+    def setUp(self):
+        if self.skip_tests:
+            return
+
+        self.app = create_app()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+
+    def tearDown(self):
+        if self.skip_tests:
+            return
+
+        self.ctx.pop()
 
     def test_trim_grid_to_aoi_noclip_clip(self):
         # arrange
@@ -497,6 +523,8 @@ class TestGridService(unittest.TestCase):
         # act
         grid = GridService.trim_grid_to_aoi(grid_dto)
         # assert
+        print(json.dumps(grid))
+        print(json.dumps(expected))
         self.assertEquals(json.dumps(grid), json.dumps(expected))
 
     def test_trim_grid_to_aoi_noclip(self):
@@ -1290,4 +1318,6 @@ class TestGridService(unittest.TestCase):
         # act
         grid = GridService.trim_grid_to_aoi(grid_dto)
         # assert
+        print(json.dumps(grid))
+        print(json.dumps(expected))
         self.assertEquals(grid, expected)

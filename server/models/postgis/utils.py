@@ -47,6 +47,11 @@ class ST_Centroid(GenericFunction):
     name = 'ST_Centroid'
     type = Geometry
 
+class ST_Transform(GenericFunction):
+    """ Exposes PostGIS ST_Transform function """
+    name = 'ST_Transform'
+    type = Geometry
+
 
 def timestamp():
     """ Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""
