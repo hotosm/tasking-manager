@@ -87,6 +87,11 @@ class User(db.Model):
 
         return mapped_projects_dto
 
+    def set_user_role(self, role: UserRole):
+        """ Sets the supplied role on the user """
+        self.role = role.value
+        db.session.commit()
+
     def delete(self):
         """ Delete the user in scope from DB """
         db.session.delete(self)
