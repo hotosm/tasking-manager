@@ -78,11 +78,11 @@
             var feature = geospatialService.getFeatureFromGeoJSON(aoi);
             var olExtent = feature.getGeometry().getExtent();
             var bboxArray = geospatialService.transformExtentToLatLonArray(olExtent);
-            // TODO: replace hard coded bounding box to bounding box of the project and add URL to view
+            var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
+            // TODO: replace hard coded bounding box to bounding box of the project
             //var bboxArray = [33.700175,-3.236424, 33.944021, -3.041382];
             var queryPrefix = '<osm-script output="json" timeout="25"><union>';
             var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
-            var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
             var queryMiddle = '<query type="node"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
                               '<query type="way"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
                               '<query type="relation"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>';
