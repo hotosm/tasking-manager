@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from server.services.stats_service import StatsService, ProjectService, UserService, TaskStatus
+from server.services.stats_service import StatsService, TaskStatus, TaskHistory
 from server.models.postgis.project import Project
 from server.models.postgis.user import User
 
@@ -48,7 +48,8 @@ class TestStatsService(unittest.TestCase):
         # Assert
         self.assertEqual(test_project.tasks_bad_imagery, 1)
 
-    def test_update_after_invalidating_mapped_task_sets_counters_correctly(self):
+    @patch.object(TaskHistory, 'get_last_status')
+    def test_update_after_invalidating_mapped_task_sets_counters_correctly(self, last_status):
         # Arrange
         test_project = Project()
         test_project.tasks_mapped = 1
@@ -56,14 +57,17 @@ class TestStatsService(unittest.TestCase):
         test_user = User()
         test_user.tasks_invalidated = 0
 
+        last_status.return_value = TaskStatus.MAPPED
+
         # Act
-        StatsService._set_counters_after_invalidated(TaskStatus.MAPPED, test_project, test_user)
+        StatsService._set_counters_after_invalidated(1, test_project, test_user)
 
         # Assert
         self.assertEqual(test_project.tasks_mapped, 0)
         self.assertEqual(test_user.tasks_invalidated, 1)
 
-    def test_update_after_invalidating_bad_imagery_task_sets_counters_correctly(self):
+    @patch.object(TaskHistory, 'get_last_status')
+    def test_update_after_invalidating_bad_imagery_task_sets_counters_correctly(self, last_status):
         # Arrange
         test_project = Project()
         test_project.tasks_bad_imagery = 1
@@ -71,14 +75,17 @@ class TestStatsService(unittest.TestCase):
         test_user = User()
         test_user.tasks_invalidated = 0
 
+        last_status.return_value = TaskStatus.BADIMAGERY
+
         # Act
-        StatsService._set_counters_after_invalidated(TaskStatus.BADIMAGERY, test_project, test_user)
+        StatsService._set_counters_after_invalidated(1, test_project, test_user)
 
         # Assert
         self.assertEqual(test_project.tasks_bad_imagery, 0)
         self.assertEqual(test_user.tasks_invalidated, 1)
 
-    def test_update_after_invalidating_validated_task_sets_counters_correctly(self):
+    @patch.object(TaskHistory, 'get_last_status')
+    def test_update_after_invalidating_validated_task_sets_counters_correctly(self, last_status):
         # Arrange
         test_project = Project()
         test_project.tasks_mapped = 1
@@ -87,8 +94,10 @@ class TestStatsService(unittest.TestCase):
         test_user = User()
         test_user.tasks_invalidated = 0
 
+        last_status.return_value = TaskStatus.VALIDATED
+
         # Act
-        StatsService._set_counters_after_invalidated(TaskStatus.VALIDATED, test_project, test_user)
+        StatsService._set_counters_after_invalidated(1, test_project, test_user)
 
         # Assert
         self.assertEqual(test_project.tasks_validated, 0)
