@@ -102,6 +102,29 @@ class UserService:
         return User.get_mapped_projects(user.id, preferred_locale)
 
     @staticmethod
+    def add_role_to_user(admin_user_id: int, username: str, role: str):
+        """
+        Add role to user
+        :param admin_user_id: ID of admin attempting to add the role 
+        :param username: Username of user the role should be added to
+        :param role: The requested role
+        :raises UserServiceError
+        """
+        try:
+            requested_role = UserRole[role.upper()]
+        except KeyError:
+            raise UserServiceError(f'Unknown role {role} accepted values are ADMIN, PROJECT_MANAGER, VALIDATOR')
+
+        admin = UserService.get_user_by_id(admin_user_id)
+        admin_role = UserRole(admin.role)
+
+        if admin_role == UserRole.PROJECT_MANAGER and requested_role == UserRole.ADMIN:
+            raise UserServiceError(f'You must be an Admin to assign Admin role')
+
+        user = UserService.get_user_by_username(username)
+        user.set_user_role(requested_role)
+
+    @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API

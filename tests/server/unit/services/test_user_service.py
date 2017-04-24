@@ -82,3 +82,19 @@ class TestUserService(unittest.TestCase):
 
         # Act / Assert
         self.assertTrue(UserService.is_user_validator(123))
+
+    def test_unknown_role_raise_error_when_setting_role(self):
+        # Act / Assert
+        with self.assertRaises(UserServiceError):
+            UserService.add_role_to_user(1, 'test', 'TEST')
+
+    @patch.object(UserService, 'get_user_by_id')
+    def test_pm_not_allowed_to_add_admin_role_when_setting_role(self, mock_admin):
+        # Arrange
+        admin = User()
+        admin.role = UserRole.PROJECT_MANAGER.value
+        mock_admin.return_value = admin
+
+        # Act
+        with self.assertRaises(UserServiceError):
+            UserService.add_role_to_user(1, 'test', 'ADMIN')

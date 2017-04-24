@@ -1,7 +1,7 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
 from schematics.types import StringType, IntType
-from schematics.types.compound import ListType, ModelType
+from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.postgis.statuses import MappingLevel
 
 
@@ -36,6 +36,8 @@ class MappedProject(Model):
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
     status = StringType()
+    centroid = BaseType()
+    aoi = BaseType()
 
 
 class UserMappedProjectsDTO(Model):
