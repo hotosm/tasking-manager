@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService', 'geospatialService', profileController]);
 
-    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService) {
+    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, geospatialService) {
         var vm = this;
         vm.username = '';
         vm.currentlyLoggedInUser = null;
@@ -63,8 +63,12 @@
         function getUserProjects(){
             var resultsPromise = accountService.getUserProjects(vm.username);
             resultsPromise.then(function (data) {
+                console.log(data.mappedProjects);
                 vm.projects = data.mappedProjects;
-                projectMapService.showProjectsOnMap(vm.projects);
+                // iterate over the projects and add the center of the project as a point on the map
+                for (var i = 0; i < vm.projects.length; i++){
+                    projectMapService.showProjectOnMap(vm.projects[i].centroid);
+                }
             }, function(){
                 vm.projects = [];
             });
@@ -79,8 +83,6 @@
             var olExtent = feature.getGeometry().getExtent();
             var bboxArray = geospatialService.transformExtentToLatLonArray(olExtent);
             var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
-            // TODO: replace hard coded bounding box to bounding box of the project
-            //var bboxArray = [33.700175,-3.236424, 33.944021, -3.041382];
             var queryPrefix = '<osm-script output="json" timeout="25"><union>';
             var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
             var queryMiddle = '<query type="node"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
