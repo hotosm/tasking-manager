@@ -103,9 +103,9 @@ class UserMappedProjects(Resource):
               default: Thinkwhere
         responses:
             200:
-                description: User found
+                description: Mapped projects found
             404:
-                description: User not found
+                description: No mapped projects found
             500:
                 description: Internal Server Error
         """
@@ -114,7 +114,7 @@ class UserMappedProjects(Resource):
             user_dto = UserService.get_mapped_projects(username, locale)
             return user_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User or mapping not found"}, 404
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

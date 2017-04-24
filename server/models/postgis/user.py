@@ -70,7 +70,7 @@ class User(db.Model):
         results = db.engine.execute(sql)
 
         if results.rowcount == 0:
-            return NotFound()
+            raise NotFound()
 
         mapped_projects_dto = UserMappedProjectsDTO()
         for row in results:
