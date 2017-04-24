@@ -111,6 +111,7 @@ class StatsService:
                                    Project.total_tasks,
                                    Project.tasks_mapped,
                                    Project.tasks_validated,
+                                   Project.tasks_bad_imagery,
                                    Project.created,
                                    Project.last_updated,
                                    Project.default_locale,
