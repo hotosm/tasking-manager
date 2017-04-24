@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', 'accountService','mapService','projectMapService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService', profileController]);
 
-    function profileController($routeParams, $location, accountService, mapService, projectMapService) {
+    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService) {
         var vm = this;
         vm.username = '';
         vm.currentlyLoggedInUser = null;
@@ -27,7 +27,7 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
-            setUserProjectsAndStats();
+            getUserProjects();
         }
 
         /**
@@ -58,68 +58,36 @@
         }
 
         /**
-         * Set the user's project
-         * TODO: get from API
+         * Gets the user's project
          */
-        function setUserProjectsAndStats(){
-            vm.projects = [
-                {
-                    id: 1,
-                    name: 'Cyclone Enawo: Anjanazan, Madagascar 1',
-                    tasksMapped: 3,
-                    tasksValidated: 5,
-                    status: 'active',
-                    aoiCentroid: {
-                        coordinates: [-2.207, 24.2578]
-                    },
-                    lastUpdated: '2017-03-31T10:48:41.161085'
-                },
-                {
-                    id: 222,
-                    name: 'Missing Maps: Zambia Malaria Elimination 46',
-                    tasksMapped: 30,
-                    tasksValidated: 50,
-                    status: 'active',
-                    aoiCentroid: {
-                        coordinates: [-0.489, 51.28]
-                    },
-                    lastUpdated: '2017-04-04T15:51:21.135789'
-                },
-                {
-                    id: 21,
-                    name: 'Osun State Road Network Mapping for Vaccine Delivery Routing, Nigeria',
-                    tasksMapped: 300,
-                    tasksValidated: 500,
-                    status: 'active',
-                    aoiCentroid: {
-                        coordinates: [6.915, 0.703]
-                    },
-                    lastUpdated: '2017-04-04T15:51:21.135789'
-                }
-            ];
-            projectMapService.showProjectsOnMap(vm.projects);
+        function getUserProjects(){
+            var resultsPromise = accountService.getUserProjects(vm.username);
+            resultsPromise.then(function (data) {
+                vm.projects = data.mappedProjects;
+                projectMapService.showProjectsOnMap(vm.projects);
+            }, function(){
+                vm.projects = [];
+            });
         }
 
         /**
-         * Navigate to the project contribute page
-         * @param id
+         * View project for user and bounding box in Overpass Turbo
+         * @param bboxArray
          */
-        vm.navigateToProject = function(id){
-            $location.path('/project/' + id);
-        };
-
-        /**
-         * Remove all highlighted projects from the map
-         */
-        vm.removeHighlightOnMap = function(){
-            projectMapService.removeHighlightOnMap();
-        };
-
-        /**
-         * Highlight project on map by showing a highlights layer
-         */
-        vm.highlightProjectOnMap = function(id){
-            projectMapService.highlightProjectOnMap(vm.projects, id);
-        };
+        vm.viewOverpassTurbo = function(aoi){
+            var feature = geospatialService.getFeatureFromGeoJSON(aoi);
+            var olExtent = feature.getGeometry().getExtent();
+            var bboxArray = geospatialService.transformExtentToLatLonArray(olExtent);
+            // TODO: replace hard coded bounding box to bounding box of the project and add URL to view
+            //var bboxArray = [33.700175,-3.236424, 33.944021, -3.041382];
+            var queryPrefix = '<osm-script output="json" timeout="25"><union>';
+            var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
+            var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
+            var queryMiddle = '<query type="node"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
+                              '<query type="way"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
+                              '<query type="relation"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>';
+            var query = queryPrefix + queryMiddle + querySuffix;
+            $window.open('http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query));
+        }
     }
 })();
