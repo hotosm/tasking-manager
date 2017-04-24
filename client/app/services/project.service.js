@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', ['$http', '$q', 'mapService', 'configService', 'authService', 'geospatialService', projectService]);
+        .service('projectService', ['$http', '$q', 'configService', 'authService', 'geospatialService', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -11,7 +11,7 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService($http, $q, mapService, configService, authService, geospatialService) {
+    function projectService($http, $q, configService, authService, geospatialService) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -22,13 +22,12 @@
         var map = null;
         var taskGrid = null;
         var aoi = null;
-        var projectServiceDefined = null;
 
         // OpenLayers source for the task grid
         var taskGridSource = null;
 
         var service = {
-            init: init,
+            initDraw: initDraw,
             createTaskGrid: createTaskGrid,
             getTaskGrid: getTaskGrid,
             validateAOI: validateAOI,
@@ -58,12 +57,9 @@
         /**
          * Initialise the draw tools
          */
-        function init() {
-            if (!projectServiceDefined) {
-                map = mapService.getOSMMap();
-                addVectorLayer();
-                projectServiceDefined = true;
-            }
+        function initDraw(OLmap) {
+            map = OLmap;
+            addVectorLayer();
         }
 
         /**
