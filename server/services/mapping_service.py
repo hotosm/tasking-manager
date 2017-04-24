@@ -75,9 +75,10 @@ class MappingService:
         if new_state not in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY, TaskStatus.READY]:
             raise MappingServiceError('Can only set status to MAPPED, BADIMAGERY, READY after mapping')
 
-        task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
         StatsService.update_stats_after_task_state_change(mapped_task.project_id, mapped_task.user_id, new_state,
-                                                          current_state)
+                                                          mapped_task.task_id)
+        task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
+
         return task.as_dto()
 
     @staticmethod

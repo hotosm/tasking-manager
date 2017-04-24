@@ -12,8 +12,7 @@ from server.services.user_service import UserService
 
 class StatsService:
     @staticmethod
-    def update_stats_after_task_state_change(project_id: int, user_id: int, new_state: TaskStatus,
-                                             current_state: TaskStatus):
+    def update_stats_after_task_state_change(project_id: int, user_id: int, new_state: TaskStatus, task_id: int):
         """ Update stats when a task has had a state change """
         if new_state in [TaskStatus.READY, TaskStatus.LOCKED_FOR_VALIDATION, TaskStatus.LOCKED_FOR_MAPPING]:
             return  # No stats to record for these states
@@ -24,7 +23,7 @@ class StatsService:
         if new_state == TaskStatus.MAPPED:
             StatsService._set_counters_after_mapping(project, user)
         elif new_state == TaskStatus.INVALIDATED:
-            StatsService._set_counters_after_invalidated(current_state, project, user)
+            StatsService._set_counters_after_invalidated(task_id, project, user)
         elif new_state == TaskStatus.VALIDATED:
             StatsService._set_counters_after_validated(project, user)
         elif new_state == TaskStatus.BADIMAGERY:
@@ -32,7 +31,7 @@ class StatsService:
 
         UserService.upsert_mapped_projects(user_id, project_id)
         project.last_updated = timestamp()
-        project.save()  # Will also save user changes, as using same session
+        #project.save()  # Will also save user changes, as using same session
 
         return project, user
 
@@ -54,13 +53,16 @@ class StatsService:
         project.tasks_bad_imagery += 1
 
     @staticmethod
-    def _set_counters_after_invalidated(current_state: TaskStatus, project: Project, user: User):
+    def _set_counters_after_invalidated(task_id: int, project: Project, user: User):
         """ Set counters after user has validated a task """
-        if current_state == TaskStatus.BADIMAGERY:
+
+        last_state = TaskHistory.get_last_status(project.id, task_id)
+
+        if last_state == TaskStatus.BADIMAGERY:
             project.tasks_bad_imagery -= 1
-        elif current_state == TaskStatus.MAPPED:
+        elif last_state == TaskStatus.MAPPED:
             project.tasks_mapped -= 1
-        elif current_state == TaskStatus.VALIDATED:
+        elif last_state == TaskStatus.VALIDATED:
             project.tasks_mapped -= 1
             project.tasks_validated -= 1
 
