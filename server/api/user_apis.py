@@ -122,7 +122,7 @@ class UserMappedProjects(Resource):
             return {"error": error_msg}, 500
 
 
-class UserAddRole(Resource):
+class UserSetRole(Resource):
 
     @tm.pm_only()
     @token_auth.login_required
@@ -156,14 +156,20 @@ class UserAddRole(Resource):
         responses:
             200:
                 description: Role added
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             404:
                 description: User not found
             500:
                 description: Internal Server Error
         """
         try:
-            UserService.add_role_to_user(username, role, tm.authenticated_user_id)
-            #return user_dto.to_primitive(), 200
+            UserService.add_role_to_user(tm.authenticated_user_id, username, role)
+            return {"Success": "Role Added"}, 200
+        except UserServiceError:
+            return {"Error": "Not allowed"}, 403
         except NotFound:
             return {"Error": "User or mapping not found"}, 404
         except Exception as e:

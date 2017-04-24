@@ -104,19 +104,19 @@ class UserService:
     @staticmethod
     def add_role_to_user(admin_user_id: int, username: str, role: str):
 
-
-        requested_role = UserRole[role]
-
-        if reqested_role.upper() not in [UserRole.PROJECT_MANAGER.name, UserRole.VALIDATOR.name, UserRole.ADMIN.name]:
-            raise UserServiceError('Unexpected Role name')
+        try:
+            requested_role = UserRole[role.upper()]
+        except KeyError:
+            raise UserServiceError(f'Unknown role {role} accepted values are ADMIN, PROJECT_MANAGER, VALIDATOR')
 
         admin = UserService.get_user_by_id(admin_user_id)
         admin_role = UserRole(admin.role)
 
-        if admin_role == UserRole.PROJECT_MANAGER and reqe
+        if admin_role == UserRole.PROJECT_MANAGER and requested_role == UserRole.ADMIN:
+            raise UserServiceError(f'You must be an Admin to assign Admin role')
 
-
-
+        user = UserService.get_user_by_username(username)
+        user.set_user_role(requested_role)
 
     @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:
