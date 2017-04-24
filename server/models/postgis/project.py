@@ -74,10 +74,10 @@ class Project(db.Model):
     campaign_tag = db.Column(db.String, index=True)
 
     # Stats
-    total_tasks = db.Column(db.Integer)
-    tasks_mapped = db.Column(db.Integer, default=0)
-    tasks_validated = db.Column(db.Integer, default=0)
-    tasks_bad_imagery = db.Column(db.Integer, default=0)
+    total_tasks = db.Column(db.Integer, nullable=False)
+    tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
+    tasks_validated = db.Column(db.Integer, default=0, nullable=False)
+    tasks_bad_imagery = db.Column(db.Integer, default=0, nullable=False)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
