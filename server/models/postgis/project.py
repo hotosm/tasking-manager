@@ -1,11 +1,12 @@
 import json
 import geojson
 from flask import current_app
-from typing import Optional, List
+from typing import Optional
 from geoalchemy2 import Geometry
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, ProjectInfoDTO, DraftProjectDTO, ProjectSearchResultDTO, \
-    ProjectSearchResultsDTO, PMProject, PMDashboardDTO
+from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSearchResultDTO, \
+    ProjectSearchResultsDTO, ProjectSummary, PMDashboardDTO
+from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
@@ -43,101 +44,6 @@ class AreaOfInterest(db.Model):
         self.centroid = ST_Centroid(self.geometry)
 
 
-class ProjectInfo(db.Model):
-    """ Contains all project info localized into supported languages """
-    __tablename__ = 'project_info'
-
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), primary_key=True)
-    locale = db.Column(db.String(10), primary_key=True)
-    name = db.Column(db.String(512))
-    short_description = db.Column(db.String)
-    description = db.Column(db.String)
-    instructions = db.Column(db.String)
-
-    __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
-
-    @classmethod
-    def create_from_name(cls, name: str):
-        """ Creates a new ProjectInfo class from name, used when creating draft projects """
-        new_info = cls()
-        new_info.locale = 'en'  # Draft project default to english, PMs can change this prior to publication
-        new_info.name = name
-        return new_info
-
-    @classmethod
-    def create_from_dto(cls, dto: ProjectInfoDTO):
-        """ Creates a new ProjectInfo class from dto, used from project edit """
-        new_info = cls()
-        new_info.update_from_dto(dto)
-        return new_info
-
-    def update_from_dto(self, dto: ProjectInfoDTO):
-        """ Updates existing ProjectInfo from supplied DTO """
-        self.locale = dto.locale
-        self.name = dto.name
-
-        # TODO bleach input
-        self.short_description = dto.short_description
-        self.description = dto.description
-        self.instructions = dto.instructions
-
-    @staticmethod
-    def get_dto_for_locale(project_id, locale, default_locale='en') -> ProjectInfoDTO:
-        """
-        Gets the projectInfoDTO for the project for the requested locale. If not found, then the default locale is used
-        :param project_id: ProjectID in scope
-        :param locale: locale requested by user
-        :param default_locale: default locale of project
-        :raises: ValueError if no info found for Default Locale
-        """
-        project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=locale).one_or_none()
-
-        if project_info is None:
-            # If project is none, get default locale and don't worry about empty translations
-            project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=default_locale).one_or_none()
-            return project_info.get_dto()
-
-        if locale == default_locale:
-            # If locale == default_locale don't need to worry about empty translations
-            return project_info.get_dto()
-
-        default_locale = ProjectInfo.query.filter_by(project_id=project_id, locale=default_locale).one_or_none()
-
-        if default_locale is None:
-            error_message = \
-                f'BAD DATA - no info found for project {project_id}, locale: {locale}, default {default_locale}'
-            current_app.logger.critical(error_message)
-            raise ValueError(error_message)
-
-        # Pass thru default_locale in case of partial translation
-        return project_info.get_dto(default_locale)
-
-    def get_dto(self, default_locale=ProjectInfoDTO()) -> ProjectInfoDTO:
-        """
-        Get DTO for current ProjectInfo
-        :param default_locale: The default locale string for any empty fields
-        """
-        project_info_dto = ProjectInfoDTO()
-        project_info_dto.locale = self.locale
-        project_info_dto.name = self.name if self.name else default_locale.name
-        project_info_dto.description = self.description if self.description else default_locale.description
-        project_info_dto.short_description = self.short_description if self.short_description else default_locale.short_description
-        project_info_dto.instructions = self.instructions if self.description else default_locale.instructions
-
-        return project_info_dto
-
-    @staticmethod
-    def get_dto_for_all_locales(project_id) -> List[ProjectInfoDTO]:
-        locales = ProjectInfo.query.filter_by(project_id=project_id).all()
-
-        project_info_dtos = []
-        for locale in locales:
-            project_info_dto = locale.get_dto()
-            project_info_dtos.append(project_info_dto)
-
-        return project_info_dtos
-
-
 class Project(db.Model):
     """ Describes a HOT Mapping Project """
     __tablename__ = 'projects'
@@ -171,6 +77,7 @@ class Project(db.Model):
     total_tasks = db.Column(db.Integer)
     tasks_mapped = db.Column(db.Integer, default=0)
     tasks_validated = db.Column(db.Integer, default=0)
+    tasks_bad_imagery = db.Column(db.Integer, default=0)
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
@@ -288,6 +195,7 @@ class Project(db.Model):
                                            Project.total_tasks,
                                            Project.tasks_mapped,
                                            Project.tasks_validated,
+                                           Project.tasks_bad_imagery,
                                            Project.created,
                                            Project.last_updated,
                                            Project.default_locale,
@@ -299,7 +207,7 @@ class Project(db.Model):
 
         admin_projects_dto = PMDashboardDTO()
         for project in admins_projects:
-            pm_project = Project.get_pm_project(project, preferred_locale)
+            pm_project = Project.get_project_summary(project, preferred_locale)
             project_status = ProjectStatus(project.status)
 
             if project_status == ProjectStatus.DRAFT:
@@ -314,17 +222,17 @@ class Project(db.Model):
         return admin_projects_dto
 
     @staticmethod
-    def get_pm_project(project, preferred_locale) -> PMProject:
-        """ Create PMProject object from query results """
-        pm_project = PMProject()
+    def get_project_summary(project, preferred_locale) -> ProjectSummary:
+        """ Create Project Summary model for postgis project object"""
+        pm_project = ProjectSummary()
         pm_project.project_id = project.id
         pm_project.campaign_tag = project.campaign_tag
         pm_project.created = project.created
         pm_project.last_updated = project.last_updated
         pm_project.aoi_centroid = geojson.loads(project.geojson)
 
-        pm_project.percent_mapped = round((project.tasks_mapped / project.total_tasks) * 100, 0)
-        pm_project.percent_validated = round((project.tasks_validated / project.total_tasks) * 100, 0)
+        pm_project.percent_mapped = round((project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
+        pm_project.percent_validated = round(((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
 
         project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
         pm_project.name = project_info.name

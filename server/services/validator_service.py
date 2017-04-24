@@ -68,7 +68,8 @@ class ValidatorService:
             if task is None:
                 raise NotFound(f'Task {validated_task.task_id} not found')
 
-            if TaskStatus(task.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
+            current_state = TaskStatus(task.task_status)
+            if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
                 raise ValidatatorServiceError(f'Task {validated_task.task_id} is not LOCKED_FOR_VALIDATION')
 
             if task.locked_by != validated_dto.user_id:
@@ -83,7 +84,7 @@ class ValidatorService:
             task = task_to_unlock['task']
             task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'])
             StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
-                                                              task_to_unlock['new_state'])
+                                                              task_to_unlock['new_state'], current_state)
             dtos.append(task.as_dto())
 
         task_dtos = TaskDTOs()
