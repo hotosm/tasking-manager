@@ -195,6 +195,7 @@ class Project(db.Model):
                                            Project.total_tasks,
                                            Project.tasks_mapped,
                                            Project.tasks_validated,
+                                           Project.tasks_bad_imagery,
                                            Project.created,
                                            Project.last_updated,
                                            Project.default_locale,
@@ -230,8 +231,8 @@ class Project(db.Model):
         pm_project.last_updated = project.last_updated
         pm_project.aoi_centroid = geojson.loads(project.geojson)
 
-        pm_project.percent_mapped = round((project.tasks_mapped / project.total_tasks) * 100, 0)
-        pm_project.percent_validated = round((project.tasks_validated / project.total_tasks) * 100, 0)
+        pm_project.percent_mapped = round((project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
+        pm_project.percent_validated = round(((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
 
         project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
         pm_project.name = project_info.name

@@ -24,23 +24,11 @@ class StatsService:
         if new_state == TaskStatus.MAPPED:
             StatsService._set_counters_after_mapping(project, user)
         elif new_state == TaskStatus.INVALIDATED:
-
-            if current_state == TaskStatus.BADIMAGERY:
-                project.tasks_bad_imagery -= 1
-            elif current_state == TaskStatus.MAPPED:
-                project.tasks_mapped -= 1
-            elif current_state == TaskStatus.VALIDATED:
-                project.tasks_mapped -= 1
-                project.tasks_validated -= 1
-
-            user.tasks_invalidated += 1
-
+            StatsService._set_counters_after_invalidated(current_state, project, user)
         elif new_state == TaskStatus.VALIDATED:
-            project.tasks_validated += 1
-            user.tasks_validated += 1
-
+            StatsService._set_counters_after_validated(project, user)
         elif new_state == TaskStatus.BADIMAGERY:
-            project.tasks_bad_imagery += 1
+            StatsService._set_counters_after_bad_imagery(project)
 
         UserService.upsert_mapped_projects(user_id, project_id)
         project.last_updated = timestamp()
@@ -56,9 +44,27 @@ class StatsService:
 
     @staticmethod
     def _set_counters_after_validated(project: Project, user: User):
-        """ Set counters after user has mapped a task """
+        """ Set counters after user has validated a task """
         project.tasks_validated += 1
         user.tasks_validated += 1
+
+    @staticmethod
+    def _set_counters_after_bad_imagery(project: Project):
+        """ Set counters after user has marked a task as Bad Imagery """
+        project.tasks_bad_imagery += 1
+
+    @staticmethod
+    def _set_counters_after_invalidated(current_state: TaskStatus, project: Project, user: User):
+        """ Set counters after user has validated a task """
+        if current_state == TaskStatus.BADIMAGERY:
+            project.tasks_bad_imagery -= 1
+        elif current_state == TaskStatus.MAPPED:
+            project.tasks_mapped -= 1
+        elif current_state == TaskStatus.VALIDATED:
+            project.tasks_mapped -= 1
+            project.tasks_validated -= 1
+
+        user.tasks_invalidated += 1
 
     @staticmethod
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
