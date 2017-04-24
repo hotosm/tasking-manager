@@ -22,7 +22,6 @@ class GridService:
                     if clip_to_aoi:
                         if intersection.geom_type == 'Polygon':
                             intersection = MultiPolygon([intersection])
-                        print(mapping(intersection))
                         feature['geometry'] = mapping(intersection)
                         feature['properties']['splittable'] = False
                     intersecting_features.append(feature)
