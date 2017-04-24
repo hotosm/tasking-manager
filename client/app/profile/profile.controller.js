@@ -27,6 +27,7 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
+            projectMapService.showInfoOnHoverOrClick();
             getUserProjects();
         }
 
@@ -63,11 +64,10 @@
         function getUserProjects(){
             var resultsPromise = accountService.getUserProjects(vm.username);
             resultsPromise.then(function (data) {
-                console.log(data.mappedProjects);
                 vm.projects = data.mappedProjects;
                 // iterate over the projects and add the center of the project as a point on the map
                 for (var i = 0; i < vm.projects.length; i++){
-                    projectMapService.showProjectOnMap(vm.projects[i].centroid);
+                    projectMapService.showProjectOnMap(vm.projects[i], vm.projects[i].centroid);
                 }
             }, function(){
                 vm.projects = [];
