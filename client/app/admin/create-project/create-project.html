@@ -157,11 +157,21 @@
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'trim'" class="content">
                     <h2>Step 4: trim tasks</h2>
-                    <input type="checkbox" checked="{{ projectCtrl.clipTasksToAoi }}" ng-click="createProjectCtrl.toggleClipTasksToAoi()"/> Clip
+
+                    <p>Trim the task grid to the Area of Interest (optional). You can keep task squares complete, or
+                        clip
+                        them to the AOI</p>
+
+                    <label class="form__option">
+                        <input type="checkbox" name="form-checkbox" id="form-checkbox-1" value="Checkbox 1"
+                               checked="{{ projectCtrl.clipTasksToAoi }}"
+                               ng-click="createProjectCtrl.toggleClipTasksToAoi()"/> Clip tasks to Area of Interest
+                    </label>
                     <button class="button button--achromic" type="button"
                             ng-click="createProjectCtrl.trimTaskGrid()">
                         Trim
                     </button>
+                    <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--secondary button" type="button"

@@ -6,7 +6,6 @@ from server.models.dtos.grid_dto import GridDTO
 from server import db
 from server.models.postgis.utils import ST_Transform
 
-
 class GridService:
     @staticmethod
     def trim_grid_to_aoi(grid_dto: GridDTO) -> geojson.FeatureCollection:
