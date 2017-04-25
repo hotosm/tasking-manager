@@ -126,7 +126,7 @@ class ProjectCommentsDTO(Model):
     comments = ListType(ModelType(ProjectComment))
 
 
-class PMProject(Model):
+class ProjectSummary(Model):
     """ Model used for PM dashboard """
     project_id = IntType(required=True, serialized_name='projectId')
     name = StringType()
@@ -147,6 +147,6 @@ class PMDashboardDTO(Model):
         self.archived_projects = []
         self.active_projects = []
 
-    draft_projects = ListType(ModelType(PMProject), serialized_name='draftProjects')
-    active_projects = ListType(ModelType(PMProject), serialized_name='activeProjects')
-    archived_projects = ListType(ModelType(PMProject), serialized_name='archivedProjects')
+    draft_projects = ListType(ModelType(ProjectSummary), serialized_name='draftProjects')
+    active_projects = ListType(ModelType(ProjectSummary), serialized_name='activeProjects')
+    archived_projects = ListType(ModelType(ProjectSummary), serialized_name='archivedProjects')

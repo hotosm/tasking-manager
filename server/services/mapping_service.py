@@ -62,8 +62,9 @@ class MappingService:
     def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
         task = MappingService.get_task(mapped_task.task_id, mapped_task.project_id)
+        current_state = TaskStatus(task.task_status)
 
-        if TaskStatus(task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
+        if current_state != TaskStatus.LOCKED_FOR_MAPPING:
             raise MappingServiceError('Status must be LOCKED_FOR_MAPPING to unlock')
 
         if task.locked_by != mapped_task.user_id:
@@ -74,8 +75,10 @@ class MappingService:
         if new_state not in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY, TaskStatus.READY]:
             raise MappingServiceError('Can only set status to MAPPED, BADIMAGERY, READY after mapping')
 
+        StatsService.update_stats_after_task_state_change(mapped_task.project_id, mapped_task.user_id, new_state,
+                                                          mapped_task.task_id)
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
-        StatsService.update_stats_after_task_state_change(mapped_task.project_id, mapped_task.user_id, new_state)
+
         return task.as_dto()
 
     @staticmethod

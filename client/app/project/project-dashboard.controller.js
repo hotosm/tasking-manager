@@ -48,7 +48,9 @@
             var resultsPromise = statsService.getProjectStats(projectId);
             resultsPromise.then(function (data) {
                 vm.project = data;
-                projectMapService.showProjectOnMap(vm.project);
+                var customColours = false;
+                var zoomToProject = true;
+                projectMapService.showProjectOnMap(vm.project, customColours, zoomToProject);
             }, function(data){
                // TODO
             });
@@ -94,7 +96,7 @@
                 vm.projectActivity = data.activity;
             }, function(){
                 // an error occurred
-                vm.projectActivityPagination = data.pagination;
+                vm.projectActivityPagination = [];
                 vm.projectActivity = [];
             });
         }

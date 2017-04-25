@@ -54,7 +54,8 @@
             <div class="section__body">
                 <div class="inner">
                     <h2>Projects</h2>
-                    <div class="profile-projects-list">
+                     <p ng-show="!profileCtrl.projects.length > 0">No contributions to projects (yet).</p>
+                    <div ng-show="profileCtrl.projects.length > 0" class="profile-projects-list">
                         <table class="table">
                             <thead>
                             <tr>
@@ -63,25 +64,27 @@
                                 <th>Number of tasks mapped</th>
                                 <th>Number of tasks validated</th>
                                 <th>Status</th>
+                                <th>Overpass</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="project in profileCtrl.projects | orderBy: '-lastUpdated'"
-                                class="pointer tr-hover"
-                                ng-mouseover="profileCtrl.highlightProjectOnMap(project.id)"
-                                ng-mouseleave="profileCtrl.removeHighlightOnMap()"
-                                ng-click="profileCtrl.navigateToProject(project.id)">
-                                <th scope="row">{{ project.id }}</th>
-                                <td>{{ project.name }}</td>
+                            <tr ng-repeat="project in profileCtrl.projects">
+                                <td>{{ project.projectId }}</td>
+                                <td><a ng-href="project/{{ project.projectId }}">{{ project.name }}</a></td>
                                 <td>{{ project.tasksMapped }}</td>
                                 <td>{{ project.tasksValidated }}</td>
                                 <td>{{ project.status }}</td>
+                                <td><a href="" ng-click="profileCtrl.viewOverpassTurbo(project.aoi)">View in Overpass Turbo</a></td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                         <div id="map" class="map-container"></div>
+                        <div id="popup" class="ol-popup">
+                            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                            <div id="popup-content"></div>
+                        </div>
                     </div>
                 </div>
             </div>

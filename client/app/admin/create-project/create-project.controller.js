@@ -85,7 +85,7 @@
             vm.drawPolygonInteraction.on('drawstart', function () {
                 drawService.getSource().clear();
             });
-            projectService.init();
+            projectService.initDraw(vm.map);
         }
 
         /**

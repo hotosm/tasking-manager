@@ -9,24 +9,33 @@
         .service('projectMapService', ['styleService', projectMapService]);
 
     function projectMapService(styleService) {
-        
+
         var map = null;
         var projectVectorSource = null;
         var projectHighlightVectorSource = null;
-        
+
         var service = {
             initialise: initialise,
             showProjectsOnMap: showProjectsOnMap,
             showProjectOnMap: showProjectOnMap,
             highlightProjectOnMap: highlightProjectOnMap,
-            removeHighlightOnMap: removeHighlightOnMap
+            removeHighlightOnMap: removeHighlightOnMap,
+            showInfoOnHoverOrClick: showInfoOnHoverOrClick
         };
+
+        /**
+         * Elements that make up the popup.
+         */
+        var container = document.getElementById('popup');
+        var content = document.getElementById('popup-content');
+        var closer = document.getElementById('popup-closer');
+        var overlay = null;
 
         return service;
 
         /**
          * Initialises the service by adding the vector layers
-         * @param mapForProjects - OL map 
+         * @param mapForProjects - OL map
          */
         function initialise(mapForProjects){
             map = mapForProjects;
@@ -78,23 +87,34 @@
 
             // iterate over the projects and add the center of the project as a point on the map
             for (var i = 0; i < projects.length; i++){
-                showProjectOnMap(projects[i], typeOfProject);
+                showProjectOnMap(projects[i], projects[i].aoiCentroid, typeOfProject);
             }
         }
 
         /**
          * Show project on map
          * @param project
+         * @param aoiCentroid
          * @param type - optional
+         * @param zoomTo - optional
          */
-        function showProjectOnMap(project, type) {
-            var projectCenter = ol.proj.transform(project.aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
+        function showProjectOnMap(project, aoiCentroid, type, zoomTo) {
+            var projectCenter = ol.proj.transform(aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
             var feature = new ol.Feature({
                 geometry: new ol.geom.Point(projectCenter)
+            });
+            feature.setProperties({
+                'projectId': project.projectId,
+                'projectName': project.name
             });
             if (projectVectorSource) {
                 projectVectorSource.addFeature(feature);
                 feature.setStyle(styleService.getProjectStyle(type));
+            }
+            if (zoomTo){
+                map.getView().fit(feature.getGeometry().getExtent(), {
+                    maxZoom: 8
+                });
             }
         }
         
@@ -123,6 +143,62 @@
          */
         function removeHighlightOnMap(){
             projectHighlightVectorSource.clear();
+        }
+
+        /**
+         * Show feature info on hover or click
+         */
+        function showInfoOnHoverOrClick() {
+            /**
+             * Create an overlay to anchor the popup to the map.
+             */
+            overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
+                element: container,
+                autoPan: true,
+                autoPanAnimation: {
+                    duration: 250
+                }
+            }));
+
+            /**
+             * Add a click handler to hide the popup.
+             * @return {boolean} Don't follow the href.
+             */
+            if (closer){
+                closer.onclick = function () {
+                    overlay.setPosition(undefined);
+                    closer.blur();
+                    return false;
+                };
+            }
+
+            map.on('pointermove', function (evt) {
+                if (evt.dragging) {
+                    return;
+                }
+                var pixel = map.getEventPixel(evt.originalEvent);
+                displayFeatureInfo(pixel, evt.coordinate);
+            });
+            map.on('click', function (evt) {
+                displayFeatureInfo(evt.pixel, evt.coordinate);
+            });
+            map.addOverlay(overlay);
+        }
+
+        /**
+         * Display feature info
+         * @param pixel
+         */
+        function displayFeatureInfo(pixel, coordinate){
+            var feature = map.forEachFeatureAtPixel(pixel, function(feature){
+                return feature;
+            });
+            if (feature){
+                var projectId = feature.getProperties().projectId;
+                var projectName = feature.getProperties().projectName;
+                content.innerHTML = '<h4>#' + projectId + ' - ' + '<a href="/project/' + projectId + '">' + projectName + '</a></h4>';
+                overlay.setPosition(coordinate);
+            }
         }
     }
 })();    

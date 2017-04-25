@@ -1,7 +1,7 @@
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
     ProjectActivityDTO
-from server.models.dtos.project_dto import PMProject
+from server.models.dtos.project_dto import ProjectSummary
 from server.models.postgis.project import Project, AreaOfInterest
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User
@@ -12,29 +12,61 @@ from server.services.user_service import UserService
 
 class StatsService:
     @staticmethod
-    def update_stats_after_task_state_change(project_id: int, user_id: int, task_status: TaskStatus):
+    def update_stats_after_task_state_change(project_id: int, user_id: int, new_state: TaskStatus, task_id: int):
         """ Update stats when a task has had a state change """
-        if task_status in [TaskStatus.READY, TaskStatus.LOCKED_FOR_VALIDATION,
-                           TaskStatus.LOCKED_FOR_MAPPING]:
+        if new_state in [TaskStatus.READY, TaskStatus.LOCKED_FOR_VALIDATION, TaskStatus.LOCKED_FOR_MAPPING]:
             return  # No stats to record for these states
 
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_id(user_id)
 
-        if task_status == TaskStatus.MAPPED:
-            project.tasks_mapped += 1
-            user.tasks_mapped += 1
-        elif task_status == TaskStatus.INVALIDATED:
-            user.tasks_invalidated += 1
-            project.tasks_mapped -= 1
-        elif task_status == TaskStatus.VALIDATED:
-            project.tasks_validated += 1
-            user.tasks_validated += 1
+        if new_state == TaskStatus.MAPPED:
+            StatsService._set_counters_after_mapping(project, user)
+        elif new_state == TaskStatus.INVALIDATED:
+            StatsService._set_counters_after_invalidated(task_id, project, user)
+        elif new_state == TaskStatus.VALIDATED:
+            StatsService._set_counters_after_validated(project, user)
+        elif new_state == TaskStatus.BADIMAGERY:
+            StatsService._set_counters_after_bad_imagery(project)
 
+        UserService.upsert_mapped_projects(user_id, project_id)
         project.last_updated = timestamp()
-        project.save()  # Will also save user changes, as using same session
 
+        # Transaction will be saved when task is saved
         return project, user
+
+    @staticmethod
+    def _set_counters_after_mapping(project: Project, user: User):
+        """ Set counters after user has mapped a task """
+        project.tasks_mapped += 1
+        user.tasks_mapped += 1
+
+    @staticmethod
+    def _set_counters_after_validated(project: Project, user: User):
+        """ Set counters after user has validated a task """
+        project.tasks_validated += 1
+        user.tasks_validated += 1
+
+    @staticmethod
+    def _set_counters_after_bad_imagery(project: Project):
+        """ Set counters after user has marked a task as Bad Imagery """
+        project.tasks_bad_imagery += 1
+
+    @staticmethod
+    def _set_counters_after_invalidated(task_id: int, project: Project, user: User):
+        """ Set counters after user has validated a task """
+
+        last_state = TaskHistory.get_last_status(project.id, task_id)
+
+        if last_state == TaskStatus.BADIMAGERY:
+            project.tasks_bad_imagery -= 1
+        elif last_state == TaskStatus.MAPPED:
+            project.tasks_mapped -= 1
+        elif last_state == TaskStatus.VALIDATED:
+            project.tasks_mapped -= 1
+            project.tasks_validated -= 1
+
+        user.tasks_invalidated += 1
 
     @staticmethod
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
@@ -73,7 +105,7 @@ class StatsService:
         return activity_dto
 
     @staticmethod
-    def get_project_stats(project_id: int, preferred_locale: str) -> PMProject:
+    def get_project_stats(project_id: int, preferred_locale: str) -> ProjectSummary:
         """ Gets stats for the specified project """
         project = db.session.query(Project.id,
                                    Project.status,
@@ -81,13 +113,14 @@ class StatsService:
                                    Project.total_tasks,
                                    Project.tasks_mapped,
                                    Project.tasks_validated,
+                                   Project.tasks_bad_imagery,
                                    Project.created,
                                    Project.last_updated,
                                    Project.default_locale,
                                    AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
-        pm_project = Project.get_pm_project(project, preferred_locale)
+        pm_project = Project.get_project_summary(project, preferred_locale)
         return pm_project
 
     @staticmethod

@@ -5,8 +5,8 @@
                 <h1 class="section__title">
                     Activity and Stats
                 </h1>
-                <a ng-href="/project/{{ projectDashboardCtrl.project.id }}"
-                   class="heading-alt">{{ projectDashboardCtrl.project.name }}
+                <a ng-href="/project/{{ projectDashboardCtrl.projectId }}"
+                   class="heading-alt">#{{ projectDashboardCtrl.projectId }} - {{ projectDashboardCtrl.project.name }}
                 </a>
             </div>
         </header>
@@ -16,37 +16,40 @@
                     <div class="dashboard-container">
                         <div class="left">
                             <h2>Last activity</h2>
-                            <div class="content">
-                                <div ng-repeat="item in projectDashboardCtrl.projectActivity">
-                                    <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">Task locked for mapping by <a
-                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                    <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">Task locked for validation by <a
-                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Task marked as bad imagery by <a
-                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">Task mapped by <a
-                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Task validated by <a
-                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Task invalidated by <a
-                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                    <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">Task marked as ready by <a
-                                            href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                    <p>
-                                        <em am-time-ago="item.actionDate | amUtc | amLocal"></em>
-                                    </p>
+                            <p ng-show="!projectDashboardCtrl.projectActivity.length > 0">No activity (yet).</p>
+                            <div ng-show="projectDashboardCtrl.projectActivity.length > 0">
+                                <div class="content">
+                                    <div ng-repeat="item in projectDashboardCtrl.projectActivity">
+                                        <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">Task locked for mapping by <a
+                                                href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                        <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">Task locked for validation by <a
+                                                href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Task marked as bad imagery by <a
+                                                href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">Task mapped by <a
+                                                href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Task validated by <a
+                                                href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Task invalidated by <a
+                                                href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">Task marked as ready by <a
+                                                href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                        <p>
+                                            <em am-time-ago="item.actionDate | amUtc | amLocal"></em>
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                            <button class="button button--achromic"
+                                <button class="button button--achromic"
                                     ng-class="!projectDashboardCtrl.projectActivityPagination.hasPrev ? 'disabled' : ''"
                                     ng-click="projectDashboardCtrl.getLastActivity(projectDashboardCtrl.projectActivityPagination.prevNum)">
-                                Older
-                            </button>
-                            <button class="button button--achromic"
+                                    Newer
+                                </button>
+                                <button class="button button--achromic"
                                     ng-class="!projectDashboardCtrl.projectActivityPagination.hasNext ? 'disabled' : ''"
                                     ng-click="projectDashboardCtrl.getLastActivity(projectDashboardCtrl.projectActivityPagination.nextNum)">
-                                Newer
-                            </button>
+                                    Older
+                                </button>
+                            </div>
                         </div>
                         <div class="right">
                             <h2>Contributions</h2>
@@ -100,7 +103,7 @@
                     <h2>Comments by users</h2>
                       <h6 class="heading-alt">{{ projectDashboardCtrl.selectedProject.name }}</h6>
                     <div ng-show="projectDashboardCtrl.projectComments.length < 1">
-                        No comments for this project.
+                        No comments (yet).
                     </div>
                     <div ng-show="projectDashboardCtrl.projectComments.length > 0">
                         <table class="table table-dashboard-comments">

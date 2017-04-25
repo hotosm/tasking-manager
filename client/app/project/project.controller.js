@@ -11,6 +11,7 @@
 
     function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
         var vm = this;
+        vm.id = 0;
         vm.projectData = null;
         vm.taskVectorLayer = null;
         vm.highlightVectorLayer = null;
@@ -104,14 +105,14 @@
                 });
             });
 
-            var id = $routeParams.id;
-            initialiseProject(id);
-            updateMappedTaskPerUser(id);
+            vm.id = $routeParams.id;
+            initialiseProject(vm.id);
+            updateMappedTaskPerUser(vm.id);
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
-                refreshProject(id);
-                updateMappedTaskPerUser(id);
+                refreshProject(vm.id);
+                updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refesh too
             }, 10000);
         }
@@ -686,8 +687,7 @@
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var extent = selectedFeature.getGeometry().getExtent();
-            var bboxTransformed = geospatialService.transformExtentToLatLon(extent);
-            var bboxArray = bboxTransformed.split(',');
+            var bboxArray = geospatialService.transformExtentToLatLonArray(extent);
             var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
             // Loop through the history and get a unique list of users to pass to Overpass Turbo
             var userList = [];
