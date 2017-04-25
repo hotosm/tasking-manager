@@ -87,18 +87,19 @@
 
             // iterate over the projects and add the center of the project as a point on the map
             for (var i = 0; i < projects.length; i++){
-                showProjectOnMap(projects[i], typeOfProject);
+                showProjectOnMap(projects[i], projects[i].aoiCentroid, typeOfProject);
             }
         }
 
         /**
          * Show project on map
          * @param project
+         * @param aoiCentroid
          * @param type - optional
          * @param zoomTo - optional
          */
-        function showProjectOnMap(project, type, zoomTo) {
-            var projectCenter = ol.proj.transform(project.aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
+        function showProjectOnMap(project, aoiCentroid, type, zoomTo) {
+            var projectCenter = ol.proj.transform(aoiCentroid.coordinates, 'EPSG:4326', 'EPSG:3857');
             var feature = new ol.Feature({
                 geometry: new ol.geom.Point(projectCenter)
             });
