@@ -98,3 +98,8 @@ class TestUserService(unittest.TestCase):
         # Act
         with self.assertRaises(UserServiceError):
             UserService.add_role_to_user(1, 'test', 'ADMIN')
+
+    def test_unknown_level_raise_error_when_setting_level(self):
+        # Act / Assert
+        with self.assertRaises(UserServiceError):
+            UserService.set_user_mapping_level('test', 'TEST')

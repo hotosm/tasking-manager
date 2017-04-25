@@ -98,6 +98,11 @@ class User(db.Model):
         self.role = role.value
         db.session.commit()
 
+    def set_mapping_level(self, level: MappingLevel):
+        """ Sets the supplied level on the user """
+        self.mapping_level = level.value
+        db.session.commit()
+
     def delete(self):
         """ Delete the user in scope from DB """
         db.session.delete(self)

@@ -125,6 +125,22 @@ class UserService:
         user.set_user_role(requested_role)
 
     @staticmethod
+    def set_user_mapping_level(username: str, level: str) -> User:
+        """
+        Sets the users mapping level
+        :raises: UserServiceError 
+        """
+        try:
+            requested_level = MappingLevel[level.upper()]
+        except KeyError:
+            raise UserServiceError(f'Unknown role {level} accepted values are BEGINNER, INTERMEDIATE, ADVANCED')
+
+        user = UserService.get_user_by_username(username)
+        user.set_mapping_level(requested_level)
+
+        return user
+
+    @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API
