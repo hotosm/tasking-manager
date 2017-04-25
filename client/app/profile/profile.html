@@ -26,13 +26,32 @@
                         <div class="roles pull-right">
                             <h4 ng-show="profileCtrl.userDetails.role === 'VALIDATOR'">
                                 <i class="hot-ds-icon-circle-tick"></i> Validator
-                            </h4>
-                            <h4 ng-show="profileCtrl.userDetails.role === 'ADMIN'">
-                                <i class="hot-ds-icon-pencil"></i> Administrator
+                                <button class="button button--achromic"
+                                        ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                        ng-click="profileCtrl.setRole('MAPPER')">Remove privileges</button>
                             </h4>
                             <h4 ng-show="profileCtrl.userDetails.role === 'PROJECT_MANAGER'">
                                 <i class="hot-ds-icon-pencil"></i> Project Manager
+                                <button class="button button--achromic"
+                                        ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                        ng-click="profileCtrl.setRole('MAPPER')">Remove privileges</button>
                             </h4>
+                            <h4 ng-show="profileCtrl.userDetails.role === 'ADMIN'">
+                                <i class="hot-ds-icon-pencil"></i> Administrator
+                                <button class="button button--achromic"
+                                        ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                        ng-click="profileCtrl.setRole('MAPPER')">Remove privileges</button>
+                            </h4>
+                            <button class="button button--achromic"
+                                    ng-show="profileCtrl.userDetails.role != 'PROJECT_MANAGER' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                    ng-click="profileCtrl.setRole('PROJECT_MANAGER')">Set as project manager</button>
+                            <button class="button button--achromic"
+                                    ng-show="profileCtrl.userDetails.role != 'VALIDATOR' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                    ng-click="profileCtrl.setRole('VALIDATOR')">Set as validator</button>
+                            <button class="button button--achromic"
+                                    ng-show="profileCtrl.userDetails.role != 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                    ng-click="profileCtrl.setRole('ADMIN')">Set as administrator</button>
+                            <p ng-show="profileCtrl.errorSetRole" class="error">An error occurred when setting the role.</p>
                         </div>
                     </div>
                 </div>

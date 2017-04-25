@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', 'accountService','mapService','projectMapService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', 'accountService','mapService','projectMapService','userService', profileController]);
 
-    function profileController($routeParams, $location, accountService, mapService, projectMapService) {
+    function profileController($routeParams, $location, accountService, mapService, projectMapService, userService) {
         var vm = this;
         vm.username = '';
         vm.currentlyLoggedInUser = null;
@@ -18,6 +18,7 @@
         vm.projects = [];
         vm.map = null;
         vm.highlightSource = null;
+        vm.errorSetRole = false;
 
         activate();
 
@@ -35,22 +36,10 @@
          */
         function setUserDetails(){
             // Get account details from account service
-            var resultsPromise = accountService.getUser(vm.username);
-            resultsPromise.then(function (data) {
-                // On success, set the account details for this user
-                vm.userDetails = data;
-                // Get the account for the currently logged in user
-                var account = accountService.getAccount();
-                if (account){
-                    vm.currentlyLoggedInUser = account;
-                }
-            }, function () {
-                // Could not find the user, redirect to the homepage
-                $location.path('/');
-            });
+            getUser();
 
             // Get OSM account details from account service
-            var osmDetailsPromise = accountService.getOSMUserDetails(vm.username);
+            var osmDetailsPromise = userService.getOSMUserDetails(vm.username);
             osmDetailsPromise.then(function (data) {
                 // On success, set the OSM account details for this user
                 vm.osmUserDetails = data;
@@ -121,5 +110,38 @@
         vm.highlightProjectOnMap = function(id){
             projectMapService.highlightProjectOnMap(vm.projects, id);
         };
+
+        /**
+         * Set the user's role
+         * @param role
+         */
+        vm.setRole = function(role){
+            vm.errorSetRole = false;
+            var resultsPromise = userService.setRole(vm.username, role);
+            resultsPromise.then(function (data) {
+                getUser();
+            }, function(data){
+                vm.errorSetRole = true;
+            });
+        };
+
+        /**
+         * Get the user's details from the account service
+         */
+        function getUser(){
+            var resultsPromise = accountService.getUser(vm.username);
+            resultsPromise.then(function (data) {
+                // On success, set the account details for this user
+                vm.userDetails = data;
+                // Get the account for the currently logged in user
+                var account = accountService.getAccount();
+                if (account){
+                    vm.currentlyLoggedInUser = account;
+                }
+            }, function () {
+                // Could not find the user, redirect to the homepage
+                $location.path('/');
+            });
+        }
     }
 })();

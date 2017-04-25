@@ -714,8 +714,6 @@
 
         /**
          * Start the editor by getting the editor options and the URL to call
-         * TODO: complete for all editors
-         * See: https://github.com/hotosm/osm-tasking-manager2/blob/d3a3b70d09256ba16bdff1b35909ad4f3b9f66e2/osmtm/static/js/project.js
          * @param editor
          */
         vm.startEditor = function (editor) {
@@ -848,7 +846,7 @@
                 return vm.lockedTaskData.taskId;
             }
             return null;
-        }
+        };
 
         /**
          * Higlights the set of tasks on the map
@@ -858,7 +856,7 @@
             //highlight features
             var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), doneTaskIds);
             vm.highlightVectorLayer.getSource().addFeatures(features);
-        }
+        };
 
         /**
          * Locks the set of tasks for validation
@@ -903,7 +901,7 @@
             }, function (error) {
                 onLockError(vm.projectData.projectId, error)
             });
-        }
+        };
 
         vm.resetToSelectingStep = function () {
             //TODO - The following reset lines are repeated in several places in this file.
@@ -918,19 +916,19 @@
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
 
-        }
+        };
 
         vm.resetTaskData = function () {
             vm.selectedTaskData = null;
             vm.lockedTaskData = null;
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
-        }
+        };
 
         vm.resetStatusFlags = function () {
             vm.isSelectedMappable = false;
             vm.isSelectedValidatable = false;
-        }
+        };
 
         vm.resetErrors = function () {
             vm.taskErrorMapping = '';
@@ -939,7 +937,7 @@
             vm.taskLockErrorMessage = '';
             vm.taskUnLockError = false;
             vm.taskUnLockErrorMessage = '';
-        }
+        };
 
         /**
          * Create the url for downloading the currently selected tasks as a gpx file
@@ -950,7 +948,7 @@
                 return configService.tmAPI + '/project/' + vm.projectData.projectId + '/tasks_as_gpx?tasks=' + vm.getSelectTaskIds() + '&as_file=true';
             }
             else return '';
-        }
+        };
 
         /**
          * Sorts the table by property name
