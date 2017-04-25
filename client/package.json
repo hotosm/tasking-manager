@@ -28,7 +28,7 @@
     "gulp-sass": "^3.1.0",
     "gulp-uglify": "^2.0.1",
     "hot-design-system": "git+https://github.com/hotosm/hot-design-system.git",
-    "jasmine-core": "^2.5.2",
+    "jasmine-core": "~2.5.2",
     "jeet": "^7.1.0",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
