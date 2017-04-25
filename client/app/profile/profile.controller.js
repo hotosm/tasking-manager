@@ -7,9 +7,10 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', 'accountService','mapService','projectMapService','userService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', profileController]);
 
-    function profileController($routeParams, $location, accountService, mapService, projectMapService, userService) {
+    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService) {
+
         var vm = this;
         vm.username = '';
         vm.currentlyLoggedInUser = null;
@@ -28,13 +29,14 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
-            setUserProjectsAndStats();
+            projectMapService.showInfoOnHoverOrClick();
+            getUserProjects();
         }
 
         /**
          * Set user details by calling the APIs
          */
-        function setUserDetails(){
+        function setUserDetails() {
             // Get account details from account service
             getUser();
 
@@ -47,80 +49,31 @@
         }
 
         /**
-         * Set the user's project
-         * TODO: get from API
+         * Gets the user's project
          */
-        function setUserProjectsAndStats(){
-            vm.projects = [
-                {
-                    id: 1,
-                    name: 'Cyclone Enawo: Anjanazan, Madagascar 1',
-                    tasksMapped: 3,
-                    tasksValidated: 5,
-                    status: 'active',
-                    aoiCentroid: {
-                        coordinates: [-2.207, 24.2578]
-                    },
-                    lastUpdated: '2017-03-31T10:48:41.161085'
-                },
-                {
-                    id: 222,
-                    name: 'Missing Maps: Zambia Malaria Elimination 46',
-                    tasksMapped: 30,
-                    tasksValidated: 50,
-                    status: 'active',
-                    aoiCentroid: {
-                        coordinates: [-0.489, 51.28]
-                    },
-                    lastUpdated: '2017-04-04T15:51:21.135789'
-                },
-                {
-                    id: 21,
-                    name: 'Osun State Road Network Mapping for Vaccine Delivery Routing, Nigeria',
-                    tasksMapped: 300,
-                    tasksValidated: 500,
-                    status: 'active',
-                    aoiCentroid: {
-                        coordinates: [6.915, 0.703]
-                    },
-                    lastUpdated: '2017-04-04T15:51:21.135789'
+        function getUserProjects() {
+            var resultsPromise = userService.getUserProjects(vm.username);
+            resultsPromise.then(function (data) {
+                vm.projects = data.mappedProjects;
+                // iterate over the projects and add the center of the project as a point on the map
+                for (var i = 0; i < vm.projects.length; i++) {
+                    projectMapService.showProjectOnMap(vm.projects[i], vm.projects[i].centroid);
                 }
-            ];
-            projectMapService.showProjectsOnMap(vm.projects);
+            }, function () {
+                vm.projects = [];
+            });
         }
-
-        /**
-         * Navigate to the project contribute page
-         * @param id
-         */
-        vm.navigateToProject = function(id){
-            $location.path('/project/' + id);
-        };
-
-        /**
-         * Remove all highlighted projects from the map
-         */
-        vm.removeHighlightOnMap = function(){
-            projectMapService.removeHighlightOnMap();
-        };
-
-        /**
-         * Highlight project on map by showing a highlights layer
-         */
-        vm.highlightProjectOnMap = function(id){
-            projectMapService.highlightProjectOnMap(vm.projects, id);
-        };
 
         /**
          * Set the user's role
          * @param role
          */
-        vm.setRole = function(role){
+        vm.setRole = function (role) {
             vm.errorSetRole = false;
             var resultsPromise = userService.setRole(vm.username, role);
             resultsPromise.then(function (data) {
                 getUser();
-            }, function(data){
+            }, function (data) {
                 vm.errorSetRole = true;
             });
         };
@@ -128,20 +81,38 @@
         /**
          * Get the user's details from the account service
          */
-        function getUser(){
+        function getUser() {
             var resultsPromise = accountService.getUser(vm.username);
             resultsPromise.then(function (data) {
                 // On success, set the account details for this user
                 vm.userDetails = data;
                 // Get the account for the currently logged in user
                 var account = accountService.getAccount();
-                if (account){
+                if (account) {
                     vm.currentlyLoggedInUser = account;
                 }
             }, function () {
                 // Could not find the user, redirect to the homepage
                 $location.path('/');
             });
+        }
+
+        /**
+         * View project for user and bounding box in Overpass Turbo
+         * @param bboxArray
+         */
+        vm.viewOverpassTurbo = function (aoi) {
+            var feature = geospatialService.getFeatureFromGeoJSON(aoi);
+            var olExtent = feature.getGeometry().getExtent();
+            var bboxArray = geospatialService.transformExtentToLatLonArray(olExtent);
+            var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
+            var queryPrefix = '<osm-script output="json" timeout="25"><union>';
+            var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
+            var queryMiddle = '<query type="node"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
+                '<query type="way"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
+                '<query type="relation"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>';
+            var query = queryPrefix + queryMiddle + querySuffix;
+            $window.open('http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query));
         }
     }
 })();

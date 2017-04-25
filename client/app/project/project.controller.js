@@ -687,8 +687,7 @@
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
             var extent = selectedFeature.getGeometry().getExtent();
-            var bboxTransformed = geospatialService.transformExtentToLatLon(extent);
-            var bboxArray = bboxTransformed.split(',');
+            var bboxArray = geospatialService.transformExtentToLatLonArray(extent);
             var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
             // Loop through the history and get a unique list of users to pass to Overpass Turbo
             var userList = [];

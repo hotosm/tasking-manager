@@ -24,33 +24,52 @@
                             <p><a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}/history">OSM edit history</a></p>
                         </div>
                         <div class="roles pull-right">
-                            <h4 ng-show="profileCtrl.userDetails.role === 'VALIDATOR'">
-                                <i class="hot-ds-icon-circle-tick"></i> Validator
+                            <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
+                                <h4 ng-show="profileCtrl.userDetails.role === 'VALIDATOR'">
+                                    <i class="hot-ds-icon-circle-tick"></i> Validator
+                                </h4>
+                                <h4 ng-show="profileCtrl.userDetails.role === 'PROJECT_MANAGER'">
+                                    <i class="hot-ds-icon-pencil"></i> Project Manager
+                                </h4>
+                                <h4 ng-show="profileCtrl.userDetails.role === 'ADMIN'">
+                                    <i class="hot-ds-icon-pencil"></i> Administrator
+                                </h4>
+                            </div>
+                            <div ng-hide="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
+                                <h4 ng-show="profileCtrl.userDetails.role === 'VALIDATOR'">
+                                    <i class="hot-ds-icon-circle-tick"></i> Validator
+                                    <button class="button button--achromic"
+                                            ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                            ng-click="profileCtrl.setRole('MAPPER')">Remove privileges
+                                    </button>
+                                </h4>
+                                <h4 ng-show="profileCtrl.userDetails.role === 'PROJECT_MANAGER'">
+                                    <i class="hot-ds-icon-pencil"></i> Project Manager
+                                    <button class="button button--achromic"
+                                            ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                            ng-click="profileCtrl.setRole('MAPPER')">Remove privileges
+                                    </button>
+                                </h4>
+                                <h4 ng-show="profileCtrl.userDetails.role === 'ADMIN'">
+                                    <i class="hot-ds-icon-pencil"></i> Administrator
+                                    <button class="button button--achromic"
+                                            ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                            ng-click="profileCtrl.setRole('MAPPER')">Remove privileges
+                                    </button>
+                                </h4>
                                 <button class="button button--achromic"
-                                        ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                        ng-click="profileCtrl.setRole('MAPPER')">Remove privileges</button>
-                            </h4>
-                            <h4 ng-show="profileCtrl.userDetails.role === 'PROJECT_MANAGER'">
-                                <i class="hot-ds-icon-pencil"></i> Project Manager
+                                        ng-show="profileCtrl.userDetails.role != 'PROJECT_MANAGER' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                        ng-click="profileCtrl.setRole('PROJECT_MANAGER')">Set as project manager
+                                </button>
                                 <button class="button button--achromic"
-                                        ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                        ng-click="profileCtrl.setRole('MAPPER')">Remove privileges</button>
-                            </h4>
-                            <h4 ng-show="profileCtrl.userDetails.role === 'ADMIN'">
-                                <i class="hot-ds-icon-pencil"></i> Administrator
+                                        ng-show="profileCtrl.userDetails.role != 'VALIDATOR' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                        ng-click="profileCtrl.setRole('VALIDATOR')">Set as validator
+                                </button>
                                 <button class="button button--achromic"
-                                        ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                        ng-click="profileCtrl.setRole('MAPPER')">Remove privileges</button>
-                            </h4>
-                            <button class="button button--achromic"
-                                    ng-show="profileCtrl.userDetails.role != 'PROJECT_MANAGER' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                    ng-click="profileCtrl.setRole('PROJECT_MANAGER')">Set as project manager</button>
-                            <button class="button button--achromic"
-                                    ng-show="profileCtrl.userDetails.role != 'VALIDATOR' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                    ng-click="profileCtrl.setRole('VALIDATOR')">Set as validator</button>
-                            <button class="button button--achromic"
-                                    ng-show="profileCtrl.userDetails.role != 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                    ng-click="profileCtrl.setRole('ADMIN')">Set as administrator</button>
+                                        ng-show="profileCtrl.userDetails.role != 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                        ng-click="profileCtrl.setRole('ADMIN')">Set as administrator
+                                </button>
+                            </div>
                             <p ng-show="profileCtrl.errorSetRole" class="error">An error occurred when setting the role.</p>
                         </div>
                     </div>
@@ -73,7 +92,8 @@
             <div class="section__body">
                 <div class="inner">
                     <h2>Projects</h2>
-                    <div class="profile-projects-list">
+                     <p ng-show="!profileCtrl.projects.length > 0">No contributions to projects (yet).</p>
+                    <div ng-show="profileCtrl.projects.length > 0" class="profile-projects-list">
                         <table class="table">
                             <thead>
                             <tr>
@@ -82,25 +102,27 @@
                                 <th>Number of tasks mapped</th>
                                 <th>Number of tasks validated</th>
                                 <th>Status</th>
+                                <th>Overpass</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="project in profileCtrl.projects | orderBy: '-lastUpdated'"
-                                class="pointer tr-hover"
-                                ng-mouseover="profileCtrl.highlightProjectOnMap(project.id)"
-                                ng-mouseleave="profileCtrl.removeHighlightOnMap()"
-                                ng-click="profileCtrl.navigateToProject(project.id)">
-                                <th scope="row">{{ project.id }}</th>
-                                <td>{{ project.name }}</td>
+                            <tr ng-repeat="project in profileCtrl.projects">
+                                <td>{{ project.projectId }}</td>
+                                <td><a ng-href="project/{{ project.projectId }}">{{ project.name }}</a></td>
                                 <td>{{ project.tasksMapped }}</td>
                                 <td>{{ project.tasksValidated }}</td>
                                 <td>{{ project.status }}</td>
+                                <td><a href="" ng-click="profileCtrl.viewOverpassTurbo(project.aoi)">View in Overpass Turbo</a></td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                         <div id="map" class="map-container"></div>
+                        <div id="popup" class="ol-popup">
+                            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                            <div id="popup-content"></div>
+                        </div>
                     </div>
                 </div>
             </div>
