@@ -92,7 +92,7 @@ def init_flask_restful_routes(app):
     from server.api.authentication_apis import LoginAPI, OAuthAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole
+    from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, MappedTasksByUser
     from server.api.grid_apis import IntersectingTilesAPI
 
@@ -124,6 +124,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UserMappedProjects,            '/api/v1/user/<string:username>/mapped-projects')
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')
+    api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')
