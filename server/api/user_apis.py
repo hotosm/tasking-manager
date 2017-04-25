@@ -128,7 +128,7 @@ class UserSetRole(Resource):
     @token_auth.login_required
     def post(self, username, role):
         """
-        Adds the specified role to the user
+        Allows PMs to set the users role
         ---
         tags:
           - user
@@ -155,7 +155,7 @@ class UserSetRole(Resource):
               default: ADMIN 
         responses:
             200:
-                description: Role added
+                description: Role set
             401:
                 description: Unauthorized - Invalid credentials
             403:
@@ -170,6 +170,62 @@ class UserSetRole(Resource):
             return {"Success": "Role Added"}, 200
         except UserServiceError:
             return {"Error": "Not allowed"}, 403
+        except NotFound:
+            return {"Error": "User or mapping not found"}, 404
+        except Exception as e:
+            error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class UserSetLevel(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, username, level):
+        """
+        Allows PMs to set a users mapping level
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: username
+              in: path
+              description: The users username
+              required: true
+              type: string
+              default: Thinkwhere
+            - name: level
+              in: path
+              description: The mapping level that should be set
+              required: true
+              type: string
+              default: ADVANCED 
+        responses:
+            200:
+                description: Level set
+            400:
+                description: Bad Request - Client Error
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            UserService.set_user_mapping_level(username, level)
+            return {"Success": "Level set"}, 200
+        except UserServiceError:
+            return {"Error": "Not allowed"}, 400
         except NotFound:
             return {"Error": "User or mapping not found"}, 404
         except Exception as e:
