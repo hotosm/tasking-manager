@@ -1,7 +1,7 @@
 import os
 import unittest
 from server import create_app
-from server.services.user_service import UserService
+from server.services.user_service import UserService, MappingLevel
 from tests.server.helpers.test_helpers import create_canned_project
 
 
@@ -50,3 +50,12 @@ class TestAuthenticationService(unittest.TestCase):
         mapped_project = projects.mapped_projects[0]
         self.assertEqual(mapped_project.project_id, self.test_project.id)  # We should find we've mapped the test project
 
+    def test_set_level_adds_level_to_user(self):
+        if self.skip_tests:
+            return
+
+        # Act
+        user = UserService.set_user_mapping_level(self.test_user.username, MappingLevel.ADVANCED.name)
+
+        # Assert
+        self.assertEqual(MappingLevel(user.mapping_level), MappingLevel.ADVANCED)
