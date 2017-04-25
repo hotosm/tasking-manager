@@ -203,7 +203,7 @@
             var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi)
             trimTaskGridPromise.then(function (data) {
                 projectService.removeTaskGrid();
-                var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data)
+                var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
             }, function () {

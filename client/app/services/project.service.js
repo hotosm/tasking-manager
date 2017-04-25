@@ -610,8 +610,8 @@
         }
 
         function trimTaskGrid(clipTasksToAoi) {
-            var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
-            var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid);
+            var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi, 'EPSG:3857');
+            var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid, 'EPSG:3857');
 
             // Get the geometry of the area of interest. It should only have one feature.
             var gridAndAoi = {
