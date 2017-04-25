@@ -497,8 +497,6 @@ class TestGridService(unittest.TestCase):
         # act
         grid = GridService.trim_grid_to_aoi(grid_dto)
         # assert
-        print(json.dumps(grid))
-        print(json.dumps(expected))
         self.assertEquals(json.dumps(grid), json.dumps(expected))
 
     def test_trim_grid_to_aoi_noclip(self):
