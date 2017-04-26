@@ -170,7 +170,7 @@
                 }
                 if (colour === 'yellow'){
                     fillColour = [255, 255, 0, 0.5]; // yellow
-                    strokeColour = [255, 255, 0, 1]; // yellow
+                    strokeColour = [0, 0, 0, 1]; // black
                 }
                 if (colour === 'blue'){
                     fillColour = [0, 0, 255, 0.5]; // blue

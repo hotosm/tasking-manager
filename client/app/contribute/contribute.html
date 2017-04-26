@@ -204,10 +204,39 @@
             <div class="section__body">
                 <div class="inner">
                     <div>
-                        <div id="map" class="map-container"></div>
+                        <div id="map" class="map-container">
+
+                        </div>
                         <div id="popup" class="ol-popup">
                             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                             <div id="popup-content"></div>
+                        </div>
+                         <div id="legend-container" class="ol-control legend-control" style="background-color: white">
+                            <h3>Legend</h3>
+                            <div>
+                                <svg height="25" width="25">
+                                    <circle cx="15" cy="15" r="8" stroke="red" stroke-width="1" fill="red" fill-opacity="0.5" />
+                                </svg>
+                                Urgent
+                            </div>
+                            <div>
+                                <svg height="25" width="25">
+                                    <circle cx="15" cy="15" r="8" stroke="orange" stroke-width="1" fill="orange" fill-opacity="0.5" />
+                                </svg>
+                                High
+                            </div>
+                            <div>
+                                <svg height="25" width="25">
+                                    <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1" fill="yellow" fill-opacity="0.5" />
+                                </svg>
+                                Medium
+                            </div>
+                            <div>
+                                <svg height="25" width="25">
+                                    <circle cx="15" cy="15" r="8" stroke="blue" stroke-width="1" fill="blue" fill-opacity="0.5" />
+                                </svg>
+                                Low
+                            </div>
                         </div>
                     </div>
                 </div>
