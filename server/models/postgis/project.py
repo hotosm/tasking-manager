@@ -67,7 +67,7 @@ class Project(db.Model):
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
     last_updated = db.Column(db.DateTime, default=timestamp)
-    license_id = db.Column(db.Integer, db.ForeignKey('licenses.id'))
+    license_id = db.Column(db.Integer, db.ForeignKey('licenses.id', name='fk_licenses'))
 
     # Tags
     mapping_types = db.Column(db.ARRAY(db.Integer), index=True)
