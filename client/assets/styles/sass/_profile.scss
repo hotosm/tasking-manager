@@ -4,7 +4,7 @@
   .details {
     @include column(12/12);
     @include media(medium-up) {
-      @include column(8/12);
+      @include column(7/12);
     }
   }
 
@@ -12,7 +12,7 @@
     padding-top: 3rem;
     @include column(12/12);
     @include media(medium-up) {
-      @include column(4/12);
+      @include column(5/12);
     }
   }
 }
@@ -48,6 +48,15 @@
     letter-spacing: 1px;
     opacity: .7;
     line-height: 18px;
+  }
+}
+
+.roles {
+  button {
+    margin: 0 .5rem .5rem 0;
+  }
+  .button-group {
+    margin: 0 .5rem 1.5rem 0;
   }
 }
 
