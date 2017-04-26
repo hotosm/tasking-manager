@@ -12,7 +12,7 @@ class License(db.Model):
     __tablename__ = "licenses"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, unique=True)
     description = db.Column(db.String)
     plain_text = db.Column(db.String)
 

@@ -9,9 +9,25 @@ class LicenseAPI(Resource):
         Creates a new mapping license
         ---
         tags:
-          - licenses
+            - licenses
         produces:
-          - application/json
+            - application/json
+        parameters:
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating a new mapping license
+              schema:
+                  properties:
+                      name:
+                          type: string
+                          default: Public Domain
+                      description:
+                          type: string
+                          default: This imagery is in the public domain.
+                      plainText:
+                          type: string
+                          default: This imagery is in the public domain.  
         responses:
             200:
                 description: New license created
