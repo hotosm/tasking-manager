@@ -101,6 +101,7 @@ def init_flask_restful_routes(app):
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
     api.add_resource(LicenseAPI,                    '/api/v1/license', endpoint="create_license", methods=['PUT'])
+    api.add_resource(LicenseAPI,                    '/api/v1/license/<int:license_id>', methods=['GET', 'POST', 'DELETE'])
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')

@@ -1,4 +1,5 @@
 from server.models.dtos.licenses_dto import LicenseDTO
+from server.models.postgis.utils import NotFound
 from server import db
 
 # Secondary table defining the many-to-many join
@@ -30,3 +31,19 @@ class License(db.Model):
 
         db.session.add(new_license)
         db.session.commit()
+
+    @staticmethod
+    def get_license_as_dto(license_id: int) -> LicenseDTO:
+        """ Get the license from the DB """
+        result = License.query.filter_by(id=license_id).one_or_none()
+
+        if result is None:
+            raise NotFound()
+
+        dto = LicenseDTO()
+        dto.id = result.id
+        dto.name = result.name
+        dto.description = result.description
+        dto.plain_text = result.plain_text
+
+        return dto

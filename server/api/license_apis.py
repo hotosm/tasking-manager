@@ -1,6 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.licenses_dto import LicenseDTO
+from server.models.postgis.utils import NotFound
 from server.services.license_service import LicenseService
 
 
@@ -33,6 +34,8 @@ class LicenseAPI(Resource):
         responses:
             200:
                 description: New license created
+            400:
+                description: Invalid Request
             500:
                 description: Internal Server Error
         """
@@ -46,6 +49,39 @@ class LicenseAPI(Resource):
         try:
             LicenseService.create_licence(license_dto)
             return {"Success": "License created"}, 200
+        except Exception as e:
+            error_msg = f'License PUT - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    def get(self, license_id):
+        """
+        Get specified mapping license
+        ---
+        tags:
+            - licenses
+        produces:
+            - application/json
+        parameters:
+            - name: license_id
+              in: path
+              description: The unique license ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: License found
+            404:
+                description: License not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            license_dto = LicenseService.get_license(license_id)
+            return license_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "License Not Found"}, 404
         except Exception as e:
             error_msg = f'License PUT - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
