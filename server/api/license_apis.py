@@ -1,5 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
+from server.services.authentication_service import token_auth, tm
 from server.models.dtos.licenses_dto import LicenseDTO
 from server.models.postgis.utils import NotFound
 from server.services.license_service import LicenseService
@@ -7,6 +8,8 @@ from server.services.license_service import LicenseService
 
 class LicenseAPI(Resource):
 
+    @tm.pm_only()
+    @token_auth.login_required
     def put(self):
         """
         Creates a new mapping license
@@ -16,6 +19,12 @@ class LicenseAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: body
               name: body
               required: true
@@ -36,6 +45,8 @@ class LicenseAPI(Resource):
                 description: New license created
             400:
                 description: Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
             500:
                 description: Internal Server Error
         """
@@ -87,6 +98,8 @@ class LicenseAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
+    @token_auth.login_required
     def post(self, license_id):
         """
         Update  a new mapping license
@@ -96,6 +109,12 @@ class LicenseAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: license_id
               in: path
               description: The unique license ID
@@ -122,6 +141,8 @@ class LicenseAPI(Resource):
                 description: New license created
             400:
                 description: Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
             500:
                 description: Internal Server Error
         """
@@ -143,6 +164,8 @@ class LicenseAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
+    @token_auth.login_required
     def delete(self, license_id):
         """
         Delete the specified mapping license
@@ -152,6 +175,12 @@ class LicenseAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: license_id
               in: path
               description: The unique license ID
@@ -161,6 +190,8 @@ class LicenseAPI(Resource):
         responses:
             200:
                 description: License deleted
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: License not found
             500:
