@@ -95,6 +95,7 @@ def init_flask_restful_routes(app):
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, MappedTasksByUser
+    from server.api.grid_apis import IntersectingTilesAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
@@ -129,3 +130,4 @@ def init_flask_restful_routes(app):
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')
+    api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')

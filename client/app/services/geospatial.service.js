@@ -37,10 +37,10 @@
          * @param {string} geojson
          * @returns {Array.<ol.Feature>}
          */
-        function getFeaturesFromGeoJSON(geojson) {
+        function getFeaturesFromGeoJSON(geojson, dataProjection) {
             var format = new ol.format.GeoJSON();
             var features = format.readFeatures(geojson, {
-                dataProjection: DATA_PROJECTION,
+                dataProjection: dataProjection ? dataProjection : DATA_PROJECTION,
                 featureProjection: MAP_PROJECTION
             });
             return features;
@@ -124,10 +124,10 @@
          * @param features
          * @returns {object} geojson
          */
-        function getGeoJSONObjectFromFeatures(features) {
+        function getGeoJSONObjectFromFeatures(features, dataProjection) {
             var format = new ol.format.GeoJSON();
             var geojsonObject = format.writeFeaturesObject(features, {
-                dataProjection: DATA_PROJECTION,
+                dataProjection: dataProjection ? dataProjection : DATA_PROJECTION,
                 featureProjection: MAP_PROJECTION
             });
             return geojsonObject;

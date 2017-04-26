@@ -49,7 +49,8 @@
             getCommentsForProject: getCommentsForProject,
             userCanMapProject: userCanMapProject,
             userCanValidateProject: userCanValidateProject,
-            getMyProjects: getMyProjects
+            getMyProjects: getMyProjects,
+            trimTaskGrid: trimTaskGrid
         };
 
         return service;
@@ -107,17 +108,14 @@
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
                     var taskFeatureGeoJSON = geospatialService.getGeoJSONFromFeature(taskFeature);
-                    // Check if the generated task feature intersects with the area of interest
-                    var intersection = turf.intersect(JSON.parse(taskFeatureGeoJSON), JSON.parse(areaOfInterestGeoJSON));
-                    // Add the task feature to the array if it intersects
-                    if (intersection) {
-                        taskFeature.setProperties({
-                            'x': x,
-                            'y': y,
-                            'zoom': zoomLevel
-                        });
-                        taskFeatures.push(taskFeature);
-                    }
+                    taskFeature.setProperties({
+                        'x': x,
+                        'y': y,
+                        'zoom': zoomLevel,
+                        'splittable': true
+                    });
+                    taskFeatures.push(taskFeature);
+
                 }
             }
             return taskFeatures;
@@ -224,10 +222,10 @@
          * @returns {{valid: boolean, message: string}}
          */
         function validateAOI(features) {
-             var validationResult = {
-                 valid: true,
-                 message: ''
-             };
+            var validationResult = {
+                valid: true,
+                message: ''
+            };
 
             // check we have a non empty array of things
             if (!features || !features.length || features.length == 0) {
@@ -605,6 +603,41 @@
                 // or server returns response with an error status.
                 return $q.reject("error");
             });
+        }
+
+        /**
+         * Creates a new task grid which has been trimmed to the aoi
+         * @param clipTasksToAoi
+         * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
+         */
+        function trimTaskGrid(clipTasksToAoi) {
+            // TODO the aoi may have more than one feature when dealing with imported aoi's
+            var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi, 'EPSG:3857');
+            var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid, 'EPSG:3857');
+
+            //create the data for the post
+            var gridAndAoi = {
+                areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
+                clipToAoi: clipTasksToAoi,
+                grid: taskGridGeoJSON
+            };
+
+            // Returns a promise
+            return $http({
+                method: 'PUT',
+                url: configService.tmAPI + '/grid/intersecting-tiles',
+                data: gridAndAoi,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+
         }
     }
 })();

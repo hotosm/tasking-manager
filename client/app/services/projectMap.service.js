@@ -26,9 +26,9 @@
         /**
          * Elements that make up the popup.
          */
-        var container = document.getElementById('popup');
-        var content = document.getElementById('popup-content');
-        var closer = document.getElementById('popup-closer');
+        var container = null;
+        var content = null;
+        var closer = null;
         var overlay = null;
 
         return service;
@@ -149,6 +149,15 @@
          * Show feature info on hover or click
          */
         function showInfoOnHoverOrClick() {
+
+            /**
+            * Elements that make up the popup.
+            */
+            container = document.getElementById('popup');
+            content = document.getElementById('popup-content');
+            closer = document.getElementById('popup-closer');
+            overlay = null;
+
             /**
              * Create an overlay to anchor the popup to the map.
              */

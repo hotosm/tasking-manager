@@ -50,7 +50,7 @@
                 vm.project = data;
                 var customColours = false;
                 var zoomToProject = true;
-                projectMapService.showProjectOnMap(vm.project, customColours, zoomToProject);
+                projectMapService.showProjectOnMap(vm.project, vm.project.aoiCentroid, customColours, zoomToProject);
             }, function(data){
                // TODO
             });
