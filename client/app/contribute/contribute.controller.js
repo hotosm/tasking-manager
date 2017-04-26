@@ -85,7 +85,24 @@
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
-                projectMapService.showProjectsOnMap(vm.results);
+                for (var i = 0; i < vm.results.length; i++){
+                    if (vm.results[i].priority === 'URGENT'){
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "red", false);
+                    }
+                    else if (vm.results[i].priority === 'HIGH'){
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "orange", false);
+                    }
+                    else if (vm.results[i].priority === 'MEDIUM'){
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "yellow", false);
+                    }
+                    else if (vm.results[i].priority === 'LOW'){
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "blue", false);
+                    }
+                    else {
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "red", false);
+                    }
+                }
+
             }, function(){
                 // On error
                 vm.results = [];
