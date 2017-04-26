@@ -605,11 +605,17 @@
             });
         }
 
+        /**
+         * Creates a new task grid which has been trimmed to the aoi
+         * @param clipTasksToAoi
+         * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
+         */
         function trimTaskGrid(clipTasksToAoi) {
+            // TODO the aoi may have more than one feature when dealing with imported aoi's
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi, 'EPSG:3857');
             var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid, 'EPSG:3857');
 
-            // Get the geometry of the area of interest. It should only have one feature.
+            //create the data for the post
             var gridAndAoi = {
                 areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
                 clipToAoi: clipTasksToAoi,

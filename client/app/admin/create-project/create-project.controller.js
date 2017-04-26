@@ -159,20 +159,26 @@
         vm.showWizardStep = function (wizardStep) {
             var showStep = false;
             if (wizardStep === 'area') {
-                if (vm.currentStep === 'area' || vm.currentStep === 'tasks' || vm.currentStep === 'taskSize' || vm.currentStep === 'review') {
+                if (vm.currentStep === 'area' || vm.currentStep === 'tasks' || vm.currentStep === 'taskSize' || vm.currentStep === 'trim' || vm.currentStep === 'review') {
                     showStep = true;
                 }
             }
             else if (wizardStep === 'tasks') {
-                if (vm.currentStep === 'tasks' || vm.currentStep === 'taskSize' || vm.currentStep === 'review') {
+                if (vm.currentStep === 'tasks' || vm.currentStep === 'taskSize' || vm.currentStep === 'trim' || vm.currentStep === 'review') {
                     showStep = true;
                 }
             }
             else if (wizardStep === 'taskSize') {
-                if (vm.currentStep === 'taskSize' || vm.currentStep === 'review') {
+                if (vm.currentStep === 'taskSize' || vm.currentStep === 'trim' || vm.currentStep === 'review') {
                     showStep = true;
                 }
             }
+            else if (wizardStep === 'trim') {
+                if (vm.currentStep === 'trim' || vm.currentStep === 'review') {
+                    showStep = true;
+                }
+            }
+
             else if (wizardStep === 'review') {
                 if (vm.currentStep === 'review') {
                     showStep = true;
@@ -207,9 +213,8 @@
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
             }, function () {
-                console.log('error')
+                //TODO: may want to handle error
             })
-
         }
 
         /**
@@ -417,7 +422,5 @@
         vm.toggleClipTasksToAoi = function(){
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
         }
-
-
     }
 })();

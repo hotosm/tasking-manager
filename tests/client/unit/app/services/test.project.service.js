@@ -34,7 +34,7 @@ describe('project.service', function () {
         var taskGrid = projectService.getTaskGrid();
 
         // Assert
-        expect(taskGrid.length).toBe(10);
+        expect(taskGrid.length).toBe(12);
     });
 
     it('should return a task grid with 23 features for an AOI and zoom level 19', function () {
@@ -56,7 +56,7 @@ describe('project.service', function () {
         var taskGrid = projectService.getTaskGrid();
 
         // Assert
-        expect(taskGrid.length).toBe(23);
+        expect(taskGrid.length).toBe(32);
     });
 
     it('should return a VALID result when validating an array of non self intersecting features', function () {

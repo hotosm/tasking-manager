@@ -55,8 +55,7 @@ class IntersectingTilesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            json = request.get_json()
-            grid_dto = GridDTO(json)
+            grid_dto = GridDTO(request.get_json())
             grid_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
