@@ -78,8 +78,64 @@ class LicenseAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            license_dto = LicenseService.get_license(license_id)
+            license_dto = LicenseService.get_license_as_dto(license_id)
             return license_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "License Not Found"}, 404
+        except Exception as e:
+            error_msg = f'License PUT - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    def post(self, license_id):
+        """
+        Update  a new mapping license
+        ---
+        tags:
+            - licenses
+        produces:
+            - application/json
+        parameters:
+            - name: license_id
+              in: path
+              description: The unique license ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating a new mapping license
+              schema:
+                  properties:
+                      name:
+                          type: string
+                          default: Public Domain
+                      description:
+                          type: string
+                          default: This imagery is in the public domain.
+                      plainText:
+                          type: string
+                          default: This imagery is in the public domain.  
+        responses:
+            200:
+                description: New license created
+            400:
+                description: Invalid Request
+            500:
+                description: Internal Server Error
+        """
+        try:
+            license_dto = LicenseDTO(request.get_json())
+            license_dto.id = license_id
+            license_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            updated_license = LicenseService.update_licence(license_dto)
+            return updated_license.to_primitive(), 200
         except NotFound:
             return {"Error": "License Not Found"}, 404
         except Exception as e:

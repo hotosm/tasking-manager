@@ -21,6 +21,11 @@ class License(db.Model):
     projects = db.relationship("Project", backref='license')
     users = db.relationship("License", secondary=users_licenses_table)  # Many to Many relationship
 
+    @staticmethod
+    def get_by_id(license_id: int):
+        """ Get license by id """
+        return License.query.get(license_id)
+
     @classmethod
     def create_from_dto(cls, dto: LicenseDTO):
         """ Creates a new License class from dto """
@@ -32,18 +37,19 @@ class License(db.Model):
         db.session.add(new_license)
         db.session.commit()
 
-    @staticmethod
-    def get_license_as_dto(license_id: int) -> LicenseDTO:
+    def update_license(self, dto: LicenseDTO):
+        """ Update existing license """
+        self.name = dto.name
+        self.description = dto.description
+        self.plain_text = dto.plain_text
+        db.session.commit()
+
+    def as_dto(self) -> LicenseDTO:
         """ Get the license from the DB """
-        result = License.query.filter_by(id=license_id).one_or_none()
-
-        if result is None:
-            raise NotFound()
-
         dto = LicenseDTO()
-        dto.id = result.id
-        dto.name = result.name
-        dto.description = result.description
-        dto.plain_text = result.plain_text
+        dto.id = self.id
+        dto.name = self.name
+        dto.description = self.description
+        dto.plain_text = self.plain_text
 
         return dto
