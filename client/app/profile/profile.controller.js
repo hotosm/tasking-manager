@@ -20,6 +20,7 @@
         vm.map = null;
         vm.highlightSource = null;
         vm.errorSetRole = false;
+        vm.errorSetLevel = false;
 
         activate();
 
@@ -77,6 +78,16 @@
                 vm.errorSetRole = true;
             });
         };
+
+        vm.setLevel = function(level){
+            vm.errorSetLevel = false;
+            var resultsPromise = userService.setLevel(vm.username, level);
+            resultsPromise.then(function(data) {
+               getUser();
+            }, function(){
+                vm.errorSetLevel = true;
+            });
+        }
 
         /**
          * Get the user's details from the account service

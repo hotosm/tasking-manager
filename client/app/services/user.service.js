@@ -12,6 +12,7 @@
 
         var service = {
             setRole: setRole,
+            setLevel: setLevel,
             getOSMUserDetails: getOSMUserDetails,
             getUserProjects: getUserProjects
         };
@@ -29,6 +30,29 @@
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/user/' + username + '/set-role/' + role,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Set the user's level
+         * @param username
+         * @param level
+         * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function setLevel(username, level){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/user/' + username + '/set-level/' + level,
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
