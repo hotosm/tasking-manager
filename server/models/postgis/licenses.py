@@ -27,7 +27,7 @@ class License(db.Model):
         return License.query.get(license_id)
 
     @classmethod
-    def create_from_dto(cls, dto: LicenseDTO):
+    def create_from_dto(cls, dto: LicenseDTO) -> int:
         """ Creates a new License class from dto """
         new_license = cls()
         new_license.name = dto.name
@@ -37,6 +37,8 @@ class License(db.Model):
         db.session.add(new_license)
         db.session.commit()
 
+        return new_license.id
+
     def update_license(self, dto: LicenseDTO):
         """ Update existing license """
         self.name = dto.name
@@ -44,10 +46,15 @@ class License(db.Model):
         self.plain_text = dto.plain_text
         db.session.commit()
 
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
     def as_dto(self) -> LicenseDTO:
         """ Get the license from the DB """
         dto = LicenseDTO()
-        dto.id = self.id
+        dto.license_id = self.id
         dto.name = self.name
         dto.description = self.description
         dto.plain_text = self.plain_text

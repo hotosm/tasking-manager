@@ -47,8 +47,8 @@ class LicenseAPI(Resource):
             return str(e), 400
 
         try:
-            LicenseService.create_licence(license_dto)
-            return {"Success": "License created"}, 200
+            new_license_id = LicenseService.create_licence(license_dto)
+            return {"licenseId": new_license_id}, 200
         except Exception as e:
             error_msg = f'License PUT - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
@@ -127,7 +127,7 @@ class LicenseAPI(Resource):
         """
         try:
             license_dto = LicenseDTO(request.get_json())
-            license_dto.id = license_id
+            license_dto.license_id = license_id
             license_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -139,6 +139,39 @@ class LicenseAPI(Resource):
         except NotFound:
             return {"Error": "License Not Found"}, 404
         except Exception as e:
-            error_msg = f'License PUT - unhandled error: {str(e)}'
+            error_msg = f'License POST - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    def delete(self, license_id):
+        """
+        Delete the specified mapping license
+        ---
+        tags:
+            - licenses
+        produces:
+            - application/json
+        parameters:
+            - name: license_id
+              in: path
+              description: The unique license ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: License deleted
+            404:
+                description: License not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            LicenseService.delete_license(license_id)
+            return {"Success": "License deleted"}, 200
+        except NotFound:
+            return {"Error": "License Not Found"}, 404
+        except Exception as e:
+            error_msg = f'License DELETE - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
