@@ -24,6 +24,20 @@ def get_canned_osm_user_details():
         raise FileNotFoundError('osm_user_details.xml not found')
 
 
+def get_canned_grid_request():
+    """ Read canned Grid request from file """
+
+    location = os.path.join(os.path.dirname(__file__), 'test_files', 'test_grid.json')
+
+    try:
+        with open(location, 'r') as grid_file:
+           data = json.load(grid_file)
+
+           return data
+    except FileNotFoundError:
+        raise FileNotFoundError('osm_user_details.xml not found')
+
+
 def get_canned_simplified_osm_user_details():
     """ Helper that reads file and returns it as a string """
     location = os.path.join(os.path.dirname(__file__), 'test_files', 'osm_user_details_simple.xml')
