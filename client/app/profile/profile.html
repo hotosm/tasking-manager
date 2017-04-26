@@ -20,8 +20,16 @@
                                 <p>Joined OSM <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
                                 <p>{{ profileCtrl.osmUserDetails.changesetCount}} total OSM changesets</p>
                             </div>
-                            <p><a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}">OSM profile</a></p>
-                            <p><a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}/history">OSM edit history</a></p>
+                            <p>
+                                <a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}" target="_blank">
+                                    OSM profile
+                                </a>
+                            </p>
+                            <p>
+                                <a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}/history" target="_blank">
+                                    OSM edit history
+                                </a>
+                            </p>
                         </div>
                         <div class="roles pull-right">
                             <div>
