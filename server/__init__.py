@@ -85,6 +85,7 @@ def init_flask_restful_routes(app):
     api = Api(app)
 
     from server.api.health_check_api import HealthCheckAPI
+    from server.api.license_apis import LicenseAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, TasksAsGPX, TasksAsOSM
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
@@ -98,6 +99,10 @@ def init_flask_restful_routes(app):
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
+    api.add_resource(LoginAPI,                      '/api/v1/auth/login')
+    api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
+    api.add_resource(LicenseAPI,                    '/api/v1/license', endpoint="create_license", methods=['PUT'])
+    api.add_resource(LicenseAPI,                    '/api/v1/license/<int:license_id>', methods=['GET', 'POST', 'DELETE'])
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
@@ -125,6 +130,4 @@ def init_flask_restful_routes(app):
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')
-    api.add_resource(LoginAPI,                      '/api/v1/auth/login')
-    api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')
