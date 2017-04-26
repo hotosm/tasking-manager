@@ -1,3 +1,4 @@
+from server.models.dtos.licenses_dto import LicenseDTO
 from server import db
 
 # Secondary table defining the many-to-many join
@@ -18,3 +19,14 @@ class License(db.Model):
 
     projects = db.relationship("Project", backref='license')
     users = db.relationship("License", secondary=users_licenses_table)  # Many to Many relationship
+
+    @classmethod
+    def create_from_dto(cls, dto: LicenseDTO):
+        """ Creates a new License class from dto """
+        new_license = cls()
+        new_license.name = dto.name
+        new_license.description = dto.description
+        new_license.plain_text = dto.plain_text
+
+        db.session.add(new_license)
+        db.session.commit()
