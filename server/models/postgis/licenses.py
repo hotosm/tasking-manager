@@ -51,6 +51,9 @@ class License(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def get_all(self):
+        pass
+
     def as_dto(self) -> LicenseDTO:
         """ Get the license from the DB """
         dto = LicenseDTO()

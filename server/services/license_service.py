@@ -1,4 +1,4 @@
-from server.models.dtos.licenses_dto import LicenseDTO
+from server.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
 from server.models.postgis.licenses import License
 from server.models.postgis.utils import NotFound
 
@@ -42,3 +42,7 @@ class LicenseService:
         """ Delete specified license"""
         map_license = LicenseService.get_license(license_id)
         map_license.delete()
+
+    @staticmethod
+    def get_all_licenses():
+        pass

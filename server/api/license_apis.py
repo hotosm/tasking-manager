@@ -206,3 +206,32 @@ class LicenseAPI(Resource):
             error_msg = f'License DELETE - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class LicenceListAPI(Resource):
+
+    def get(self):
+        """
+        Get all imagery licenses
+        ---
+        tags:
+            - licenses
+        produces:
+            - application/json
+        responses:
+            200:
+                description: Licenses found
+            404:
+                description: Licenses not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            license_dto = LicenseService.get_license_as_dto(license_id)
+            return license_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "License Not Found"}, 404
+        except Exception as e:
+            error_msg = f'License PUT - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
