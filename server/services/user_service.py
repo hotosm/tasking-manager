@@ -65,6 +65,13 @@ class UserService:
         return user.as_dto()
 
     @staticmethod
+    def get_users_by_username(username: str) -> UserDTO:
+        """Gets user DTO for supplied username """
+        test = None
+        dto = User.get_all_matching_users(test)
+        return dto
+
+    @staticmethod
     def is_user_a_project_manager(user_id: int) -> bool:
         """ Is the user a project manager """
         user = UserService.get_user_by_id(user_id)

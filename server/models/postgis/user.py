@@ -1,7 +1,8 @@
 import geojson
 from enum import Enum
+from sqlalchemy import func
 from server import db
-from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject
+from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, TMUsersDTO, Pagination
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus
@@ -31,6 +32,8 @@ class User(db.Model):
 
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
 
+    __table_args__ = (db.Index('idx_username_lower', func.lower(username)), {})
+
     def create(self):
         """ Creates and saves the current model to the DB """
         db.session.add(self)
@@ -43,6 +46,17 @@ class User(db.Model):
     def get_by_username(self, username: str):
         """ Return the user for the specified username, or None if not found """
         return User.query.filter_by(username=username).one_or_none()
+
+    @staticmethod
+    def get_all_matching_users(filter_by: str):
+        results = db.session.query(User.username).order_by(User.username).paginate(1, 5, True)
+
+        dto = TMUsersDTO()
+        for result in results.items:
+            dto.usernames.append(result.username)
+
+        dto.pagination = Pagination(results)
+        return dto
 
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):

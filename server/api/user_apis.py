@@ -39,6 +39,41 @@ class UserAPI(Resource):
             return {"error": error_msg}, 500
 
 
+class UserSearchAPI(Resource):
+
+    def get(self, username):
+        """
+        Gets all users matching username
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - name: username
+              in: path
+              description: Partial or full username
+              type: string
+              default: ab
+        responses:
+            200:
+                description: Users found
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            users_dto = UserService.get_users_by_username(username)
+            return users_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
 class UserOSMAPI(Resource):
 
     def get(self, username):

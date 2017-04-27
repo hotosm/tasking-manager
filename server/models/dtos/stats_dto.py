@@ -22,6 +22,19 @@ class ProjectContributionsDTO(Model):
 
 class Pagination(Model):
     """ Properties for paginating results """
+    def __init__(self, paginated_result):
+        """ Instantiate from a Flask-SQLAlchemy paginated result"""
+        super().__init__()
+
+        self.has_next = paginated_result.has_next
+        self.has_prev = paginated_result.has_prev
+        self.next_num = paginated_result.next_num
+        self.page = paginated_result.page
+        self.pages = paginated_result.pages
+        self.prev_num = paginated_result.prev_num
+        self.per_page = paginated_result.per_page
+        self.total = paginated_result.total
+
     has_next = BooleanType(serialized_name='hasNext')
     has_prev = BooleanType(serialized_name='hasPrev')
     next_num = IntType(serialized_name='nextNum')
