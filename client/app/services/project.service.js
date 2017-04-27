@@ -79,19 +79,15 @@
         /**
          * Creates a task grid with features for a polygon feature.
          * It snaps to the OSM grid
-         * @param areaOfInterest (ol.Feature) - this should be a polygon
+         * @param areaOfInterestExtent (ol.Extent) - this should be a polygon
          * @param zoomLevel - the OSM zoom level the task squares will align with
          */
-        function createTaskGrid(areaOfInterest, zoomLevel) {
+        function createTaskGrid(areaOfInterestExtent, zoomLevel) {
 
-            var zoomLevel = zoomLevel;
-            var extent = areaOfInterest.getGeometry().getExtent();
-            var areaOfInterestGeoJSON = geospatialService.getGeoJSONFromFeature(areaOfInterest);
-
-            var xmin = Math.ceil(extent[0]);
-            var ymin = Math.ceil(extent[1]);
-            var xmax = Math.floor(extent[2]);
-            var ymax = Math.floor(extent[3]);
+            var xmin = Math.ceil(areaOfInterestExtent[0]);
+            var ymin = Math.ceil(areaOfInterestExtent[1]);
+            var xmax = Math.floor(areaOfInterestExtent[2]);
+            var ymax = Math.floor(areaOfInterestExtent[3]);
 
             // task size (in meters) at the required zoom level
             var step = AXIS_OFFSET / (Math.pow(2, (zoomLevel - 1)));
@@ -102,8 +98,8 @@
             var yminstep = parseInt(Math.floor((ymin + AXIS_OFFSET) / step));
             var ymaxstep = parseInt(Math.ceil((ymax + AXIS_OFFSET) / step));
 
-            // Generate an array of task features
             var taskFeatures = [];
+            // Generate an array of task features
             for (var x = xminstep; x < xmaxstep; x++) {
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
@@ -115,9 +111,9 @@
                         'splittable': true
                     });
                     taskFeatures.push(taskFeature);
-
                 }
             }
+
             return taskFeatures;
         }
 
@@ -318,7 +314,7 @@
         function getSplitTasks(task) {
             // For smaller tasks, increase the zoom level by 1
             var zoomLevel = task.getProperties().zoom + 1;
-            var grid = createTaskGrid(task, zoomLevel);
+            var grid = createTaskGrid(task.getGeometry().getExtent(), zoomLevel);
             return grid;
         }
 
