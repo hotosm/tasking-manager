@@ -96,13 +96,13 @@
          */
         function showOnMap(projects){
             if (projects.activeProjects) {
-                projectMapService.showProjectsOnMap(projects.activeProjects, "active", false);
+                projectMapService.showProjectsOnMap(projects.activeProjects, "red", false);
             }
             if (projects.draftProjects) {
-                projectMapService.showProjectsOnMap(projects.draftProjects, "draft", true);
+                projectMapService.showProjectsOnMap(projects.draftProjects, "blue", true);
             }
             if (projects.archivedProjects) {
-                projectMapService.showProjectsOnMap(projects.archivedProjects, "archived", true);
+                projectMapService.showProjectsOnMap(projects.archivedProjects, "black", true);
             }
         }
     }

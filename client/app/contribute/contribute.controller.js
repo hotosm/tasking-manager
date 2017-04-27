@@ -46,6 +46,12 @@
             var disableScrollZoom = true;
             mapService.createOSMMap('map', disableScrollZoom);
             vm.map = mapService.getOSMMap();
+            // Get legend element and add it to the map as a control
+            var legendContainer = document.getElementById('legend-container');
+            if (legendContainer){
+                var legendControl = new ol.control.Control({element: legendContainer});
+                vm.map.addControl(legendControl);
+            }
             projectMapService.initialise(vm.map);
             projectMapService.showInfoOnHoverOrClick();
             setOrganisationTags();
@@ -85,7 +91,26 @@
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
-                projectMapService.showProjectsOnMap(vm.results);
+                // First remove all projects from the map before adding the results
+                projectMapService.removeProjectsOnMap();
+                for (var i = 0; i < vm.results.length; i++){
+                    if (vm.results[i].priority === 'URGENT'){
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "red", false);
+                    }
+                    else if (vm.results[i].priority === 'HIGH'){
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "orange", false);
+                    }
+                    else if (vm.results[i].priority === 'MEDIUM'){
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "yellow", false);
+                    }
+                    else if (vm.results[i].priority === 'LOW'){
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "blue", false);
+                    }
+                    else {
+                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "red", false);
+                    }
+                }
+
             }, function(){
                 // On error
                 vm.results = [];
