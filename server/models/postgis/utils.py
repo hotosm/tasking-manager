@@ -52,6 +52,11 @@ class ST_Transform(GenericFunction):
     name = 'ST_Transform'
     type = Geometry
 
+class ST_Buffer(GenericFunction):
+    """ Exposes PostGIS ST_Transform function """
+    name = 'ST_Buffer'
+    type = Geometry
+
 
 def timestamp():
     """ Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""

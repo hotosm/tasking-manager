@@ -609,11 +609,15 @@
         function trimTaskGrid(clipTasksToAoi) {
             // TODO the aoi may have more than one feature when dealing with imported aoi's
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi, 'EPSG:3857');
+            console.log('aoi')
+            console.log(JSON.stringify(areaOfInterestGeoJSON))
             var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid, 'EPSG:3857');
+            console.log('tasks')
+            console.log(JSON.stringify(taskGridGeoJSON))
 
             //create the data for the post
             var gridAndAoi = {
-                areaOfInterest: areaOfInterestGeoJSON.features[0].geometry,
+                areaOfInterest: areaOfInterestGeoJSON,
                 clipToAoi: clipTasksToAoi,
                 grid: taskGridGeoJSON
             };
