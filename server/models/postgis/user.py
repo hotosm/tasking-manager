@@ -30,9 +30,8 @@ class User(db.Model):
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
     projects_mapped = db.Column(db.ARRAY(db.Integer))
 
+    # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
-
-    __table_args__ = (db.Index('idx_username_lower', func.lower(username)), {})
 
     def create(self):
         """ Creates and saves the current model to the DB """

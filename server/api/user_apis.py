@@ -74,7 +74,7 @@ class UserSearchFilterAPI(Resource):
 
     def get(self, username):
         """
-        Gets all users matching username filter
+        Gets paged lists of users matching username filter
         ---
         tags:
           - user
@@ -102,7 +102,7 @@ class UserSearchFilterAPI(Resource):
             page = int(request.args.get('page')) if request.args.get('page') else 1
             users_dto = UserService.get_users_by_username(username, page)
             return users_dto.to_primitive(), 200
-        except (NotFound, NotFound):
+        except NotFound:
             return {"Error": "User not found"}, 404
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
