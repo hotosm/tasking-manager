@@ -48,7 +48,8 @@ class User(db.Model):
         return User.query.filter_by(username=username).one_or_none()
 
     @staticmethod
-    def get_all_users(page: int):
+    def get_all_users(page: int) -> TMUsersDTO:
+        """ Search all users """
         results = db.session.query(User.username).order_by(User.username).paginate(page, 20, True)
 
         dto = TMUsersDTO()
@@ -59,8 +60,8 @@ class User(db.Model):
         return dto
 
     @staticmethod
-    def get_all_users_filtered(user_filter: str, page: int):
-        """ """
+    def get_all_users_filtered(user_filter: str, page: int) -> TMUsersDTO:
+        """ Finds users that matches first characters, for auto-complete """
         results = db.session.query(User.username).filter(User.username.ilike(user_filter.lower() + '%'))\
             .order_by(User.username).paginate(page, 20, True)
 
