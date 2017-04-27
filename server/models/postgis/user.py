@@ -106,7 +106,13 @@ class User(db.Model):
         self.mapping_level = level.value
         db.session.commit()
 
-    def has_user_accepted_licence(self, license_id):
+    def accept_license_terms(self, license_id: int):
+        """ Associate the user in scope with the supplied license """
+        image_license = License.get_by_id(license_id)
+        self.accepted_licenses.append(image_license)
+        db.session.commit()
+
+    def has_user_accepted_licence(self, license_id: int):
         """ Test to see if the user has accepted the terms of the specified license"""
         image_license = License.get_by_id(license_id)
 
