@@ -1,4 +1,4 @@
-from server.models.dtos.licenses_dto import LicenseDTO
+from server.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
 from server.models.postgis.utils import NotFound
 from server import db
 
@@ -51,8 +51,24 @@ class License(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def get_all(self):
-        pass
+    @staticmethod
+    def get_all() -> LicenseListDTO:
+        """ Gets all licenses currently stored """
+        results = License.query.all()
+
+        if len(results) == 0:
+            raise NotFound()
+
+        dto = LicenseListDTO()
+        for result in results:
+            imagery_license = LicenseDTO()
+            imagery_license.license_id = result.id
+            imagery_license.name = result.name
+            imagery_license.description = result.description
+            imagery_license.plain_text = result.plain_text
+            dto.licenses.append(imagery_license)
+
+        return dto
 
     def as_dto(self) -> LicenseDTO:
         """ Get the license from the DB """

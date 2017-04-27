@@ -227,8 +227,8 @@ class LicenceListAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            license_dto = LicenseService.get_license_as_dto(license_id)
-            return license_dto.to_primitive(), 200
+            licenses_dto = LicenseService.get_all_licenses()
+            return licenses_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "License Not Found"}, 404
         except Exception as e:

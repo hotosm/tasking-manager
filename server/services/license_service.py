@@ -44,5 +44,6 @@ class LicenseService:
         map_license.delete()
 
     @staticmethod
-    def get_all_licenses():
-        pass
+    def get_all_licenses() -> LicenseListDTO:
+        """ Get all licenses in DB """
+        return License.get_all()
