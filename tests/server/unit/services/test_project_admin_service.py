@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch
 from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project, \
-    ProjectAdminServiceError, ProjectDTO, ProjectStatus, NotFound
+    ProjectAdminServiceError, ProjectDTO, ProjectStatus, NotFound, LicenseService
 from server.models.dtos.project_dto import ProjectInfoDTO
 
 
@@ -92,3 +92,12 @@ class TestProjectAdminService(unittest.TestCase):
 
         # Assert
         self.assertTrue(is_valid, 'Complete default locale should be valid')
+
+    @patch.object(LicenseService, 'get_license_as_dto')
+    def test_attempting_to_attach_non_existant_license_raise_error(self, license_mock):
+        # Arrange
+        license_mock.side_effect = NotFound()
+
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService._validate_imagery_licence(1)
+

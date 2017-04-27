@@ -132,6 +132,7 @@ class Project(db.Model):
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
         self.last_updated = timestamp()
+        self.license_id = project_dto.license_id
 
         if project_dto.organisation_tag:
             org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)

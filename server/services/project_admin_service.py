@@ -5,6 +5,7 @@ from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectC
 from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, ProjectStatus
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData
+from server.services.license_service import LicenseService
 
 
 class ProjectAdminServiceError(Exception):
@@ -66,8 +67,19 @@ class ProjectAdminService:
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
             ProjectAdminService._validate_default_locale(project_dto.default_locale, project_dto.project_info_locales)
 
+        if project_dto.license_id:
+            ProjectAdminService._validate_imagery_licence(project_dto.license_id)
+
         project.update(project_dto)
         return project
+
+    @staticmethod
+    def _validate_imagery_licence(license_id):
+        """ Ensures that the suppliced license Id actually exists """
+        try:
+            LicenseService.get_license_as_dto(license_id)
+        except NotFound:
+            raise ProjectAdminServiceError(f'LicenseId {license_id} not found')
 
     @staticmethod
     def delete_project(project_id: int):
