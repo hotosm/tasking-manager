@@ -1,8 +1,8 @@
 from flask import current_app
 from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO, LockedTasksForUser
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel, MappingTypes
-from server.models.postgis.statuses import TaskStatus
-from server.models.postgis.utils import NotFound, timestamp
+from server.models.postgis.statuses import MappingNotAllowed
+from server.models.postgis.utils import NotFound
 from server.services.user_service import UserService
 
 
@@ -62,12 +62,16 @@ class ProjectService:
         tasks = project.get_locked_tasks_for_user(user_id)
 
         if len(tasks) > 0:
-            return False, 'User already has a locked task on this project'
+            return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
         if project.enforce_mapper_level:
             if not ProjectService._is_user_mapping_level_at_or_above_level_requests(MappingLevel(project.mapper_level),
                                                                                                  user_id):
-                return False, 'User is below required mapping level for this project'
+                return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
+
+        if project.license_id:
+            if not UserService.has_user_accepted_license(user_id, project.license_id):
+                return False, MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE
 
         return True, 'User allowed to map'
 

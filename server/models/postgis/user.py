@@ -2,6 +2,7 @@ import geojson
 from enum import Enum
 from server import db
 from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject
+from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus
 from server.models.postgis.utils import NotFound
@@ -27,6 +28,8 @@ class User(db.Model):
     tasks_validated = db.Column(db.Integer, default=0, nullable=False)
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
     projects_mapped = db.Column(db.ARRAY(db.Integer))
+
+    accepted_licenses = db.relationship("License", secondary=users_licenses_table)
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -102,6 +105,15 @@ class User(db.Model):
         """ Sets the supplied level on the user """
         self.mapping_level = level.value
         db.session.commit()
+
+    def has_user_accepted_licence(self, license_id):
+        """ Test to see if the user has accepted the terms of the specified license"""
+        image_license = License.get_by_id(license_id)
+
+        if image_license in self.accepted_licenses:
+            return True
+
+        return False
 
     def delete(self):
         """ Delete the user in scope from DB """

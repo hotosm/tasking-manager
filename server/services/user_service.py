@@ -141,6 +141,12 @@ class UserService:
         return user
 
     @staticmethod
+    def has_user_accepted_license(user_id: int, license_id: int):
+        """ Checks if user has accepted specified license """
+        user = UserService.get_user_by_id(user_id)
+        return user.has_user_accepted_licence(license_id)
+
+    @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API

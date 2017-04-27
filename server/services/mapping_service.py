@@ -50,10 +50,10 @@ class MappingService:
         if not task.is_mappable():
             raise MappingServiceError('Task in invalid state for mapping')
 
-        user_can_map, error_message = ProjectService.is_user_permitted_to_map(lock_task_dto.project_id,
+        user_can_map, error_reason = ProjectService.is_user_permitted_to_map(lock_task_dto.project_id,
                                                                               lock_task_dto.user_id)
         if not user_can_map:
-            raise MappingServiceError(error_message)
+            raise MappingServiceError(f'Mapping not allowed because: {error_reason.name}')
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
         return task.as_dto()
