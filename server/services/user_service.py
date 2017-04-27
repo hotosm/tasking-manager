@@ -1,7 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from flask import current_app
-from server.models.dtos.user_dto import UserDTO, UserOSMDTO
+from server.models.dtos.user_dto import UserDTO, UserOSMDTO, TMUsersDTO
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 
@@ -63,6 +63,16 @@ class UserService:
         """Gets user DTO for supplied username """
         user = UserService.get_user_by_username(username)
         return user.as_dto()
+
+    @staticmethod
+    def get_all_users(page: int) -> TMUsersDTO:
+        """ Gets paginated list of users """
+        return User.get_all_users(page)
+
+    @staticmethod
+    def get_users_by_username(username: str, page: int) -> TMUsersDTO:
+        """ Gets paginated list of users, filtered by username, for autocomplete """
+        return User.get_all_users_filtered(username, page)
 
     @staticmethod
     def is_user_a_project_manager(user_id: int) -> bool:

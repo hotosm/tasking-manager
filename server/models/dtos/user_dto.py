@@ -2,6 +2,7 @@ from schematics import Model
 from schematics.exceptions import ValidationError
 from schematics.types import StringType, IntType
 from schematics.types.compound import ListType, ModelType, BaseType
+from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import MappingLevel
 
 
@@ -47,3 +48,13 @@ class UserMappedProjectsDTO(Model):
         self.mapped_projects = []
 
     mapped_projects = ListType(ModelType(MappedProject), serialized_name='mappedProjects')
+
+
+class TMUsersDTO(Model):
+    """ DTO to hold all Tasking Manager users """
+    def __init__(self):
+        super().__init__()
+        self.usernames = []
+
+    pagination = ModelType(Pagination)
+    usernames = ListType(StringType)

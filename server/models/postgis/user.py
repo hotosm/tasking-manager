@@ -1,7 +1,8 @@
 import geojson
 from enum import Enum
+from sqlalchemy import func
 from server import db
-from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject
+from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, TMUsersDTO, Pagination
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus
@@ -29,6 +30,7 @@ class User(db.Model):
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
     projects_mapped = db.Column(db.ARRAY(db.Integer))
 
+    # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
 
     def create(self):
@@ -43,6 +45,34 @@ class User(db.Model):
     def get_by_username(self, username: str):
         """ Return the user for the specified username, or None if not found """
         return User.query.filter_by(username=username).one_or_none()
+
+    @staticmethod
+    def get_all_users(page: int) -> TMUsersDTO:
+        """ Search all users """
+        results = db.session.query(User.username).order_by(User.username).paginate(page, 20, True)
+
+        dto = TMUsersDTO()
+        for result in results.items:
+            dto.usernames.append(result.username)
+
+        dto.pagination = Pagination(results)
+        return dto
+
+    @staticmethod
+    def get_all_users_filtered(user_filter: str, page: int) -> TMUsersDTO:
+        """ Finds users that matches first characters, for auto-complete """
+        results = db.session.query(User.username).filter(User.username.ilike(user_filter.lower() + '%'))\
+            .order_by(User.username).paginate(page, 20, True)
+
+        if results.total == 0:
+            raise NotFound()
+
+        dto = TMUsersDTO()
+        for result in results.items:
+            dto.usernames.append(result.username)
+
+        dto.pagination = Pagination(results)
+        return dto
 
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):

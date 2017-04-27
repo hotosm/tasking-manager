@@ -90,18 +90,7 @@ class StatsService:
 
             activity_dto.activity.append(history)
 
-        pagination = Pagination()
-        pagination.has_next = results.has_next
-        pagination.has_prev = results.has_prev
-        pagination.next_num = results.next_num
-        pagination.page = results.page
-        pagination.pages = results.pages
-        pagination.prev_num = results.prev_num
-        pagination.per_page = results.per_page
-        pagination.total = results.total
-
-        activity_dto.pagination = pagination
-
+        activity_dto.pagination = Pagination(results)
         return activity_dto
 
     @staticmethod
