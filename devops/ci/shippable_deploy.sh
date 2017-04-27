@@ -17,7 +17,7 @@ if [ $BRANCH == "develop" ]
     then
         # Install AWS requirements
         pip install -r requirements.aws.txt
-        printf '1\nn\n' | eb init hot-tasking-manager --region eu-west-1
+        printf 'n\n' | eb init hot-tasking-manager --region eu-west-1
         eb use tasking-manager-staging
 
         # Deploy develop builds to Staging environment
