@@ -55,6 +55,10 @@ class UserSearchAPI(Resource):
               description: Partial or full username
               type: string
               default: ab
+            - in: query
+              name: page
+              description: Page of results user requested
+              type: integer
         responses:
             200:
                 description: Users found
@@ -64,7 +68,8 @@ class UserSearchAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            users_dto = UserService.get_users_by_username(username)
+            page = int(request.args.get('page')) if request.args.get('page') else 1
+            users_dto = UserService.get_users_by_username(username, page)
             return users_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404

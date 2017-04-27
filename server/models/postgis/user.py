@@ -48,8 +48,21 @@ class User(db.Model):
         return User.query.filter_by(username=username).one_or_none()
 
     @staticmethod
-    def get_all_matching_users(filter_by: str):
-        results = db.session.query(User.username).order_by(User.username).paginate(1, 5, True)
+    def get_all_users(page: int):
+        results = db.session.query(User.username).order_by(User.username).paginate(page, 20, True)
+
+        dto = TMUsersDTO()
+        for result in results.items:
+            dto.usernames.append(result.username)
+
+        dto.pagination = Pagination(results)
+        return dto
+
+    @staticmethod
+    def get_all_users_filtered(user_filter: str, page: int):
+        """ """
+        results = db.session.query(User.username).filter(User.username.ilike(user_filter.lower() + '%'))\
+            .order_by(User.username).paginate(page, 20, True)
 
         dto = TMUsersDTO()
         for result in results.items:

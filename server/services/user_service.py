@@ -65,10 +65,9 @@ class UserService:
         return user.as_dto()
 
     @staticmethod
-    def get_users_by_username(username: str) -> UserDTO:
+    def get_users_by_username(username: str, page: int) -> UserDTO:
         """Gets user DTO for supplied username """
-        test = None
-        dto = User.get_all_matching_users(test)
+        dto = User.get_all_users_filtered(username, page)
         return dto
 
     @staticmethod
