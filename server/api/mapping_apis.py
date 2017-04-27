@@ -5,7 +5,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from server.services.authentication_service import token_auth, tm
-from server.services.mapping_service import MappingService, MappingServiceError, NotFound
+from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
 
 
 class MappingTaskAPI(Resource):
@@ -91,6 +91,8 @@ class LockTaskForMappingAPI(Resource):
                 description: Forbidden
             404:
                 description: Task not found
+            409:
+                description: User has not accepted license terms of project
             500:
                 description: Internal Server Error
         """
@@ -110,6 +112,8 @@ class LockTaskForMappingAPI(Resource):
             return {"Error": "Task Not Found"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
+        except UserLicenseError:
+            return {"Error": "User not accepted license terms"}, 409
         except Exception as e:
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

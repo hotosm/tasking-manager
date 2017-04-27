@@ -43,3 +43,10 @@ class MappingTypes(Enum):
     WATERWAYS = 3
     LAND_USE = 4
     OTHER = 5
+
+
+class MappingNotAllowed(Enum):
+    """ Enum describing reasons a user cannot map """
+    USER_ALREADY_HAS_TASK_LOCKED = 100
+    USER_NOT_CORRECT_MAPPING_LEVEL = 101
+    USER_NOT_ACCEPTED_LICENSE = 102

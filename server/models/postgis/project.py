@@ -261,6 +261,7 @@ class Project(db.Model):
                                    Project.mapping_types,
                                    Project.campaign_tag,
                                    Project.organisation_tag,
+                                   Project.license_id,
                                    AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
             .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
 
@@ -284,6 +285,7 @@ class Project(db.Model):
         base_dto.josm_preset = project.josm_preset
         base_dto.campaign_tag = project.campaign_tag
         base_dto.organisation_tag = project.organisation_tag
+        base_dto.license_id = project.license_id
 
         if project.mapping_types:
             mapping_types = []

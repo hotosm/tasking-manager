@@ -1,6 +1,6 @@
 import unittest
 from server.services.mapping_service import MappingService, Task, MappingServiceError, TaskStatus, \
-     ProjectService, NotFound, StatsService
+     ProjectService, NotFound, StatsService, MappingNotAllowed, UserLicenseError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import TaskHistory, TaskAction, User
 from unittest.mock import patch, MagicMock
@@ -61,10 +61,21 @@ class TestMappingService(unittest.TestCase):
     def test_lock_task_for_mapping_raises_error_if_user_already_has_locked_task(self, mock_task, mock_project):
         # Arrange
         mock_task.return_value = self.task_stub
-        mock_project.return_value = False, 'Not allowed'
+        mock_project.return_value = False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
         # Act / Assert
         with self.assertRaises(MappingServiceError):
+            MappingService.lock_task_for_mapping(self.lock_task_dto)
+
+    @patch.object(ProjectService, 'is_user_permitted_to_map')
+    @patch.object(MappingService, 'get_task')
+    def test_lock_task_for_mapping_raises_error_if_user_has_not_accepted_license(self, mock_task, mock_project):
+        # Arrange
+        mock_task.return_value = self.task_stub
+        mock_project.return_value = False, MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE
+
+        # Act / Assert
+        with self.assertRaises(UserLicenseError):
             MappingService.lock_task_for_mapping(self.lock_task_dto)
 
     @patch.object(MappingService, 'get_task')
