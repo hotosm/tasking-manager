@@ -195,6 +195,10 @@ class ProjectAdminAPI(Resource):
                       organisationTag:
                           type: string
                           default: red cross
+                      licenseId:
+                          type: integer
+                          default: 1
+                          description: Id of imagery license associated with the project 
                       projectInfoLocales:
                           type: array
                           items:
