@@ -65,6 +65,9 @@ class User(db.Model):
         results = db.session.query(User.username).filter(User.username.ilike(user_filter.lower() + '%'))\
             .order_by(User.username).paginate(page, 20, True)
 
+        if results.total == 0:
+            raise NotFound()
+
         dto = TMUsersDTO()
         for result in results.items:
             dto.usernames.append(result.username)

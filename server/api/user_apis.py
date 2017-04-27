@@ -43,7 +43,7 @@ class UserSearchAllAPI(Resource):
 
     def get(self):
         """
-        Gets all users matching username
+        Gets paged list of all usernames
         ---
         tags:
           - user
@@ -57,8 +57,6 @@ class UserSearchAllAPI(Resource):
         responses:
             200:
                 description: Users found
-            404:
-                description: User not found
             500:
                 description: Internal Server Error
         """
@@ -66,8 +64,6 @@ class UserSearchAllAPI(Resource):
             page = int(request.args.get('page')) if request.args.get('page') else 1
             users_dto = UserService.get_all_users(page)
             return users_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found"}, 404
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
@@ -78,7 +74,7 @@ class UserSearchFilterAPI(Resource):
 
     def get(self, username):
         """
-        Gets all users matching username
+        Gets all users matching username filter
         ---
         tags:
           - user
@@ -106,7 +102,7 @@ class UserSearchFilterAPI(Resource):
             page = int(request.args.get('page')) if request.args.get('page') else 1
             users_dto = UserService.get_users_by_username(username, page)
             return users_dto.to_primitive(), 200
-        except NotFound:
+        except (NotFound, NotFound):
             return {"Error": "User not found"}, 404
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
