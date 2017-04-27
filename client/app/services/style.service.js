@@ -158,15 +158,15 @@
          */
         function getProjectStyle(colour) {
             var fillColour = [255, 0, 0, 0.5]; // red
-            var strokeColour = [255, 0, 0, 1]; // red
+            var strokeColour = [0, 0, 0, 1]; // black
             if (colour){
                 if (colour === 'red'){
                     fillColour = [255, 0, 0, 0.5]; // red
-                    strokeColour = [255, 0, 0, 1]; // red
+                    strokeColour = [0, 0, 0, 1]; // black
                 }
                 if (colour === 'orange'){
                     fillColour = [255, 165, 0, 0.5]; // orange
-                    strokeColour = [255, 165, 0, 1]; // orange
+                    strokeColour = [0, 0, 0, 1]; // black
                 }
                 if (colour === 'yellow'){
                     fillColour = [255, 255, 0, 0.5]; // yellow
@@ -174,7 +174,7 @@
                 }
                 if (colour === 'blue'){
                     fillColour = [0, 0, 255, 0.5]; // blue
-                    strokeColour = [0, 0, 255, 1]; // blue
+                    strokeColour = [0, 0, 0, 1]; // black
                 }
                 if (colour === 'black'){
                     fillColour = [0, 0, 0, 0.5]; // black

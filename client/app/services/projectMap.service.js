@@ -18,6 +18,7 @@
             initialise: initialise,
             showProjectsOnMap: showProjectsOnMap,
             showProjectOnMap: showProjectOnMap,
+            removeProjectsOnMap: removeProjectsOnMap,
             highlightProjectOnMap: highlightProjectOnMap,
             removeHighlightOnMap: removeHighlightOnMap,
             showInfoOnHoverOrClick: showInfoOnHoverOrClick
@@ -116,6 +117,13 @@
                     maxZoom: 8
                 });
             }
+        }
+
+        /**
+         * Remove projects from the map
+         */
+        function removeProjectsOnMap(){
+            projectVectorSource.clear();
         }
         
          /**

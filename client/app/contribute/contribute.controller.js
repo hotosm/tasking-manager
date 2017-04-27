@@ -91,6 +91,8 @@
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
+                // First remove all projects from the map before adding the results
+                projectMapService.removeProjectsOnMap();
                 for (var i = 0; i < vm.results.length; i++){
                     if (vm.results[i].priority === 'URGENT'){
                         projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "red", false);
