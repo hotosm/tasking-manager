@@ -141,6 +141,12 @@ class UserService:
         return user
 
     @staticmethod
+    def accept_license_terms(user_id: int, license_id: int):
+        """ Saves the fact user has accepted license terms """
+        user = UserService.get_user_by_id(user_id)
+        user.accept_license_terms(license_id)
+
+    @staticmethod
     def has_user_accepted_license(user_id: int, license_id: int):
         """ Checks if user has accepted specified license """
         user = UserService.get_user_by_id(user_id)
