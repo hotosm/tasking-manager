@@ -4,6 +4,7 @@ from flask import current_app
 from geoalchemy2 import shape
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.utils import NotFound
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
@@ -14,6 +15,11 @@ class MappingServiceError(Exception):
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
+
+
+class UserLicenseError(Exception):
+    """ Custom Exception to notify caller that the user attempting to map has not accepted the license """
+    pass
 
 
 class MappingService:
@@ -53,7 +59,10 @@ class MappingService:
         user_can_map, error_reason = ProjectService.is_user_permitted_to_map(lock_task_dto.project_id,
                                                                               lock_task_dto.user_id)
         if not user_can_map:
-            raise MappingServiceError(f'Mapping not allowed because: {error_reason.name}')
+            if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
+                raise UserLicenseError('User must accept license to map this task')
+            else:
+                raise MappingServiceError(f'Mapping not allowed because: {error_reason.name}')
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
         return task.as_dto()

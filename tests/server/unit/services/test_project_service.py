@@ -49,7 +49,26 @@ class TestProjectService(unittest.TestCase):
         mock_user_tasks.return_value = [1]
 
         #Act
-        allowed, message = ProjectService.is_user_permitted_to_map(1, 1)
+        allowed, reason = ProjectService.is_user_permitted_to_map(1, 1)
+
+        # Assert
+        self.assertFalse(allowed)
+
+    @patch.object(UserService, 'has_user_accepted_license')
+    @patch.object(Project, 'get_locked_tasks_for_user')
+    @patch.object(Project, 'get')
+    def test_user_not_permitted_to_map_if_user_has_not_accepted_license(self, mock_project, mock_user_tasks,
+                                                                        mock_user_service):
+        # Arrange
+        stub_project = Project()
+        stub_project.license_id = 11
+
+        mock_project.return_value = stub_project
+        mock_user_tasks.return_value = []
+        mock_user_service.return_value = False
+
+        #Act
+        allowed, reason = ProjectService.is_user_permitted_to_map(1, 1)
 
         # Assert
         self.assertFalse(allowed)
