@@ -15,23 +15,28 @@
         vm.license = {};
         vm.isNew = false;
         vm.isLicenseFound = false;
+        vm.isSaveEditsSuccessful = true;
+        vm.isDeleteSuccessful = true;
+        vm.isCreateNewSuccessful = true;
+        vm.id = 0;
         
         activate();
 
         function activate() {
-            var id = $routeParams.id;
-            if (id === 'new'){
+            vm.id = $routeParams.id;
+            if (vm.id === 'new'){
                 vm.isNew = true;
             }
             else {
-                var license = licenseService.getLicenseForId(id);
-                if (license){
-                    vm.license = license;
+                var resultsPromise = licenseService.getLicense(vm.id);
+                resultsPromise.then(function (data) {
+                    // On success
+                    vm.license = data.license;
                     vm.isLicenseFound = true;
-                }
-                else {
+                }, function(){
+                    // On error
                     vm.isLicenseFound = false;
-                }
+                });
             }
         }
 
@@ -46,22 +51,45 @@
          * Save the edits made to the license
          */
         vm.saveEdits = function(){
-            // TODO
+            vm.isSaveEditsSuccessful = true;
+            var resultsPromise = licenseService.updateLicense(vm.license, vm.id);
+            resultsPromise.then(function () {
+                // On success
+                $location.path('/admin/licenses');
+            }, function () {
+                // On error
+                vm.isSaveEditsSuccessful = false;
+            });
         };
 
         /**
          * Delete the license
          */
         vm.delete = function(){
-            // TODO
+            vm.isDeleteSuccessful = true;
+            var resultsPromise = licenseService.deleteLicense(vm.id);
+            resultsPromise.then(function () {
+                // On success
+                $location.path('/admin/licenses');
+            }, function () {
+                // On error
+                vm.isDeleteSuccessful = false;
+            });
         };
 
         /**
          * Create a new license
          */
         vm.createNewLicense = function(){
-            // TODO
-            $location.path('/admin/licenses');
+            vm.isCreateNewSuccessful = true;
+            var resultsPromise = licenseService.createLicense(vm.license);
+            resultsPromise.then(function () {
+                // On success
+                $location.path('/admin/licenses');
+            }, function () {
+                // On error
+                vm.isCreateNewSuccessful = false;
+            });
         };
     }
 })();

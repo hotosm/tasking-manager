@@ -34,18 +34,44 @@
                             </div>
                         </fieldset>
                         <fieldset ng-show="!licenseEditCtrl.isNew" class="form__fieldset">
-                            <button class="button button--secondary" type="button">Save edits</button>
-                            <button class="button button--base" type="button">Delete</button>
-                            <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">Cancel</button>
+                            <button class="button button--secondary" type="button"
+                                    ng-click="licenseEditCtrl.saveEdits()">
+                                Save edits
+                            </button>
+                            <button class="button button--base" type="button"
+                                    ng-click="licenseEditCtrl.delete()">
+                                Delete
+                            </button>
+                            <button class="button button--achromic" type="button"
+                                    ng-click="licenseEditCtrl.cancel()">
+                                Cancel
+                            </button>
                         </fieldset>
                         <fieldset ng-show="licenseEditCtrl.isNew" class="form__fieldset">
-                            <button class="button button--secondary" type="button" ng-click="licenseEditCtrl.createNewLicense()">Create new licence</button>
-                            <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">Cancel</button>
+                            <button class="button button--secondary" type="button"
+                                    ng-click="licenseEditCtrl.createNewLicense()">
+                                Create new licence
+                            </button>
+                            <button class="button button--achromic" type="button"
+                                    ng-click="licenseEditCtrl.cancel()">
+                                Cancel
+                            </button>
                         </fieldset>
                     </form>
-                    <div ng-show="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
-                        <p>No license found.</p>
-                        <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">Go back to license overview</button>
+                    <div class="error">
+                        <div ng-show="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
+                            <p>No license found.</p>
+                            <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">Go back to license overview</button>
+                        </div>
+                        <div ng-show="!licenseEditCtrl.isSaveEditsSuccessful">
+                            <p>Saving the edits was not successful. Please try again.</p>
+                        </div>
+                        <div ng-show="!licenseEditCtrl.isDeleteSuccessful">
+                            <p>Deleting the license was not successful. Please try again.</p>
+                        </div>
+                        <div ng-show="!licenseEditCtrl.isCreateNewSuccessful">
+                            <p>Creating a new license was not successful. Please try again.</p>
+                        </div>
                     </div>
                 </div>
             </div>

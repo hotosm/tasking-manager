@@ -6,15 +6,18 @@
 
     angular
         .module('taskingManager')
-        .service('licenseService', [licenseService]);
+        .service('licenseService', ['$http', '$q', 'configService', 'authService', licenseService]);
 
-    function licenseService() {
+    function licenseService($http, $q, configService, authService) {
 
         var licenses = [];
 
         var service = {
             getLicenses: getLicenses,
-            getLicenseForId: getLicenseForId
+            getLicense: getLicense,
+            createLicense: createLicense,
+            deleteLicense: deleteLicense,
+            updateLicense: updateLicense
         };
 
         return service;
@@ -67,15 +70,84 @@
          * @param id - license id
          * @returns {*}
          */
-        function getLicenseForId(id){
-            if (licenses) {
-                for (var i = 0; i < licenses.length; i++) {
-                    if (licenses[i].id == id) {
-                        return licenses[i];
-                    }
-                }
-            }
-            return null;
+        function getLicense(id) {
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/license/' + id,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Create a new license
+         * @param licenseData
+         * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function createLicense(licenseData){
+            // Returns a promise
+            return $http({
+                method: 'PUT',
+                url: configService.tmAPI + '/license',
+                data: licenseData,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Delete a license
+         * @param id
+         * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function deleteLicense(id){
+            // Returns a promise
+            return $http({
+                method: 'DELETE',
+                url: configService.tmAPI + '/license/' + id,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        function updateLicense(licenseData, id){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/license/' + id,
+                data: licenseData,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
         }
     }
 })();
