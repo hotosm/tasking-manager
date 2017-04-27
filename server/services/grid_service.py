@@ -23,16 +23,17 @@ class GridService:
         clip_to_aoi = grid_dto.clip_to_aoi
 
         # create a shapely shape from the aoi
-        aoi_polygon = GridService.feature_collection_to_multiPolygon(aoi, dissolve=True)
+        aoi_multi_polygon_geojson = GridService.convert_feature_collection_to_multi_polygon(aoi, dissolve=True)
+        aoi_multi_polygon =  shapely.geometry.shape(aoi_multi_polygon_geojson)
         intersecting_features = []
         for feature in grid['features']:
             # create a shapely shape for the tile
             tile = shapely.geometry.shape(feature['geometry'])
-            if aoi_polygon.contains(tile):
+            if aoi_multi_polygon.contains(tile):
                 # tile is completely within aoi, use as is
                 intersecting_features.append(feature)
             else:
-                intersection = aoi_polygon.intersection(tile)
+                intersection = aoi_multi_polygon.intersection(tile)
                 if intersection.is_empty:
                     continue  # this ignores polygons which are completely outside aoi
                 # tile is partially intersecting the aoi
@@ -41,12 +42,12 @@ class GridService:
         return geojson.FeatureCollection(intersecting_features)
 
     @staticmethod
-    def feature_collection_to_multiPolygon(feature_collection: dict, dissolve: bool) -> MultiPolygon:
+    def convert_feature_collection_to_multi_polygon(feature_collection: dict, dissolve: bool) -> MultiPolygon:
         parsed_geojson = GridService._parse_geojson(json.dumps(feature_collection))
         multi_polygon = GridService._convert_to_multipolygon(parsed_geojson)
         if dissolve:
             multi_polygon = GridService._dissolve(multi_polygon)
-        return multi_polygon
+        return  geojson.loads(json.dumps(mapping(multi_polygon)))
 
     @staticmethod
     def _update_feature(clip_to_aoi: bool, feature: dict, new_shape):

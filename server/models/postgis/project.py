@@ -12,6 +12,7 @@ from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
+from server.services.grid_service import  GridService
 
 
 class AreaOfInterest(db.Model):
@@ -30,7 +31,9 @@ class AreaOfInterest(db.Model):
         :param aoi_geometry_geojson: AOI GeoJson
         :raises InvalidGeoJson
         """
-        aoi_geometry = geojson.loads(json.dumps(aoi_geometry_geojson))
+        aoi_geojson = geojson.loads(json.dumps(aoi_geometry_geojson))
+        aoi_geometry = GridService.convert_feature_collection_to_multi_polygon(aoi_geojson, dissolve=True)
+
 
         if type(aoi_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')
