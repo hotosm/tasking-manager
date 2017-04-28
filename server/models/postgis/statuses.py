@@ -50,3 +50,11 @@ class MappingNotAllowed(Enum):
     USER_ALREADY_HAS_TASK_LOCKED = 100
     USER_NOT_CORRECT_MAPPING_LEVEL = 101
     USER_NOT_ACCEPTED_LICENSE = 102
+
+
+class UserRole(Enum):
+    """ Describes the role a user can be assigned, app doesn't support multiple roles """
+    MAPPER = 0
+    ADMIN = 1
+    PROJECT_MANAGER = 2
+    VALIDATOR = 4

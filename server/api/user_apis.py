@@ -1,4 +1,6 @@
 from flask_restful import Resource, current_app, request
+from schematics.exceptions import DataError
+from server.models.dtos.user_dto import UserSearchQuery
 from server.services.authentication_service import token_auth, tm
 from server.services.user_service import UserService, UserServiceError, NotFound
 
@@ -54,6 +56,18 @@ class UserSearchAllAPI(Resource):
               name: page
               description: Page of results user requested
               type: integer
+            - in: query
+              name: username
+              description: Full or part username
+              type: integer
+            - in: query
+              name: role
+              description: Role of User, eg ADMIN, PROJECT_MANAGER
+              type: string
+            - in: query
+              name: level
+              description: Level of User, eg BEGINNER
+              type: string
         responses:
             200:
                 description: Users found
@@ -61,8 +75,18 @@ class UserSearchAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            page = int(request.args.get('page')) if request.args.get('page') else 1
-            users_dto = UserService.get_all_users(page)
+            query = UserSearchQuery()
+            query.page = int(request.args.get('page')) if request.args.get('page') else 1
+            query.username = request.args.get('username')
+            query.mapping_level = request.args.get('level')
+            query.role = request.args.get('role')
+            query.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            users_dto = UserService.get_all_users(query)
             return users_dto.to_primitive(), 200
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
@@ -100,7 +124,7 @@ class UserSearchFilterAPI(Resource):
         """
         try:
             page = int(request.args.get('page')) if request.args.get('page') else 1
-            users_dto = UserService.get_users_by_username(username, page)
+            users_dto = UserService.filter_users(username, page)
             return users_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404

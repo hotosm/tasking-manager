@@ -101,6 +101,7 @@ class LockTaskForMappingAPI(Resource):
             lock_task_dto.user_id = tm.authenticated_user_id
             lock_task_dto.project_id = project_id
             lock_task_dto.task_id = task_id
+            lock_task_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
