@@ -14,7 +14,8 @@
             setRole: setRole,
             setLevel: setLevel,
             getOSMUserDetails: getOSMUserDetails,
-            getUserProjects: getUserProjects
+            getUserProjects: getUserProjects,
+            searchUser: searchUser
         };
 
         return service;
@@ -99,6 +100,29 @@
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/user/' + username + '/mapped-projects',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Search a user
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         */
+        function searchUser(username){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/user/search/filter/' + username,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }

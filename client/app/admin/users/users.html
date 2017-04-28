@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Users (TODO)
+                    Users
                 </h1>
             </div>
         </header>
@@ -13,10 +13,19 @@
                     <div class="users-container">
                         <div class="filter">
                             <form class="form">
-                                 <h3>Search users</h3>
-                                     <div class="form__group">
-                                         <input type="text" class="form__control form__control--medium" id="form-name" name="form-name" placeholder="Search by username" />
-                                     </div>
+                                <h3>Search users</h3>
+                                <div>
+                                    <input type="text" ng-model="asyncSelected" placeholder="Search for a user"
+                                           class="form__control form__control--medium"
+                                           uib-typeahead="user for user in usersCtrl.getUser($viewValue)"
+                                           typeahead-loading="loadingLocations"
+                                           typeahead-no-results="noResults"
+                                           typeahead-on-select="usersCtrl.selectUser($item)">
+                                    <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+                                    <div ng-show="noResults">
+                                        <i class="glyphicon glyphicon-remove"></i> No Results Found
+                                    </div>
+                                </div>
                              </form>
                         </div>
                         <div class="results">
@@ -46,7 +55,6 @@
                                 items-per-page="usersCtrl.itemsPerPage"
                                 total-items="usersCtrl.users.length"
                                 ng-model="usersCtrl.currentPage"></ul>
-                        </div>
                         </div>
                     </div>
                 </div>

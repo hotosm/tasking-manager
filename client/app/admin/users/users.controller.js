@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('usersController', [profileController]);
+        .controller('usersController', ['$location', 'userService', usersController]);
 
-    function profileController() {
+    function usersController($location, userService) {
         var vm = this;
 
         // Filter
@@ -88,5 +88,27 @@
         function activate() {
             
         }
+
+        /**
+         * Get the user for a search value
+         * @param searchValue
+         */
+        vm.getUser = function(searchValue){
+            var resultsPromise = userService.searchUser(searchValue);
+            return resultsPromise.then(function (data) {
+                // On success
+                return data.usernames;
+            }, function(){
+                // On error
+            });
+        };
+
+        /**
+         * Select a user
+         * @param username
+         */
+        vm.selectUser = function(username) {
+            $location.path('/user/' + username);
+        };
     }
 })();
