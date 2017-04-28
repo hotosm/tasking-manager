@@ -35,8 +35,16 @@ class ProjectAdminAPI(Resource):
                           type: string
                           default: HOT Project
                       areaOfInterest:
-                          schema:
-                              $ref: "#/definitions/GeoJsonMultiPolygon"
+                            schema:
+                                properties:
+                                  type:
+                                      type: string
+                                      default: FeatureCollection
+                                  features:
+                                      type: array
+                                      items:
+                                          schema:
+                                              $ref: "#/definitions/GeoJsonFeature"
                       tasks:
                           schema:
                               properties:
