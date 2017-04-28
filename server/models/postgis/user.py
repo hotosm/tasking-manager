@@ -1,6 +1,7 @@
 import geojson
 from server import db
-from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination
+from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
+    UserSearchQuery, UserSearchDTO, ListedUser
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
@@ -37,13 +38,20 @@ class User(db.Model):
         return User.query.filter_by(username=username).one_or_none()
 
     @staticmethod
-    def get_all_users(page: int) -> UserFilterDTO:
+    def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Search all users """
-        results = db.session.query(User.username).order_by(User.username).paginate(page, 20, True)
+        if query.mapping_level is None and query.username is None and query.role is None:
+            results = db.session.query(User.username, User.mapping_level, User.role).order_by(User.username).paginate(
+                query.page, 20, True)
 
-        dto = UserFilterDTO()
+        dto = UserSearchDTO()
         for result in results.items:
-            dto.usernames.append(result.username)
+            listed_user = ListedUser()
+            listed_user.mapping_level = MappingLevel(result.mapping_level).name
+            listed_user.username = result.username
+            listed_user.role = UserRole(result.role).name
+
+            dto.users.append(listed_user)
 
         dto.pagination = Pagination(results)
         return dto
@@ -51,7 +59,7 @@ class User(db.Model):
     @staticmethod
     def filter_users(user_filter: str, page: int) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete """
-        results = db.session.query(User.username).filter(User.username.ilike(user_filter.lower() + '%'))\
+        results = db.session.query(User.username).filter(User.username.ilike(user_filter.lower() + '%')) \
             .order_by(User.username).paginate(page, 20, True)
 
         if results.total == 0:

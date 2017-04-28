@@ -1,7 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from flask import current_app
-from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery
+from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 
@@ -65,10 +65,9 @@ class UserService:
         return user.as_dto()
 
     @staticmethod
-    def get_all_users(query: UserSearchQuery) -> UserFilterDTO:
+    def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Gets paginated list of users """
-        pass
-        #return User.get_all_users(page)
+        return User.get_all_users(query)
 
     @staticmethod
     def filter_users(username: str, page: int) -> UserFilterDTO:
