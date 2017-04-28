@@ -96,18 +96,16 @@ class StatsService:
     @staticmethod
     def get_project_stats(project_id: int, preferred_locale: str) -> ProjectSummary:
         """ Gets stats for the specified project """
-        project = db.session.query(Project.id,
-                                   Project.status,
-                                   Project.campaign_tag,
-                                   Project.total_tasks,
-                                   Project.tasks_mapped,
-                                   Project.tasks_validated,
-                                   Project.tasks_bad_imagery,
-                                   Project.created,
-                                   Project.last_updated,
-                                   Project.default_locale,
-                                   AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
-            .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
+        contrib_query = '''select p.id, p.status, p.campaign_tag, p.total_tasks, p.tasks_mapped,
+                           p.tasks_validated, p.tasks_bad_imagery, p.created, p.last_updated,
+                           p.default_locale
+                              from projects p
+                              where p.id = {0}  FULL OUTER JOIN
+                              count(t.mapped_by) DISTINCT t.mapped_by
+                              from tasks t 
+                              where t.project_id = {0}
+        '''.format(project_id)
+        results = db.engine.execute(contrib_query)
 
         pm_project = Project.get_project_summary(project, preferred_locale)
         return pm_project
