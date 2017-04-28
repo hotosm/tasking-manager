@@ -32,7 +32,7 @@ class AreaOfInterest(db.Model):
         :raises InvalidGeoJson
         """
         aoi_geojson = geojson.loads(json.dumps(aoi_geometry_geojson))
-        aoi_geometry = GridService.convert_feature_collection_to_multi_polygon(aoi_geojson, dissolve=True)
+        aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
 
 
         if type(aoi_geometry) is not geojson.MultiPolygon:
