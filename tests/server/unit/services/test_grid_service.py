@@ -12,8 +12,9 @@ class TestGridService(unittest.TestCase):
         # arrange
         grid_json = get_canned_json('test_grid.json')
         grid_dto = GridDTO(grid_json)
-        expected = geojson.loads(json.dumps(get_canned_json('multi_polygon_dissolved.json')))
         aoi_geojson = geojson.loads(json.dumps(grid_dto.area_of_interest))
+        expected = geojson.loads(json.dumps(get_canned_json('multi_polygon_dissolved.json')))
+
 
         # act
         result = GridService.merge_to_multi_polygon(aoi_geojson, True)
@@ -45,7 +46,7 @@ class TestGridService(unittest.TestCase):
         result = GridService.trim_grid_to_aoi(grid_dto)
 
         # assert
-        self.assertEquals(json.dumps(expected), json.dumps(result))
+        self.assertEquals(str(expected), str(result))
 
     def test_trim_grid_to_aoi_noclip(self):
         # arrange
@@ -56,10 +57,10 @@ class TestGridService(unittest.TestCase):
 
         expected = geojson.loads(json.dumps(get_canned_json('feature_collection.json')))
 
-        print(expected)
         # act
         result = GridService.trim_grid_to_aoi(grid_dto)
+        print(result)
 
         # assert
-        self.assertEquals(expected, result)
+        self.assertEquals(str(expected), str(result))
 
