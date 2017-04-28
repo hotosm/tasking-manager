@@ -17,7 +17,8 @@
             getLicense: getLicense,
             createLicense: createLicense,
             deleteLicense: deleteLicense,
-            updateLicense: updateLicense
+            updateLicense: updateLicense,
+            getLicenseList: getLicenseList
         };
 
         return service;
@@ -138,6 +139,27 @@
                 method: 'POST',
                 url: configService.tmAPI + '/license/' + id,
                 data: licenseData,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get all licenses
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function getLicenseList(){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/license/list',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

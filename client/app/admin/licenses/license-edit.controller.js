@@ -31,7 +31,7 @@
                 var resultsPromise = licenseService.getLicense(vm.id);
                 resultsPromise.then(function (data) {
                     // On success
-                    vm.license = data.license;
+                    vm.license = data;
                     vm.isLicenseFound = true;
                 }, function(){
                     // On error
