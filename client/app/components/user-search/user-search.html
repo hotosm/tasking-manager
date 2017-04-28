@@ -1,0 +1,11 @@
+<div>
+    <input type="text" ng-model="asyncSelected" placeholder="Search for a user"
+           class="form__control form__control--medium"
+           uib-typeahead="user for user in userSearchCtrl.getUser($viewValue)"
+           typeahead-loading="loadingLocations"
+           typeahead-no-results="noResults"
+           typeahead-on-select="userSearchCtrl.selectUser($item)">
+    <div ng-show="noResults">
+        No Results Found
+    </div>
+</div>

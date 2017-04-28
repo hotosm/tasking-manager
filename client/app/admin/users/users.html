@@ -14,18 +14,7 @@
                         <div class="filter">
                             <form class="form">
                                 <h3>Search users</h3>
-                                <div>
-                                    <input type="text" ng-model="asyncSelected" placeholder="Search for a user"
-                                           class="form__control form__control--medium"
-                                           uib-typeahead="user for user in usersCtrl.getUser($viewValue)"
-                                           typeahead-loading="loadingLocations"
-                                           typeahead-no-results="noResults"
-                                           typeahead-on-select="usersCtrl.selectUser($item)">
-                                    <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
-                                    <div ng-show="noResults">
-                                        <i class="glyphicon glyphicon-remove"></i> No Results Found
-                                    </div>
-                                </div>
+                                <user-search></user-search>
                              </form>
                         </div>
                         <div class="results">
