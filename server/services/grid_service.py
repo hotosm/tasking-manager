@@ -24,7 +24,7 @@ class GridService:
 
         # create a shapely shape from the aoi
         aoi_multi_polygon_geojson = GridService.merge_to_multi_polygon(aoi, dissolve=True)
-        aoi_multi_polygon =  shapely.geometry.shape(aoi_multi_polygon_geojson)
+        aoi_multi_polygon = shapely.geometry.shape(aoi_multi_polygon_geojson)
         intersecting_features = []
         for feature in grid['features']:
             # create a shapely shape for the tile
@@ -49,14 +49,14 @@ class GridService:
         :param dissolve: flag for wther to to dissolve internal boundaries.
         :return: geojson.MultiPolygon
         """
-        parsed_geojson = GridService._parse_geojson(json.dumps(feature_collection))
+        parsed_geojson = GridService._to_shapely_geometries(json.dumps(feature_collection))
         multi_polygon = GridService._convert_to_multipolygon(parsed_geojson)
         if dissolve:
             multi_polygon = GridService._dissolve(multi_polygon)
-        return  geojson.loads(json.dumps(mapping(multi_polygon)))
+        return geojson.loads(json.dumps(mapping(multi_polygon)))
 
     @staticmethod
-    def _update_feature(clip_to_aoi: bool, feature: dict, new_shape)->dict:
+    def _update_feature(clip_to_aoi: bool, feature: dict, new_shape) -> dict:
         """
         Updates the feature with the new shape, and splittable property
         :param clip_to_aoi: value for feature's splittable property
@@ -74,26 +74,24 @@ class GridService:
         return feature
 
     @staticmethod
-    def _parse_geojson(input: str)->list:
+    def _to_shapely_geometries(input: str) -> list:
         """
         Parses the input geojson and returns a list of geojson.Fearure objects with their geometries adapted to shapely geometries
         :param input: string of geojson
         :return: list of geojson.Fearure objects with their geometries adapted to shapely geometries
         """
-        collection = geojson.loads(input,
-                                   object_hook=geojson.GeoJSON.to_instance)
+        collection = geojson.loads(input, object_hook=geojson.GeoJSON.to_instance)
 
-        if not hasattr(collection, "features") or \
-                        len(collection.features) < 1:
+        if not hasattr(collection, "features") or len(collection.features) < 1:
             raise InvalidGeoJson("Geojson does not contain any features")
 
-        shapely_features = list((filter(lambda x: x is not None,
-                                        map(GridService._adapt_feature_geometry, collection.features))))
+        shapely_features = list(
+            (filter(lambda x: x is not None, map(GridService._adapt_feature_geometry, collection.features))))
 
         return shapely_features
 
     @staticmethod
-    def _adapt_feature_geometry(feature: geojson.Feature)-> geojson.Feature:
+    def _adapt_feature_geometry(feature: geojson.Feature) -> geojson.Feature:
         """
         Adapts the feature geometry to be used as a shapely geometry
         :param feature: geojson.feature to be adapted
@@ -108,7 +106,7 @@ class GridService:
             return None
 
     @staticmethod
-    def _convert_to_multipolygon(features: list)->MultiPolygon:
+    def _convert_to_multipolygon(features: list) -> MultiPolygon:
         """
         converts a list of (multi)polygon geometries to one single multipolygon
         :param features:
@@ -129,7 +127,8 @@ class GridService:
 
         return geom2d
 
-    def _dissolve(geoms: MultiPolygon)->MultiPolygon:
+    @staticmethod
+    def _dissolve(geoms: MultiPolygon) -> MultiPolygon:
         """
         dissolves a Multipolygons
         :return: Multipolygon
