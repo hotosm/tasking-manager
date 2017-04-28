@@ -3,16 +3,25 @@ from schematics.exceptions import ValidationError
 from schematics.types import StringType, IntType
 from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.dtos.stats_dto import Pagination
-from server.models.postgis.statuses import MappingLevel
+from server.models.postgis.statuses import MappingLevel, UserRole
 
 
 def is_known_mapping_level(value):
-    """ Validates that Project Status is known value """
+    """ Validates that supplied mapping level is known value """
     try:
         MappingLevel[value.upper()]
     except KeyError:
         raise ValidationError(f'Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, '
                               f'{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}')
+
+
+def is_known_role(value):
+    """ Validates that supplied user role is known value """
+    try:
+        UserRole[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown mappingLevel: {value} Valid values are {UserRole.ADMIN.name}, '
+                              f'{UserRole.PROJECT_MANAGER.name}, {UserRole.MAPPER.name}, {UserRole.VALIDATOR.name}')
 
 
 class UserDTO(Model):
@@ -50,7 +59,32 @@ class UserMappedProjectsDTO(Model):
     mapped_projects = ListType(ModelType(MappedProject), serialized_name='mappedProjects')
 
 
-class TMUsersDTO(Model):
+class UserSearchQuery(Model):
+    """ Describes a user search query, that a user may submit to filter the list of users """
+    username = StringType()
+    role = StringType(validators=[is_known_role])
+    mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])
+    page = IntType()
+
+
+class ListedUser(Model):
+    """ Describes a user within the User List """
+    username = StringType()
+    role = StringType()
+    mapping_level = StringType(serialized_name='mappingLevel')
+
+
+class UserSearchDTO(Model):
+    """ Paginated list of TM users """
+    def __init__(self):
+        super().__init__()
+        self.users = []
+
+    pagination = ModelType(Pagination)
+    users = ListType(ModelType(ListedUser))
+
+
+class UserFilterDTO(Model):
     """ DTO to hold all Tasking Manager users """
     def __init__(self):
         super().__init__()
