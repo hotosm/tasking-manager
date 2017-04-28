@@ -75,6 +75,7 @@
 
         // License
         vm.showLicenseModal = false;
+        vm.lockingReason = '';
 
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
@@ -606,6 +607,7 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskMapping = function () {
+            vm.lockingReason = 'MAPPING';
             var projectId = vm.projectData.projectId;
             var taskId = vm.selectedTaskData.taskId;
             // - try to lock the task, call returns a promise
@@ -629,7 +631,6 @@
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
             }, function (error) {
-                console.log(error);
                 onLockError(projectId, error);
             });
         };
@@ -638,6 +639,7 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
+            vm.lockingReason = 'VALIDATION';
             var projectId = vm.projectData.projectId;
             var taskId = vm.selectedTaskData.taskId;
             var taskIds = [taskId];
@@ -801,7 +803,12 @@
             resultsPromise.then(function () {
                 // On success
                 vm.showLicenseModal = false;
-                vm.lockSelectedTaskMapping();
+                if (vm.lockingReason === 'MAPPING'){
+                    vm.lockSelectedTaskMapping();
+                }
+                else if (vm.lockingReason === 'VALIDATION'){
+                    vm.lockSelectedTaskValidation();
+                }
             }, function(){
                 // On error
             });
