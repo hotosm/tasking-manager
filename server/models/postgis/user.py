@@ -43,6 +43,10 @@ class User(db.Model):
         if query.mapping_level is None and query.username is None and query.role is None:
             results = db.session.query(User.username, User.mapping_level, User.role).order_by(User.username).paginate(
                 query.page, 20, True)
+        elif query.mapping_level and query.username is None and query.role is None:
+            results = db.session.query(User.username, User.mapping_level, User.role).filter(
+                User.mapping_level == MappingLevel[query.mapping_level.upper()].value).order_by(User.username).paginate(
+                query.page, 20, True)
 
         dto = UserSearchDTO()
         for result in results.items:
