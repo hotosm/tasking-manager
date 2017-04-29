@@ -91,7 +91,7 @@
                                 <span>Previous</span>
                             </button>
                             <button class="button button--secondary" type="button"
-                                    ng-click="createProjectCtrl.setWizardStep('taskSize')">
+                                    ng-click="createProjectCtrl.setWizardStep(createProjectCtrl.isTaskArbitrary?'review':'taskSize')">
                                 <span>Next</span>
                             </button>
                         </div>
@@ -217,7 +217,7 @@
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--secondary button" type="button"
-                                    ng-click="createProjectCtrl.setWizardStep('trim')">
+                                    ng-click="createProjectCtrl.setWizardStep(createProjectCtrl.isTaskArbitrary?'tasks':'trim')">
                                 <span>Previous</span>
                             </button>
                             <button class="button button--primary" type="button"

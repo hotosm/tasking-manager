@@ -227,6 +227,8 @@
          */
 
         vm.createArbitaryTasks = function () {
+            vm.isTaskGrid = false;
+            vm.isTaskArbitrary = true;
             projectService.removeTaskGrid();
 
             // Get and set the AOI
@@ -246,6 +248,7 @@
         vm.createTaskGrid = function () {
 
             vm.isTaskGrid = true;
+            vm.isTaskArbitrary = false;
 
             // Remove existing task grid
             projectService.removeTaskGrid();
