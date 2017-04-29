@@ -1,7 +1,7 @@
 {
   "development": {
     "EnvironmentConfig":{
-      "tmAPI": "http://http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1",
+      "tmAPI": "http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1",
       "layers": [
         {
           "id": "mapBoxAerial",
