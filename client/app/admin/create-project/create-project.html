@@ -78,7 +78,9 @@
                                     ng-click="createProjectCtrl.createTaskGrid()">
                                 Square grid
                             </button>
-                            <button class="button button--achromic" type="button" ng-click="createProjectCtrl.createArbitaryTasks()">
+                            {{ createProjectCtrl.isImportedAOI }}
+                            <button class="button button--achromic" type="button"
+                                    ng-click="createProjectCtrl.createArbitaryTasks()">
                                 Arbitrary (TODO)
                             </button>
                         </div>

@@ -104,6 +104,7 @@
             for (var x = xminstep; x < xmaxstep; x++) {
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
+                    console.log(x+','+y);
                     taskFeature.setProperties({
                         'x': x,
                         'y': y,
@@ -239,36 +240,40 @@
                 }
             }
 
+            // check everything is a polygon of multiPolygon
+            var allPolygonTypes = features.every(function (feature) {
+                var type = feature.getGeometry().getType();
+                return type === 'MultiPolygon' || type === 'Polygon'
+            });
+            if (!allPolygonTypes) {
+                validationResult.valid = false;
+                validationResult.message = 'CONTAINS_NON_POLYGON_FEATURES';
+                return validationResult;
+            }
+
             // check for self-intersections
             for (var featureCount = 0; featureCount < features.length; featureCount++) {
-                if (features[featureCount].getGeometry() instanceof ol.geom.MultiPolygon) {
-                    // it should only have one polygon per multipolygon at the moment
-                    var polygonsInFeatures = features[featureCount].getGeometry().getPolygons();
-                    var hasSelfIntersections;
-                    for (var polyCount = 0; polyCount < polygonsInFeatures.length; polyCount++) {
+                var hasSelfIntersections = false;
+                var featuresToCheck = [];
+                if (features[featureCount].getGeometry().getType() === 'MultiPolygon') {
+                    features[featureCount].getGeometry().getPolygons().forEach(function (geom) {
                         var feature = new ol.Feature({
-                            geometry: polygonsInFeatures[polyCount]
+                            geometry: geom
                         });
-                        var selfIntersect = checkFeatureSelfIntersections_(feature);
-                        if (selfIntersect) {
-                            hasSelfIntersections = true;
-                            // If only one self intersection exists, return as having self intersections
-                            break;
-                        }
-                    }
-                    if (hasSelfIntersections) {
-                        validationResult.valid = false;
-                        validationResult.message = 'SELF_INTERSECTIONS';
-                        return validationResult;
-                    }
+                        this.push(feature);
+                    }, featuresToCheck);
                 }
                 else {
-                    var hasSelfIntersections = checkFeatureSelfIntersections_(features[featureCount]);
-                    if (hasSelfIntersections) {
-                        validationResult.valid = false;
-                        validationResult.message = 'SELF_INTERSECTIONS';
-                        return validationResult;
-                    }
+                    featuresToCheck.push(features[featureCount]);
+                }
+                var hasSelfIntersections = featuresToCheck.every(function (feature) {
+                    return checkFeatureSelfIntersections_(feature)
+                });
+
+                if (hasSelfIntersections) {
+                    validationResult.valid = false;
+                    validationResult.message = 'SELF_INTERSECTIONS';
+                    return validationResult;
                 }
             }
             return validationResult;
@@ -643,13 +648,27 @@
             var tasks = [];
             for (var i = 0; i < features.length; i++) {
                 var task = features[i].clone();
+                var type = task.getGeometry().getType();
+                if (type === 'Polygon') {
+                    var multiPolygon = new ol.geom.MultiPolygon();
+                    multiPolygon.appendPolygon(task.getGeometry());
+                    task.setGeometry(multiPolygon)
+                }
+                else if(type !== 'MultiPolygon'){
+                    continue; //ignore anything that isn't a polygon or multiPolygon
+                }
                 task.setId(i + 1);
                 task.setProperties({
-                    'splittable': false
+                        //TODO - check how api validation handles these properties
+                        'x': -1,
+                        'y': -1,
+                        'zoom': -1,
+                        'splittable': false
                 });
                 tasks.push(task);
             }
-            return tasks
+            return tasks;
+
         }
     }
 })();
