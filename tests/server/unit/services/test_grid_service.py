@@ -1,171 +1,66 @@
 import unittest
 from server.services.grid_service import GridService
 from server.models.dtos.grid_dto import GridDTO
-from tests.server.helpers.test_helpers import get_canned_grid_request
+from tests.server.helpers.test_helpers import get_canned_json
 import geojson
 import json
-
 
 class TestGridService(unittest.TestCase):
     skip_tests = False
 
-    def test_trim_grid_to_aoi_noclip_clip(self):
+    def test_feature_collection_to_multi_polygon_dissolve(self):
         # arrange
-        grid_json = get_canned_grid_request()
-
+        grid_json = get_canned_json('test_grid.json')
         grid_dto = GridDTO(grid_json)
-        expected = geojson.FeatureCollection([{"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[[11.455322708388653, 24.617057336671365], [11.453661367104136, 24.617025871151228], [11.453669402000191, 24.617057336671365], [11.455322708388653, 24.617057336671365]]]]}, "properties": {"x": 69706, "y": 74787, "zoom": 17, "splittable": False}}, {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[[11.455993650291683, 24.6170700441964], [11.455322708388653, 24.617057336671365], [11.453669402000191, 24.617057336671365], [11.454307006014547, 24.619554262806403], [11.455993650291683, 24.619554262806403], [11.455993650291683, 24.6170700441964]]]]}, "properties": {"x": 69706, "y": 74788, "zoom": 17, "splittable": False}}, {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[[11.454777166054331, 24.621395460265262], [11.455993650291683, 24.621380100785228], [11.455993650291683, 24.619554262806403], [11.454307006014547, 24.619554262806403], [11.454777166054331, 24.621395460265262]]]]}, "properties": {"x": 69706, "y": 74789, "zoom": 17, "splittable": False}}, {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[[11.45874023232243, 24.617122063990887], [11.455993650291683, 24.6170700441964], [11.455993650291683, 24.619554262806403], [11.45874023232243, 24.619554262806403], [11.45874023232243, 24.617122063990887]]]]}, "properties": {"x": 69707, "y": 74788, "zoom": 17, "splittable": False}}, {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[[11.455993650291683, 24.621380100785228], [11.45874023232243, 24.621345422101715], [11.45874023232243, 24.619554262806403], [11.455993650291683, 24.619554262806403], [11.455993650291683, 24.621380100785228]]]]}, "properties": {"x": 69707, "y": 74789, "zoom": 17, "splittable": False}}, {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[[11.46135950841598, 24.619554262806403], [11.461486814353208, 24.61899663851402], [11.461486814353208, 24.61717408378538], [11.45874023232243, 24.617122063990887], [11.45874023232243, 24.619554262806403], [11.46135950841598, 24.619554262806403]]]]}, "properties": {"x": 69708, "y": 74788, "zoom": 17, "splittable": False}}, {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[[11.45874023232243, 24.621345422101715], [11.460956975624642, 24.621317433227347], [11.46135950841598, 24.619554262806403], [11.45874023232243, 24.619554262806403], [11.45874023232243, 24.621345422101715]]]]}, "properties": {"x": 69708, "y": 74789, "zoom": 17, "splittable": False}}, {"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": [[[[11.461486814353208, 24.61899663851402], [11.461901113197886, 24.617181930534727], [11.461486814353208, 24.61717408378538], [11.461486814353208, 24.61899663851402]]]]}, "properties": {"x": 69709, "y": 74788, "zoom": 17, "splittable": False}}])
+        aoi_geojson = geojson.loads(json.dumps(grid_dto.area_of_interest))
+        expected = geojson.loads(json.dumps(get_canned_json('multi_polygon_dissolved.json')))
+
 
         # act
-        grid = GridService.trim_grid_to_aoi(grid_dto)
+        result = GridService.merge_to_multi_polygon(aoi_geojson, True)
+
         # assert
-        self.assertEquals(json.dumps(grid), json.dumps(expected))
+        self.assertEquals(str(expected), str(result))
+
+    def test_feature_collection_to_multi_polygon_nodissolve(self):
+        # arrange
+        grid_json = get_canned_json('test_grid.json')
+        grid_dto = GridDTO(grid_json)
+        expected = geojson.loads(json.dumps(get_canned_json('multi_polygon.json')))
+        aoi_geojson = geojson.loads(json.dumps(grid_dto.area_of_interest))
+
+        # act
+        result = GridService.merge_to_multi_polygon(aoi_geojson, False)
+
+        # assert
+        self.assertEquals(str(expected), str(result))
+
+    def test_trim_grid_to_aoi_clip(self):
+        # arrange
+        grid_json = get_canned_json('test_grid.json')
+
+        grid_dto = GridDTO(grid_json)
+        expected = geojson.loads(json.dumps(get_canned_json('clipped_feature_collection.json')))
+
+        # act
+        result = GridService.trim_grid_to_aoi(grid_dto)
+
+        # assert
+        self.assertEquals(str(expected), str(result))
 
     def test_trim_grid_to_aoi_noclip(self):
         # arrange
 
-        grid_json = get_canned_grid_request()
+        grid_json = get_canned_json('test_grid.json')
         grid_dto = GridDTO(grid_json)
         grid_dto.clip_to_aoi = False
 
-        expected = {"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "MultiPolygon",
-                                                                                               "coordinates": [[[[
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.61456036067679],
-                                                                                                                 [
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.61456036067679],
-                                                                                                                 [
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.61456036067679]]]]},
-                                                               "properties": {"x": 69706, "y": 74787, "zoom": 17}},
-                                                              {"type": "Feature", "geometry": {"type": "MultiPolygon",
-                                                                                               "coordinates": [[[[
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.617057336671365]]]]},
-                                                               "properties": {"x": 69706, "y": 74788, "zoom": 17}},
-                                                              {"type": "Feature", "geometry": {"type": "MultiPolygon",
-                                                                                               "coordinates": [[[[
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.622051139078053],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.622051139078053],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.453247068260938,
-                                                                                                                     24.619554262806403]]]]},
-                                                               "properties": {"x": 69706, "y": 74789, "zoom": 17}},
-                                                              {"type": "Feature", "geometry": {"type": "MultiPolygon",
-                                                                                               "coordinates": [[[[
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.617057336671365]]]]},
-                                                               "properties": {"x": 69707, "y": 74788, "zoom": 17}},
-                                                              {"type": "Feature", "geometry": {"type": "MultiPolygon",
-                                                                                               "coordinates": [[[[
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.622051139078053],
-                                                                                                                 [
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.622051139078053],
-                                                                                                                 [
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.455993650291683,
-                                                                                                                     24.619554262806403]]]]},
-                                                               "properties": {"x": 69707, "y": 74789, "zoom": 17}},
-                                                              {"type": "Feature", "geometry": {"type": "MultiPolygon",
-                                                                                               "coordinates": [[[[
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.461486814353208,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.461486814353208,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.617057336671365]]]]},
-                                                               "properties": {"x": 69708, "y": 74788, "zoom": 17}},
-                                                              {"type": "Feature", "geometry": {"type": "MultiPolygon",
-                                                                                               "coordinates": [[[[
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.622051139078053],
-                                                                                                                 [
-                                                                                                                     11.461486814353208,
-                                                                                                                     24.622051139078053],
-                                                                                                                 [
-                                                                                                                     11.461486814353208,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.45874023232243,
-                                                                                                                     24.619554262806403]]]]},
-                                                               "properties": {"x": 69708, "y": 74789, "zoom": 17}},
-                                                              {"type": "Feature", "geometry": {"type": "MultiPolygon",
-                                                                                               "coordinates": [[[[
-                                                                                                                     11.461486814353208,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.461486814353208,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.464233396383955,
-                                                                                                                     24.619554262806403],
-                                                                                                                 [
-                                                                                                                     11.464233396383955,
-                                                                                                                     24.617057336671365],
-                                                                                                                 [
-                                                                                                                     11.461486814353208,
-                                                                                                                     24.617057336671365]]]]},
-                                                               "properties": {"x": 69709, "y": 74788, "zoom": 17}}]}
+        expected = geojson.loads(json.dumps(get_canned_json('feature_collection.json')))
 
         # act
-        grid = GridService.trim_grid_to_aoi(grid_dto)
+        result = GridService.trim_grid_to_aoi(grid_dto)
+        print(result)
+
         # assert
-        self.assertEquals(grid, expected)
+        self.assertEquals(str(expected), str(result))
+

@@ -24,18 +24,18 @@ def get_canned_osm_user_details():
         raise FileNotFoundError('osm_user_details.xml not found')
 
 
-def get_canned_grid_request():
+def get_canned_json(name_of_file):
     """ Read canned Grid request from file """
 
-    location = os.path.join(os.path.dirname(__file__), 'test_files', 'test_grid.json')
+    location = os.path.join(os.path.dirname(__file__), 'test_files', name_of_file)
 
     try:
         with open(location, 'r') as grid_file:
-           data = json.load(grid_file)
+            data = json.load(grid_file)
 
-           return data
+            return data
     except FileNotFoundError:
-        raise FileNotFoundError('osm_user_details.xml not found')
+        raise FileNotFoundError('json file not found')
 
 
 def get_canned_simplified_osm_user_details():
@@ -61,9 +61,7 @@ def create_canned_user() -> User:
 
 def create_canned_project() -> Tuple[Project, User]:
     """ Generates a canned project in the DB to help with integration tests """
-    multipoly_geojson = json.loads('{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],'
-                                   '[-4.0237, 56.0904]]]], "properties": {"x": 2402, "y": 1736, "zoom": 12},'
-                                   '"type": "MultiPolygon"}')
+    multipoly_geojson = geojson.loads(json.dumps(get_canned_json('test_aoi.json')))
 
     task_feature = geojson.loads('{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'
                                  '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "type": "MultiPolygon"},'

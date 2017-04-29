@@ -34,7 +34,15 @@ class IntersectingTilesAPI(Resource):
                         default: true
                       areaOfInterest:
                           schema:
-                              $ref: "#/definitions/GeoJsonMultiPolygon"
+                              properties:
+                                  type:
+                                      type: string
+                                      default: FeatureCollection
+                                  features:
+                                      type: array
+                                      items:
+                                          schema:
+                                              $ref: "#/definitions/GeoJsonFeature"
                       grid:
                           schema:
                               properties:

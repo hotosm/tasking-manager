@@ -1,0 +1,27 @@
+{
+	"features": [
+      {
+        "type": "Feature",
+		"geometry": {
+			"coordinates": [
+				[
+					[
+						[-4.0237, 56.0904],
+						[-3.9111, 56.1715],
+						[-3.8122, 56.098],
+						[-4.0237, 56.0904]
+					]
+				]
+			],
+			"properties": {
+				"x": 2402,
+				"y": 1736,
+				"zoom": 12
+			},
+			"type": "MultiPolygon"
+		}
+	  }
+    ],
+	"type": "FeatureCollection"
+}
+
