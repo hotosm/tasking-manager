@@ -123,16 +123,21 @@
                 }
                 if (vm.isImportedAOI) {
                     // TODO: validate AOI - depends on what API supports! Self-intersecting polygons?
-                    vm.drawPolygonInteraction.setActive(false);
-                    vm.map.getView().fit(drawService.getSource().getExtent());
-                    // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
-                    vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
-                        + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
-                    vm.currentStep = wizardStep;
-                    vm.drawPolygonInteraction.setActive(false);
-                    vm.modifyInteraction.setActive(false);
-                    // Reset the user zoom level offset
-                    vm.userZoomLevelOffset = 0;
+                    var aoiValidationResult = projectService.validateAOI(drawService.getSource().getFeatures());
+                    vm.isAOIValid = aoiValidationResult.valid;
+                    vm.AOIValidationMessage = aoiValidationResult.message;
+                    if (vm.isAOIValid) {
+                        vm.drawPolygonInteraction.setActive(false);
+                        vm.map.getView().fit(drawService.getSource().getExtent());
+                        // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
+                        vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
+                            + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
+                        vm.currentStep = wizardStep;
+                        vm.drawPolygonInteraction.setActive(false);
+                        vm.modifyInteraction.setActive(false);
+                        // Reset the user zoom level offset
+                        vm.userZoomLevelOffset = 0;
+                    }
                 }
             }
             else if (wizardStep === 'taskSize') {
@@ -215,6 +220,24 @@
             }, function () {
                 //TODO: may want to handle error
             })
+        }
+
+        /**
+         * Create arbitary tasks
+         */
+
+        vm.createArbitaryTasks = function () {
+            projectService.removeTaskGrid();
+
+            // Get and set the AOI
+            var areaOfInterest = drawService.getSource().getFeatures();
+            projectService.setAOI(areaOfInterest);
+            // Create a arbitary tasks from aoi
+            if (vm.isDrawnAOI || vm.isImportedAOI) {
+                var taskGrid = projectService.createTasksFromFeatures(drawService.getSource().getFeatures());
+                projectService.setTaskGrid(taskGrid);
+                projectService.addTaskGridToMap();
+            }
         }
 
         /**
@@ -416,7 +439,7 @@
             }
         }
 
-        vm.toggleClipTasksToAoi = function(){
+        vm.toggleClipTasksToAoi = function () {
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
         }
     }

@@ -50,7 +50,8 @@
             userCanMapProject: userCanMapProject,
             userCanValidateProject: userCanValidateProject,
             getMyProjects: getMyProjects,
-            trimTaskGrid: trimTaskGrid
+            trimTaskGrid: trimTaskGrid,
+            createTasksFromFeatures: createTasksFromFeatures
         };
 
         return service;
@@ -103,7 +104,6 @@
             for (var x = xminstep; x < xmaxstep; x++) {
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
-                    var taskFeatureGeoJSON = geospatialService.getGeoJSONFromFeature(taskFeature);
                     taskFeature.setProperties({
                         'x': x,
                         'y': y,
@@ -634,6 +634,22 @@
                 return $q.reject("error");
             });
 
+        }
+
+        /**
+         *
+         */
+        function createTasksFromFeatures(features) {
+            var tasks = [];
+            for (var i = 0; i < features.length; i++) {
+                var task = features[i].clone();
+                task.setId(i + 1);
+                task.setProperties({
+                    'splittable': false
+                });
+                tasks.push(task);
+            }
+            return tasks
         }
     }
 })();
