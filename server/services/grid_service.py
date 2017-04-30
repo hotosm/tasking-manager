@@ -34,8 +34,8 @@ class GridService:
                 intersecting_features.append(feature)
             else:
                 intersection = aoi_multi_polygon.intersection(tile)
-                if intersection.is_empty:
-                    continue  # this ignores polygons which are completely outside aoi
+                if intersection.is_empty or intersection.geom_type not in ['Polygon','MultiPolygon']:
+                    continue  # this intersections which are not polygons or which are completely outside aoi
                 # tile is partially intersecting the aoi
                 clipped_feature = GridService._update_feature(clip_to_aoi, feature, intersection)
                 intersecting_features.append(clipped_feature)

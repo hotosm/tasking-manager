@@ -105,6 +105,10 @@
             }
             else if (wizardStep === 'tasks') {
                 setSplitToolsActive_(false);
+                vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
+                    + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
+                // Reset the user zoom level offset
+                vm.userZoomLevelOffset = 0;
                 if (vm.isDrawnAOI) {
                     var aoiValidationResult = projectService.validateAOI(drawService.getSource().getFeatures());
                     vm.isAOIValid = aoiValidationResult.valid;
@@ -112,10 +116,6 @@
                     if (vm.isAOIValid) {
                         vm.map.getView().fit(drawService.getSource().getExtent());
                         // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
-                        vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
-                            + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
-                        // Reset the user zoom level offset
-                        vm.userZoomLevelOffset = 0;
                         vm.currentStep = wizardStep;
                         vm.drawPolygonInteraction.setActive(false);
                         vm.modifyInteraction.setActive(false);
