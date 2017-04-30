@@ -351,7 +351,8 @@
             var newProject = {
                 areaOfInterest: areaOfInterestGeoJSON,
                 projectName: projectName,
-                tasks: taskGridGeoJSON
+                tasks: taskGridGeoJSON,
+                arbitraryTasks: false
             };
 
             // Returns a promise

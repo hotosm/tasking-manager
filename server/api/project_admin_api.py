@@ -56,6 +56,9 @@ class ProjectAdminAPI(Resource):
                                       items:
                                           schema:
                                               $ref: "#/definitions/GeoJsonFeature"
+                      arbitraryTasks:
+                          type: boolean
+                          default: false
         responses:
             201:
                 description: Draft project created successfully

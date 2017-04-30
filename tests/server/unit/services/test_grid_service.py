@@ -72,7 +72,6 @@ class TestGridService(unittest.TestCase):
         # act
 
         result = GridService.tasks_from_aoi_features(grid_dto.area_of_interest)
-        print(result)
         # assert
         self.assertEquals(str(expected), str(result))
 

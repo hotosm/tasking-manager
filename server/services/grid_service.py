@@ -50,17 +50,20 @@ class GridService:
         for feature in parsed_geojson:
             if not isinstance(feature.geometry, MultiPolygon):
                 feature.geometry = MultiPolygon([feature.geometry])
+            feature.geometry = shapely.geometry.mapping(feature.geometry)
 
             feature.properties = {
-                'x': None,
-                'y': None,
-                'zoom': None,
+                'x': -1,
+                'y': -1,
+                'zoom': -1,
                 'splittable': False
             }
 
             tasks.append(feature)
 
         return geojson.FeatureCollection(tasks)
+        #return geojson.loads(json.dumps(tasks))
+        # return json.dumps(tasks)
 
     @staticmethod
     def merge_to_multi_polygon(feature_collection: str, dissolve: bool) -> geojson.MultiPolygon:

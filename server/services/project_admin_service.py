@@ -6,10 +6,12 @@ from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJso
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData
 from server.services.license_service import LicenseService
+from server.services.grid_service import GridService
 
 
 class ProjectAdminServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when validating a Project """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
@@ -17,13 +19,13 @@ class ProjectAdminServiceError(Exception):
 
 class ProjectStoreError(Exception):
     """ Custom Exception to notify callers an error occurred with database CRUD operations """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
 
 class ProjectAdminService:
-
     @staticmethod
     def create_draft_project(draft_project_dto: DraftProjectDTO) -> int:
         """
@@ -40,8 +42,10 @@ class ProjectAdminService:
         draft_project = Project()
         draft_project.create_draft_project(draft_project_dto, area_of_interest)
 
-        # TODOcreate tasks from aoi or use tasks in DTO
-        tasks = draft_project_dto.tasks
+        # if arbitrary_tasks requested, create tasks from aoi otherwise use tasks in DTO
+        tasks = GridService.tasks_from_aoi_features(draft_project_dto.area_of_interest) \
+            if draft_project_dto.arbitrary_tasks \
+            else draft_project_dto.tasks
         ProjectAdminService._attach_tasks_to_project(draft_project, tasks)
 
         draft_project.create()
@@ -153,7 +157,7 @@ class ProjectAdminService:
 
         for attr, value in default_info.items():
             if not value:
-                raise(ProjectAdminServiceError(f'{attr} not provided for Default Locale'))
+                raise (ProjectAdminServiceError(f'{attr} not provided for Default Locale'))
 
         return True  # Indicates valid default locale for unit testing
 
