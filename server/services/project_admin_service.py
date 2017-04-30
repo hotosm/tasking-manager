@@ -40,7 +40,9 @@ class ProjectAdminService:
         draft_project = Project()
         draft_project.create_draft_project(draft_project_dto, area_of_interest)
 
-        ProjectAdminService._attach_tasks_to_project(draft_project, draft_project_dto.tasks)
+        # TODOcreate tasks from aoi or use tasks in DTO
+        tasks = draft_project_dto.tasks
+        ProjectAdminService._attach_tasks_to_project(draft_project, tasks)
 
         draft_project.create()
         return draft_project.id

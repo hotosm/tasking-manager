@@ -217,7 +217,8 @@
                 var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
-            }, function () {
+            }, function (reason) {
+                console.log(reason);
                 //TODO: may want to handle error
             })
         }

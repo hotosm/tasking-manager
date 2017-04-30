@@ -42,6 +42,27 @@ class GridService:
         return geojson.FeatureCollection(intersecting_features)
 
     @staticmethod
+    def tasks_from_aoi_features(feature_collection: str) -> geojson.FeatureCollection:
+        # TODO change GridDTO input to DraftProjectDTO
+        parsed_geojson = GridService._to_shapely_geometries(json.dumps(feature_collection))
+
+        tasks = []
+        for feature in parsed_geojson:
+            if not isinstance(feature.geometry, MultiPolygon):
+                feature.geometry = MultiPolygon([feature.geometry])
+
+            feature.properties = {
+                'x': None,
+                'y': None,
+                'zoom': None,
+                'splittable': False
+            }
+
+            tasks.append(feature)
+
+        return geojson.FeatureCollection(tasks)
+
+    @staticmethod
     def merge_to_multi_polygon(feature_collection: str, dissolve: bool) -> geojson.MultiPolygon:
         """
         Merge all geometries to a single multipolygon
@@ -76,9 +97,9 @@ class GridService:
     @staticmethod
     def _to_shapely_geometries(input: str) -> list:
         """
-        Parses the input geojson and returns a list of geojson.Fearure objects with their geometries adapted to shapely geometries
+        Parses the input geojson and returns a list of geojson.Feature objects with their geometries adapted to shapely geometries
         :param input: string of geojson
-        :return: list of geojson.Fearure objects with their geometries adapted to shapely geometries
+        :return: list of geojson.Feature objects with their geometries adapted to shapely geometries
         """
         collection = geojson.loads(input, object_hook=geojson.GeoJSON.to_instance)
 

@@ -64,3 +64,13 @@ class TestGridService(unittest.TestCase):
         # assert
         self.assertEquals(str(expected), str(result))
 
+    def test_tasks_from_aoi_features(self):
+        # arrange
+        aoi_json = get_canned_json('very_large_aoi.geojson')
+        expected = geojson.loads(json.dumps(get_canned_json('tasks_from_aoi_features.json')))
+        # act
+
+        result = GridService.tasks_from_aoi_features(aoi_json)
+        # assert
+        self.assertEquals(str(expected), str(result))
+
