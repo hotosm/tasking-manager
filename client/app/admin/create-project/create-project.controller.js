@@ -226,20 +226,16 @@
         /**
          * Create arbitary tasks
          */
-
         vm.createArbitaryTasks = function () {
-            vm.isTaskGrid = false;
-            vm.isTaskArbitrary = true;
-            projectService.removeTaskGrid();
-
-            // Get and set the AOI
-            var areaOfInterest = drawService.getSource().getFeatures();
-            projectService.setAOI(areaOfInterest);
-            // Create a arbitary tasks from aoi
-            if (vm.isDrawnAOI || vm.isImportedAOI) {
-                var taskGrid = projectService.createTasksFromFeatures(drawService.getSource().getFeatures());
-                projectService.setTaskGrid(taskGrid);
-                projectService.addTaskGridToMap();
+            if (vm.isImportedAOI) {
+                vm.isTaskGrid = false;
+                vm.isTaskArbitrary = true;
+                projectService.removeTaskGrid();
+                // Get and set the AOI
+                var areaOfInterest = drawService.getSource().getFeatures();
+                projectService.setAOI(areaOfInterest);
+                // Jump to review step
+                vm.setWizardStep('review');
             }
         }
 
@@ -411,7 +407,7 @@
             vm.createProjectFail = false;
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
-                var resultsPromise = projectService.createProject(vm.projectName);
+                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid);
                 resultsPromise.then(function (data) {
                     // Project created successfully
                     vm.createProjectFail = false;

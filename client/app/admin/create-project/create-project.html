@@ -74,12 +74,11 @@
                     <form class="form">
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--achromic" type="button"
-                                    ng-class="createProjectCtrl.isTaskGrid ? 'button--active': ''"
                                     ng-click="createProjectCtrl.createTaskGrid()">
                                 Square grid
                             </button>
-                            {{ createProjectCtrl.isImportedAOI }}
                             <button class="button button--achromic" type="button"
+                                    ng-class="createProjectCtrl.isImportedAOI ? '': 'button--active'"
                                     ng-click="createProjectCtrl.createArbitaryTasks()">
                                 Arbitrary (TODO)
                             </button>

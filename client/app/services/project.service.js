@@ -338,21 +338,24 @@
             return hasSelfIntersections;
         }
 
+
         /**
          * Creates a project by calling the API with the AOI, a task grid and a project name
-         * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
+         * @param projectName
+         * @param isTaskGrid
+         * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
          */
-        function createProject(projectName) {
+        function createProject(projectName, isTaskGrid) {
 
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
-            var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid);
+            var taskGridGeoJSON = isTaskGrid?geospatialService.getGeoJSONObjectFromFeatures(taskGrid):null;
 
             // Get the geometry of the area of interest. It should only have one feature.
             var newProject = {
                 areaOfInterest: areaOfInterestGeoJSON,
                 projectName: projectName,
                 tasks: taskGridGeoJSON,
-                arbitraryTasks: false
+                arbitraryTasks: !isTaskGrid
             };
 
             // Returns a promise
