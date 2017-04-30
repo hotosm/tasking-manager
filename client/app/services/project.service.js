@@ -50,8 +50,7 @@
             userCanMapProject: userCanMapProject,
             userCanValidateProject: userCanValidateProject,
             getMyProjects: getMyProjects,
-            trimTaskGrid: trimTaskGrid,
-            createTasksFromFeatures: createTasksFromFeatures
+            trimTaskGrid: trimTaskGrid
         };
 
         return service;
@@ -643,36 +642,6 @@
 
                 return $q.reject(reason);
             });
-
-        }
-
-        /**
-         *
-         */
-        function createTasksFromFeatures(features) {
-            var tasks = [];
-            for (var i = 0; i < features.length; i++) {
-                var task = features[i].clone();
-                var type = task.getGeometry().getType();
-                if (type === 'Polygon') {
-                    var multiPolygon = new ol.geom.MultiPolygon();
-                    multiPolygon.appendPolygon(task.getGeometry());
-                    task.setGeometry(multiPolygon)
-                }
-                else if(type !== 'MultiPolygon'){
-                    continue; //ignore anything that isn't a polygon or multiPolygon
-                }
-                task.setId(i + 1);
-                task.setProperties({
-                        //TODO - check how api validation handles these properties
-                        'x': -1,
-                        'y': -1,
-                        'zoom': -1,
-                        'splittable': false
-                });
-                tasks.push(task);
-            }
-            return tasks;
 
         }
     }

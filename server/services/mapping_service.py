@@ -119,9 +119,8 @@ class MappingService:
         tasks = Task.get_tasks(project_id, task_ids)
         for task in tasks:
             task_geom = shape.to_shape(task.geometry)
-            trkseg = ET.SubElement(trk, 'trkseg')
-
             for poly in task_geom:
+                trkseg = ET.SubElement(trk, 'trkseg')
                 for point in poly.exterior.coords:
                     ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
 
