@@ -103,7 +103,6 @@
             for (var x = xminstep; x < xmaxstep; x++) {
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
-                    console.log(x+','+y);
                     taskFeature.setProperties({
                         'x': x,
                         'y': y,

@@ -43,15 +43,22 @@ class GridService:
 
     @staticmethod
     def tasks_from_aoi_features(feature_collection: str) -> geojson.FeatureCollection:
-        # TODO change GridDTO input to DraftProjectDTO
+        """
+        Creates a geojson feature collection of tasks from an aoi feature collection
+        :param feature_collection:
+        :return: task features
+        """
         parsed_geojson = GridService._to_shapely_geometries(json.dumps(feature_collection))
-
         tasks = []
         for feature in parsed_geojson:
             if not isinstance(feature.geometry, MultiPolygon):
                 feature.geometry = MultiPolygon([feature.geometry])
+            # put the geometry back to geojson
             feature.geometry = shapely.geometry.mapping(feature.geometry)
 
+            # set default properties
+            # TODO decide on defaults for x, y, zoom
+            # TODO add splittable to task table
             feature.properties = {
                 'x': -1,
                 'y': -1,
@@ -62,8 +69,6 @@ class GridService:
             tasks.append(feature)
 
         return geojson.FeatureCollection(tasks)
-        #return geojson.loads(json.dumps(tasks))
-        # return json.dumps(tasks)
 
     @staticmethod
     def merge_to_multi_polygon(feature_collection: str, dissolve: bool) -> geojson.MultiPolygon:

@@ -122,22 +122,12 @@
                     }
                 }
                 if (vm.isImportedAOI) {
-                    // // TODO: validate AOI - depends on what API supports! Self-intersecting polygons?
-                    // var aoiValidationResult = projectService.validateAOI(drawService.getSource().getFeatures());
-                    // vm.isAOIValid = aoiValidationResult.valid;
-                    // vm.AOIValidationMessage = aoiValidationResult.message;
-                    // if (vm.isAOIValid) {
+                    // TODO: validate AOI - depends on what API supports! Self-intersecting polygons?
                     vm.drawPolygonInteraction.setActive(false);
                     vm.map.getView().fit(drawService.getSource().getExtent());
-                    // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
-                    vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
-                        + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
                     vm.currentStep = wizardStep;
                     vm.drawPolygonInteraction.setActive(false);
                     vm.modifyInteraction.setActive(false);
-                    // Reset the user zoom level offset
-                    vm.userZoomLevelOffset = 0;
-                    //}
                 }
             }
             else if (wizardStep === 'taskSize') {
@@ -218,7 +208,6 @@
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
             }, function (reason) {
-                console.log(reason);
                 //TODO: may want to handle error
             })
         }
