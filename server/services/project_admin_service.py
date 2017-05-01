@@ -72,7 +72,7 @@ class ProjectAdminService:
         if project_dto.license_id:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
-        if project_dto.allowed_users:
+        if project_dto.allowed_usernames:
             ProjectAdminService._validate_allowed_users(project_dto)
 
         project.update(project_dto)
@@ -93,12 +93,12 @@ class ProjectAdminService:
             raise ProjectAdminServiceError('Only private projects can have a restricted user list')
 
         try:
-            allowed_user_ids = []
-            for user in project_dto.allowed_users:
-                user = UserService.get_user_by_username(user)
-                allowed_user_ids.append(user.id)
+            allowed_users = []
+            for username in project_dto.allowed_usernames:
+                user = UserService.get_user_by_username(username)
+                allowed_users.append(user)
 
-            project_dto.allowed_user_ids = allowed_user_ids
+            project_dto.allowed_users = allowed_users  # Dynamically attach the user object to the DTO for more efficient persistance
         except NotFound:
             raise ProjectAdminServiceError(f'allowedUsers contains an unknown username {user}')
 

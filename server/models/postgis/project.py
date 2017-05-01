@@ -163,9 +163,9 @@ class Project(db.Model):
         self.mapping_types = type_array
 
         # Add list of allowed users, meaning the project can only be mapped by users in this list
-        if project_dto.allowed_users_ids:
-            for user_id in project_dto.allowed_users_ids:
-                self.allowed_users.append(user_id)
+        if project_dto.allowed_users:
+            for user in project_dto.allowed_users:
+                self.allowed_users.append(user)
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:

@@ -207,7 +207,7 @@ class ProjectAdminAPI(Resource):
                           type: integer
                           default: 1
                           description: Id of imagery license associated with the project
-                      allowedUsers:
+                      allowedUsernames:
                           type: array
                           items:
                               type: string
