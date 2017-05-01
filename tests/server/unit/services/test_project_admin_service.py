@@ -20,7 +20,7 @@ class TestProjectAdminService(unittest.TestCase):
         # Arrange
         valid_feature_collection = json.loads('{"features": [{"geometry": {"coordinates": [[[[-4.0237, 56.0904],'
                                               '[-3.9111, 56.1715], [-3.8122, 56.098], [-4.0237, 56.0904]]]], "type":'
-                                              '"MultiPolygon"}, "properties": {"x": 2402, "y": 1736, "zoom": 12}, "type":'
+                                              '"MultiPolygon"}, "properties": {"x": 2402, "y": 1736, "zoom": 12, "splittable": true}, "type":'
                                               '"Feature"}], "type": "FeatureCollection"}')
 
         test_project = Project()

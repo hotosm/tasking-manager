@@ -65,7 +65,7 @@ def create_canned_project() -> Tuple[Project, User]:
 
     task_feature = geojson.loads('{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'
                                  '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "type": "MultiPolygon"},'
-                                 '"properties": {"x": 2402, "y": 1736, "zoom": 12}, "type": "Feature"}')
+                                 '"properties": {"x": 2402, "y": 1736, "zoom": 12, "splittable":false}, "type": "Feature"}')
 
     test_aoi = AreaOfInterest(multipoly_geojson)
 

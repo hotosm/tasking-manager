@@ -66,6 +66,9 @@ class SwaggerDocsAPI(Resource):
                             zoom:
                                 type: integer
                                 default: 12
+                            splittable:
+                                type: boolean
+                                default: true
             - schema:
                 id: ValidatedTask
                 properties:
