@@ -71,7 +71,7 @@ class TestProjectAdminService(unittest.TestCase):
 
         dto = ProjectDTO()
         dto.private = False
-        dto.allowed_users = ['Test']
+        dto.allowed_usernames = ['Test']
 
         with self.assertRaises(ProjectAdminServiceError):
             ProjectAdminService.update_project(dto)
