@@ -1,8 +1,8 @@
 import unittest
 from server.services.validator_service import ValidatorService, Task, NotFound, LockForValidationDTO, TaskStatus, \
-    ValidatatorServiceError, UnlockAfterValidationDTO, ProjectService
+    ValidatatorServiceError, UnlockAfterValidationDTO, ProjectService, ValidatingNotAllowed, UserLicenseError
 from server.models.dtos.validator_dto import ValidatedTask
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from server import create_app
 
 
@@ -57,13 +57,30 @@ class TestValidatorService(unittest.TestCase):
         task_stub.task_status = TaskStatus.MAPPED.value
         mock_task.return_value = task_stub
 
-        mock_project.return_value = False, 'Not allowed'
+        mock_project.return_value = False, ValidatingNotAllowed.USER_NOT_VALIDATOR
 
         lock_dto = LockForValidationDTO()
         lock_dto.project_id = 1
         lock_dto.task_ids = [1, 2]
 
         with self.assertRaises(ValidatatorServiceError):
+            ValidatorService.lock_tasks_for_validation(lock_dto)
+
+    @patch.object(Task, 'get')
+    @patch.object(ProjectService, 'is_user_permitted_to_validate')
+    def test_lock_tasks_raises_error_if_user_has_not_accepted_license(self, mock_project, mock_task):
+        # Arrange
+        task_stub = Task()
+        task_stub.task_status = TaskStatus.MAPPED.value
+        mock_task.return_value = task_stub
+
+        mock_project.return_value = False, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
+
+        lock_dto = LockForValidationDTO()
+        lock_dto.project_id = 1
+        lock_dto.task_ids = [1, 2]
+
+        with self.assertRaises(UserLicenseError):
             ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(Task, 'get')
