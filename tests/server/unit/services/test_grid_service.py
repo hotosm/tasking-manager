@@ -41,6 +41,7 @@ class TestGridService(unittest.TestCase):
 
         grid_dto = GridDTO(grid_json)
         expected = geojson.loads(json.dumps(get_canned_json('clipped_feature_collection.json')))
+        grid_dto.clip_to_aoi = True
 
         # act
         result = GridService.trim_grid_to_aoi(grid_dto)
@@ -59,7 +60,6 @@ class TestGridService(unittest.TestCase):
 
         # act
         result = GridService.trim_grid_to_aoi(grid_dto)
-        print(result)
 
         # assert
         self.assertEquals(str(expected), str(result))

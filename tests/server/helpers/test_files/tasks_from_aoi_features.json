@@ -36,9 +36,9 @@
       },
       "properties": {
         "splittable": false,
-        "x": null,
-        "y": null,
-        "zoom": null
+        "x": -1,
+        "y": -1,
+        "zoom": -1
       },
       "type": "Feature"
     },
@@ -74,9 +74,9 @@
       },
       "properties": {
         "splittable": false,
-        "x": null,
-        "y": null,
-        "zoom": null
+        "x": -1,
+        "y": -1,
+        "zoom": -1
       },
       "type": "Feature"
     },
@@ -108,9 +108,9 @@
       },
       "properties": {
         "splittable": false,
-        "x": null,
-        "y": null,
-        "zoom": null
+        "x": -1,
+        "y": -1,
+        "zoom": -1
       },
       "type": "Feature"
     }
