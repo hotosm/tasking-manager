@@ -1,5 +1,6 @@
 import json
 import geojson
+from typing import List
 from flask import current_app
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
 from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, ProjectStatus
@@ -72,7 +73,7 @@ class ProjectAdminService:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
         if project_dto.allowed_users:
-            ProjectAdminService._validate_allowed_users(project_dto.allowed_users)
+            ProjectAdminService._validate_allowed_users(project_dto)
 
         project.update(project_dto)
         return project
@@ -86,11 +87,18 @@ class ProjectAdminService:
             raise ProjectAdminServiceError(f'LicenseId {license_id} not found')
 
     @staticmethod
-    def _validate_allowed_users(allowed_users):
-        """ Ensures that all usernames are known """
+    def _validate_allowed_users(project_dto: ProjectDTO):
+        """ Ensures that all usernames are known and returns their user ids """
+        if not project_dto.private:
+            raise ProjectAdminServiceError('Only private projects can have a restricted user list')
+
         try:
-            for user in allowed_users:
-                UserService.get_user_by_username(user)
+            allowed_user_ids = []
+            for user in project_dto.allowed_users:
+                user = UserService.get_user_by_username(user)
+                allowed_user_ids.append(user.id)
+
+            project_dto.allowed_user_ids = allowed_user_ids
         except NotFound:
             raise ProjectAdminServiceError(f'allowedUsers contains an unknown username {user}')
 

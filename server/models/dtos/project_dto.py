@@ -82,6 +82,7 @@ class ProjectDTO(Model):
     organisation_tag = StringType(serialized_name='organisationTag')
     license_id = IntType(serialized_name='licenseId')
     allowed_users = ListType(StringType(), serialized_name='allowedUsers')
+    allowed_users_ids = ListType(IntType())  # Used internally to temporarily store userids.
 
 
 class ProjectSearchDTO(Model):
