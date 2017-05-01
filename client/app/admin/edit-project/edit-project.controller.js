@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService) {
         var vm = this;
         vm.currentSection = '';
         vm.editForm = {};
@@ -108,7 +108,7 @@
             vm.updateProjectFail = false;
             vm.updateProjectSuccess = false;
             
-            // Only check required fields when
+            // Only check required fields when publishing
             if (vm.project.projectStatus === 'PUBLISHED') {
                 var requiredFieldsMissing = checkRequiredFields();
             }
@@ -121,6 +121,12 @@
             }
             if (vm.projectCampaignTag[0]) {
                 vm.project.campaignTag = vm.projectCampaignTag[0].text;
+            }
+            if (vm.projectLicense){
+                vm.project.licenseId = vm.projectLicense.licenseId;
+            }
+            else {
+                vm.project.licenseId = null;
             }
 
             // Prepare the data for sending to API by removing any locales with no fields
@@ -521,6 +527,7 @@
             var resultsPromise = projectService.getProjectMetadata(id);
             resultsPromise.then(function (data) {
                 vm.project = data;
+                getLicenses();
                 // only 'non-empty' locales are included so add empty locales to ease editing
                 // TODO: move to separate service?
                 for (var i = 0; i < vm.locales.length; i++){
@@ -560,6 +567,27 @@
                 }
             }, function(){
                // TODO
+            });
+        }
+
+        /**
+         * Get licenses
+         */
+        function getLicenses(){
+            var resultsPromise = licenseService.getLicenseList();
+            resultsPromise.then(function (data) {
+                // On success
+                vm.licenses = data.licenses;
+                if (vm.licenses){
+                    for (var i = 0; i < vm.licenses.length; i++){
+                        if (vm.licenses[i].licenseId === vm.project.licenseId){
+                            vm.projectLicense = vm.licenses[i];
+                            break;
+                        }
+                    }
+                }
+            }, function(){
+                // On error
             });
         }
 

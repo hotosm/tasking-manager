@@ -304,13 +304,11 @@
                                     <p>Note: follow this format for TMS URLs: tms[22]:http://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png</p>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">Required license (TODO)</label>
-                                    <select class="form__control form__control--medium">
-                                        <option>Airbus DS / OSM-FR</option>
-                                        <option>Astrium / UNOSAT</option>
-                                        <option>Hai Phong Satellite Imagery</option>
-                                        <option>NextView</option>
-                                        <option>Public Domain</option>
+                                    <label class="form__label">Required license</label>
+                                    <select class="form__control form__control--medium"
+                                            ng-options="license.name for license in editProjectCtrl.licenses"
+                                            ng-model="editProjectCtrl.projectLicense">
+                                         <option value="">-- no license --</option>
                                     </select>
                                 </div>
                             </fieldset>

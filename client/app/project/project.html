@@ -717,3 +717,37 @@
         </div>
     </section>
 </div>
+
+<!-- accept license modal -->
+<section class="modal modal-tm" ng-show="projectCtrl.showLicenseModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">Accept imagery license</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <p>You need to accept the license before continuing.</p>
+            <hr>
+            <h4>{{ projectCtrl.license.name }}</h4>
+            <p>{{ projectCtrl.license.description }}</p>
+            <p>{{ projectCtrl.license.plainText }}</p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="editProjectCtrl.validateTasksSuccess">
+                <button class="button button--achromic" type="button"
+                    ng-click="projectCtrl.setShowLicenseModal(false)">
+                    Cancel
+                </button>
+                <button class="button button--base" type="button"
+                    ng-click="projectCtrl.acceptLicense()">
+                    Accept and continue
+                </button>
+            </div>
+        </footer>
+    </div>
+    <button class="modal__button-dismiss" title="Close" ng-click="projectCtrl.setShowLicenseModal(false)">
+        Dismiss
+    </button>
+</section>
+<!-- accept license modal -->

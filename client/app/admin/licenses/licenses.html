@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Licenses (TODO)
+                    Licenses
                 </h1>
             </div>
         </header>
@@ -25,7 +25,7 @@
                             <tr ng-repeat="license in licensesCtrl.licenses">
                                 <td><strong>{{ license.name }}</strong></td>
                                 <td>{{ license.plainText }}</td>
-                                <td><a href="/admin/licenses/edit/{{ license.id }}">edit</a></td>
+                                <td><a href="/admin/licenses/edit/{{ license.licenseId }}">edit</a></td>
                             </tr>
                         </tbody>
                     </table>
