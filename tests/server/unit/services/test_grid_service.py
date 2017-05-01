@@ -45,6 +45,7 @@ class TestGridService(unittest.TestCase):
 
         # act
         result = GridService.trim_grid_to_aoi(grid_dto)
+        print(result)
 
         # assert
         self.assertEquals(str(expected), str(result))

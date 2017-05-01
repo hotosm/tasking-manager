@@ -57,12 +57,10 @@ class GridService:
             feature.geometry = shapely.geometry.mapping(feature.geometry)
 
             # set default properties
-            # TODO decide on defaults for x, y, zoom
-            # TODO add splittable to task table
             feature.properties = {
-                'x': -1,
-                'y': -1,
-                'zoom': -1,
+                'x': None,
+                'y': None,
+                'zoom': None,
                 'splittable': False
             }
 
@@ -99,6 +97,9 @@ class GridService:
                 # shapely may return a POLYGON rather than a MULTIPOLYGON if there is just one intersection area
                 new_shape = MultiPolygon([new_shape])
             feature['geometry'] = mapping(new_shape)
+            feature['properties']['x'] = None
+            feature['properties']['y'] = None
+            feature['properties']['zoom'] = None
             feature['properties']['splittable'] = False
         return feature
 
