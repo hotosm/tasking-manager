@@ -16,6 +16,7 @@
             getOSMUserDetails: getOSMUserDetails,
             getUserProjects: getUserProjects,
             searchUser: searchUser,
+            searchAllUsers: searchAllUsers,
             acceptLicense: acceptLicense
         };
 
@@ -124,6 +125,50 @@
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/user/search/filter/' + username,
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Searches all users
+         * @param page
+         * @param role
+         * @param level
+         * @param username
+         * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
+         */
+        function searchAllUsers(page, role, level, username){
+            var searchParams = '';
+            if (page){
+                searchParams += 'page=' + page;
+            }
+            else {
+                searchParams += 'page=1';
+            }
+            if (role){
+                searchParams += '&role=' + role;
+            }
+            if (level){
+                searchParams += '&level=' + level;
+            }
+            if (username){
+                searchParams += '&username=' + username;
+            }
+            
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/user/search-all?' + searchParams,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
