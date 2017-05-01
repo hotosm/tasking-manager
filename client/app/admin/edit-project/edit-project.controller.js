@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService) {
         var vm = this;
         vm.currentSection = '';
         vm.editForm = {};
@@ -48,6 +48,7 @@
         vm.projectCampaignTag = [];
 
         vm.project = {};
+        vm.allowedUsers = ['LindaA1'];
         vm.project.defaultLocale = 'en';
         vm.descriptionLanguage = 'en';
         vm.shortDescriptionLanguage = 'en';
@@ -58,6 +59,9 @@
         
         // Delete
         vm.showDeleteConfirmationModal = false;
+        
+        // Private project/add users
+        vm.addUserEnabled = false;
 
         // Error messages
         vm.deleteProjectFail = false;
@@ -381,6 +385,62 @@
          */
         vm.getCampaignTags = function(){
             return vm.campaignTags;
+        };
+
+        /**
+         * Get the user for a search value
+         * @param searchValue
+         */
+        vm.getUser = function(searchValue){
+            var resultsPromise = userService.searchUser(searchValue);
+            return resultsPromise.then(function (data) {
+                // On success
+                return data.usernames;
+            }, function(){
+                // On error
+            });
+        };
+
+        /**
+         * Adds the user to the allowed user list
+         * @param user
+         */
+        vm.addUser = function(user){
+            // TODO: change to project.allowedUsers
+            var index = vm.allowedUsers.indexOf(user);
+            if (index == -1){
+                vm.allowedUsers.push(user);
+            }
+        };
+
+        /**
+         * Removes the user from the allowed user list
+         * @param user
+         */
+        vm.removeUser = function(user){
+            // TODO: change to project.allowedUsers
+            var index = vm.allowedUsers.indexOf(user);
+            if (index > -1){
+                vm.allowedUsers.splice(index, 1);
+            }
+        };
+
+        /**
+         * On private change
+         */
+        vm.onPrivateChange = function(){
+             // TODO: change to project.allowedUsers
+            if (!vm.project.private){
+                // clear the allowed users list when a project is not private
+                vm.allowedUsers = [];
+            }
+        };
+
+        /**
+         * Enable adding a user
+         */
+        vm.enableAddUser = function(boolean){
+            vm.addUserEnabled = boolean;
         };
 
         /**

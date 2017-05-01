@@ -367,7 +367,7 @@
                                 <div class="form__group">
                                     <label class="form__label">Private project</label>
                                     <label class="form__option">
-                                        <input ng-model="editProjectCtrl.project.private" type="checkbox"/>Private
+                                        <input ng-model="editProjectCtrl.project.private" type="checkbox" ng-click="editProjectCtrl.onPrivateChange()"/>Private
                                     </label>
                                     <p>Private means that only a given list of users can access this project. In
                                         order for the user's name to be available to add to the Allowed Users - they
@@ -377,12 +377,24 @@
                                     </p>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">Allowed users (TODO)</label>
+                                    <label class="form__label">Allowed users on private project</label>
+                                    <ul>
+                                        <li ng-repeat="user in editProjectCtrl.allowedUsers">
+                                            {{ user }} <i class="hot-ds-icon-sm-xmark" ng-click="editProjectCtrl.removeUser(user)"></i>
+                                        </li>
+                                    </ul>
                                     <div class="form__input-group">
-                                        <input type="text" class="form__control form__control--medium"
-                                               placeholder="Type a username">
+                                        <input type="text" ng-model="user" placeholder="Type a username"
+                                               ng-change="editProjectCtrl.enableAddUser(false)"
+                                           class="form__control form__control--medium"
+                                           uib-typeahead="user for user in editProjectCtrl.getUser($viewValue)"
+                                           typeahead-loading="loadingLocations"
+                                           typeahead-no-results="noResults"
+                                           typeahead-on-select="editProjectCtrl.enableAddUser(true)">
                                         <span class="form__input-group-button">
-                                            <button type="submit" class="button button--achromic button--medium">
+                                            <button type="submit" class="button button--achromic button--medium"
+                                                    ng-click="editProjectCtrl.addUser(user)"
+                                                   ng-class="!editProjectCtrl.project.private || !editProjectCtrl.addUserEnabled ? 'disabled' : ''">
                                                 <span>Add user</span>
                                             </button>
                                         </span>
