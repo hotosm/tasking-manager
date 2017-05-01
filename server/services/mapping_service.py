@@ -5,7 +5,7 @@ from geoalchemy2 import shape
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.statuses import MappingNotAllowed
-from server.models.postgis.utils import NotFound
+from server.models.postgis.utils import NotFound, UserLicenseError
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
 
@@ -15,11 +15,6 @@ class MappingServiceError(Exception):
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
-
-
-class UserLicenseError(Exception):
-    """ Custom Exception to notify caller that the user attempting to map has not accepted the license """
-    pass
 
 
 class MappingService:

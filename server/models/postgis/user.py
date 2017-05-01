@@ -60,8 +60,6 @@ class User(db.Model):
         elif query.mapping_level and query.username is None and query.role:
             base = base.filter(User.role == UserRole[query.role.upper()].value,
                                User.mapping_level == MappingLevel[query.mapping_level.upper()].value)
-        else:
-            raise ValueError('Unexpected combination of filters')
 
         results = base.paginate(query.page, 20, True)
 

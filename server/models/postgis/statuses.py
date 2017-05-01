@@ -52,6 +52,12 @@ class MappingNotAllowed(Enum):
     USER_NOT_ACCEPTED_LICENSE = 102
 
 
+class ValidatingNotAllowed(Enum):
+    """ Enum describing reasons a user cannot map """
+    USER_NOT_VALIDATOR = 100
+    USER_NOT_ACCEPTED_LICENSE = 101
+
+
 class UserRole(Enum):
     """ Describes the role a user can be assigned, app doesn't support multiple roles """
     MAPPER = 0

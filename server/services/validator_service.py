@@ -2,7 +2,8 @@ from flask import current_app
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks
 from server.models.postgis.task import Task, TaskStatus
-from server.models.postgis.utils import NotFound
+from server.models.postgis.statuses import ValidatingNotAllowed
+from server.models.postgis.utils import NotFound, UserLicenseError
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
 
@@ -37,11 +38,14 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
-        user_can_validate, error_msg = ProjectService.is_user_permitted_to_validate(validation_dto.project_id,
-                                                                                    validation_dto.user_id)
+        user_can_validate, error_reason = ProjectService.is_user_permitted_to_validate(validation_dto.project_id,
+                                                                                       validation_dto.user_id)
 
         if not user_can_validate:
-            raise ValidatatorServiceError(error_msg)
+            if error_reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
+                raise UserLicenseError('User must accept license to map this task')
+            else:
+                raise ValidatatorServiceError(f'Mapping not allowed because: {error_reason.name}')
 
         # Lock all tasks for validation
         dtos = []
