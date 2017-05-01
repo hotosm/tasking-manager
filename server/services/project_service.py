@@ -73,6 +73,13 @@ class ProjectService:
             if not UserService.has_user_accepted_license(user_id, project.license_id):
                 return False, MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE
 
+        if project.private:
+            # Check user is in allowed users
+            try:
+                next(user for user in project.allowed_users if user.id == user_id)
+            except StopIteration:
+                return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
         return True, 'User allowed to map'
 
     @staticmethod
@@ -100,6 +107,13 @@ class ProjectService:
         if project.license_id:
             if not UserService.has_user_accepted_license(user_id, project.license_id):
                 return False, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
+
+        if project.private:
+            # Check user is in allowed users
+            try:
+                next(user for user in project.allowed_users if user.id == user_id)
+            except StopIteration:
+                return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         return True, 'User allowed to validate'
 

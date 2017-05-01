@@ -112,4 +112,3 @@ class TestProjectAdminService(unittest.TestCase):
 
         with self.assertRaises(ProjectAdminServiceError):
             ProjectAdminService._validate_imagery_licence(1)
-
