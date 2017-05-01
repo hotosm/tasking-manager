@@ -18,6 +18,7 @@
         vm.currentStep = '';
         vm.projectName = '';
         vm.projectNameForm = {};
+        vm.taskType = 'square-grid'
 
         // AOI 
         vm.AOI = null;
@@ -86,6 +87,21 @@
                 drawService.getSource().clear();
             });
             projectService.initDraw(vm.map);
+        }
+
+        /**
+         *
+         */
+        vm.setWizardStepAfterTaskTypeSelection=function(){
+            if(vm.taskType==='square-grid'){
+                vm.createTaskGrid();
+                vm.setWizardStep('taskSize');
+            }
+            else if(vm.taskType==='arbitrary-tasks'){
+                vm.createArbitaryTasks();
+                vm.setWizardStep('review');
+            }
+
         }
 
         /**

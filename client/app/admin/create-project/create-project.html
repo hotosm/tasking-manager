@@ -70,18 +70,18 @@
                     </div>
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'tasks'" class="content">
-                    <h2>Step 2: define tasks</h2>
+                    <h2>Step 2: Choose tasks type</h2>
                     <form class="form">
                         <div class="button-group button-group--horizontal" role="group">
-                            <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.createTaskGrid()">
-                                Square grid
-                            </button>
-                            <button class="button button--achromic" type="button"
-                                    ng-class="createProjectCtrl.isImportedAOI ? '': 'button--active'"
-                                    ng-click="createProjectCtrl.createArbitaryTasks()">
-                                Arbitrary (TODO)
-                            </button>
+                            <div class="form__group">
+                                <label class="form__option form__option--inline">
+                                    <input ng-model="createProjectCtrl.taskType" type="radio" name="form-tasks-type" id="square-grid" value="square-grid"/>
+                                    Square Grid
+                                </label>
+                                <label class="form__option form__option--inline">
+                                    <input ng-disabled="createProjectCtrl.isDrawnAOI" ng-model="createProjectCtrl.taskType" type="radio" name="form-tasks-type" id="arbitrary-tasks" value="arbitrary-tasks"/> <span>Arbitrary Tasks</span>
+                                </label>
+                            </div>
                         </div>
                     </form>
                     <hr/>
@@ -92,7 +92,7 @@
                                 <span>Previous</span>
                             </button>
                             <button class="button button--secondary" type="button"
-                                    ng-click="createProjectCtrl.setWizardStep(createProjectCtrl.isTaskArbitrary?'review':'taskSize')">
+                                    ng-click="createProjectCtrl.setWizardStepAfterTaskTypeSelection()">
                                 <span>Next</span>
                             </button>
                         </div>
