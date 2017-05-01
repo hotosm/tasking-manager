@@ -200,6 +200,12 @@
                                    ng-model="createProjectCtrl.projectName"
                             />
                         </div>
+                        <p>Project has {{ createProjectCtrl.numberOfTasks }} tasks.</p>
+                        <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
+                             class="alert alert--danger" role="alert">
+                            <p><strong>Error:</strong> Unable to create project because there are more than {{  createProjectCtrl.MAX_NUMBER_OF_TASKS }} tasks.  Use a smaller AOI and/or fewer tasks.
+                            </p>
+                        </div>
                         <div role="alert">
                             <span class="error"
                                   ng-show="createProjectCtrl.projectNameForm.submitted && createProjectCtrl.projectNameForm.projectName.$error.required">
@@ -221,7 +227,10 @@
                                     ng-click="createProjectCtrl.setWizardStep(createProjectCtrl.isTaskArbitrary?'tasks':'trim')">
                                 <span>Previous</span>
                             </button>
+
                             <button class="button button--primary" type="button"
+                                    ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
+                                    ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                                     ng-click="createProjectCtrl.createProject()">
                                 <span>Create</span>
                             </button>

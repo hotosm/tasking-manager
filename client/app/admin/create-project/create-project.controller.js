@@ -92,12 +92,12 @@
         /**
          *
          */
-        vm.setWizardStepAfterTaskTypeSelection=function(){
-            if(vm.taskType==='square-grid'){
+        vm.setWizardStepAfterTaskTypeSelection = function () {
+            if (vm.taskType === 'square-grid') {
                 vm.createTaskGrid();
                 vm.setWizardStep('taskSize');
             }
-            else if(vm.taskType==='arbitrary-tasks'){
+            else if (vm.taskType === 'arbitrary-tasks') {
                 vm.createArbitaryTasks();
                 vm.setWizardStep('review');
             }
@@ -223,6 +223,8 @@
                 var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
+               // Get the number of tasks in project
+                vm.numberOfTasks = projectService.getNumberOfTasks();
             }, function (reason) {
                 //TODO: may want to handle error
             })
@@ -239,8 +241,9 @@
                 // Get and set the AOI
                 var areaOfInterest = drawService.getSource().getFeatures();
                 projectService.setAOI(areaOfInterest);
-                // Jump to review step
-                vm.setWizardStep('review');
+                // Get the number of tasks in project
+                vm.numberOfTasks = drawService.getSource().getFeatures().length;
+
             }
         }
 
