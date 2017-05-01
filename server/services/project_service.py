@@ -1,7 +1,7 @@
 from flask import current_app
 from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO, LockedTasksForUser
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel, MappingTypes
-from server.models.postgis.statuses import MappingNotAllowed
+from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.utils import NotFound
 from server.services.user_service import UserService
 
@@ -95,7 +95,11 @@ class ProjectService:
         project = ProjectService.get_project_by_id(project_id)
 
         if project.enforce_validator_role and not UserService.is_user_validator(user_id):
-            return False, 'User must be a validator to map on this project'
+            return False, ValidatingNotAllowed.USER_NOT_VALIDATOR
+
+        if project.license_id:
+            if not UserService.has_user_accepted_license(user_id, project.license_id):
+                return False, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
 
         return True, 'User allowed to validate'
 

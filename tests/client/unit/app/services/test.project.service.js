@@ -29,7 +29,7 @@ describe('project.service', function () {
         var zoom = 18;
 
         // Act
-        var grid = projectService.createTaskGrid(AOI, zoom);
+        var grid = projectService.createTaskGrid(AOI.getGeometry().getExtent(), zoom);
         projectService.setTaskGrid(grid);
         var taskGrid = projectService.getTaskGrid();
 
@@ -51,7 +51,7 @@ describe('project.service', function () {
         var zoom = 19;
 
         // Act
-        var grid = projectService.createTaskGrid(AOI, zoom);
+        var grid = projectService.createTaskGrid(AOI.getGeometry().getExtent(), zoom);
         projectService.setTaskGrid(grid);
         var taskGrid = projectService.getTaskGrid();
 

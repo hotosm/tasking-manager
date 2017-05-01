@@ -232,9 +232,9 @@
             projectService.setAOI(areaOfInterest);
 
             // Create a task grid
-            // TODO: may need to fix areaOfInterest[0] as it may need to work for featureCollections and multiPolygons
-            if (vm.isDrawnAOI) {
-                var taskGrid = projectService.createTaskGrid(areaOfInterest[0], vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+            if (vm.isDrawnAOI || vm.isImportedAOI) {
+                var aoiExtent = drawService.getSource().getExtent();
+                var taskGrid = projectService.createTaskGrid(aoiExtent, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
                 projectService.setTaskGrid(taskGrid);
                 projectService.addTaskGridToMap();
 
@@ -243,9 +243,6 @@
 
                 // Get the size of the tasks
                 vm.sizeOfTasks = projectService.getTaskSize();
-            }
-            if (vm.isImportedAOI) {
-                // TODO: create task grid from imported AOI
             }
         };
 

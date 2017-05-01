@@ -17,6 +17,11 @@ class InvalidGeoJson(Exception):
             current_app.logger.error(message)
 
 
+class UserLicenseError(Exception):
+    """ Custom Exception to notify caller that the user attempting to map has not accepted the license """
+    pass
+
+
 class InvalidData(Exception):
     """ Custom exception to notify caller they have supplied Invalid data to a model """
     def __init__(self, message):
@@ -47,9 +52,16 @@ class ST_Centroid(GenericFunction):
     name = 'ST_Centroid'
     type = Geometry
 
+
 class ST_Transform(GenericFunction):
     """ Exposes PostGIS ST_Transform function """
     name = 'ST_Transform'
+    type = Geometry
+
+
+class ST_Buffer(GenericFunction):
+    """ Exposes PostGIS ST_Transform function """
+    name = 'ST_Buffer'
     type = Geometry
 
 
