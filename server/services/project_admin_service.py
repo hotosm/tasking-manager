@@ -1,11 +1,13 @@
 import json
 import geojson
+from typing import List
 from flask import current_app
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
 from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, ProjectStatus
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData
 from server.services.license_service import LicenseService
+from server.services.user_service import UserService
 
 
 class ProjectAdminServiceError(Exception):
@@ -70,16 +72,35 @@ class ProjectAdminService:
         if project_dto.license_id:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
+        if project_dto.allowed_usernames:
+            ProjectAdminService._validate_allowed_users(project_dto)
+
         project.update(project_dto)
         return project
 
     @staticmethod
-    def _validate_imagery_licence(license_id):
+    def _validate_imagery_licence(license_id: int):
         """ Ensures that the suppliced license Id actually exists """
         try:
             LicenseService.get_license_as_dto(license_id)
         except NotFound:
             raise ProjectAdminServiceError(f'LicenseId {license_id} not found')
+
+    @staticmethod
+    def _validate_allowed_users(project_dto: ProjectDTO):
+        """ Ensures that all usernames are known and returns their user ids """
+        if not project_dto.private:
+            raise ProjectAdminServiceError('Only private projects can have a restricted user list')
+
+        try:
+            allowed_users = []
+            for username in project_dto.allowed_usernames:
+                user = UserService.get_user_by_username(username)
+                allowed_users.append(user)
+
+            project_dto.allowed_users = allowed_users  # Dynamically attach the user object to the DTO for more efficient persistance
+        except NotFound:
+            raise ProjectAdminServiceError(f'allowedUsers contains an unknown username {user}')
 
     @staticmethod
     def delete_project(project_id: int):

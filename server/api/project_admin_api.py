@@ -206,7 +206,12 @@ class ProjectAdminAPI(Resource):
                       licenseId:
                           type: integer
                           default: 1
-                          description: Id of imagery license associated with the project 
+                          description: Id of imagery license associated with the project
+                      allowedUsernames:
+                          type: array
+                          items:
+                              type: string
+                          default: ["Iain Hunter", LindaA1]
                       projectInfoLocales:
                           type: array
                           items:

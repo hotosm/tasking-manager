@@ -11,8 +11,16 @@ from server.models.postgis.statuses import ProjectStatus, ProjectPriority, Mappi
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
-from server.services.grid_service import  GridService
+from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound, ST_AsGeoJSON
+from server.services.grid_service import GridService
+
+# Secondary table defining many-to-many join for private projects that only defined users can map on
+project_allowed_users = db.Table(
+    'project_allowed_users',
+    db.metadata,
+    db.Column('project_id', db.Integer, db.ForeignKey('projects.id')),
+    db.Column('user_id', db.BigInteger, db.ForeignKey('users.id'))
+)
 
 
 class AreaOfInterest(db.Model):
@@ -34,7 +42,6 @@ class AreaOfInterest(db.Model):
         aoi_geojson = geojson.loads(json.dumps(aoi_geometry_geojson))
         aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
 
-
         if type(aoi_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')
 
@@ -45,6 +52,11 @@ class AreaOfInterest(db.Model):
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         self.centroid = ST_Centroid(self.geometry)
+
+    def get_aoi_geometry_as_geojson(self):
+        """ Helper which returns the AOI geometry as a geojson object """
+        aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
+        return geojson.loads(aoi_geojson)
 
 
 class Project(db.Model):
@@ -88,6 +100,7 @@ class Project(db.Model):
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
     author = db.relationship(User)
+    allowed_users = db.relationship(User, secondary=project_allowed_users)
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO, aoi: AreaOfInterest):
         """
@@ -103,7 +116,6 @@ class Project(db.Model):
 
     def create(self):
         """ Creates and saves the current model to the DB """
-        # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
         db.session.commit()
 
@@ -154,6 +166,12 @@ class Project(db.Model):
         for mapping_type in project_dto.mapping_types:
             type_array.append(MappingTypes[mapping_type].value)
         self.mapping_types = type_array
+
+        # Add list of allowed users, meaning the project can only be mapped by users in this list
+        if project_dto.allowed_users:
+            self.allowed_users = []  # Clear existing relationships then re-insert
+            for user in project_dto.allowed_users:
+                self.allowed_users.append(user)
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
@@ -246,37 +264,19 @@ class Project(db.Model):
 
     def _get_project_and_base_dto(self, project_id):
         """ Populates a project DTO with properties common to all roles """
-
-        # Query ignores tasks so we can more optimally generate the task feature collection if needed
-        project = db.session.query(Project.id,
-                                   Project.priority,
-                                   Project.status,
-                                   Project.default_locale,
-                                   Project.mapper_level,
-                                   Project.enforce_validator_role,
-                                   Project.enforce_mapper_level,
-                                   Project.private,
-                                   Project.changeset_comment,
-                                   Project.entities_to_map,
-                                   Project.imagery,
-                                   Project.due_date,
-                                   Project.josm_preset,
-                                   Project.mapping_types,
-                                   Project.campaign_tag,
-                                   Project.organisation_tag,
-                                   Project.license_id,
-                                   AreaOfInterest.geometry.ST_AsGeoJSON().label('geojson')) \
-            .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
+        project = Project.get(project_id)
 
         if project is None:
             return None, None
+
+        aoi = project.area_of_interest
 
         base_dto = ProjectDTO()
         base_dto.project_id = project_id
         base_dto.project_status = ProjectStatus(project.status).name
         base_dto.default_locale = project.default_locale
         base_dto.project_priority = ProjectPriority(project.priority).name
-        base_dto.area_of_interest = geojson.loads(project.geojson)
+        base_dto.area_of_interest = aoi.get_aoi_geometry_as_geojson()
         base_dto.enforce_mapper_level = project.enforce_mapper_level
         base_dto.enforce_validator_role = project.enforce_validator_role
         base_dto.private = project.private
@@ -289,6 +289,13 @@ class Project(db.Model):
         base_dto.campaign_tag = project.campaign_tag
         base_dto.organisation_tag = project.organisation_tag
         base_dto.license_id = project.license_id
+
+        if project.private:
+            # If project is private it should have a list of allowed users
+            allowed_usernames = []
+            for user in project.allowed_users:
+                allowed_usernames.append(user.username)
+            base_dto.allowed_usernames = allowed_usernames
 
         if project.mapping_types:
             mapping_types = []

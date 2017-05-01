@@ -5,10 +5,8 @@ import os
 class EnvironmentConfig:
     """ Base class for config that is shared between environments """
     LOG_LEVEL = logging.ERROR
-    # TODO rename this env_var
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
     SECRET_KEY = os.getenv('TM_SECRET', None)
-    # TODO recreate for go-live.
     OSM_OAUTH_SETTINGS = {
         'base_url': 'https://www.openstreetmap.org/api/0.6/',
         'consumer_key': os.getenv('TM_CONSUMER_KEY', None),
