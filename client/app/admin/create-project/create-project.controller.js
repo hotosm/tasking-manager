@@ -56,6 +56,9 @@
         vm.modifyInteraction = null;
         vm.drawPolygonInteraction = null;
 
+        //waiting spinner
+        vm.waiting=false;
+
         activate();
 
         function activate() {
@@ -216,9 +219,11 @@
          */
         vm.trimTaskGrid = function () {
 
-            var taskGrid = projectService.getTaskGrid()
+            var taskGrid = projectService.getTaskGrid();
+            vm.waiting= true;
             var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi)
             trimTaskGridPromise.then(function (data) {
+                vm.waiting= false;
                 projectService.removeTaskGrid();
                 var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
@@ -226,6 +231,7 @@
                // Get the number of tasks in project
                 vm.numberOfTasks = projectService.getNumberOfTasks();
             }, function (reason) {
+                vm.waiting= false;
                 //TODO: may want to handle error
             })
         }
@@ -415,14 +421,17 @@
             vm.createProjectFail = false;
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
+                vm.waiting = true;
                 var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid);
                 resultsPromise.then(function (data) {
+                    vm.waiting = false;
                     // Project created successfully
                     vm.createProjectFail = false;
                     vm.createProjectSuccess = true;
                     // Navigate to the edit project page
                     $location.path('/admin/edit-project/' + data.projectId);
                 }, function () {
+                    vm.waiting = false;
                     // Project not created successfully
                     vm.createProjectFail = true;
                     vm.createProjectSuccess = false;
