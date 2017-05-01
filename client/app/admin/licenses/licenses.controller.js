@@ -17,7 +17,13 @@
         activate();
 
         function activate() {
-            vm.licenses = licenseService.getLicenses();
+            var resultsPromise = licenseService.getLicenseList();
+            resultsPromise.then(function (data) {
+                // On success
+                vm.licenses = data.licenses;
+            }, function(){
+                // On error
+            });
         }
 
         /**

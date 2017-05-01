@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', projectController]);
+        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', projectController]);
 
-    function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService) {
+    function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService) {
         var vm = this;
         vm.id = 0;
         vm.projectData = null;
@@ -72,6 +72,10 @@
         //table sorting control
         vm.propertyName = 'username';
         vm.reverse = true;
+
+        // License
+        vm.showLicenseModal = false;
+        vm.lockingReason = '';
 
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
@@ -318,7 +322,6 @@
                 // project not returned successfully
                 // TODO - may want to handle error
             });
-
         }
 
         /**
@@ -604,6 +607,7 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskMapping = function () {
+            vm.lockingReason = 'MAPPING';
             var projectId = vm.projectData.projectId;
             var taskId = vm.selectedTaskData.taskId;
             // - try to lock the task, call returns a promise
@@ -635,6 +639,7 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
+            vm.lockingReason = 'VALIDATION';
             var projectId = vm.projectData.projectId;
             var taskId = vm.selectedTaskData.taskId;
             var taskIds = [taskId];
@@ -783,6 +788,33 @@
         };
 
         /**
+         * Set the accept license modal to visible/invisible
+         * @param showModal
+         */
+        vm.setShowLicenseModal = function(showModal){
+            vm.showLicenseModal = showModal;
+        };
+
+        /**
+         * Accept the license for this user
+         */
+        vm.acceptLicense = function(){
+            var resultsPromise = userService.acceptLicense(vm.projectData.licenseId);
+            resultsPromise.then(function () {
+                // On success
+                vm.showLicenseModal = false;
+                if (vm.lockingReason === 'MAPPING'){
+                    vm.lockSelectedTaskMapping();
+                }
+                else if (vm.lockingReason === 'VALIDATION'){
+                    vm.lockSelectedTaskValidation();
+                }
+            }, function(){
+                // On error
+            });
+        };
+
+        /**
          * Refresh the map and selected task on error
          * @param projectId
          * @param taskId
@@ -796,6 +828,20 @@
             // Check if it is an unauthorized error. If so, display appropriate message
             if (error.status == 401) {
                 vm.isAuthorized = false;
+            }
+            // User has not accepted the license terms
+            else if (error.status == 409){
+                vm.isAuthorized = true;
+                vm.hasAcceptedLicenseTerms = false;
+                // call the API to get the license terms
+                var resultsPromise = licenseService.getLicense(vm.projectData.licenseId);
+                resultsPromise.then(function (data) {
+                    // On success
+                    vm.license = data;
+                    vm.showLicenseModal = true;
+                }, function(){
+                    // On error
+                });
             }
             else {
                 // Another error occurred.
