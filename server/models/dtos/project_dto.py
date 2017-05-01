@@ -57,11 +57,6 @@ class ProjectInfoDTO(Model):
 
 class ProjectDTO(Model):
     """ Describes JSON model for a tasking manager project """
-    def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.allowed_usernames = []
-
     project_id = IntType(serialized_name='projectId')
     project_status = StringType(required=True, serialized_name='projectStatus', validators=[is_known_project_status],
                                 serialize_when_none=False)
@@ -86,7 +81,7 @@ class ProjectDTO(Model):
     campaign_tag = StringType(serialized_name='campaignTag')
     organisation_tag = StringType(serialized_name='organisationTag')
     license_id = IntType(serialized_name='licenseId')
-    allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames')
+    allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames', default=[])
 
 
 class ProjectSearchDTO(Model):
