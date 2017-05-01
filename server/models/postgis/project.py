@@ -12,7 +12,15 @@ from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
-from server.services.grid_service import  GridService
+from server.services.grid_service import GridService
+
+# Secondary table defining many-to-many join for private projects that only defined users can map on
+project_allowed_users = db.Table(
+    'project_allowed_users',
+    db.metadata,
+    db.Column('project_id', db.Integer, db.ForeignKey('projects.id')),
+    db.Column('user_id', db.BigInteger, db.ForeignKey('users.id'))
+)
 
 
 class AreaOfInterest(db.Model):
@@ -33,7 +41,6 @@ class AreaOfInterest(db.Model):
         """
         aoi_geojson = geojson.loads(json.dumps(aoi_geometry_geojson))
         aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
-
 
         if type(aoi_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')
@@ -88,6 +95,7 @@ class Project(db.Model):
     area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
     author = db.relationship(User)
+    allowed_users = db.relationship(User, secondary=project_allowed_users)
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO, aoi: AreaOfInterest):
         """
@@ -103,7 +111,6 @@ class Project(db.Model):
 
     def create(self):
         """ Creates and saves the current model to the DB """
-        # TODO going to need some validation and logic re Draft, Published etc
         db.session.add(self)
         db.session.commit()
 

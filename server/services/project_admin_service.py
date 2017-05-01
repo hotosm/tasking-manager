@@ -6,6 +6,7 @@ from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJso
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData
 from server.services.license_service import LicenseService
+from server.services.user_service import UserService
 
 
 class ProjectAdminServiceError(Exception):
@@ -70,16 +71,28 @@ class ProjectAdminService:
         if project_dto.license_id:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
+        if project_dto.allowed_users:
+            ProjectAdminService._validate_allowed_users(project_dto.allowed_users)
+
         project.update(project_dto)
         return project
 
     @staticmethod
-    def _validate_imagery_licence(license_id):
+    def _validate_imagery_licence(license_id: int):
         """ Ensures that the suppliced license Id actually exists """
         try:
             LicenseService.get_license_as_dto(license_id)
         except NotFound:
             raise ProjectAdminServiceError(f'LicenseId {license_id} not found')
+
+    @staticmethod
+    def _validate_allowed_users(allowed_users):
+        """ Ensures that all usernames are known """
+        try:
+            for user in allowed_users:
+                UserService.get_user_by_username(user)
+        except NotFound:
+            raise ProjectAdminServiceError(f'allowedUsers contains an unknown username {user}')
 
     @staticmethod
     def delete_project(project_id: int):
