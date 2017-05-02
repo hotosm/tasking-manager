@@ -160,6 +160,12 @@ class GridService:
         return geom2d
 
     def _to_2d(x, y, z=None):
+        """
+        helper function which can be used when stripping z-coord from a geometry to make it 2D
+        :param y:
+        :param z:
+        :return:
+        """
         return tuple(filter(None, [x, y]))
 
     @staticmethod
