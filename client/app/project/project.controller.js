@@ -68,6 +68,7 @@
 
         //bound from the html
         vm.comment = '';
+        vm.usernames = [];
 
         //table sorting control
         vm.propertyName = 'username';
@@ -1002,6 +1003,27 @@
         vm.sortBy = function (propertyName) {
             vm.reverse = (vm.propertyName === propertyName) ? !vm.reverse : false;
             vm.propertyName = propertyName;
+        };
+
+        /**
+         * Search for a user
+         * @param searchValue
+         */
+        vm.searchUser = function(search) {
+            // Search for a user by calling the API
+            var resultsPromise = userService.searchUser(search);
+            return resultsPromise.then(function (data) {
+                // On success
+                vm.usernames = [];
+                if (data.usernames){
+                    for (var i = 0; i < data.usernames.length; i++){
+                        vm.usernames.push({'label': data.usernames[i]});
+                    }
+                }
+                return data.usernames;
+            }, function () {
+                // On error
+            });
         };
     }
 })

@@ -502,6 +502,9 @@
                                     </div>
                                 </div>
                                 <div class="error">
+                                    <p ng-show="editProjectCtrl.project.private && editProjectCtrl.project.allowedUsernames.length < 1">
+                                        You need to add at least one allowed user to a private project.
+                                    </p>
                                     <p ng-show="editProjectCtrl.nameMissing">
                                         A name for the default locale "{{ editProjectCtrl.project.defaultLocale }}" is missing.
                                     </p>
