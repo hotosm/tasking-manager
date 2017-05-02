@@ -34,12 +34,39 @@ class GridService:
                 intersecting_features.append(feature)
             else:
                 intersection = aoi_multi_polygon.intersection(tile)
-                if intersection.is_empty:
-                    continue  # this ignores polygons which are completely outside aoi
+                if intersection.is_empty or intersection.geom_type not in ['Polygon','MultiPolygon']:
+                    continue  # this intersections which are not polygons or which are completely outside aoi
                 # tile is partially intersecting the aoi
                 clipped_feature = GridService._update_feature(clip_to_aoi, feature, intersection)
                 intersecting_features.append(clipped_feature)
         return geojson.FeatureCollection(intersecting_features)
+
+    @staticmethod
+    def tasks_from_aoi_features(feature_collection: str) -> geojson.FeatureCollection:
+        """
+        Creates a geojson feature collection of tasks from an aoi feature collection
+        :param feature_collection:
+        :return: task features
+        """
+        parsed_geojson = GridService._to_shapely_geometries(json.dumps(feature_collection))
+        tasks = []
+        for feature in parsed_geojson:
+            if not isinstance(feature.geometry, MultiPolygon):
+                feature.geometry = MultiPolygon([feature.geometry])
+            # put the geometry back to geojson
+            feature.geometry = shapely.geometry.mapping(feature.geometry)
+
+            # set default properties
+            feature.properties = {
+                'x': None,
+                'y': None,
+                'zoom': None,
+                'splittable': False
+            }
+
+            tasks.append(feature)
+
+        return geojson.FeatureCollection(tasks)
 
     @staticmethod
     def merge_to_multi_polygon(feature_collection: str, dissolve: bool) -> geojson.MultiPolygon:
@@ -70,15 +97,18 @@ class GridService:
                 # shapely may return a POLYGON rather than a MULTIPOLYGON if there is just one intersection area
                 new_shape = MultiPolygon([new_shape])
             feature['geometry'] = mapping(new_shape)
+            feature['properties']['x'] = None
+            feature['properties']['y'] = None
+            feature['properties']['zoom'] = None
             feature['properties']['splittable'] = False
         return feature
 
     @staticmethod
     def _to_shapely_geometries(input: str) -> list:
         """
-        Parses the input geojson and returns a list of geojson.Fearure objects with their geometries adapted to shapely geometries
+        Parses the input geojson and returns a list of geojson.Feature objects with their geometries adapted to shapely geometries
         :param input: string of geojson
-        :return: list of geojson.Fearure objects with their geometries adapted to shapely geometries
+        :return: list of geojson.Feature objects with their geometries adapted to shapely geometries
         """
         collection = geojson.loads(input, object_hook=geojson.GeoJSON.to_instance)
 

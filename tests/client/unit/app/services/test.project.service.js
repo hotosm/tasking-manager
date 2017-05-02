@@ -208,6 +208,27 @@ describe('project.service', function () {
         })
     });
 
+     it('should return an INVALID CONTAINS_NON_POLYGON_FEATURES result when validating a point', function () {
+
+        var point = new ol.geom.Point(
+            [0, 0]
+        );
+        var feature = new ol.Feature({
+            geometry: point
+        });
+
+        var features = [feature];
+
+        //Act
+        var result = projectService.validateAOI(features);
+
+        //Assert
+        expect(result).toEqual({
+            valid: false,
+            message: 'CONTAINS_NON_POLYGON_FEATURES'
+        })
+    });
+
     it('should return an VALID result when validating a multipolygon containing no self intersections', function () {
 
         var multipolygon = new ol.geom.MultiPolygon([[[

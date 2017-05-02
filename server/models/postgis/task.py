@@ -154,6 +154,7 @@ class Task(db.Model):
             task.x = task_feature.properties['x']
             task.y = task_feature.properties['y']
             task.zoom = task_feature.properties['zoom']
+            task.splittable = task_feature.properties['splittable']
         except KeyError as e:
             raise InvalidData(f'Task: Expected property not found: {str(e)}')
 
@@ -276,14 +277,14 @@ class Task(db.Model):
         :return: geojson.FeatureCollection
         """
         project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.task_status,
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
                              Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
             task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskStatus=TaskStatus(task.task_status).name)
+                                   taskSplittable=task.splittable,taskStatus=TaskStatus(task.task_status).name)
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
             tasks_features.append(feature)
 

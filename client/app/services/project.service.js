@@ -103,7 +103,6 @@
             for (var x = xminstep; x < xmaxstep; x++) {
                 for (var y = yminstep; y < ymaxstep; y++) {
                     var taskFeature = createTaskFeature_(step, x, y);
-                    var taskFeatureGeoJSON = geospatialService.getGeoJSONFromFeature(taskFeature);
                     taskFeature.setProperties({
                         'x': x,
                         'y': y,
@@ -239,36 +238,40 @@
                 }
             }
 
+            // check everything is a polygon of multiPolygon
+            var allPolygonTypes = features.every(function (feature) {
+                var type = feature.getGeometry().getType();
+                return type === 'MultiPolygon' || type === 'Polygon'
+            });
+            if (!allPolygonTypes) {
+                validationResult.valid = false;
+                validationResult.message = 'CONTAINS_NON_POLYGON_FEATURES';
+                return validationResult;
+            }
+
             // check for self-intersections
             for (var featureCount = 0; featureCount < features.length; featureCount++) {
-                if (features[featureCount].getGeometry() instanceof ol.geom.MultiPolygon) {
-                    // it should only have one polygon per multipolygon at the moment
-                    var polygonsInFeatures = features[featureCount].getGeometry().getPolygons();
-                    var hasSelfIntersections;
-                    for (var polyCount = 0; polyCount < polygonsInFeatures.length; polyCount++) {
+                var hasSelfIntersections = false;
+                var featuresToCheck = [];
+                if (features[featureCount].getGeometry().getType() === 'MultiPolygon') {
+                    features[featureCount].getGeometry().getPolygons().forEach(function (geom) {
                         var feature = new ol.Feature({
-                            geometry: polygonsInFeatures[polyCount]
+                            geometry: geom
                         });
-                        var selfIntersect = checkFeatureSelfIntersections_(feature);
-                        if (selfIntersect) {
-                            hasSelfIntersections = true;
-                            // If only one self intersection exists, return as having self intersections
-                            break;
-                        }
-                    }
-                    if (hasSelfIntersections) {
-                        validationResult.valid = false;
-                        validationResult.message = 'SELF_INTERSECTIONS';
-                        return validationResult;
-                    }
+                        this.push(feature);
+                    }, featuresToCheck);
                 }
                 else {
-                    var hasSelfIntersections = checkFeatureSelfIntersections_(features[featureCount]);
-                    if (hasSelfIntersections) {
-                        validationResult.valid = false;
-                        validationResult.message = 'SELF_INTERSECTIONS';
-                        return validationResult;
-                    }
+                    featuresToCheck.push(features[featureCount]);
+                }
+                var hasSelfIntersections = featuresToCheck.every(function (feature) {
+                    return checkFeatureSelfIntersections_(feature)
+                });
+
+                if (hasSelfIntersections) {
+                    validationResult.valid = false;
+                    validationResult.message = 'SELF_INTERSECTIONS';
+                    return validationResult;
                 }
             }
             return validationResult;
@@ -333,20 +336,24 @@
             return hasSelfIntersections;
         }
 
+
         /**
          * Creates a project by calling the API with the AOI, a task grid and a project name
-         * @returns {*|!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred}
+         * @param projectName
+         * @param isTaskGrid
+         * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
          */
-        function createProject(projectName) {
+        function createProject(projectName, isTaskGrid) {
 
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
-            var taskGridGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(taskGrid);
+            var taskGridGeoJSON = isTaskGrid?geospatialService.getGeoJSONObjectFromFeatures(taskGrid):null;
 
             // Get the geometry of the area of interest. It should only have one feature.
             var newProject = {
                 areaOfInterest: areaOfInterestGeoJSON,
                 projectName: projectName,
-                tasks: taskGridGeoJSON
+                tasks: taskGridGeoJSON,
+                arbitraryTasks: !isTaskGrid
             };
 
             // Returns a promise
@@ -628,10 +635,11 @@
                 // this callback will be called asynchronously
                 // when the response is available
                 return (response.data);
-            }, function errorCallback() {
+            }, function errorCallback(reason) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                return $q.reject("error");
+
+                return $q.reject(reason);
             });
 
         }

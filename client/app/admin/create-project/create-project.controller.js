@@ -18,6 +18,7 @@
         vm.currentStep = '';
         vm.projectName = '';
         vm.projectNameForm = {};
+        vm.taskType = 'square-grid'
 
         // AOI 
         vm.AOI = null;
@@ -55,6 +56,9 @@
         vm.modifyInteraction = null;
         vm.drawPolygonInteraction = null;
 
+        //waiting spinner
+        vm.waiting=false;
+
         activate();
 
         function activate() {
@@ -89,6 +93,21 @@
         }
 
         /**
+         * Move the wizard to appropiate step for type of tasks selected
+         */
+        vm.setWizardStepAfterTaskTypeSelection = function () {
+            if (vm.taskType === 'square-grid') {
+                vm.createTaskGrid();
+                vm.setWizardStep('taskSize');
+            }
+            else if (vm.taskType === 'arbitrary-tasks') {
+                vm.createArbitaryTasks();
+                vm.setWizardStep('review');
+            }
+
+        }
+
+        /**
          * Set the current wizard step in the process of creating a project
          * @param wizardStep the step in the wizard the user wants to go to
          */
@@ -105,6 +124,10 @@
             }
             else if (wizardStep === 'tasks') {
                 setSplitToolsActive_(false);
+                vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
+                    + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
+                // Reset the user zoom level offset
+                vm.userZoomLevelOffset = 0;
                 if (vm.isDrawnAOI) {
                     var aoiValidationResult = projectService.validateAOI(drawService.getSource().getFeatures());
                     vm.isAOIValid = aoiValidationResult.valid;
@@ -112,10 +135,6 @@
                     if (vm.isAOIValid) {
                         vm.map.getView().fit(drawService.getSource().getExtent());
                         // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
-                        vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
-                            + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
-                        // Reset the user zoom level offset
-                        vm.userZoomLevelOffset = 0;
                         vm.currentStep = wizardStep;
                         vm.drawPolygonInteraction.setActive(false);
                         vm.modifyInteraction.setActive(false);
@@ -125,14 +144,9 @@
                     // TODO: validate AOI - depends on what API supports! Self-intersecting polygons?
                     vm.drawPolygonInteraction.setActive(false);
                     vm.map.getView().fit(drawService.getSource().getExtent());
-                    // Use the current zoom level + a standard offset to determine the default task grid size for the AOI
-                    vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
-                        + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
                     vm.currentStep = wizardStep;
                     vm.drawPolygonInteraction.setActive(false);
                     vm.modifyInteraction.setActive(false);
-                    // Reset the user zoom level offset
-                    vm.userZoomLevelOffset = 0;
                 }
             }
             else if (wizardStep === 'taskSize') {
@@ -205,16 +219,38 @@
          */
         vm.trimTaskGrid = function () {
 
-            var taskGrid = projectService.getTaskGrid()
+            var taskGrid = projectService.getTaskGrid();
+            vm.waiting= true;
             var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi)
             trimTaskGridPromise.then(function (data) {
+                vm.waiting= false;
                 projectService.removeTaskGrid();
                 var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
-            }, function () {
+               // Get the number of tasks in project
+                vm.numberOfTasks = projectService.getNumberOfTasks();
+            }, function (reason) {
+                vm.waiting= false;
                 //TODO: may want to handle error
             })
+        }
+
+        /**
+         * Create arbitary tasks
+         */
+        vm.createArbitaryTasks = function () {
+            if (vm.isImportedAOI) {
+                vm.isTaskGrid = false;
+                vm.isTaskArbitrary = true;
+                projectService.removeTaskGrid();
+                // Get and set the AOI
+                var areaOfInterest = drawService.getSource().getFeatures();
+                projectService.setAOI(areaOfInterest);
+                // Get the number of tasks in project
+                vm.numberOfTasks = drawService.getSource().getFeatures().length;
+
+            }
         }
 
         /**
@@ -223,6 +259,7 @@
         vm.createTaskGrid = function () {
 
             vm.isTaskGrid = true;
+            vm.isTaskArbitrary = false;
 
             // Remove existing task grid
             projectService.removeTaskGrid();
@@ -384,14 +421,17 @@
             vm.createProjectFail = false;
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
-                var resultsPromise = projectService.createProject(vm.projectName);
+                vm.waiting = true;
+                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid);
                 resultsPromise.then(function (data) {
+                    vm.waiting = false;
                     // Project created successfully
                     vm.createProjectFail = false;
                     vm.createProjectSuccess = true;
                     // Navigate to the edit project page
                     $location.path('/admin/edit-project/' + data.projectId);
                 }, function () {
+                    vm.waiting = false;
                     // Project not created successfully
                     vm.createProjectFail = true;
                     vm.createProjectSuccess = false;
@@ -416,7 +456,7 @@
             }
         }
 
-        vm.toggleClipTasksToAoi = function(){
+        vm.toggleClipTasksToAoi = function () {
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
         }
     }
