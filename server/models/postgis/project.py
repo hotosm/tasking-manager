@@ -168,7 +168,7 @@ class Project(db.Model):
         self.mapping_types = type_array
 
         # Add list of allowed users, meaning the project can only be mapped by users in this list
-        if project_dto.allowed_users:
+        if hasattr(project_dto, 'allowed_users'):
             self.allowed_users = []  # Clear existing relationships then re-insert
             for user in project_dto.allowed_users:
                 self.allowed_users.append(user)
