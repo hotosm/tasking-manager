@@ -65,13 +65,13 @@ class TestProjectAdminService(unittest.TestCase):
             ProjectAdminService.update_project(dto)
 
     @patch.object(Project, 'get')
-    def test_adding_allowed_users_to_a_non_private_project_raises_errors(self, mock_project):
+    def test_updating_a_private_project_with_no_allowed_users_causes_an_error(self, mock_project):
         # Arrange
         mock_project.return_value = Project()
 
         dto = ProjectDTO()
-        dto.private = False
-        dto.allowed_usernames = ['Test']
+        dto.private = True
+        dto.allowed_usernames = []
 
         with self.assertRaises(ProjectAdminServiceError):
             ProjectAdminService.update_project(dto)

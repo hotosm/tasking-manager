@@ -79,7 +79,7 @@ class ProjectAdminService:
         if project_dto.license_id:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
-        if project_dto.allowed_usernames:
+        if project_dto.private:
             ProjectAdminService._validate_allowed_users(project_dto)
 
         project.update(project_dto)
@@ -96,8 +96,8 @@ class ProjectAdminService:
     @staticmethod
     def _validate_allowed_users(project_dto: ProjectDTO):
         """ Ensures that all usernames are known and returns their user ids """
-        if not project_dto.private:
-            raise ProjectAdminServiceError('Only private projects can have a restricted user list')
+        if len(project_dto.allowed_usernames) == 0:
+            raise ProjectAdminServiceError('Must have at least one allowed user on a private project')
 
         try:
             allowed_users = []
