@@ -379,7 +379,7 @@
                                 <div class="form__group">
                                     <label class="form__label">Allowed users on private project</label>
                                     <ul>
-                                        <li ng-repeat="user in editProjectCtrl.allowedUsers">
+                                        <li ng-repeat="user in editProjectCtrl.project.allowedUsernames">
                                             {{ user }} <i class="hot-ds-icon-sm-xmark" ng-click="editProjectCtrl.removeUser(user)"></i>
                                         </li>
                                     </ul>

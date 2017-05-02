@@ -48,7 +48,6 @@
         vm.projectCampaignTag = [];
 
         vm.project = {};
-        vm.allowedUsers = ['LindaA1'];
         vm.project.defaultLocale = 'en';
         vm.descriptionLanguage = 'en';
         vm.shortDescriptionLanguage = 'en';
@@ -406,10 +405,9 @@
          * @param user
          */
         vm.addUser = function(user){
-            // TODO: change to project.allowedUsers
-            var index = vm.allowedUsers.indexOf(user);
+            var index = vm.project.allowedUsernames.indexOf(user);
             if (index == -1){
-                vm.allowedUsers.push(user);
+                vm.project.allowedUsernames.push(user);
             }
         };
 
@@ -419,9 +417,9 @@
          */
         vm.removeUser = function(user){
             // TODO: change to project.allowedUsers
-            var index = vm.allowedUsers.indexOf(user);
+            var index = vm.project.allowedUsernames.indexOf(user);
             if (index > -1){
-                vm.allowedUsers.splice(index, 1);
+                vm.project.allowedUsernames.splice(index, 1);
             }
         };
 
@@ -429,10 +427,10 @@
          * On private change
          */
         vm.onPrivateChange = function(){
-             // TODO: change to project.allowedUsers
+            console.log(vm.project);
             if (!vm.project.private){
                 // clear the allowed users list when a project is not private
-                vm.allowedUsers = [];
+                vm.project.allowedUsernames = [];
             }
         };
 

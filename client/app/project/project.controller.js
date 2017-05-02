@@ -68,6 +68,7 @@
 
         //bound from the html
         vm.comment = '';
+        vm.prefixComment = '';
 
         //table sorting control
         vm.propertyName = 'username';
@@ -813,7 +814,7 @@
                 // On error
             });
         };
-
+        
         /**
          * Refresh the map and selected task on error
          * @param projectId
