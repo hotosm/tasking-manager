@@ -43,7 +43,7 @@ class DraftProjectDTO(Model):
     project_name = StringType(required=True, serialized_name='projectName')
     area_of_interest = BaseType(required=True, serialized_name='areaOfInterest')
     tasks = BaseType(required=False)
-    arbitrary_tasks = BooleanType(required=True, serialized_name='arbitraryTasks')
+    has_arbitrary_tasks = BooleanType(required=True, serialized_name='arbitraryTasks')
     user_id = IntType(required=True)
 
 

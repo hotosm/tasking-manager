@@ -93,7 +93,7 @@
         }
 
         /**
-         *
+         * Move the wizard to appropiate step for type of tasks selected
          */
         vm.setWizardStepAfterTaskTypeSelection = function () {
             if (vm.taskType === 'square-grid') {
