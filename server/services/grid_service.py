@@ -152,10 +152,19 @@ class GridService:
         geometry = MultiPolygon(rings)
 
         # Downsample 3D -> 2D
+
+
+        if geometry.has_z:
+            geometry = shapely.ops.transform(GridService._to_2d, geometry)
+
+
         wkt2d = geometry.wkt
         geom2d = shapely.wkt.loads(wkt2d)
 
         return geom2d
+
+    def _to_2d(x, y, z=None):
+        return tuple(filter(None, [x, y]))
 
     @staticmethod
     def _dissolve(geoms: MultiPolygon) -> MultiPolygon:
