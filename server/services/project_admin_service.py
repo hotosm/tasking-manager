@@ -44,10 +44,12 @@ class ProjectAdminService:
         draft_project.create_draft_project(draft_project_dto, area_of_interest)
 
         # if arbitrary_tasks requested, create tasks from aoi otherwise use tasks in DTO
-        tasks = GridService.tasks_from_aoi_features(draft_project_dto.area_of_interest) \
-            if draft_project_dto.has_arbitrary_tasks \
-            else draft_project_dto.tasks
+        if draft_project_dto.has_arbitrary_tasks:
+            tasks = GridService.tasks_from_aoi_features(draft_project_dto.area_of_interest)
+        else:
+            tasks = draft_project_dto.tasks
         ProjectAdminService._attach_tasks_to_project(draft_project, tasks)
+
 
         draft_project.create()
         return draft_project.id
