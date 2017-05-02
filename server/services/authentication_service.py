@@ -14,21 +14,26 @@ tm = TMAPIDecorators()
 def verify_token(token):
     """ Verify the supplied token and check user role is correct for the requested resource"""
     if not token:
+        current_app.logger.debug('Token not supplied')
         return False
 
     try:
         decoded_token = base64.b64decode(token).decode('utf-8')
     except UnicodeDecodeError:
+        current_app.logger.debug('Unable to decode token')
         return False  # Can't decode token, so fail login
 
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
+        current_app.logger.debug('Token not valid')
         return False
 
     if tm.is_pm_only_resource:
         if not UserService.is_user_a_project_manager(user_id):
+            current_app.logger.debug('User is not a PM')
             return False
 
+    current_app.logger.debug(f'Validated user {user_id}')
     tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
     return True  # All tests passed token is good for the requested resource
 
