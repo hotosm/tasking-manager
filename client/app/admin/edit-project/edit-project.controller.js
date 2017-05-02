@@ -416,7 +416,6 @@
          * @param user
          */
         vm.removeUser = function(user){
-            // TODO: change to project.allowedUsers
             var index = vm.project.allowedUsernames.indexOf(user);
             if (index > -1){
                 vm.project.allowedUsernames.splice(index, 1);
@@ -427,7 +426,6 @@
          * On private change
          */
         vm.onPrivateChange = function(){
-            console.log(vm.project);
             if (!vm.project.private){
                 // clear the allowed users list when a project is not private
                 vm.project.allowedUsernames = [];

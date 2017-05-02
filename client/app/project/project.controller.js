@@ -68,7 +68,6 @@
 
         //bound from the html
         vm.comment = '';
-        vm.prefixComment = '';
 
         //table sorting control
         vm.propertyName = 'username';
