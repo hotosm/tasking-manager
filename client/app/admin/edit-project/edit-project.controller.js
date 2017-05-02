@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService) {
         var vm = this;
         vm.currentSection = '';
         vm.editForm = {};
@@ -58,6 +58,9 @@
         
         // Delete
         vm.showDeleteConfirmationModal = false;
+        
+        // Private project/add users
+        vm.addUserEnabled = false;
 
         // Error messages
         vm.deleteProjectFail = false;
@@ -381,6 +384,59 @@
          */
         vm.getCampaignTags = function(){
             return vm.campaignTags;
+        };
+
+        /**
+         * Get the user for a search value
+         * @param searchValue
+         */
+        vm.getUser = function(searchValue){
+            var resultsPromise = userService.searchUser(searchValue);
+            return resultsPromise.then(function (data) {
+                // On success
+                return data.usernames;
+            }, function(){
+                // On error
+            });
+        };
+
+        /**
+         * Adds the user to the allowed user list
+         * @param user
+         */
+        vm.addUser = function(user){
+            var index = vm.project.allowedUsernames.indexOf(user);
+            if (index == -1){
+                vm.project.allowedUsernames.push(user);
+            }
+        };
+
+        /**
+         * Removes the user from the allowed user list
+         * @param user
+         */
+        vm.removeUser = function(user){
+            var index = vm.project.allowedUsernames.indexOf(user);
+            if (index > -1){
+                vm.project.allowedUsernames.splice(index, 1);
+            }
+        };
+
+        /**
+         * On private change
+         */
+        vm.onPrivateChange = function(){
+            if (!vm.project.private){
+                // clear the allowed users list when a project is not private
+                vm.project.allowedUsernames = [];
+            }
+        };
+
+        /**
+         * Enable adding a user
+         */
+        vm.enableAddUser = function(boolean){
+            vm.addUserEnabled = boolean;
         };
 
         /**

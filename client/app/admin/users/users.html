@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Users (TODO)
+                    Users
                 </h1>
             </div>
         </header>
@@ -13,40 +13,92 @@
                     <div class="users-container">
                         <div class="filter">
                             <form class="form">
-                                 <h3>Search users</h3>
-                                     <div class="form__group">
-                                         <input type="text" class="form__control form__control--medium" id="form-name" name="form-name" placeholder="Search by username" />
-                                     </div>
+                                <h3>Search users</h3>
+                                <div class="form__group">
+                                    <label class="form__label">Role</label>
+                                    <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="" /> All
+                                    </label>
+                                    <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="MAPPER" /> Mapper
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="VALIDATOR" /> Validator
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="PROJECT_MANAGER" /> Project manager
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="ADMIN" /> Admin
+                                    </label>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="form__group">
+                                    <label class="form__label">Mapping level</label>
+                                    <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="" /> All
+                                    </label>
+                                    <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="BEGINNER" /> Beginner
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="INTERMEDIATE" /> Intermediate
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="ADVANCED" /> Advanced
+                                    </label>
+                                </div>
                              </form>
+                             <div class="form__group">
+                                  <label class="form__label" for="form-name">Username</label>
+                                  <input type="text" class="form__control "
+                                         placeholder="Enter a username"
+                                         ng-model="usersCtrl.username"
+                                         ng-change="usersCtrl.searchUsers()"/>
+                             </div>
                         </div>
                         <div class="results">
                             <div>
-                                Total number of users: {{ usersCtrl.users.length }}
+                                Total number of users: {{ usersCtrl.pagination.total }}
                             </div>
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>Username</th>
-                                    <th>Role</th>
-                                    <th>Mapping level</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="user in usersCtrl.users.slice(((usersCtrl.currentPage-1)*usersCtrl.itemsPerPage), ((usersCtrl.currentPage)*usersCtrl.itemsPerPage))  | filter:usersCtrl.searchText track by $index">
-                                    <td><a href="/user/{{ user.username }}">{{ user.username }}</a></td>
-                                    <td>{{ user.role }}</td>
-                                    <td>{{ user.mappingLevel }}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <ul ng-show="usersCtrl.users.length > 0" uib-pagination
-                                max-size="3"
-                                boundary-link-numbers="true"
-                                rotate="false"
-                                items-per-page="usersCtrl.itemsPerPage"
-                                total-items="usersCtrl.users.length"
-                                ng-model="usersCtrl.currentPage"></ul>
-                        </div>
+                            <div class="results-table-container">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th>Mapping level</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="user in usersCtrl.users track by $index">
+                                        <td><a href="/user/{{ user.username }}">{{ user.username }}</a></td>
+                                        <td>{{ user.role }}</td>
+                                        <td>{{ user.mappingLevel }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="button button--achromic"
+                                    ng-class="!usersCtrl.pagination.hasPrev ? 'disabled' : ''"
+                                    ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.prevNum)">
+                                    Previous
+                            </button>
+                            <button class="button button--achromic"
+                                    ng-class="!usersCtrl.pagination.hasNext ? 'disabled' : ''"
+                                    ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.nextNum)">
+                                    Next
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -813,7 +813,7 @@
                 // On error
             });
         };
-
+        
         /**
          * Refresh the map and selected task on error
          * @param projectId
