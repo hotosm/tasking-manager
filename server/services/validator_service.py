@@ -88,6 +88,10 @@ class ValidatorService:
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock['task']
 
+            if task_to_unlock['comment']:
+                # Parses comment to see if any users have been @'d
+                MessageService.send_message_after_comment(validated_dto.user_id, task_to_unlock['comment'], task.id)
+
             if task_to_unlock['new_state'] == TaskStatus.VALIDATED:
                 # All mappers get a thankyou if their task has been validated :)
                 MessageService.send_message_after_validation(validated_dto.user_id, task.mapped_by, task.id)
