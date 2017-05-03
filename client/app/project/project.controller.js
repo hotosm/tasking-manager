@@ -7,7 +7,7 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$location','$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', projectController]);
+        .controller('projectController', ['$location', '$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', projectController]);
 
     function projectController($location,$interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService) {
         var vm = this;
@@ -20,8 +20,6 @@
         vm.user = {};
         vm.maxlengthComment = 500;
         vm.taskUrl = '';
-
-
 
         // tab and view control
         vm.currentTab = '';
@@ -67,7 +65,6 @@
 
         vm.mappedTasksPerUser = [];
         vm.lockedTasksForCurrentUser = [];
-
 
         //bound from the html
         vm.comment = '';
@@ -118,15 +115,12 @@
             initialiseProject(vm.id);
             updateMappedTaskPerUser(vm.id);
 
-
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
                 refreshProject(vm.id);
                 updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refesh too
             }, 10000);
-
-
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -136,7 +130,6 @@
                 autoRefresh = undefined;
             }
         })
-
 
         /**
          * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual
@@ -178,7 +171,6 @@
             vm.taskUnLockError = false;
             vm.taskUnLockErrorMessage = '';
         }
-
 
         /**
          * Make the passed in feature the selected feature and ensure view and map updates for selected feature
@@ -382,7 +374,6 @@
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
             }
-
         }
 
         /**
@@ -588,7 +579,6 @@
             });
         };
 
-
         /**
          * Call api to unlock currently locked tasks after validation.  Will pass the comment and new status to api.  Will update view and map after unlock.
          * @param comment
@@ -630,7 +620,6 @@
                 onUnLockError(projectId, error);
             });
         };
-
 
         /**
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
