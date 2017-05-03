@@ -331,6 +331,7 @@ class UserSetLevel(Resource):
 
 class UserAcceptLicense(Resource):
 
+    @tm.is_pm_only_resource(False)
     @token_auth.login_required
     def post(self, license_id):
         """

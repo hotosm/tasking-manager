@@ -52,6 +52,7 @@ class MappingTaskAPI(Resource):
 
 class LockTaskForMappingAPI(Resource):
 
+    @tm.is_pm_only_resource(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
@@ -123,6 +124,7 @@ class LockTaskForMappingAPI(Resource):
 
 class UnlockTaskForMappingAPI(Resource):
 
+    @tm.is_pm_only_resource(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
         """

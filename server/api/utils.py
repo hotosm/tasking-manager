@@ -6,9 +6,6 @@ class TMAPIDecorators:
     is_pm_only_resource = None
     authenticated_user_id = None  # Set by AuthenticationService when user has successfully authenticated
 
-    def __init__(self):
-        self.is_pm_only_resource = False
-
     def pm_only(self, pm_only_resource=True):
         """
         Indicates that users must have at least Project Manager role to access the resource
