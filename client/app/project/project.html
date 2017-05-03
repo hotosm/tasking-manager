@@ -245,9 +245,14 @@
                                     </div>
                                 </div>
                                 <div class="form__group">
-                                    <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                    <textarea class="form__control" type="text" mentio
+                                              rows="4"
                                               maxlength="{{ projectCtrl.maxlengthComment }}"
-                                              placeholder="Leave a comment"></textarea>
+                                              placeholder="Leave a comment"
+                                              mentio-typed-text="typedTerm"
+                                              mentio-search="projectCtrl.searchUser(term)"
+                                              mentio-items="projectCtrl.usernames | filter:label:typedTerm"
+                                              ng-model="projectCtrl.comment"></textarea>
                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                         characters remaining</p>
                                 </div>
@@ -488,9 +493,14 @@
                                     </div>
                                 </div>
                                 <div class="form__group">
-                                    <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                     <textarea class="form__control" type="text" mentio
+                                              rows="4"
                                               maxlength="{{ projectCtrl.maxlengthComment }}"
-                                              placeholder="Leave a comment"></textarea>
+                                              placeholder="Leave a comment"
+                                              mentio-typed-text="typedTerm"
+                                              mentio-search="projectCtrl.searchUser(term)"
+                                              mentio-items="projectCtrl.usernames | filter:label:typedTerm"
+                                              ng-model="projectCtrl.comment"></textarea>
                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                         characters remaining</p>
                                 </div>
@@ -567,9 +577,14 @@
                                     </div>
                                 </div>
                                 <div class="form__group">
-                                    <textarea ng-model="projectCtrl.comment" class="form__control" rows="4"
+                                     <textarea class="form__control" type="text" mentio
+                                              rows="4"
                                               maxlength="{{ projectCtrl.maxlengthComment }}"
-                                              placeholder="Leave a comment on all tasks"></textarea>
+                                              placeholder="Leave a comment"
+                                              mentio-typed-text="typedTerm"
+                                              mentio-search="projectCtrl.searchUser(term)"
+                                              mentio-items="projectCtrl.usernames | filter:label:typedTerm"
+                                              ng-model="projectCtrl.comment"></textarea>
                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                         characters remaining</p>
                                 </div>
