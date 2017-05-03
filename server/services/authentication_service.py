@@ -1,6 +1,6 @@
 import base64
 from urllib import parse
-from flask import current_app
+from flask import current_app, request
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from server.api.utils import TMAPIDecorators
@@ -13,27 +13,28 @@ tm = TMAPIDecorators()
 @token_auth.verify_token
 def verify_token(token):
     """ Verify the supplied token and check user role is correct for the requested resource"""
+
     if not token:
-        current_app.logger.debug('Token not supplied')
+        current_app.logger.debug(f'Token not supplied {request.base_url}')
         return False
 
     try:
         decoded_token = base64.b64decode(token).decode('utf-8')
     except UnicodeDecodeError:
-        current_app.logger.debug('Unable to decode token')
+        current_app.logger.debug(f'Unable to decode token {request.base_url}')
         return False  # Can't decode token, so fail login
 
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
-        current_app.logger.debug('Token not valid')
+        current_app.logger.debug(f'Token not valid {request.base_url}')
         return False
 
     if tm.is_pm_only_resource:
         if not UserService.is_user_a_project_manager(user_id):
-            current_app.logger.debug('User is not a PM')
+            current_app.logger.debug(f'User {user_id} is not a PM {request.base_url}')
             return False
 
-    current_app.logger.debug(f'Validated user {user_id}')
+    current_app.logger.debug(f'Validated user {user_id} for {request.base_url}')
     tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
     return True  # All tests passed token is good for the requested resource
 
