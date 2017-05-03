@@ -84,3 +84,8 @@ class Message(db.Model):
             messages_dto.user_messages.append(dto)
 
         return messages_dto
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()

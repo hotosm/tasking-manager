@@ -41,7 +41,7 @@ class MessageService:
         return Message.get_all_messages(user_id)
 
     @staticmethod
-    def get_message(message_id: int, user_id: int) -> MessageDTO:
+    def get_message(message_id: int, user_id: int) -> Message:
         """ Gets the specified message """
         message = Message.query.get(message_id)
 
@@ -51,4 +51,15 @@ class MessageService:
         if message.to_user_id != int(user_id):
             raise MessageServiceError(f'User {user_id} attempting to access another users message {message_id}')
 
+        return message
+
+    @staticmethod
+    def get_message_as_dto(message_id: int, user_id: int):
+        message = MessageService.get_message(message_id, user_id)
         return message.as_dto()
+
+    @staticmethod
+    def delete_message(message_id: int, user_id: int):
+        """ Deletes the specified message """
+        message = MessageService.get_message(message_id, user_id)
+        message.delete()
