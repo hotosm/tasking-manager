@@ -2,8 +2,7 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 from server.models.dtos.message_dto import MessageDTO
 from server.services.authentication_service import token_auth, tm
-from server.services.message_service import MessageService
-from server.models.postgis.utils import NotFound
+from server.services.message_service import MessageService, NotFound, MessageServiceError
 
 
 class ProjectsMessageAll(Resource):
@@ -134,6 +133,54 @@ class GetAllMessages(Resource):
         try:
             user_messages = MessageService.get_all_messages(tm.authenticated_user_id)
             return user_messages.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No messages found"}, 404
+        except Exception as e:
+            error_msg = f'Messages GET all - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class MessagesAPI(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self, message_id):
+        """
+        Gets the specified message
+        ---
+        tags:
+          - messages
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: message_id
+              in: path
+              description: The unique message
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Messages found
+            403:
+                description: Forbidden, if user attempting to ready other messages
+            404:
+                description: Not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user_message = MessageService.get_message(message_id, tm.authenticated_user_id)
+            return user_message.to_primitive(), 200
+        except MessageServiceError as e:
+            return {"Error": str(e)}, 403
         except NotFound:
             return {"Error": "No messages found"}, 404
         except Exception as e:

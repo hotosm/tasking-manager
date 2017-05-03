@@ -1,5 +1,13 @@
+from flask import current_app
 from server.models.dtos.message_dto import MessageDTO
-from server.models.postgis.message import Message
+from server.models.postgis.message import Message, NotFound
+
+
+class MessageServiceError(Exception):
+    """ Custom Exception to notify callers an error occurred when handling mapping """
+    def __init__(self, message):
+        if current_app:
+            current_app.logger.error(message)
 
 
 class MessageService:
@@ -32,5 +40,15 @@ class MessageService:
         """ Get all messages for user """
         return Message.get_all_messages(user_id)
 
+    @staticmethod
+    def get_message(message_id: int, user_id: int) -> MessageDTO:
+        """ Gets the specified message """
+        message = Message.query.get(message_id)
 
+        if message is None:
+            raise NotFound()
 
+        if message.to_user_id != int(user_id):
+            raise MessageServiceError(f'User {user_id} attempting to access another users message {message_id}')
+
+        return message.as_dto()
