@@ -15,3 +15,15 @@ class MessageService:
     @staticmethod
     def send_message_after_comment():
         pass
+
+    @staticmethod
+    def has_user_new_messages(user_id: int) -> dict:
+        """ Determines if the user has any unread messages """
+        count = Message.get_unread_message_count(user_id)
+
+        new_messages = False
+        if count > 0:
+            new_messages = True
+
+        return dict(newMessages=new_messages, unread=count)
+

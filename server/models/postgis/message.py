@@ -44,3 +44,9 @@ class Message(db.Model):
             db.session.add(message)
 
         db.session.commit()
+
+    @staticmethod
+    def get_unread_message_count(user_id: int):
+        """ Get count of unread messages for user """
+        return Message.query.filter(Message.to_user_id == user_id, Message.read == False).count()
+
