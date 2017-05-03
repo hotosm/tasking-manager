@@ -45,6 +45,7 @@ class Message(db.Model):
         return dto
 
     def add_message(self):
+        """ Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
         db.session.add(self)
 
     @staticmethod

@@ -6,6 +6,7 @@ from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.utils import NotFound, UserLicenseError
+from server.services.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
 
@@ -81,6 +82,12 @@ class MappingService:
 
         StatsService.update_stats_after_task_state_change(mapped_task.project_id, mapped_task.user_id, new_state,
                                                           mapped_task.task_id)
+
+        if mapped_task.comment:
+            # Parses comment to see if any users have been @'d
+            MessageService.send_message_after_comment(mapped_task.user_id, mapped_task.comment, task.id)
+
+
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
 
         return task.as_dto()
