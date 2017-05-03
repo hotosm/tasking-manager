@@ -177,8 +177,53 @@ class MessagesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_message = MessageService.get_message(message_id, tm.authenticated_user_id)
+            user_message = MessageService.get_message_as_dto(message_id, tm.authenticated_user_id)
             return user_message.to_primitive(), 200
+        except MessageServiceError as e:
+            return {"Error": str(e)}, 403
+        except NotFound:
+            return {"Error": "No messages found"}, 404
+        except Exception as e:
+            error_msg = f'Messages GET all - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def delete(self, message_id):
+        """
+        Deletes the specified message
+        ---
+        tags:
+          - messages
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: message_id
+              in: path
+              description: The unique message
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Messages found
+            403:
+                description: Forbidden, if user attempting to ready other messages
+            404:
+                description: Not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            MessageService.delete_message(message_id, tm.authenticated_user_id)
+            return {"Success": "Message deleted"}, 200
         except MessageServiceError as e:
             return {"Error": str(e)}, 403
         except NotFound:
