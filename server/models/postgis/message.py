@@ -44,6 +44,9 @@ class Message(db.Model):
 
         return dto
 
+    def add_message(self):
+        db.session.add(self)
+
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
         """ Sends a message to all contributors """
