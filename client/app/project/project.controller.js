@@ -336,6 +336,10 @@
             });
         }
 
+        /**
+         * Select a task using it's ID.
+         * @param taskId
+         */
         function selectTaskById(taskId) {
             //select task on map if id provided in url
             var task = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), $routeParams.taskId);
