@@ -23,6 +23,7 @@ class Message(db.Model):
 
     @classmethod
     def from_dto(cls, to_user_id: int, dto: MessageDTO):
+        """ Creates new message from DTO """
         message = cls()
         message.subject = dto.subject
         message.message = dto.message
@@ -30,6 +31,18 @@ class Message(db.Model):
         message.to_user_id = to_user_id
 
         return message
+
+    def as_dto(self) -> MessageDTO:
+        """ Casts message object to DTO """
+        dto = MessageDTO()
+        dto.message_id = self.id
+        dto.message = self.message
+        dto.from_username = self.from_user.username
+        dto.sent_date = self.date
+        dto.read = self.read
+        dto.subject = self.subject
+
+        return dto
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
