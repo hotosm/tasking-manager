@@ -11,7 +11,7 @@ from server.models.postgis.statuses import ProjectStatus, ProjectPriority, Mappi
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound, ST_AsGeoJSON
+from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
 from server.services.grid_service import GridService
 
 # Secondary table defining many-to-many join for private projects that only defined users can map on

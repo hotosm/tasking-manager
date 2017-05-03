@@ -27,3 +27,10 @@ class MessageService:
 
         return dict(newMessages=new_messages, unread=count)
 
+    @staticmethod
+    def get_all_messages(user_id: int):
+        """ Get all messages for user """
+        return Message.get_all_messages(user_id)
+
+
+
