@@ -11,7 +11,8 @@
     function messageService($http, $q, configService, authService) {
         
         var service = {
-            messageAll: messageAll
+            messageAll: messageAll,
+            hasNewMessages: hasNewMessages
         };
 
         return service;
@@ -29,6 +30,27 @@
                     message: message,
                     subject: subject
                 },
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Check if a user has new messages
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|!jQuery.deferred|*}
+         */
+        function hasNewMessages(){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/messages/has-new-messages',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
