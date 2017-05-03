@@ -54,7 +54,7 @@ class ProjectsMessageAll(Resource):
         """
         try:
             message_dto = MessageDTO(request.get_json())
-            message_dto.from_user = tm.authenticated_user_id
+            message_dto.from_user_id = tm.authenticated_user_id
             message_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -99,5 +99,41 @@ class HasNewMessages(Resource):
             return unread_messages, 200
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class GetAllMessages(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self):
+        """
+        Get all messages for logged in user
+        ---
+        tags:
+          - messages
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            200:
+                description: Messages found
+            404:
+                description: User has no messages
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user_messages = MessageService.get_all_messages(tm.authenticated_user_id)
+            return user_messages.to_primitive(), 200
+        except Exception as e:
+            error_msg = f'Messages GET all - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

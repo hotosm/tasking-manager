@@ -1,5 +1,5 @@
 from server import db
-from server.models.dtos.message_dto import MessageDTO
+from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.postgis.user import User
 from server.models.postgis.utils import timestamp
 
@@ -25,7 +25,7 @@ class Message(db.Model):
         message = cls()
         message.subject = dto.subject
         message.message = dto.message
-        message.from_user_id = dto.from_user
+        message.from_user_id = dto.from_user_id
         message.to_user_id = to_user_id
 
         return message
@@ -50,3 +50,20 @@ class Message(db.Model):
         """ Get count of unread messages for user """
         return Message.query.filter(Message.to_user_id == user_id, Message.read == False).count()
 
+    @staticmethod
+    def get_all_messages(user_id: int) -> MessagesDTO:
+        """ Gets all messages to the user """
+        user_messages = Message.query.filter(Message.to_user_id == user_id).all()
+
+        messages_dto = MessagesDTO()
+        for message in user_messages:
+            dto = MessageDTO()
+            dto.message = message.message
+            dto.subject = message.subject
+            dto.sent_date = message.date
+            dto.read = message.read
+            dto.from_username = message.from_user.username
+
+            messages_dto.user_messages.append(dto)
+
+        return messages_dto

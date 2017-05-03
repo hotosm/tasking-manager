@@ -87,7 +87,7 @@ def init_flask_restful_routes(app):
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, TasksAsGPX, TasksAsOSM
-    from server.api.message_apis import ProjectsMessageAll, HasNewMessages
+    from server.api.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
     from server.api.swagger_docs_api import SwaggerDocsAPI
@@ -106,6 +106,7 @@ def init_flask_restful_routes(app):
     api.add_resource(LicenseAPI,                    '/api/v1/license/<int:license_id>', methods=['GET', 'POST', 'DELETE'])
     api.add_resource(LicenceListAPI,                '/api/v1/license/list')
     api.add_resource(HasNewMessages,                '/api/v1/messages/has-new-messages')
+    api.add_resource(GetAllMessages,                '/api/v1/messages/get-all-messages')
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
