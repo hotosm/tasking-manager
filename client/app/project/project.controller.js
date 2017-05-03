@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', projectController]);
+        .controller('projectController', ['$location','$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', projectController]);
 
-    function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService) {
+    function projectController($location,$interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService) {
         var vm = this;
         vm.id = 0;
         vm.projectData = null;
@@ -19,6 +19,9 @@
         vm.map = null;
         vm.user = {};
         vm.maxlengthComment = 500;
+        vm.taskUrl = '';
+
+
 
         // tab and view control
         vm.currentTab = '';
@@ -111,8 +114,10 @@
             });
 
             vm.id = $routeParams.id;
+
             initialiseProject(vm.id);
             updateMappedTaskPerUser(vm.id);
+
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
@@ -120,6 +125,8 @@
                 updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refesh too
             }, 10000);
+
+
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -253,8 +260,8 @@
                 $scope.description = data.projectInfo.description;
                 $scope.shortDescription = data.projectInfo.shortDescription;
                 $scope.instructions = data.projectInfo.instructions;
-                vm.userCanMap = projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel );
-                vm.userCanValidate = projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole );
+                vm.userCanMap = projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
+                vm.userCanValidate = projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addProjectTasksToMap(vm.projectData.tasks, true);
 
@@ -283,6 +290,10 @@
                     vm.map.addLayer(vm.highlightVectorLayer);
                 } else {
                     vm.highlightVectorLayer.getSource().clear();
+                }
+
+                if ($routeParams.taskId) {
+                    selectTaskById($routeParams.taskId)
                 }
             }, function () {
                 // project not returned successfully
@@ -325,6 +336,17 @@
             });
         }
 
+        function selectTaskById(taskId) {
+            //select task on map if id provided in url
+            var task = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), $routeParams.taskId);
+            if (task) {
+                selectFeature(task);
+                var padding = getPaddingSize();
+                vm.map.getView().fit(task.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+            }
+
+        }
+
         /**
          * Adds project tasks to map as features from geojson
          * @param tasks
@@ -356,6 +378,7 @@
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
             }
+
         }
 
         /**
@@ -414,12 +437,9 @@
          */
         function onTaskSelection(feature) {
             //we don't want to allow selection of multiple features by map click
-
-
             //get id from feature
             var taskId = feature.get('taskId');
             var projectId = vm.projectData.projectId;
-
 
             // get full task from task service call
             var taskPromise = taskService.getTask(projectId, taskId);
@@ -494,6 +514,10 @@
             else {
                 vm.validatingStep = 'viewing';
             }
+
+            //update taskURL to allow task bookmarking
+            vm.taskUrl = $location.absUrl() + ($routeParams.taskId?'':'/'+data.taskId);
+
         }
 
         /**
@@ -792,29 +816,29 @@
          * Set the accept license modal to visible/invisible
          * @param showModal
          */
-        vm.setShowLicenseModal = function(showModal){
+        vm.setShowLicenseModal = function (showModal) {
             vm.showLicenseModal = showModal;
         };
 
         /**
          * Accept the license for this user
          */
-        vm.acceptLicense = function(){
+        vm.acceptLicense = function () {
             var resultsPromise = userService.acceptLicense(vm.projectData.licenseId);
             resultsPromise.then(function () {
                 // On success
                 vm.showLicenseModal = false;
-                if (vm.lockingReason === 'MAPPING'){
+                if (vm.lockingReason === 'MAPPING') {
                     vm.lockSelectedTaskMapping();
                 }
-                else if (vm.lockingReason === 'VALIDATION'){
+                else if (vm.lockingReason === 'VALIDATION') {
                     vm.lockSelectedTaskValidation();
                 }
-            }, function(){
+            }, function () {
                 // On error
             });
         };
-        
+
         /**
          * Refresh the map and selected task on error
          * @param projectId
@@ -831,7 +855,7 @@
                 vm.isAuthorized = false;
             }
             // User has not accepted the license terms
-            else if (error.status == 409){
+            else if (error.status == 409) {
                 vm.isAuthorized = true;
                 vm.hasAcceptedLicenseTerms = false;
                 // call the API to get the license terms
@@ -840,7 +864,7 @@
                     // On success
                     vm.license = data;
                     vm.showLicenseModal = true;
-                }, function(){
+                }, function () {
                     // On error
                 });
             }
@@ -1009,14 +1033,14 @@
          * Search for a user
          * @param searchValue
          */
-        vm.searchUser = function(search) {
+        vm.searchUser = function (search) {
             // Search for a user by calling the API
             var resultsPromise = userService.searchUser(search);
             return resultsPromise.then(function (data) {
                 // On success
                 vm.usernames = [];
-                if (data.usernames){
-                    for (var i = 0; i < data.usernames.length; i++){
+                if (data.usernames) {
+                    for (var i = 0; i < data.usernames.length; i++) {
                         vm.usernames.push({'label': data.usernames[i]});
                     }
                 }
