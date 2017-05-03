@@ -13,8 +13,15 @@ class MessageServiceError(Exception):
 class MessageService:
 
     @staticmethod
-    def send_message_after_validation():
-        pass
+    def send_message_after_validation(validated_by: int, mapped_by: int, task_id: int):
+        """ Sends mapper a thank you, after their task has been marked as valid """
+        validation_message = Message()
+        validation_message.from_user_id = validated_by
+        validation_message.to_user_id = mapped_by
+        # TODO add hyperlink to subject for task
+        validation_message.subject = 'The task you mapped you has just been validated'
+        validation_message.message = 'Hi \n I just validated your mapping.\n\n Awesome work! \n\n Keep mapping and hope to see you soon'
+        validation_message.add_message()
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):

@@ -4,6 +4,7 @@ from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterVa
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.statuses import ValidatingNotAllowed
 from server.models.postgis.utils import NotFound, UserLicenseError
+from server.services.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
 
@@ -86,8 +87,15 @@ class ValidatorService:
         dtos = []
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock['task']
+
+            if task_to_unlock['new_state'] == TaskStatus.VALIDATED:
+                # All mappers get a thankyou if their task has been validated :)
+                MessageService.send_message_after_validation(validated_dto.user_id, task.mapped_by, task.id)
+
             StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
                                                               task_to_unlock['new_state'], task.id)
+
+
             task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'])
 
             dtos.append(task.as_dto())
