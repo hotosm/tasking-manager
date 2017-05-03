@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService) {
         var vm = this;
         vm.currentSection = '';
         vm.editForm = {};
@@ -366,6 +366,36 @@
                 vm.validateTasksFail = true;
                 vm.validateTasksSuccess = false;
                 vm.validateInProgress = false;
+            })
+        };
+
+        /**
+         * Set the show message contributors modal to visible/invisible
+         */
+        vm.showMessageContributors = function(showModal){
+            vm.showMessageContributorsModal = showModal;
+        };
+
+        /**
+         * Send a message to all users on this project
+         * @param subject
+         * @param message
+         */
+        vm.sendMessage = function(subject, message){
+            vm.sendMessageInProgress = true;
+            vm.sendMessageFail = false;
+            vm.sendMessageSuccess = false;
+            var resultsPromise = messageService.messageAll(vm.project.projectId, subject, message);
+            resultsPromise.then(function(){
+                // Tasks validated successfully
+                vm.sendMessageFail = false;
+                vm.sendMessageSuccess = true;
+                vm.sendMessageInProgress = false;
+            }, function(){
+                // Tasks not validated successfully
+                vm.sendMessageFail = true;
+                vm.sendMessageSuccess = false;
+                vm.sendMessageInProgress = false;
             })
         };
 
@@ -740,7 +770,7 @@
         }
 
          /**
-         * Set organisation tags
+         * Set organisaion tags
          */
         function setOrganisationTags() {
             var resultsPromise = tagService.getOrganisationTags();
