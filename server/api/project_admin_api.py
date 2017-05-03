@@ -475,3 +475,53 @@ class ProjectsForAdminAPI(Resource):
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class ProjectsMessageAll(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Send message to all contributors to a project
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                  properties:
+                      subject:
+                          type: string
+                          default: Thanks 
+                          required: true
+                      message:
+                          type: string
+                          default: Thanks for your contribution
+                          required: true
+        responses:
+            200:
+                description: All mapped tasks validated
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        pass

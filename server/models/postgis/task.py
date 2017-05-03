@@ -253,14 +253,9 @@ class Task(db.Model):
 
         if new_state == TaskStatus.MAPPED and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
             # Don't set mapped if state being set back to mapped after validation
-            # TODO +1 user count
             self.mapped_by = user_id
         elif new_state == TaskStatus.VALIDATED:
-            # TODO +1 user count
             self.validated_by = user_id
-        elif new_state == TaskStatus.INVALIDATED:
-            # TODO +1 user count
-            pass
 
         # Using a slightly evil side effect of Actions and Statuses having the same name here :)
         TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
