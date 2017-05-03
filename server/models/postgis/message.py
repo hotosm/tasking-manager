@@ -2,6 +2,7 @@ from server import db
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.postgis.user import User
 from server.models.postgis.utils import timestamp
+from server.models.postgis.utils import NotFound
 
 
 class Message(db.Model):
@@ -55,10 +56,13 @@ class Message(db.Model):
         """ Gets all messages to the user """
         user_messages = Message.query.filter(Message.to_user_id == user_id).all()
 
+        if len(user_messages) == 0:
+            raise NotFound()
+
         messages_dto = MessagesDTO()
         for message in user_messages:
             dto = MessageDTO()
-            dto.message = message.message
+            dto.message_id = message.id
             dto.subject = message.subject
             dto.sent_date = message.date
             dto.read = message.read
