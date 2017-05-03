@@ -1,6 +1,7 @@
 import unittest
 from server.services.grid_service import GridService
 from server.models.dtos.grid_dto import GridDTO
+from server.models.dtos.project_dto import DraftProjectDTO
 from tests.server.helpers.test_helpers import get_canned_json
 import geojson
 import json
@@ -45,7 +46,6 @@ class TestGridService(unittest.TestCase):
 
         # act
         result = GridService.trim_grid_to_aoi(grid_dto)
-        print(result)
 
         # assert
         self.assertEquals(str(expected), str(result))
@@ -73,6 +73,32 @@ class TestGridService(unittest.TestCase):
         # act
 
         result = GridService.tasks_from_aoi_features(grid_dto.area_of_interest)
+        # assert
+        self.assertEquals(str(expected), str(result))
+
+    def test_feature_collection_multi_polygon_with_zcoord_nodissolve(self):
+        # arrange
+        project_json = get_canned_json('canned_kml_project.json')
+        project_dto = DraftProjectDTO(project_json)
+        expected = geojson.loads(json.dumps(get_canned_json('2d_multi_polygon.json')))
+        aoi_geojson = geojson.loads(json.dumps(project_dto.area_of_interest))
+
+        # act
+        result = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=False)
+
+        # assert
+        self.assertEquals(str(expected), str(result))
+
+    def test_feature_collection_multi_polygon_with_zcoord_dissolve(self):
+        # arrange
+        project_json = get_canned_json('canned_kml_project.json')
+        project_dto = DraftProjectDTO(project_json)
+        expected = geojson.loads(json.dumps(get_canned_json('2d_multi_polygon.json')))
+        aoi_geojson = geojson.loads(json.dumps(project_dto.area_of_interest))
+
+        # act
+        result = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
+
         # assert
         self.assertEquals(str(expected), str(result))
 
