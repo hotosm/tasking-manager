@@ -7,6 +7,9 @@
         <button class="button button--achromic drop__toggle drop__toggle--caret" type="button"
             ng-click="accountNavCtrl.showDropdown = !accountNavCtrl.showDropdown">
             <span>{{ accountNavCtrl.account.username }}</span>
+            <span class="badge" ng-show="accountNavCtrl.userMessages.newMessages">
+                {{ accountNavCtrl.userMessages.unread }}
+            </span>
         </button>
         <div ng-show="accountNavCtrl.showDropdown" class="drop__content">
             <ul class="drop__menu drop__menu--iconified" role="menu">

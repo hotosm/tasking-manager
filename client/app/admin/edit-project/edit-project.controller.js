@@ -770,7 +770,7 @@
         }
 
          /**
-         * Set organisaion tags
+         * Set organisation tags
          */
         function setOrganisationTags() {
             var resultsPromise = tagService.getOrganisationTags();

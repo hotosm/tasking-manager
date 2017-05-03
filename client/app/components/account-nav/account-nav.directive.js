@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('accountNavController', ['$scope','$location','accountService','authService', accountNavController])
+        .controller('accountNavController', ['$scope','$location', '$interval', 'accountService','authService', 'messageService', accountNavController])
         .directive('accountNav', accountNavDirective);
 
     /**
@@ -30,16 +30,26 @@
         return directive;
     }
 
-    function accountNavController($scope, $location, accountService, authService) {
+    function accountNavController($scope, $location, $interval, accountService, authService, messageService) {
         
         var vm = this;
         vm.account = {};
         vm.showDropdown = false;
+        vm.userMessages = null;
 
         // Watch the accountService for changes and update when needed
         $scope.$watch(function(){ return accountService.getAccount();}, function(account){
             vm.account = account;
         }, true);
+
+        activate();
+
+        function activate() {
+            //start up a timer for autorefreshing the user messages.
+            $interval(function () {
+                checkIfUserHasMessages();
+            }, 30000);
+        }
 
         /**
          * Login by going to OpenStreetMap
@@ -96,5 +106,19 @@
             $location.path('admin/users');
             vm.showDropdown = false;
         };
+
+        /**
+         * Check if the user has new messages
+         */
+        function checkIfUserHasMessages(){
+            var resultsPromise = messageService.hasNewMessages();
+            resultsPromise.then(function (data) {
+                // Return the projects successfully
+                vm.userMessages = data;
+                console.log(vm.userMessages);
+            }, function(){
+                // an error occurred
+            });
+        }
     }
 })();
