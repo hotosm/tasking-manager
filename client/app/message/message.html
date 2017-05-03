@@ -1,0 +1,23 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    Message (TODO)
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <h3>{{ messageCtrl.message.subject }}</h3>
+                    <p>From: <a ng-href="user/{{ messageCtrl.message.username }}">{{ messageCtrl.message.username }}</a></p>
+                    <p><em am-time-ago="message.date | amUtc | amLocal"></em></p>
+                    <div>
+                        <p>{{ messageCtrl.message.message }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -123,6 +123,18 @@
                     templateUrl: 'app/admin/users/users.html',
                     controller: 'usersController',
                     controllerAs: 'usersCtrl'
+                })
+            
+                .when('/inbox', {
+                    templateUrl: 'app/message/inbox.html',
+                    controller: 'inboxController',
+                    controllerAs: 'inboxCtrl'
+                })
+
+                .when('/message/:id', {
+                    templateUrl: 'app/message/message.html',
+                    controller: 'messageController',
+                    controllerAs: 'messageCtrl'
                 });
             
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them

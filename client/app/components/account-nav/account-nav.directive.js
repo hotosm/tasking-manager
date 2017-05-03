@@ -31,14 +31,16 @@
     }
 
     function accountNavController($scope, $location, $interval, accountService, authService, messageService) {
-        
+
         var vm = this;
         vm.account = {};
         vm.showDropdown = false;
         vm.userMessages = null;
 
         // Watch the accountService for changes and update when needed
-        $scope.$watch(function(){ return accountService.getAccount();}, function(account){
+        $scope.$watch(function () {
+            return accountService.getAccount();
+        }, function (account) {
             vm.account = account;
         }, true);
 
@@ -54,14 +56,14 @@
         /**
          * Login by going to OpenStreetMap
          */
-        vm.login = function(){
+        vm.login = function () {
             authService.login();
         };
-        
+
         /**
          * Log the user out by resetting the local storage ('cookies')
          */
-        vm.logout = function(){
+        vm.logout = function () {
             authService.logout();
             $location.path('/');
             vm.showDropdown = false;
@@ -70,7 +72,7 @@
         /**
          * Navigate to the user's profile
          */
-        vm.goToProfile = function(){
+        vm.goToProfile = function () {
             $location.path('user/' + vm.account.username);
             vm.showDropdown = false;
         };
@@ -78,7 +80,7 @@
         /**
          * Navigate to the create project page
          */
-        vm.goToCreateNewProject = function(){
+        vm.goToCreateNewProject = function () {
             $location.path('admin/create-project');
             vm.showDropdown = false;
         };
@@ -86,7 +88,7 @@
         /**
          * Navigate to the licence management page
          */
-        vm.goToManageLicenses = function(){
+        vm.goToManageLicenses = function () {
             $location.path('admin/licenses');
             vm.showDropdown = false;
         };
@@ -94,7 +96,7 @@
         /**
          * Navigate to the project dashboard page
          */
-        vm.goToProjectDashboard = function(){
+        vm.goToProjectDashboard = function () {
             $location.path('admin/dashboard');
             vm.showDropdown = false;
         };
@@ -102,21 +104,28 @@
         /**
          * Navigate to the user list page
          */
-        vm.goToUserList = function(){
+        vm.goToUserList = function () {
             $location.path('admin/users');
+            vm.showDropdown = false;
+        };
+        
+        /**
+         * Go to the messages page
+         */
+        vm.goToMessages = function () {
+            $location.path('inbox');
             vm.showDropdown = false;
         };
 
         /**
          * Check if the user has new messages
          */
-        function checkIfUserHasMessages(){
+        function checkIfUserHasMessages() {
             var resultsPromise = messageService.hasNewMessages();
             resultsPromise.then(function (data) {
                 // Return the projects successfully
                 vm.userMessages = data;
-                console.log(vm.userMessages);
-            }, function(){
+            }, function () {
                 // an error occurred
             });
         }
