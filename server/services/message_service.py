@@ -1,3 +1,4 @@
+from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message
 
 
@@ -8,8 +9,8 @@ class MessageService:
         pass
 
     @staticmethod
-    def send_message_to_all_contributors(subject: str, message: str, from_user: str):
-        pass
+    def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
+        Message.send_message_to_all_contributors(project_id, message_dto)
 
     @staticmethod
     def send_message_after_comment():
