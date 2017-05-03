@@ -7,6 +7,7 @@ from server.services.validator_service import ValidatorService, NotFound, Valida
 
 class LockTasksForValidationAPI(Resource):
 
+    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -83,6 +84,7 @@ class LockTasksForValidationAPI(Resource):
 
 class UnlockTasksAfterValidationAPI(Resource):
 
+    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
         """

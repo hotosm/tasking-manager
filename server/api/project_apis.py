@@ -121,6 +121,7 @@ class ProjectSearchAPI(Resource):
 
 class HasUserTaskOnProject(Resource):
 
+    @tm.pm_only(False)
     @token_auth.login_required
     def get(self, project_id):
         """
