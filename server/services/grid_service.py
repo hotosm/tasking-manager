@@ -159,12 +159,13 @@ class GridService:
 
         return geom2d
 
-    def _to_2d(x, y, z=None):
+    def _to_2d(x: tuple, y:tuple, z:tuple=None) -> tuple:
         """
-        helper function which can be used when stripping z-coord from a geometry to make it 2D
-        :param y:
-        :param z:
-        :return:
+        Helper method that can be used to strip out the z-coords from a shapely geometry
+        :param x: tuple containing tuple of x coords
+        :param y: tuple containing tuple of y coords
+        :param z: tuple containing tuple of z coords
+        :return: tuple of containing tuple of x coords and tuple of y coords
         """
         return tuple(filter(None, [x, y]))
 
