@@ -251,6 +251,7 @@
                                               placeholder="Leave a comment"
                                               mentio-typed-text="typedTerm"
                                               mentio-search="projectCtrl.searchUser(term)"
+                                              mentio-select="projectCtrl.formatUserTag(item)"
                                               mentio-items="projectCtrl.usernames | filter:label:typedTerm"
                                               ng-model="projectCtrl.comment"></textarea>
                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
@@ -499,6 +500,7 @@
                                               placeholder="Leave a comment"
                                               mentio-typed-text="typedTerm"
                                               mentio-search="projectCtrl.searchUser(term)"
+                                              mentio-select="projectCtrl.formatUserTag(item)"
                                               mentio-items="projectCtrl.usernames | filter:label:typedTerm"
                                               ng-model="projectCtrl.comment"></textarea>
                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
@@ -583,6 +585,7 @@
                                               placeholder="Leave a comment"
                                               mentio-typed-text="typedTerm"
                                               mentio-search="projectCtrl.searchUser(term)"
+                                              mentio-select="projectCtrl.formatUserTag(item)"
                                               mentio-items="projectCtrl.usernames | filter:label:typedTerm"
                                               ng-model="projectCtrl.comment"></textarea>
                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}

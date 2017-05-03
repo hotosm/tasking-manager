@@ -1025,6 +1025,16 @@
                 // On error
             });
         };
+
+        /**
+         * Formats the user tag
+         * @param item
+         */
+        vm.formatUserTag = function(item){
+            // Format the user tag by wrapping into brackets so it is easier to detect that it is a username
+            // especially when there are spaces in the username
+            return '@[' + item.label + ']';
+        }
     }
 })
 ();
