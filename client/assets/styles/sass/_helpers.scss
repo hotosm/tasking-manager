@@ -33,6 +33,9 @@ hr {
   background-color: rgba($base-color, 0.1);
 }
 
+.tr-darker {
+  background-color: rgba($base-color, 0.1);
+}
 
 .pagination {
     list-style: none;
@@ -127,4 +130,20 @@ hr {
   text-decoration: none;
   background-color: $primary-color;
   outline: 0;
+}
+
+/** Bootstrap's badge class **/
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 0px 7px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: $base-color;
+  border-radius: 10px;
 }

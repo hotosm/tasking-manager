@@ -1,0 +1,15 @@
+.unread-messages-popover {
+  position: absolute;
+  z-index: 1000;
+  width: 11rem;
+  margin: 0;
+  padding: 1rem;
+  overflow: hidden;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.5;
+  background: #fff;
+  box-shadow: 0 2px 12px 2px rgba(34, 10, 10, 0.12), 0 0 0 1px rgba(34, 10, 10, 0.12);
+  border-radius: 0.25rem;
+  transition: opacity 0.16s ease 0s, margin 0.16s ease 0s, visibility 0.16s linear 0s;
+}

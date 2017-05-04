@@ -370,6 +370,36 @@
         };
 
         /**
+         * Set the show message contributors modal to visible/invisible
+         */
+        vm.showMessageContributors = function(showModal){
+            vm.showMessageContributors = showModal;
+        };
+
+        /**
+         * Send a message to all users on this project
+         * @param subject
+         * @param message
+         */
+        vm.sendMessage = function(subject, message){
+            vm.sendMessageInProgress = true;
+            vm.sendMessageFail = false;
+            vm.sendMessageSuccess = false;
+            var resultsPromise = projectService.validateAllTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks validated successfully
+                vm.sendMessageFail = false;
+                vm.validateTasksSuccess = true;
+                vm.sendMessageInProgress = false;
+            }, function(){
+                // Tasks not validated successfully
+                vm.validateTasksFail = true;
+                vm.validateTasksSuccess = false;
+                vm.sendMessageInProgress = false;
+            })
+        };
+
+        /**
          * Get organisation tags
          * @returns {Array|*}
          */

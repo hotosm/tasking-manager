@@ -444,9 +444,12 @@
                         <div ng-show="editProjectCtrl.currentSection === 'actions'">
                             <fieldset class="form__fieldset">
                                 <div class="form__group">
-                                    <label class="form__label">Message all contributors (TODO)</label>
+                                    <label class="form__label">Message all contributors</label>
                                     <div>
-                                        <button class="button button--secondary" type="button">Message all contributors</button>
+                                        <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.showMessageContributors(true)">
+                                            Message all contributors
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="form__group">
@@ -664,3 +667,53 @@
     </button>
 </section>
 <!-- validate tasks confirmation modal -->
+
+<!-- message contributors modal -->
+<section class="modal modal-tm" ng-show="editProjectCtrl.showMessageContributorsModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">Message all contributors</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div ng-hide="editProjectCtrl.validateTasksSuccess">
+                <p>
+                    This will send a Tasking Manager message to every contributor of the current project. Please use
+                    this feature conservatively.
+                </p>
+                <input type="text" class="form__control" ng-model="messageSubject" placeholder="Subject" />
+                <textarea class="form__control" rows="4" ng-model="messageContent" placeholder="Message"></textarea>
+                <p>
+                    This message does not automatically translate, so you may want to include your own translations.
+                </p>
+            </div>
+            <p ng-show="editProjectCtrl.sendMessageSuccess">
+                Contributors were messaged successfully.
+            </p>
+            <p ng-show="editProjectCtrl.sendMessageFail" class="error">
+                Contributors were not messaged successfully.
+            </p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="editProjectCtrl.sendMessageSuccess">
+                <button class="button button--achromic" type="button"
+                        ng-click="editProjectCtrl.showMessageContributors(false)">Cancel
+                </button>
+                <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.sendMessage(messageSubject, messageContent)">Message all contributors
+                </button>
+                <span ng-show="editProjectCtrl.sendMessageInProgress">Sending...</span>
+            </div>
+            <div ng-show="editProjectCtrl.sendMessageSuccess">
+                 <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.showMessageContributors(false)">Close message
+                </button>
+            </div>
+        </footer>
+    </div>
+    <button class="modal__button-dismiss" title="Close" ng-click="editProjectCtrl.showMessageContributors(false)">
+        Dismiss
+    </button>
+</section>
+<!-- message contributors modal -->
