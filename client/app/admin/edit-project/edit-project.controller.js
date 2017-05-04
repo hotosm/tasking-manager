@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService) {
+    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService) {
         var vm = this;
         vm.currentSection = '';
         vm.editForm = {};
@@ -373,7 +373,7 @@
          * Set the show message contributors modal to visible/invisible
          */
         vm.showMessageContributors = function(showModal){
-            vm.showMessageContributorsModal = showModal;
+            vm.showMessageContributors = showModal;
         };
 
         /**
@@ -385,16 +385,16 @@
             vm.sendMessageInProgress = true;
             vm.sendMessageFail = false;
             vm.sendMessageSuccess = false;
-            var resultsPromise = messageService.messageAll(vm.project.projectId, subject, message);
+            var resultsPromise = projectService.validateAllTasks(vm.project.projectId);
             resultsPromise.then(function(){
                 // Tasks validated successfully
                 vm.sendMessageFail = false;
-                vm.sendMessageSuccess = true;
+                vm.validateTasksSuccess = true;
                 vm.sendMessageInProgress = false;
             }, function(){
                 // Tasks not validated successfully
-                vm.sendMessageFail = true;
-                vm.sendMessageSuccess = false;
+                vm.validateTasksFail = true;
+                vm.validateTasksSuccess = false;
                 vm.sendMessageInProgress = false;
             })
         };

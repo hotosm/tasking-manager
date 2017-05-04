@@ -27,7 +27,7 @@
                                     <a ng-href="user/{{ message.fromUsername }}">{{ message.fromUsername }}</a>
                                 </td>
                                 <td>
-                                    <a ng-href="message/{{ message.messageId }}">{{ message.subject }}</a>
+                                    <a ng-href="message/{{ message.messageId }}" ng-bind-html="message.subject"></a>
                                 </td>
                                 <td>
                                     <span am-time-ago="message.sentDate | amUtc | amLocal"></span>

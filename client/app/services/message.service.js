@@ -15,7 +15,8 @@
             hasNewMessages: hasNewMessages,
             getAllMessages: getAllMessages,
             getMessage: getMessage,
-            deleteMessage: deleteMessage
+            deleteMessage: deleteMessage,
+            formatUserNamesToLink: formatUserNamesToLink
         };
 
         return service;
@@ -129,6 +130,26 @@
                 // or server returns response with an error status.
                 return $q.reject("error");
             });
+        }
+
+        /**
+         * Format user names to link to user profile
+         * @param text
+         */
+        function formatUserNamesToLink(text){
+            var regex = /@\[([^\]]+)\]/gi;
+            // Find usernames with a regular expression. They all start with '[@' and end with ']'
+            var usernames = text.match(regex);
+            if (usernames) {
+                for (var i = 0; i < usernames.length; i++) {
+                    // Strip off the first two characters: '@['
+                    var username = usernames[i].substring(2, usernames[i].length);
+                    // Strip off the last character
+                    username = username.substring(0, username.length - 1);
+                    text = text.replace(usernames[i], '<a href="/user/' + username + '">' + username + '</a>');
+                }
+            }
+            return text;
         }
     }
 })();

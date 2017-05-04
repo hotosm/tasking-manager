@@ -10,11 +10,11 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <h3>{{ messageCtrl.message.subject }}</h3>
+                    <h3 ng-bind-html="messageCtrl.message.subject"></h3>
                     <p>From: <a ng-href="user/{{ messageCtrl.message.fromUsername }}">{{ messageCtrl.message.fromUsername }}</a></p>
                     <p><em am-time-ago="messageCtrl.message.sentDate | amUtc | amLocal"></em></p>
                     <div>
-                        <p>{{ messageCtrl.message.message }}</p>
+                        <p ng-bind-html="messageCtrl.message.message"></p>
                     </div>
                 </div>
             </div>

@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', projectController]);
+        .controller('projectController', ['$interval', '$scope', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', 'messageService', projectController]);
 
-    function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService) {
+    function projectController($interval, $scope, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService) {
         var vm = this;
         vm.id = 0;
         vm.projectData = null;
@@ -474,6 +474,14 @@
             vm.isSelectedMappable = (isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
             vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED');
             vm.selectedTaskData = data;
+
+            // Format the comments by adding links to the usernames
+            var history = vm.selectedTaskData.taskHistory;
+            if (history) {
+                for (var i = 0; i < history.length; i++){
+                    history[i].actionText = messageService.formatUserNamesToLink(history[i].actionText);
+                }
+            }
 
             //jump to locked step if mappable and locked by me
             if (isLockedByMeMapping) {
