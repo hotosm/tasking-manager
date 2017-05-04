@@ -6,6 +6,7 @@ from geoalchemy2 import Geometry
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSearchResultDTO, \
     ProjectSearchResultsDTO, ProjectSummary, PMDashboardDTO
+from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
 from server.models.postgis.tags import Tags
@@ -101,6 +102,7 @@ class Project(db.Model):
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
     author = db.relationship(User)
     allowed_users = db.relationship(User, secondary=project_allowed_users)
+    priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas)
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO, aoi: AreaOfInterest):
         """
