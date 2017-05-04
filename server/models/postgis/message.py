@@ -63,6 +63,11 @@ class Message(db.Model):
 
         db.session.commit()
 
+    def mark_as_read(self):
+        """ Mark the message in scope as Read """
+        self.read = True
+        db.session.commit()
+
     @staticmethod
     def get_unread_message_count(user_id: int):
         """ Get count of unread messages for user """
