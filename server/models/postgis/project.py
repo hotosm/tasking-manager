@@ -186,10 +186,12 @@ class Project(db.Model):
             else:
                 project_info.update_from_dto(dto)
 
+        # TODO handle removal of existing relationships on PAs
         if project_dto.priority_areas:
             self.priority_areas = []  # Clear existing relationships then re-insert
             for priority_area in project_dto.priority_areas:
-                iain = priority_area
+                pa = PriorityArea.from_dict(priority_area)
+                self.priority_areas.append(pa)
 
         db.session.commit()
 

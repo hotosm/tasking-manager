@@ -248,6 +248,8 @@ class ProjectAdminAPI(Resource):
         try:
             ProjectAdminService.update_project(project_dto)
             return {"Status": "Updated"}, 200
+        except InvalidGeoJson as e:
+            return {"Invalid GeoJson": str(e)}, 400
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except ProjectAdminServiceError as e:
