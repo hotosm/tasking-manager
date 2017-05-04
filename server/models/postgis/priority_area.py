@@ -37,5 +37,6 @@ class PriorityArea(db.Model):
         return pa
 
     def get_as_geojson(self):
+        """ Helper to translate geometry back to a GEOJson Poly"""
         pa_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
         return geojson.loads(pa_geojson)
