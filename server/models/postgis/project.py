@@ -313,6 +313,13 @@ class Project(db.Model):
 
             base_dto.mapping_types = mapping_types
 
+        if project.priority_areas:
+            geojson_areas = []
+            for priority_area in project.priority_areas:
+                geojson_areas.append(priority_area.get_as_geojson())
+
+            base_dto.priority_areas = geojson_areas
+
         return project, base_dto
 
     def as_dto_for_mapping(self, locale: str) -> Optional[ProjectDTO]:
