@@ -209,11 +209,6 @@ class Project(db.Model):
 
         return locked_tasks
 
-    def auto_unlock_tasks(self):
-        # get locked tasks on project
-        tasks = self.tasks.filter(Task.task_status.in_([TaskStatus.LOCKED_FOR_MAPPING.value, TaskStatus.LOCKED_FOR_VALIDATION.value ]),)
-        pass
-
     @staticmethod
     def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
         """ Get projects for admin """
