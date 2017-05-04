@@ -102,7 +102,8 @@ class Project(db.Model):
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
     author = db.relationship(User)
     allowed_users = db.relationship(User, secondary=project_allowed_users)
-    priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas)
+    priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
+                                     single_parent=True)
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO, aoi: AreaOfInterest):
         """
@@ -186,9 +187,8 @@ class Project(db.Model):
             else:
                 project_info.update_from_dto(dto)
 
-        # TODO handle removal of existing relationships on PAs
+        self.priority_areas = []  # Always clear Priority Area prior to updating
         if project_dto.priority_areas:
-            self.priority_areas = []  # Clear existing relationships then re-insert
             for priority_area in project_dto.priority_areas:
                 pa = PriorityArea.from_dict(priority_area)
                 self.priority_areas.append(pa)
