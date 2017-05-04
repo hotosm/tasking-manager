@@ -206,7 +206,7 @@ class Task(db.Model):
              and t.task_status in (1,3)
              and th.action in ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
              and th.action_text is null
-             and th.action_date <= current_timestamp - INTERVAL '2 days' '''.format(project_id)
+             and th.action_date <= current_timestamp - INTERVAL '2 hours' '''.format(project_id)
 
         old_tasks = db.engine.execute(old_locks_query)
 
