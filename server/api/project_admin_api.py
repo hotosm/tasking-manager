@@ -215,6 +215,11 @@ class ProjectAdminAPI(Resource):
                           items:
                               type: string
                           default: ["Iain Hunter", LindaA1]
+                      priorityAreas:
+                          type: array
+                          items:
+                              schema:
+                                  $ref: "#/definitions/GeoJsonPolygon"
                       projectInfoLocales:
                           type: array
                           items:

@@ -186,6 +186,11 @@ class Project(db.Model):
             else:
                 project_info.update_from_dto(dto)
 
+        if project_dto.priority_areas:
+            self.priority_areas = []  # Clear existing relationships then re-insert
+            for priority_area in project_dto.priority_areas:
+                iain = priority_area
+
         db.session.commit()
 
     def delete(self):

@@ -83,6 +83,7 @@ class ProjectDTO(Model):
     organisation_tag = StringType(serialized_name='organisationTag')
     license_id = IntType(serialized_name='licenseId')
     allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames', default=[])
+    priority_areas = BaseType(serialized_name='priorityAreas')
 
 
 class ProjectSearchDTO(Model):
