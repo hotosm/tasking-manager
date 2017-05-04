@@ -18,6 +18,9 @@ class MessageService:
     @staticmethod
     def send_message_after_validation(validated_by: int, mapped_by: int, task_id: int):
         """ Sends mapper a thank you, after their task has been marked as valid """
+        if validated_by == mapped_by:
+            return  # No need to send a thankyou to yourself
+
         validation_message = Message()
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
@@ -100,7 +103,9 @@ class MessageService:
 
     @staticmethod
     def get_message_as_dto(message_id: int, user_id: int):
+        """ Gets the selected message and marks it as read """
         message = MessageService.get_message(message_id, user_id)
+        message.mark_as_read()
         return message.as_dto()
 
     @staticmethod
