@@ -16,17 +16,18 @@ class MessageServiceError(Exception):
 class MessageService:
 
     @staticmethod
-    def send_message_after_validation(validated_by: int, mapped_by: int, task_id: int):
+    def send_message_after_validation(validated_by: int, mapped_by: int, task_id: int, project_id: int):
         """ Sends mapper a thank you, after their task has been marked as valid """
         if validated_by == mapped_by:
             return  # No need to send a thankyou to yourself
 
+        task_link = MessageService.get_task_link(project_id, task_id)
+
         validation_message = Message()
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        # TODO add hyperlink to subject for task
-        validation_message.subject = 'The task you mapped you has just been validated'
-        validation_message.message = 'Hi \n I just validated your mapping.\n\n Awesome work! \n\n Keep mapping and hope to see you soon'
+        validation_message.subject = f'Tasking Manager {task_link} that you mapped you has just been validated'
+        validation_message.message = f'Hi \n I just validated your mapping on {task_link}.\n\n Awesome work! \n\n Keep mapping and hope to see you soon'
         validation_message.add_message()
 
     @staticmethod
@@ -35,13 +36,14 @@ class MessageService:
         Message.send_message_to_all_contributors(project_id, message_dto)
 
     @staticmethod
-    def send_message_after_comment(comment_from: int, comment: str, task_id: int):
+    def send_message_after_comment(comment_from: int, comment: str, task_id: int, project_id :int):
         """ Will send a canned message to anyone @'d in a comment """
         usernames = MessageService._parse_comment_for_username(comment)
 
         if len(usernames) == 0:
             return  # Nobody @'d so return
 
+        link = MessageService.get_task_link(project_id, task_id)
         for username in usernames:
 
             try:
@@ -52,9 +54,8 @@ class MessageService:
             message = Message()
             message.from_user_id = comment_from
             message.to_user_id = user.id
-            # TODO add hyperlink
-            message.subject = 'You were mentioned in a comment on Task'
-            message.message = 'You were mentioned in a comment on Task'
+            message.subject = f'You were mentioned in a comment on {link}'
+            message.message = comment
             message.add_message()
 
     @staticmethod
@@ -113,3 +114,12 @@ class MessageService:
         """ Deletes the specified message """
         message = MessageService.get_message(message_id, user_id)
         message.delete()
+
+    @staticmethod
+    def get_task_link(project_id: int, task_id: int, base_url=None) -> str:
+        """ Helper method that generates a link to the task """
+        if not base_url:
+            base_url = current_app.config['APP_BASE_URL']
+
+        link = f'<a href="{base_url}/project/{project_id}/?task={task_id}">Task {task_id}</a>'
+        return link

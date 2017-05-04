@@ -90,15 +90,16 @@ class ValidatorService:
 
             if task_to_unlock['comment']:
                 # Parses comment to see if any users have been @'d
-                MessageService.send_message_after_comment(validated_dto.user_id, task_to_unlock['comment'], task.id)
+                MessageService.send_message_after_comment(validated_dto.user_id, task_to_unlock['comment'], task.id,
+                                                          validated_dto.project_id)
 
             if task_to_unlock['new_state'] == TaskStatus.VALIDATED:
                 # All mappers get a thankyou if their task has been validated :)
-                MessageService.send_message_after_validation(validated_dto.user_id, task.mapped_by, task.id)
+                MessageService.send_message_after_validation(validated_dto.user_id, task.mapped_by, task.id,
+                                                             validated_dto.project_id)
 
             StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
                                                               task_to_unlock['new_state'], task.id)
-
 
             task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'])
 
