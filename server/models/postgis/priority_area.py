@@ -35,3 +35,7 @@ class PriorityArea(db.Model):
         valid_geojson = geojson.dumps(pa_geojson)
         pa.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         return pa
+
+    def get_as_geojson(self):
+        pa_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
+        return geojson.loads(pa_geojson)
