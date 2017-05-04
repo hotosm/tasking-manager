@@ -6,7 +6,7 @@ from server.models.postgis.utils import NotFound
 
 
 class Message(db.Model):
-    """ Describes an individual mapping Task """
+    """ Describes an individual Message a user can send """
     __tablename__ = "messages"
 
     id = db.Column(db.Integer, primary_key=True)

@@ -17,6 +17,17 @@ class SwaggerDocsAPI(Resource):
           - docs
         definitions:
             - schema:
+                id: GeoJsonPolygon
+                properties:
+                    type:
+                        type: string
+                        default: Polygon
+                    coordinates:
+                        type: array
+                        items:
+                            type: number
+                            default: [[-4.0237,56.0904],[-3.9111,56.1715],[-3.8122,56.0980],[-4.0237,56.0904]]
+            - schema:
                 id: GeoJsonMultiPolygon
                 properties:
                     type:
