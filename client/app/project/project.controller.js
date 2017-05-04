@@ -284,8 +284,9 @@
                     vm.highlightVectorLayer.getSource().clear();
                 }
 
-                if ($routeParams.taskId) {
-                    selectTaskById($routeParams.taskId)
+
+                if ($location.search().task) {
+                    selectTaskById($location.search().task);
                 }
             }, function () {
                 // project not returned successfully
@@ -334,7 +335,7 @@
          */
         function selectTaskById(taskId) {
             //select task on map if id provided in url
-            var task = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), $routeParams.taskId);
+            var task = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), taskId);
             if (task) {
                 selectFeature(task);
                 var padding = getPaddingSize();
@@ -510,8 +511,9 @@
                 vm.validatingStep = 'viewing';
             }
 
-            //update taskURL to allow task bookmarking
-            vm.taskUrl = $location.absUrl() + ($routeParams.taskId?'':'/'+data.taskId);
+            //update browser address bar with task id search params
+            $location.search('task', data.taskId);
+
 
         }
 
