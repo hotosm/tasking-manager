@@ -56,6 +56,11 @@ class TaskHistory(db.Model):
         self.action = TaskAction.STATE_CHANGE.name
         self.action_text = new_state.name
 
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
     @staticmethod
     def update_task_locked_with_duration(task_id, project_id, lock_action):
         """
@@ -105,7 +110,17 @@ class TaskHistory(db.Model):
                     TaskHistory.action == TaskAction.STATE_CHANGE.name) \
             .order_by(TaskHistory.action_date.desc()).first()
 
+        if result == None:
+            return TaskStatus.READY
+
         return TaskStatus[result[0]]
+
+    @staticmethod
+    def get_last_action(project_id: int, task_id: int):
+        """Get the last action on the task"""
+        return TaskHistory.query.filter(TaskHistory.project_id == project_id,
+                                 TaskHistory.task_id == task_id) \
+            .order_by(TaskHistory.action_date.desc()).first()
 
 
 class Task(db.Model):
@@ -179,6 +194,29 @@ class Task(db.Model):
         """ Get all tasks that match supplied list """
         return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids))
 
+    @staticmethod
+    def auto_unlock_tasks(project_id: int):
+        """Unlock all tasks locked more than 2 hours ago"""
+        old_locks_query = '''select t.id
+             from tasks t,
+                  task_history th
+             where t.project_id = {0}
+             and t.id = th.task_id
+             and t.project_id = th.project_id
+             and t.task_status in (1,3)
+             and th.action in ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
+             and th.action_text is null
+             and th.action_date <= current_timestamp - INTERVAL '2 days' '''.format(project_id)
+
+        old_tasks = db.engine.execute(old_locks_query)
+
+        if old_tasks.rowcount == 0:
+            return
+
+        for old_task in old_tasks:
+            task = Task.get(old_task[0], project_id)
+            task.clear_task_lock()
+
     def is_mappable(self):
         """ Determines if task in scope is in suitable state for mapping """
         if TaskStatus(self.task_status) not in [TaskStatus.READY, TaskStatus.INVALIDATED, TaskStatus.BADIMAGERY]:
@@ -221,6 +259,16 @@ class Task(db.Model):
         self.task_status = TaskStatus.LOCKED_FOR_VALIDATION.value
         self.locked_by = user_id
         self.update()
+
+    def clear_task_lock(self):
+        # update the task record
+        self.locked_by = None
+        self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
+        self.update()
+
+        # clear the task history item
+        last_action = TaskHistory.get_last_action(self.project_id, self.id)
+        last_action.delete();
 
     @staticmethod
     def invalidate_all(project_id: int, user_id: int):
@@ -279,7 +327,7 @@ class Task(db.Model):
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
             task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskSplittable=task.splittable,taskStatus=TaskStatus(task.task_status).name)
+                                   taskSplittable=task.splittable, taskStatus=TaskStatus(task.task_status).name)
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
             tasks_features.append(feature)
 
