@@ -157,6 +157,7 @@ INSERT INTO hotnew.task_history(
 	from hotold.task_comment tc
 	where author_id is not null
 	and exists(select id from hotnew.tasks t where t.project_id = tc.project_id and t.id = tc.task_id ));
+
 	
 -- Update USER STATISTICS
 -- User Task stats
@@ -201,6 +202,41 @@ from p
 where u.id = p.user_id;	
 
 
+-- MESSAGES
+-- only migrating messages that have not yet been read
+INSERT INTO hotnew.messages(
+            message, subject, from_user_id, to_user_id, date, read)
+    (select message, subject,  from_user_id, to_user_id, date, read
+     from hotold.message
+     where read = false);
+
+	 
+-- PRIORITY_AREAS
+--  migrate all areas
+INSERT INTO hotnew.priority_areas(
+            id, geometry)
+    (SELECT id, geometry
+    from hotold.priority_area);
+
+-- Update sequence
+select setval('hotnew.priority_areas_id_seq',(select max(id) from hotnew.priority_areas));
+
+-- Migrate project_priority areas link but only where a matching project exists.  
+-- Remove duplicate records
+INSERT INTO hotnew.project_priority_areas(
+            project_id, priority_area_id)
+    (SELECT distinct pa.project_id, pa.priority_area_id
+    from hotold.project_priority_areas pa
+    where exists(select null from hotnew.projects p where p.id = pa.project_id) );
+
+-- PROJECT ALLOWED USERS
+-- Remove duplicate records
+INSERT INTO hotnew.project_allowed_users(
+            project_id, user_id)
+    (select distinct project_id, user_id
+    from hotold.project_allowed_users);
+	
+	
 --------------------------------------------------	
 --  Migration Results 28/04/2017
 --
