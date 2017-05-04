@@ -76,14 +76,8 @@
                 .when('/project/:id', {
                     templateUrl: 'app/project/project.html',
                     controller: 'projectController',
-                    controllerAs: 'projectCtrl'
-                })
-
-
-                .when('/project/:id/:taskId', {
-                    templateUrl: 'app/project/project.html',
-                    controller: 'projectController',
-                    controllerAs: 'projectCtrl'
+                    controllerAs: 'projectCtrl',
+                    reloadOnSearch: false
                 })
 
                 .when('/user/:id', {
