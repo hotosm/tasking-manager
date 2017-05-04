@@ -7,22 +7,30 @@
      */
     angular
         .module('taskingManager')
-        .controller('messageController', [messageController]);
+        .controller('messageController', ['$routeParams', 'messageService', messageController]);
 
-    function messageController() {
+    function messageController($routeParams, messageService) {
         var vm = this;
         vm.message = {};
        
         activate();
 
         function activate() {
-            // TODO: get message from API
-            vm.message = {
-                username: 'LindaA1',
-                subject: 'You were mentioned in a comment - Task #18',
-                time: '2016-05-14T18:10:16Z',
-                message: 'A few roads are missing. Please add them.'
-            };
+            vm.messageId = $routeParams.id;
+            getMessage(vm.messageId);
+        }
+
+        /**
+         * Get a message
+         */
+        function getMessage(){
+            var resultsPromise = messageService.getMessage(vm.messageId);
+            resultsPromise.then(function (data) {
+                // success
+                vm.message = data;
+            }, function () {
+                // an error occurred
+            });
         }
     }
 })();

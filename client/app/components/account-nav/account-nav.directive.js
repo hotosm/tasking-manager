@@ -36,6 +36,7 @@
         vm.account = {};
         vm.showDropdown = false;
         vm.userMessages = null;
+        vm.newMessageNotification = true;
 
         // Watch the accountService for changes and update when needed
         $scope.$watch(function () {
@@ -47,6 +48,7 @@
         activate();
 
         function activate() {
+            checkIfUserHasMessages();
             //start up a timer for autorefreshing the user messages.
             $interval(function () {
                 checkIfUserHasMessages();
@@ -118,12 +120,19 @@
         };
 
         /**
+         * Hide new message notification
+         */
+        vm.hideNotification = function(){
+           vm.newMessageNotification = false;
+        };
+
+        /**
          * Check if the user has new messages
          */
         function checkIfUserHasMessages() {
             var resultsPromise = messageService.hasNewMessages();
             resultsPromise.then(function (data) {
-                // Return the projects successfully
+                // success
                 vm.userMessages = data;
             }, function () {
                 // an error occurred

@@ -12,7 +12,10 @@
         
         var service = {
             messageAll: messageAll,
-            hasNewMessages: hasNewMessages
+            hasNewMessages: hasNewMessages,
+            getAllMessages: getAllMessages,
+            getMessage: getMessage,
+            deleteMessage: deleteMessage
         };
 
         return service;
@@ -51,6 +54,71 @@
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/messages/has-new-messages',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get all messages
+         * @returns {*|!jQuery.jqXHR|!jQuery.deferred|!jQuery.Promise}
+         */
+        function getAllMessages(){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/messages/get-all-messages',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get a message
+         * @param messageId
+         * @returns {*|!jQuery.jqXHR|!jQuery.deferred|!jQuery.Promise}
+         */
+        function getMessage(messageId){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/messages/' + messageId,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Deletes a message
+         * @param messageId
+         * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
+         */
+        function deleteMessage(messageId){
+            // Returns a promise
+            return $http({
+                method: 'DELETE',
+                url: configService.tmAPI + '/messages/' + messageId,
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

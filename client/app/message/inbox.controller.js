@@ -7,30 +7,65 @@
      */
     angular
         .module('taskingManager')
-        .controller('inboxController', [inboxController]);
+        .controller('inboxController', ['messageService', inboxController]);
 
-    function inboxController() {
+    function inboxController(messageService) {
         var vm = this;
         vm.messages = [];
+        vm.showDeleteMessageModal = false;
        
         activate();
 
         function activate() {
-            // TODO: get messages from API
-            vm.messages = [
-                {
-                    username: 'LindaA1',
-                    subject: 'You were mentioned in a comment - Task #18',
-                    date: '2016-05-14T18:10:16Z',
-                    id: 1
-                },
-                {
-                    username: 'popeln',
-                    subject: 'You were mentioned in a comment - Task #20',
-                    date: '2015-05-14T18:10:16Z',
-                    id: 2
-                }
-            ]
+            getAllMessages();
+        }
+
+        /**
+         * Set the delete message modal to visible/invisible
+         * @param showModal
+         */
+        vm.setShowDeleteMessageModal = function(showModal){
+            vm.showDeleteMessageModal = showModal;
+        };
+
+        /**
+         * Confirm deleting a message
+         * @param messageId
+         */
+        vm.confirmDeleteMessage = function(messageId){
+            vm.messageIdToBeDeleted = messageId;
+            vm.showDeleteMessageModal = true;
+        };
+
+        /**
+         * Delete a message
+         * @param messageId
+         */
+        vm.deleteMessage = function(){
+            vm.deleteMessageFail = false;
+            var resultsPromise = messageService.deleteMessage(vm.messageIdToBeDeleted);
+            resultsPromise.then(function (data) {
+                // success
+                vm.showDeleteMessageModal = false;
+                getAllMessages();
+            }, function () {
+                // an error occurred
+                 vm.deleteMessageFail = true;
+            });
+        };
+
+        /**
+         * Get all messages for a user
+         */
+        function getAllMessages(){
+            var resultsPromise = messageService.getAllMessages();
+            resultsPromise.then(function (data) {
+                // success
+                vm.messages = data.userMessages;
+            }, function () {
+                // an error occurred
+                vm.messages = [];
+            });
         }
     }
 })();

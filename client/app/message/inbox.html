@@ -3,31 +3,78 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Messages - inbox (TODO)
+                    Messages - inbox
                 </h1>
             </div>
         </header>
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th>From</th>
-                            <th>Subject</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="message in inboxCtrl.messages">
-                            <td><a ng-href="user/{{ message.username }}">{{ message.username }}</a></td>
-                            <td><a ng-href="message/{{ message.id }}">{{ message.subject }}</a></td>
-                            <td><span am-time-ago="message.date | amUtc | amLocal"></span></td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div ng-show="inboxCtrl.messages.length > 0">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>Subject</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-class="!message.read ? 'tr-darker' : ''"
+                                ng-repeat="message in inboxCtrl.messages | orderBy:'-sentDate'">
+                                <td>
+                                    <a ng-href="user/{{ message.fromUsername }}">{{ message.fromUsername }}</a>
+                                </td>
+                                <td>
+                                    <a ng-href="message/{{ message.messageId }}">{{ message.subject }}</a>
+                                </td>
+                                <td>
+                                    <span am-time-ago="message.sentDate | amUtc | amLocal"></span>
+                                </td>
+                                <td>
+                                    <i class="hot-ds-icon-trash-bin pointer"
+                                       ng-click="inboxCtrl.confirmDeleteMessage(message.messageId)"></i>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div ng-hide="inboxCtrl.messages.length > 0">
+                        <p>You have no messages.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 </div>
+
+<!-- delete message modal -->
+<section class="modal modal-tm" ng-show="inboxCtrl.showDeleteMessageModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">Delete message</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <p>Are you sure you want to delete this message?</p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="inboxCtrl.validateTasksSuccess">
+                <button class="button button--achromic" type="button"
+                    ng-click="inboxCtrl.setShowDeleteMessageModal(false)">
+                    Cancel
+                </button>
+                <button class="button button--base" type="button"
+                    ng-click="inboxCtrl.deleteMessage()">
+                    Delete
+                </button>
+            </div>
+        </footer>
+    </div>
+    <button class="modal__button-dismiss" title="Close" ng-click="inboxCtrl.setShowDeleteMessageModal(false)">
+        Dismiss
+    </button>
+</section>
+<!-- delete message modal -->
