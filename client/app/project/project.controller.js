@@ -256,6 +256,7 @@
                 vm.userCanMap = projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
                 vm.userCanValidate = projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
                 addAoiToMap(vm.projectData.areaOfInterest);
+                addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
 
 
@@ -426,6 +427,39 @@
             // read tasks JSON into features
             var aoiFeature = geospatialService.getFeatureFromGeoJSON(aoi)
             source.addFeature(aoiFeature);
+        }
+
+        /**
+         * Adds the priority areas to the map
+         * @param priorityAreas
+         */
+        function addPriorityAreasToMap(priorityAreas){
+            var source = new ol.source.Vector();
+            var vector = new ol.layer.Vector({
+                source: source,
+                name: 'priorityareas'
+            });
+            vm.map.addLayer(vector);
+
+            source.on('addfeature', function(event){
+                // Add style to make it stand out from the AOI
+                var style =  new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255,255,255,0.6)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,0,0,1)', //red
+                        width: 1
+                    })
+                });
+                event.feature.setStyle(style);
+            });
+            if (priorityAreas) {
+                for (var i = 0; i < priorityAreas.length; i++) {
+                    var feature = geospatialService.getFeatureFromGeoJSON(priorityAreas[i]);
+                    source.addFeature(feature);
+                }
+            }
         }
 
         /**
