@@ -623,6 +623,7 @@
         function getProjectMetadata(id){
             var resultsPromise = projectService.getProjectMetadata(id);
             resultsPromise.then(function (data) {
+                vm.source.clear(); // clear the priority areas
                 vm.project = data;
                 getLicenses();
                 // only 'non-empty' locales are included so add empty locales to ease editing
@@ -738,9 +739,11 @@
          * Add the priority areas to the map
          */
         function addPriorityAreasToMap(){
-            for (var i = 0; i < vm.project.priorityAreas.length; i++){
-                var feature = geospatialService.getFeatureFromGeoJSON(vm.project.priorityAreas[i]);
-                vm.source.addFeature(feature);
+            if (vm.project.priorityAreas) {
+                for (var i = 0; i < vm.project.priorityAreas.length; i++) {
+                    var feature = geospatialService.getFeatureFromGeoJSON(vm.project.priorityAreas[i]);
+                    vm.source.addFeature(feature);
+                }
             }
         }
 
