@@ -459,6 +459,9 @@
                     var feature = geospatialService.getFeatureFromGeoJSON(priorityAreas[i]);
                     source.addFeature(feature);
                 }
+                if (priorityAreas.length > 0){
+                    vm.hasPriorityArea = true;
+                }
             }
         }
 

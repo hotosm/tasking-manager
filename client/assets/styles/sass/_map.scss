@@ -51,21 +51,16 @@
   }
 }
 
-.mapping-legend {
-  bottom: 2.5rem;
-  left: 0.5rem;
-  position: absolute;
-  z-index: 1000;
-  padding: 0.5rem;
-  background: white;
-  border: solid 1px;
-}
-
 .legend-control {
   background-color: rgba(255,255,255,0.8);
   bottom: 2.5em;
   left: 0.6em;
   padding: 0.5em;
+  z-index: 1000;
+}
+
+.priority-areas {
+  left: 10em !important;
 }
 
 /* ==========================================================================
