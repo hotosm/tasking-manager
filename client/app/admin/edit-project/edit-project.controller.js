@@ -392,7 +392,7 @@
                 vm.sendMessageSuccess = true;
                 vm.sendMessageInProgress = false;
             }, function(){
-                // Messages sent successfully
+                // Messages not sent successfully
                 vm.sendMessageFail = true;
                 vm.sendMessageSuccess = false;
                 vm.sendMessageInProgress = false;
