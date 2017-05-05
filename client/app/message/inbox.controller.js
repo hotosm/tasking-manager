@@ -62,10 +62,24 @@
             resultsPromise.then(function (data) {
                 // success
                 vm.messages = data.userMessages;
+                if (vm.messages){
+                    for (var i = 0; i < vm.messages.length; i++){
+                        vm.messages[i].subject = htmlToPlaintext(vm.messages[i].subject);
+                    }
+                }
             }, function () {
                 // an error occurred
                 vm.messages = [];
             });
+        }
+
+        /**
+         * Convert HTML to plain text to remove the link in the subject
+         * @param text
+         * @returns {string}
+         */
+        function htmlToPlaintext(text) {
+            return text ? String(text).replace(/<[^>]+>/gm, '') : '';
         }
     }
 })();

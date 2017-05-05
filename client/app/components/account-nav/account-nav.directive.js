@@ -43,16 +43,20 @@
             return accountService.getAccount();
         }, function (account) {
             vm.account = account;
+            if (vm.account.username){
+                checkIfUserHasMessages();
+            }
         }, true);
 
         activate();
 
         function activate() {
-            checkIfUserHasMessages();
             //start up a timer for autorefreshing the user messages.
             $interval(function () {
-                checkIfUserHasMessages();
-            }, 30000);
+                if (vm.account.username) {
+                    checkIfUserHasMessages();
+                }
+            }, 10000);
         }
 
         /**

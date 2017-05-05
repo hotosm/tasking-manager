@@ -10,11 +10,14 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <h3 ng-bind-html="messageCtrl.message.subject"></h3>
-                    <p>From: <a ng-href="user/{{ messageCtrl.message.fromUsername }}">{{ messageCtrl.message.fromUsername }}</a></p>
-                    <p><em am-time-ago="messageCtrl.message.sentDate | amUtc | amLocal"></em></p>
-                    <div>
-                        <p ng-bind-html="messageCtrl.message.message"></p>
+                    <a href="/inbox" class="button button--achromic">Return to inbox</a>
+                    <div class="inbox-message">
+                        <h3 ng-bind-html="messageCtrl.message.subject"></h3>
+                        <p>From: <a ng-href="user/{{ messageCtrl.message.fromUsername }}">{{ messageCtrl.message.fromUsername }}</a></p>
+                        <p><em am-time-ago="messageCtrl.message.sentDate | amUtc | amLocal"></em></p>
+                        <div>
+                            <p ng-bind-html="messageCtrl.message.message"></p>
+                        </div>
                     </div>
                 </div>
             </div>
