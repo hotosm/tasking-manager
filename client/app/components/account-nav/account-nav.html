@@ -5,7 +5,7 @@
 <a class="global-menu-item" ng-show="accountNavCtrl.account.username">
     <div class="drop drop--down drop--align-left drop--open">
         <button class="button button--achromic drop__toggle drop__toggle--caret" type="button"
-            ng-click="accountNavCtrl.showDropdown = !accountNavCtrl.showDropdown">
+            ng-click="accountNavCtrl.toggleMenu($event)">
             <span>{{ accountNavCtrl.account.username }}</span>
             <span class="badge" ng-show="accountNavCtrl.userMessages.newMessages">
                 {{ accountNavCtrl.userMessages.unread }}

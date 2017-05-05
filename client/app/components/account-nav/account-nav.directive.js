@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('accountNavController', ['$scope','$location', '$interval', 'accountService','authService', 'messageService', accountNavController])
+        .controller('accountNavController', ['$scope','$location', '$interval', '$document','$element', 'accountService','authService', 'messageService', accountNavController])
         .directive('accountNav', accountNavDirective);
 
     /**
@@ -30,7 +30,7 @@
         return directive;
     }
 
-    function accountNavController($scope, $location, $interval, accountService, authService, messageService) {
+    function accountNavController($scope, $location, $interval, $document, $element, accountService, authService, messageService) {
 
         var vm = this;
         vm.account = {};
@@ -57,6 +57,18 @@
                     checkIfUserHasMessages();
                 }
             }, 10000);
+
+            // Catch clicks and check if it was outside of the menu element. If so, close the dropdown menu.
+            $document.bind('click', function(event){
+                var isClickedElementChildOfPopup = $element
+                  .find(event.target)
+                  .length > 0;
+                if (isClickedElementChildOfPopup)
+                  return;
+
+                vm.showDropdown = false;
+                $scope.$apply();
+            });
         }
 
         /**
@@ -128,6 +140,16 @@
          */
         vm.hideNotification = function(){
            vm.newMessageNotification = false;
+        };
+
+        /**
+         * Toggle the menu
+         */
+        vm.toggleMenu = function(event){
+            vm.showDropdown = !vm.showDropdown;
+            // Do not let the event propagate. Otherwise it would check if the click was inside the menu div and
+            // always close the dropdown menu
+            event.stopPropagation();
         };
 
         /**
