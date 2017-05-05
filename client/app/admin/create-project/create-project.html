@@ -109,9 +109,9 @@
                             <button class="button button--achromic" type="button"
                                     ng-click="createProjectCtrl.changeSizeTaskGrid(-1)">Larger
                             </button>
-                            <button ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
+                            <button ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT ? 'disabled' : ''"
                                     class="button button--achromic" type="button"
-                                    ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
+                                    ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT"
                                     ng-click="createProjectCtrl.changeSizeTaskGrid(1)">Smaller
                             </button>
                         </div>
@@ -134,7 +134,7 @@
                         <p>A new project will be created with {{ createProjectCtrl.numberOfTasks }} tasks.</p>
                         <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks | number : 2 }}
                             km<sup>2</sup>.</p>
-                        <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
+                        <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT"
                              class="alert alert--warning" role="alert">
                             <p><strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required
                                 please make the area of interest smaller.
