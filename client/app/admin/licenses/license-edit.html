@@ -13,20 +13,20 @@
                     <form class="form" ng-hide="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
                         <fieldset class="form__fieldset">
                             <div class="form__group">
-                                <label class="form__label" for="form-name">Name</label>
+                                <label class="form__label" for="form-name">Name*</label>
                                 <input type="text" class="form__control form__control--medium" id="form-name"
                                        ng-model="licenseEditCtrl.license.name"
                                        name="form-name" placeholder="Enter a name for the license (provider for example)"/>
                             </div>
                             <div class="form__group">
-                                <label class="form__label" for="form-description">Description</label>
+                                <label class="form__label" for="form-description">Description*</label>
                                 <textarea class="form__control form__control--medium" id="form-description" rows="8"
                                        ng-model="licenseEditCtrl.license.description"
                                        name="form-name" placeholder="Enter the license terms">
                                 </textarea>
                             </div>
                             <div class="form__group">
-                                <label class="form__label" for="form-plaintext">Plain text</label>
+                                <label class="form__label" for="form-plaintext">Plain text*</label>
                                 <textarea class="form__control form__control--medium" id="form-plaintext" rows="2"
                                        ng-model="licenseEditCtrl.license.plainText"
                                        name="form-name" placeholder="Enter a short version of the terms">
