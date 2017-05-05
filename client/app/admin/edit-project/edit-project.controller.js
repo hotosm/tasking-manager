@@ -108,6 +108,15 @@
          */
         vm.saveEdits = function(){
 
+            // Format priority areas
+            var priorityAreaFeatures = vm.source.getFeatures();
+            var priorityAreas = [];
+            for (var i = 0; i < priorityAreaFeatures.length; i++){
+                var priorityArea = geospatialService.getGeoJSONObjectFromFeature(priorityAreaFeatures[i]);
+                priorityAreas.push(priorityArea.geometry);
+            }
+            vm.project.priorityAreas = priorityAreas;
+
             vm.updateProjectFail = false;
             vm.updateProjectSuccess = false;
             
@@ -596,7 +605,9 @@
                     })
                 });
                 event.feature.setStyle(style);
-                $scope.$apply(vm.numberOfPriorityAreas++);
+                 $timeout(function() {
+                    $scope.$apply(vm.numberOfPriorityAreas++);
+                });
             });
             vm.source.on('removefeature', function(){
                 $timeout(function() {
@@ -612,6 +623,7 @@
         function getProjectMetadata(id){
             var resultsPromise = projectService.getProjectMetadata(id);
             resultsPromise.then(function (data) {
+                vm.source.clear(); // clear the priority areas
                 vm.project = data;
                 getLicenses();
                 // only 'non-empty' locales are included so add empty locales to ease editing
@@ -645,6 +657,7 @@
                 }
                 populateTypesOfMapping();
                 addAOIToMap();
+                addPriorityAreasToMap();
                 if (vm.project.organisationTag) {
                     vm.projectOrganisationTag = [vm.project.organisationTag];
                 }
@@ -720,6 +733,18 @@
 
             // Zoom to the extent of the AOI
             vm.map.getView().fit(source.getExtent());
+        }
+
+        /**
+         * Add the priority areas to the map
+         */
+        function addPriorityAreasToMap(){
+            if (vm.project.priorityAreas) {
+                for (var i = 0; i < vm.project.priorityAreas.length; i++) {
+                    var feature = geospatialService.getFeatureFromGeoJSON(vm.project.priorityAreas[i]);
+                    vm.source.addFeature(feature);
+                }
+            }
         }
 
         /**
