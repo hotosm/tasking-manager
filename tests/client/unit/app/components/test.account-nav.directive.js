@@ -1,7 +1,7 @@
 'use strict';
 
 describe('account-nav.directive', function () {
-    var accountNavController, scope = null;
+    var accountNavController, scope, element = null;
 
     beforeEach(function () {
         module('taskingManager');
@@ -9,7 +9,8 @@ describe('account-nav.directive', function () {
 
          inject(function ($controller, $rootScope) {
              scope = $rootScope.$new();
-             accountNavController = $controller('accountNavController', {$scope: scope});
+             element = angular.element('<div></div>');
+             accountNavController = $controller('accountNavController', {$scope: scope, $element: element});
          });
     });
 
