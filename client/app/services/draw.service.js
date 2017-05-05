@@ -92,7 +92,7 @@
          */
         function initDrawPolygonInteraction_() {
             drawPolygonInteraction = new ol.interaction.Draw({
-                type: "MultiPolygon",
+                type: "Polygon",
                 source: source
             });
             drawPolygonInteraction.setActive(false);
