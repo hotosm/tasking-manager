@@ -445,7 +445,7 @@
                 // Add style to make it stand out from the AOI
                 var style =  new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: 'rgba(255,255,255,0.6)'
+                        color: 'rgba(255,0,0,0.2)' //red
                     }),
                     stroke: new ol.style.Stroke({
                         color: 'rgba(255,0,0,1)', //red
