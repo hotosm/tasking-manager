@@ -387,12 +387,12 @@
             vm.sendMessageSuccess = false;
             var resultsPromise = messageService.messageAll(vm.project.projectId, subject, message);
             resultsPromise.then(function(){
-                // Tasks validated successfully
+                // Messages sent successfully
                 vm.sendMessageFail = false;
                 vm.sendMessageSuccess = true;
                 vm.sendMessageInProgress = false;
             }, function(){
-                // Tasks not validated successfully
+                // Messages validated successfully
                 vm.sendMessageFail = true;
                 vm.sendMessageSuccess = false;
                 vm.sendMessageInProgress = false;
