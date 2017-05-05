@@ -21,6 +21,9 @@
                 <li>
                     <a title="Messages" class="drop__menu-item" ng-click="accountNavCtrl.goToMessages()">
                         Messages
+                        <span class="badge" ng-show="accountNavCtrl.userMessages.newMessages">
+                            {{ accountNavCtrl.userMessages.unread }}
+                        </span>
                     </a>
                 </li>
                 <li>
