@@ -55,18 +55,39 @@ class ProjectActivityDTO(Model):
     activity = ListType(ModelType(TaskHistoryDTO))
 
 
-class TaskActivityDTO(Model):
-    """ DTO to hold a task activity """
-    user_id = IntType()
+class UserActionActivityDTO(Model):
+    """ DTO to hold datetimes for one kind of action """
+    def __init__(self):
+        super().__init__()
+
+    action_type = StringType()
+    datetimes = ListType(DateTimeType)
+
+
+class UserActivityDTO(Model):
+    """ DTO to hold action for one user """
+    def __init__(self):
+        super().__init__()
+        self.action = []
+
     project_id = IntType()
-    action_text = StringType()
-    action_date = DateTimeType()
+    action = ListType(ModelType(UserActionActivityDTO), serialized_name='projectActions')
 
 
-class AllStatsDTO(Model):
-    """DTO to hold all activity everywhere """
+class UserDTO(Model):
+    """DTO to hold activity for one user """
     def __init__(self):
         super().__init__()
         self.activity = []
 
-    activity = ListType(ModelType(TaskActivityDTO))
+    user_id = IntType()
+    activity = ListType(ModelType(UserActivityDTO), serialized_name='user')
+
+
+class AllUserDTO(Model):
+    """ DTO to hold activity for all users """
+    def __init__(self):
+        super().__init__()
+        self.all_activity = []
+
+    all_activity = ListType(ModelType(UserDTO), serialized_name="allActivity")
