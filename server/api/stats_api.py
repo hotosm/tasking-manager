@@ -118,3 +118,32 @@ class StatsProjectAPI(Resource):
             error_msg = f'unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class StatsAllAPI(Resource):
+
+    def get(self):
+        """
+        Get All User Activity
+        ---
+        tags:
+          - stats
+        produces:
+          - application/json
+        responses:
+            200:
+                description: All user stats
+            404:
+                description: No activity yet
+            500:
+                description: Internal Server Error
+        """
+        try:
+            all_user_stats = StatsService.get_all_user_stats()
+            return all_user_stats.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No activity yet"}, 404
+        except Exception as e:
+            error_msg = f'unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

@@ -1,6 +1,6 @@
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
-    ProjectActivityDTO
+    ProjectActivityDTO, AllStatsDTO, TaskActivityDTO
 from server.models.dtos.project_dto import ProjectSummary
 from server.models.postgis.project import Project, AreaOfInterest
 from server.models.postgis.statuses import TaskStatus
@@ -147,3 +147,27 @@ class StatsService:
             contrib_dto.user_contributions.append(user_contrib)
 
         return contrib_dto
+
+    @staticmethod
+    def get_all_user_stats() -> AllStatsDTO:
+        """ Get user done, validating, and invalidating statistics"""
+        contrib_query = '''SELECT t.user_id, t.project_id, t.action_text, t.action_date
+                             FROM task_history t
+                            WHERE t.action_text in ('MAPPED', 'VALIDATED', 'INVALIDATED')
+        '''
+
+        results = db.engine.execute(contrib_query)
+        if results.rowcount == 0:
+            raise NotFound()
+
+        all_stats_dto = AllStatsDTO()
+        for row in results:
+            user_activity = TaskActivityDTO()
+            user_activity.user_id = row[0] if row[0] else -1
+            user_activity.project_id = row[1] if row[1] else -1
+            user_activity.action_text = row[2] if row[2] else ''
+            user_activity.action_date = row[3] if row[3] else 0
+
+            all_stats_dto.activity.append(user_activity)
+
+        return all_stats_dto

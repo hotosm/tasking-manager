@@ -1,5 +1,5 @@
 from schematics import Model
-from schematics.types import StringType, IntType, BooleanType
+from schematics.types import StringType, IntType, BooleanType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.mapping_dto import TaskHistoryDTO
 
@@ -53,3 +53,20 @@ class ProjectActivityDTO(Model):
 
     pagination = ModelType(Pagination)
     activity = ListType(ModelType(TaskHistoryDTO))
+
+
+class TaskActivityDTO(Model):
+    """ DTO to hold a task activity """
+    user_id = IntType()
+    project_id = IntType()
+    action_text = StringType()
+    action_date = DateTimeType()
+
+
+class AllStatsDTO(Model):
+    """DTO to hold all activity everywhere """
+    def __init__(self):
+        super().__init__()
+        self.activity = []
+
+    activity = ListType(ModelType(TaskActivityDTO))
