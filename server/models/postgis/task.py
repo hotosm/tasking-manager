@@ -103,7 +103,7 @@ class TaskHistory(db.Model):
 
     @staticmethod
     def get_last_status(project_id: int, task_id: int):
-        """ Get the last status the task was set to"""
+        """ Get the status the task was set to the last the task had a STATUS_CHANGE"""
         result = db.session.query(TaskHistory.action_text) \
             .filter(TaskHistory.project_id == project_id,
                     TaskHistory.task_id == task_id,
@@ -117,7 +117,7 @@ class TaskHistory(db.Model):
 
     @staticmethod
     def get_last_action(project_id: int, task_id: int):
-        """Get the last action on the task"""
+        """Gets the most recent task history record for the task"""
         return TaskHistory.query.filter(TaskHistory.project_id == project_id,
                                  TaskHistory.task_id == task_id) \
             .order_by(TaskHistory.action_date.desc()).first()
@@ -211,6 +211,7 @@ class Task(db.Model):
         old_tasks = db.engine.execute(old_locks_query)
 
         if old_tasks.rowcount == 0:
+            # no tasks older than 2 hours found, return without further processing
             return
 
         for old_task in old_tasks:
@@ -261,12 +262,17 @@ class Task(db.Model):
         self.update()
 
     def clear_task_lock(self):
-        # update the task record
+        """
+        Does database updates to effect a task unlock.  Clears the lock as though it never happened.
+        No history of the unlock is recorded.
+        :return:
+        """
+        # Set locked_by to null and status to last status on task
         self.locked_by = None
         self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
         self.update()
 
-        # clear the task history item
+        # clear the lock action for the task in the task history
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
         last_action.delete();
 
