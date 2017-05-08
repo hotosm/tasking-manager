@@ -119,7 +119,7 @@ class TaskHistory(db.Model):
     def get_last_action(project_id: int, task_id: int):
         """Gets the most recent task history record for the task"""
         return TaskHistory.query.filter(TaskHistory.project_id == project_id,
-                                 TaskHistory.task_id == task_id) \
+                                        TaskHistory.task_id == task_id) \
             .order_by(TaskHistory.action_date.desc()).first()
 
 
@@ -197,16 +197,16 @@ class Task(db.Model):
     @staticmethod
     def auto_unlock_tasks(project_id: int):
         """Unlock all tasks locked more than 2 hours ago"""
-        old_locks_query = '''select t.id
-             from tasks t,
-                  task_history th
-             where t.project_id = {0}
-             and t.id = th.task_id
-             and t.project_id = th.project_id
-             and t.task_status in (1,3)
-             and th.action in ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
-             and th.action_text is null
-             and th.action_date <= current_timestamp - INTERVAL '2 hours' '''.format(project_id)
+        old_locks_query = '''SELECT t.id
+            FROM tasks t, task_history th
+            WHERE t.id = th.task_id
+            AND t.project_id = th.project_id
+            AND t.task_status IN (1,3)
+            AND th.action IN ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
+            AND th.action_text IS NULL
+            AND t.project_id = {0}
+            AND AGE(TIMESTAMP '{1}', th.action_date) > '2 hours'
+            '''.format(project_id, str(datetime.datetime.utcnow()))
 
         old_tasks = db.engine.execute(old_locks_query)
 
