@@ -309,8 +309,6 @@ class ProjectAdminAPI(Resource):
 
 class ProjectCommentsAPI(Resource):
 
-    @tm.pm_only()
-    @token_auth.login_required
     def get(self, project_id):
         """
         Gets all comments for project
