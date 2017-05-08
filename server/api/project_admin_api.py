@@ -309,8 +309,6 @@ class ProjectAdminAPI(Resource):
 
 class ProjectCommentsAPI(Resource):
 
-    @tm.pm_only()
-    @token_auth.login_required
     def get(self, project_id):
         """
         Gets all comments for project
@@ -320,12 +318,6 @@ class ProjectCommentsAPI(Resource):
         produces:
             - application/json
         parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
