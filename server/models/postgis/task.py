@@ -263,7 +263,7 @@ class Task(db.Model):
 
     def clear_task_lock(self):
         """
-        Does database updates to effect a task unlock.  Clears the lock as though it never happened.
+        Unlocks task in scope in the database.  Clears the lock as though it never happened.
         No history of the unlock is recorded.
         :return:
         """
