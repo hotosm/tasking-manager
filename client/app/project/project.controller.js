@@ -18,7 +18,7 @@
         vm.highlightVectorLayer = null;
         vm.lockedByCurrentUserVectorLayer = null;
         vm.map = null;
-        vm.user = {};
+        vm.user = null;
         vm.maxlengthComment = 500;
         vm.taskUrl = '';
 
@@ -88,7 +88,7 @@
 
             // Check the user's role
             var session = authService.getSession();
-            if (session) {
+            if (session && session.username && session.username != "") {
                 var resultsPromise = accountService.getUser(session.username);
                 resultsPromise.then(function (user) {
                     vm.user = user;
@@ -253,8 +253,8 @@
                 $scope.description = data.projectInfo.description;
                 $scope.shortDescription = data.projectInfo.shortDescription;
                 $scope.instructions = data.projectInfo.instructions;
-                vm.userCanMap = projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
-                vm.userCanValidate = projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
+                vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
+                vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
@@ -406,7 +406,9 @@
                     vm.lockedByCurrentUserVectorLayer.getSource().addFeatures(features);
                 }
             }, function () {
-                vm.lockedByCurrentUserVectorLayer.getSource().clear();
+                if(vm.lockedByCurrentUserVectorLayer) {
+                    vm.lockedByCurrentUserVectorLayer.getSource().clear();
+                }
                 vm.lockedTasksForCurrentUser = [];
             });
         }
