@@ -4,7 +4,7 @@ from server import create_app
 from server.models.postgis.task import InvalidGeoJson, InvalidData, Task, TaskAction
 
 
-class TestProject(unittest.TestCase):
+class TestTask(unittest.TestCase):
 
     def setUp(self):
         self.app = create_app()

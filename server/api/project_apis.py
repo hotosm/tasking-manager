@@ -6,7 +6,6 @@ from server.services.project_service import ProjectService, ProjectServiceError,
 
 
 class ProjectAPI(Resource):
-
     def get(self, project_id):
         """
         Get HOT Project for mapping
@@ -50,10 +49,15 @@ class ProjectAPI(Resource):
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+        finally:
+            # this will try to unlock tasks older than 2 hours
+            try:
+                ProjectService.auto_unlock_tasks(project_id)
+            except Exception as e:
+                current_app.logger.critical(str(e))
 
 
 class ProjectSearchAPI(Resource):
-
     def get(self):
         """
         Search active projects
@@ -120,7 +124,6 @@ class ProjectSearchAPI(Resource):
 
 
 class HasUserTaskOnProject(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, project_id):

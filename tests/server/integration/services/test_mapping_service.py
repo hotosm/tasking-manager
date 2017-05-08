@@ -58,3 +58,5 @@ class TestAuthenticationService(unittest.TestCase):
 
         # Assert
         self.assertEqual(gpx_hash, '6b808eadc04cff17b68a55d8d2a1a570')
+
+
