@@ -38,10 +38,7 @@
             ChartJsProvider.setOptions({
                 chartColors: ['#AC3232', '#DCDCDC', '#7A7A7A', '#595959']
             });
-
-            showdown.setOption('openLinksInNewWindow', true);
-            console.log(showdown.getOption('openLinksInNewWindow'));
-
+            
             $routeProvider
 
                 .when('/', {
