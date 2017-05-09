@@ -5,7 +5,7 @@
      */
 
     angular
-        .module('taskingManager')
+        .module('taskingManager', [])
 
         // This filter finds a tags and sets the target attribute to blank
         .filter('addTargetBlank', function () {
