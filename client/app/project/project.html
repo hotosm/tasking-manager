@@ -39,7 +39,7 @@
                             <div>
                                 <mark>Priority: {{ projectCtrl.projectData.projectPriority }}</mark>
                             </div>
-                            <p ng-bind-html="description | addTargetBlank"></p>
+                            <p ng-bind-html="description"></p>
                         </section>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
@@ -95,7 +95,7 @@
                                 </div>
                                 <hr/>
                             </div>
-                            <p ng-bind-html="instructions | addTargetBlank"></p>
+                            <p ng-bind-html="instructions"></p>
                         </section>
 
                     </div>
