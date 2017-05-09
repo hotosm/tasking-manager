@@ -35,7 +35,9 @@ class ValidatorService:
             if TaskStatus(task.task_status) not in [TaskStatus.MAPPED, TaskStatus.VALIDATED]:
                 raise ValidatatorServiceError(f'Task {task_id} is not MAPPED or VALIDATED')
 
-            # TODO can't validate tasks you own
+            # TODO can't validate tasks you own unless user.is_admin or user.is_project_manager
+            if task.mapped_by == validation_dto.user_id:
+                raise ValidatatorServiceError(f'Task {task_id} cannot be validated and mapped by the same user')
 
             tasks_to_lock.append(task)
 
