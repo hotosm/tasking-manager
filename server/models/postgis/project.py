@@ -299,7 +299,7 @@ class Project(db.Model):
         base_dto.organisation_tag = project.organisation_tag
         base_dto.license_id = project.license_id
         base_dto.last_updated = project.last_updated
-        base_dto.author = User.get_by_id(project.author_id).username
+        base_dto.author = User().get_by_id(project.author_id).username
 
         if project.private:
             # If project is private it should have a list of allowed users
