@@ -2,16 +2,21 @@
   @include column(24/24);
 
   .search {
+    background: #f6f5f5;
+    box-shadow: 0 2px 12px 2px rgba(34, 10, 10, 0.12), 0 0 0 1px rgba(34, 10, 10, 0.12);
+    border-radius: 0.25rem;
+    border-radius: 20px;
+    padding: 10px;
     @include column(24/24);
     @include media(medium-up) {
-      @include column(9/24);
+      @include column(7/24);
     }
   }
 
   .search-results {
     @include column(24/24);
     @include media(medium-up) {
-      @include column(15/24);
+      @include column(24/24);
     }
     .list {
       max-height: 500px;
@@ -41,7 +46,7 @@
   }
 
   &__card {
-    width: 330px;
+    width: 500px;
     margin-bottom: 2rem;
   }
 
@@ -61,4 +66,10 @@
     height: 10px !important;
     margin-bottom: 10px !important;
   }
+}
+
+.search-option {
+  width: 25%;
+  float: left;
+  padding: 1em;
 }
