@@ -7,6 +7,7 @@ from server.models.postgis.utils import NotFound, UserLicenseError
 from server.services.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
+from server.services.user_service import UserService
 
 
 class ValidatatorServiceError(Exception):
@@ -35,8 +36,10 @@ class ValidatorService:
             if TaskStatus(task.task_status) not in [TaskStatus.MAPPED, TaskStatus.VALIDATED]:
                 raise ValidatatorServiceError(f'Task {task_id} is not MAPPED or VALIDATED')
 
-            # TODO can't validate tasks you own unless user.is_admin or user.is_project_manager
-            if task.mapped_by == validation_dto.user_id:
+            # can't validate tasks you own unless you are a project manager (admin counts as project manager too)
+            is_project_manager = UserService.is_user_a_project_manager(validation_dto.user_id)
+            mapped_by_me = (task.mapped_by == validation_dto.user_id)
+            if (not is_project_manager) and (mapped_by_me):
                 raise ValidatatorServiceError(f'Task {task_id} cannot be validated and mapped by the same user')
 
             tasks_to_lock.append(task)
