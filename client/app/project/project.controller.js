@@ -3,13 +3,14 @@
     'use strict';
 
     /**
-     * Project controller which manages activating a project the UI for user task selection and contribution workflow
+     * Project controller which manages activating a project the UI for user task selection and contribution
+     * TODO: refactor this controller. It is getting big!
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', 'messageService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', 'messageService', 'drawService', projectController]);
 
-    function projectController($interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService) {
 
         var vm = this;
         vm.id = 0;
@@ -60,9 +61,7 @@
         vm.selectedEditor = '';
 
         //interaction
-        var select = new ol.interaction.Select({
-            style: styleService.getSelectedTaskStyle
-        });
+        vm.selectInteraction = null;
 
         vm.mappedTasksPerUser = [];
         vm.lockedTasksForCurrentUser = [];
@@ -103,18 +102,13 @@
             mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
 
-            vm.map.addInteraction(select);
-            select.on('select', function (event) {
-                $scope.$apply(function () {
-                    var feature = event.selected[0];
-                    onTaskSelection(feature);
-                });
-            });
-
             vm.id = $routeParams.id;
 
             initialiseProject(vm.id);
             updateMappedTaskPerUser(vm.id);
+
+            // Add interactions for drawing a polygon for validation
+            addInteractions();
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
@@ -178,8 +172,8 @@
          * @param feature - ol.Feature the feature to be selected
          */
         function selectFeature(feature) {
-            select.getFeatures().clear();
-            select.getFeatures().push(feature);
+            vm.selectInteraction.getFeatures().clear();
+            vm.selectInteraction.getFeatures().push(feature);
             onTaskSelection(feature);
         }
 
@@ -233,12 +227,79 @@
         };
 
         /**
+         * Select tasks to validate by letting the user draw a polygon
+         */
+        vm.selectByPolygonValidate = function(){
+            if (vm.drawPolygonInteraction.getActive()){
+                drawService.getSource().clear();
+                vm.selectInteraction.setActive(true);
+                vm.drawPolygonInteraction.setActive(false);
+            }
+            else {
+                vm.selectInteraction.setActive(false);
+                vm.drawPolygonInteraction.setActive(true);
+            }
+        };
+
+         /**
+         * Add the interactions for selecting tasks
+         */
+        function addInteractions(){
+
+            // Priority areas: initialise the draw service with interactions
+            drawService.initInteractions(true, false, false, false, false, false);
+
+            // Get the interactions in the controller so events can be handled
+            vm.source = drawService.getSource();
+            // Draw interaction - adds it to the map in the draw service
+            vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
+            // Select interaction
+            vm.selectInteraction = new ol.interaction.Select({
+                style: styleService.getSelectedTaskStyle
+            });
+            vm.map.addInteraction(vm.selectInteraction);
+            vm.selectInteraction.on('select', function (event) {
+                $scope.$apply(function () {
+                    var feature = event.selected[0];
+                    onTaskSelection(feature);
+                });
+            });
+
+            vm.drawPolygonInteraction.on('drawstart', function () {
+                drawService.getSource().clear();
+            });
+            // Check which tasks intersect and add them to the selected features manually
+            vm.drawPolygonInteraction.on('drawend', function (event) {
+                var selectedFeatures = vm.selectInteraction.getFeatures();
+	            selectedFeatures.clear();
+	            var polygon = event.feature.getGeometry();
+	            var features = vm.taskVectorLayer.getSource().getFeatures();
+                vm.selectedTasksForValidation = [];
+                for (var i = 0 ; i < features.length; i++){
+                    if (polygon.intersectsExtent(features[i].getGeometry().getExtent())){
+                        var taskStatus = features[i].getProperties().taskStatus;
+                        if (taskStatus === 'MAPPED') {
+                            selectedFeatures.push(features[i]);
+                            vm.selectedTasksForValidation.push(features[i].getProperties().taskId);
+                        }
+                    }
+                }
+                // Reactivate select after 300ms (to avoid single click trigger)
+                $timeout(function(){
+                    vm.selectInteraction.setActive(true);
+                    vm.drawPolygonInteraction.setActive(false);
+                    drawService.getSource().clear();
+                }, 300);
+            });
+        }
+
+        /**
          * clears the currently selected task.  Clears down/resets the vm properties and clears the feature param in the select interaction object.
          */
         vm.clearCurrentSelection = function () {
             // vm.mappingStep = 'selecting';
             // vm.validatingStep = 'selecting';
-            select.getFeatures().clear();
+            vm.selectInteraction.getFeatures().clear();
         };
 
         /**
@@ -310,17 +371,17 @@
                 if (vm.selectedTaskData) {
                     var selectedFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), vm.selectedTaskData.taskId);
                     //this just forces the selected styling to apply
-                    select.getFeatures().clear();
-                    select.getFeatures().push(selectedFeature);
+                    vm.selectInteraction.getFeatures().clear();
+                    vm.selectInteraction.getFeatures().push(selectedFeature);
                 }
                 else if (vm.multiSelectedTasksData.length > 0) {
                     var tasks = vm.multiSelectedTasksData.map(function (task) {
                         return task.taskId;
                     });
                     var selectedFeatures = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), tasks);
-                    select.getFeatures().clear();
+                    vm.selectInteraction.getFeatures().clear();
                     selectedFeatures.forEach(function (feature) {
-                            select.getFeatures().push(feature);
+                            vm.selectInteraction.getFeatures().push(feature);
                         }
                     )
                 }
@@ -792,7 +853,7 @@
 
             vm.editorStartError = '';
 
-            var selectedFeatures = select.getFeatures();
+            var selectedFeatures = vm.selectInteraction.getFeatures();
             var taskCount = selectedFeatures.getArray().length;
             var extent = geospatialService.getBoundingExtentFromFeatures(selectedFeatures.getArray());
             // Zoom to the extent to get the right zoom level for the editorsgit commit -a
@@ -802,7 +863,6 @@
             var changesetComment = vm.projectData.changesetComment;
             // get center in the right projection
             var center = ol.proj.transform(geospatialService.getCenterOfExtent(extent), 'EPSG:3857', 'EPSG:4326');
-            // TODO licence agreement
             if (editor === 'ideditor') {
                 editorService.launchIdEditor(
                     center,
@@ -819,7 +879,6 @@
                 editorService.launchFieldPapersEditor(center);
             }
             else if (editor === 'josm') {
-                // TODO licence agreement
                 var changesetSource = "Bing";
                 var hasImagery = false;
                 if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
@@ -976,7 +1035,7 @@
          * @param array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
-            select.getFeatures().clear();
+            vm.selectInteraction.getFeatures().clear();
 
             //use doneTaskIds to get corresponding subset of tasks for selection from the project
             var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
@@ -988,7 +1047,7 @@
             //select each one by one
             tasksForSelection.forEach(function (feature) {
                 var feature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), feature.properties.taskId);
-                select.getFeatures().push(feature);
+                vm.selectInteraction.getFeatures().push(feature);
             });
 
             //put the UI in to locked for multi validation mode
