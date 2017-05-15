@@ -34,6 +34,14 @@
 </head>
 <body>
 
+<div class="mob-disclaimer" ng-show="!hideMobileMessage">
+    <p class="mob-disclaimer-text">
+        <i class="hot-ds-icon-xmark pull-right pointer" ng-click="hideMobileMessage = true"></i>
+        In order to make full use of Tasking Manager's many features please use a desktop computer rather than a mobile
+        device. If you would to contribute on a mobile device, please see MapSwipe instead.
+    </p>
+    <a href="https://mapswipe.org" class="button button--achromic">Go to MapSwipe</a>
+</div>
 
 <!-- header -->
 <header class="page__header page__header__fixed" role="banner">

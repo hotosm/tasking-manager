@@ -1,0 +1,14 @@
+.mob-disclaimer {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: .5em 4em;
+  z-index: 6;
+  background: $primary-color;
+  color: white;
+  text-align: center;
+  @include media(large-up) {
+    display: none;
+  }
+}
