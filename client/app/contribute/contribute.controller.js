@@ -39,6 +39,10 @@
         
         // Character limit
         vm.characterLimitShortDescription = 100;
+        
+        vm.status = {
+            isopen: false
+        };
 
         activate();
 
@@ -117,21 +121,6 @@
                 projectMapService.showProjectsOnMap(vm.results);
             });
         }
-
-        /**
-         * Set the mapper level
-         * @param level
-         */
-        vm.setMapperLevel = function(level){
-            vm.mapperLevel = level;
-        };
-
-        /**
-         * Search projects
-         */
-        vm.search = function(){
-            searchProjects();
-        };
 
         /**
          * Set the mapper level

@@ -68,8 +68,17 @@
   }
 }
 
-.search-option {
-  width: 25%;
-  float: left;
-  padding: 1em;
+.search-options-container {
+  @include span(25/25);
+  .search-option {
+    @include span(25/25);
+    float: left;
+    padding: 0.25em;
+     @include media(large-up) {
+      @include span(5/25);
+    }
+  }
+  .search-button {
+    padding-top: 1.75em;
+  }
 }

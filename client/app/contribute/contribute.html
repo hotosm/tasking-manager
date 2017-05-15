@@ -11,6 +11,7 @@
             <div class="section__body">
                 <div class="inner">
                     <div style="width: 100%">
+                         <a class="pull-right" ng-click="showSearchOptions = !showSearchOptions">Advanced search options</a>
                         <div class="form__input-group">
                         <input type="text" ng-model="user" placeholder="Search for a project ID etc."
                                class="form__control form__control--medium">
@@ -20,41 +21,18 @@
                              </button>
                          </span>
                             </div>
-                        <a class="pull-right" ng-click="showSearchOptions = !showSearchOptions">Advanced search options</a>
                     </div>
                     <div class="search" ng-show="showSearchOptions" ng-init="showSearchOptions = false">
                         <form class="form">
                             <fieldset class="form__fieldset">
+                                <div class="search-options-container">
                                    <div class="form__group search-option">
                                         <label class="form__label">Mapping difficulty</label>
-                                        <!--<div class="button-group button-group--horizontal" role="group"
-                                             aria-label="choose mapping difficulty">
-                                            <button class="button button--achromic button--small" type="button"
-                                                    ng-click="contributeCtrl.setMapperLevel('')"
-                                                    ng-class="contributeCtrl.mapperLevel === '' ? 'button--active' : ''">
-                                                All
-                                            </button>
-                                            <button class="button button--achromic button--small" type="button"
-                                                    ng-click="contributeCtrl.setMapperLevel('BEGINNER')"
-                                                    ng-class="contributeCtrl.mapperLevel === 'BEGINNER' ? 'button--active' : ''">
-                                                Beginner
-                                            </button>
-                                            <button class="button button--achromic button--small" type="button"
-                                                    ng-click="contributeCtrl.setMapperLevel('INTERMEDIATE')"
-                                                    ng-class="contributeCtrl.mapperLevel === 'INTERMEDIATE' ? 'button--active' : ''">
-                                                Intermediate
-                                            </button>
-                                            <button class="button button--achromic button--small" type="button"
-                                                    ng-click="contributeCtrl.setMapperLevel('ADVANCED')"
-                                                    ng-class="contributeCtrl.mapperLevel === 'ADVANCED' ? 'button--active' : ''">
-                                                Advanced
-                                            </button>
-                                        </div>-->
-                                        <select class="form__control form__control--small">
+                                        <select class="form__control form__control--small" ng-model="contributeCtrl.mapperLevel">
                                             <option value="">All</option>
-                                            <option value="beginner">Beginner</option>
-                                            <option value="beginner">Intermediate</option>
-                                            <option value="beginner">Advanced</option>
+                                            <option value="BEGINNER">Beginner</option>
+                                            <option value="INTERMEDIATE">Intermediate</option>
+                                            <option value="ADVANCED">Advanced</option>
                                         </select>
                                     </div>
                                     <div class="form__group search-option">
@@ -105,20 +83,33 @@
                                         <span class="form__option__text">Other</span>
                                         <span class="form__option__ui"></span>
                                     </label>-->
-                                       <select class="form__control form__control--small">
+                                     <!--  <select class="form__control form__control--small">
                                             <option value="">All</option>
                                             <option value="beginner">Roads</option>
                                             <option value="beginner">Buildings</option>
                                             <option value="beginner">Waterways</option>
                                             <option value="beginner">Landuse</option>
-                                        </select>
+                                        </select>-->
+                                        <div class="btn-group" uib-dropdown>
+                                          <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
+                                            Button dropdown <span class="caret"></span>
+                                          </button>
+                                          <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                                            <li role="menuitem"><a href="#">Action</a></li>
+                                            <li role="menuitem"><a href="#">Another action</a></li>
+                                            <li role="menuitem"><a href="#">Something else here</a></li>
+                                            <li class="divider"></li>
+                                            <li role="menuitem"><a href="#">Separated link</a></li>
+                                          </ul>
+                                        </div>
                                 </div>
-                                <!--<div>
-                                    <button class="button button--primary button--large pull-right"
+                                <div class="form__group search-option search-button">
+                                    <button class="button button--primary pull-right"
                                             ng-click="contributeCtrl.search()">
                                         Search
                                     </button>
-                                </div>-->
+                                </div>
+                                </div>
                             </fieldset>
                         </form>
                     </div>
