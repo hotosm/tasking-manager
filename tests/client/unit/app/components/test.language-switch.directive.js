@@ -6,7 +6,6 @@ describe('language-switch.directive', function () {
     beforeEach(function () {
         module('taskingManager');
 
-
          inject(function ($controller, $rootScope) {
              scope = $rootScope.$new();
              element = angular.element('<div></div>');
