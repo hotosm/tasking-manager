@@ -19,6 +19,10 @@
   cursor: pointer;
 }
 
+.padding-at-bottom {
+  padding-bottom: 1rem;
+}
+
 /** Override the OSM design system **/
 .form__group {
   margin-top: $global-spacing;
