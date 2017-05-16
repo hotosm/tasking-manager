@@ -160,46 +160,54 @@ class TestValidatorService(unittest.TestCase):
             ValidatorService.unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(UserService, 'is_user_a_project_manager')
-    @patch.object(Task, 'get')
-    @patch.object(ProjectService, 'is_user_permitted_to_validate')
-    def test_lock_tasks_raises_error_if_user_not_pm_and_mapped_the_task(self, mock_project, mock_task, mock_user):
+    def test_user_can_validate_task_returns_false_when_user_not_a_pm_and_validating_own_task(self, mock_user):
         # Arrange
-        task_stub = Task()
-        task_stub.task_status = TaskStatus.MAPPED.value
-        task_stub.mapped_by = 1234
-        mock_task.return_value = task_stub
-
-        mock_project.return_value = True, 'User allowed to validate'
         mock_user.return_value = False
-
-        lock_dto = LockForValidationDTO()
-        lock_dto.project_id = 1
-        lock_dto.task_ids = [1, 2]
-        lock_dto.user_id = 1234
-
-        with self.assertRaises(ValidatatorServiceError):
-            ValidatorService.lock_tasks_for_validation(lock_dto)
-
-    @patch.object(UserService, 'is_user_a_project_manager')
-    @patch.object(Task, 'get')
-    @patch.object(ProjectService, 'is_user_permitted_to_validate')
-    def test_lock_tasks_locks_task_if_user_is_pm_and_mapped_the_task(self, mock_project, mock_task, mock_user):
-        # Arrange
-        task_stub = Task()
-        task_stub.task_status = TaskStatus.MAPPED.value
-        task_stub.mapped_by = 1234
-        mock_task.return_value = task_stub
-
-        mock_project.return_value = True, 'User allowed to validate'
-        mock_user.return_value = True
-
-        lock_dto = LockForValidationDTO()
-        lock_dto.project_id = 1
-        lock_dto.task_ids = [1, 2]
-        lock_dto.user_id = 1234
+        user_id = 1234
+        mapped_by = 1234
 
         # act
-        task_dto = ValidatorService.lock_tasks_for_validation(lock_dto)
+        user_can_validate_task = ValidatorService._user_can_validate_task(user_id, mapped_by)
 
         # assert
-        self.assertIsInstance(task_dto, TaskDTOs, "lock_tasks_for_validation did not return TaskDTOs object")
+        self.assertFalse(user_can_validate_task)
+
+    @patch.object(UserService, 'is_user_a_project_manager')
+    def test_user_can_validate_task_returns_true_when_user_a_pm_and_validating_own_task(self, mock_user):
+        # Arrange
+        mock_user.return_value = True
+        user_id = 1234
+        mapped_by = 1234
+
+        # act
+        user_can_validate_task = ValidatorService._user_can_validate_task(user_id, mapped_by)
+
+        # assert
+        self.assertTrue(user_can_validate_task)
+
+    @patch.object(UserService, 'is_user_a_project_manager')
+    def test_user_can_validate_task_returns_true_when_user_a_pm_and_not_validating_own_task(self, mock_user):
+        # Arrange
+        mock_user.return_value = True
+        user_id = 5678
+        mapped_by = 1234
+
+        # act
+        user_can_validate_task = ValidatorService._user_can_validate_task(user_id, mapped_by)
+
+        # assert
+        self.assertTrue(user_can_validate_task)
+
+    @patch.object(UserService, 'is_user_a_project_manager')
+    def test_user_can_validate_task_returns_true_when_user_not_a_pm_and_not_validating_own_task(self, mock_user):
+        # Arrange
+        mock_user.return_value = False
+        user_id = 5678
+        mapped_by = 1234
+
+        # act
+        user_can_validate_task = ValidatorService._user_can_validate_task(user_id, mapped_by)
+
+        # assert
+        self.assertTrue(user_can_validate_task)
+

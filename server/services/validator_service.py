@@ -36,11 +36,8 @@ class ValidatorService:
             if TaskStatus(task.task_status) not in [TaskStatus.MAPPED, TaskStatus.VALIDATED]:
                 raise ValidatatorServiceError(f'Task {task_id} is not MAPPED or VALIDATED')
 
-            # can't validate tasks you own unless you are a project manager (admin counts as project manager too)
-            is_project_manager = UserService.is_user_a_project_manager(validation_dto.user_id)
-            mapped_by_me = (task.mapped_by == validation_dto.user_id)
-            if (not is_project_manager) and (mapped_by_me):
-                raise ValidatatorServiceError(f'Task {task_id} cannot be validated and mapped by the same user')
+            if not ValidatorService._user_can_validate_task(validation_dto.user_id, task.mapped_by):
+                raise ValidatatorServiceError(f'Tasks cannot be mapped and validated by the same user')
 
             tasks_to_lock.append(task)
 
@@ -63,6 +60,21 @@ class ValidatorService:
         task_dtos.tasks = dtos
 
         return task_dtos
+
+    @staticmethod
+    def _user_can_validate_task(user_id: int, mapped_by: int) -> bool:
+        """
+        check whether a user is able to validate a task.  Users cannot validate their own tasks unless they are a PM (admin counts as project manager too)
+        :param user_id: id of user attempting to validate
+        :param mapped_by: id of user who mapped the task
+        :return: Boolean
+        """
+        is_project_manager = UserService.is_user_a_project_manager(user_id)
+        mapped_by_me = (mapped_by == user_id)
+        if is_project_manager or not mapped_by_me:
+            return True
+        return False
+
 
     @staticmethod
     def unlock_tasks_after_validation(validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
