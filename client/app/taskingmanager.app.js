@@ -2,7 +2,7 @@
 
 (function () {
 
-    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', 'taskingmanager.config'])
+    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', 'taskingmanager.config', 'pascalprecht.translate'])
 
     /**
      * Factory that returns the configuration settings for the current environment
@@ -24,8 +24,15 @@
             }
         }])
 
-        .config(['$routeProvider', '$locationProvider', '$httpProvider', 'ChartJsProvider', function ($routeProvider, $locationProvider, $httpProvider, ChartJsProvider) {
+        .config(['$routeProvider', '$locationProvider', '$httpProvider', 'ChartJsProvider', '$translateProvider', function ($routeProvider, $locationProvider, $httpProvider, ChartJsProvider, $translateProvider) {
 
+            // Translate
+            $translateProvider.useStaticFilesLoader({
+                prefix: 'locale/',
+                suffix: '.json'
+            });
+            $translateProvider.preferredLanguage('nl');
+            
             // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
             $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
             $httpProvider.defaults.cache = false;
