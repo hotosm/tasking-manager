@@ -31,4 +31,6 @@ schematics==2.0.0a1
 Shapely==1.5.17
 six==1.10.0
 SQLAlchemy==1.1.9
+transifex-client==0.12.4
+urllib3==1.21.1
 Werkzeug==0.12.1
