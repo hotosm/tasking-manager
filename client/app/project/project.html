@@ -40,6 +40,12 @@
                                 <mark>Priority: {{ projectCtrl.projectData.projectPriority }}</mark>
                             </div>
                             <p ng-bind-html="description"></p>
+                            <hr/>
+                            <div><strong>Created by: </strong><span><a
+                                    href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></span>
+                            </div>
+                            <div><strong>Last updated: </strong> <span
+                                    am-time-ago="projectCtrl.projectData.lastUpdated | amUtc | amLocal"></span></div>
                         </section>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
@@ -68,11 +74,12 @@
                                 </div>
                                 <hr/>
                             </div>
-                            <div ng-show="projectCtrl.projectData.changesetComment" ng-init="showChangesetCommentHelp = false">
+                            <div ng-show="projectCtrl.projectData.changesetComment"
+                                 ng-init="showChangesetCommentHelp = false">
                                 <strong>
                                     Changeset Comment
                                     <i ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
-                                        class="hot-ds-icon-circle-question pointer">
+                                       class="hot-ds-icon-circle-question pointer">
                                     </i>
                                 </strong>
                                 <div ng-show="showChangesetCommentHelp">
@@ -510,14 +517,14 @@
                                 </div>
                                 <div class="form__group">
                                      <textarea class="form__control" type="text" mentio
-                                              rows="4"
-                                              maxlength="{{ projectCtrl.maxlengthComment }}"
-                                              placeholder="Leave a comment"
-                                              mentio-typed-text="typedTerm"
-                                              mentio-search="projectCtrl.searchUser(term)"
-                                              mentio-select="projectCtrl.formatUserTag(item)"
-                                              mentio-items="projectCtrl.usernames | filter:label:typedTerm"
-                                              ng-model="projectCtrl.comment"></textarea>
+                                               rows="4"
+                                               maxlength="{{ projectCtrl.maxlengthComment }}"
+                                               placeholder="Leave a comment"
+                                               mentio-typed-text="typedTerm"
+                                               mentio-search="projectCtrl.searchUser(term)"
+                                               mentio-select="projectCtrl.formatUserTag(item)"
+                                               mentio-items="projectCtrl.usernames | filter:label:typedTerm"
+                                               ng-model="projectCtrl.comment"></textarea>
                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                         characters remaining</p>
                                 </div>
@@ -595,14 +602,14 @@
                                 </div>
                                 <div class="form__group">
                                      <textarea class="form__control" type="text" mentio
-                                              rows="4"
-                                              maxlength="{{ projectCtrl.maxlengthComment }}"
-                                              placeholder="Leave a comment"
-                                              mentio-typed-text="typedTerm"
-                                              mentio-search="projectCtrl.searchUser(term)"
-                                              mentio-select="projectCtrl.formatUserTag(item)"
-                                              mentio-items="projectCtrl.usernames | filter:label:typedTerm"
-                                              ng-model="projectCtrl.comment"></textarea>
+                                               rows="4"
+                                               maxlength="{{ projectCtrl.maxlengthComment }}"
+                                               placeholder="Leave a comment"
+                                               mentio-typed-text="typedTerm"
+                                               mentio-search="projectCtrl.searchUser(term)"
+                                               mentio-select="projectCtrl.formatUserTag(item)"
+                                               mentio-items="projectCtrl.usernames | filter:label:typedTerm"
+                                               ng-model="projectCtrl.comment"></textarea>
                                     <p class="pull-right">{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                         characters remaining</p>
                                 </div>
@@ -747,43 +754,50 @@
                     <h3>Legend</h3>
                     <div>
                         <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1" fill="rgba(223, 223, 223, 0.1)"/>
+                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(223, 223, 223, 0.1)"/>
                         </svg>
                         Ready
                     </div>
                     <div>
                         <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1" fill="rgba(255, 198, 12, 0.4)"/>
+                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(255, 198, 12, 0.4)"/>
                         </svg>
                         Mapped
                     </div>
                     <div>
                         <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1" fill="rgba(0, 0, 0, 0.4)"/>
+                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(0, 0, 0, 0.4)"/>
                         </svg>
                         Bad imagery
                     </div>
                     <div>
                         <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1" fill="rgba(0, 128, 0, 0.4)"/>
+                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(0, 128, 0, 0.4)"/>
                         </svg>
                         Validated
                     </div>
                     <div>
                         <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1" fill="rgba(233, 11, 67, 0.4)"/>
+                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(233, 11, 67, 0.4)"/>
                         </svg>
                         Invalidated
                     </div>
                     <div>
                         <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1" fill="rgba(18, 89, 240, 0.4)"/>
+                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(18, 89, 240, 0.4)"/>
                         </svg>
                         Locked
                     </div>
                     <div>
                         <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(18, 89, 240, 1)" stroke-width="5" fill="rgba(18, 89, 240, 0.4)"/>
+                            <rect width="20" height="20" stroke="rgba(18, 89, 240, 1)" stroke-width="5"
+                                  fill="rgba(18, 89, 240, 0.4)"/>
                         </svg>
                         Locked by me
                     </div>
@@ -791,11 +805,12 @@
                 <div ng-show="projectCtrl.hasPriorityArea" class="ol-control legend-control priority-areas">
                     <div>
                         <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(255, 0, 0, 1)" stroke-width="3" fill="rgba(255, 0, 0, 0.3)"/>
+                            <rect width="20" height="20" stroke="rgba(255, 0, 0, 1)" stroke-width="3"
+                                  fill="rgba(255, 0, 0, 0.3)"/>
                         </svg>
                         Priority area
                     </div>
-                 </div>
+                </div>
             </div>
         </div>
     </section>
