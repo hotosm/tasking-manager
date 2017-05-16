@@ -40,6 +40,12 @@
                                 <mark>Priority: {{ projectCtrl.projectData.projectPriority }}</mark>
                             </div>
                             <p ng-bind-html="description"></p>
+                            <hr/>
+                            <div><strong>Created by: </strong><span><a
+                                    href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></span>
+                            </div>
+                            <div><strong>Last updated: </strong> <span
+                                    am-time-ago="projectCtrl.projectData.lastUpdated | amUtc | amLocal"></span></div>
                         </section>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
@@ -53,19 +59,29 @@
                         </button>
                         <section>
                             <h2>Instructions</h2>
-                            <div ng-init="showEntitiesHelp = false">
-                                <strong>Entities to Map <i ng-click="showEntitiesHelp = !showEntitiesHelp"
-                                                           class="hot-ds-icon-circle-question pointer"></i></strong>
+                            <div ng-show="projectCtrl.projectData.entitiesToMap" ng-init="showEntitiesHelp = false">
+                                <strong>
+                                    Entities to Map
+                                    <i ng-click="showEntitiesHelp = !showEntitiesHelp"
+                                       class="hot-ds-icon-circle-question pointer">
+                                    </i>
+                                </strong>
                                 <div ng-show="showEntitiesHelp">
                                     <small><em>The list of elements we ask you to map</em></small>
                                 </div>
-                                <div><code>{{ projectCtrl.projectData.entitiesToMap }}</code></div>
+                                <div>
+                                    <code>{{ projectCtrl.projectData.entitiesToMap }}</code>
+                                </div>
+                                <hr/>
                             </div>
-                            <hr/>
-                            <div ng-init="showChangesetCommentHelp = false">
-                                <strong>Changeset Comment <i
-                                        ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
-                                        class="hot-ds-icon-circle-question pointer"></i></strong>
+                            <div ng-show="projectCtrl.projectData.changesetComment"
+                                 ng-init="showChangesetCommentHelp = false">
+                                <strong>
+                                    Changeset Comment
+                                    <i ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
+                                       class="hot-ds-icon-circle-question pointer">
+                                    </i>
+                                </strong>
                                 <div ng-show="showChangesetCommentHelp">
                                     <small><em>The default comment entered when uploaded data to the OSM database. When
                                         saving your work,
@@ -74,9 +90,18 @@
                                         buildings and a residential road"
                                     </em></small>
                                 </div>
-                                <div><code>{{ projectCtrl.projectData.changesetComment }}</code></div>
+                                <div>
+                                    <code>{{ projectCtrl.projectData.changesetComment }}</code>
+                                </div>
+                                <hr/>
                             </div>
-                            <hr/>
+                            <div ng-show="projectCtrl.projectData.imagery" class="imagery-container">
+                                <strong>Imagery</strong>
+                                <div>
+                                    <code>{{ projectCtrl.projectData.imagery }}</code>
+                                </div>
+                                <hr/>
+                            </div>
                             <p ng-bind-html="instructions"></p>
                         </section>
 

@@ -32,6 +32,7 @@ module.exports = function(config) {
       'node_modules/angular-chart.js/dist/angular-chart.js',
       'node_modules/ng-tags-input/build/ng-tags-input.js',
       'node_modules/ment.io/dist/mentio.js',
+      'app/taskingmanager.app.js',
       'app/*.js',
       'app/**/*.js',
       '../tests/client/unit/**/*.js'
