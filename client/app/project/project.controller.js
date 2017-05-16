@@ -278,7 +278,7 @@
                 for (var i = 0 ; i < features.length; i++){
                     if (polygon.intersectsExtent(features[i].getGeometry().getExtent())){
                         var taskStatus = features[i].getProperties().taskStatus;
-                        if (taskStatus === 'MAPPED') {
+                        if (taskStatus === 'MAPPED' || taskStatus === 'VALIDATED') {
                             selectedFeatures.push(features[i]);
                             vm.selectedTasksForValidation.push(features[i].getProperties().taskId);
                         }
