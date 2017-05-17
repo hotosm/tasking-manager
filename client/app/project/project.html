@@ -345,7 +345,7 @@
                                         role.</p>
                                 </div>
                                 <div ng-show="projectCtrl.userCanValidate">
-                                    <p>Choose a task for validation:</p>
+                                    <p>Choose one or more tasks for validation:</p>
                                     <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                                     <p><strong>Option 2: </strong>
                                         <button ng-click="projectCtrl.selectRandomTaskValidate()"
@@ -353,23 +353,33 @@
                                             Select a random task
                                         </button>
                                     </p>
+                                    <p><strong>Option 3: </strong>Select by area</p>
+                                    <div class="padding-at-bottom">
+                                        <button ng-click="projectCtrl.selectByPolygonValidate()"
+                                                 class="button button--achromic pull-center"
+                                                 ng-class="projectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''">
+                                             Select area by drawing a polygon
+                                        </button>
+                                        <button class="button button--secondary"
+                                            ng-class="projectCtrl.selectedTasksForValidation.length < 1 ? 'disabled' : '' "
+                                            ng-click="projectCtrl.lockTasksForValidation(projectCtrl.selectedTasksForValidation)">
+                                            Start validating
+                                        </button>
+                                    </div>
+                                    <p><strong>Option 4: </strong> Select by user:</p>
                                     <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
                                         <div class="alert alert--danger" role="alert">
                                             <p>There are no tasks currently available for validation.</p>
                                         </div>
-
                                     </div>
                                     <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
                                         <div class="alert alert--danger" role="alert">
                                             <button class="alert__button-dismiss" title="Dismiss alert"
                                                     ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
                                             </button>
-                                            <p>there was an error retrieving the task from the server.</p>
+                                            <p>There was an error retrieving the task from the server.</p>
                                         </div>
                                     </div>
-
-                                    <p><strong>Option 3: </strong> Select By user:
-                                    </p>
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
                                             <p>The tasks could not be
@@ -386,7 +396,7 @@
                                         <tr>
                                             <th nowrap ng-click="projectCtrl.sortBy('username')"><a
                                                     class="table__sort table__sort--none"
-                                                    title="Sort column"><span>Contributer</span></a></th>
+                                                    title="Sort column"><span>Contributor</span></a></th>
                                             <th nowrap ng-click="projectCtrl.sortBy('mappingLevel')"><a
                                                     class="table__sort table__sort--none"
                                                     title="Sort column"><span>Level</span></a></th>

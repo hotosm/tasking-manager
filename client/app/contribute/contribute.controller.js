@@ -81,11 +81,14 @@
             }
 
             var searchParameters = {
-                mapperLevel: vm.mapperLevel,
                 mappingTypes: vm.mappingTypes,
                 organisationTag: vm.searchOrganisation,
                 campaignTag: vm.searchCampaign
             };
+            // Only add mapper level if set
+            if (vm.mapperLevel){
+                searchParameters.mapperLevel = vm.mapperLevel;
+            }
 
             var resultsPromise = searchService.searchProjects(searchParameters);
             resultsPromise.then(function (data) {
