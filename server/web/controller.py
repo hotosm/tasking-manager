@@ -13,7 +13,7 @@ def assets(path):
 
 
 @main.route('/locale/<path:path>')
-def assets(path):
+def locale(path):
     """
     Route for returning any files contained in the locale dir
     :param path: Path to the file the browser is requesting
