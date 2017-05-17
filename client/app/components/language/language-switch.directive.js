@@ -33,6 +33,18 @@
 
         var vm = this;
         vm.showDropdown = false;
+        vm.selectedLanguage = 'English'; // defaults to English
+        // TODO: get from API
+        vm.availableLanguages = [
+            {
+                'key': 'en',
+                'value': 'English'
+            },
+            {
+                'key': 'nl_NL',
+                'value': 'Nederlands'
+            }
+        ];
 
         activate();
 
@@ -66,8 +78,9 @@
          * Switch language
          * @param key
          */
-        vm.switchLanguage = function(key){
-            $translate.use(key);
+        vm.switchLanguage = function(language){
+            $translate.use(language.key);
+            vm.selectedLanguage = language.value;
         }
     }
 })();

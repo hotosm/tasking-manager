@@ -29,7 +29,7 @@
 
         // Locale - TODO: get from API
         vm.locales = [
-            'nl', 'en'
+            'nl_NL', 'en'
         ];
 
         // Types of mapping

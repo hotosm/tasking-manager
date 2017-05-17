@@ -149,14 +149,23 @@
 .global-menu-item {
   display: block;
   line-height: 2rem;
-  font-size: 1rem;
+  font-size: 0.9rem !important;
   padding: 0 ($global-spacing / 2);
   border-radius: $base-border-radius;
+  .button {
+    font-size: 0.9rem !important;
+    @include media(large-up) {
+      font-size: 1rem !important;
+    }
+  }
   &, &:visited {
     color: $base-font-color;
   }
   &--active {
     background: rgba($base-color, 0.08);
+  }
+  @include media(large-up) {
+    font-size: 1rem !important;
   }
 }
 

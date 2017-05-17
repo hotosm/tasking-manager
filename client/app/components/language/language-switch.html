@@ -1,19 +1,18 @@
 <a class="global-menu-item">
     <div class="drop drop--down drop--align-left drop--open">
+         <!--<a href="" title="Switch language" class="global-menu-item drop__toggle--caret"
+            ng-click="languageSwitchCtrl.toggleMenu($event)">
+             <span>{{ languageSwitchCtrl.selectedLanguage }}</span>
+         </a>-->
         <button class="button button--achromic drop__toggle drop__toggle--caret" type="button"
             ng-click="languageSwitchCtrl.toggleMenu($event)">
-            <span>Language</span>
+            <span>{{ languageSwitchCtrl.selectedLanguage }}</span>
         </button>
         <div ng-show="languageSwitchCtrl.showDropdown" class="drop__content">
             <ul class="drop__menu drop__menu--iconified" role="menu">
-                <li>
-                    <a class="drop__menu-item" ng-click="languageSwitchCtrl.switchLanguage('en')">
-                        English
-                    </a>
-                </li>
-                <li>
-                    <a class="drop__menu-item" ng-click="languageSwitchCtrl.switchLanguage('nl')">
-                        Nederlands
+                <li ng-repeat="language in languageSwitchCtrl.availableLanguages">
+                    <a class="drop__menu-item" ng-click="languageSwitchCtrl.switchLanguage(language)">
+                        {{ language.value }}
                     </a>
                 </li>
             </ul>
