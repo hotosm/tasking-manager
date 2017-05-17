@@ -1,14 +1,24 @@
 import geojson
 import json
-from shapely.geometry import MultiPolygon, mapping
+from shapely.geometry import Polygon, MultiPolygon, mapping
 from shapely.ops import cascaded_union
 import shapely.geometry
 from geoalchemy2 import shape
 from server.models.dtos.grid_dto import GridDTO
 from server.models.postgis.utils import InvalidGeoJson
+from server.models.postgis.utils import ST_Transform
+from server import db
+from shapely.geometry import asShape
+from flask import current_app
 
+class GridServiceError(Exception):
+    """ Custom Exception to notify callers an error occurred when handling projects """
+    def __init__(self, message):
+        if current_app:
+            current_app.logger.error(message)
 
 class GridService:
+
     @staticmethod
     def trim_grid_to_aoi(grid_dto: GridDTO) -> geojson.FeatureCollection:
         """
@@ -182,3 +192,67 @@ class GridService:
             # force Multipolygon
             geometry = MultiPolygon([geometry])
         return geometry
+
+    @staticmethod
+    def split_geom(geom_to_split: geojson.Feature)->list:
+        """
+        function for splitting a task square geometry into 4 smaller squares
+        :param geom_to_split: {geojson.Feature} the geojson feature to b split
+        :return: list of {geojson.Feature}
+        """
+        try:
+            if(geom_to_split['properties']['splittable']==False):
+                raise GridServiceError('task is not splittable')
+
+            split_geoms = []
+            for i in range(0, 2):
+                for j in range(0, 2):
+                    x = geom_to_split['properties']['x'] * 2 + i
+                    y = geom_to_split['properties']['y'] * 2 + j
+                    zoom = geom_to_split['properties']['zoom']+1
+                    new_square = GridService._create_square(x, y, zoom)
+
+                    feature = geojson.Feature()
+                    feature.geometry = new_square
+                    feature.properties = {
+                        'x': x,
+                        'y': y,
+                        'zoom': zoom,
+                        'splittable': True
+                    }
+                    split_geoms.append(feature)
+
+            return split_geoms
+        except Exception as e:
+            msg = str.format("unhandled error splitting task: {0}; {1}",geom_to_split,str(e))
+            raise GridServiceError(msg)
+
+
+    @staticmethod
+    def _create_square(x, y, zoom):
+        # Maximum resolution
+        MAXRESOLUTION = 156543.0339
+
+        # X/Y axis limit
+        max = MAXRESOLUTION * 256 / 2
+
+        step = max / (2 ** (zoom-1))
+        xmin = x * step - max
+        ymin = y * step - max
+        xmax = (x + 1) * step - max
+        ymax = (y + 1) * step - max
+
+        # make a shapely multipolygon
+        multipolygon = MultiPolygon([Polygon([(xmin, ymin), (xmax, ymin),
+                        (xmax, ymax), (xmin, ymax)])])
+
+        # use the database to transform the geometry from 3857 to 4326
+        transformed_geometry = ST_Transform(shape.from_shape(multipolygon, 3857), 4326)
+
+        # convert geometry -> string -> json -> shapely shape
+        transformed_geojson_str = db.engine.execute(transformed_geometry.ST_AsGeoJSON()).scalar()
+        transformed_json = json.loads(transformed_geojson_str)
+        transformed_multipolygon = asShape(transformed_json)
+
+        return transformed_multipolygon
+
