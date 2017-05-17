@@ -12,6 +12,16 @@ def assets(path):
     return send_from_directory(main.static_folder, 'assets/' + path)
 
 
+@main.route('/locale/<path:path>')
+def assets(path):
+    """
+    Route for returning any files contained in the locale dir
+    :param path: Path to the file the browser is requesting
+    :return: The requested file
+    """
+    return send_from_directory(main.static_folder, 'locale/' + path)
+
+
 @main.route('/app/<path:path>')
 def app(path):
     """
