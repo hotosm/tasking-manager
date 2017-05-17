@@ -9,18 +9,18 @@
 truncate hotnew.users cascade;
 truncate hotnew.areas_of_interest cascade;
 
--- Populate users with ids and default stats
-insert into public.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated)
+-- Populate users with ids and default stats - sets users to beginner mapper level
+insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated)
 (select id,username,
 	case when role is null then 0 else role end,
-	0,0,0,0 
+	1,0,0,0
 	 from hotold.users);
 	 
 -- update sequence  (commented out as not needed. ID comes from OSM not from the sequence.)
 -- select setval('hotnew.users_id_seq',(select max(id) from hotnew.users));
 
 -- LICENCES
-INSERT INTO public.licenses(
+INSERT INTO hotnew.licenses(
             id, name, description, plain_text)
     (SELECT id, name, description, plain_text
 	from hotold.licenses);
@@ -43,8 +43,8 @@ insert into hotnew.areas_of_interest (id, geometry, centroid)
 select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.areas_of_interest));
 
 -- PROJECTS
--- Transfer project data.
--- TODO:  update mapper_level, tasks_bad_imagery
+-- Transfer project data, all projects set to mapper level beginner
+-- TODO:  update tasks_bad_imagery
 -- Skipped projects with null author_id
 INSERT INTO hotnew.projects(
             id, status, aoi_id, created, priority, default_locale, author_id, 
@@ -53,7 +53,7 @@ INSERT INTO hotnew.projects(
             last_updated, mapping_types, organisation_tag, campaign_tag, 
             total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery)
   (select id, status, area_id, created, priority, 'en', author_id, 
-            0, false, false, private, 
+            1, false, false, private,
             entities_to_map, changeset_comment, due_date, imagery, josm_preset, 
             last_update, null, '', '', 
             0, 0, 0, 0
@@ -75,7 +75,7 @@ INSERT INTO hotnew.project_info(
 -- Get all tasks that don't have a state of -1 (removed) and where they relate to a project that has been migrated above
 -- default any null x, y values to -1
 -- default any null zoom levels to 13
-INSERT INTO public.tasks(
+INSERT INTO hotnew.tasks(
             id, project_id, x, y, zoom, geometry, task_status)
     (SELECT t.id, t.project_id, 
 	t.x, 
@@ -85,10 +85,10 @@ INSERT INTO public.tasks(
 	0
     from hotold.task t
     where not exists(select id from hotold.task_state ts where ts.task_id = t.id and ts.project_id = t.project_id and ts.state = -1)
-    and exists(select id from public.projects p where p.id = t.project_id) );
+    and exists(select id from hotnew.projects p where p.id = t.project_id) );
 
 -- Update tasks with "Done" task_status and mapped_by info
-update public.tasks nt
+update hotnew.tasks nt
 	set task_status = 2,
 	mapped_by = val.user_id
     from 
@@ -98,7 +98,7 @@ update public.tasks nt
 
 -- Update tasks with validated task_status and validated_by info from old task_state tables
 --  Note, old task_status validated = 3;  new task status validated = 4
-update public.tasks nt
+update hotnew.tasks nt
 	set task_status = 4,
 	validated_by = val.user_id
     from 
@@ -107,16 +107,16 @@ update public.tasks nt
 	and val.project_id = nt.project_id;
 
 -- Update PROJECT with task stats.  Don't have info on bad-imagery
-update public.projects p
-  set total_tasks = (select count(id) from public.tasks t where t.project_id = p.id),
-  tasks_mapped = (select count(id) from public.tasks t where t.project_id = p.id and task_status in (2,4)),
-  tasks_validated = (select count(id) from public.tasks t where t.project_id = p.id and task_status = 4);
+update hotnew.projects p
+  set total_tasks = (select count(id) from hotnew.tasks t where t.project_id = p.id),
+  tasks_mapped = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status in (2,4)),
+  tasks_validated = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status = 4);
 
   
 -- TASK HISTORY
 --  State Changes
 --   only insert state changes where user_id exists, and only for tasks that have been migrated	
-INSERT INTO public.task_history(
+INSERT INTO hotnew.task_history(
             project_id, task_id, action, action_text, action_date, user_id)
     (SELECT project_id, task_id, 'STATE_CHANGE', 
 	CASE state 
@@ -135,7 +135,7 @@ INSERT INTO public.task_history(
 --   assuming all the lock events in the old system are locked_for_mapping events not for validation
 --   not attempting to calculate the length of time task locked
 --   only insert lock events where user_id exists, and only for tasks that have been migrated	
-INSERT INTO public.task_history(
+INSERT INTO hotnew.task_history(
             project_id, task_id, action, action_text, action_date, user_id)
     (SELECT project_id, task_id, 'LOCKED_FOR_MAPPING', 
 	'',
@@ -144,11 +144,11 @@ INSERT INTO public.task_history(
 	from hotold.task_lock ts
 	where user_id is not null
 	and lock = true
-	and exists(select id from public.tasks t where t.project_id = ts.project_id and t.id = ts.task_id ));
+	and exists(select id from hotnew.tasks t where t.project_id = ts.project_id and t.id = ts.task_id ));
 
 --  Comments
 --   only insert comments where author_id exists, and only for tasks that have been migrated	
-INSERT INTO public.task_history(
+INSERT INTO hotnew.task_history(
             project_id, task_id, action, action_text, action_date, user_id)
     (SELECT project_id, task_id, 'COMMENT', 
 	comment,
@@ -156,7 +156,7 @@ INSERT INTO public.task_history(
 	author_id
 	from hotold.task_comment tc
 	where author_id is not null
-	and exists(select id from public.tasks t where t.project_id = tc.project_id and t.id = tc.task_id ));
+	and exists(select id from hotnew.tasks t where t.project_id = tc.project_id and t.id = tc.task_id ));
 
 	
 -- Update USER STATISTICS
@@ -164,27 +164,27 @@ INSERT INTO public.task_history(
 with 
    m as
      (select user_id, count(id) as mapped
-	from public.task_history
+	from hotnew.task_history
 	where action = 'STATE_CHANGE' 
 	and action_text = 'MAPPED'
 	group by user_id), 
    v as 
      (select user_id, count(id) as validated
-	from public.task_history
+	from hotnew.task_history
 	where action = 'STATE_CHANGE'
 	and action_text = 'VALIDATED'
 	group by user_id),
    i as
      (select user_id, count(id) as invalidated
-	from public.task_history
+	from hotnew.task_history
 	where action = 'STATE_CHANGE'
 	and action_text = 'INVALIDATED'
 	group by user_id)
-update public.users us
+update hotnew.users us
    set tasks_mapped = coalesce(m.mapped,0),
    tasks_validated = coalesce(v.validated,0), 
    tasks_invalidated = coalesce(i.invalidated,0)
-from public.users u
+from hotnew.users u
   left join m on m.user_id = u.id
   left join v on v.user_id = u.id
   left join i on i.user_id = u.id
@@ -193,10 +193,10 @@ from public.users u
 -- User Project List 
 with p as
   (select user_id, array_agg(distinct project_id) as projects
-	from public.task_history
+	from hotnew.task_history
 	where action = 'STATE_CHANGE'
 	group by user_id)
-update public.users u
+update hotnew.users u
   set projects_mapped = p.projects
 from p
 where u.id = p.user_id;	
@@ -213,13 +213,13 @@ INSERT INTO hotnew.messages(
 	 
 -- PRIORITY_AREAS
 --  migrate all areas
-INSERT INTO public.priority_areas(
+INSERT INTO hotnew.priority_areas(
             id, geometry)
     (SELECT id, geometry
     from hotold.priority_area);
 
 -- Update sequence
-select setval('public.priority_areas_id_seq',(select max(id) from public.priority_areas));
+select setval('hotnew.priority_areas_id_seq',(select max(id) from hotnew.priority_areas));
 
 -- Migrate project_priority areas link but only where a matching project exists.  
 -- Remove duplicate records
