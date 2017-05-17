@@ -102,17 +102,3 @@ class TestGridService(unittest.TestCase):
         # assert
         self.assertEquals(str(expected), str(result))
 
-    def test_split_geom(self):
-        # arrange
-        splittable_task = geojson.loads(json.dumps(get_canned_json('splittable_task.json')))
-        expected = geojson.loads(json.dumps(get_canned_json('split_task.json')))
-
-        # act
-        result = GridService.split_geom(splittable_task)
-        print(str(expected))
-        print(str(result))
-
-
-        # assert
-        self.assertEquals(str(expected), str(result))
-
