@@ -15,7 +15,8 @@ var paths = {
     scripts: ['app/**/*.js'],
     html: ['./**/*.html', '!node_modules/**/*.html'],
     styles: ['assets/styles/css/*.css'],
-    images: ['assets/img/**/*']
+    images: ['assets/img/**/*'],
+    locale: ['locale/*.json']
 };
 
 gulp.task('browser-sync', function () {
@@ -97,6 +98,12 @@ gulp.task('copy_images_to_dist', function () {
         .pipe(gulp.dest('../server/web/static/dist/assets/img'));
 });
 
+gulp.task('copy_translations_to_dist', function () {
+    /* Copy the translations in the locale folder to a dist folder */
+    return gulp.src(paths.locale)
+        .pipe(gulp.dest('../server/web/static/dist/locale'));
+});
+
 gulp.task('create-dev-config', function () {
     /** Creates a config file for Angular with the relevant environment variables for development */
     return gulp.src('taskingmanager.config.json')
@@ -117,6 +124,7 @@ gulp.task('build', function (callback) {
         'create-release-config',
         'compile-sass',
         'copy_images_to_dist',
+        'copy_translations_to_dist',
         'minify-css',
         'uglify',
         'processhtml',
