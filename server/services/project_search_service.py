@@ -77,8 +77,7 @@ class ProjectSearchService:
             query = query.filter(Project.mapping_types.contains(mapping_type_array))
 
         if search_dto.text_search:
-            #query = query.filter(ProjectInfo.text_searchable.match(search_dto.text_search))
-            query = query.filter(ProjectInfo.text_searchable.match(114, postgresql_regconfig='english'))
+            query = query.filter(ProjectInfo.text_searchable.match(search_dto.text_search))
 
         results = query.order_by(Project.priority).paginate(search_dto.page, 4, True)
 
