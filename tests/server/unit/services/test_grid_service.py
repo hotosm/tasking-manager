@@ -6,6 +6,7 @@ from tests.server.helpers.test_helpers import get_canned_json
 import geojson
 import json
 
+
 class TestGridService(unittest.TestCase):
     skip_tests = False
 
