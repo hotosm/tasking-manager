@@ -72,6 +72,17 @@ INSERT INTO hotnew.project_info(
     from hotold.project_translation pt
     where exists(select p.id from hotnew.projects p where p.id = pt.id));
 
+-- Delete empty languages
+delete from project_info where name = '' and short_description = '' and description = '' and instructions = '';
+
+-- Create trigger for text search
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
+ON project_info FOR EACH ROW EXECUTE PROCEDURE
+tsvector_update_trigger(text_searchable, 'pg_catalog.english', project_id_str, short_description, description);
+
+-- set project-id which will update text search index
+update project_info set project_id_str = project_id::text
+
 -- TASKS
 -- Get all tasks that don't have a state of -1 (removed) and where they relate to a project that has been migrated above
 -- default any null x, y values to -1
@@ -236,8 +247,8 @@ INSERT INTO hotnew.project_allowed_users(
             project_id, user_id)
     (select distinct project_id, user_id
     from hotold.project_allowed_users);
-	
-	
+
+
 --------------------------------------------------	
 --  Migration Results 28/04/2017
 --

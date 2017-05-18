@@ -94,6 +94,12 @@ class ProjectSearchAPI(Resource):
               name: page
               description: Page of results user requested
               type: integer
+              default: 1
+            - in: query
+              name: textSearch
+              description: text to search
+              type: string
+              default: serbia
         responses:
             200:
                 description: Projects found
@@ -109,6 +115,7 @@ class ProjectSearchAPI(Resource):
             search_dto.organisation_tag = request.args.get('organisationTag')
             search_dto.campaign_tag = request.args.get('campaignTag')
             search_dto.page = int(request.args.get('page')) if request.args.get('page') else 1
+            search_dto.text_search = request.args.get('textSearch')
 
             mapping_types_str = request.args.get('mappingTypes')
             if mapping_types_str:
