@@ -71,7 +71,7 @@
             }, function(){
                 // On error
             });
-        };
+        }
 
         /**
          * Select a user

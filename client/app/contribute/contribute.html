@@ -143,57 +143,96 @@
                                                 </section>
                                             </div>
                                         </div>
-                                        <ul ng-show="contributeCtrl.results.length > 0" uib-pagination
-                                            max-size="3"
-                                            boundary-link-numbers="true"
-                                            rotate="false"
-                                            items-per-page="contributeCtrl.itemsPerPage"
-                                            total-items="contributeCtrl.results.length"
-                                            ng-model="contributeCtrl.currentPage"></ul>
+                                        <!-- Pagination -->
+                                        <div class="button-group button-group--horizontal" role="group" aria-label="Navigate the results">
+                                            <button class="button button--achromic"
+                                                    ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
+                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
+                                                    Previous
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
+                                                    ng-class="contributeCtrl.pagination.page === 1 ? 'disabled' : ''"
+                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.lastNum)">
+                                                    1
+                                            </button>
+                                            <button class="button button--achromic disabled"
+                                                    ng-show="contributeCtrl.pagination.prevNum - 1 > 1">
+                                                ...
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-show="contributeCtrl.pagination.prevNum"
+                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
+                                                {{ contributeCtrl.pagination.prevNum }}
+                                            </button>
+                                            <button class="button button--achromic button--active">
+                                                {{ contributeCtrl.pagination.page }}
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-show="contributeCtrl.pagination.nextNum"
+                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
+                                                {{ contributeCtrl.pagination.nextNum }}
+                                            </button>
+                                            <button class="button button--achromic disabled"
+                                                    ng-show="contributeCtrl.pagination.pages - contributeCtrl.pagination.page > 2">
+                                                ...
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-show="(contributeCtrl.pagination.nextNum || contributeCtrl.pagination.page) != contributeCtrl.pagination.pages"
+                                                    ng-class="contributeCtrl.pagination.pages === contributeCtrl.pagination.page ? 'disabled' : ''"
+                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.pages)">
+                                                    {{ contributeCtrl.pagination.pages }}
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
+                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
+                                                    Next
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="list" ng-show="contributeCtrl.resultsView === 'list'">
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>
-                                            <span>#</span>
-                                        </th>
-                                        <th>
-                                            <span>Name</span>
-                                        </th>
-                                        <th>
-                                            <span>Description</span>
-                                        </th>
-                                        <th>
-                                            <span>Level</span>
-                                        </th>
-                                        <th>
-                                            <span>Priority</span>
-                                        </th>
-                                        <th>
-                                            <span>Organisation</span>
-                                        </th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="project in contributeCtrl.results track by project.projectId">
-                                        <td>{{ project.projectId }}</td>
-                                        <td>{{ project.name }}</td>
-                                        <td>
-                                            <span ng-bind-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
-                                                (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
-                                            </span>
-                                        </td>
-                                        <td>{{ project.mapperLevel }}</td>
-                                        <td>{{ project.priority }}</td>
-                                        <td>{{ project.organisationTag }}</td>
-                                        <td><a href="/project/{{ project.projectId }}" class="button button--primary button--small">Contribute</a></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                <div class="list" ng-show="contributeCtrl.resultsView === 'list'">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                <span>#</span>
+                                            </th>
+                                            <th>
+                                                <span>Name</span>
+                                            </th>
+                                            <th>
+                                                <span>Description</span>
+                                            </th>
+                                            <th>
+                                                <span>Level</span>
+                                            </th>
+                                            <th>
+                                                <span>Priority</span>
+                                            </th>
+                                            <th>
+                                                <span>Organisation</span>
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="project in contributeCtrl.results track by project.projectId">
+                                            <td>{{ project.projectId }}</td>
+                                            <td>{{ project.name }}</td>
+                                            <td>
+                                                <span ng-bind-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
+                                                    (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
+                                                </span>
+                                            </td>
+                                            <td>{{ project.mapperLevel }}</td>
+                                            <td>{{ project.priority }}</td>
+                                            <td>{{ project.organisationTag }}</td>
+                                            <td><a href="/project/{{ project.projectId }}" class="button button--primary button--small">Contribute</a></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

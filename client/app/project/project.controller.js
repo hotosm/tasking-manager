@@ -8,9 +8,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', 'messageService', 'drawService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', 'messageService', 'drawService', 'languageService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService) {
 
         var vm = this;
         vm.id = 0;
@@ -51,11 +51,6 @@
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
 
-        //project display text
-        vm.description = '';
-        vm.shortDescription = '';
-        vm.instructions = '';
-
         //editor
         vm.editorStartError = '';
         vm.selectedEditor = '';
@@ -80,6 +75,13 @@
 
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
+
+        // Watch the languageService for change in language and get the project again when needed
+        $scope.$watch(function () {
+            return languageService.getLanguageCode();
+        }, function () {
+            updateDescriptionAndInstructions(vm.id);
+        }, true);
 
         activate();
 
@@ -311,15 +313,11 @@
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.projectData = data;
-                $scope.description = data.projectInfo.description;
-                $scope.shortDescription = data.projectInfo.shortDescription;
-                $scope.instructions = data.projectInfo.instructions;
                 vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
                 vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
-
 
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
@@ -354,6 +352,17 @@
             }, function () {
                 // project not returned successfully
                 // TODO - may want to handle error
+            });
+        }
+
+        /**
+         * Update description and metadata
+         * @param id
+         */
+        function updateDescriptionAndInstructions(id){
+            var resultsPromise = projectService.getProject(id);
+            resultsPromise.then(function (data) {
+                vm.projectData = data;
             });
         }
 
