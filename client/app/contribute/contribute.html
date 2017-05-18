@@ -124,10 +124,10 @@
                                                  ng-repeat="project in contributeCtrl.results.slice(((contributeCtrl.currentPage-1)*contributeCtrl.itemsPerPage), ((contributeCtrl.currentPage)*contributeCtrl.itemsPerPage)) track by project.projectId">
                                                 <section class="panel project-result__content">
                                                      <div class="progress-bar-container">
-                                                         <span class="label">55% mapped</span>
-                                                         <uib-progressbar value="55"></uib-progressbar>
-                                                         <span class="label">30% validated</span>
-                                                         <uib-progressbar value="30"></uib-progressbar>
+                                                         <span class="label">{{ project.percentMapped }}% mapped</span>
+                                                         <uib-progressbar value="project.percentMapped"></uib-progressbar>
+                                                         <span class="label">{{ project.percentValidated }}% validated</span>
+                                                         <uib-progressbar value="project.percentValidated"></uib-progressbar>
                                                     </div>
                                                     <h4>{{ project.name }}</h4>
                                                     <p ng-bind-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
@@ -142,52 +142,6 @@
                                                        class="button button--primary">Contribute</a>
                                                 </section>
                                             </div>
-                                        </div>
-                                        <!-- Pagination -->
-                                        <div class="button-group button-group--horizontal" role="group" aria-label="Navigate the results">
-                                            <button class="button button--achromic"
-                                                    ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
-                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
-                                                    Previous
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
-                                                    ng-class="contributeCtrl.pagination.page === 1 ? 'disabled' : ''"
-                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.lastNum)">
-                                                    1
-                                            </button>
-                                            <button class="button button--achromic disabled"
-                                                    ng-show="contributeCtrl.pagination.prevNum - 1 > 1">
-                                                ...
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-show="contributeCtrl.pagination.prevNum"
-                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
-                                                {{ contributeCtrl.pagination.prevNum }}
-                                            </button>
-                                            <button class="button button--achromic button--active">
-                                                {{ contributeCtrl.pagination.page }}
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-show="contributeCtrl.pagination.nextNum"
-                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
-                                                {{ contributeCtrl.pagination.nextNum }}
-                                            </button>
-                                            <button class="button button--achromic disabled"
-                                                    ng-show="contributeCtrl.pagination.pages - contributeCtrl.pagination.page > 2">
-                                                ...
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-show="(contributeCtrl.pagination.nextNum || contributeCtrl.pagination.page) != contributeCtrl.pagination.pages"
-                                                    ng-class="contributeCtrl.pagination.pages === contributeCtrl.pagination.page ? 'disabled' : ''"
-                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.pages)">
-                                                    {{ contributeCtrl.pagination.pages }}
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
-                                                    ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
-                                                    Next
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -232,6 +186,54 @@
                                         </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                    <!-- Pagination -->
+                                    <div class="paging">
+                                        <div class="button-group button-group--horizontal" role="group" aria-label="Navigate the results">
+                                        <button class="button button--achromic"
+                                                ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
+                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
+                                            Previous
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
+                                                ng-class="contributeCtrl.pagination.page === 1 ? 'disabled' : ''"
+                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.lastNum)">
+                                            1
+                                        </button>
+                                        <button class="button button--achromic disabled"
+                                                ng-show="contributeCtrl.pagination.prevNum - 1 > 1">
+                                            ...
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-show="contributeCtrl.pagination.prevNum"
+                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
+                                            {{ contributeCtrl.pagination.prevNum }}
+                                        </button>
+                                        <button class="button button--achromic button--active">
+                                            {{ contributeCtrl.pagination.page }}
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-show="contributeCtrl.pagination.nextNum"
+                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
+                                            {{ contributeCtrl.pagination.nextNum }}
+                                        </button>
+                                        <button class="button button--achromic disabled"
+                                                ng-show="contributeCtrl.pagination.pages - contributeCtrl.pagination.page > 2">
+                                            ...
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-show="(contributeCtrl.pagination.nextNum || contributeCtrl.pagination.page) != contributeCtrl.pagination.pages"
+                                                ng-class="contributeCtrl.pagination.pages === contributeCtrl.pagination.page ? 'disabled' : ''"
+                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.pages)">
+                                            {{ contributeCtrl.pagination.pages }}
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
+                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
+                                            Next
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

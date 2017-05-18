@@ -13,9 +13,8 @@
     @include media(medium-up) {
       @include column(15/24);
     }
-    .list {
-      max-height: 500px;
-      overflow-y: auto;
+    .paging {
+      text-align: center !important;
     }
   }
 }
@@ -23,11 +22,6 @@
 /* ==========================================================================
    Search results
    ========================================================================== */
-
-.search-results-container {
-  text-align: center !important;
-}
-
 .project-result {
   &__cards {
     text-align: left;
