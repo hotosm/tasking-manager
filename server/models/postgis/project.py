@@ -3,6 +3,7 @@ import geojson
 from flask import current_app
 from typing import Optional
 from geoalchemy2 import Geometry
+from sqlalchemy.dialects.postgresql import ARRAY
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSearchResultDTO, \
     ProjectSearchResultsDTO, ProjectSummary, PMDashboardDTO
@@ -86,7 +87,7 @@ class Project(db.Model):
     license_id = db.Column(db.Integer, db.ForeignKey('licenses.id', name='fk_licenses'))
 
     # Tags
-    mapping_types = db.Column(db.ARRAY(db.Integer), index=True)
+    mapping_types = db.Column(ARRAY(db.Integer), index=True)
     organisation_tag = db.Column(db.String, index=True)
     campaign_tag = db.Column(db.String, index=True)
 

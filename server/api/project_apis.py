@@ -3,6 +3,7 @@ from schematics.exceptions import DataError
 from server.models.dtos.project_dto import ProjectSearchDTO
 from server.services.authentication_service import token_auth, tm
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
+from server.services.project_search_service import ProjectSearchService
 
 
 class ProjectAPI(Resource):
@@ -89,6 +90,10 @@ class ProjectSearchAPI(Resource):
               name: campaignTag
               type: string
               default: malaria
+            - in: query
+              name: page
+              description: Page of results user requested
+              type: integer
         responses:
             200:
                 description: Projects found
@@ -103,6 +108,7 @@ class ProjectSearchAPI(Resource):
             search_dto.mapper_level = request.args.get('mapperLevel')
             search_dto.organisation_tag = request.args.get('organisationTag')
             search_dto.campaign_tag = request.args.get('campaignTag')
+            search_dto.page = int(request.args.get('page')) if request.args.get('page') else 1
 
             mapping_types_str = request.args.get('mappingTypes')
             if mapping_types_str:
@@ -113,7 +119,8 @@ class ProjectSearchAPI(Resource):
             return str(e), 400
 
         try:
-            results_dto = ProjectService.get_projects_by_search_criteria(search_dto)
+            results_dto = ProjectSearchService.search_projects(search_dto)
+            #results_dto = ProjectService.get_projects_by_search_criteria(search_dto)
             return results_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "No projects found"}, 404

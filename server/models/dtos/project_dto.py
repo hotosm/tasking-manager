@@ -3,6 +3,7 @@ from schematics.exceptions import ValidationError
 from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
+from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes
 
 
@@ -87,6 +88,7 @@ class ProjectDTO(Model):
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
 
+
 class ProjectSearchDTO(Model):
     """ Describes the criteria users use to filter active projects"""
     preferred_locale = StringType(required=True, default='en')
@@ -94,6 +96,7 @@ class ProjectSearchDTO(Model):
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     organisation_tag = StringType()
     campaign_tag = StringType()
+    page = IntType(required=True)
 
 
 class ProjectSearchResultDTO(Model):
@@ -111,7 +114,13 @@ class ProjectSearchResultDTO(Model):
 
 class ProjectSearchResultsDTO(Model):
     """ Contains all results for the search criteria """
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.results = []
+
     results = ListType(ModelType(ProjectSearchResultDTO))
+    pagination = ModelType(Pagination)
 
 
 class LockedTasksForUser(Model):
