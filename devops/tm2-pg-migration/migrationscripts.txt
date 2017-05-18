@@ -62,6 +62,7 @@ INSERT INTO hotnew.projects(
             );
 
 select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
+select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.projects));
 
 -- Project info & translations
 -- Skip any records relating to projects that have not been imported
