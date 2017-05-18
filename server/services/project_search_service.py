@@ -75,6 +75,6 @@ class ProjectSearchService:
 
             query = query.filter(Project.mapping_types.contains(mapping_type_array))
 
-        results = query.paginate(search_dto.page, 4, True)
+        results = query.order_by(Project.priority).paginate(search_dto.page, 4, True)
 
         return results
