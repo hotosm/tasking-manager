@@ -92,14 +92,15 @@
                             <!-- Pagination -->
                             <div class="button-group button-group--horizontal" role="group" aria-label="Navigate the results">
                                 <button class="button button--achromic"
-                                        ng-class="usersCtrl.pagination.page === 1 ? 'disabled' : ''"
-                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.lastNum)">
-                                        First
-                                </button>
-                                <button class="button button--achromic"
                                         ng-class="!usersCtrl.pagination.hasPrev ? 'disabled' : ''"
                                         ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.prevNum)">
                                         Previous
+                                </button>
+                                <button class="button button--achromic"
+                                        ng-show="(usersCtrl.pagination.prevNum || usersCtrl.pagination.page) != 1"
+                                        ng-class="usersCtrl.pagination.page === 1 ? 'disabled' : ''"
+                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.lastNum)">
+                                        1
                                 </button>
                                 <button class="button button--achromic disabled"
                                         ng-show="usersCtrl.pagination.prevNum - 1 > 1">
@@ -119,18 +120,19 @@
                                     {{ usersCtrl.pagination.nextNum }}
                                 </button>
                                 <button class="button button--achromic disabled"
-                                        ng-show="usersCtrl.pagination.lastNum - usersCtrl.pagination.lastNum > 1">
+                                        ng-show="usersCtrl.pagination.pages - usersCtrl.pagination.page > 2">
                                     ...
+                                </button>
+                                <button class="button button--achromic"
+                                        ng-show="(usersCtrl.pagination.nextNum || usersCtrl.pagination.page) != usersCtrl.pagination.pages"
+                                        ng-class="usersCtrl.pagination.pages === usersCtrl.pagination.page ? 'disabled' : ''"
+                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.pages)">
+                                        {{ usersCtrl.pagination.pages }}
                                 </button>
                                 <button class="button button--achromic"
                                         ng-class="!usersCtrl.pagination.hasNext ? 'disabled' : ''"
                                         ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.nextNum)">
                                         Next
-                                </button>
-                                <button class="button button--achromic"
-                                        ng-class="usersCtrl.pagination.lastNum === usersCtrl.pagination.page ? 'disabled' : ''"
-                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.lastNum)">
-                                        Last
                                 </button>
                             </div>
                             <!-- /Pagination -->

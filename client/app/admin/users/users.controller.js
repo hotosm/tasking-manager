@@ -47,7 +47,6 @@
          * Gets users with a specific page
          */
         vm.searchUsersWithPage = function(page){
-            console.log(vm.pagination);
             getUsers(page, vm.role, vm.level, vm.username);
         };
 
@@ -69,7 +68,6 @@
                 // On success
                 vm.users = data.users;
                 vm.pagination = data.pagination;
-                vm.pagination.lastNum = Math.ceil(vm.pagination.total / vm.pagination.perPage);
             }, function(){
                 // On error
             });

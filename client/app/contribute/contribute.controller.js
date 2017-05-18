@@ -36,6 +36,9 @@
         vm.searchOther = false;
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
+
+        // Paging
+        vm.pagination = null;
         
         // Character limit
         vm.characterLimitShortDescription = 100;
@@ -67,9 +70,19 @@
         }
 
         /**
-         * Search projects with search parameters
+         * Search projects with page param
+         * @param page
          */
-        function searchProjects(){
+        vm.searchProjectsWithPage = function(page){
+            searchProjects(page);
+        };
+
+        /**
+         * Search projects with search parameters
+         * @param page
+         */
+        function searchProjects(page){
+
             vm.mappingTypes = [];
             if (vm.searchRoads){
                 vm.mappingTypes.push("ROADS");
@@ -96,11 +109,15 @@
             if (vm.mapperLevel){
                 searchParameters.mapperLevel = vm.mapperLevel;
             }
-
+            if (page){
+                searchParameters.page = page;
+            }
+           
             var resultsPromise = searchService.searchProjects(searchParameters);
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
+                vm.pagination = data.pagination;
                 // First remove all projects from the map before adding the results
                 projectMapService.removeProjectsOnMap();
                 for (var i = 0; i < vm.results.length; i++){
