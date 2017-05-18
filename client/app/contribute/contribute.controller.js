@@ -117,6 +117,7 @@
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
+                console.log(vm.results);
                 vm.pagination = data.pagination;
                 // First remove all projects from the map before adding the results
                 projectMapService.removeProjectsOnMap();
