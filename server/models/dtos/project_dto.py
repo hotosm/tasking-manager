@@ -110,6 +110,8 @@ class ProjectSearchResultDTO(Model):
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
     organisation_tag = StringType(serialized_name='organisationTag')
     campaign_tag = StringType(serialized_name='campaignTag')
+    percent_mapped = IntType(serialized_name='percentMapped')
+    percent_validated = IntType(serialized_name='percentValidated')
 
 
 class ProjectSearchResultsDTO(Model):
