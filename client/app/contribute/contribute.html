@@ -152,48 +152,48 @@
                                             ng-model="contributeCtrl.currentPage"></ul>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="list" ng-show="contributeCtrl.resultsView === 'list'">
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>
-                                            <span>#</span>
-                                        </th>
-                                        <th>
-                                            <span>Name</span>
-                                        </th>
-                                        <th>
-                                            <span>Description</span>
-                                        </th>
-                                        <th>
-                                            <span>Level</span>
-                                        </th>
-                                        <th>
-                                            <span>Priority</span>
-                                        </th>
-                                        <th>
-                                            <span>Organisation</span>
-                                        </th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="project in contributeCtrl.results track by project.projectId">
-                                        <td>{{ project.projectId }}</td>
-                                        <td>{{ project.name }}</td>
-                                        <td>
-                                            <span ng-bind-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
-                                                (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
-                                            </span>
-                                        </td>
-                                        <td>{{ project.mapperLevel }}</td>
-                                        <td>{{ project.priority }}</td>
-                                        <td>{{ project.organisationTag }}</td>
-                                        <td><a href="/project/{{ project.projectId }}" class="button button--primary button--small">Contribute</a></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                <div class="list" ng-show="contributeCtrl.resultsView === 'list'">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                <span>#</span>
+                                            </th>
+                                            <th>
+                                                <span>Name</span>
+                                            </th>
+                                            <th>
+                                                <span>Description</span>
+                                            </th>
+                                            <th>
+                                                <span>Level</span>
+                                            </th>
+                                            <th>
+                                                <span>Priority</span>
+                                            </th>
+                                            <th>
+                                                <span>Organisation</span>
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="project in contributeCtrl.results track by project.projectId">
+                                            <td>{{ project.projectId }}</td>
+                                            <td>{{ project.name }}</td>
+                                            <td>
+                                                <span ng-bind-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
+                                                    (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
+                                                </span>
+                                            </td>
+                                            <td>{{ project.mapperLevel }}</td>
+                                            <td>{{ project.priority }}</td>
+                                            <td>{{ project.organisationTag }}</td>
+                                            <td><a href="/project/{{ project.projectId }}" class="button button--primary button--small">Contribute</a></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

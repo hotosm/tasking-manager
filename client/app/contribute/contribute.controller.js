@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['mapService', 'searchService', 'projectMapService', 'tagService', contributeController]);
+        .controller('contributeController', ['$scope', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController(mapService, searchService, projectMapService, tagService) {
+    function contributeController($scope, mapService, searchService, projectMapService, tagService, languageService) {
 
         var vm = this;
 
@@ -39,6 +39,13 @@
         
         // Character limit
         vm.characterLimitShortDescription = 100;
+
+        // Watch the languageService for change in language and search again when needed
+        $scope.$watch(function () {
+            return languageService.getLanguageCode();
+        }, function () {
+            searchProjects();
+        }, true);
 
         activate();
 
