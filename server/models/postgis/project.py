@@ -344,34 +344,3 @@ class Project(db.Model):
         project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(project_id)
 
         return project_dto
-
-    @staticmethod
-    def get_projects_by_seach_criteria(sql: str, preferred_locale: str) -> ProjectSearchResultsDTO:
-        """ Find all projects that match the search criteria """
-        results = db.engine.execute(sql)
-
-        if results.rowcount == 0:
-            raise NotFound()
-
-        results_list = []
-        for row in results:
-            # TODO would be nice to get this for an array rather than individually would be more efficient
-            project_info_dto = ProjectInfo.get_dto_for_locale(row[0], preferred_locale, row[3])
-
-            result_dto = ProjectSearchResultDTO()
-            result_dto.project_id = row[0]
-            result_dto.locale = project_info_dto.locale
-            result_dto.name = project_info_dto.name
-            result_dto.priority = ProjectPriority(row[2]).name
-            result_dto.mapper_level = MappingLevel(row[1]).name
-            result_dto.short_description = project_info_dto.short_description
-            result_dto.aoi_centroid = geojson.loads(row[4])
-            result_dto.organisation_tag = row[5]
-            result_dto.campaign_tag = row[6]
-
-            results_list.append(result_dto)
-
-        results_dto = ProjectSearchResultsDTO()
-        results_dto.results = results_list
-
-        return results_dto
