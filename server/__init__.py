@@ -97,6 +97,7 @@ def init_flask_restful_routes(app):
     from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, MappedTasksByUser
     from server.api.grid_apis import IntersectingTilesAPI
+    from server.api.split_task_apis import SplitTaskAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
@@ -140,3 +141,4 @@ def init_flask_restful_routes(app):
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')
     api.add_resource(UserAcceptLicense,             '/api/v1/user/accept-license/<int:license_id>')
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')
+    api.add_resource(SplitTaskAPI,                  '/api/v1/split/split-task/project/<int:project_id>/task/<int:task_id>')
