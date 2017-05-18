@@ -32,6 +32,8 @@ class ProjectSearchService:
             result_dto.aoi_centroid = geojson.loads(project.centroid)
             result_dto.organisation_tag = project.organisation_tag
             result_dto.campaign_tag = project.campaign_tag
+            result_dto.percent_mapped = round((project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
+            result_dto.percent_validated = round(((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
 
             dto.results.append(result_dto)
 
@@ -49,7 +51,11 @@ class ProjectSearchService:
                                  Project.default_locale,
                                  AreaOfInterest.centroid.ST_AsGeoJSON().label('centroid'),
                                  Project.organisation_tag,
-                                 Project.campaign_tag).join(AreaOfInterest)\
+                                 Project.campaign_tag,
+                                 Project.tasks_bad_imagery,
+                                 Project.tasks_mapped,
+                                 Project.tasks_validated,
+                                 Project.total_tasks).join(AreaOfInterest)\
             .filter(Project.status == ProjectStatus.PUBLISHED.value)
 
         if search_dto.mapper_level:
