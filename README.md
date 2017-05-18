@@ -124,3 +124,5 @@ On boot the Tasking Manager App will look for the following environment vars:
     * **Staging** - Use this for your staging/test environment
     * **Prod** - Use this for your production environment
 
+## Localisation
+Please see the [Localisation Wiki](https://github.com/hotosm/tasking-manager/wiki/Localisation) for more details.

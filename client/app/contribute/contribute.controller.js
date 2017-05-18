@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['mapService', 'searchService', 'projectMapService', 'tagService', contributeController]);
+        .controller('contributeController', ['$scope', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController(mapService, searchService, projectMapService, tagService) {
+    function contributeController($scope, mapService, searchService, projectMapService, tagService, languageService) {
 
         var vm = this;
 
@@ -36,9 +36,19 @@
         vm.searchOther = false;
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
+
+        // Paging
+        vm.pagination = null;
         
         // Character limit
         vm.characterLimitShortDescription = 100;
+
+        // Watch the languageService for change in language and search again when needed
+        $scope.$watch(function () {
+            return languageService.getLanguageCode();
+        }, function () {
+            searchProjects();
+        }, true);
 
         activate();
 
@@ -60,9 +70,19 @@
         }
 
         /**
-         * Search projects with search parameters
+         * Search projects with page param
+         * @param page
          */
-        function searchProjects(){
+        vm.searchProjectsWithPage = function(page){
+            searchProjects(page);
+        };
+
+        /**
+         * Search projects with search parameters
+         * @param page
+         */
+        function searchProjects(page){
+
             vm.mappingTypes = [];
             if (vm.searchRoads){
                 vm.mappingTypes.push("ROADS");
@@ -81,16 +101,23 @@
             }
 
             var searchParameters = {
-                mapperLevel: vm.mapperLevel,
                 mappingTypes: vm.mappingTypes,
                 organisationTag: vm.searchOrganisation,
                 campaignTag: vm.searchCampaign
             };
-
+            // Only add mapper level if set
+            if (vm.mapperLevel){
+                searchParameters.mapperLevel = vm.mapperLevel;
+            }
+            if (page){
+                searchParameters.page = page;
+            }
+           
             var resultsPromise = searchService.searchProjects(searchParameters);
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
+                vm.pagination = data.pagination;
                 // First remove all projects from the map before adding the results
                 projectMapService.removeProjectsOnMap();
                 for (var i = 0; i < vm.results.length; i++){

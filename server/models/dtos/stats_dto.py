@@ -39,7 +39,7 @@ class Pagination(Model):
     has_prev = BooleanType(serialized_name='hasPrev')
     next_num = IntType(serialized_name='nextNum')
     page = IntType()
-    pages = IntType
+    pages = IntType()
     prev_num = IntType(serialized_name='prevNum')
     per_page = IntType(serialized_name='perPage')
     total = IntType()
