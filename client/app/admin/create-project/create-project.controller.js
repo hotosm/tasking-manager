@@ -47,6 +47,7 @@
         vm.splitPolygonValidationMessage = '';
         vm.isimportError = false;
         vm.createProjectFail = false;
+        vm.createProjectFailReason = '';
         vm.createProjectSuccess = false;
 
         // Split tasks
@@ -60,6 +61,7 @@
         //waiting spinner
         vm.waiting = false;
         vm.trimError = false;
+        vm.trimErrorReason = '';
 
         activate();
 
@@ -157,9 +159,15 @@
                     vm.currentStep = wizardStep;
                 }
             }
+            else if (wizardStep === 'trim') {
+                vm.trimError = false;
+                vm.trimErrorReason = '';
+                vm.currentStep = wizardStep;
+            }
             else if (wizardStep === 'review') {
                 setSplitToolsActive_(false);
                 vm.createProjectFailed = false;
+                vm.createProjectFailReason = '';
                 vm.currentStep = wizardStep;
             }
             else {
@@ -194,7 +202,6 @@
                     showStep = true;
                 }
             }
-
             else if (wizardStep === 'review') {
                 if (vm.currentStep === 'review') {
                     showStep = true;
@@ -227,6 +234,7 @@
             trimTaskGridPromise.then(function (data) {
                 vm.waiting = false;
                 vm.trimError = false;
+                vm.trimErrorReason = '';
                 projectService.removeTaskGrid();
                 var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
@@ -236,8 +244,9 @@
             }, function (reason) {
                 vm.waiting = false;
                 vm.trimError = true;
+                vm.trimErrorReason = reason.status
             })
-        }
+        };
 
         /**
          * Create arbitary tasks
@@ -431,13 +440,15 @@
                     // Project created successfully
                     vm.createProjectFail = false;
                     vm.createProjectSuccess = true;
+                    vm.createProjectFailReason = '';
                     // Navigate to the edit project page
                     $location.path('/admin/edit-project/' + data.projectId);
-                }, function () {
+                }, function (reason) {
                     vm.waiting = false;
                     // Project not created successfully
                     vm.createProjectFail = true;
                     vm.createProjectSuccess = false;
+                    vm.createProjectFailReason = reason.status
                 });
             }
             else {
