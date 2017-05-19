@@ -74,7 +74,7 @@ class ProjectAdminAPI(Resource):
             draft_project_dto.user_id = tm.authenticated_user_id
             draft_project_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f'error validating request: {str(e)}')
             return str(e), 400
 
         try:

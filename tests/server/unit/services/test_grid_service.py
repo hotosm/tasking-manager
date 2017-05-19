@@ -113,5 +113,5 @@ class TestGridService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(InvalidGeoJson):
-            GridService.trim_grid_to_aoi(grid_dto)
+            GridService.merge_to_multi_polygon(grid_dto.area_of_interest, dissolve=True)
 
