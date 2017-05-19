@@ -88,6 +88,10 @@
                                             <span class="form__option__ui"></span>
                                         </label>
                                     </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Text search</label>
+                                        <input type="text" class="form__control form__control--medium" placeholder="Search on description or project number" ng-model="contributeCtrl.searchText"/>
+                                    </div>
                                     <div>
                                         <button class="button button--primary pull-right"
                                             ng-click="contributeCtrl.search()">
@@ -129,7 +133,7 @@
                                                          <span class="label">{{ project.percentValidated }}% validated</span>
                                                          <uib-progressbar value="project.percentValidated"></uib-progressbar>
                                                     </div>
-                                                    <h4>{{ project.name }}</h4>
+                                                    <h4>#{{ project.projectId }} {{ project.name }}</h4>
                                                     <p ng-bind-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
                                                     </p>
