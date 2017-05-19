@@ -43,13 +43,6 @@ class AreaOfInterest(db.Model):
         aoi_geojson = geojson.loads(json.dumps(aoi_geometry_geojson))
         aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
 
-        if type(aoi_geometry) is not geojson.MultiPolygon:
-            raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')
-
-        is_valid_geojson = geojson.is_valid(aoi_geometry)
-        if is_valid_geojson['valid'] == 'no':
-            raise InvalidGeoJson(f"Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}")
-
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         self.centroid = ST_Centroid(self.geometry)

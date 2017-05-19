@@ -1,6 +1,7 @@
 import geojson
 import json
-from shapely.geometry import Polygon, MultiPolygon, mapping
+from shapely.geometry import MultiPolygon, mapping
+from geoalchemy2 import shape
 from shapely.ops import cascaded_union
 import shapely.geometry
 from flask import current_app
@@ -32,6 +33,7 @@ class GridService:
 
         # create a shapely shape from the aoi
         aoi_multi_polygon_geojson = GridService.merge_to_multi_polygon(aoi, dissolve=True)
+
         aoi_multi_polygon = shapely.geometry.shape(aoi_multi_polygon_geojson)
         intersecting_features = []
         for feature in grid['features']:
@@ -88,7 +90,17 @@ class GridService:
         multi_polygon = GridService._convert_to_multipolygon(parsed_geojson)
         if dissolve:
             multi_polygon = GridService._dissolve(multi_polygon)
-        return geojson.loads(json.dumps(mapping(multi_polygon)))
+        aoi_multi_polygon_geojson =  geojson.loads(json.dumps(mapping(multi_polygon)))
+
+        # validate the geometry
+        if type(aoi_multi_polygon_geojson) is not geojson.MultiPolygon:
+            raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')
+
+        is_valid_geojson = geojson.is_valid(aoi_multi_polygon_geojson)
+        if is_valid_geojson['valid'] == 'no':
+            raise InvalidGeoJson(f"Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}")
+
+        return aoi_multi_polygon_geojson
 
     @staticmethod
     def _update_feature(clip_to_aoi: bool, feature: dict, new_shape) -> dict:
