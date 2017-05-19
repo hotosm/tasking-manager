@@ -8,6 +8,7 @@ from server.services.mapping_service import MappingService, Task
 from tests.server.helpers.test_helpers import create_canned_project
 
 
+
 class TestAuthenticationService(unittest.TestCase):
     skip_tests = False
     test_project = None
@@ -57,6 +58,6 @@ class TestAuthenticationService(unittest.TestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode('utf-8')).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, '6b808eadc04cff17b68a55d8d2a1a570')
+        self.assertEqual(gpx_hash, '97c4274c013964091974916ffee07846')
 
 

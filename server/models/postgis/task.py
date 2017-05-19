@@ -144,6 +144,20 @@ class Task(db.Model):
     task_history = db.relationship(TaskHistory, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
 
+    def create(self):
+        """ Creates and saves the current model to the DB """
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        """ Updates the DB with the current state of the Task """
+        db.session.commit()
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
     @classmethod
     def from_geojson_feature(cls, task_id, task_feature):
         """
@@ -244,10 +258,6 @@ class Task(db.Model):
             history.set_state_change_action(new_state)
 
         self.task_history.append(history)
-
-    def update(self):
-        """ Updates the DB with the current state of the Task """
-        db.session.commit()
 
     def lock_task_for_mapping(self, user_id: int):
         self.set_task_history(TaskAction.LOCKED_FOR_MAPPING, user_id)
@@ -376,6 +386,16 @@ class Task(db.Model):
         mapped_tasks_dto.mapped_tasks = mapped_tasks
 
         return mapped_tasks_dto
+
+    @staticmethod
+    def get_max_task_id_for_project(project_id: int):
+        """Gets the nights task id currntly in use on a project"""
+        sql = """select max(id) from tasks where project_id = {0} GROUP BY project_id""".format(project_id)
+        result = db.engine.execute(sql)
+        if result.rowcount == 0:
+            raise NotFound()
+        for row in result:
+            return row[0]
 
     def as_dto(self):
         """

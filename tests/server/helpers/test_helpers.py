@@ -63,9 +63,7 @@ def create_canned_project() -> Tuple[Project, User]:
     """ Generates a canned project in the DB to help with integration tests """
     multipoly_geojson = geojson.loads(json.dumps(get_canned_json('test_aoi.json')))
 
-    task_feature = geojson.loads('{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'
-                                 '[-3.8122, 56.098], [-4.0237, 56.0904]]]], "type": "MultiPolygon"},'
-                                 '"properties": {"x": 2402, "y": 1736, "zoom": 12, "splittable":false}, "type": "Feature"}')
+    task_feature = geojson.loads(json.dumps(get_canned_json('splittable_task.json')))
 
     test_aoi = AreaOfInterest(multipoly_geojson)
 

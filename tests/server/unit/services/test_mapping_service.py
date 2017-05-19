@@ -144,3 +144,4 @@ class TestMappingService(unittest.TestCase):
         self.assertEqual(TaskAction.STATE_CHANGE.name, test_task.task_history[0].action)
         self.assertEqual(test_task.task_history[0].action_text, TaskStatus.MAPPED.name)
         self.assertEqual(TaskStatus.MAPPED.name, test_task.task_status)
+

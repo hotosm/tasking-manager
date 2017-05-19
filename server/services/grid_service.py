@@ -1,11 +1,19 @@
 import geojson
 import json
-from shapely.geometry import MultiPolygon, mapping
+from shapely.geometry import Polygon, MultiPolygon, mapping
 from shapely.ops import cascaded_union
 import shapely.geometry
-from geoalchemy2 import shape
+from flask import current_app
 from server.models.dtos.grid_dto import GridDTO
 from server.models.postgis.utils import InvalidGeoJson
+
+
+class GridServiceError(Exception):
+    """ Custom Exception to notify callers an error occurred when handling projects """
+
+    def __init__(self, message):
+        if current_app:
+            current_app.logger.error(message)
 
 
 class GridService:
@@ -34,7 +42,7 @@ class GridService:
                 intersecting_features.append(feature)
             else:
                 intersection = aoi_multi_polygon.intersection(tile)
-                if intersection.is_empty or intersection.geom_type not in ['Polygon','MultiPolygon']:
+                if intersection.is_empty or intersection.geom_type not in ['Polygon', 'MultiPolygon']:
                     continue  # this intersections which are not polygons or which are completely outside aoi
                 # tile is partially intersecting the aoi
                 clipped_feature = GridService._update_feature(clip_to_aoi, feature, intersection)
@@ -159,7 +167,7 @@ class GridService:
 
         return geom2d
 
-    def _to_2d(x: tuple, y:tuple, z:tuple=None) -> tuple:
+    def _to_2d(x: tuple, y: tuple, z: tuple = None) -> tuple:
         """
         Helper method that can be used to strip out the z-coords from a shapely geometry
         :param x: tuple containing tuple of x coords
