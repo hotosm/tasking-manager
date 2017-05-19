@@ -42,6 +42,9 @@
             }
             $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
 
+             // Intercept the response errors and go to the login page if the status is 401
+            $httpProvider.interceptors.push('httpInterceptorService');
+
             ChartJsProvider.setOptions({
                 chartColors: ['#AC3232', '#DCDCDC', '#7A7A7A', '#595959']
             });
@@ -143,6 +146,12 @@
                     templateUrl: 'app/message/message.html',
                     controller: 'messageController',
                     controllerAs: 'messageCtrl'
+                })
+            
+                .when('/login', {
+                    templateUrl: 'app/login/login.html',
+                    controller: 'loginController',
+                    controllerAs: 'loginCtrl'
                 });
 
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them
