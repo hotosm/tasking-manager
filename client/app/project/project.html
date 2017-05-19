@@ -39,7 +39,7 @@
                             <div>
                                 <mark>Priority: {{ projectCtrl.projectData.projectPriority }}</mark>
                             </div>
-                            <p ng-bind-html="projectCtrl.projectData.projectInfo.description"></p>
+                            <p markdown-to-html="projectCtrl.projectData.projectInfo.description"></p>
                             <hr/>
                             <div><strong>Created by: </strong><span><a
                                     href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></span>
@@ -102,7 +102,7 @@
                                 </div>
                                 <hr/>
                             </div>
-                            <p ng-bind-html="projectInfo.description.instructions"></p>
+                            <p markdown-to-html="projectCtrl.projectData.projectInfo.instructions"></p>
                         </section>
 
                     </div>
