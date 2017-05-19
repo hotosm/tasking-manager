@@ -159,9 +159,15 @@
                     vm.currentStep = wizardStep;
                 }
             }
+            else if (wizardStep === 'trim') {
+                vm.trimError = false;
+                vm.trimErrorReason = '';
+                vm.currentStep = wizardStep;
+            }
             else if (wizardStep === 'review') {
                 setSplitToolsActive_(false);
                 vm.createProjectFailed = false;
+                vm.createProjectFailReason = '';
                 vm.currentStep = wizardStep;
             }
             else {
@@ -196,7 +202,6 @@
                     showStep = true;
                 }
             }
-
             else if (wizardStep === 'review') {
                 if (vm.currentStep === 'review') {
                     showStep = true;
@@ -239,19 +244,7 @@
             }, function (reason) {
                 vm.waiting = false;
                 vm.trimError = true;
-
-                switch (reason.status) {
-                    case 400:
-                        vm.trimErrorReason = reason.data.error;
-                        break;
-                    case 500:
-                        vm.trimErrorReason = reason.data.error;
-                        break;
-                    default:
-                        vm.trimErrorReason = 'The grid could not be trimmed. This may be because the combined data size of the AOI and the ' +
-                        'grid is too large. Try again with a smaller AOI, fewer tasks and/or larger tasks.'
-                        break;
-                }
+                vm.trimErrorReason = reason.status
             })
         };
 
@@ -447,6 +440,7 @@
                     // Project created successfully
                     vm.createProjectFail = false;
                     vm.createProjectSuccess = true;
+                    vm.createProjectFailReason = '';
                     // Navigate to the edit project page
                     $location.path('/admin/edit-project/' + data.projectId);
                 }, function (reason) {
@@ -454,20 +448,7 @@
                     // Project not created successfully
                     vm.createProjectFail = true;
                     vm.createProjectSuccess = false;
-
-                    switch (reason.status) {
-                        case 400:
-                            vm.createProjectFailReason = reason.data.error
-                            break;
-                        case 500:
-                            vm.createProjectFailReason = reason.data.error
-                            break;
-                        default:
-                            vm.createProjectFailReason = 'The project could be be created. This may be because the combined data size of the AOI and the ' +
-                            'grid is too large. Try again with a smaller AOI, fewer tasks and/or larger tasks.'
-                            break;
-                    }
-
+                    vm.createProjectFailReason = reason.status
                 });
             }
             else {
