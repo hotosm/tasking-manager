@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
+        .controller('contributeController', ['$scope', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService','accountService', contributeController]);
 
-    function contributeController($scope, mapService, searchService, projectMapService, tagService, languageService) {
+    function contributeController($scope, mapService, searchService, projectMapService, tagService, languageService, accountService) {
 
         var vm = this;
 
@@ -28,7 +28,7 @@
         vm.campaigns = [];
 
         // Search parameters
-        vm.mapperLevel = 'BEGINNER'; // default to beginner
+        vm.mapperLevel = ''; // default to ALL
         vm.searchRoads = false;
         vm.searchBuildings = false;
         vm.searchWaterways = false;
@@ -36,6 +36,7 @@
         vm.searchOther = false;
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
+        vm.searchText = '';
 
         // Paging
         vm.pagination = null;
@@ -44,9 +45,16 @@
         vm.characterLimitShortDescription = 100;
 
         // Watch the languageService for change in language and search again when needed
-        $scope.$watch(function () {
-            return languageService.getLanguageCode();
-        }, function () {
+        $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
+            searchProjects();
+        }, true);
+
+        // Watch the accountService for change in account
+        $scope.$watch(function () { return accountService.getAccount();}, function (account) {
+            if (account) {
+                // Set the default mapping level to the user's mapping level
+                vm.mapperLevel = account.mappingLevel;
+            }
             searchProjects();
         }, true);
 
@@ -66,7 +74,6 @@
             projectMapService.showInfoOnHoverOrClick();
             setOrganisationTags();
             setCampaignTags();
-            searchProjects(); 
         }
 
         /**
@@ -100,20 +107,29 @@
                 vm.mappingTypes.push("OTHER");
             }
 
-            var searchParameters = {
-                mappingTypes: vm.mappingTypes,
-                organisationTag: vm.searchOrganisation,
-                campaignTag: vm.searchCampaign
-            };
-            // Only add mapper level if set
+            var searchParams = {};
+
+            // Only add parameters if set
             if (vm.mapperLevel){
-                searchParameters.mapperLevel = vm.mapperLevel;
+                searchParams.mapperLevel = vm.mapperLevel;
+            }
+            if (vm.mappingTypes){
+                searchParams.mappingTypes = vm.mappingTypes;
+            }
+            if (vm.searchOrganisation){
+                searchParams.organisationTag = vm.searchOrganisation;
+            }
+            if (vm.searchCampaign){
+                searchParams.campaignTag = vm.searchCampaign;
+            }
+            if (vm.searchText){
+                searchParams.textSearch = vm.searchText;
             }
             if (page){
-                searchParameters.page = page;
+                searchParams.page = page;
             }
            
-            var resultsPromise = searchService.searchProjects(searchParameters);
+            var resultsPromise = searchService.searchProjects(searchParams);
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
