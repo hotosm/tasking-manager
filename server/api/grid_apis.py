@@ -3,6 +3,7 @@ from server.services.grid_service import GridService
 from server.services.authentication_service import token_auth, tm
 from server.models.dtos.grid_dto import GridDTO
 from schematics.exceptions import DataError
+from server.services.project_admin_service import InvalidGeoJson
 
 
 class IntersectingTilesAPI(Resource):
@@ -72,6 +73,8 @@ class IntersectingTilesAPI(Resource):
         try:
             grid = GridService.trim_grid_to_aoi(grid_dto)
             return grid, 200
+        except (InvalidGeoJson) as e:
+            return {"error": f'{str(e)}'},
         except Exception as e:
             error_msg = f'IntersectingTiles GET API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
