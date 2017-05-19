@@ -13,12 +13,13 @@ from server.models.postgis.utils import NotFound
 
 class SplitServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when handling splitting tasks """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
-class SplitService:
 
+class SplitService:
     @staticmethod
     def _create_split_tasks(x, y, zoom) -> list:
         """
@@ -48,15 +49,22 @@ class SplitService:
         except Exception as e:
             raise SplitServiceError(f'unhandled error splitting tile: {str(e)}')
 
-
     @staticmethod
-    def _create_square(x, y, zoom):
+    def _create_square(x, y, zoom) -> geojson.MultiPolygon:
+        """
+        Function for creating a geojson.MultiPolygon square representing a single OSM tile grid square
+        :param x: osm tile grid x
+        :param y: osm tile grid x
+        :param zoom: osm tile grid zoom level
+        :return: eojson.MultiPolygon in EPSG:4326
+        """
         # Maximum resolution
         MAXRESOLUTION = 156543.0339
 
         # X/Y axis limit
         max = MAXRESOLUTION * 256 / 2
 
+        # calculate extents
         step = max / (2 ** (zoom - 1))
         xmin = x * step - max
         ymin = y * step - max
@@ -70,12 +78,21 @@ class SplitService:
         # use the database to transform the geometry from 3857 to 4326
         transformed_geometry = ST_Transform(shape.from_shape(multipolygon, 3857), 4326)
 
+        # use DB to get the geometry as geojson
         return geojson.loads(db.engine.execute(transformed_geometry.ST_AsGeoJSON()).scalar())
 
     @staticmethod
-    def split_task(split_task: SplitTaskDTO) -> TaskDTOs:
+    def split_task(split_task_dto: SplitTaskDTO) -> TaskDTOs:
+        """
+        Replaces a task square with 4 smaller tasks at the next OSM tile grid zoom level
+        Validates that task is:
+         - locked for mapping by current user
+         - splittable (splittable property is True)
+        :param split_task_dto:
+        :return: new tasks in a DTO
+        """
         # get the task to be split
-        original_task = Task.get(split_task.task_id, split_task.project_id)
+        original_task = Task.get(split_task_dto.task_id, split_task_dto.project_id)
         if original_task is None:
             raise NotFound()
 
@@ -83,7 +100,7 @@ class SplitService:
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
             raise SplitServiceError('Status must be LOCKED_FOR_MAPPING to split')
 
-        if original_task.locked_by != split_task.user_id:
+        if original_task.locked_by != split_task_dto.user_id:
             raise SplitServiceError('Attempting to split a task owned by another user')
 
         # check it's splittable
@@ -97,13 +114,13 @@ class SplitService:
             raise SplitServiceError(f'Error splitting task{str(e)}')
 
         # create new tasks from the new geojson
-        i = Task.get_max_task_id_for_project(split_task.project_id)
+        i = Task.get_max_task_id_for_project(split_task_dto.project_id)
         new_tasks_dto = []
         for new_task_geojson in new_tasks_geojson:
             # insert new tasks into database
-            i = i+1
+            i = i + 1
             new_task = Task.from_geojson_feature(i, new_task_geojson)
-            new_task.project_id = split_task.project_id
+            new_task.project_id = split_task_dto.project_id
             new_task.task_status = TaskStatus.READY.value
             new_tasks_dto.append(new_task.as_dto())
             new_task.create()
@@ -112,7 +129,7 @@ class SplitService:
         original_task.delete()
 
         # update project task counts
-        project = Project.get(split_task.project_id)
+        project = Project.get(split_task_dto.project_id)
         project.total_tasks = project.tasks.count()
         # update bad imagery because we may have split a bad imagery tile
         project.tasks_bad_imagery = project.tasks.filter(Task.task_status == TaskStatus.BADIMAGERY.value).count()

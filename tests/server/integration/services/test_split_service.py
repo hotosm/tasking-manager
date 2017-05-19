@@ -5,7 +5,6 @@ import geojson
 import json
 from server.services.split_service import SplitService, SplitServiceError
 from tests.server.helpers.test_helpers import get_canned_json
-from tests.server.helpers.test_helpers import create_canned_project
 from server.models.postgis.task import Task
 from server.models.postgis.project import Project
 from server.models.dtos.grid_dto import SplitTaskDTO
@@ -84,16 +83,10 @@ class TestSplitService(unittest.TestCase):
         task_stub.y = 1399
         task_stub.zoom = 11
         mock_task_get.return_value = task_stub
-
         mock_task_get_max_task_id_for_project.return_value = 1
-
         mock_project_get.return_value = Project();
-
         mock_project_tasks.return_value = [task_stub]
-
-
-
-        splitTaskDTO = SplitTaskDTO() # Task.get(1, self.test_project.id)
+        splitTaskDTO = SplitTaskDTO()
         splitTaskDTO.user_id = 1234
         splitTaskDTO.project_id = 1
         splitTaskDTO.task_id = 1

@@ -6,6 +6,7 @@ from server.models.postgis.task import TaskHistory, TaskAction, User
 from unittest.mock import patch, MagicMock
 from server import create_app
 
+
 class TestMappingService(unittest.TestCase):
     task_stub = Task
     lock_task_dto = LockTaskDTO
