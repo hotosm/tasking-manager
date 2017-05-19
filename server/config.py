@@ -15,6 +15,10 @@ class EnvironmentConfig:
         'access_token_url': 'https://www.openstreetmap.org/oauth/access_token',
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
     }
+    SUPPORTED_LANGUAGES = {
+        'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu',
+        'languages': 'English, Français, Español, Deutsch, Português, 日本語, Lietuvos, 中文, Indonesia, Dansk, Português (Brasil), Русский, Slovenščina, Italiano, Nederlands, Українська, தமிழ், සිංහල, Česky, Bokmål, Magyar'
+    }
 
 
 class StagingConfig(EnvironmentConfig):
