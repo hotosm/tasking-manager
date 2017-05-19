@@ -4,9 +4,8 @@ import os
 
 class EnvironmentConfig:
     """ Base class for config that is shared between environments """
+    DEFAULT_CHANGESET_COMMENT = '#hotosm-project'
     LOG_LEVEL = logging.ERROR
-    SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
-    SECRET_KEY = os.getenv('TM_SECRET', None)
     OSM_OAUTH_SETTINGS = {
         'base_url': 'https://www.openstreetmap.org/api/0.6/',
         'consumer_key': os.getenv('TM_CONSUMER_KEY', None),
@@ -15,6 +14,8 @@ class EnvironmentConfig:
         'access_token_url': 'https://www.openstreetmap.org/oauth/access_token',
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
     }
+    SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
+    SECRET_KEY = os.getenv('TM_SECRET', None)
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {
         'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu',

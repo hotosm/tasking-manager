@@ -5,8 +5,7 @@ from typing import Optional
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import ARRAY
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSearchResultDTO, \
-    ProjectSearchResultsDTO, ProjectSummary, PMDashboardDTO
+from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
@@ -117,6 +116,7 @@ class Project(db.Model):
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
         self.last_updated = timestamp()
+        self.changeset_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
 
     def create(self):
         """ Creates and saves the current model to the DB """
