@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app, request
+from flask_restful import Resource, current_app
 from server.models.dtos.grid_dto import SplitTaskDTO
 from schematics.exceptions import DataError
 from server.services.authentication_service import token_auth, tm

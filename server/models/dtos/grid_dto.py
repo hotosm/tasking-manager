@@ -9,7 +9,7 @@ class GridDTO(Model):
     clip_to_aoi = BooleanType(required=True, serialized_name='clipToAoi')
 
 class SplitTaskDTO(Model):
-    """ DTO used to lock a task for mapping """
+    """ DTO used to split a task """
     user_id = IntType(required=True)
     task_id = IntType(required=True)
     project_id = IntType(required=True)

@@ -54,9 +54,9 @@ class SplitService:
         """
         Function for creating a geojson.MultiPolygon square representing a single OSM tile grid square
         :param x: osm tile grid x
-        :param y: osm tile grid x
+        :param y: osm tile grid y
         :param zoom: osm tile grid zoom level
-        :return: eojson.MultiPolygon in EPSG:4326
+        :return: geojson.MultiPolygon in EPSG:4326
         """
         # Maximum resolution
         MAXRESOLUTION = 156543.0339
@@ -96,16 +96,16 @@ class SplitService:
         if original_task is None:
             raise NotFound()
 
+        # check it's splittable
+        if not original_task.splittable:
+            raise SplitServiceError('Task is not splittable')
+
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
             raise SplitServiceError('Status must be LOCKED_FOR_MAPPING to split')
 
         if original_task.locked_by != split_task_dto.user_id:
             raise SplitServiceError('Attempting to split a task owned by another user')
-
-        # check it's splittable
-        if not original_task.splittable:
-            raise SplitServiceError('Task is not splittable')
 
         # create new geometries from the task geometry
         try:
