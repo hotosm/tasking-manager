@@ -773,6 +773,27 @@
             });
         };
 
+        vm.splitTask = function(){
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var splitPromise = taskService.splitTask(projectId, taskId);
+            splitPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                refreshProject(projectId);
+                updateMappedTaskPerUser(projectId);
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+                $location.search('task', null);
+
+            }, function (error) {
+                // TODO - show message
+            });
+
+        };
+
         /**
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
