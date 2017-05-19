@@ -134,7 +134,7 @@
                                                          <uib-progressbar value="project.percentValidated"></uib-progressbar>
                                                     </div>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
-                                                    <p ng-bind-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
+                                                    <p markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
                                                     </p>
                                                     <ul>
@@ -179,7 +179,7 @@
                                             <td>{{ project.projectId }}</td>
                                             <td>{{ project.name }}</td>
                                             <td>
-                                                <span ng-bind-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
+                                                <span markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
                                                     (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
                                                 </span>
                                             </td>

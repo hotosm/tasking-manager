@@ -149,10 +149,6 @@
                     var info = vm.project.projectInfoLocales[i];
                     var populatedLocale = false;
                     if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== '') {
-                        // Convert to HTML using the showdown library
-                        info.description = $showdown.makeHtml(info.description);
-                        info.shortDescription = $showdown.makeHtml(info.shortDescription);
-                        info.instructions = $showdown.makeHtml(info.instructions);
                         populatedLocale = true;
                     }
                     // if no fields for this locale are populated, remove from array
