@@ -23,8 +23,6 @@ class TestSplitService(unittest.TestCase):
         if env == 'true':
             cls.skip_tests = True
 
-
-
     def setUp(self):
         if self.skip_tests:
             return
@@ -40,6 +38,9 @@ class TestSplitService(unittest.TestCase):
         self.ctx.pop()
 
     def test_split_geom_returns_split_geometries(self):
+        if self.skip_tests:
+            return
+
         # arrange
         x = 1010
         y = 1399
@@ -52,8 +53,9 @@ class TestSplitService(unittest.TestCase):
         # assert
         self.assertEquals(str(expected), str(result))
 
-
     def test_split_geom_raise_grid_service_error_when_task_not_usable(self):
+        if self.skip_tests:
+            return
         with self.assertRaises(SplitServiceError):
             SplitService._create_split_tasks("foo", "bar", "dum")
 
@@ -67,6 +69,9 @@ class TestSplitService(unittest.TestCase):
     def test_split_task_helper(self, mock_task_get, mock_task_get_max_task_id_for_project,
                                mock_task_create, mock_task_delete, mock_project_get, mock_project_save,
                                mock_project_tasks):
+        if self.skip_tests:
+            return
+
         # arrange
         task_stub = Task()
         task_stub.id = 1

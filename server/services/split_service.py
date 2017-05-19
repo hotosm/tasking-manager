@@ -78,10 +78,9 @@ class SplitService:
         original_task = Task.get(split_task.task_id, split_task.project_id)
         if original_task is None:
             raise NotFound()
-        current_state = TaskStatus(original_task.task_status)
 
         # check its locked for mapping by the current user
-        if current_state != TaskStatus.LOCKED_FOR_MAPPING:
+        if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
             raise SplitServiceError('Status must be LOCKED_FOR_MAPPING to split')
 
         if original_task.locked_by != split_task.user_id:
@@ -113,11 +112,11 @@ class SplitService:
         original_task.delete()
 
         # update project task counts
-        project = Project.get(split_task.project_id) #TODO: mock
+        project = Project.get(split_task.project_id)
         project.total_tasks = project.tasks.count()
         # update bad imagery because we may have split a bad imagery tile
         project.tasks_bad_imagery = project.tasks.filter(Task.task_status == TaskStatus.BADIMAGERY.value).count()
-        project.save() #TODO: mock
+        project.save()
 
         # return the new tasks in a DTO
         task_dtos = TaskDTOs()
