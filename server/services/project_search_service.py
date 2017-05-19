@@ -10,6 +10,7 @@ class ProjectSearchService:
 
     @staticmethod
     def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
+        """ Searches all projects for matches to the criteria provided by the user """
 
         filtered_projects = ProjectSearchService._filter_projects(search_dto)
 
@@ -55,8 +56,8 @@ class ProjectSearchService:
                                  Project.tasks_bad_imagery,
                                  Project.tasks_mapped,
                                  Project.tasks_validated,
-                                 Project.total_tasks).join(AreaOfInterest)\
-            .filter(Project.status == ProjectStatus.PUBLISHED.value)
+                                 Project.total_tasks).join(AreaOfInterest).join(ProjectInfo)\
+            .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(ProjectInfo.locale == search_dto.preferred_locale)
 
         if search_dto.mapper_level:
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)
@@ -74,6 +75,9 @@ class ProjectSearchService:
                 mapping_type_array.append(MappingTypes[mapping_type].value)
 
             query = query.filter(Project.mapping_types.contains(mapping_type_array))
+
+        if search_dto.text_search:
+            query = query.filter(ProjectInfo.text_searchable.match(search_dto.text_search))
 
         results = query.order_by(Project.priority).paginate(search_dto.page, 4, True)
 

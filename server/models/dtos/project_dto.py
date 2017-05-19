@@ -97,6 +97,7 @@ class ProjectSearchDTO(Model):
     organisation_tag = StringType()
     campaign_tag = StringType()
     page = IntType(required=True)
+    text_search = StringType()
 
 
 class ProjectSearchResultDTO(Model):
