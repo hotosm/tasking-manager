@@ -26,8 +26,8 @@ class MessageService:
         validation_message = Message()
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = f'Tasking Manager {task_link} that you mapped you has just been validated'
-        validation_message.message = f'Hi \n I just validated your mapping on {task_link}.\n\n Awesome work! \n\n Keep mapping and hope to see you soon'
+        validation_message.subject = f'Your mapping on {task_link} has just been validated'
+        validation_message.message = f'Hi \n I just validated your mapping on {task_link}.\n\n Awesome work! \n\n Keep mapping :)'
         validation_message.add_message()
 
     @staticmethod

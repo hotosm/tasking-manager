@@ -34,22 +34,17 @@
         var vm = this;
         vm.showDropdown = false;
         vm.selectedLanguage = 'English'; // defaults to English
-        // TODO: get from API
-        vm.availableLanguages = [
-            {
-                'key': 'en',
-                'value': 'English'
-            },
-            {
-                'key': 'nl_NL',
-                'value': 'Nederlands'
-            }
-        ];
+        vm.availableLanguages = [];
 
         activate();
 
         function activate() {
-            // TODO
+            
+            // Get available languages
+            var resultsPromise = languageService.getAvailableLanguages();
+            resultsPromise.then(function (data) {
+                vm.availableLanguages = data.supportedLanguages;
+            });
             
              // Catch clicks and check if it was outside of the menu element. If so, close the dropdown menu.
             $document.bind('click', function(event){
@@ -79,9 +74,9 @@
          * @param key
          */
         vm.switchLanguage = function(language){
-            $translate.use(language.key);
-            vm.selectedLanguage = language.value;
-            languageService.setLanguageCode(language.key);
+            $translate.use(language.code);
+            vm.selectedLanguage = language.language;
+            languageService.setLanguageCode(language.code);
         }
     }
 })();

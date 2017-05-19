@@ -7,9 +7,10 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','languageService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService) {
+    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, languageService) {
+
         var vm = this;
         vm.currentSection = '';
         vm.editForm = {};
@@ -27,10 +28,8 @@
         
         vm.numberOfPriorityAreas = 0;
 
-        // Locale - TODO: get from API
-        vm.locales = [
-            'nl_NL', 'en'
-        ];
+        // Locale
+        vm.locales = [];
 
         // Types of mapping
         vm.mappingTypes = {
@@ -73,6 +72,14 @@
         activate();
 
         function activate() {
+
+            // Get available languages
+            var resultsPromise = languageService.getAvailableLanguages();
+            resultsPromise.then(function (data) {
+                for (var i = 0; i < data.supportedLanguages.length; i++){
+                    vm.locales.push(data.supportedLanguages[i].code);
+                }
+            });
 
             // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
             var session = authService.getSession();
