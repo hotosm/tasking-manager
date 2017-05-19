@@ -28,7 +28,7 @@
         vm.campaigns = [];
 
         // Search parameters
-        vm.mapperLevel = ''; // default to beginner
+        vm.mapperLevel = ''; // default to ALL
         vm.searchRoads = false;
         vm.searchBuildings = false;
         vm.searchWaterways = false;
