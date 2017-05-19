@@ -185,9 +185,7 @@
                          class="alert alert--danger" role="alert">
                         <button class="alert__button-dismiss" title="Dismiss alert"
                                 ng-click="createProjectCtrl.trimError = false"><span>Dismiss</span></button>
-                        <p><strong>Error:</strong> The grid could not be trimmed. This may be because the combined data
-                            size of the AOI and the grid is too large. Try again with a smaller AOI, fewer tasks and/or
-                            larger tasks.
+                        <p><strong>Error:</strong> {{ createProjectCtrl.trimErrorReason }}
                         </p>
                     </div>
                     <hr/>
@@ -230,11 +228,7 @@
                             </span>
                             <div ng-show="createProjectCtrl.createProjectFail"
                                  class="alert alert--danger" role="alert">
-                                <p><strong>Error:</strong> TThis project could not be created. This may be because the
-                                    combined data
-                                    size of the AOI and the grid is too large. Try again with a smaller AOI, fewer tasks
-                                    and/or
-                                    larger tasks.
+                                <p><strong>Error:</strong> {{ createProjectCtrl.createProjectFailReason }}
                                 </p>
                             </div>
 

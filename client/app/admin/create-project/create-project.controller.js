@@ -47,6 +47,7 @@
         vm.splitPolygonValidationMessage = '';
         vm.isimportError = false;
         vm.createProjectFail = false;
+        vm.createProjectFailReason = '';
         vm.createProjectSuccess = false;
 
         // Split tasks
@@ -60,6 +61,7 @@
         //waiting spinner
         vm.waiting = false;
         vm.trimError = false;
+        vm.trimErrorReason = '';
 
         activate();
 
@@ -227,6 +229,7 @@
             trimTaskGridPromise.then(function (data) {
                 vm.waiting = false;
                 vm.trimError = false;
+                vm.trimErrorReason = '';
                 projectService.removeTaskGrid();
                 var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
@@ -236,8 +239,21 @@
             }, function (reason) {
                 vm.waiting = false;
                 vm.trimError = true;
+
+                switch (reason.status) {
+                    case 400:
+                        vm.trimErrorReason = reason.data.error;
+                        break;
+                    case 500:
+                        vm.trimErrorReason = reason.data.error;
+                        break;
+                    default:
+                        vm.trimErrorReason = 'The grid could not be trimmed. This may be because the combined data size of the AOI and the ' +
+                        'grid is too large. Try again with a smaller AOI, fewer tasks and/or larger tasks.'
+                        break;
+                }
             })
-        }
+        };
 
         /**
          * Create arbitary tasks
@@ -433,11 +449,25 @@
                     vm.createProjectSuccess = true;
                     // Navigate to the edit project page
                     $location.path('/admin/edit-project/' + data.projectId);
-                }, function () {
+                }, function (reason) {
                     vm.waiting = false;
                     // Project not created successfully
                     vm.createProjectFail = true;
                     vm.createProjectSuccess = false;
+
+                    switch (reason.status) {
+                        case 400:
+                            vm.createProjectFailReason = reason.data.error
+                            break;
+                        case 500:
+                            vm.createProjectFailReason = reason.data.error
+                            break;
+                        default:
+                            vm.createProjectFailReason = 'The project could be be created. This may be because the combined data size of the AOI and the ' +
+                            'grid is too large. Try again with a smaller AOI, fewer tasks and/or larger tasks.'
+                            break;
+                    }
+
                 });
             }
             else {
