@@ -9,11 +9,11 @@
 truncate hotnew.users cascade;
 truncate hotnew.areas_of_interest cascade;
 
--- Populate users with ids and default stats
+-- Populate users with ids and default stats - sets users to beginner mapper level
 insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated)
 (select id,username,
 	case when role is null then 0 else role end,
-	0,0,0,0 
+	1,0,0,0
 	 from hotold.users);
 	 
 -- update sequence  (commented out as not needed. ID comes from OSM not from the sequence.)
@@ -43,8 +43,8 @@ insert into hotnew.areas_of_interest (id, geometry, centroid)
 select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.areas_of_interest));
 
 -- PROJECTS
--- Transfer project data.
--- TODO:  update mapper_level, tasks_bad_imagery
+-- Transfer project data, all projects set to mapper level beginner
+-- TODO:   tasks_bad_imagery
 -- Skipped projects with null author_id
 INSERT INTO hotnew.projects(
             id, status, aoi_id, created, priority, default_locale, author_id, 
@@ -56,7 +56,7 @@ INSERT INTO hotnew.projects(
             0, false, false, private, 
             entities_to_map, changeset_comment, due_date, imagery, josm_preset, 
             last_update, null, '', '', 
-            0, 0, 0, 0
+            1, 0, 0, 0
             from hotold.project
             where author_id is not null
             );
