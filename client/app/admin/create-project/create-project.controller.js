@@ -58,7 +58,8 @@
         vm.drawPolygonInteraction = null;
 
         //waiting spinner
-        vm.waiting=false;
+        vm.waiting = false;
+        vm.trimError = false;
 
         activate();
 
@@ -221,19 +222,20 @@
         vm.trimTaskGrid = function () {
 
             var taskGrid = projectService.getTaskGrid();
-            vm.waiting= true;
+            vm.waiting = true;
             var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi)
             trimTaskGridPromise.then(function (data) {
-                vm.waiting= false;
+                vm.waiting = false;
+                vm.trimError = false;
                 projectService.removeTaskGrid();
                 var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
-               // Get the number of tasks in project
+                // Get the number of tasks in project
                 vm.numberOfTasks = projectService.getNumberOfTasks();
             }, function (reason) {
-                vm.waiting= false;
-                //TODO: may want to handle error
+                vm.waiting = false;
+                vm.trimError = true;
             })
         }
 

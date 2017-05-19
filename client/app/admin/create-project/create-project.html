@@ -181,6 +181,15 @@
                     <span ng-show="createProjectCtrl.waiting">
                         <img src="./assets/img/waiting_spinner.gif"><span>Trimming in progress</span>
                     </span>
+                    <div ng-show="createProjectCtrl.trimError"
+                         class="alert alert--danger" role="alert">
+                        <button class="alert__button-dismiss" title="Dismiss alert"
+                                ng-click="createProjectCtrl.trimError = false"><span>Dismiss</span></button>
+                        <p><strong>Error:</strong> The grid could not be trimmed. This may be because the combined data
+                            size of the AOI and the grid is too large. Try again with a smaller AOI, fewer tasks and/or
+                            larger tasks.
+                        </p>
+                    </div>
                     <hr/>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
@@ -219,10 +228,16 @@
                                   ng-show="createProjectCtrl.projectNameForm.submitted && createProjectCtrl.projectNameForm.projectName.$error.required">
                                 Required
                             </span>
-                            <span class="error"
-                                  ng-show="createProjectCtrl.createProjectFail">
-                                There was an error creating your project. Please try again.
-                            </span>
+                            <div ng-show="createProjectCtrl.createProjectFail"
+                                 class="alert alert--danger" role="alert">
+                                <p><strong>Error:</strong> TThis project could not be created. This may be because the
+                                    combined data
+                                    size of the AOI and the grid is too large. Try again with a smaller AOI, fewer tasks
+                                    and/or
+                                    larger tasks.
+                                </p>
+                            </div>
+
                             <span ng-show="createProjectCtrl.createProjectSuccess">
                                 Your project was created successfully.
                             </span>
@@ -246,6 +261,7 @@
                         <div ng-show="createProjectCtrl.waiting">
                             <img src="./assets/img/waiting_spinner.gif"/><span>Creation in progress</span>
                         </div>
+
                     </div>
                 </div>
             </div>
