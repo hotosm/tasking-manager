@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+
+#: client/index.html:65
+msgid "About"
+msgstr ""
+
+#: client/index.html:97
+msgid "Contact us via the About page."
+msgstr ""
+
+#: client/index.html:75
+msgid "Contribute"
+msgstr ""
+
+#: client/index.html:100
+msgid "Fork the Tasking Manager Code on GitHub"
+msgstr ""
+
+#: client/index.html:43
+msgid "Go to MapSwipe"
+msgstr ""
+
+#: client/index.html:7
+msgid "HOT Tasking Manager"
+msgstr ""
+
+#: client/index.html:41
+msgid "In order to make full use of the Tasking Manager's many features please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead."
+msgstr ""
+
+#: client/index.html:70
+msgid "Learn"
+msgstr ""
+
+#: client/index.html:100
+msgid "and help improve it."
+msgstr ""
