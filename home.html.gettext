@@ -1,0 +1,57 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+
+#: client/app/home/home.html:45
+msgid "A few of the humanitarian efforts you can support through mapping."
+msgstr ""
+
+#: client/app/home/home.html:29
+msgid "Anyone who can use a computer to draw lines and boxes or use a phone to swipe and tap, can meaningfully contribute to humanitarian mapping. If you have never mapped before and would like to help by digitizing imagery, tracing buildings and roads, we ask you to visit our Learn page, which will get you up and mapping in about 30 mins."
+msgstr ""
+
+#: client/app/home/home.html:35
+msgid "Contribute"
+msgstr ""
+
+#: client/app/home/home.html:25
+msgid "During disaster preparation, response and recovery, detailed geospatial information, maps of roads, buildings, bridges, etc., is critical to delivering the best service and support in the most timely and efficient way possible. Unfortunately, this kind of information does not exist or is not open and accessible for large parts of the world. Through coordinated, remote satellite or UAV imagery based mapping and a close working partnership with people on the ground you can help provide that data where and when it is needed."
+msgstr ""
+
+#: client/app/home/home.html:44
+msgid "Field stories"
+msgstr ""
+
+#: client/app/home/home.html:6
+msgid "HOT Tasking Manager"
+msgstr ""
+
+#: client/app/home/home.html:24
+msgid "How you can help"
+msgstr ""
+
+#: client/app/home/home.html:34
+msgid "If you are returning and ready to start mapping, please visit the Contribute page. You will see a list of mapping projects that need someone just like you to help get them done. You can select the Filter tab and narrow down the projects that you most want to work on. Your profile page has a list and quick link to projects you have already taken part in."
+msgstr ""
+
+#: client/app/home/home.html:30
+msgid "Learn"
+msgstr ""
+
+#: client/app/home/home.html:28
+msgid "New to mapping?"
+msgstr ""
+
+#: client/app/home/home.html:9
+msgid "OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping."
+msgstr ""
+
+#: client/app/home/home.html:33
+msgid "Ready to get mapping?"
+msgstr ""
+
+#: client/app/home/home.html:14
+msgid "Start Mapping"
+msgstr ""
