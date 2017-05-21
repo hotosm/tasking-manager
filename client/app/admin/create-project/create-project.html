@@ -32,14 +32,14 @@
                         <div class="form__group">
                             <button class="button button--achromic" type="button"
                                     ng-click="createProjectCtrl.drawAOI()"><span>{{ "Draw" | translate }}</span></button>
-                            <p>{{ "Draw the area of interest on the map." | translate }}</p>
+                            <p>{{ "Draw the Area of Interest on the map." | translate }}</p>
                             <div>
                                 <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
-                                    {{ "No area of interest has been drawn." | translate }}
+                                    {{ "No Area of Interest has been drawn." | translate }}
                                 </span>
                                 <span class="error"
                                       ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
-                                    {{ "The area of interest contains self intersections." | translate }}
+                                    {{ "The Area of Interest contains self intersections." | translate }}
                                 </span>
                             </div>
                         </div>
@@ -102,7 +102,7 @@
                     </div>
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'taskSize'" class="content">
-                    <h2>{{ "Step 3: set task sizes" | translate }}</h2>
+                    <h2>{{ "Step 3: Set Task Sizes" | translate }}</h2>
                     <div>
                         <p>{{ "General task size:" | translate }}</p>
                         <div class="button-group button-group--horizontal" role="group">
@@ -136,7 +136,7 @@
                             km<sup>2</sup>.</p>
                         <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT"
                              class="alert alert--warning" role="alert">
-                            <p>{{ "<strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required please make the area of interest smaller." | translate }}
+                            <p>{{ "<strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required please make the Area of Interest smaller." | translate }}
                             </p>
                         </div>
                         <div ng-show="createProjectCtrl.sizeOfTasks > createProjectCtrl.MAX_SIZE_OF_TASKS"
