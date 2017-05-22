@@ -57,8 +57,7 @@ class ProjectSearchService:
                                  Project.tasks_mapped,
                                  Project.tasks_validated,
                                  Project.total_tasks).join(AreaOfInterest).join(ProjectInfo)\
-            .filter(Project.status == ProjectStatus.PUBLISHED.value)\
-            .filter(ProjectInfo.locale == search_dto.preferred_locale).filter(Project.private != True)
+            .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
 
         if search_dto.mapper_level:
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)
@@ -80,7 +79,7 @@ class ProjectSearchService:
         if search_dto.text_search:
             # We construct an OR search, so any projects that contain or more of the search terms should be returned
             or_search = search_dto.text_search.replace(' ', ' | ')
-            query = query.filter(ProjectInfo.text_searchable.match(or_search))
+            query = query.filter(ProjectInfo.text_searchable.match(or_search, postgresql_regconfig='english'))
 
         results = query.order_by(Project.priority).paginate(search_dto.page, 4, True)
 
