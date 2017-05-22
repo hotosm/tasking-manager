@@ -39,6 +39,8 @@ class SMTPService:
         sender.sendmail(from_address, to_address, msg.as_string())
         sender.quit()
 
+        return True
+
     @staticmethod
     def _init_smtp_client():
         """ Initialise SMTP client from app settings """

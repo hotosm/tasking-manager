@@ -20,6 +20,10 @@ class User(db.Model):
     tasks_validated = db.Column(db.Integer, default=0, nullable=False)
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
     projects_mapped = db.Column(db.ARRAY(db.Integer))
+    email_address = db.Column(db.String)
+    twitter_id = db.Column(db.String)
+    facebook_id = db.Column(db.String)
+    linkedin_id = db.Column(db.String)
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)

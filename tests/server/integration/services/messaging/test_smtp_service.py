@@ -15,4 +15,5 @@ class TestStatsService(unittest.TestCase):
         self.ctx.pop()
 
     def test_send_mail(self):
-        SMTPService.send_email_alert('hot-test@mailinator.com', 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/user/Iain%20Hunter')
+        self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
+                                                     'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/user/Iain%20Hunter'))

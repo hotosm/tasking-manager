@@ -65,6 +65,11 @@ class UserService:
         return user.as_dto()
 
     @staticmethod
+    def update_user_details():
+        # TODO encrypt email, save details
+        pass
+
+    @staticmethod
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Gets paginated list of users """
         return User.get_all_users(query)
