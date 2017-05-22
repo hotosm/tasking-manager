@@ -159,6 +159,7 @@
         vm.resetStatusFlags = function () {
             vm.isSelectedMappable = false;
             vm.isSelectedValidatable = false;
+            vm.isSelectedSplittable = false;
         }
 
         /**
@@ -171,6 +172,8 @@
             vm.taskLockErrorMessage = '';
             vm.taskUnLockError = false;
             vm.taskUnLockErrorMessage = '';
+            vm.taskSplitError = false;
+            vm.taskSplitCode == null;
         }
 
         /**
@@ -603,12 +606,6 @@
             var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
             vm.isSelectedMappable = (isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
             vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED');
-
-            var taskId = data.taskId;
-            var features = vm.taskVectorLayer.getSource().getFeatures();
-            vm.isSelectedSplittable = isTaskSplittable(features, taskId);
-
-
             vm.selectedTaskData = data;
 
             // Format the comments by adding links to the usernames
@@ -778,6 +775,7 @@
                 vm.selectedTaskData = data;
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
+                vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
             }, function (error) {
                 onLockError(projectId, error);
             });
@@ -843,7 +841,7 @@
         /**
          * Is the the task splittable
          */
-        function isTaskSplittable(taskFeatures, taskId){
+        function isTaskSplittable(taskFeatures, taskId) {
             var feature = taskService.getTaskFeatureById(taskFeatures, taskId);
             var properties = feature.getProperties();
             return feature.getProperties().taskSplittable;
@@ -1141,27 +1139,6 @@
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
 
-        };
-
-        vm.resetTaskData = function () {
-            vm.selectedTaskData = null;
-            vm.lockedTaskData = null;
-            vm.multiSelectedTasksData = [];
-            vm.multiLockedTasks = [];
-        };
-
-        vm.resetStatusFlags = function () {
-            vm.isSelectedMappable = false;
-            vm.isSelectedValidatable = false;
-        };
-
-        vm.resetErrors = function () {
-            vm.taskErrorMapping = '';
-            vm.taskErrorValidation = '';
-            vm.taskLockError = false;
-            vm.taskLockErrorMessage = '';
-            vm.taskUnLockError = false;
-            vm.taskUnLockErrorMessage = '';
         };
 
         /**
