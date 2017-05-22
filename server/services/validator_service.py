@@ -1,10 +1,11 @@
 from flask import current_app
+
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks
-from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.statuses import ValidatingNotAllowed
+from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound, UserLicenseError
-from server.services.message_service import MessageService
+from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
 from server.services.user_service import UserService
