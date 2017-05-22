@@ -781,6 +781,10 @@
             });
         };
 
+
+        /**
+         * Call api to split task currently selected task for mapping.  Will update view and map after split.
+         */
         vm.splitTask = function () {
             vm.taskSplitError = false;
             vm.taskSplitCode == null;
@@ -801,7 +805,10 @@
             }, function (error) {
                 // TODO - show message
                 vm.taskSplitError = true;
-                vm.taskSplitCode = 403;
+                vm.taskSplitCode = null;
+                if (error.status = 403) {
+                    vm.taskSplitCode = 403;
+                }
             });
         };
 

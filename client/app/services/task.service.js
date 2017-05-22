@@ -343,7 +343,7 @@
         }
 
         /**
-         * Requests a task lock for mapping
+         * Requests a task split
          * @param projectId - id of the task project
          * @param taskId - id of the task
          * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
