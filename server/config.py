@@ -16,6 +16,12 @@ class EnvironmentConfig:
     }
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
     SECRET_KEY = os.getenv('TM_SECRET', None)
+    SMTP_SETTINGS = {
+        'host': 'email-smtp.eu-west-1.amazonaws.com',
+        'smtp_user': 'AKIAIIBGP3IBB3NWDX5Q',
+        'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
+        'from_address': 'noreply@mailinator.com'
+    }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {
         'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu',
