@@ -1,6 +1,6 @@
 <a ng-show="!accountNavCtrl.account.username" class="button button--primary" role="button"
     ng-click="accountNavCtrl.login()">
-    <span>Login</span>
+    <span>{{ "Login" | translate }}</span>
 </a>
 <a class="global-menu-item" ng-show="accountNavCtrl.account.username">
     <div class="drop drop--down drop--align-left drop--open">
@@ -15,12 +15,12 @@
             <ul class="drop__menu drop__menu--iconified" role="menu">
                 <li>
                     <a title="Your profile" class="drop__menu-item" ng-click="accountNavCtrl.goToProfile()">
-                        Your profile
+                        {{ "Your profile" | translate }}
                     </a>
                 </li>
                 <li>
                     <a title="Messages" class="drop__menu-item" ng-click="accountNavCtrl.goToMessages()">
-                        Messages
+                        {{ "Messages" | translate }}
                         <span class="badge" ng-show="accountNavCtrl.userMessages.newMessages">
                             {{ accountNavCtrl.userMessages.unread }}
                         </span>
@@ -28,7 +28,7 @@
                 </li>
                 <li>
                     <a title="Logout" class="drop__menu-item" ng-click="accountNavCtrl.logout()">
-                        Logout
+                        {{ "Logout" | translate }}
                     </a>
                 </li>
             </ul>
@@ -36,22 +36,22 @@
                 class="drop__menu drop__menu--iconified" role="menu">
                 <li ng-show="accountNavCtrl.account.role === 'ADMIN' || accountNavCtrl.account.role === 'ADMIN'">
                     <a title="User list" class="drop__menu-item" ng-click="accountNavCtrl.goToUserList()">
-                        User list
+                        {{ "User list" | translate }}
                     </a>
                 </li>
                 <li ng-show="accountNavCtrl.account.role === 'ADMIN'">
                     <a title="Manage licences" class="drop__menu-item" ng-click="accountNavCtrl.goToManageLicenses()">
-                        Manage licences
+                        {{ "Manage licences" | translate }}
                     </a>
                 </li>
                 <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
                     <a title="Project dashboard" class="drop__menu-item" ng-click="accountNavCtrl.goToProjectDashboard()">
-                        Project dashboard
+                        {{ "Project dashboard" | translate }}
                     </a>
                 </li>
                 <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
                     <a title="New project" class="drop__menu-item" ng-click="accountNavCtrl.goToCreateNewProject()">
-                        Create new project
+                        {{ "Create new Project" | translate }}
                     </a>
                 </li>
             </ul>
@@ -60,5 +60,5 @@
 </a>
 <div ng-show="accountNavCtrl.userMessages.newMessages && accountNavCtrl.newMessageNotification" class="unread-messages-popover">
     <i class="hot-ds-icon-sm-xmark pull-right pointer" ng-click="accountNavCtrl.hideNotification()"></i>
-    <p class="pull-left">You have unread messages.</p>
+    <p class="pull-left">{{ "You have unread messages." | translate }}</p>
 </div>
