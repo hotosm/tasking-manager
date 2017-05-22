@@ -5,6 +5,8 @@ import os
 class EnvironmentConfig:
     """ Base class for config that is shared between environments """
     DEFAULT_CHANGESET_COMMENT = '#hotosm-project'
+    # This is the address we'll use as the sender on all auto generated emails
+    EMAIL_FROM_ADDRESS = 'noreply@hotosmmail.org'
     LOG_LEVEL = logging.ERROR
     OSM_OAUTH_SETTINGS = {
         'base_url': 'https://www.openstreetmap.org/api/0.6/',
@@ -20,7 +22,6 @@ class EnvironmentConfig:
         'host': 'email-smtp.eu-west-1.amazonaws.com',
         'smtp_user': 'AKIAIIBGP3IBB3NWDX5Q',
         'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
-        'from_address': 'noreply@mailinator.com'
     }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {

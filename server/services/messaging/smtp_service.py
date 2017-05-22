@@ -7,24 +7,26 @@ from email.mime.text import MIMEText
 class SMTPService:
 
     @staticmethod
-    def send_mail(subject: str, to_address: str):
+    def send_email_alert(to_address: str, profile_link: str):
+        from_address = current_app.config['EMAIL_FROM_ADDRESS']
+
         msg = MIMEMultipart('alternative')
-        msg['Subject'] = subject
-        msg['From'] = 'noreply@mailinator.com'
+        msg['Subject'] = 'You have a new message on the HOT Tasking Manager'
+        msg['From'] = from_address
         msg['To'] = to_address
 
-        text = "Hi!\nHow are you?\nHere is the link you wanted:\nhttps://www.python.org"
-        html = """\
+        text = f'Hi\nYou have a new message on the HOT Tasking Manager.\n Messages can be viewed at this link {profile_link}'
+        html = f'''\
         <html>
           <head></head>
           <body>
-            <p>Hi!<br>
-               How are you?<br>
-               Here is the <a href="https://www.python.org">link</a> you wanted.
+            <p>Hi<br>
+               You have a new message on the HOT Tasking Manager.<br>
+               <a href="{profile_link}">Click here to view it.</a>.
             </p>
           </body>
         </html>
-        """
+        '''
 
         # Record the MIME types of both parts - text/plain and text/html.
         part1 = MIMEText(text, 'plain')
@@ -33,11 +35,16 @@ class SMTPService:
         msg.attach(part1)
         msg.attach(part2)
 
-        s = smtplib.SMTP('email-smtp.eu-west-1.amazonaws.com')
-        s.starttls()
-        # sendmail function takes 3 arguments: sender's address, recipient's address
-        # and message to send - here it is sent as one string.
-        s.log
-        s.login('AKIAIIBGP3IBB3NWDX5Q', 'ApYTq+lAWqCaKzqVvY+2G3noYXyoFgS3s4Le4U1Jwhj0')
-        s.sendmail('noreply@mailinator.com', to_address, msg.as_string())
-        s.quit()
+        sender = SMTPService._init_smtp_client()
+        sender.sendmail(from_address, to_address, msg.as_string())
+        sender.quit()
+
+    @staticmethod
+    def _init_smtp_client():
+        """ Initialise SMTP client from app settings """
+        smtp_settings = current_app.config['SMTP_SETTINGS']
+        sender = smtplib.SMTP(smtp_settings['host'])
+        sender.starttls()
+        sender.login(smtp_settings['smtp_user'], smtp_settings['smtp_password'])
+
+        return sender
