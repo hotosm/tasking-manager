@@ -363,7 +363,7 @@
                                     </p>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">Allowed users on private project</label>
+                                    <label class="form__label">{{ "Allowed users on private project" | translate }}</label>
                                     <ul>
                                         <li ng-repeat="user in editProjectCtrl.project.allowedUsernames">
                                             {{ user }} <i class="hot-ds-icon-sm-xmark" ng-click="editProjectCtrl.removeUser(user)"></i>
@@ -381,7 +381,7 @@
                                             <button type="submit" class="button button--achromic button--medium"
                                                     ng-click="editProjectCtrl.addUser(user)"
                                                    ng-class="!editProjectCtrl.project.private || !editProjectCtrl.addUserEnabled ? 'disabled' : ''">
-                                                <span>Add user</span>
+                                                <span>{{ "Add user" | translate }}</span>
                                             </button>
                                         </span>
                                     </div>
@@ -393,7 +393,7 @@
                         <div ng-show="editProjectCtrl.currentSection === 'settings'">
                             <fieldset class="form__fieldset">
                                 <div class="form__group">
-                                    <label class="form__label">Default locale</label>
+                                    <label class="form__label">{{ "Default locale" | translate }}</label>
                                     <div>
                                         <div class="button-group button-group--horizontal"
                                              ng-repeat="locale in editProjectCtrl.locales"
@@ -414,39 +414,38 @@
                         <div ng-show="editProjectCtrl.currentSection === 'actions'">
                             <fieldset class="form__fieldset">
                                 <div class="form__group">
-                                    <label class="form__label">Message all contributors</label>
+                                    <label class="form__label">{{ "Message all contributors" | translate }}</label>
                                     <div>
                                         <button class="button button--secondary" type="button"
                                             ng-click="editProjectCtrl.showMessageContributors(true)">
-                                            Message all contributors
+                                            {{ "Message all contributors" | translate }}
                                         </button>
                                     </div>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">(In)validation</label>
-                                    <p>Use this if for some
-                                        reason you need to (in)validate all tasks in a single step.</p>
+                                    <label class="form__label">{{ "Validation and Invalidation" | translate }}</label>
+                                    <p>{{ "Use this if for some reason you need to validate or invalidate all tasks in this project in a single step." | translate }}</p>
                                     <div class="alert alert--warning" role="alert">
-                                        <p><strong>Warning:</strong> This cannot be undone.</p>
+                                        <p>{{ "<strong>Warning:</strong> This cannot be undone." | translate }}</p>
                                     </div>
                                     <button class="button button--secondary" type="button"
                                         ng-click="editProjectCtrl.showInvalidateConfirmation(true)">
-                                        Invalidate all tasks
+                                        {{ "Invalidate all tasks" | translate }}
                                     </button>
                                     <button class="button button--secondary" type="button"
                                         ng-click="editProjectCtrl.showValidateConfirmation(true)">
-                                        Validate all tasks
+                                        {{ "Validate all tasks" | translate }}
                                     </button>
                                 </div>
                                 <div class="form__group">
-                                    <label class="form__label">Delete project</label>
-                                    <p>You can only delete projects with no contributions.</p>
+                                    <label class="form__label">{{ "Delete project" | translate }}</label>
+                                    <p>{{ "You can only delete projects with no contributions." | translate }}</p>
                                     <div class="alert alert--warning" role="alert">
-                                        <p><strong>Warning:</strong> This cannot be undone.</p>
+                                        <p>{{ "<strong>Warning:</strong> This cannot be undone." | translate }}</p>
                                     </div>
                                     <button class="button button--secondary" type="button"
                                             ng-click="editProjectCtrl.showDeleteConfirmation(true)">
-                                        Delete project
+                                        {{ "Delete project" | translate }}
                                     </button>
                                 </div>
                             </fieldset>
@@ -456,7 +455,7 @@
                                 <div class="form__group">
                                     <a class="button button--achromic" role="button"
                                        href="/project/{{ editProjectCtrl.project.projectId }}">
-                                        Go to project
+                                        {{ "Go to project" | translate }}
                                     </a>
                                 </div>
                             </div>
@@ -464,37 +463,37 @@
                                 <div class="pull-right">
                                     <div class="form__group">
                                         <button class="button button--primary" type="button"
-                                                ng-click="editProjectCtrl.saveEdits()">Save changes
+                                                ng-click="editProjectCtrl.saveEdits()">{{ "Save changes" | translate }}
                                         </button>
                                     </div>
                                 </div>
                                 <div class="pull-right">
                                     <div class="form__group">
-                                        <p ng-show="editProjectCtrl.updateProjectSuccess">Your project has been updated successfully.</p>
-                                        <p class="error" ng-show="editProjectCtrl.updateProjectFail">There was an error updating your project. Please try again.</p>
+                                        <p ng-show="editProjectCtrl.updateProjectSuccess">{{ "Your project has been updated successfully." | translate }}</p>
+                                        <p class="error" ng-show="editProjectCtrl.updateProjectFail">{{ "There was an error updating your project. Please try again." | translate }}</p>
                                     </div>
                                 </div>
                                 <div class="error">
                                     <p ng-show="editProjectCtrl.project.private && editProjectCtrl.project.allowedUsernames.length < 1">
-                                        You need to add at least one allowed user to a private project.
+                                        {{ "You need to add at least one allowed user to a private project." | translate }}
                                     </p>
                                     <p ng-show="editProjectCtrl.nameMissing">
-                                        A name for the default locale "{{ editProjectCtrl.project.defaultLocale }}" is missing.
+                                        {{ "A name for the default locale" | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ "is missing." | translate }}
                                     </p>
                                     <p ng-show="editProjectCtrl.shortDescriptionMissing">
-                                        A short description for the default locale "{{ editProjectCtrl.project.defaultLocale }}" is missing.
+                                        {{ "A short description for the default locale" | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ "is missing." | translate }}
                                     </p>
                                     <p ng-show="editProjectCtrl.descriptionMissing">
-                                        A description for the default locale "{{ editProjectCtrl.project.defaultLocale }}" is missing.
+                                        {{ "A description for the default locale" | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ "is missing." | translate }}
                                     </p>
                                     <p ng-show="editProjectCtrl.instructionsMissing">
-                                        Instructions for the default locale "{{ editProjectCtrl.project.defaultLocale }}" are missing.
+                                        {{ "Instructions for the default locale" | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ "are missing." | translate }}
                                     </p>
                                     <p ng-show="!editProjectCtrl.editForm.campaignTag.$valid">
-                                        Please make sure you only have one campaign tag.
+                                        {{ "Please make sure you only have one campaign tag." | translate }}
                                     </p>
                                     <p ng-show="!editProjectCtrl.editForm.organisationTag.$valid">
-                                        Please make sure you only have one organisation tag.
+                                        {{ "Please make sure you only have one organisation tag." | translate }}
                                     </p>
                                 </div>
                             </div>
@@ -511,34 +510,34 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Delete project</h1>
+                <h1 class="modal__title">{{ "Delete project" | translate }}</h1>
             </div>
         </header>
         <div class="modal__body">
             <p ng-hide="editProjectCtrl.deleteProjectSuccess">
-                Are you sure you want to delete this project? You cannot undo deleting a project.
+                {{ "Are you sure you want to delete this project? You cannot undo deleting a project." | translate }}
             </p>
-            <p ng-show="editProjectCtrl.deleteProjectSuccess">The project was deleted successfully.</p>
-            <p ng-show="editProjectCtrl.deleteProjectFail" class="error">The project was not deleted successfully. This project might have some contributions.</p>
+            <p ng-show="editProjectCtrl.deleteProjectSuccess">{{ "The project was deleted successfully." | translate }}</p>
+            <p ng-show="editProjectCtrl.deleteProjectFail" class="error">{{ "The project was not deleted successfully. This project might have some contributions." | translate }}</p>
         </div>
         <footer class="modal__footer">
             <div ng-hide="editProjectCtrl.deleteProjectSuccess">
                 <button class="button button--achromic" type="button"
-                        ng-click="editProjectCtrl.showDeleteConfirmation(false)">Cancel
+                        ng-click="editProjectCtrl.showDeleteConfirmation(false)">{{ "Cancel" | translate }}
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.deleteProject()">Delete
+                        ng-click="editProjectCtrl.deleteProject()">{{ "Delete" | translate }}
                 </button>
             </div>
             <div ng-show="editProjectCtrl.deleteProjectSuccess">
                  <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.goToHome()">Go to the homepage
+                        ng-click="editProjectCtrl.goToHome()">{{ "Go to the homepage" | translate }}
                 </button>
             </div>
         </footer>
     </div>`
     <button class="modal__button-dismiss" title="Close" ng-click="editProjectCtrl.showDeleteConfirmation(false)">
-        Dismiss
+        {{ "Dismiss" | translate }}
     </button>
 </section>
 <!-- delete project confirmation modal -->
@@ -548,45 +547,44 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Task invalidation</h1>
+                <h1 class="modal__title">{{ "Task invalidation" | translate }}</h1>
             </div>
         </header>
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.invalidateTasksSuccess">
                 <p>
-                    Are you sure you want to invalidate all tasks? You cannot undo this.
+                    {{ "Are you sure you want to invalidate all tasks in this project? You cannot undo this." | translate }}
                 </p>
                 <p>
-                    This will mark all tasks (except 'ready' and 'bad imagery' tasks) as invalid. Please use this only if you are sure
-                    of what you are doing.
+                    {{ "This will mark all tasks (except 'ready' and 'bad imagery' tasks) as invalid. Please use this only if you are sure of what you are doing." | translate }}
                 </p>
             </div>
             <p ng-show="editProjectCtrl.invalidateTasksSuccess">
-                The tasks were invalidated successfully.
+                {{ "The tasks were invalidated successfully." | translate }}
             </p>
             <p ng-show="editProjectCtrl.invalidateTasksFail" class="error">
-                The tasks were not invalidated successfully.
+                {{ "Invalidating all the tasks failed for an unknown reason." | translate }}
             </p>
         </div>
         <footer class="modal__footer">
             <div ng-hide="editProjectCtrl.invalidateTasksSuccess">
                 <button class="button button--achromic" type="button"
-                        ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Cancel
+                        ng-click="editProjectCtrl.showInvalidateConfirmation(false)">{{ "Cancel" | translate }}
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.invalidateAllTasks()">Invalidate all tasks
+                        ng-click="editProjectCtrl.invalidateAllTasks()">{{ "Invalidate all tasks" | translate }}
                 </button>
-                <span ng-show="editProjectCtrl.invalidateInProgress">Invalidating...</span>
+                <span ng-show="editProjectCtrl.invalidateInProgress">{{ "Invalidating..." | translate }}</span>
             </div>
             <div ng-show="editProjectCtrl.invalidateTasksSuccess">
                  <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.showInvalidateConfirmation(false)">Close message
+                        ng-click="editProjectCtrl.showInvalidateConfirmation(false)">{{ "Close message" | translate }}
                 </button>
             </div>
         </footer>
     </div>
     <button class="modal__button-dismiss" title="Close" ng-click="editProjectCtrl.showInvalidateConfirmation(false)">
-        Dismiss
+        {{ "Dismiss" | translate }}
     </button>
 </section>
 <!-- invalidate tasks confirmation modal -->
@@ -596,44 +594,44 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Task validation</h1>
+                <h1 class="modal__title">{{ "Task validation" | translate }}</h1>
             </div>
         </header>
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.validateTasksSuccess">
                 <p>
-                    Are you sure you want to validate all tasks? You cannot undo this.
+                    {{ "Are you sure you want to validate all tasks? You cannot undo this." | translate }}
                 </p>
                 <p>
-                    This will mark all tasks (except 'bad imagery') as valid. Please use this only if you are sure of what you are doing.
+                    {{ "This will mark all tasks (except 'bad imagery') as valid. Please use this only if you are sure of what you are doing." | translate }}
                 </p>
             </div>
             <p ng-show="editProjectCtrl.validateTasksSuccess">
-                The tasks were marked validated successfully.
+                {{ "The tasks were marked validated successfully." | translate }}
             </p>
             <p ng-show="editProjectCtrl.validateTasksFail" class="error">
-                The tasks were not marked validated successfully.
+                {{ "Failed to mark all task valid for an unknown reason." | translate }}
             </p>
         </div>
         <footer class="modal__footer">
             <div ng-hide="editProjectCtrl.validateTasksSuccess">
                 <button class="button button--achromic" type="button"
-                        ng-click="editProjectCtrl.showValidateConfirmation(false)">Cancel
+                        ng-click="editProjectCtrl.showValidateConfirmation(false)">{{ "Cancel" | translate }}
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.validateAllTasks()">Validate all tasks
+                        ng-click="editProjectCtrl.validateAllTasks()">{{ "Validate all tasks" | translate }}
                 </button>
-                <span ng-show="editProjectCtrl.validateInProgress">Validating...</span>
+                <span ng-show="editProjectCtrl.validateInProgress">{{ "Validating..." | translate }}</span>
             </div>
             <div ng-show="editProjectCtrl.validateTasksSuccess">
                  <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.showValidateConfirmation(false)">Close message
+                        ng-click="editProjectCtrl.showValidateConfirmation(false)">{{ "Close message" | translate }}
                 </button>
             </div>
         </footer>
     </div>
     <button class="modal__button-dismiss" title="Close" ng-click="editProjectCtrl.showValidateConfirmation(false)">
-        Dismiss
+        {{ "Dismiss" | translate }}
     </button>
 </section>
 <!-- validate tasks confirmation modal -->
@@ -643,47 +641,46 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Message all contributors</h1>
+                <h1 class="modal__title">{{ "Message all contributors" | translate }}</h1>
             </div>
         </header>
         <div class="modal__body">
             <div ng-hide="editProjectCtrl.validateTasksSuccess">
                 <p>
-                    This will send a Tasking Manager message to every contributor of the current project. Please use
-                    this feature conservatively.
+                    {{ "This will send a Tasking Manager message to every contributor of the current project. Please use this feature carefully." | translate }}
                 </p>
                 <input type="text" class="form__control" ng-model="messageSubject" placeholder="Subject*" />
                 <textarea class="form__control" rows="4" ng-model="messageContent" placeholder="Message*"></textarea>
                 <p>
-                    This message does not automatically translate, so you may want to include your own translations.
+                    {{ "This message is not translated to the user's selected language, so you may want to include your own translations." | translate }}
                 </p>
             </div>
             <p ng-show="editProjectCtrl.sendMessageSuccess">
-                Contributors were messaged successfully.
+                {{ "Contributors were messaged successfully." | translate }}
             </p>
             <p ng-show="editProjectCtrl.sendMessageFail" class="error">
-                Contributors were not messaged successfully.
+                {{ "Failed to message all contributors for an unknown reason." | translate }}
             </p>
         </div>
         <footer class="modal__footer">
             <div ng-hide="editProjectCtrl.sendMessageSuccess">
                 <button class="button button--achromic" type="button"
-                        ng-click="editProjectCtrl.showMessageContributors(false)">Cancel
+                        ng-click="editProjectCtrl.showMessageContributors(false)">{{ "Cancel" | translate }}
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.sendMessage(messageSubject, messageContent)">Message all contributors
+                        ng-click="editProjectCtrl.sendMessage(messageSubject, messageContent)">{{ "Message all contributors" | translate }}
                 </button>
-                <span ng-show="editProjectCtrl.sendMessageInProgress">Sending...</span>
+                <span ng-show="editProjectCtrl.sendMessageInProgress">{{ "Sending..." | translate }}</span>
             </div>
             <div ng-show="editProjectCtrl.sendMessageSuccess">
                  <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.showMessageContributors(false)">Close message
+                        ng-click="editProjectCtrl.showMessageContributors(false)">{{ "Close message" | translate }}
                 </button>
             </div>
         </footer>
     </div>
     <button class="modal__button-dismiss" title="Close" ng-click="editProjectCtrl.showMessageContributors(false)">
-        Dismiss
+        {{ "Dismiss" | translate }}
     </button>
 </section>
 <!-- message contributors modal -->
