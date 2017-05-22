@@ -27,7 +27,6 @@
         };
         
         vm.returnToPreviousPage = function(){
-            console.log("redirect");
             $location.path(vm.redirectURL);
         };
     }

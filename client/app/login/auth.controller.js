@@ -24,7 +24,6 @@
             authService.setSession(vm.sessionToken, vm.userName);
             // Return to the URL where the user came from
             var redirectURL = $location.search().redirect_to;
-            console.log(redirectURL);
             if (redirectURL){
                 $location.path(redirectURL);
             }
@@ -38,16 +37,5 @@
             $location.search('redirect_to', null);
             $location.search('ng', null);
         }
-
-        /**
-         * Login
-         */
-        vm.login = function(){
-            authService.login();
-        };
-        
-        vm.returnToPreviousPage = function(){
-            // TODO
-        };
     }
 })();
