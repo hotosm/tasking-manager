@@ -138,7 +138,8 @@
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
                                                     </p>
                                                     <ul>
-                                                        <li>Organisation: {{ project.organisationTag }}</li>
+                                                        <li ng-show="!project.organisationTag">Organisation: N/A</li>
+                                                        <li ng-show="project.organisationTag">Organisation: {{ project.organisationTag }}</li>
                                                         <li>Priority: {{ project.priority }}</li>
                                                         <li>Level: {{ project.mapperLevel }}</li>
                                                     </ul>
@@ -185,7 +186,8 @@
                                             </td>
                                             <td>{{ project.mapperLevel }}</td>
                                             <td>{{ project.priority }}</td>
-                                            <td>{{ project.organisationTag }}</td>
+                                            <td ng-show="!project.organisationTag">N/A</td>
+                                            <td ng-show="project.organisationTag">{{ project.organisationTag }}</td>
                                             <td><a href="/project/{{ project.projectId }}" class="button button--primary button--small">Contribute</a></td>
                                         </tr>
                                         </tbody>
