@@ -20,7 +20,8 @@
             setSession: setSession,
             getSession: getSession,
             getAuthenticatedHeader: getAuthenticatedHeader,
-            getLocalStorageSessionName: getLocalStorageSessionName
+            getLocalStorageSessionName: getLocalStorageSessionName,
+            isUserLoggedIn: isUserLoggedIn
         };
 
         return service;
@@ -28,9 +29,15 @@
         /**
          * Login to OSM account 
          */
-        function login(){
-            // Get the current page the user is on and remember it so we can go back to it
-            var urlBeforeLoggingIn = $location.path();
+        function login(redirectURL){
+            var urlBeforeLoggingIn = '';
+            if (!redirectURL){
+                // Get the current page the user is on and remember it so we can go back to it
+                urlBeforeLoggingIn = $location.path();
+            }
+            else {
+                urlBeforeLoggingIn = redirectURL;
+            }
             $window.location.href = configService.tmAPI + '/auth/login?redirect_to=' + urlBeforeLoggingIn;
         }
         
@@ -84,6 +91,21 @@
          */
         function getLocalStorageSessionName(){
             return localStorageSessionName;
+        }
+
+        /**
+         * Checks if the user is logged in
+         */
+        function isUserLoggedIn(){
+            var isLoggedIn;
+            if (session.username){
+                isLoggedIn = true;
+            }
+            else {
+                isLoggedIn = false;
+            }
+            return isLoggedIn;
+
         }
     }
 })();

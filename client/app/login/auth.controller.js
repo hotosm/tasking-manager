@@ -24,6 +24,7 @@
             authService.setSession(vm.sessionToken, vm.userName);
             // Return to the URL where the user came from
             var redirectURL = $location.search().redirect_to;
+            console.log(redirectURL);
             if (redirectURL){
                 $location.path(redirectURL);
             }

@@ -23,7 +23,7 @@
          * Login
          */
         vm.login = function(){
-            authService.login();
+            authService.login(vm.redirectURL);
         };
         
         vm.returnToPreviousPage = function(){

@@ -98,8 +98,8 @@
 
                 .when('/authorized', {
                     templateUrl: 'app/login/authorized.html',
-                    controller: 'loginController',
-                    controllerAs: 'loginCtrl'
+                    controller: 'authController',
+                    controllerAs: 'authCtrl'
                 })
 
                 .when('/auth-failed', {

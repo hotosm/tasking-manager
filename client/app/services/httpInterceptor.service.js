@@ -9,9 +9,9 @@
 
     angular
         .module('taskingManager')
-        .factory('httpInterceptorService', ['$q','$location', '$window', 'configService', httpInterceptorService]);
+        .factory('httpInterceptorService', ['$q','$location', httpInterceptorService]);
 
-    function httpInterceptorService($q, $location, $window, configService) {
+    function httpInterceptorService($q, $location) {
 
         return {
 
@@ -24,10 +24,7 @@
             'responseError': function (rejection) {
                 if (rejection.status === 401) {
                     // Get the current page the user is on and remember it so we can go back to it
-                    // Can't use the authService because of a circular dependency
-                    console.log("401!");
                     var currentUrl = $location.path();
-                    //$window.location.href = configService.tmAPI + '/auth/login?redirect_to=' + urlBeforeLoggingIn;
                     $location.path('/login/').search({redirect_to : currentUrl});
                 }
                 return $q.reject(rejection);
