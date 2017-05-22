@@ -22,6 +22,7 @@
     "connect-modrewrite": "^0.9.0",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
+    "gulp-angular-translate-extract": "^0.1.8",
     "gulp-concat": "^2.6.1",
     "gulp-cssnano": "^2.1.2",
     "gulp-ng-config": "^1.4.0",

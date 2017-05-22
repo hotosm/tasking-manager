@@ -1,4 +1,5 @@
 var gulp = require('gulp'),
+    angularTranslate = require('gulp-angular-translate-extract'),
     browserSync = require('browser-sync'),
     concat = require('gulp-concat'),
     config = require('gulp-ng-config'),
@@ -8,7 +9,7 @@ var gulp = require('gulp'),
     processhtml = require('gulp-processhtml'),
     runSequence = require('run-sequence'),
     sass = require('gulp-sass');
-uglify = require('gulp-uglify');
+    uglify = require('gulp-uglify');
 
 // paths object holds references to location of all assets
 var paths = {
@@ -116,6 +117,18 @@ gulp.task('create-release-config', function () {
     return gulp.src('taskingmanager.config.json')
         .pipe(config('taskingmanager.config', {environment: 'release'}))
         .pipe(gulp.dest('app'))
+});
+
+gulp.task('translate-extract', function () {
+    /** Extracts all the translation keys for angular-translate*/
+    return gulp.src(['app/**/*.html'])
+        .pipe(angularTranslate({
+            defaultLang: 'en',
+            lang: ['en', 'nl_NL'],
+            suffix: ".json",
+            dest: 'locale'
+        }))
+        .pipe(gulp.dest('locale'))
 });
 
 /** Build task for will minify the app and copy it to the dist folder ready to deploy */
