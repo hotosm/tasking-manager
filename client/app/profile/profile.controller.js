@@ -87,7 +87,7 @@
             }, function(){
                 vm.errorSetLevel = true;
             });
-        }
+        };
 
         /**
          * Get the user's details from the account service
@@ -102,6 +102,7 @@
                 if (account) {
                     vm.currentlyLoggedInUser = account;
                 }
+                vm.userDetails.twitter = 'https://twitter.com/';
             }, function () {
                 // Could not find the user, redirect to the homepage
                 $location.path('/');

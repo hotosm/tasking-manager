@@ -30,6 +30,24 @@
                                     OSM edit history
                                 </a>
                             </p>
+                            <hr/>
+                            <p>Email (only visible to you):
+                                <span ng-hide="showEditEmail">
+                                    TODO email
+                                </span>
+                                <input ng-show="showEditEmail" type="text" class="form__control form__control__inline" placeholder="Email" ng-model="profileCtrl.currentlyLoggedInUser.email" />
+                                <span ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
+                                    <button class="button button--achromic button--small" type="button" ng-click="showEditEmail = !showEditEmail" ng-show="!showEditEmail">
+                                        <i class="hot-ds-icon-pencil" title="Edit Twitter URL"></i>
+                                    </button>
+                                    <button class="button button--achromic button--small" type="button" ng-show="showEditEmail">
+                                        <i class="hot-ds-icon-tick" title="Save edits" ng-click="profileCtrl.saveEdits()"></i>
+                                    </button>
+                                    <button class="button button--achromic button--small" type="button" ng-show="showEditEmail">
+                                        <i class="hot-ds-icon-xmark" title="Cancel edits" ng-click="showEditEmail = false"></i>
+                                    </button>
+                                </span>
+                            </p>
                         </div>
                         <div class="roles pull-right">
                             <div>

@@ -151,3 +151,8 @@ hr {
   background-color: $base-color;
   border-radius: 10px;
 }
+
+.form__control__inline {
+  width: auto;
+  display: inline;
+}
