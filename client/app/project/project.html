@@ -310,10 +310,20 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="form__group pull-center">
+                                <div class="form__group pull-center" ng-show="projectCtrl.isSelectedSplittable">
                                     <button class="button button--achromic" ng-click="projectCtrl.splitTask()">
                                         Split Task
                                     </button>
+                                </div>
+                                <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Task is not splittable</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Task could not be split</p>
+                                    </div>
                                 </div>
                                 <div ng-show="projectCtrl.taskUnLockError">
                                     <div>
@@ -361,13 +371,13 @@
                                     <p><strong>Option 3: </strong>Select by area</p>
                                     <div class="padding-at-bottom">
                                         <button ng-click="projectCtrl.selectByPolygonValidate()"
-                                                 class="button button--achromic pull-center"
-                                                 ng-class="projectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''">
-                                             Select area by drawing a polygon
+                                                class="button button--achromic pull-center"
+                                                ng-class="projectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''">
+                                            Select area by drawing a polygon
                                         </button>
                                         <button class="button button--secondary"
-                                            ng-class="projectCtrl.selectedTasksForValidation.length < 1 ? 'disabled' : '' "
-                                            ng-click="projectCtrl.lockTasksForValidation(projectCtrl.selectedTasksForValidation)">
+                                                ng-class="projectCtrl.selectedTasksForValidation.length < 1 ? 'disabled' : '' "
+                                                ng-click="projectCtrl.lockTasksForValidation(projectCtrl.selectedTasksForValidation)">
                                             Start validating
                                         </button>
                                     </div>
