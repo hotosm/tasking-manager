@@ -1,8 +1,9 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
+
 from server.models.dtos.user_dto import UserSearchQuery, UserDTO
-from server.services.authentication_service import token_auth, tm
-from server.services.user_service import UserService, UserServiceError, NotFound
+from server.services.users.authentication_service import token_auth, tm
+from server.services.users.user_service import UserService, UserServiceError, NotFound
 
 
 class UserAPI(Resource):

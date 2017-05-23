@@ -1,10 +1,12 @@
 import base64
 from urllib import parse
+
 from flask import current_app, request
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+
 from server.api.utils import TMAPIDecorators
-from server.services.user_service import UserService, NotFound
+from server.services.users.user_service import UserService, NotFound
 
 token_auth = HTTPTokenAuth(scheme='Token')
 tm = TMAPIDecorators()
