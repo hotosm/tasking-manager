@@ -115,8 +115,10 @@ class SMTPService:
 
     @staticmethod
     def _generate_email_verification_url(email_address: str, user_name: str):
+        """ Generate email verification url with unique token """
+        entropy = current_app.secret_key if current_app.secret_key else 'un1testingmode'
 
-        serializer = URLSafeTimedSerializer(current_app.secret_key)
+        serializer = URLSafeTimedSerializer(entropy)
         token = serializer.dumps(email_address.lower())
 
         base_url = current_app.config['APP_BASE_URL']
