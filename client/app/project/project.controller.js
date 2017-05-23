@@ -442,7 +442,9 @@
 
             //add locked tasks to the locked tasks vector layer
             var projectId = vm.projectData.projectId;
-            updateLockedTasksForCurrentUser(projectId);
+            if (authService.isUserLoggedIn()) {
+                updateLockedTasksForCurrentUser(projectId);
+            }
 
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
