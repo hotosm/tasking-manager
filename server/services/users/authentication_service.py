@@ -1,5 +1,5 @@
 import base64
-from urllib import parse
+import urllib.parse
 
 from flask import current_app, request
 from flask_httpauth import HTTPTokenAuth
@@ -108,12 +108,25 @@ class AuthenticationService:
 
         redirect_query = ''
         if redirect_to:
-            redirect_query = f'&redirect_to={parse.quote(redirect_to)}'
+            redirect_query = f'&redirect_to={urllib.parse.quote(redirect_to)}'
 
         # Trailing & added as Angular a bit flaky with parsing querystring
-        authorized_url = f'{base_url}/authorized?username={parse.quote(username)}&session_token={session_token}&ng=0' \
+        authorized_url = f'{base_url}/authorized?username={urllib.parse.quote(username)}&session_token={session_token}&ng=0' \
                          f'{redirect_query}'
         return authorized_url
+
+    @staticmethod
+    def generate_email_verification_url(email_address: str, user_name: str):
+
+        serializer = URLSafeTimedSerializer(current_app.secret_key)
+        token = serializer.dumps(email_address.lower())
+
+        base_url = current_app.config['APP_BASE_URL']
+
+        verification_params = {'token': token, 'username': user_name}
+        verification_url = '{0}/messaging/validate-email?{1}'.format(base_url, urllib.parse.urlencode(verification_params))
+
+        return verification_url
 
     @staticmethod
     def is_valid_token(token, token_expiry):
