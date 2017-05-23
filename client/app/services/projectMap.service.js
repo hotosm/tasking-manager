@@ -19,6 +19,7 @@
         var popupContainer = '';
         // the scope the compiled element is linked to
         var popupScope_ = $rootScope.$new(true);
+        var overlay = null;
 
         var service = {
             initialise: initialise,
@@ -220,6 +221,8 @@
          */
         function createPopup() {
 
+            overlay = null;
+
             popupContainer = angular.element('<div map-popup id="popup" class="ol-popup"></div>');
             popupContainer.attr('selected-feature', 'feature');
 
@@ -246,6 +249,7 @@
             });
             
             map.addOverlay(overlay);
+            overlay.setPosition(undefined);
         }
         
         /**
@@ -271,17 +275,6 @@
                 overlay.setElement(popupContainer[0]);
                 $compile(popupContainer)(popupScope_);
 
-                /*var projectId = feature.getProperties().projectId;
-                var projectName = feature.getProperties().projectName;
-                var mapperLevel = feature.getProperties().mapperLevel;
-                var organisation = feature.getProperties().organisationTag;
-                var shortDescription = feature.getProperties().shortDescription;
-                content.innerHTML = '<h4>#' + projectId + ' - ' + '<a href="/project/' + projectId + '">' + projectName + '</a></h4>';
-                content.innerHTML = content.innerHTML + '<p>' + mapperLevel +'</p>';
-                if (organisation){
-                    content.innerHTML = content.innerHTML + '<p>' + organisation + '<p>';
-                }
-                content.innerHTML = content.innerHTML + '<p markdown-to-html="' + shortDescription + '"><p>';*/
                 overlay.setPosition(coordinate);
             }
         }

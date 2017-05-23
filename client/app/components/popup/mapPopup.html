@@ -5,19 +5,19 @@
             <a href="/project/{{ mapPopupCtrl.projectDetails.projectId }}"> {{ mapPopupCtrl.projectDetails.projectName }}</a>
         </h4>
         <ul>
-            <li>
+            <li ng-show="mapPopupCtrl.projectDetails.mapperLevel">
                 <strong>Mapper level: </strong>
                 <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'BEGINNER'">Beginner</span>
                 <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'INTERMEDIATE'">Intermediate</span>
                 <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'ADVANCED'">Advanced</span>
             </li>
-            <li>
+            <li ng-show="mapPopupCtrl.projectDetails.organisationTag">
                 <strong>Organisation: </strong>{{ mapPopupCtrl.projectDetails.organisationTag }}
             </li>
-            <li>
+            <li ng-show="mapPopupCtrl.projectDetails.percentMapped">
                 {{ mapPopupCtrl.projectDetails.percentMapped }}% mapped
             </li>
-            <li>
+            <li ng-show="mapPopupCtrl.projectDetails.percentValidated">
                 {{ mapPopupCtrl.projectDetails.percentValidated }}% validated
             </li>
         </ul>
