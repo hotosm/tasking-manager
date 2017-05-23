@@ -5,6 +5,8 @@ import os
 class EnvironmentConfig:
     """ Base class for config that is shared between environments """
     DEFAULT_CHANGESET_COMMENT = '#hotosm-project'
+    # This is the address we'll use as the sender on all auto generated emails
+    EMAIL_FROM_ADDRESS = 'noreply@hotosmmail.org'
     LOG_LEVEL = logging.ERROR
     OSM_OAUTH_SETTINGS = {
         'base_url': 'https://www.openstreetmap.org/api/0.6/',
@@ -16,6 +18,11 @@ class EnvironmentConfig:
     }
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
     SECRET_KEY = os.getenv('TM_SECRET', None)
+    SMTP_SETTINGS = {
+        'host': 'email-smtp.eu-west-1.amazonaws.com',
+        'smtp_user': 'AKIAIIBGP3IBB3NWDX5Q',
+        'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
+    }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {
         'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu',
