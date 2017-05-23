@@ -28,18 +28,9 @@
             removeProjectsOnMap: removeProjectsOnMap,
             highlightProjectOnMap: highlightProjectOnMap,
             removeHighlightOnMap: removeHighlightOnMap,
-            showInfoOnHoverOrClick: showInfoOnHoverOrClick,
             createPopup: createPopup,
             closePopup: closePopup
         };
-
-        /**
-         * Elements that make up the popup.
-         */
-        var container = null;
-        var content = null;
-        var closer = null;
-        var overlay = null;
 
         return service;
 
@@ -165,55 +156,6 @@
          */
         function removeHighlightOnMap(){
             projectHighlightVectorSource.clear();
-        }
-
-        /**
-         * Show feature info on hover or click
-         */
-        function showInfoOnHoverOrClick() {
-
-            /**
-            * Elements that make up the popup.
-            */
-            container = document.getElementById('popup');
-            content = document.getElementById('popup-content');
-            closer = document.getElementById('popup-closer');
-            overlay = null;
-
-            /**
-             * Create an overlay to anchor the popup to the map.
-             */
-            overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
-                element: container,
-                autoPan: true,
-                autoPanAnimation: {
-                    duration: 250
-                }
-            }));
-
-            /**
-             * Add a click handler to hide the popup.
-             * @return {boolean} Don't follow the href.
-             */
-            if (closer){
-                closer.onclick = function () {
-                    overlay.setPosition(undefined);
-                    closer.blur();
-                    return false;
-                };
-            }
-
-            map.on('pointermove', function (evt) {
-                if (evt.dragging) {
-                    return;
-                }
-                var pixel = map.getEventPixel(evt.originalEvent);
-                displayFeatureInfo(pixel, evt.coordinate);
-            });
-            map.on('click', function (evt) {
-                displayFeatureInfo(evt.pixel, evt.coordinate);
-            });
-            map.addOverlay(overlay);
         }
 
         /**
