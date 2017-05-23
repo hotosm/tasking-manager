@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('authController', ['$location','authService', authController]);
+        .controller('authController', ['$location','authService','accountService', authController]);
 
-    function authController($location, authService) {
+    function authController($location, authService, accountService) {
         var vm = this;
         vm.userName = '';
         vm.sessionToken = '';
@@ -22,6 +22,7 @@
             vm.sessionToken = $location.search().session_token;
             // Set the session in the authentication service
             authService.setSession(vm.sessionToken, vm.userName);
+            accountService.setAccount(vm.userName);
             // Return to the URL where the user came from
             var redirectURL = $location.search().redirect_to;
             if (redirectURL){

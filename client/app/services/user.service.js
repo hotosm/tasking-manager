@@ -17,7 +17,8 @@
             getUserProjects: getUserProjects,
             searchUser: searchUser,
             searchAllUsers: searchAllUsers,
-            acceptLicense: acceptLicense
+            acceptLicense: acceptLicense,
+            setContactDetails: setContactDetails
         };
 
         return service;
@@ -201,6 +202,29 @@
             }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Set contact details
+         * @param contactDetails
+         * @returns {!jQuery.Promise|*|!jQuery.jqXHR|!jQuery.deferred}
+         */
+        function setContactDetails(contactDetails){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/user/update-details',
+                data: contactDetails,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response){
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status
                 return $q.reject("error");
             })
         }
