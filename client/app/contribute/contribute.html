@@ -138,9 +138,9 @@
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
                                                     </p>
                                                     <ul>
-                                                        <li ng-show="!project.organisationTag">{{ "Organisation:" | translate }} N/A</li>
-                                                        <li ng-show="project.organisationTag">{{ "Organisation:" | translate }} {{ project.organisationTag }}</li>
-                                                        <li>{{ "Priority:" | translate }} {{ project.priority }}</li>
+                                                        <li ng-show="!project.organisationTag">{{ "Organisation" | translate }}: N/A</li>
+                                                        <li ng-show="project.organisationTag">{{ "Organisation" | translate }}: {{ project.organisationTag }}</li>
+                                                        <li>{{ "Priority" | translate }}: {{ project.priority }}</li>
                                                         <li>{{ "Level" | translate }}: {{ project.mapperLevel }}</li>
                                                     </ul>
                                                     <a href="/project/{{ project.projectId }}"
