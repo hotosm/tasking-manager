@@ -1,12 +1,14 @@
 import datetime
 import xml.etree.ElementTree as ET
+
 from flask import current_app
 from geoalchemy2 import shape
+
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
-from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.statuses import MappingNotAllowed
+from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound, UserLicenseError
-from server.services.message_service import MessageService
+from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
 
