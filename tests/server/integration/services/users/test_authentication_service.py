@@ -1,10 +1,10 @@
 import os
 import unittest
 from urllib.parse import urlparse, parse_qs
-from tests.server.helpers.test_helpers import get_canned_osm_user_details
+
 from server import create_app
-from server.services.authentication_service import AuthenticationService
-from server.models.postgis.user import User
+from server.services.users.authentication_service import AuthenticationService
+from tests.server.helpers.test_helpers import get_canned_osm_user_details
 
 
 class TestAuthenticationService(unittest.TestCase):
@@ -29,9 +29,6 @@ class TestAuthenticationService(unittest.TestCase):
     def tearDown(self):
         if self.skip_tests:
             return
-
-        user = User().get_by_id(7777777)
-        user.delete()
 
         self.ctx.pop()
 

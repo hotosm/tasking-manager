@@ -1,9 +1,11 @@
 import re
-from flask import current_app
 from typing import List
+
+from flask import current_app
+
 from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message, NotFound
-from server.services.user_service import UserService
+from server.services.users.user_service import UserService
 
 
 class MessageServiceError(Exception):

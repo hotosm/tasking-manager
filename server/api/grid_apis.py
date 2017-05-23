@@ -1,9 +1,10 @@
 from flask_restful import Resource, current_app, request
-from server.services.grid_service import GridService
-from server.services.authentication_service import token_auth, tm
-from server.models.dtos.grid_dto import GridDTO
 from schematics.exceptions import DataError
+
+from server.models.dtos.grid_dto import GridDTO
+from server.services.grid_service import GridService
 from server.services.project_admin_service import InvalidGeoJson
+from server.services.users.authentication_service import token_auth, tm
 
 
 class IntersectingTilesAPI(Resource):

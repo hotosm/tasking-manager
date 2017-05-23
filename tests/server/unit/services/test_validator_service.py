@@ -1,11 +1,11 @@
 import unittest
+from unittest.mock import patch
+
+from server import create_app
+from server.models.dtos.validator_dto import ValidatedTask
+from server.services.users.user_service import UserService
 from server.services.validator_service import ValidatorService, Task, NotFound, LockForValidationDTO, TaskStatus, \
     ValidatatorServiceError, UnlockAfterValidationDTO, ProjectService, ValidatingNotAllowed, UserLicenseError
-from server.models.dtos.validator_dto import ValidatedTask
-from unittest.mock import patch
-from server import create_app
-from server.services.user_service import UserService
-from server.models.dtos.mapping_dto import TaskDTOs
 
 
 class TestValidatorService(unittest.TestCase):

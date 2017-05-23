@@ -1,13 +1,13 @@
 from server import db
+from server.models.dtos.project_dto import ProjectSummary
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
     ProjectActivityDTO
-from server.models.dtos.project_dto import ProjectSummary
 from server.models.postgis.project import Project, AreaOfInterest
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
-from server.services.user_service import UserService
+from server.services.users.user_service import UserService
 
 
 class StatsService:

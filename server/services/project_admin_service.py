@@ -1,14 +1,16 @@
 import json
+
 import geojson
-from typing import List
 from flask import current_app
+
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
 from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, ProjectStatus
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData
-from server.services.license_service import LicenseService
 from server.services.grid_service import GridService
-from server.services.user_service import UserService
+from server.services.license_service import LicenseService
+from server.services.users.user_service import UserService
+
 
 class ProjectAdminServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when validating a Project """
