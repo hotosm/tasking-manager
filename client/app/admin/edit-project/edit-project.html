@@ -131,7 +131,7 @@
                                                     class="form__control"
                                                     ng-model="info.shortDescription" rows="4">
                                             </textarea>
-                                            <p>{{ "<strong>Tip:</strong> You can use Markdown. (HTML is not allowed)" | translate }}</p>
+                                            <p><strong>{{ "Tip" | translate }}:</strong> {{ "You can use Markdown. (HTML is not allowed)" | translate }}</p>
                                             <button class="button button--secondary button--small"
                                                     ng-click="editProjectCtrl.showPreviewShortDescription = !editProjectCtrl.showPreviewShortDescription">
                                                 {{ "Preview" | translate }}
@@ -160,7 +160,7 @@
                                                     class="form__control"
                                                     ng-model="info.description" rows="10">
                                             </textarea>
-                                            <p>{{ "<strong>Tip:</strong> You can use Markdown. (HTML is not allowed)" | translate }}</p>
+                                            <p><strong>{{ "Tip" | translate }}:</strong> {{ "You can use Markdown. (HTML is not allowed)" | translate }}</p>
                                             <button class="button button--secondary button--small"
                                                     ng-click="editProjectCtrl.showPreviewDescription = !editProjectCtrl.showPreviewDescription">
                                                 {{ "Preview" | translate }}
@@ -210,7 +210,7 @@
                                                     class="form__control"
                                                     ng-model="info.instructions" rows="10">
                                             </textarea>
-                                            <p>{{ "<strong>Tip:</strong> You can use Markdown. (HTML is not allowed)" | translate }}</p>
+                                            <p><strong>{{ "Tip" | translate }}:</strong> {{ "You can use Markdown. (HTML is not allowed)" | translate }}</p>
                                             <button class="button button--secondary button--small"
                                                     ng-click="editProjectCtrl.showPreviewInstructions = !editProjectCtrl.showPreviewInstructions">
                                                 {{ "Preview" | translate }}
@@ -426,7 +426,7 @@
                                     <label class="form__label">{{ "Validation and Invalidation" | translate }}</label>
                                     <p>{{ "Use this if for some reason you need to validate or invalidate all tasks in this project in a single step." | translate }}</p>
                                     <div class="alert alert--warning" role="alert">
-                                        <p>{{ "<strong>Warning:</strong> This cannot be undone." | translate }}</p>
+                                        <p><strong>{{ "Warning" | translate }}:</strong> {{ "This cannot be undone." | translate }}</p>
                                     </div>
                                     <button class="button button--secondary" type="button"
                                         ng-click="editProjectCtrl.showInvalidateConfirmation(true)">
@@ -441,7 +441,7 @@
                                     <label class="form__label">{{ "Delete project" | translate }}</label>
                                     <p>{{ "You can only delete projects with no contributions." | translate }}</p>
                                     <div class="alert alert--warning" role="alert">
-                                        <p>{{ "<strong>Warning:</strong> This cannot be undone." | translate }}</p>
+                                        <p><strong>{{ "Warning" | translate }}:</strong> {{ "This cannot be undone." | translate }}</p>
                                     </div>
                                     <button class="button button--secondary" type="button"
                                             ng-click="editProjectCtrl.showDeleteConfirmation(true)">
