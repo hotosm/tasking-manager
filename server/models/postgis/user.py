@@ -41,6 +41,14 @@ class User(db.Model):
         """ Return the user for the specified username, or None if not found """
         return User.query.filter_by(username=username).one_or_none()
 
+    def update(self, user_dto: UserDTO):
+        """ Update the user details """
+        self.email_address = user_dto.email_address
+        self.twitter_id = user_dto.twitter_id
+        self.facebook_id = user_dto.facebook_id
+        self.linkedin_id = user_dto.linkedin_id
+        db.session.commit()
+
     @staticmethod
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Search and filter all users """

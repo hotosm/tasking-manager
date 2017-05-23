@@ -1,6 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from server.models.dtos.user_dto import UserSearchQuery
+from server.models.dtos.user_dto import UserSearchQuery, UserDTO
 from server.services.authentication_service import token_auth, tm
 from server.services.user_service import UserService, UserServiceError, NotFound
 
@@ -53,7 +53,7 @@ class UserUpdateAPI(Resource):
 
     @tm.pm_only(False)
     @token_auth.login_required
-    def post(self, username):
+    def post(self):
         """
         Updates user info
         ---
@@ -89,13 +89,22 @@ class UserUpdateAPI(Resource):
         responses:
             200:
                 description: Details saved
+            400:
+                description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
             500:
                 description: Internal Server Error
         """
         try:
-            user_dto = UserService.get_user_dto_by_username(username)
+            user_dto = UserDTO(request.get_json())
+            user_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            user_dto = UserService.update_user_details(tm.authenticated_user_id, user_dto)
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404

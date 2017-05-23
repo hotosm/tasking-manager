@@ -65,9 +65,14 @@ class UserService:
         return user.as_dto()
 
     @staticmethod
-    def update_user_details():
-        # TODO encrypt email, save details
-        pass
+    def update_user_details(user_id: int, user_dto: UserDTO):
+        user = UserService.get_user_by_id(user_id)
+
+        if user.email_address != user_dto.email_address:
+            # TODO send verification email
+            pass
+
+        user.update(user_dto)
 
     @staticmethod
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
