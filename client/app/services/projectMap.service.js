@@ -254,7 +254,7 @@
          */
         function closePopup() {
             overlay.setPosition(undefined);
-        };
+        }
 
         /**
          * Display feature info

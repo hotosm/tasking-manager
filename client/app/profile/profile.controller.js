@@ -87,7 +87,7 @@
             }, function(){
                 vm.errorSetLevel = true;
             });
-        }
+        };
 
         /**
          * Get the user's details from the account service
