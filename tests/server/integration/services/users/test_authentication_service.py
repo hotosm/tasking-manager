@@ -49,17 +49,3 @@ class TestAuthenticationService(unittest.TestCase):
         self.assertEqual(query['username'][0], 'Thinkwhere Test')
         self.assertTrue(query['session_token'][0])
         self.assertEqual(query['redirect_to'][0], '/test/redirect')
-
-    def test_email_verification_url_generated_correctly(self):
-        # Arrange
-        test_user = 'mrtest'
-
-        # Act
-        url = AuthenticationService.generate_email_verification_url('test@test.com', test_user)
-
-        parsed_url = urlparse(url)
-        query = parse_qs(parsed_url.query)
-
-        self.assertEqual(parsed_url.path, '/messaging/validate-email')
-        self.assertEqual(query['username'], [test_user])
-        self.assertTrue(query['token'])  # Token random every time so just check we have something
