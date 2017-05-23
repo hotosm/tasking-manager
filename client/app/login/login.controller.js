@@ -14,7 +14,7 @@
         vm.redirectURL = '';
 
         activate();
-
+        
         function activate(){
             vm.redirectURL = $location.search().redirect_to;
         }

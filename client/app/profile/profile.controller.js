@@ -21,6 +21,10 @@
         vm.highlightSource = null;
         vm.errorSetRole = false;
         vm.errorSetLevel = false;
+        vm.errorSetContactDetails = false;
+
+        // Edit user details
+        vm.editDetails = false;
 
         activate();
 
@@ -102,10 +106,35 @@
                 if (account) {
                     vm.currentlyLoggedInUser = account;
                 }
+
             }, function () {
                 // Could not find the user, redirect to the homepage
                 $location.path('/');
             });
+        }
+
+        /**
+         * Set contact details
+         */
+        vm.setContactDetails = function(){
+            vm.errorSetContactDetails = false;
+            var contactDetails = {
+                emailAddress: vm.userDetails.emailAddress,
+                facebookId: vm.userDetails.facebookId,
+                linkedinId: vm.userDetails.linkedinId,
+                twitterId: vm.userDetails.twitterId
+            };
+            var resultsPromise = userService.setContactDetails(contactDetails);
+            resultsPromise.then(function (data) {
+                // Successfully saved
+                vm.editDetails = false;
+                getUser();
+            }, function () {
+                vm.editDetails = false;
+                vm.errorSetContactDetails = true;
+                getUser();
+            });
+            vm.editDetails = false;
         }
 
         /**
