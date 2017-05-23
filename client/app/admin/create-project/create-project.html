@@ -136,12 +136,12 @@
                             km<sup>2</sup>.</p>
                         <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT"
                              class="alert alert--warning" role="alert">
-                            <p>{{ "<strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required please make the Area of Interest smaller." | translate }}
+                            <p><strong>{{ "Warning" | translate }}:</strong> {{ "Maximum number of tasks reached. If smaller tasks are required please make the Area of Interest smaller." | translate }}
                             </p>
                         </div>
                         <div ng-show="createProjectCtrl.sizeOfTasks > createProjectCtrl.MAX_SIZE_OF_TASKS"
                              class="alert alert--warning" role="alert">
-                            <p>{{ "<strong>Warning:</strong> It is recommended to keep the size of the tasks small. Please review the size of the tasks and/or consider creating multiple projects." | translate }}
+                            <p><strong>{{ "Warning" | translate }}:</strong> {{ "It is recommended to keep the size of the tasks small. Please review the size of the tasks and/or consider creating multiple projects." | translate }}
                             </p>
                         </div>
                     </div>
@@ -178,17 +178,17 @@
                     </span>
                     <div ng-show="createProjectCtrl.trimErrorReason == 400"
                          class="alert alert--danger" role="alert">
-                        <p>{{ "<strong>Error:</strong> AOI geometry must be a valid MultiPolygon." | translate }}
+                        <p><strong>{{ "Error" | translate }}:</strong> {{ "AOI geometry must be a valid MultiPolygon." | translate }}
                         </p>
                     </div>
                     <div ng-show="createProjectCtrl.trimErrorReason == 500"
                          class="alert alert--danger" role="alert">
-                        <p>{{ "<strong>Error:</strong> Project grid could not be trimmed to the AOI." | translate }}
+                        <p><strong>{{ "Error" | translate }}:</strong> {{ "Project grid could not be trimmed to the AOI." | translate }}
                         </p>
                     </div>
                     <div ng-show="createProjectCtrl.trimErrorReason == -1"
                          class="alert alert--danger" role="alert">
-                        <p>{{ "<strong>Error:</strong> The Project could not be trimmed. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks." | translate }}
+                        <p><strong>{{ "Error" | translate }}:</strong> {{ "The Project could not be trimmed. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks." | translate }}
                         </p>
                     </div>
 
@@ -220,7 +220,7 @@
                         <p>{{ "Project has" | translate }} {{ createProjectCtrl.numberOfTasks }} {{ "tasks." | translate }}</p>
                         <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                              class="alert alert--danger" role="alert">
-                            <p>{{ "<strong>Error:</strong> Unable to create project because there are more than" | translate }} {{ createProjectCtrl.MAX_NUMBER_OF_TASKS }} {{ "tasks. Use a smaller AOI and/or fewer tasks." | translate }}
+                            <p><strong>{{ "Error" | translate }}:</strong> {{ "Unable to create project because there are more than" | translate }} {{ createProjectCtrl.MAX_NUMBER_OF_TASKS }} {{ "tasks. Use a smaller AOI and/or fewer tasks." | translate }}
                             </p>
                         </div>
                         <div role="alert">
@@ -230,17 +230,17 @@
                             </span>
                             <div ng-show="createProjectCtrl.createProjectFailReason == 400"
                                  class="alert alert--danger" role="alert">
-                                <p>{{ "<strong>Error:</strong> AOI geometry must be a valid MultiPolygon." | translate }}
+                                <p><strong>{{ "Error" | translate }}:</strong> {{ "AOI geometry must be a valid MultiPolygon." | translate }}
                                 </p>
                             </div>
                             <div ng-show="createProjectCtrl.createProjectFailReason == 500"
                                  class="alert alert--danger" role="alert">
-                                <p>{{ "<strong>Error:</strong> Project could not be created. The exact reason could not be determined." | translate }}
+                                <p><strong>{{ "Error" | translate }}:</strong> {{ "Project could not be created. The exact reason could not be determined." | translate }}
                                 </p>
                             </div>
                             <div ng-show="createProjectCtrl.createProjectFailReason == -1"
                                  class="alert alert--danger" role="alert">
-                                <p>{{ "<strong>Error:</strong> The Project could not be created. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks." | translate }}
+                                <p><strong>{{ "Error" | translate }}:</strong> {{ "The Project could not be created. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks." | translate }}
                                 </p>
                             </div>
 
