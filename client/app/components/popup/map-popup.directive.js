@@ -3,7 +3,7 @@
     'use strict';
 
     /**
-     * @fileoverview This file provides a map pin popup directive.
+     * @fileoverview This file provides a map popup directive.
      */
 
     angular
