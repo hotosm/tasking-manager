@@ -106,10 +106,6 @@
                 if (account) {
                     vm.currentlyLoggedInUser = account;
                 }
-                //vm.userDetails.emailAddress = 'linda.alblas@thinkwhere.com';
-                //vm.userDetails.facebookId = 'hotosm';
-                //vm.userDetails.linkedinId = 'personal-linkedin-id';
-                //vm.userDetails.twitterId = 'hotosm';
 
             }, function () {
                 // Could not find the user, redirect to the homepage
