@@ -1,21 +1,29 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from server.models.dtos.user_dto import UserSearchQuery
+from server.models.dtos.user_dto import UserSearchQuery, UserDTO
 from server.services.authentication_service import token_auth, tm
 from server.services.user_service import UserService, UserServiceError, NotFound
 
 
 class UserAPI(Resource):
 
+    @tm.pm_only(False)
+    @token_auth.login_required
     def get(self, username):
         """
-        Gets basic user information
+        Gets user information
         ---
         tags:
           - user
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: username
               in: path
               description: The users username
@@ -31,7 +39,72 @@ class UserAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_dto = UserService.get_user_dto_by_username(username)
+            user_dto = UserService.get_user_dto_by_username(username, tm.authenticated_user_id)
+            return user_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class UserUpdateAPI(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self):
+        """
+        Updates user info
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                  properties:
+                      emailAddress:
+                          type: string
+                          default: test@test.com
+                      twitterId:
+                          type: string
+                          default: tweeter
+                      facebookId:
+                          type: string
+                          default: fbme
+                      linkedinId:
+                          type: string
+                          default: linkme
+        responses:
+            200:
+                description: Details saved
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user_dto = UserDTO(request.get_json())
+            user_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            user_dto = UserService.update_user_details(tm.authenticated_user_id, user_dto)
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404
@@ -373,3 +446,6 @@ class UserAcceptLicense(Resource):
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+

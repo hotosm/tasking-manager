@@ -20,6 +20,10 @@ class User(db.Model):
     tasks_validated = db.Column(db.Integer, default=0, nullable=False)
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
     projects_mapped = db.Column(db.ARRAY(db.Integer))
+    email_address = db.Column(db.String)
+    twitter_id = db.Column(db.String)
+    facebook_id = db.Column(db.String)
+    linkedin_id = db.Column(db.String)
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
@@ -36,6 +40,14 @@ class User(db.Model):
     def get_by_username(self, username: str):
         """ Return the user for the specified username, or None if not found """
         return User.query.filter_by(username=username).one_or_none()
+
+    def update(self, user_dto: UserDTO):
+        """ Update the user details """
+        self.email_address = user_dto.email_address
+        self.twitter_id = user_dto.twitter_id
+        self.facebook_id = user_dto.facebook_id
+        self.linkedin_id = user_dto.linkedin_id
+        db.session.commit()
 
     @staticmethod
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
@@ -173,7 +185,7 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def as_dto(self):
+    def as_dto(self, logged_in_username: str) -> UserDTO:
         """ Create DTO object from user in scope """
         user_dto = UserDTO()
         user_dto.username = self.username
@@ -181,5 +193,12 @@ class User(db.Model):
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
+        user_dto.twitter_id = self.twitter_id
+        user_dto.linkedin_id = self.linkedin_id
+        user_dto.facebook_id = self.facebook_id
+
+        if self.username == logged_in_username:
+            # Only return email address when logged in user is looking at their own profile
+            user_dto.email_address = self.email_address
 
         return user_dto
