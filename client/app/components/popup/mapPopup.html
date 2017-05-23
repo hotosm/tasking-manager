@@ -4,5 +4,25 @@
         <h4># {{ mapPopupCtrl.projectDetails.projectId }} -
             <a href="/project/{{ mapPopupCtrl.projectDetails.projectId }}"> {{ mapPopupCtrl.projectDetails.projectName }}</a>
         </h4>
+        <ul>
+            <li>
+                <strong>Mapper level: </strong>
+                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'BEGINNER'">Beginner</span>
+                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'INTERMEDIATE'">Intermediate</span>
+                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'ADVANCED'">Advanced</span>
+            </li>
+            <li>
+                <strong>Organisation: </strong>{{ mapPopupCtrl.projectDetails.organisationTag }}
+            </li>
+            <li>
+                {{ mapPopupCtrl.projectDetails.percentMapped }}% mapped
+            </li>
+            <li>
+                {{ mapPopupCtrl.projectDetails.percentValidated }}% validated
+            </li>
+        </ul>
+        <p markdown-to-html="(mapPopupCtrl.projectDetails.shortDescription | limitTo: mapPopupCtrl.characterLimitShortDescription) +
+            (mapPopupCtrl.projectDetails.shortDescription.length > mapPopupCtrl.characterLimitShortDescription ? '...' : '')">
+        </p>
     </div>
 </div>

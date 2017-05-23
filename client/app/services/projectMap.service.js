@@ -112,13 +112,14 @@
             var feature = new ol.Feature({
                 geometry: new ol.geom.Point(projectCenter)
             });
-            console.log(project);
             feature.setProperties({
                 'projectId': project.projectId,
                 'projectName': project.name,
                 'mapperLevel': project.mapperLevel,
                 'organisationTag': project.organisationTag,
-                'shortDescription': project.shortDescription
+                'shortDescription': project.shortDescription,
+                'percentMapped': project.percentMapped,
+                'percentValidated': project.percentValidated
             });
             if (projectVectorSource) {
                 projectVectorSource.addFeature(feature);
@@ -269,8 +270,6 @@
                 // Compile the element, link it to the scope
                 overlay.setElement(popupContainer[0]);
                 $compile(popupContainer)(popupScope_);
-
-                console.log(coordinate);
 
                 /*var projectId = feature.getProperties().projectId;
                 var projectName = feature.getProperties().projectName;

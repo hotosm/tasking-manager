@@ -38,18 +38,20 @@
         var vm = this;
         vm.feature;
         vm.projectDetails = {};
+        vm.characterLimitShortDescription = 100;
 
         /**
          * Watches the selected feature
          */
         $scope.$watch('mapPopupCtrl.selectedFeature', function(selectedFeature) {
-            console.log(selectedFeature.getProperties().projectId);
             vm.feature = selectedFeature;
             vm.projectDetails.projectId = vm.feature.getProperties().projectId;
             vm.projectDetails.projectName = vm.feature.getProperties().projectName;
             vm.projectDetails.mapperLevel = vm.feature.getProperties().mapperLevel;
             vm.projectDetails.organisationTag = vm.feature.getProperties().organisationTag;
             vm.projectDetails.shortDescription = vm.feature.getProperties().shortDescription;
+            vm.projectDetails.percentMapped = vm.feature.getProperties().percentMapped;
+            vm.projectDetails.percentValidated = vm.feature.getProperties().percentValidated;
         });
 
         vm.close = function(){
