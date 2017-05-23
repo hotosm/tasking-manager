@@ -14,6 +14,9 @@ class TestStatsService(unittest.TestCase):
     def tearDown(self):
         self.ctx.pop()
 
+    def test_send_verification_mail(self):
+        self.assertTrue(SMTPService.send_verification_email('hot-test@mailinator.com', 'mrtest'))
+
     def test_send_mail(self):
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
                                                      'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/user/Iain%20Hunter'))

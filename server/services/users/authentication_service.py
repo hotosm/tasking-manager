@@ -116,19 +116,6 @@ class AuthenticationService:
         return authorized_url
 
     @staticmethod
-    def generate_email_verification_url(email_address: str, user_name: str):
-
-        serializer = URLSafeTimedSerializer(current_app.secret_key)
-        token = serializer.dumps(email_address.lower())
-
-        base_url = current_app.config['APP_BASE_URL']
-
-        verification_params = {'token': token, 'username': user_name}
-        verification_url = '{0}/messaging/validate-email?{1}'.format(base_url, urllib.parse.urlencode(verification_params))
-
-        return verification_url
-
-    @staticmethod
     def is_valid_token(token, token_expiry):
         """
         Validates if the supplied token is valid, and hasn't expired.

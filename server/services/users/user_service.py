@@ -4,6 +4,7 @@ from flask import current_app
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
+from server.services.messaging.smtp_service import SMTPService
 
 INTERMEDIATE_MAPPER_LEVEL = 250
 ADVANCED_MAPPER_LEVEL = 500
@@ -71,8 +72,7 @@ class UserService:
         user = UserService.get_user_by_id(user_id)
 
         if user.email_address != user_dto.email_address.lower():
-            # TODO send verification email
-            pass
+            SMTPService.send_verification_email(user_dto.email_address.lower(), user.username)
 
         user.update(user_dto)
 

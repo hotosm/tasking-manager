@@ -3,7 +3,6 @@ import unittest
 from urllib.parse import urlparse, parse_qs
 
 from server import create_app
-from server.models.postgis.user import User
 from server.services.users.authentication_service import AuthenticationService
 from tests.server.helpers.test_helpers import get_canned_osm_user_details
 
