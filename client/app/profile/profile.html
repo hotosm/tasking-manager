@@ -31,22 +31,60 @@
                                 </a>
                             </p>
                             <hr/>
-                            <p>Email (only visible to you):
-                                <span ng-hide="showEditEmail">
-                                    TODO email
+                            <p>
+                                <span ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.editDetails">Email (only visible to you):</span>
+                                <span ng-hide="profileCtrl.editDetails">
+                                    {{ profileCtrl.userDetails.emailAddress }}
                                 </span>
-                                <input ng-show="showEditEmail" type="text" class="form__control form__control__inline" placeholder="Email" ng-model="profileCtrl.currentlyLoggedInUser.email" />
-                                <span ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
-                                    <button class="button button--achromic button--small" type="button" ng-click="showEditEmail = !showEditEmail" ng-show="!showEditEmail">
-                                        <i class="hot-ds-icon-pencil" title="Edit Twitter URL"></i>
-                                    </button>
-                                    <button class="button button--achromic button--small" type="button" ng-show="showEditEmail">
-                                        <i class="hot-ds-icon-tick" title="Save edits" ng-click="profileCtrl.saveEdits()"></i>
-                                    </button>
-                                    <button class="button button--achromic button--small" type="button" ng-show="showEditEmail">
-                                        <i class="hot-ds-icon-xmark" title="Cancel edits" ng-click="showEditEmail = false"></i>
-                                    </button>
-                                </span>
+                                <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                       class="form__control form__control__inline"
+                                       placeholder="Email"
+                                       ng-model="profileCtrl.userDetails.emailAddress" />
+                            </p>
+                            <p>
+                                <span ng-show="profileCtrl.userDetails.facebookId || profileCtrl.editDetails">Facebook:</span>
+                                <a ng-hide="profileCtrl.editDetails" href="http://www.facebook.com/{{ profileCtrl.userDetails.facebookId }}" target="_blank">
+                                    {{ profileCtrl.userDetails.facebookId }}
+                                </a>
+                                <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                       class="form__control form__control__inline"
+                                       placeholder="Facebook ID (e.g. hotosm)"
+                                       ng-model="profileCtrl.userDetails.facebookId" />
+                            </p>
+                            <p>
+                                <span ng-show="profileCtrl.userDetails.twitterId || profileCtrl.editDetails">Twitter:</span>
+                                <a ng-hide="profileCtrl.editDetails" href="http://www.twitter.com/{{ profileCtrl.userDetails.twitterId }}" target="_blank">
+                                    {{ profileCtrl.userDetails.twitterId }}
+                                </a>
+                                <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                       class="form__control form__control__inline"
+                                       placeholder="Twitter ID (e.g. hotosm)"
+                                       ng-model="profileCtrl.userDetails.twitterId" />
+                            </p>
+                            <p>
+                                <span ng-show="profileCtrl.userDetails.linkedinId || profileCtrl.editDetails">LinkedIn:</span>
+                                <a ng-hide="profileCtrl.editDetails" href="http://www.linkedin.com/in{{ profileCtrl.userDetails.linkedinId }}" target="_blank">
+                                    {{ profileCtrl.userDetails.linkedinId }}
+                                </a>
+                                <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                       class="form__control form__control__inline"
+                                       placeholder="LinkedIn ID (personal)"
+                                       ng-model="profileCtrl.userDetails.linkedinId" />
+                            </p>
+                            <p ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
+                                <button class="button button--achromic" type="button" ng-click="profileCtrl.editDetails = !profileCtrl.editDetails" ng-show="!profileCtrl.editDetails">
+                                    <i class="hot-ds-icon-pencil" title="Edit Twitter URL"></i>
+                                    <span>Edit contact details</span>
+                                </button>
+                                <button class="button button--achromic" type="button" ng-click="profileCtrl.setContactDetails()" ng-show="profileCtrl.editDetails">
+                                    <i class="hot-ds-icon-tick" title="Save edits"></i>
+                                    <span>Save</span>
+                                </button>
+                                <button class="button button--achromic" type="button" ng-click="profileCtrl.editDetails = false" ng-show="profileCtrl.editDetails">
+                                    <i class="hot-ds-icon-xmark" title="Cancel edits"></i>
+                                    <span>Cancel</span>
+                                </button>
+                                <p ng-show="profileCtrl.errorSetContactDetails" class="error">An error occurred when setting your contact details.</p>
                             </p>
                         </div>
                         <div class="roles pull-right">
