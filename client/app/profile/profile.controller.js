@@ -34,7 +34,7 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
-            projectMapService.showInfoOnHoverOrClick();
+            projectMapService.createPopup();
             getUserProjects();
         }
 
