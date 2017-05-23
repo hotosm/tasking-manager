@@ -71,7 +71,7 @@
                 vm.map.addControl(legendControl);
             }
             projectMapService.initialise(vm.map);
-            projectMapService.showInfoOnHoverOrClick();
+            projectMapService.createPopup();
             setOrganisationTags();
             setCampaignTags();
         }
