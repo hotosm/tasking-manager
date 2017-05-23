@@ -1,10 +1,24 @@
+import os
 import smtplib
+import urllib.parse
 from flask import current_app
+from itsdangerous import URLSafeTimedSerializer
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
 class SMTPService:
+
+    @staticmethod
+    def send_verification_email(to_address: str):
+        from_address = current_app.config['EMAIL_FROM_ADDRESS']
+
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = 'HOT Tasking Manager - Email Verification'
+        msg['From'] = from_address
+        msg['To'] = to_address
+
+
 
     @staticmethod
     def send_email_alert(to_address: str, profile_link: str):
@@ -40,6 +54,50 @@ class SMTPService:
         sender.quit()
 
         return True
+
+    @staticmethod
+    def _generate_verification_url(email_address, user_id):
+        """
+        Helper method to construct the URL the customer will need to click to validate their account
+        :param email_address: Customer email address in scope
+        :return:
+        """
+        base_url = current_app.config['APP_BASE_UR']
+        token = SMTPService._generate_timed_token(email_address)
+
+        activation_params = {'token': token, 'id': user_id}
+        activation_url = '{0}{1}'.format(base_url, urllib.parse.urlencode(activation_params))
+
+        return activation_url
+
+    @staticmethod
+    def _generate_timed_token(email_address):
+        """
+        Generates a unique token with time embedded within it
+        :return:
+        """
+        serializer = URLSafeTimedSerializer(current_app.secret)
+
+        # Generate token using email
+        token = serializer.dumps(email_address.lower())
+        return token
+
+    @staticmethod
+    def _get_template(template_name) -> str:
+        """
+        Helper function to read the template from disk and return as a string to be manipulated
+        :param template_name: The template we want to load
+        :return: Template as a string
+        """
+        current_app.logger.debug('Getting template {0}'.format(template_name))
+
+        try:
+            template_location = os.path.join(os.path.dirname(__file__), 'templates/{0}'.format(template_name))
+            template = open(template_location, mode='r', encoding='utf-8')
+            return template.read()
+        except FileNotFoundError:
+            current_app.logger.error('Unable open file {0}'.format(template_location))
+            raise ValueError('Unable open file {0}'.format(template_location))
 
     @staticmethod
     def _init_smtp_client():

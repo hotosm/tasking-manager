@@ -70,7 +70,7 @@ class UserService:
     def update_user_details(user_id: int, user_dto: UserDTO):
         user = UserService.get_user_by_id(user_id)
 
-        if user.email_address != user_dto.email_address:
+        if user.email_address != user_dto.email_address.lower():
             # TODO send verification email
             pass
 
