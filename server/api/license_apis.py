@@ -1,9 +1,10 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from server.services.authentication_service import token_auth, tm
+
 from server.models.dtos.licenses_dto import LicenseDTO
 from server.models.postgis.utils import NotFound
 from server.services.license_service import LicenseService
+from server.services.users.authentication_service import token_auth, tm
 
 
 class LicenseAPI(Resource):

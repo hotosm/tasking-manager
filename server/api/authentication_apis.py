@@ -1,8 +1,10 @@
-from flask_restful import Resource
-from flask import session, current_app, redirect, request
 from urllib import parse
+
+from flask import session, current_app, redirect, request
+from flask_restful import Resource
+
 from server import osm
-from server.services.authentication_service import AuthenticationService, AuthServiceError
+from server.services.users.authentication_service import AuthenticationService, AuthServiceError
 
 
 @osm.tokengetter

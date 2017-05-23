@@ -1,8 +1,10 @@
 import base64
+
 from flask_migrate import MigrateCommand
 from flask_script import Manager
+
 from server import create_app
-from server.services.authentication_service import AuthenticationService
+from server.services.users.authentication_service import AuthenticationService
 
 # Initialise the flask app object
 application = create_app()

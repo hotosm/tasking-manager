@@ -1,9 +1,10 @@
 import unittest
-from urllib.parse import urlparse, parse_qs
 from unittest.mock import patch
-from tests.server.helpers.test_helpers import get_canned_osm_user_details
+from urllib.parse import urlparse, parse_qs
+
 from server import create_app
-from server.services.authentication_service import AuthenticationService, AuthServiceError, UserService, NotFound
+from server.services.users.authentication_service import AuthenticationService, AuthServiceError, UserService, NotFound
+from tests.server.helpers.test_helpers import get_canned_osm_user_details
 
 
 class TestAuthenticationService(unittest.TestCase):

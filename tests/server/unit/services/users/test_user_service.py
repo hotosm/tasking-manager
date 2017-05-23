@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
-from server.services.user_service import UserService, UserServiceError, User, UserRole, MappingLevel
+
+from server.services.users.user_service import UserService, UserServiceError, User, UserRole, MappingLevel
 from tests.server.helpers.test_helpers import get_canned_simplified_osm_user_details
 
 

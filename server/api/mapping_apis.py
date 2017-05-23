@@ -1,11 +1,13 @@
 import io
 from distutils.util import strtobool
+
 from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
+
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
-from server.services.authentication_service import token_auth, tm
 from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
+from server.services.users.authentication_service import token_auth, tm
 
 
 class MappingTaskAPI(Resource):

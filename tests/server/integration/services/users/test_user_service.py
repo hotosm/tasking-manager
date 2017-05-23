@@ -1,7 +1,8 @@
 import os
 import unittest
+
 from server import create_app
-from server.services.user_service import UserService, MappingLevel
+from server.services.users.user_service import UserService, MappingLevel
 from tests.server.helpers.test_helpers import create_canned_project
 
 

@@ -1,10 +1,12 @@
 import base64
-from urllib import parse
+import urllib.parse
+
 from flask import current_app, request
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+
 from server.api.utils import TMAPIDecorators
-from server.services.user_service import UserService, NotFound
+from server.services.users.user_service import UserService, NotFound
 
 token_auth = HTTPTokenAuth(scheme='Token')
 tm = TMAPIDecorators()
@@ -106,10 +108,10 @@ class AuthenticationService:
 
         redirect_query = ''
         if redirect_to:
-            redirect_query = f'&redirect_to={parse.quote(redirect_to)}'
+            redirect_query = f'&redirect_to={urllib.parse.quote(redirect_to)}'
 
         # Trailing & added as Angular a bit flaky with parsing querystring
-        authorized_url = f'{base_url}/authorized?username={parse.quote(username)}&session_token={session_token}&ng=0' \
+        authorized_url = f'{base_url}/authorized?username={urllib.parse.quote(username)}&session_token={session_token}&ng=0' \
                          f'{redirect_query}'
         return authorized_url
 
