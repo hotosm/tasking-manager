@@ -21,6 +21,7 @@
 
             if (sessionStorage) {
                 authService.setSession(sessionStorage.sessionToken || '', sessionStorage.username || '');
+                accountService.setAccount(sessionStorage.username);
             }
         }])
 

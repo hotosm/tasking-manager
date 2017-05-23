@@ -215,7 +215,7 @@
             // Returns a promise
             return $http({
                 method: 'POST',
-                url: configService.tmAPI + '',
+                url: configService.tmAPI + '/user/update-details',
                 data: contactDetails,
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response){

@@ -30,7 +30,7 @@
                                     OSM edit history
                                 </a>
                             </p>
-                            <hr/>
+                            <hr ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.userDetails.facebookId || profileCtrl.userDetails.twitterId || profileCtrl.userDetails.linkedinId"/>
                             <p>
                                 <span ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.editDetails">Email (only visible to you):</span>
                                 <span ng-hide="profileCtrl.editDetails">
@@ -74,7 +74,7 @@
                             <p ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
                                 <button class="button button--achromic" type="button" ng-click="profileCtrl.editDetails = !profileCtrl.editDetails" ng-show="!profileCtrl.editDetails">
                                     <i class="hot-ds-icon-pencil" title="Edit Twitter URL"></i>
-                                    <span>Edit contact details</span>
+                                    <span>Add/edit contact details</span>
                                 </button>
                                 <button class="button button--achromic" type="button" ng-click="profileCtrl.setContactDetails()" ng-show="profileCtrl.editDetails">
                                     <i class="hot-ds-icon-tick" title="Save edits"></i>

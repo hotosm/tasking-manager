@@ -6,9 +6,9 @@
 
     angular
         .module('taskingManager')
-        .service('authService', ['$window', '$location', 'configService', 'accountService', authService]);
+        .service('authService', ['$window', '$location', 'configService', authService]);
 
-    function authService($window, $location, configService, accountService) {
+    function authService($window, $location, configService) {
 
         var session = {};
         var sessionToken = '';
@@ -54,7 +54,6 @@
                 username: username
             };
             localStorage.setItem(localStorageSessionName, JSON.stringify(session));
-            accountService.setAccount(username);
         }
 
         /**
