@@ -8,7 +8,7 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', 'messageService', 'drawService', 'languageService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', projectController]);
 
     function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService) {
 
@@ -37,6 +37,8 @@
         vm.taskLockErrorMessage = '';
         vm.taskUnLockError = false;
         vm.taskUnLockErrorMessage = '';
+        vm.taskSplitError = false;
+        vm.taskSplitCode == null;
 
         //authorization
         vm.isAuthorized = false;
@@ -44,6 +46,7 @@
         //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
+        vm.isSelectedSplittable = false;
 
         //task data
         vm.selectedTaskData = null;
@@ -72,6 +75,7 @@
         // License
         vm.showLicenseModal = false;
         vm.lockingReason = '';
+
 
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
@@ -155,6 +159,7 @@
         vm.resetStatusFlags = function () {
             vm.isSelectedMappable = false;
             vm.isSelectedValidatable = false;
+            vm.isSelectedSplittable = false;
         }
 
         /**
@@ -167,6 +172,8 @@
             vm.taskLockErrorMessage = '';
             vm.taskUnLockError = false;
             vm.taskUnLockErrorMessage = '';
+            vm.taskSplitError = false;
+            vm.taskSplitCode == null;
         }
 
         /**
@@ -231,8 +238,8 @@
         /**
          * Select tasks to validate by letting the user draw a polygon
          */
-        vm.selectByPolygonValidate = function(){
-            if (vm.drawPolygonInteraction.getActive()){
+        vm.selectByPolygonValidate = function () {
+            if (vm.drawPolygonInteraction.getActive()) {
                 drawService.getSource().clear();
                 vm.selectInteraction.setActive(true);
                 vm.drawPolygonInteraction.setActive(false);
@@ -243,10 +250,10 @@
             }
         };
 
-         /**
+        /**
          * Add the interactions for selecting tasks
          */
-        function addInteractions(){
+        function addInteractions() {
 
             // Priority areas: initialise the draw service with interactions
             drawService.initInteractions(true, false, false, false, false, false);
@@ -273,12 +280,12 @@
             // Check which tasks intersect and add them to the selected features manually
             vm.drawPolygonInteraction.on('drawend', function (event) {
                 var selectedFeatures = vm.selectInteraction.getFeatures();
-	            selectedFeatures.clear();
-	            var polygon = event.feature.getGeometry();
-	            var features = vm.taskVectorLayer.getSource().getFeatures();
+                selectedFeatures.clear();
+                var polygon = event.feature.getGeometry();
+                var features = vm.taskVectorLayer.getSource().getFeatures();
                 vm.selectedTasksForValidation = [];
-                for (var i = 0 ; i < features.length; i++){
-                    if (polygon.intersectsExtent(features[i].getGeometry().getExtent())){
+                for (var i = 0; i < features.length; i++) {
+                    if (polygon.intersectsExtent(features[i].getGeometry().getExtent())) {
                         var taskStatus = features[i].getProperties().taskStatus;
                         if (taskStatus === 'MAPPED' || taskStatus === 'VALIDATED') {
                             selectedFeatures.push(features[i]);
@@ -287,7 +294,7 @@
                     }
                 }
                 // Reactivate select after 300ms (to avoid single click trigger)
-                $timeout(function(){
+                $timeout(function () {
                     vm.selectInteraction.setActive(true);
                     vm.drawPolygonInteraction.setActive(false);
                     drawService.getSource().clear();
@@ -359,7 +366,7 @@
          * Update description and metadata
          * @param id
          */
-        function updateDescriptionAndInstructions(id){
+        function updateDescriptionAndInstructions(id) {
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 vm.projectData = data;
@@ -478,7 +485,7 @@
                     vm.lockedByCurrentUserVectorLayer.getSource().addFeatures(features);
                 }
             }, function () {
-                if(vm.lockedByCurrentUserVectorLayer) {
+                if (vm.lockedByCurrentUserVectorLayer) {
                     vm.lockedByCurrentUserVectorLayer.getSource().clear();
                 }
                 vm.lockedTasksForCurrentUser = [];
@@ -507,7 +514,7 @@
          * Adds the priority areas to the map
          * @param priorityAreas
          */
-        function addPriorityAreasToMap(priorityAreas){
+        function addPriorityAreasToMap(priorityAreas) {
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
                 source: source,
@@ -515,9 +522,9 @@
             });
             vm.map.addLayer(vector);
 
-            source.on('addfeature', function(event){
+            source.on('addfeature', function (event) {
                 // Add style to make it stand out from the AOI
-                var style =  new ol.style.Style({
+                var style = new ol.style.Style({
                     fill: new ol.style.Fill({
                         color: 'rgba(255,0,0,0.2)' //red
                     }),
@@ -533,7 +540,7 @@
                     var feature = geospatialService.getFeatureFromGeoJSON(priorityAreas[i]);
                     source.addFeature(feature);
                 }
-                if (priorityAreas.length > 0){
+                if (priorityAreas.length > 0) {
                     vm.hasPriorityArea = true;
                 }
             }
@@ -606,7 +613,7 @@
             // Format the comments by adding links to the usernames
             var history = vm.selectedTaskData.taskHistory;
             if (history) {
-                for (var i = 0; i < history.length; i++){
+                for (var i = 0; i < history.length; i++) {
                     history[i].actionText = messageService.formatUserNamesToLink(history[i].actionText);
                 }
             }
@@ -770,8 +777,40 @@
                 vm.selectedTaskData = data;
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
+                vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
             }, function (error) {
                 onLockError(projectId, error);
+            });
+        };
+
+
+        /**
+         * Call api to split task currently selected task for mapping.  Will update view and map after split.
+         */
+        vm.splitTask = function () {
+            vm.taskSplitError = false;
+            vm.taskSplitCode == null;
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var splitPromise = taskService.splitTask(projectId, taskId);
+            splitPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                refreshProject(projectId);
+                updateMappedTaskPerUser(projectId);
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+                $location.search('task', null);
+
+            }, function (error) {
+                // TODO - show message
+                vm.taskSplitError = true;
+                vm.taskSplitCode = null;
+                if (error.status = 403) {
+                    vm.taskSplitCode = 403;
+                }
             });
         };
 
@@ -807,6 +846,16 @@
                 onLockError(projectId, error);
             });
         };
+
+        /**
+         * Is the the task splittable
+         */
+        function isTaskSplittable(taskFeatures, taskId) {
+            var feature = taskService.getTaskFeatureById(taskFeatures, taskId);
+            var properties = feature.getProperties();
+            return feature.getProperties().taskSplittable;
+
+        }
 
         /**
          * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
@@ -1101,27 +1150,6 @@
 
         };
 
-        vm.resetTaskData = function () {
-            vm.selectedTaskData = null;
-            vm.lockedTaskData = null;
-            vm.multiSelectedTasksData = [];
-            vm.multiLockedTasks = [];
-        };
-
-        vm.resetStatusFlags = function () {
-            vm.isSelectedMappable = false;
-            vm.isSelectedValidatable = false;
-        };
-
-        vm.resetErrors = function () {
-            vm.taskErrorMapping = '';
-            vm.taskErrorValidation = '';
-            vm.taskLockError = false;
-            vm.taskLockErrorMessage = '';
-            vm.taskUnLockError = false;
-            vm.taskUnLockErrorMessage = '';
-        };
-
         /**
          * Create the url for downloading the currently selected tasks as a gpx file
          * @returns {string}
@@ -1167,7 +1195,7 @@
          * Formats the user tag
          * @param item
          */
-        vm.formatUserTag = function(item){
+        vm.formatUserTag = function (item) {
             // Format the user tag by wrapping into brackets so it is easier to detect that it is a username
             // especially when there are spaces in the username
             return '@[' + item.label + ']';
