@@ -21,6 +21,7 @@ class User(db.Model):
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
     projects_mapped = db.Column(db.ARRAY(db.Integer))
     email_address = db.Column(db.String)
+    email_address_verified = db.Column(db.Boolean, default=False)
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
