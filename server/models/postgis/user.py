@@ -185,7 +185,7 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def as_dto(self):
+    def as_dto(self, logged_in_username: str) -> UserDTO:
         """ Create DTO object from user in scope """
         user_dto = UserDTO()
         user_dto.username = self.username
@@ -193,5 +193,12 @@ class User(db.Model):
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
+        user_dto.twitter_id = self.twitter_id
+        user_dto.linkedin_id = self.linkedin_id
+        user_dto.facebook_id = self.facebook_id
+
+        if self.username == logged_in_username:
+            # Only return email address when logged in user is looking at their own profile
+            user_dto.email_address = self.email_address
 
         return user_dto

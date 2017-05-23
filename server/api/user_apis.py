@@ -39,7 +39,7 @@ class UserAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_dto = UserService.get_user_dto_by_username(username)
+            user_dto = UserService.get_user_dto_by_username(username, tm.authenticated_user_id)
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404
