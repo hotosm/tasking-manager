@@ -105,8 +105,8 @@ class UserUpdateAPI(Resource):
             return str(e), 400
 
         try:
-            user_dto = UserService.update_user_details(tm.authenticated_user_id, user_dto)
-            return {"Success": "User updated success"}, 200
+            verification_sent = UserService.update_user_details(tm.authenticated_user_id, user_dto)
+            return verification_sent, 200
         except NotFound:
             return {"Error": "User not found"}, 404
         except Exception as e:
