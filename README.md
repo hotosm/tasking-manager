@@ -70,7 +70,7 @@ As the project is open source we have to keep secrets out of the repo.  You will
     * ```export TM_SECRET=secret-key-here```
     * ```export TM_CONSUMER_KEY=oauth-consumer-key-goes-here```
     * ```export TM_CONSUMER_SECRET=oauth-consumer-secret-key-goes-here```
-    * ```export TM_SMTP_PASSWORD=smtp-server-password-her```
+    * ```export TM_SMTP_PASSWORD=smtp-server-password-here```
 * Windows:
     * ```setx TM_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
     * ```setx TM_SECRET "secret-key-here"```
