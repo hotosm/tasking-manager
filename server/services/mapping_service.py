@@ -138,8 +138,30 @@ class MappingService:
         return xml_gpx
 
     @staticmethod
-    def generate_osm_xml():
-        # TODO remove or productionise
-        tree = ET.parse('osm_sample.xml')
-        root = tree.getroot()
-        return ET.tostring(root, encoding='utf8')
+    def generate_osm_xml(project_id: int, task_ids_str: str) -> str:
+        """ Generate xml response suitable for loading into JOSM """
+
+        root = ET.Element('osm', attrib=dict(version='0.6', upload='no', creator='HOT Tasking Manager'))
+
+        task_ids = map(int, task_ids_str.split(','))
+        tasks = Task.get_tasks(project_id, task_ids)
+
+        fake_id = -1  # We use fake-ids to ensure XML is not accidentally submitted to OSM
+        for task in tasks:
+            task_geom = shape.to_shape(task.geometry)
+            way = ET.SubElement(root, 'way', attrib=dict(id=str((task.id * -1)), action='modify', visible='true'))
+            for poly in task_geom:
+                for point in poly.exterior.coords:
+                    ET.SubElement(root, 'node', attrib=dict(action='modify', visible='true', id=str(fake_id),
+                                                            lon=str(point[0]), lat=str(point[1])))
+                    ET.SubElement(way, 'nd', attrib=dict(id=str(fake_id)))
+                    fake_id -= 1
+
+        xml_gpx = ET.tostring(root, encoding='utf8')
+        return xml_gpx
+
+        #tree = ET.parse('osm_sample.xml')
+        #root = tree.getroot()
+        #return ET.tostring(root, encoding='utf8')
+
+
