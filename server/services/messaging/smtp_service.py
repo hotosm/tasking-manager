@@ -32,37 +32,24 @@ class SMTPService:
         return True
 
     @staticmethod
-    def send_email_alert(to_address: str, profile_link: str):
-        from_address = current_app.config['EMAIL_FROM_ADDRESS']
+    def send_email_alert(to_address: str, username: str):
+        """ Send an email to user to alert them they have a new message"""
 
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = 'You have a new message on the HOT Tasking Manager'
-        msg['From'] = from_address
-        msg['To'] = to_address
+        # TODO these could be localised if needed, in the future
+        html_template = SMTPService._get_template('message_alert_en.html')
+        text_template = SMTPService._get_template('message_alert_en.txt')
 
-        text = f'Hi\nYou have a new message on the HOT Tasking Manager.\n Messages can be viewed at this link {profile_link}'
-        html = f'''\
-        <html>
-          <head></head>
-          <body>
-            <p>Hi<br>
-               You have a new message on the HOT Tasking Manager.<br>
-               <a href="{profile_link}">Click here to view it.</a>.
-            </p>
-          </body>
-        </html>
-        '''
+        base_url = current_app.config['APP_BASE_URL']
+        profile_url = f'{base_url}/user/{urllib.parse.quote(username)}'
 
-        # Record the MIME types of both parts - text/plain and text/html.
-        part1 = MIMEText(text, 'plain')
-        part2 = MIMEText(html, 'html')
+        html_template = html_template.replace('[USERNAME]', username)
+        html_template = html_template.replace('[PROFILE_LINK]', profile_url)
 
-        msg.attach(part1)
-        msg.attach(part2)
+        text_template = text_template.replace('[USERNAME]', username)
+        text_template = text_template.replace('[PROFILE_LINK]', profile_url)
 
-        sender = SMTPService._init_smtp_client()
-        sender.sendmail(from_address, to_address, msg.as_string())
-        sender.quit()
+        subject = 'You have a new message on the HOT Tasking Manager'
+        SMTPService._send_mesage(to_address, subject, html_template, text_template)
 
         return True
 

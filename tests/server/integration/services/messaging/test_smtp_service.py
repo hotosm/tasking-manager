@@ -36,7 +36,7 @@ class TestStatsService(unittest.TestCase):
             return
 
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
-                                                     'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/user/Iain%20Hunter'))
+                                                     'Iain Hunter'))
 
     def test_email_verification_url_generated_correctly(self):
         # Arrange
