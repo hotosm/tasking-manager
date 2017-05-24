@@ -3,60 +3,60 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Create project
+                    {{ 'Create project' | translate }}
                 </h1>
             </div>
         </header>
         <div class="create-project">
             <ul class="progress-indicator">
                 <li ng-class="createProjectCtrl.showWizardStep('area') ? 'completed' : ''">
-                    <span class="bubble"></span>Step 1
+                    <span class="bubble"></span>{{ 'Step 1' | translate }}
                 </li>
                 <li ng-class="createProjectCtrl.showWizardStep('tasks') ? 'completed' : ''">
-                    <span class="bubble"></span>Step 2
+                    <span class="bubble"></span>{{ 'Step 2' | translate }}
                 </li>
                 <li ng-class="createProjectCtrl.showWizardStep('taskSize') ? 'completed' : ''">
-                    <span class="bubble"></span>Step 3
+                    <span class="bubble"></span>{{ 'Step 3' | translate }}
                 </li>
                 <li ng-class="createProjectCtrl.showWizardStep('trim') ? 'completed' : ''">
-                    <span class="bubble"></span>Step 4
+                    <span class="bubble"></span>{{ 'Step 4' | translate }}
                 </li>
                 <li ng-class="createProjectCtrl.showWizardStep('review') ? 'completed' : ''">
-                    <span class="bubble"></span>Step 5
+                    <span class="bubble"></span>{{ 'Step 5' | translate }}
                 </li>
             </ul>
             <div class="sidebar">
                 <div ng-show="createProjectCtrl.currentStep === 'area'" class="content">
-                    <h2>Step 1: define area</h2>
+                    <h2>{{ 'Step 1: Define Area' | translate }}</h2>
                     <form class="form">
                         <div class="form__group">
                             <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.drawAOI()"><span>Draw</span></button>
-                            <p>Draw the area of interest on the map.</p>
+                                    ng-click="createProjectCtrl.drawAOI()"><span>{{ 'Draw' | translate }}</span></button>
+                            <p>{{ 'Draw the Area of Interest on the map.' | translate }}</p>
                             <div>
                                 <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
-                                    No area of interest has been drawn.
+                                    {{ 'No Area of Interest has been drawn.' | translate }}
                                 </span>
                                 <span class="error"
                                       ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
-                                    The area of interest contains self intersections.
+                                    {{ 'The Area of Interest contains self intersections.' | translate }}
                                 </span>
                             </div>
                         </div>
                         <div class="form__group">
-                            <div class="button button--achromic" ngf-select="createProjectCtrl.import($file)">Import
+                            <div class="button button--achromic" ngf-select="createProjectCtrl.import($file)">{{ 'Import' | translate }}
                             </div>
-                            <p>Import a GeoJSON, KML, or zipped SHP file.</p>
+                            <p>{{ 'Import a GeoJSON, KML, or zipped SHP file.' | translate }}</p>
                             <div>
                                 <span class="error" ng-show="createProjectCtrl.isImportError">
-                                    Please provide a valid GeoJSON, KML or zipped Shapefile.
+                                    {{ 'Please provide a valid GeoJSON, KML or zipped Shapefile.' | translate }}
                                 </span>
                             </div>
                         </div>
                         <div class="form__group">
-                            <p>Want to use an .osm file instead? You can use <a href="http://geojson.io"
+                            <p>{{ 'Want to use an .osm file instead? You can use' | translate }} <a href="http://geojson.io"
                                                                                 target="_blank">GeoJSON.io</a>
-                                to convert it to GeoJSON.</p>
+                                {{ 'to convert it to GeoJSON.' | translate }}</p>
                         </div>
                     </form>
                     <hr/>
@@ -64,25 +64,25 @@
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--secondary pull-right" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('tasks')">
-                                <span>Next</span>
+                                <span>{{ 'Next' | translate }}</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'tasks'" class="content">
-                    <h2>Step 2: Choose tasks type</h2>
+                    <h2>{{ 'Step 2: Choose Tasks Type' | translate }}</h2>
                     <form class="form">
                         <div class="button-group button-group--horizontal" role="group">
                             <div class="form__group">
                                 <label class="form__option form__option--inline">
                                     <input ng-model="createProjectCtrl.taskType" type="radio" name="form-tasks-type"
                                            id="square-grid" value="square-grid"/>
-                                    Square Grid
+                                    {{ 'Square Grid' | translate }}
                                 </label>
                                 <label class="form__option form__option--inline">
                                     <input ng-disabled="createProjectCtrl.isDrawnAOI"
                                            ng-model="createProjectCtrl.taskType" type="radio" name="form-tasks-type"
-                                           id="arbitrary-tasks" value="arbitrary-tasks"/> <span>Arbitrary Tasks</span>
+                                           id="arbitrary-tasks" value="arbitrary-tasks"/> <span>{{ 'Arbitrary Tasks' | translate }}</span>
                                 </label>
                             </div>
                         </div>
@@ -92,59 +92,56 @@
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--secondary button" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('area')">
-                                <span>Previous</span>
+                                <span>{{ 'Previous' | translate }}</span>
                             </button>
                             <button class="button button--secondary" type="button"
                                     ng-click="createProjectCtrl.setWizardStepAfterTaskTypeSelection()">
-                                <span>Next</span>
+                                <span>{{ 'Next' | translate }}</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'taskSize'" class="content">
-                    <h2>Step 3: set task sizes</h2>
+                    <h2>{{ 'Step 3: Set Task Sizes' | translate }}</h2>
                     <div>
-                        <p>General task size:</p>
+                        <p>{{ 'General task size:' | translate }}</p>
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.changeSizeTaskGrid(-1)">Larger
+                                    ng-click="createProjectCtrl.changeSizeTaskGrid(-1)">{{ 'Larger' | translate }}
                             </button>
                             <button ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT ? 'disabled' : ''"
                                     class="button button--achromic" type="button"
                                     ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT"
-                                    ng-click="createProjectCtrl.changeSizeTaskGrid(1)">Smaller
+                                    ng-click="createProjectCtrl.changeSizeTaskGrid(1)">{{ 'Smaller' | translate }}
                             </button>
                         </div>
 
-                        <p>Split a specific area into smaller tasks by drawing an area or point:</p>
+                        <p>{{ 'Split a specific area into smaller tasks by drawing an area or point:' | translate }}</p>
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--achromic" type="button"
                                     ng-class="createProjectCtrl.drawAndSelectPolygon.getActive() ? 'button--active' : ''"
-                                    ng-click="createProjectCtrl.drawAndSplitAreaPolygon()">Split (polygon)
+                                    ng-click="createProjectCtrl.drawAndSplitAreaPolygon()">{{ 'Split (polygon)' | translate }}
                             </button>
                             <button class="button button--achromic" type="button"
                                     ng-class="createProjectCtrl.drawAndSelectPoint.getActive() ? 'button--active' : ''"
-                                    ng-click="createProjectCtrl.drawAndSplitAreaPoint()">Split (point)
+                                    ng-click="createProjectCtrl.drawAndSplitAreaPoint()">{{ 'Split (point)' | translate }}
                             </button>
                             <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.changeSizeTaskGrid(0)">Reset
+                                    ng-click="createProjectCtrl.changeSizeTaskGrid(0)">{{ 'Reset' | translate }}
                             </button>
                         </div>
                         <hr/>
-                        <p>A new project will be created with {{ createProjectCtrl.numberOfTasks }} tasks.</p>
-                        <p>The size of each task is roughly {{ createProjectCtrl.sizeOfTasks | number : 2 }}
+                        <p>{{ 'A new project will be created with' | translate }} {{ createProjectCtrl.numberOfTasks }} {{ 'tasks.' | translate }}</p>
+                        <p>{{ 'The size of each task is approximately' | translate }} {{ createProjectCtrl.sizeOfTasks | number : 2 }}
                             km<sup>2</sup>.</p>
                         <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT"
                              class="alert alert--warning" role="alert">
-                            <p><strong>Warning:</strong> Maximum number of tasks reached. If smaller tasks are required
-                                please make the area of interest smaller.
+                            <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'Maximum number of tasks reached. If smaller tasks are required please make the Area of Interest smaller.' | translate }}
                             </p>
                         </div>
                         <div ng-show="createProjectCtrl.sizeOfTasks > createProjectCtrl.MAX_SIZE_OF_TASKS"
                              class="alert alert--warning" role="alert">
-                            <p><strong>Warning:</strong> It is recommended to keep the size of the tasks small.
-                                Please review the size of the tasks and/or consider creating multiple
-                                projects.
+                            <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'It is recommended to keep the size of the tasks small. Please review the size of the tasks and/or consider creating multiple projects.' | translate }}
                             </p>
                         </div>
                     </div>
@@ -153,50 +150,45 @@
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--secondary" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('tasks')">
-                                <span>Previous</span>
+                                <span>{{ 'Previous' | translate }}</span>
                             </button>
                             <button class="button button--secondary" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('trim')">
-                                <span>Next</span>
+                                <span>{{ 'Next' | translate }}</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'trim'" class="content">
-                    <h2>Step 4: trim tasks</h2>
+                    <h2>{{ 'Step 4: Trim Project' | translate }}</h2>
 
-                    <p>Trim the task grid to the Area of Interest (optional). You can keep task squares complete, or
-                        clip
-                        them to the AOI. This could take some time.</p>
+                    <p>{{ 'Trim the task grid to the Area of Interest (optional). You can keep task squares complete, or clip them to the AOI. This could take some time.' | translate }}</p>
 
                     <label class="form__option">
                         <input type="checkbox" name="form-checkbox" id="form-checkbox-1" value="Checkbox 1"
                                checked="{{ projectCtrl.clipTasksToAoi }}"
-                               ng-click="createProjectCtrl.toggleClipTasksToAoi()"/> Clip tasks to Area of Interest
+                               ng-click="createProjectCtrl.toggleClipTasksToAoi()"/>{{ 'Clip tasks to Area of Interest' | translate }}
                     </label>
                     <button class="button button--achromic" type="button"
                             ng-click="createProjectCtrl.trimTaskGrid()">
-                        Trim
+                        {{ 'Trim' | translate }}
                     </button>
                     <span ng-show="createProjectCtrl.waiting">
-                        <img src="./assets/img/waiting_spinner.gif"><span>Trimming in progress</span>
+                        <img src="./assets/img/waiting_spinner.gif"><span>{{ 'Trimming in progress' | translate }}</span>
                     </span>
                     <div ng-show="createProjectCtrl.trimErrorReason == 400"
                          class="alert alert--danger" role="alert">
-                        <p><strong>Error:</strong> AOI geometry must be a valid MultiPolygon.
+                        <p><strong>{{ 'Error' | translate }}:</strong> {{ 'AOI geometry must be a valid MultiPolygon.' | translate }}
                         </p>
                     </div>
                     <div ng-show="createProjectCtrl.trimErrorReason == 500"
                          class="alert alert--danger" role="alert">
-                        <p><strong>Error:</strong> Project grid could not be trimmed to the AOI
+                        <p><strong>{{ 'Error' | translate }}:</strong> {{ 'Project grid could not be trimmed to the AOI.' | translate }}
                         </p>
                     </div>
                     <div ng-show="createProjectCtrl.trimErrorReason == -1"
                          class="alert alert--danger" role="alert">
-                        <p><strong>Error:</strong> The grid could not be trimmed. This may be because the
-                            combined data size of the AOI and the
-                            grid is too large to send to the server. Try again with a smaller AOI, fewer tasks and/or
-                            larger tasks
+                        <p><strong>{{ 'Error' | translate }}:</strong> {{ 'The Project could not be trimmed. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks.' | translate }}
                         </p>
                     </div>
 
@@ -205,60 +197,55 @@
                         <div class="button-group button-group--horizontal" role="group">
                             <button class="button button--secondary button" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('taskSize')">
-                                <span>Previous</span>
+                                <span>{{ 'Previous' | translate }}</span>
                             </button>
                             <button class="button button--secondary" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('review')">
-                                <span>Next</span>
+                                <span>{{ 'Next' | translate }}</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div ng-show="createProjectCtrl.currentStep === 'review'" class="content">
-                    <h2>Step 5: review</h2>
+                    <h2>{{ 'Step 5: Review' | translate }}</h2>
                     <form class="form" name="createProjectCtrl.projectNameForm">
                         <div class="form__group">
-                            <label class="form__label" for="projectName">Project name</label>
+                            <label class="form__label" for="projectName">{{ 'Project name' | translate }}</label>
                             <input type="text" class="form__control form__control--medium" id="projectName"
                                    name="projectName"
                                    ng-class="{ 'ng-touched': createProjectCtrl.projectNameForm.submitted }" required
                                    ng-model="createProjectCtrl.projectName"
                             />
                         </div>
-                        <p>Project has {{ createProjectCtrl.numberOfTasks }} tasks.</p>
+                        <p>{{ 'Project has' | translate }} {{ createProjectCtrl.numberOfTasks }} {{ 'tasks.' | translate }}</p>
                         <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                              class="alert alert--danger" role="alert">
-                            <p><strong>Error:</strong> Unable to create project because there are more
-                                than {{ createProjectCtrl.MAX_NUMBER_OF_TASKS }} tasks. Use a smaller AOI and/or fewer
-                                tasks.
+                            <p><strong>{{ 'Error' | translate }}:</strong> {{ 'Unable to create project because there are more than' | translate }} {{ createProjectCtrl.MAX_NUMBER_OF_TASKS }} {{ 'tasks. Use a smaller AOI and/or fewer tasks.' | translate }}
                             </p>
                         </div>
                         <div role="alert">
                             <span class="error"
                                   ng-show="createProjectCtrl.projectNameForm.submitted && createProjectCtrl.projectNameForm.projectName.$error.required">
-                                Required
+                                {{ 'Required' | translate }}
                             </span>
                             <div ng-show="createProjectCtrl.createProjectFailReason == 400"
                                  class="alert alert--danger" role="alert">
-                                <p><strong>Error:</strong> AOI geometry must be a valid multipolygon
+                                <p><strong>{{ 'Error' | translate }}:</strong> {{ 'AOI geometry must be a valid MultiPolygon.' | translate }}
                                 </p>
                             </div>
                             <div ng-show="createProjectCtrl.createProjectFailReason == 500"
                                  class="alert alert--danger" role="alert">
-                                <p><strong>Error:</strong> Project could not be created.
+                                <p><strong>{{ 'Error' | translate }}:</strong> {{ 'Project could not be created. The exact reason could not be determined.' | translate }}
                                 </p>
                             </div>
                             <div ng-show="createProjectCtrl.createProjectFailReason == -1"
                                  class="alert alert--danger" role="alert">
-                                <p><strong>Error:</strong> The project could not be created. This may be because the
-                                    combined data size of the AOI and the
-                                    grid is too large to send to the server. Try again with a smaller AOI, fewer tasks
-                                    and/or larger tasks
+                                <p><strong>{{ 'Error' | translate }}:</strong> {{ 'The Project could not be created. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks.' | translate }}
                                 </p>
                             </div>
 
                             <span ng-show="createProjectCtrl.createProjectSuccess">
-                                Your project was created successfully.
+                                {{ 'Your project was created successfully.' | translate }}
                             </span>
                         </div>
                     </form>
@@ -268,17 +255,17 @@
 
                             <button class="button button--secondary button" type="button"
                                     ng-click="createProjectCtrl.setWizardStep(createProjectCtrl.isTaskArbitrary?'tasks':'trim')">
-                                <span>Previous</span>
+                                <span>{{ 'Previous' | translate }}</span>
                             </button>
                             <button class="button button--primary" type="button"
                                     ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
                                     ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                                     ng-click="createProjectCtrl.createProject()">
-                                <span>Create</span>
+                                <span>{{ 'Create' | translate }}</span>
                             </button>
                         </div>
                         <div ng-show="createProjectCtrl.waiting">
-                            <img src="./assets/img/waiting_spinner.gif"/><span>Creation in progress</span>
+                            <img src="./assets/img/waiting_spinner.gif"/><span>{{ 'Creation in progress...' | translate }}</span>
                         </div>
 
                     </div>
