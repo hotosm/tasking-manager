@@ -50,9 +50,9 @@ class User(db.Model):
         self.linkedin_id = user_dto.linkedin_id.lower()
         db.session.commit()
 
-    def email_succesfully_verified(self):
+    def set_email_verified_status(self, is_verified: bool):
         """ Updates email verfied flag on successfully verified emails"""
-        self.is_email_verified = True
+        self.is_email_verified = is_verified
         db.session.commit()
 
     @staticmethod
@@ -206,5 +206,6 @@ class User(db.Model):
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
+            user_dto.is_email_verified = self.is_email_verified
 
         return user_dto

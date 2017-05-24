@@ -100,7 +100,7 @@ class AuthenticationService:
             return AuthenticationService._get_email_validated_url(False)
 
         # Token is valid so update DB and return
-        user.email_succesfully_verified()
+        user.set_email_verified_status(is_verified=True)
         return AuthenticationService._get_email_validated_url(True)
 
     @staticmethod

@@ -76,6 +76,7 @@ class UserService:
         verification_email_sent = False
         if user.email_address != user_dto.email_address.lower():
             SMTPService.send_verification_email(user_dto.email_address.lower(), user.username)
+            user.set_email_verified_status(is_verified=False)
             verification_email_sent = True
 
         user.update(user_dto)
