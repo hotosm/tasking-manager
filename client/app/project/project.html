@@ -39,7 +39,13 @@
                             <div>
                                 <mark>Priority: {{ projectCtrl.projectData.projectPriority }}</mark>
                             </div>
-                            <p ng-bind-html="description"></p>
+                            <p markdown-to-html="projectCtrl.projectData.projectInfo.description"></p>
+                            <hr/>
+                            <div><strong>Created by: </strong><span><a
+                                    href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></span>
+                            </div>
+                            <div><strong>Last updated: </strong> <span
+                                    am-time-ago="projectCtrl.projectData.lastUpdated | amUtc | amLocal"></span></div>
                         </section>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
@@ -53,19 +59,29 @@
                         </button>
                         <section>
                             <h2>Instructions</h2>
-                            <div ng-init="showEntitiesHelp = false">
-                                <strong>Entities to Map <i ng-click="showEntitiesHelp = !showEntitiesHelp"
-                                                           class="hot-ds-icon-circle-question pointer"></i></strong>
+                            <div ng-show="projectCtrl.projectData.entitiesToMap" ng-init="showEntitiesHelp = false">
+                                <strong>
+                                    Entities to Map
+                                    <i ng-click="showEntitiesHelp = !showEntitiesHelp"
+                                       class="hot-ds-icon-circle-question pointer">
+                                    </i>
+                                </strong>
                                 <div ng-show="showEntitiesHelp">
                                     <small><em>The list of elements we ask you to map</em></small>
                                 </div>
-                                <div><code>{{ projectCtrl.projectData.entitiesToMap }}</code></div>
+                                <div>
+                                    <code>{{ projectCtrl.projectData.entitiesToMap }}</code>
+                                </div>
+                                <hr/>
                             </div>
-                            <hr/>
-                            <div ng-init="showChangesetCommentHelp = false">
-                                <strong>Changeset Comment <i
-                                        ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
-                                        class="hot-ds-icon-circle-question pointer"></i></strong>
+                            <div ng-show="projectCtrl.projectData.changesetComment"
+                                 ng-init="showChangesetCommentHelp = false">
+                                <strong>
+                                    Changeset Comment
+                                    <i ng-click="showChangesetCommentHelp = !showChangesetCommentHelp"
+                                       class="hot-ds-icon-circle-question pointer">
+                                    </i>
+                                </strong>
                                 <div ng-show="showChangesetCommentHelp">
                                     <small><em>The default comment entered when uploaded data to the OSM database. When
                                         saving your work,
@@ -74,10 +90,19 @@
                                         buildings and a residential road"
                                     </em></small>
                                 </div>
-                                <div><code>{{ projectCtrl.projectData.changesetComment }}</code></div>
+                                <div>
+                                    <code>{{ projectCtrl.projectData.changesetComment }}</code>
+                                </div>
+                                <hr/>
                             </div>
-                            <hr/>
-                            <p ng-bind-html="instructions"></p>
+                            <div ng-show="projectCtrl.projectData.imagery" class="imagery-container">
+                                <strong>Imagery</strong>
+                                <div>
+                                    <code>{{ projectCtrl.projectData.imagery }}</code>
+                                </div>
+                                <hr/>
+                            </div>
+                            <p markdown-to-html="projectCtrl.projectData.projectInfo.instructions"></p>
                         </section>
 
                     </div>
@@ -285,6 +310,21 @@
                                         </button>
                                     </div>
                                 </div>
+                                <div class="form__group pull-center" ng-show="projectCtrl.isSelectedSplittable">
+                                    <button class="button button--achromic" ng-click="projectCtrl.splitTask()">
+                                        Split Task
+                                    </button>
+                                </div>
+                                <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Task is not splittable</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Task could not be split</p>
+                                    </div>
+                                </div>
                                 <div ng-show="projectCtrl.taskUnLockError">
                                     <div>
                                         <div class="alert alert--danger" role="alert">
@@ -320,7 +360,7 @@
                                         role.</p>
                                 </div>
                                 <div ng-show="projectCtrl.userCanValidate">
-                                    <p>Choose a task for validation:</p>
+                                    <p>Choose one or more tasks for validation:</p>
                                     <p><strong>Option 1: </strong>Select a task by clicking on the map</p>
                                     <p><strong>Option 2: </strong>
                                         <button ng-click="projectCtrl.selectRandomTaskValidate()"
@@ -328,23 +368,33 @@
                                             Select a random task
                                         </button>
                                     </p>
+                                    <p><strong>Option 3: </strong>Select by area</p>
+                                    <div class="padding-at-bottom">
+                                        <button ng-click="projectCtrl.selectByPolygonValidate()"
+                                                class="button button--achromic pull-center"
+                                                ng-class="projectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''">
+                                            Select area by drawing a polygon
+                                        </button>
+                                        <button class="button button--secondary"
+                                                ng-class="projectCtrl.selectedTasksForValidation.length < 1 ? 'disabled' : '' "
+                                                ng-click="projectCtrl.lockTasksForValidation(projectCtrl.selectedTasksForValidation)">
+                                            Start validating
+                                        </button>
+                                    </div>
+                                    <p><strong>Option 4: </strong> Select by user:</p>
                                     <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
                                         <div class="alert alert--danger" role="alert">
                                             <p>There are no tasks currently available for validation.</p>
                                         </div>
-
                                     </div>
                                     <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
                                         <div class="alert alert--danger" role="alert">
                                             <button class="alert__button-dismiss" title="Dismiss alert"
                                                     ng-click="projectCtrl.clearCurrentSelection()"><span>Dismiss</span>
                                             </button>
-                                            <p>there was an error retrieving the task from the server.</p>
+                                            <p>There was an error retrieving the task from the server.</p>
                                         </div>
                                     </div>
-
-                                    <p><strong>Option 3: </strong> Select By user:
-                                    </p>
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
                                             <p>The tasks could not be
@@ -361,7 +411,7 @@
                                         <tr>
                                             <th nowrap ng-click="projectCtrl.sortBy('username')"><a
                                                     class="table__sort table__sort--none"
-                                                    title="Sort column"><span>Contributer</span></a></th>
+                                                    title="Sort column"><span>Contributor</span></a></th>
                                             <th nowrap ng-click="projectCtrl.sortBy('mappingLevel')"><a
                                                     class="table__sort table__sort--none"
                                                     title="Sort column"><span>Level</span></a></th>

@@ -2,7 +2,7 @@
 
 (function () {
 
-    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', 'taskingmanager.config'])
+    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', 'taskingmanager.config', 'pascalprecht.translate'])
 
     /**
      * Factory that returns the configuration settings for the current environment
@@ -21,11 +21,19 @@
 
             if (sessionStorage) {
                 authService.setSession(sessionStorage.sessionToken || '', sessionStorage.username || '');
+                accountService.setAccount(sessionStorage.username);
             }
         }])
 
-        .config(['$routeProvider', '$locationProvider', '$httpProvider', 'ChartJsProvider', function ($routeProvider, $locationProvider, $httpProvider, ChartJsProvider) {
+        .config(['$routeProvider', '$locationProvider', '$httpProvider', 'ChartJsProvider', '$translateProvider', function ($routeProvider, $locationProvider, $httpProvider, ChartJsProvider, $translateProvider) {
 
+            // Translate
+            $translateProvider.useStaticFilesLoader({
+                prefix: 'locale/',
+                suffix: '.json'
+            });
+            $translateProvider.preferredLanguage('en');
+            
             // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
             $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
             $httpProvider.defaults.cache = false;
@@ -35,10 +43,13 @@
             }
             $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
 
+             // Intercept the response errors and go to the login page if the status is 401
+            $httpProvider.interceptors.push('httpInterceptorService');
+
             ChartJsProvider.setOptions({
                 chartColors: ['#AC3232', '#DCDCDC', '#7A7A7A', '#595959']
             });
-
+            
             $routeProvider
 
                 .when('/', {
@@ -88,8 +99,8 @@
 
                 .when('/authorized', {
                     templateUrl: 'app/login/authorized.html',
-                    controller: 'loginController',
-                    controllerAs: 'loginCtrl'
+                    controller: 'authController',
+                    controllerAs: 'authCtrl'
                 })
 
                 .when('/auth-failed', {
@@ -136,11 +147,16 @@
                     templateUrl: 'app/message/message.html',
                     controller: 'messageController',
                     controllerAs: 'messageCtrl'
+                })
+            
+                .when('/login', {
+                    templateUrl: 'app/login/login.html',
+                    controller: 'loginController',
+                    controllerAs: 'loginCtrl'
                 });
 
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them
             $locationProvider.html5Mode(true);
 
         }]);
-
 })();

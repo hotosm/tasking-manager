@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['mapService', 'searchService', 'projectMapService', 'tagService', contributeController]);
+        .controller('contributeController', ['$scope', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService','accountService', contributeController]);
 
-    function contributeController(mapService, searchService, projectMapService, tagService) {
+    function contributeController($scope, mapService, searchService, projectMapService, tagService, languageService, accountService) {
 
         var vm = this;
 
@@ -28,7 +28,7 @@
         vm.campaigns = [];
 
         // Search parameters
-        vm.mapperLevel = 'BEGINNER'; // default to beginner
+        vm.mapperLevel = ''; // default to ALL
         vm.searchRoads = false;
         vm.searchBuildings = false;
         vm.searchWaterways = false;
@@ -36,6 +36,10 @@
         vm.searchOther = false;
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
+        vm.searchText = '';
+
+        // Paging
+        vm.pagination = null;
         
         // Character limit
         vm.characterLimitShortDescription = 100;
@@ -43,6 +47,20 @@
         vm.status = {
             isopen: false
         };
+
+        // Watch the languageService for change in language and search again when needed
+        $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
+            searchProjects();
+        }, true);
+
+        // Watch the accountService for change in account
+        $scope.$watch(function () { return accountService.getAccount();}, function (account) {
+            if (account) {
+                // Set the default mapping level to the user's mapping level
+                vm.mapperLevel = account.mappingLevel;
+            }
+            searchProjects();
+        }, true);
 
         activate();
 
@@ -57,16 +75,25 @@
                 vm.map.addControl(legendControl);
             }
             projectMapService.initialise(vm.map);
-            projectMapService.showInfoOnHoverOrClick();
+            projectMapService.createPopup();
             setOrganisationTags();
             setCampaignTags();
-            searchProjects(); 
         }
 
         /**
-         * Search projects with search parameters
+         * Search projects with page param
+         * @param page
          */
-        function searchProjects(){
+        vm.searchProjectsWithPage = function(page){
+            searchProjects(page);
+        };
+
+        /**
+         * Search projects with search parameters
+         * @param page
+         */
+        function searchProjects(page){
+
             vm.mappingTypes = [];
             if (vm.searchRoads){
                 vm.mappingTypes.push("ROADS");
@@ -84,17 +111,33 @@
                 vm.mappingTypes.push("OTHER");
             }
 
-            var searchParameters = {
-                mapperLevel: vm.mapperLevel,
-                mappingTypes: vm.mappingTypes,
-                organisationTag: vm.searchOrganisation,
-                campaignTag: vm.searchCampaign
-            };
+            var searchParams = {};
 
-            var resultsPromise = searchService.searchProjects(searchParameters);
+            // Only add parameters if set
+            if (vm.mapperLevel){
+                searchParams.mapperLevel = vm.mapperLevel;
+            }
+            if (vm.mappingTypes){
+                searchParams.mappingTypes = vm.mappingTypes;
+            }
+            if (vm.searchOrganisation){
+                searchParams.organisationTag = vm.searchOrganisation;
+            }
+            if (vm.searchCampaign){
+                searchParams.campaignTag = vm.searchCampaign;
+            }
+            if (vm.searchText){
+                searchParams.textSearch = vm.searchText;
+            }
+            if (page){
+                searchParams.page = page;
+            }
+           
+            var resultsPromise = searchService.searchProjects(searchParams);
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
+                vm.pagination = data.pagination;
                 // First remove all projects from the map before adding the results
                 projectMapService.removeProjectsOnMap();
                 for (var i = 0; i < vm.results.length; i++){

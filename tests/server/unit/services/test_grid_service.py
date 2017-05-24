@@ -5,6 +5,8 @@ from server.models.dtos.project_dto import DraftProjectDTO
 from tests.server.helpers.test_helpers import get_canned_json
 import geojson
 import json
+from server.models.postgis.utils import InvalidGeoJson
+
 
 class TestGridService(unittest.TestCase):
     skip_tests = False
@@ -101,4 +103,15 @@ class TestGridService(unittest.TestCase):
 
         # assert
         self.assertEquals(str(expected), str(result))
+
+    def test_raises_InvalidGeoJson_when_geometry_is_linestring(self):
+
+        # arrange
+        grid_json = get_canned_json('CHAI-Escuintla-West2.json')
+        grid_dto = GridDTO(grid_json)
+        grid_dto.clip_to_aoi = True
+
+        # Act / Assert
+        with self.assertRaises(InvalidGeoJson):
+            GridService.merge_to_multi_polygon(grid_dto.area_of_interest, dissolve=True)
 

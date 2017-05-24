@@ -1,11 +1,20 @@
 import geojson
 import json
 from shapely.geometry import MultiPolygon, mapping
+from geoalchemy2 import shape
 from shapely.ops import cascaded_union
 import shapely.geometry
-from geoalchemy2 import shape
+from flask import current_app
 from server.models.dtos.grid_dto import GridDTO
 from server.models.postgis.utils import InvalidGeoJson
+
+
+class GridServiceError(Exception):
+    """ Custom Exception to notify callers an error occurred when handling projects """
+
+    def __init__(self, message):
+        if current_app:
+            current_app.logger.error(message)
 
 
 class GridService:
@@ -24,6 +33,7 @@ class GridService:
 
         # create a shapely shape from the aoi
         aoi_multi_polygon_geojson = GridService.merge_to_multi_polygon(aoi, dissolve=True)
+
         aoi_multi_polygon = shapely.geometry.shape(aoi_multi_polygon_geojson)
         intersecting_features = []
         for feature in grid['features']:
@@ -34,7 +44,7 @@ class GridService:
                 intersecting_features.append(feature)
             else:
                 intersection = aoi_multi_polygon.intersection(tile)
-                if intersection.is_empty or intersection.geom_type not in ['Polygon','MultiPolygon']:
+                if intersection.is_empty or intersection.geom_type not in ['Polygon', 'MultiPolygon']:
                     continue  # this intersections which are not polygons or which are completely outside aoi
                 # tile is partially intersecting the aoi
                 clipped_feature = GridService._update_feature(clip_to_aoi, feature, intersection)
@@ -80,7 +90,17 @@ class GridService:
         multi_polygon = GridService._convert_to_multipolygon(parsed_geojson)
         if dissolve:
             multi_polygon = GridService._dissolve(multi_polygon)
-        return geojson.loads(json.dumps(mapping(multi_polygon)))
+        aoi_multi_polygon_geojson =  geojson.loads(json.dumps(mapping(multi_polygon)))
+
+        # validate the geometry
+        if type(aoi_multi_polygon_geojson) is not geojson.MultiPolygon:
+            raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')
+
+        is_valid_geojson = geojson.is_valid(aoi_multi_polygon_geojson)
+        if is_valid_geojson['valid'] == 'no':
+            raise InvalidGeoJson(f"Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}")
+
+        return aoi_multi_polygon_geojson
 
     @staticmethod
     def _update_feature(clip_to_aoi: bool, feature: dict, new_shape) -> dict:
@@ -159,7 +179,7 @@ class GridService:
 
         return geom2d
 
-    def _to_2d(x: tuple, y:tuple, z:tuple=None) -> tuple:
+    def _to_2d(x: tuple, y: tuple, z: tuple = None) -> tuple:
         """
         Helper method that can be used to strip out the z-coords from a shapely geometry
         :param x: tuple containing tuple of x coords

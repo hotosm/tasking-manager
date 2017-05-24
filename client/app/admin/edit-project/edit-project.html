@@ -91,15 +91,17 @@
                                 </div>
                                 <div class="form__group">
                                     <label class="form__label">Name of the project *</label>
-                                    <div class="button-group button-group--horizontal pull-right"
-                                         ng-repeat="locale in editProjectCtrl.locales"
-                                         role="group"
-                                         aria-label="choose locale">
-                                        <button class="button button--small button--achromic" type="button"
-                                                ng-class="editProjectCtrl.nameLanguage === locale ? 'button--active' : ''"
-                                                ng-click="editProjectCtrl.changeLanguageName(locale)">
-                                                {{ locale }}
-                                        </button>
+                                    <div>
+                                        <div class="button-group button-group--horizontal"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.nameLanguage === locale ? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.changeLanguageName(locale)">
+                                                    {{ locale }}
+                                            </button>
+                                        </div>
                                     </div>
                                     <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
                                         <div ng-show="info.locale === editProjectCtrl.nameLanguage">
@@ -111,15 +113,17 @@
                                 </div>
                                 <div class="form__group">
                                     <label class="form__label">Short description *</label>
-                                    <div class="button-group button-group--horizontal pull-right"
-                                         ng-repeat="locale in editProjectCtrl.locales"
-                                         role="group"
-                                         aria-label="choose locale">
-                                        <button class="button button--small button--achromic" type="button"
-                                                ng-class="editProjectCtrl.shortDescriptionLanguage === locale ? 'button--active' : ''"
-                                                ng-click="editProjectCtrl.changeLanguageShortDescription(locale)">
-                                                {{ locale }}
-                                        </button>
+                                    <div>
+                                        <div class="button-group button-group--horizontal"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.shortDescriptionLanguage === locale ? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.changeLanguageShortDescription(locale)">
+                                                    {{ locale }}
+                                            </button>
+                                        </div>
                                     </div>
                                     <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
                                         <div ng-show="info.locale === editProjectCtrl.shortDescriptionLanguage">
@@ -138,15 +142,17 @@
                                 </div>
                                 <div class="form__group">
                                     <label class="form__label">Description *</label>
-                                    <div class="button-group button-group--horizontal pull-right"
-                                         ng-repeat="locale in editProjectCtrl.locales"
-                                         role="group"
-                                         aria-label="choose locale">
-                                        <button class="button button--small button--achromic" type="button"
-                                                ng-class="editProjectCtrl.descriptionLanguage === locale ? 'button--active' : ''"
-                                                ng-click="editProjectCtrl.changeLanguageDescription(locale)">
-                                                {{ locale }}
-                                        </button>
+                                    <div>
+                                        <div class="button-group button-group--horizontal"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.descriptionLanguage === locale ? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.changeLanguageDescription(locale)">
+                                                    {{ locale }}
+                                            </button>
+                                        </div>
                                     </div>
                                     <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
                                         <div ng-show="info.locale === editProjectCtrl.descriptionLanguage">
@@ -190,15 +196,17 @@
                                 </div>
                                 <div class="form__group">
                                     <label class="form__label">Detailed instructions *</label>
-                                    <div class="button-group button-group--horizontal pull-right"
-                                         ng-repeat="locale in editProjectCtrl.locales"
-                                         role="group"
-                                         aria-label="choose locale">
-                                        <button class="button button--small button--achromic" type="button"
-                                                ng-class="editProjectCtrl.instructionsLanguage === locale ? 'button--active' : ''"
-                                                ng-click="editProjectCtrl.changeLanguageInstructions(locale)">
-                                                {{ locale }}
-                                        </button>
+                                    <div>
+                                        <div class="button-group button-group--horizontal"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.instructionsLanguage === locale ? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.changeLanguageInstructions(locale)">
+                                                    {{ locale }}
+                                            </button>
+                                        </div>
                                     </div>
                                     <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
                                         <div ng-show="info.locale === editProjectCtrl.instructionsLanguage">
@@ -213,15 +221,6 @@
                                             </button>
                                             <p ng-show="editProjectCtrl.showPreviewInstructions" markdown-to-html="info.instructions"></p>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="form__group">
-                                    <label class="form__label">Per task instructions (optional) (TODO)</label>
-                                    <textarea class="form__control" rows="4" ng-model="editProjectCtrl.project.taskInstructions"></textarea>
-                                    <p><strong>Tip:</strong> You can use Markdown. (HTML is not allowed)</p>
-                                    <div ng-show="editProjectCtrl.project.taskInstructions">
-                                        <label class="form__label">Preview</label>
-                                        <p markdown-to-html="editProjectCtrl.project.taskInstructions"></p>
                                     </div>
                                 </div>
                             </fieldset>
@@ -407,35 +406,19 @@
                             <fieldset class="form__fieldset">
                                 <div class="form__group">
                                     <label class="form__label">Default locale</label>
-                                    <div class="button-group button-group--horizontal pull-right"
-                                         ng-repeat="locale in editProjectCtrl.locales"
-                                         role="group"
-                                         aria-label="choose default locale">
-                                        <button class="button button--small button--achromic" type="button"
-                                                ng-class="editProjectCtrl.project.defaultLocale === locale ? 'button--active' : ''"
-                                                ng-click="editProjectCtrl.changeDefaultLocale(locale)">
-                                                {{ locale }}
-                                        </button>
+                                    <div>
+                                        <div class="button-group button-group--horizontal"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="choose default locale">
+                                            <button class="button button--small button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.project.defaultLocale === locale ? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.changeDefaultLocale(locale)">
+                                                    {{ locale }}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- hide project due date and JOSM preset for now -->
-                                <!--<div class="form__group">
-                                    <label class="form__label">Project due date (dd/mm/yyyy)</label>
-                                    <div class="form__input-group">
-                                        <input type="date" class="form__control form__control--medium"
-                                               placeholder="dd/mm/yyyy"
-                                               ng-model="editProjectCtrl.project.dueDate"
-                                               name="dueDate">
-                                    </div>
-                                    <p>The date after which the project will automatically be archived.</p>
-                                </div>
-                                <div class="form__group">
-                                    <label class="form__label">JOSM preset</label>
-                                    <input type="file" class="form__control" fileread="editProjectCtrl.josmPreset"/>
-                                    <p ng-show="editProjectCtrl.project.josmPreset">
-                                        A JOSM Preset has already been added to this project.
-                                    </p>
-                                </div>-->
                             </fieldset>
                         </div>
                             <!--/ settings -->

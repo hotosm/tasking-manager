@@ -22,7 +22,8 @@
             getTaskFeatureById: getTaskFeatureById,
             getTaskFeaturesByIds: getTaskFeaturesByIds,
             getMappedTasksByUser: getMappedTasksByUser,
-            getLockedTasksForCurrentUser: getLockedTasksForCurrentUser
+            getLockedTasksForCurrentUser: getLockedTasksForCurrentUser,
+            splitTask: splitTask
         };
 
         return service;
@@ -340,5 +341,29 @@
                 return $q.reject("error");
             });
         }
+
+        /**
+         * Requests a task split
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function splitTask(projectId, taskId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/split',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback(error) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
+
     }
 })();

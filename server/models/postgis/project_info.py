@@ -1,4 +1,5 @@
 from flask import current_app
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from typing import List
 from server import db
 from server.models.dtos.project_dto import ProjectInfoDTO
@@ -14,6 +15,8 @@ class ProjectInfo(db.Model):
     short_description = db.Column(db.String)
     description = db.Column(db.String)
     instructions = db.Column(db.String)
+    project_id_str = db.Column(db.String)
+    text_searchable = db.Column(TSVECTOR)  # This contains searchable text and is populated by a DB Trigger
 
     __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
 
@@ -36,6 +39,7 @@ class ProjectInfo(db.Model):
         """ Updates existing ProjectInfo from supplied DTO """
         self.locale = dto.locale
         self.name = dto.name
+        self.project_id_str = str(self.project_id)  # Allows project_id to be searched
 
         # TODO bleach input
         self.short_description = dto.short_description

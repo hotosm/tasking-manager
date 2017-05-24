@@ -1,8 +1,7 @@
-import hashlib
 import unittest
 from unittest.mock import patch
 from server.services.project_service import ProjectService, Project, NotFound, ProjectStatus, ProjectServiceError, \
-    MappingLevel, UserService, ProjectSearchDTO, MappingTypes
+    MappingLevel, UserService
 
 
 class TestProjectService(unittest.TestCase):
@@ -83,18 +82,3 @@ class TestProjectService(unittest.TestCase):
         #Act / Assert
         with self.assertRaises(NotFound):
             ProjectService.get_task_for_logged_in_user(1, 1)
-
-    def test_search_generates_expected_sql(self):
-        # Arrange
-        dto = ProjectSearchDTO()
-        dto.mapper_level = MappingLevel.BEGINNER.name
-        dto.mapping_types = [MappingTypes.ROADS.name, MappingTypes.BUILDINGS.name]
-        dto.campaign_tag = 'malaria'
-        dto.organisation_tag = 'red cross'
-
-        # Act
-        sql = ProjectService.generate_search_sql(dto)
-
-        # Assert
-        sql_hash = hashlib.md5(sql.encode('utf-8')).hexdigest()
-        self.assertEqual(sql_hash, '72465d76bedc3c6b2015d14eea07845c')

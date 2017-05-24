@@ -3,6 +3,7 @@ from schematics.exceptions import ValidationError
 from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
+from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes
 
 
@@ -84,6 +85,8 @@ class ProjectDTO(Model):
     license_id = IntType(serialized_name='licenseId')
     allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames', default=[])
     priority_areas = BaseType(serialized_name='priorityAreas')
+    last_updated = DateTimeType(serialized_name='lastUpdated')
+    author = StringType()
 
 
 class ProjectSearchDTO(Model):
@@ -93,6 +96,8 @@ class ProjectSearchDTO(Model):
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     organisation_tag = StringType()
     campaign_tag = StringType()
+    page = IntType(required=True)
+    text_search = StringType()
 
 
 class ProjectSearchResultDTO(Model):
@@ -106,11 +111,19 @@ class ProjectSearchResultDTO(Model):
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
     organisation_tag = StringType(serialized_name='organisationTag')
     campaign_tag = StringType(serialized_name='campaignTag')
+    percent_mapped = IntType(serialized_name='percentMapped')
+    percent_validated = IntType(serialized_name='percentValidated')
 
 
 class ProjectSearchResultsDTO(Model):
     """ Contains all results for the search criteria """
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.results = []
+
     results = ListType(ModelType(ProjectSearchResultDTO))
+    pagination = ModelType(Pagination)
 
 
 class LockedTasksForUser(Model):

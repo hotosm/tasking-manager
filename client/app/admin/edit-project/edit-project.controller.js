@@ -7,9 +7,10 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$showdown', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','languageService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $showdown, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService) {
+    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, languageService) {
+
         var vm = this;
         vm.currentSection = '';
         vm.editForm = {};
@@ -27,10 +28,8 @@
         
         vm.numberOfPriorityAreas = 0;
 
-        // Locale - TODO: get from API
-        vm.locales = [
-            'nl', 'en'
-        ];
+        // Locale
+        vm.locales = [];
 
         // Types of mapping
         vm.mappingTypes = {
@@ -73,6 +72,14 @@
         activate();
 
         function activate() {
+
+            // Get available languages
+            var resultsPromise = languageService.getAvailableLanguages();
+            resultsPromise.then(function (data) {
+                for (var i = 0; i < data.supportedLanguages.length; i++){
+                    vm.locales.push(data.supportedLanguages[i].code);
+                }
+            });
 
             // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
             var session = authService.getSession();
@@ -149,10 +156,6 @@
                     var info = vm.project.projectInfoLocales[i];
                     var populatedLocale = false;
                     if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== '') {
-                        // Convert to HTML using the showdown library
-                        info.description = $showdown.makeHtml(info.description);
-                        info.shortDescription = $showdown.makeHtml(info.shortDescription);
-                        info.instructions = $showdown.makeHtml(info.instructions);
                         populatedLocale = true;
                     }
                     // if no fields for this locale are populated, remove from array
@@ -632,10 +635,6 @@
                     var found = false;
                     for (var j = 0; j < vm.project.projectInfoLocales.length; j++){
                         if (vm.locales[i] === vm.project.projectInfoLocales[j].locale){
-                            // Convert to markdown using the to-markdown library
-                            vm.project.projectInfoLocales[j].description = toMarkdown(vm.project.projectInfoLocales[j].description);
-                            vm.project.projectInfoLocales[j].shortDescription = toMarkdown(vm.project.projectInfoLocales[j].shortDescription);
-                            vm.project.projectInfoLocales[j].instructions = toMarkdown(vm.project.projectInfoLocales[j].instructions);
                             found = true;
                             break;
                         }

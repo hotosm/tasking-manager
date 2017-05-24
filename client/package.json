@@ -15,6 +15,7 @@
     "angular-moment": "^1.0.1",
     "angular-route": "^1.6.2",
     "angular-sanitize": "^1.6.3",
+    "angular-translate": "^2.15.1",
     "angular-ui-bootstrap": "^2.5.0",
     "browser-sync": "^2.18.7",
     "chart.js": "^2.5.0",
@@ -51,7 +52,6 @@
     "react-tether": "^0.5.5",
     "run-sequence": "^1.2.2",
     "showdown": "^1.6.4",
-    "to-markdown": "^3.0.4",
     "turf": "^3.0.14"
   }
 }

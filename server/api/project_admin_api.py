@@ -1,9 +1,10 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
+
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
-from server.services.authentication_service import token_auth, tm
 from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData, \
     ProjectAdminServiceError, NotFound
+from server.services.users.authentication_service import token_auth, tm
 from server.services.validator_service import ValidatorService
 
 
@@ -74,7 +75,7 @@ class ProjectAdminAPI(Resource):
             draft_project_dto.user_id = tm.authenticated_user_id
             draft_project_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f'error validating request: {str(e)}')
             return str(e), 400
 
         try:

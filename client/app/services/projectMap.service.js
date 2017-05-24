@@ -6,13 +6,20 @@
 
     angular
         .module('taskingManager')
-        .service('projectMapService', ['styleService', projectMapService]);
+        .service('projectMapService', ['styleService', '$rootScope', '$compile', projectMapService]);
 
-    function projectMapService(styleService) {
+    function projectMapService(styleService, $rootScope, $compile) {
 
         var map = null;
         var projectVectorSource = null;
         var projectHighlightVectorSource = null;
+
+
+        // Popup
+        var popupContainer = '';
+        // the scope the compiled element is linked to
+        var popupScope_ = $rootScope.$new(true);
+        var overlay = null;
 
         var service = {
             initialise: initialise,
@@ -21,16 +28,9 @@
             removeProjectsOnMap: removeProjectsOnMap,
             highlightProjectOnMap: highlightProjectOnMap,
             removeHighlightOnMap: removeHighlightOnMap,
-            showInfoOnHoverOrClick: showInfoOnHoverOrClick
+            createPopup: createPopup,
+            closePopup: closePopup
         };
-
-        /**
-         * Elements that make up the popup.
-         */
-        var container = null;
-        var content = null;
-        var closer = null;
-        var overlay = null;
 
         return service;
 
@@ -106,7 +106,12 @@
             });
             feature.setProperties({
                 'projectId': project.projectId,
-                'projectName': project.name
+                'projectName': project.name,
+                'mapperLevel': project.mapperLevel,
+                'organisationTag': project.organisationTag,
+                'shortDescription': project.shortDescription,
+                'percentMapped': project.percentMapped,
+                'percentValidated': project.percentValidated
             });
             if (projectVectorSource) {
                 projectVectorSource.addFeature(feature);
@@ -154,41 +159,26 @@
         }
 
         /**
-         * Show feature info on hover or click
+         * Creates a popup using a directive and add this popup to an overlay layer
          */
-        function showInfoOnHoverOrClick() {
+        function createPopup() {
 
-            /**
-            * Elements that make up the popup.
-            */
-            container = document.getElementById('popup');
-            content = document.getElementById('popup-content');
-            closer = document.getElementById('popup-closer');
             overlay = null;
+
+            popupContainer = angular.element('<div map-popup id="popup" class="ol-popup"></div>');
+            popupContainer.attr('selected-feature', 'feature');
 
             /**
              * Create an overlay to anchor the popup to the map.
              */
-            overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
-                element: container,
+            overlay = new ol.Overlay({
+                element: popupContainer[0],
                 autoPan: true,
                 autoPanAnimation: {
                     duration: 250
                 }
-            }));
-
-            /**
-             * Add a click handler to hide the popup.
-             * @return {boolean} Don't follow the href.
-             */
-            if (closer){
-                closer.onclick = function () {
-                    overlay.setPosition(undefined);
-                    closer.blur();
-                    return false;
-                };
-            }
-
+            });
+            
             map.on('pointermove', function (evt) {
                 if (evt.dragging) {
                     return;
@@ -199,7 +189,17 @@
             map.on('click', function (evt) {
                 displayFeatureInfo(evt.pixel, evt.coordinate);
             });
+            
             map.addOverlay(overlay);
+            overlay.setPosition(undefined);
+        }
+        
+        /**
+         * Close the popup and sets the OpenLayers edit interactions to true so
+         * users can edit the features
+         */
+        function closePopup() {
+            overlay.setPosition(undefined);
         }
 
         /**
@@ -211,9 +211,12 @@
                 return feature;
             });
             if (feature){
-                var projectId = feature.getProperties().projectId;
-                var projectName = feature.getProperties().projectName;
-                content.innerHTML = '<h4>#' + projectId + ' - ' + '<a href="/project/' + projectId + '">' + projectName + '</a></h4>';
+                popupScope_['feature'] = feature;
+
+                // Compile the element, link it to the scope
+                overlay.setElement(popupContainer[0]);
+                $compile(popupContainer)(popupScope_);
+
                 overlay.setPosition(coordinate);
             }
         }

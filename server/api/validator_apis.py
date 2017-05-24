@@ -1,7 +1,8 @@
 from flask_restful import Resource, current_app, request
-from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
 from schematics.exceptions import DataError
-from server.services.authentication_service import token_auth, tm
+
+from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
+from server.services.users.authentication_service import token_auth, tm
 from server.services.validator_service import ValidatorService, NotFound, ValidatatorServiceError, UserLicenseError
 
 

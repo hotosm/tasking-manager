@@ -62,6 +62,7 @@ As the project is open source we have to keep secrets out of the repo.  You will
 * **TM_SECRET** - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
 * **TM_CONSUMER_KEY** - This is the OAUTH Consumer Key used for authenticating the Tasking Manager App in OSM
 * **TM_CONSUMER_SECRET** - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
+* **TM_SMTP_PASSWORD** - The password for the SMTP server that is used to send email alerts
 
 * Linux/Mac
     * (It is strongly recommended to set these within your .bash_profile so they are available to all processes )
@@ -69,11 +70,13 @@ As the project is open source we have to keep secrets out of the repo.  You will
     * ```export TM_SECRET=secret-key-here```
     * ```export TM_CONSUMER_KEY=oauth-consumer-key-goes-here```
     * ```export TM_CONSUMER_SECRET=oauth-consumer-secret-key-goes-here```
+    * ```export TM_SMTP_PASSWORD=smtp-server-password-here```
 * Windows:
     * ```setx TM_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
     * ```setx TM_SECRET "secret-key-here"```
     * ```setx TM_CONSUMER_KEY "oauth-consumer-key-goes-here"```
     * ```setx TM_CONSUMER_SECRET "oauth-consumer-secret-key-goes-here"```
+    * ```setx TM_SMTP_PASSWORD "smtp-server-password-here"```
 
 ### Creating the DB
 We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to create the database from the migrations directory.  If you can't access an existing DB refer to DevOps page to [set up a local DB in Docker](https://github.com/hotosm/tasking-manager/wiki/Dev-Ops#creating-a-local-postgis-database-with-docker) Create the database as follows:
@@ -124,3 +127,5 @@ On boot the Tasking Manager App will look for the following environment vars:
     * **Staging** - Use this for your staging/test environment
     * **Prod** - Use this for your production environment
 
+## Localisation
+Please see the [Localisation Wiki](https://github.com/hotosm/tasking-manager/wiki/Localisation) for more details.

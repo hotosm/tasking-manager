@@ -1,13 +1,14 @@
 'use strict';
 
 describe('contribute.controller', function () {
-    var contributeController = null;
+    var contributeController, scope = null;
 
     beforeEach(function () {
         module('taskingManager');
 
-        inject(function ($controller) {
-            contributeController = $controller('contributeController');
+        inject(function ($controller, $rootScope) {
+            scope = $rootScope.$new();
+            contributeController = $controller('contributeController', {$scope: scope});
         });
     });
 

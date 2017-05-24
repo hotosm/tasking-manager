@@ -9,11 +9,11 @@
 truncate hotnew.users cascade;
 truncate hotnew.areas_of_interest cascade;
 
--- Populate users with ids and default stats
-insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated)
+-- Populate users with ids and default stats - sets users to beginner mapper level
+insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, email_address_verified)
 (select id,username,
 	case when role is null then 0 else role end,
-	0,0,0,0 
+	1,0,0,0, FALSE
 	 from hotold.users);
 	 
 -- update sequence  (commented out as not needed. ID comes from OSM not from the sequence.)
@@ -43,8 +43,8 @@ insert into hotnew.areas_of_interest (id, geometry, centroid)
 select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.areas_of_interest));
 
 -- PROJECTS
--- Transfer project data.
--- TODO:  update mapper_level, tasks_bad_imagery
+-- Transfer project data, all projects set to mapper level beginner
+-- TODO:   tasks_bad_imagery
 -- Skipped projects with null author_id
 INSERT INTO hotnew.projects(
             id, status, aoi_id, created, priority, default_locale, author_id, 
@@ -56,12 +56,13 @@ INSERT INTO hotnew.projects(
             0, false, false, private, 
             entities_to_map, changeset_comment, due_date, imagery, josm_preset, 
             last_update, null, '', '', 
-            0, 0, 0, 0
+            1, 0, 0, 0
             from hotold.project
             where author_id is not null
             );
 
 select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
+select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.projects));
 
 -- Project info & translations
 -- Skip any records relating to projects that have not been imported
@@ -70,6 +71,19 @@ INSERT INTO hotnew.project_info(
     (select id, locale, name, short_description, description, instructions
     from hotold.project_translation pt
     where exists(select p.id from hotnew.projects p where p.id = pt.id));
+
+-- Delete empty languages
+delete from project_info where name = '' and short_description = '' and description = '' and instructions = '';
+
+-- Create trigger for text search
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
+ON project_info FOR EACH ROW EXECUTE PROCEDURE
+tsvector_update_trigger(text_searchable, 'pg_catalog.english', project_id_str, short_description, description);
+
+-- set project-id which will update text search index
+update project_info set project_id_str = project_id::text;
+
+CREATE INDEX textsearch_idx ON project_info USING GIN (text_searchable);
 
 -- TASKS
 -- Get all tasks that don't have a state of -1 (removed) and where they relate to a project that has been migrated above
@@ -157,6 +171,7 @@ INSERT INTO hotnew.task_history(
 	from hotold.task_comment tc
 	where author_id is not null
 	and exists(select id from hotnew.tasks t where t.project_id = tc.project_id and t.id = tc.task_id ));
+
 	
 -- Update USER STATISTICS
 -- User Task stats
@@ -199,6 +214,41 @@ update hotnew.users u
   set projects_mapped = p.projects
 from p
 where u.id = p.user_id;	
+
+
+-- MESSAGES
+-- only migrating messages that have not yet been read
+INSERT INTO hotnew.messages(
+            message, subject, from_user_id, to_user_id, date, read)
+    (select message, subject,  from_user_id, to_user_id, date, read
+     from hotold.message
+     where read = false);
+
+	 
+-- PRIORITY_AREAS
+--  migrate all areas
+INSERT INTO hotnew.priority_areas(
+            id, geometry)
+    (SELECT id, geometry
+    from hotold.priority_area);
+
+-- Update sequence
+select setval('hotnew.priority_areas_id_seq',(select max(id) from hotnew.priority_areas));
+
+-- Migrate project_priority areas link but only where a matching project exists.  
+-- Remove duplicate records
+INSERT INTO hotnew.project_priority_areas(
+            project_id, priority_area_id)
+    (SELECT distinct pa.project_id, pa.priority_area_id
+    from hotold.project_priority_areas pa
+    where exists(select null from hotnew.projects p where p.id = pa.project_id) );
+
+-- PROJECT ALLOWED USERS
+-- Remove duplicate records
+INSERT INTO hotnew.project_allowed_users(
+            project_id, user_id)
+    (select distinct project_id, user_id
+    from hotold.project_allowed_users);
 
 
 --------------------------------------------------	

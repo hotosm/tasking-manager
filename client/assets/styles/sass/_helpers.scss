@@ -19,6 +19,10 @@
   cursor: pointer;
 }
 
+.padding-at-bottom {
+  padding-bottom: 1rem;
+}
+
 /** Override the OSM design system **/
 .form__group {
   margin-top: $global-spacing;
@@ -146,4 +150,9 @@ hr {
   vertical-align: middle;
   background-color: $base-color;
   border-radius: 10px;
+}
+
+.form__control__inline {
+  width: auto;
+  display: inline;
 }

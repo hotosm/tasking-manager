@@ -3,9 +3,9 @@ import geojson
 from flask import current_app
 from typing import Optional
 from geoalchemy2 import Geometry
+from sqlalchemy.dialects.postgresql import ARRAY
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSearchResultDTO, \
-    ProjectSearchResultsDTO, ProjectSummary, PMDashboardDTO
+from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
@@ -43,13 +43,6 @@ class AreaOfInterest(db.Model):
         aoi_geojson = geojson.loads(json.dumps(aoi_geometry_geojson))
         aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
 
-        if type(aoi_geometry) is not geojson.MultiPolygon:
-            raise InvalidGeoJson('Area Of Interest: geometry must be a MultiPolygon')
-
-        is_valid_geojson = geojson.is_valid(aoi_geometry)
-        if is_valid_geojson['valid'] == 'no':
-            raise InvalidGeoJson(f"Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}")
-
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         self.centroid = ST_Centroid(self.geometry)
@@ -86,7 +79,7 @@ class Project(db.Model):
     license_id = db.Column(db.Integer, db.ForeignKey('licenses.id', name='fk_licenses'))
 
     # Tags
-    mapping_types = db.Column(db.ARRAY(db.Integer), index=True)
+    mapping_types = db.Column(ARRAY(db.Integer), index=True)
     organisation_tag = db.Column(db.String, index=True)
     campaign_tag = db.Column(db.String, index=True)
 
@@ -116,6 +109,7 @@ class Project(db.Model):
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
         self.last_updated = timestamp()
+        self.changeset_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -298,6 +292,8 @@ class Project(db.Model):
         base_dto.campaign_tag = project.campaign_tag
         base_dto.organisation_tag = project.organisation_tag
         base_dto.license_id = project.license_id
+        base_dto.last_updated = project.last_updated
+        base_dto.author = User().get_by_id(project.author_id).username
 
         if project.private:
             # If project is private it should have a list of allowed users
@@ -341,34 +337,3 @@ class Project(db.Model):
         project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(project_id)
 
         return project_dto
-
-    @staticmethod
-    def get_projects_by_seach_criteria(sql: str, preferred_locale: str) -> ProjectSearchResultsDTO:
-        """ Find all projects that match the search criteria """
-        results = db.engine.execute(sql)
-
-        if results.rowcount == 0:
-            raise NotFound()
-
-        results_list = []
-        for row in results:
-            # TODO would be nice to get this for an array rather than individually would be more efficient
-            project_info_dto = ProjectInfo.get_dto_for_locale(row[0], preferred_locale, row[3])
-
-            result_dto = ProjectSearchResultDTO()
-            result_dto.project_id = row[0]
-            result_dto.locale = project_info_dto.locale
-            result_dto.name = project_info_dto.name
-            result_dto.priority = ProjectPriority(row[2]).name
-            result_dto.mapper_level = MappingLevel(row[1]).name
-            result_dto.short_description = project_info_dto.short_description
-            result_dto.aoi_centroid = geojson.loads(row[4])
-            result_dto.organisation_tag = row[5]
-            result_dto.campaign_tag = row[6]
-
-            results_list.append(result_dto)
-
-        results_dto = ProjectSearchResultsDTO()
-        results_dto.results = results_list
-
-        return results_dto

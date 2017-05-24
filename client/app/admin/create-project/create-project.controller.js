@@ -47,6 +47,7 @@
         vm.splitPolygonValidationMessage = '';
         vm.isimportError = false;
         vm.createProjectFail = false;
+        vm.createProjectFailReason = '';
         vm.createProjectSuccess = false;
 
         // Split tasks
@@ -58,7 +59,9 @@
         vm.drawPolygonInteraction = null;
 
         //waiting spinner
-        vm.waiting=false;
+        vm.waiting = false;
+        vm.trimError = false;
+        vm.trimErrorReason = '';
 
         activate();
 
@@ -156,9 +159,15 @@
                     vm.currentStep = wizardStep;
                 }
             }
+            else if (wizardStep === 'trim') {
+                vm.trimError = false;
+                vm.trimErrorReason = '';
+                vm.currentStep = wizardStep;
+            }
             else if (wizardStep === 'review') {
                 setSplitToolsActive_(false);
                 vm.createProjectFailed = false;
+                vm.createProjectFailReason = '';
                 vm.currentStep = wizardStep;
             }
             else {
@@ -193,7 +202,6 @@
                     showStep = true;
                 }
             }
-
             else if (wizardStep === 'review') {
                 if (vm.currentStep === 'review') {
                     showStep = true;
@@ -221,21 +229,24 @@
         vm.trimTaskGrid = function () {
 
             var taskGrid = projectService.getTaskGrid();
-            vm.waiting= true;
+            vm.waiting = true;
             var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi)
             trimTaskGridPromise.then(function (data) {
-                vm.waiting= false;
+                vm.waiting = false;
+                vm.trimError = false;
+                vm.trimErrorReason = '';
                 projectService.removeTaskGrid();
                 var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
-               // Get the number of tasks in project
+                // Get the number of tasks in project
                 vm.numberOfTasks = projectService.getNumberOfTasks();
             }, function (reason) {
-                vm.waiting= false;
-                //TODO: may want to handle error
+                vm.waiting = false;
+                vm.trimError = true;
+                vm.trimErrorReason = reason.status
             })
-        }
+        };
 
         /**
          * Create arbitary tasks
@@ -429,13 +440,15 @@
                     // Project created successfully
                     vm.createProjectFail = false;
                     vm.createProjectSuccess = true;
+                    vm.createProjectFailReason = '';
                     // Navigate to the edit project page
                     $location.path('/admin/edit-project/' + data.projectId);
-                }, function () {
+                }, function (reason) {
                     vm.waiting = false;
                     // Project not created successfully
                     vm.createProjectFail = true;
                     vm.createProjectSuccess = false;
+                    vm.createProjectFailReason = reason.status
                 });
             }
             else {

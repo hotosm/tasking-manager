@@ -94,9 +94,11 @@ def init_flask_restful_routes(app):
     from server.api.authentication_apis import LoginAPI, OAuthAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI
+    from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, MappedTasksByUser
     from server.api.grid_apis import IntersectingTilesAPI
+    from server.api.split_task_apis import SplitTaskAPI
+    from server.api.settings_apis import LanguagesAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
@@ -134,9 +136,12 @@ def init_flask_restful_routes(app):
     api.add_resource(UserSearchAllAPI,              '/api/v1/user/search-all')
     api.add_resource(UserSearchFilterAPI,           '/api/v1/user/search/filter/<string:username>')
     api.add_resource(UserAPI,                       '/api/v1/user/<string:username>')
+    api.add_resource(UserUpdateAPI,                 '/api/v1/user/update-details')
     api.add_resource(UserMappedProjects,            '/api/v1/user/<string:username>/mapped-projects')
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')
     api.add_resource(UserAcceptLicense,             '/api/v1/user/accept-license/<int:license_id>')
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')
+    api.add_resource(SplitTaskAPI,                  '/api/v1/project/<int:project_id>/task/<int:task_id>/split')
+    api.add_resource(LanguagesAPI,                  '/api/v1/settings/languages')

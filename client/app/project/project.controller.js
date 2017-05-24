@@ -3,13 +3,14 @@
     'use strict';
 
     /**
-     * Project controller which manages activating a project the UI for user task selection and contribution workflow
+     * Project controller which manages activating a project the UI for user task selection and contribution
+     * TODO: refactor this controller. It is getting big!
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService','licenseService', 'messageService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', projectController]);
 
-    function projectController($interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService) {
 
         var vm = this;
         vm.id = 0;
@@ -36,6 +37,8 @@
         vm.taskLockErrorMessage = '';
         vm.taskUnLockError = false;
         vm.taskUnLockErrorMessage = '';
+        vm.taskSplitError = false;
+        vm.taskSplitCode == null;
 
         //authorization
         vm.isAuthorized = false;
@@ -43,6 +46,7 @@
         //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
+        vm.isSelectedSplittable = false;
 
         //task data
         vm.selectedTaskData = null;
@@ -50,19 +54,12 @@
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
 
-        //project display text
-        vm.description = '';
-        vm.shortDescription = '';
-        vm.instructions = '';
-
         //editor
         vm.editorStartError = '';
         vm.selectedEditor = '';
 
         //interaction
-        var select = new ol.interaction.Select({
-            style: styleService.getSelectedTaskStyle
-        });
+        vm.selectInteraction = null;
 
         vm.mappedTasksPerUser = [];
         vm.lockedTasksForCurrentUser = [];
@@ -79,8 +76,16 @@
         vm.showLicenseModal = false;
         vm.lockingReason = '';
 
+
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
+
+        // Watch the languageService for change in language and get the project again when needed
+        $scope.$watch(function () {
+            return languageService.getLanguageCode();
+        }, function () {
+            updateDescriptionAndInstructions(vm.id);
+        }, true);
 
         activate();
 
@@ -103,18 +108,13 @@
             mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
 
-            vm.map.addInteraction(select);
-            select.on('select', function (event) {
-                $scope.$apply(function () {
-                    var feature = event.selected[0];
-                    onTaskSelection(feature);
-                });
-            });
-
             vm.id = $routeParams.id;
 
             initialiseProject(vm.id);
             updateMappedTaskPerUser(vm.id);
+
+            // Add interactions for drawing a polygon for validation
+            addInteractions();
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
@@ -159,6 +159,7 @@
         vm.resetStatusFlags = function () {
             vm.isSelectedMappable = false;
             vm.isSelectedValidatable = false;
+            vm.isSelectedSplittable = false;
         }
 
         /**
@@ -171,6 +172,8 @@
             vm.taskLockErrorMessage = '';
             vm.taskUnLockError = false;
             vm.taskUnLockErrorMessage = '';
+            vm.taskSplitError = false;
+            vm.taskSplitCode == null;
         }
 
         /**
@@ -178,8 +181,8 @@
          * @param feature - ol.Feature the feature to be selected
          */
         function selectFeature(feature) {
-            select.getFeatures().clear();
-            select.getFeatures().push(feature);
+            vm.selectInteraction.getFeatures().clear();
+            vm.selectInteraction.getFeatures().push(feature);
             onTaskSelection(feature);
         }
 
@@ -233,12 +236,79 @@
         };
 
         /**
+         * Select tasks to validate by letting the user draw a polygon
+         */
+        vm.selectByPolygonValidate = function () {
+            if (vm.drawPolygonInteraction.getActive()) {
+                drawService.getSource().clear();
+                vm.selectInteraction.setActive(true);
+                vm.drawPolygonInteraction.setActive(false);
+            }
+            else {
+                vm.selectInteraction.setActive(false);
+                vm.drawPolygonInteraction.setActive(true);
+            }
+        };
+
+        /**
+         * Add the interactions for selecting tasks
+         */
+        function addInteractions() {
+
+            // Priority areas: initialise the draw service with interactions
+            drawService.initInteractions(true, false, false, false, false, false);
+
+            // Get the interactions in the controller so events can be handled
+            vm.source = drawService.getSource();
+            // Draw interaction - adds it to the map in the draw service
+            vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
+            // Select interaction
+            vm.selectInteraction = new ol.interaction.Select({
+                style: styleService.getSelectedTaskStyle
+            });
+            vm.map.addInteraction(vm.selectInteraction);
+            vm.selectInteraction.on('select', function (event) {
+                $scope.$apply(function () {
+                    var feature = event.selected[0];
+                    onTaskSelection(feature);
+                });
+            });
+
+            vm.drawPolygonInteraction.on('drawstart', function () {
+                drawService.getSource().clear();
+            });
+            // Check which tasks intersect and add them to the selected features manually
+            vm.drawPolygonInteraction.on('drawend', function (event) {
+                var selectedFeatures = vm.selectInteraction.getFeatures();
+                selectedFeatures.clear();
+                var polygon = event.feature.getGeometry();
+                var features = vm.taskVectorLayer.getSource().getFeatures();
+                vm.selectedTasksForValidation = [];
+                for (var i = 0; i < features.length; i++) {
+                    if (polygon.intersectsExtent(features[i].getGeometry().getExtent())) {
+                        var taskStatus = features[i].getProperties().taskStatus;
+                        if (taskStatus === 'MAPPED' || taskStatus === 'VALIDATED') {
+                            selectedFeatures.push(features[i]);
+                            vm.selectedTasksForValidation.push(features[i].getProperties().taskId);
+                        }
+                    }
+                }
+                // Reactivate select after 300ms (to avoid single click trigger)
+                $timeout(function () {
+                    vm.selectInteraction.setActive(true);
+                    vm.drawPolygonInteraction.setActive(false);
+                    drawService.getSource().clear();
+                }, 300);
+            });
+        }
+
+        /**
          * clears the currently selected task.  Clears down/resets the vm properties and clears the feature param in the select interaction object.
          */
         vm.clearCurrentSelection = function () {
             // vm.mappingStep = 'selecting';
             // vm.validatingStep = 'selecting';
-            select.getFeatures().clear();
+            vm.selectInteraction.getFeatures().clear();
         };
 
         /**
@@ -250,15 +320,11 @@
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.projectData = data;
-                $scope.description = data.projectInfo.description;
-                $scope.shortDescription = data.projectInfo.shortDescription;
-                $scope.instructions = data.projectInfo.instructions;
                 vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
                 vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
-
 
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
@@ -297,6 +363,17 @@
         }
 
         /**
+         * Update description and metadata
+         * @param id
+         */
+        function updateDescriptionAndInstructions(id) {
+            var resultsPromise = projectService.getProject(id);
+            resultsPromise.then(function (data) {
+                vm.projectData = data;
+            });
+        }
+
+        /**
          * Gets project data from server and updates the map
          * @param id - id of project to be refreshed
          */
@@ -310,17 +387,17 @@
                 if (vm.selectedTaskData) {
                     var selectedFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), vm.selectedTaskData.taskId);
                     //this just forces the selected styling to apply
-                    select.getFeatures().clear();
-                    select.getFeatures().push(selectedFeature);
+                    vm.selectInteraction.getFeatures().clear();
+                    vm.selectInteraction.getFeatures().push(selectedFeature);
                 }
                 else if (vm.multiSelectedTasksData.length > 0) {
                     var tasks = vm.multiSelectedTasksData.map(function (task) {
                         return task.taskId;
                     });
                     var selectedFeatures = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), tasks);
-                    select.getFeatures().clear();
+                    vm.selectInteraction.getFeatures().clear();
                     selectedFeatures.forEach(function (feature) {
-                            select.getFeatures().push(feature);
+                            vm.selectInteraction.getFeatures().push(feature);
                         }
                     )
                 }
@@ -372,7 +449,9 @@
 
             //add locked tasks to the locked tasks vector layer
             var projectId = vm.projectData.projectId;
-            updateLockedTasksForCurrentUser(projectId);
+            if (authService.isUserLoggedIn()) {
+                updateLockedTasksForCurrentUser(projectId);
+            }
 
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
@@ -406,7 +485,7 @@
                     vm.lockedByCurrentUserVectorLayer.getSource().addFeatures(features);
                 }
             }, function () {
-                if(vm.lockedByCurrentUserVectorLayer) {
+                if (vm.lockedByCurrentUserVectorLayer) {
                     vm.lockedByCurrentUserVectorLayer.getSource().clear();
                 }
                 vm.lockedTasksForCurrentUser = [];
@@ -435,7 +514,7 @@
          * Adds the priority areas to the map
          * @param priorityAreas
          */
-        function addPriorityAreasToMap(priorityAreas){
+        function addPriorityAreasToMap(priorityAreas) {
             var source = new ol.source.Vector();
             var vector = new ol.layer.Vector({
                 source: source,
@@ -443,9 +522,9 @@
             });
             vm.map.addLayer(vector);
 
-            source.on('addfeature', function(event){
+            source.on('addfeature', function (event) {
                 // Add style to make it stand out from the AOI
-                var style =  new ol.style.Style({
+                var style = new ol.style.Style({
                     fill: new ol.style.Fill({
                         color: 'rgba(255,0,0,0.2)' //red
                     }),
@@ -461,7 +540,7 @@
                     var feature = geospatialService.getFeatureFromGeoJSON(priorityAreas[i]);
                     source.addFeature(feature);
                 }
-                if (priorityAreas.length > 0){
+                if (priorityAreas.length > 0) {
                     vm.hasPriorityArea = true;
                 }
             }
@@ -534,7 +613,7 @@
             // Format the comments by adding links to the usernames
             var history = vm.selectedTaskData.taskHistory;
             if (history) {
-                for (var i = 0; i < history.length; i++){
+                for (var i = 0; i < history.length; i++) {
                     history[i].actionText = messageService.formatUserNamesToLink(history[i].actionText);
                 }
             }
@@ -698,8 +777,40 @@
                 vm.selectedTaskData = data;
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
+                vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
             }, function (error) {
                 onLockError(projectId, error);
+            });
+        };
+
+
+        /**
+         * Call api to split task currently selected task for mapping.  Will update view and map after split.
+         */
+        vm.splitTask = function () {
+            vm.taskSplitError = false;
+            vm.taskSplitCode == null;
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var splitPromise = taskService.splitTask(projectId, taskId);
+            splitPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                refreshProject(projectId);
+                updateMappedTaskPerUser(projectId);
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+                $location.search('task', null);
+
+            }, function (error) {
+                // TODO - show message
+                vm.taskSplitError = true;
+                vm.taskSplitCode = null;
+                if (error.status = 403) {
+                    vm.taskSplitCode = 403;
+                }
             });
         };
 
@@ -735,6 +846,16 @@
                 onLockError(projectId, error);
             });
         };
+
+        /**
+         * Is the the task splittable
+         */
+        function isTaskSplittable(taskFeatures, taskId) {
+            var feature = taskService.getTaskFeatureById(taskFeatures, taskId);
+            var properties = feature.getProperties();
+            return feature.getProperties().taskSplittable;
+
+        }
 
         /**
          * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
@@ -792,7 +913,7 @@
 
             vm.editorStartError = '';
 
-            var selectedFeatures = select.getFeatures();
+            var selectedFeatures = vm.selectInteraction.getFeatures();
             var taskCount = selectedFeatures.getArray().length;
             var extent = geospatialService.getBoundingExtentFromFeatures(selectedFeatures.getArray());
             // Zoom to the extent to get the right zoom level for the editorsgit commit -a
@@ -802,7 +923,6 @@
             var changesetComment = vm.projectData.changesetComment;
             // get center in the right projection
             var center = ol.proj.transform(geospatialService.getCenterOfExtent(extent), 'EPSG:3857', 'EPSG:4326');
-            // TODO licence agreement
             if (editor === 'ideditor') {
                 editorService.launchIdEditor(
                     center,
@@ -819,7 +939,6 @@
                 editorService.launchFieldPapersEditor(center);
             }
             else if (editor === 'josm') {
-                // TODO licence agreement
                 var changesetSource = "Bing";
                 var hasImagery = false;
                 if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
@@ -976,7 +1095,7 @@
          * @param array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
-            select.getFeatures().clear();
+            vm.selectInteraction.getFeatures().clear();
 
             //use doneTaskIds to get corresponding subset of tasks for selection from the project
             var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
@@ -988,7 +1107,7 @@
             //select each one by one
             tasksForSelection.forEach(function (feature) {
                 var feature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), feature.properties.taskId);
-                select.getFeatures().push(feature);
+                vm.selectInteraction.getFeatures().push(feature);
             });
 
             //put the UI in to locked for multi validation mode
@@ -1029,27 +1148,6 @@
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
 
-        };
-
-        vm.resetTaskData = function () {
-            vm.selectedTaskData = null;
-            vm.lockedTaskData = null;
-            vm.multiSelectedTasksData = [];
-            vm.multiLockedTasks = [];
-        };
-
-        vm.resetStatusFlags = function () {
-            vm.isSelectedMappable = false;
-            vm.isSelectedValidatable = false;
-        };
-
-        vm.resetErrors = function () {
-            vm.taskErrorMapping = '';
-            vm.taskErrorValidation = '';
-            vm.taskLockError = false;
-            vm.taskLockErrorMessage = '';
-            vm.taskUnLockError = false;
-            vm.taskUnLockErrorMessage = '';
         };
 
         /**
@@ -1097,7 +1195,7 @@
          * Formats the user tag
          * @param item
          */
-        vm.formatUserTag = function(item){
+        vm.formatUserTag = function (item) {
             // Format the user tag by wrapping into brackets so it is easier to detect that it is a username
             // especially when there are spaces in the username
             return '@[' + item.label + ']';

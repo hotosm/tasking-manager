@@ -3,7 +3,7 @@
 
     angular
         .module('taskingManager')
-        .service('projectService', ['$http', '$q', 'configService', 'authService', 'geospatialService', projectService]);
+        .service('projectService', ['$http', '$q', 'configService', 'authService', 'geospatialService', 'languageService', projectService]);
 
     /**
      * @fileoverview This file provides a project service.
@@ -11,7 +11,7 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService($http, $q, configService, authService, geospatialService) {
+    function projectService($http, $q, configService, authService, geospatialService, languageService) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -366,10 +366,10 @@
                 // this callback will be called asynchronously
                 // when the response is available
                 return (response.data);
-            }, function errorCallback() {
+            }, function errorCallback(response) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                return $q.reject("error");
+                return $q.reject(response);
             });
         }
 
@@ -380,11 +380,16 @@
          */
         function getProject(id) {
 
+            var preferredLanguage = languageService.getLanguageCode();
+
             // Returns a promise
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/project/' + id,
-                headers: authService.getAuthenticatedHeader()
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Accept-Language': preferredLanguage
+                }
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available

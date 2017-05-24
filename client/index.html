@@ -34,6 +34,16 @@
 </head>
 <body>
 
+<!-- mobile message -->
+<div class="mob-disclaimer" ng-show="!hideMobileMessage">
+    <p>
+        <i class="hot-ds-icon-xmark pull-right pointer" ng-click="hideMobileMessage = true"></i>
+        In order to make full use of Tasking Manager's many features please use a desktop computer rather than a mobile
+        device. If you would like to contribute on a mobile device, please use MapSwipe instead.
+    </p>
+    <a href="https://mapswipe.org" class="button button--achromic">Go to MapSwipe</a>
+</div>
+<!--/ mobile message -->
 
 <!-- header -->
 <header class="page__header page__header__fixed" role="banner">
@@ -67,6 +77,9 @@
                         </a>
                     </li>
                     <li>
+                        <language-switch></language-switch>
+                    </li>
+                    <li>
                         <account-nav></account-nav>
                     </li>
                 </ul>
@@ -82,10 +95,10 @@
 
 <footer class="page__footer">
     <div class="left">
-        Aliquam feugiat consequat lectus. Donec ex orci, euismod auctor purus sit amet, lacinia faucibus elit.
+        Contact us via the <a href="/about">About page</a>
     </div>
     <div class="right">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Fork <a href="https://github.com/hotosm/tasking-manager" target="_blank">the Tasking Manager Code on GitHub</a> and help improve it.
     </div>
 </footer>
 
@@ -137,10 +150,6 @@
 <script src="node_modules/ng-showdown/dist/ng-showdown.js"></script>
 <!-- /build -->
 
-<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/to-markdown/3.0.4/to-markdown.min.js-->
-<script src="node_modules/to-markdown/dist/to-markdown.js"></script>
-<!-- /build -->
-
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js-->
 <script src="node_modules/moment/moment.js"></script>
 <!-- /build -->
@@ -165,6 +174,14 @@
 <script src="node_modules/ment.io/dist/mentio.js"></script>
 <!-- /build -->
 
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.15.1/angular-translate.min.js -->
+<script src="node_modules/angular-translate/dist/angular-translate.js"></script>
+<!-- /build -->
+
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.15.1/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js-->
+<script src="node_modules/angular-translate/dist/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+<!-- /build -->
+
 <!-- build:js app/taskingmanager.min.js -->
 <script src="app/taskingmanager.config.js"></script>
 <script src="app/taskingmanager.app.js"></script>
@@ -183,6 +200,7 @@
 <script src="app/project/project-dashboard.controller.js"></script>
 <script src="app/message/inbox.controller.js"></script>
 <script src="app/message/message.controller.js"></script>
+<script src="app/login/auth.controller.js"></script>
 
 <script src="app/services/map.service.js"></script>
 <script src="app/services/project.service.js"></script>
@@ -200,10 +218,14 @@
 <script src="app/services/stats.service.js"></script>
 <script src="app/services/user.service.js"></script>
 <script src="app/services/message.service.js"></script>
+<script src="app/services/language.service.js"></script>
+<script src="app/services/httpInterceptor.service.js"></script>
 
 <script src="app/components/add-layer/add-layer.directive.js"></script>
 <script src="app/components/account-nav/account-nav.directive.js"></script>
 <script src="app/components/fileread.directive.js"></script>
+<script src="app/components/language/language-switch.directive.js"></script>
+<script src="app/components/popup/map-popup.directive.js"></script>
 <!-- /build -->
 
 </body>
