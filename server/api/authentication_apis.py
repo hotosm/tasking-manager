@@ -81,3 +81,40 @@ class OAuthAPI(Resource):
             return redirect(authorized_url)  # Redirect to Authentication page on successful authorization :)
         except AuthServiceError as e:
             return {"Error": str(e)}, 500
+
+
+class ValidateEmailAPI(Resource):
+
+    def get(self):
+        """
+        Authenticates user owns email address
+        ---
+        tags:
+          - authentication
+        produces:
+          - application/json
+        parameters:
+            - in: query
+              name: username
+              type: string
+              default: thinkwhere
+            - in: query
+              name: token
+              type: string
+              default: 1234dvsdf
+        responses:
+            301:
+                description: Will redirect to email validation page
+            500:
+                description: Internal Server Error
+        """
+        try:
+            username = request.args.get('username')
+            token = request.args.get('token')
+            redirect_url = AuthenticationService.authenticate_email_token(username, token)
+
+            return redirect(redirect_url)
+        except Exception as e:
+            error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

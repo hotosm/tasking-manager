@@ -32,6 +32,6 @@ class TestStatsService(unittest.TestCase):
         parsed_url = urlparse(url)
         query = parse_qs(parsed_url.query)
 
-        self.assertEqual(parsed_url.path, '/api/messages/validate-email')
+        self.assertEqual(parsed_url.path, '/api/auth/email')
         self.assertEqual(query['username'], [test_user])
         self.assertTrue(query['token'])  # Token random every time so just check we have something
