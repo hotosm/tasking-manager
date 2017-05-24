@@ -233,3 +233,37 @@ class MessagesAPI(Resource):
             error_msg = f'Messages GET all - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class ResendEmailValidationAPI(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self):
+        """
+        Resends the validation user to the logged in user
+        ---
+        tags:
+          - messages
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            200:
+                description: Resends the user their email verification email
+            500:
+                description: Internal Server Error
+        """
+        try:
+            MessageService.resend_email_validation(tm.authenticated_user_id)
+            return {"Success": "Verification email resent"}, 200
+        except Exception as e:
+            error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

@@ -5,6 +5,7 @@ from flask import current_app
 
 from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message, NotFound
+from server.services.users.user_service import SMTPService
 from server.services.users.user_service import UserService
 
 
@@ -59,6 +60,12 @@ class MessageService:
             message.subject = f'You were mentioned in a comment on {link}'
             message.message = comment
             message.add_message()
+
+    @staticmethod
+    def resend_email_validation(user_id: int):
+        """ Resends the email validation email to the logged in user """
+        user = UserService.get_user_by_id(user_id)
+        SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
     def _parse_comment_for_username(comment: str) -> List[str]:
