@@ -1,3 +1,4 @@
+import os
 import unittest
 from urllib.parse import urlparse, parse_qs
 
@@ -16,7 +17,6 @@ class TestStatsService(unittest.TestCase):
         if env == 'true':
             cls.skip_tests = True
 
-
     def setUp(self):
         self.app = create_app()
         self.ctx = self.app.app_context()
@@ -34,7 +34,7 @@ class TestStatsService(unittest.TestCase):
     def test_send_mail(self):
         if self.skip_tests:
             return
-        
+
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
                                                      'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/user/Iain%20Hunter'))
 
