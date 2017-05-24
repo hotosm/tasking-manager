@@ -1,28 +1,28 @@
 <div class="add-layer-wrapper">
     <div class="form__input-group">
-        <label class="form__label">{{ "Map service type" | translate }}</label>
+        <label class="form__label">{{ 'Map service type' | translate }}</label>
         <select class="form__control form__control--small pull-right" ng-model="addLayerCtrl.type">
             <option value="xyz">TMS</option>
             <option value="wms">WMS</option>
         </select>
     </div>
     <div class="form__input-group">
-        <label class="form__label">{{ "Map service URL" | translate }}</label>
+        <label class="form__label">{{ 'Map service URL' | translate }}</label>
         <input type="text" class="form__control form__control--small"
-               placeholder="Map URL"
+               placeholder="{{ 'Map service URL' | translate }}"
                ng-model="addLayerCtrl.layerURL">
     </div>
     <div ng-show="addLayerCtrl.type === 'wms'" class="form__input-group">
-        <label class="form__label">{{ "Layer name" | translate }}</label>
+        <label class="form__label">{{ 'Layer name' | translate }}</label>
         <input type="text" class="form__control form__control--small"
-               placeholder="Layer name"
+               placeholder="{{ 'Layer name' | translate }}"
                ng-model="addLayerCtrl.layerName">
     </div>
     <div class="form__input-group">
         <button type="submit"
                 ng-click="addLayerCtrl.addLayer()"
                 class="button button--secondary button--small pull-right">
-            {{ "Add layer" | translate }}
+            {{ 'Add layer' | translate }}
         </button>
     </div>
 </div>
