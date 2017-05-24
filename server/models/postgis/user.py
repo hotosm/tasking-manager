@@ -21,7 +21,7 @@ class User(db.Model):
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
     projects_mapped = db.Column(db.ARRAY(db.Integer))
     email_address = db.Column(db.String)
-    email_address_verified = db.Column(db.Boolean, default=False)
+    is_email_verified = db.Column(db.Boolean, default=False)
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
@@ -48,6 +48,11 @@ class User(db.Model):
         self.twitter_id = user_dto.twitter_id.lower()
         self.facebook_id = user_dto.facebook_id.lower()
         self.linkedin_id = user_dto.linkedin_id.lower()
+        db.session.commit()
+
+    def set_email_verified_status(self, is_verified: bool):
+        """ Updates email verfied flag on successfully verified emails"""
+        self.is_email_verified = is_verified
         db.session.commit()
 
     @staticmethod
@@ -201,5 +206,6 @@ class User(db.Model):
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
+            user_dto.is_email_verified = self.is_email_verified
 
         return user_dto

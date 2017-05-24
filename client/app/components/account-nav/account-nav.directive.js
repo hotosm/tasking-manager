@@ -85,6 +85,7 @@
             authService.logout();
             $location.path('/');
             vm.showDropdown = false;
+            accountService.setAccount(null);
         };
 
         /**

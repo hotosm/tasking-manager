@@ -83,6 +83,37 @@ class AuthenticationService:
         return authorized_url
 
     @staticmethod
+    def authenticate_email_token(username: str, token: str):
+        """ Validate that the email token is valid """
+
+        try:
+            user = UserService.get_user_by_username(username)
+        except NotFound:
+            return AuthenticationService._get_email_validated_url(False)
+
+        is_valid, tokenised_email = AuthenticationService.is_valid_token(token, 86400)
+
+        if not is_valid:
+            return AuthenticationService._get_email_validated_url(False)
+
+        if user.email_address != tokenised_email:
+            return AuthenticationService._get_email_validated_url(False)
+
+        # Token is valid so update DB and return
+        user.set_email_verified_status(is_verified=True)
+        return AuthenticationService._get_email_validated_url(True)
+
+    @staticmethod
+    def _get_email_validated_url(is_valid: bool) -> str:
+        """ Helper function to generate redirect url for email verification """
+        base_url = current_app.config['APP_BASE_URL']
+
+        verification_params = {'is_valid': is_valid}
+        verification_url = '{0}/validate-email?{1}'.format(base_url, urllib.parse.urlencode(verification_params))
+        return verification_url
+
+
+    @staticmethod
     def get_authentication_failed_url():
         """ Generates the auth-failed URL for the running app """
         base_url = current_app.config['APP_BASE_URL']
@@ -120,10 +151,11 @@ class AuthenticationService:
         """
         Validates if the supplied token is valid, and hasn't expired.
         :param token: Token to check
-        :param token_expiry: When the token expires
+        :param token_expiry: When the token expires in seconds
         :return: True if token is valid, and user_id contained in token
         """
-        serializer = URLSafeTimedSerializer(current_app.secret_key)
+        entropy = current_app.secret_key if current_app.secret_key else 'un1testingmode'
+        serializer = URLSafeTimedSerializer(entropy)
 
         try:
             tokenised_user_id = serializer.loads(token, max_age=token_expiry)

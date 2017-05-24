@@ -124,6 +124,6 @@ class SMTPService:
         base_url = current_app.config['APP_BASE_URL']
 
         verification_params = {'token': token, 'username': user_name}
-        verification_url = '{0}/api/messages/validate-email?{1}'.format(base_url, urllib.parse.urlencode(verification_params))
+        verification_url = '{0}/api/auth/email?{1}'.format(base_url, urllib.parse.urlencode(verification_params))
 
         return verification_url
