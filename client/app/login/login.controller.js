@@ -7,7 +7,7 @@
      */
     angular
         .module('taskingManager')
-        .controller('loginController', ['$location','authService', loginController]);
+        .controller('loginController', ['$location','authService','accountService', loginController]);
 
     function loginController($location, authService) {
         var vm = this;
