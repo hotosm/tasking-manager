@@ -680,6 +680,35 @@
         };
 
         /**
+         * Call api to stop mapping currebtly locked task.  Will pass the comment to api.  Will update view and map after unlock.
+         * @param comment
+         */
+        vm.unLockTaskMapping = function (comment) {
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.lockedTaskData.taskId;
+            var stopPromise = taskService.stopMapping(projectId, taskId, comment);
+            vm.comment = '';
+            stopPromise.then(function (data) {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                refreshProject(projectId);
+                updateMappedTaskPerUser(projectId);
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+
+            }, function (error) {
+                onUnLockError(projectId, error);
+            });
+        };
+
+        /**
          * Call api to unlock currently locked task after validation.  Will pass the comment and new status to api.  Will update view and map after unlock.
          * @param comment
          * @param status
@@ -693,6 +722,38 @@
                 taskId: taskId
             }];
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
+            vm.comment = '';
+            unLockPromise.then(function (data) {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                refreshProject(projectId);
+                updateMappedTaskPerUser(projectId);
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+            }, function (error) {
+                onUnLockError(projectId, error);
+            });
+        };
+
+        /**
+         * Call api to stop validating locked task.  Will pass the comment to api.  Will update view and map after unlock.
+         * @param comment
+         */
+        vm.stopValidating = function (comment) {
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.lockedTaskData.taskId;
+            var tasks = [{
+                comment: comment,
+                taskId: taskId
+            }];
+            var unLockPromise = taskService.stopValidating(projectId, tasks);
             vm.comment = '';
             unLockPromise.then(function (data) {
                 //TODO - The following reset lines are repeated in several places in this file.
@@ -734,9 +795,50 @@
             vm.resetStatusFlags();
             vm.resetTaskData();
 
-            var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
+            var stopPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
-            unLockPromise.then(function (data) {
+            stopPromise.then(function (data) {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                refreshProject(projectId);
+                updateMappedTaskPerUser(projectId);
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+            }, function (error) {
+                onUnLockError(projectId, error);
+            });
+        };
+
+        /**
+         * Call api to stop validating currently locked tasks.  Will pass the comment to api.  Will update view and map after unlock.
+         * @param comment
+         * @param status
+         */
+        vm.stopMultiTaskValidation = function (comment) {
+            var projectId = vm.projectData.projectId;
+
+            var data = vm.multiLockedTasks;
+            var tasks = data.map(function (task) {
+                return {
+                    comment: comment,
+                    taskId: task.taskId
+                };
+            });
+
+            vm.resetErrors();
+            vm.resetStatusFlags();
+            vm.resetTaskData();
+
+            var stopPromise = taskService.stopValidating(projectId, tasks);
+            vm.comment = '';
+            stopPromise.then(function (data) {
                 //TODO - The following reset lines are repeated in several places in this file.
                 //Refactoring to a single function call was considered, however it was decided that the ability to
                 //call the resets individually was desirable and would help readability.
