@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Activity and Stats
+                    {{ 'Activity and Stats' | translate }}
                 </h1>
                 <a ng-href="/project/{{ projectDashboardCtrl.projectId }}"
                    class="heading-alt">#{{ projectDashboardCtrl.projectId }} - {{ projectDashboardCtrl.project.name }}
@@ -15,24 +15,24 @@
                 <div class="inner">
                     <div class="dashboard-container">
                         <div class="left">
-                            <h2>Last activity</h2>
-                            <p ng-show="!projectDashboardCtrl.projectActivity.length > 0">No activity (yet).</p>
+                            <h2>{{ 'Last activity' | translate }}</h2>
+                            <p ng-show="!projectDashboardCtrl.projectActivity.length > 0">{{ 'No activity (yet).' | translate }}</p>
                             <div ng-show="projectDashboardCtrl.projectActivity.length > 0">
                                 <div class="content">
                                     <div ng-repeat="item in projectDashboardCtrl.projectActivity">
-                                        <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">Task locked for mapping by <a
+                                        <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Task locked for mapping by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">Task locked for validation by <a
+                                        <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Task locked for validation by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">Task marked as bad imagery by <a
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Task marked as bad imagery by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">Task mapped by <a
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Task mapped by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">Task validated by <a
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Task validated by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">Task invalidated by <a
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Task invalidated by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">Task marked as ready by <a
+                                        <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Task marked as ready by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                         <p>
                                             <em am-time-ago="item.actionDate | amUtc | amLocal"></em>
@@ -42,25 +42,25 @@
                                 <button class="button button--achromic"
                                     ng-class="!projectDashboardCtrl.projectActivityPagination.hasPrev ? 'disabled' : ''"
                                     ng-click="projectDashboardCtrl.getLastActivity(projectDashboardCtrl.projectActivityPagination.prevNum)">
-                                    Newer
+                                    {{ 'Newer' | translate }}
                                 </button>
                                 <button class="button button--achromic"
                                     ng-class="!projectDashboardCtrl.projectActivityPagination.hasNext ? 'disabled' : ''"
                                     ng-click="projectDashboardCtrl.getLastActivity(projectDashboardCtrl.projectActivityPagination.nextNum)">
-                                    Older
+                                    {{ 'Older' | translate }}
                                 </button>
                             </div>
                         </div>
                         <div class="right">
-                            <h2>Contributions</h2>
+                            <h2>{{ 'Contributions' | translate }}</h2>
                             <div class="content">
-                                <p ng-show="!projectDashboardCtrl.projectContributions.length > 0">No contributions (yet).</p>
+                                <p ng-show="!projectDashboardCtrl.projectContributions.length > 0">{{ 'No contributions (yet).' | translate }}</p>
                                 <table ng-show="projectDashboardCtrl.projectContributions.length > 0" class="table table-dashboard-comments">
                                     <thead>
                                         <tr>
-                                            <th>User</th>
-                                            <th>Mapped</th>
-                                            <th>Validated</th>
+                                            <th>{{ 'User' | translate }}</th>
+                                            <th>{{ 'Mapped' | translate }}</th>
+                                            <th>{{ 'Validated' | translate }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -81,12 +81,12 @@
             <div class="section__body">
                 <div class="inner">
                     <div class="dashboard-container">
-                        <h2>Stats</h2>
+                        <h2>{{ 'Stats' | translate }}</h2>
                         <div class="left">
                             <div class="section__project-dashboard--stats">
-                                <span class="label">{{ projectDashboardCtrl.project.percentMapped }}% mapped</span>
+                                <span class="label">{{ projectDashboardCtrl.project.percentMapped }}{{ '% Mapped' | translate }}</span>
                                 <uib-progressbar value="projectDashboardCtrl.project.percentMapped"></uib-progressbar>
-                                <span class="label">{{ projectDashboardCtrl.project.percentValidated }}% validated</span>
+                                <span class="label">{{ projectDashboardCtrl.project.percentValidated }}{{ '% Validated' | translate }}</span>
                                 <uib-progressbar value="projectDashboardCtrl.project.percentValidated"></uib-progressbar>
                             </div>
                         </div>
@@ -100,18 +100,18 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <h2>Comments by users</h2>
+                    <h2>{{ 'Comments by users' | translate }}</h2>
                       <h6 class="heading-alt">{{ projectDashboardCtrl.selectedProject.name }}</h6>
                     <div ng-show="projectDashboardCtrl.projectComments.length < 1">
-                        No comments (yet).
+                        {{ 'No comments (yet).' | translate }}
                     </div>
                     <div ng-show="projectDashboardCtrl.projectComments.length > 0">
                         <table class="table table-dashboard-comments">
                             <thead>
                                 <tr>
-                                    <th>Comment</th>
-                                    <th>When</th>
-                                    <th>By</th>
+                                    <th>{{ 'Comment' | translate }}</th>
+                                    <th>{{ 'When' | translate }}</th>
+                                    <th>{{ 'User' | translate }}</th>
                                 </tr>
                             </thead>
                             <tbody>
