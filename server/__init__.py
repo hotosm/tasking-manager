@@ -87,7 +87,7 @@ def init_flask_restful_routes(app):
     from server.api.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
-    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, TasksAsGPX, TasksAsOSM
+    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI, TasksAsGPX, TasksAsOSM
     from server.api.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
@@ -127,6 +127,7 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
     api.add_resource(MappingTaskAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>')
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
+    api.add_resource(StopMappingAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/stop-mapping')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
     api.add_resource(StopValidatingAPI,             '/api/v1/project/<int:project_id>/stop-validating')
