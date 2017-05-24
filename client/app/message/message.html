@@ -3,17 +3,17 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    {{ "Message" | translate }}
+                    {{ 'Message' | translate }}
                 </h1>
             </div>
         </header>
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <a href="/inbox" class="button button--achromic">{{ "Return to inbox" | translate }}</a>
+                    <a href="/inbox" class="button button--achromic">{{ 'Return to inbox' | translate }}</a>
                     <div class="inbox-message">
                         <h3 ng-bind-html="messageCtrl.message.subject"></h3>
-                        <p>{{ "From" | translate }}: <a ng-href="user/{{ messageCtrl.message.fromUsername }}">{{ messageCtrl.message.fromUsername }}</a></p>
+                        <p>{{ 'From' | translate }}: <a ng-href="user/{{ messageCtrl.message.fromUsername }}">{{ messageCtrl.message.fromUsername }}</a></p>
                         <p><em am-time-ago="messageCtrl.message.sentDate | amUtc | amLocal"></em></p>
                         <div>
                             <p ng-bind-html="messageCtrl.message.message"></p>
