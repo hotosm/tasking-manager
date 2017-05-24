@@ -129,6 +129,48 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
+    def stop_validating_tasks(validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
+        """
+        Unlocks supplied tasks after validation
+        :raises ValidatatorServiceError
+        """
+        # Loop supplied tasks to check they can all be unlocked after validation
+        tasks_to_unlock = []
+        for validated_task in validated_dto.validated_tasks:
+            task = Task.get(validated_task.task_id, validated_dto.project_id)
+
+            if task is None:
+                raise NotFound(f'Task {validated_task.task_id} not found')
+
+            current_state = TaskStatus(task.task_status)
+            if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
+                raise ValidatatorServiceError(f'Task {validated_task.task_id} is not LOCKED_FOR_VALIDATION')
+
+            if task.locked_by != validated_dto.user_id:
+                raise ValidatatorServiceError('Attempting to unlock a task owned by another user')
+
+            tasks_to_unlock.append(dict(task=task, new_state=TaskStatus[validated_task.status],
+                                        comment=validated_task.comment))
+
+        # Unlock all tasks
+        dtos = []
+        for task_to_unlock in tasks_to_unlock:
+            task = task_to_unlock['task']
+
+            if task_to_unlock['comment']:
+                # Parses comment to see if any users have been @'d
+                MessageService.send_message_after_comment(validated_dto.user_id, task_to_unlock['comment'], task.id,
+                                                          validated_dto.project_id)
+
+            task.reset_lock(validated_dto.user_id, task_to_unlock['comment'])
+            dtos.append(task.as_dto())
+
+        task_dtos = TaskDTOs()
+        task_dtos.tasks = dtos
+
+        return task_dtos
+
+    @staticmethod
     def get_mapped_tasks_by_user(project_id: int) -> MappedTasks:
         """ Get all mapped tasks on the project grouped by user"""
         mapped_tasks = Task.get_mapped_tasks_by_user(project_id)

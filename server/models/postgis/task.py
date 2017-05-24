@@ -103,7 +103,7 @@ class TaskHistory(db.Model):
 
     @staticmethod
     def get_last_status(project_id: int, task_id: int):
-        """ Get the status the task was set to the last the task had a STATUS_CHANGE"""
+        """ Get the status the task was set to the last time the task had a STATUS_CHANGE"""
         result = db.session.query(TaskHistory.action_text) \
             .filter(TaskHistory.project_id == project_id,
                     TaskHistory.task_id == task_id,
@@ -328,6 +328,19 @@ class Task(db.Model):
         self.locked_by = None
         self.update()
 
+    def reset_lock(self, user_id, comment=None):
+        if comment:
+            # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
+            # TODO send comment as message to user
+            self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
+
+        # Using a slightly evil side effect of Actions and Statuses having the same name here :)
+        TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
+
+        self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
+        self.locked_by = None
+        self.update()
+
     @staticmethod
     def get_tasks_as_geojson_feature_collection(project_id):
         """
@@ -355,17 +368,17 @@ class Task(db.Model):
 
         # Raw SQL is easier to understand that SQL alchemy here :)
         sql = """select u.username, u.mapping_level, count(distinct(t.id)), json_agg(distinct(t.id)),
-                        max(th.action_date) last_seen
-                  from tasks t,
-                       task_history th,
-                       users u
-                 where t.project_id = th.project_id
-                   and t.id = th.task_id
-                   and t.mapped_by = u.id
-                   and t.project_id = {0}
-                   and t.task_status = 2
-                   and th.action_text = 'MAPPED'
-                 group by u.username, u.mapping_level""".format(project_id)
+                            max(th.action_date) last_seen
+                      from tasks t,
+                           task_history th,
+                           users u
+                     where t.project_id = th.project_id
+                       and t.id = th.task_id
+                       and t.mapped_by = u.id
+                       and t.project_id = {0}
+                       and t.task_status = 2
+                       and th.action_text = 'MAPPED'
+                     group by u.username, u.mapping_level""".format(project_id)
 
         results = db.engine.execute(sql)
         if results.rowcount == 0:
