@@ -33,6 +33,9 @@ class MessageService:
         validation_message.message = f'Hi \n I just validated your mapping on {task_link}.\n\n Awesome work! \n\n Keep mapping :)'
         validation_message.add_message()
 
+        user = UserService.get_user_by_id(mapped_by)
+        SMTPService.send_verification_email(user.email_address, user.username)
+
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
         """ Sends supplied message to all contributors on specified project """
