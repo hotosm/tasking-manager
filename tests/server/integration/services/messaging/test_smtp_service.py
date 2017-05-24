@@ -31,12 +31,15 @@ class TestStatsService(unittest.TestCase):
 
         self.assertTrue(SMTPService.send_verification_email('hot-test@mailinator.com', 'mrtest'))
 
-    def test_send_mail(self):
+    def test_send_alert(self):
         if self.skip_tests:
             return
 
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
                                                      'Iain Hunter'))
+
+    def test_alert_not_sent_if_email_not_supplied(self):
+        self.assertFalse(SMTPService.send_email_alert('', 'Iain Hunter'))
 
     def test_email_verification_url_generated_correctly(self):
         # Arrange

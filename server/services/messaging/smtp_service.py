@@ -34,6 +34,8 @@ class SMTPService:
     @staticmethod
     def send_email_alert(to_address: str, username: str):
         """ Send an email to user to alert them they have a new message"""
+        if not to_address:
+            return False  # Many users will not have supplied email address so return
 
         # TODO these could be localised if needed, in the future
         html_template = SMTPService._get_template('message_alert_en.html')

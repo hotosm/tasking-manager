@@ -60,6 +60,7 @@ class MessageService:
             message.subject = f'You were mentioned in a comment on {link}'
             message.message = comment
             message.add_message()
+            SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
     def resend_email_validation(user_id: int):
