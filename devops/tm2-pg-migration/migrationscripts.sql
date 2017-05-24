@@ -10,7 +10,7 @@ truncate hotnew.users cascade;
 truncate hotnew.areas_of_interest cascade;
 
 -- Populate users with ids and default stats - sets users to beginner mapper level
-insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, email_address_verified)
+insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, is_email_verified)
 (select id,username,
 	case when role is null then 0 else role end,
 	1,0,0,0, FALSE

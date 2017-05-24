@@ -1,3 +1,4 @@
+import os
 import unittest
 from urllib.parse import urlparse, parse_qs
 
@@ -6,6 +7,15 @@ from server.services.messaging.smtp_service import SMTPService
 
 
 class TestStatsService(unittest.TestCase):
+    skip_tests = False
+
+    @classmethod
+    def setUpClass(cls):
+        env = os.getenv('SHIPPABLE', 'false')
+
+        # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
+        if env == 'true':
+            cls.skip_tests = True
 
     def setUp(self):
         self.app = create_app()
@@ -16,9 +26,15 @@ class TestStatsService(unittest.TestCase):
         self.ctx.pop()
 
     def test_send_verification_mail(self):
+        if self.skip_tests:
+            return
+
         self.assertTrue(SMTPService.send_verification_email('hot-test@mailinator.com', 'mrtest'))
 
     def test_send_mail(self):
+        if self.skip_tests:
+            return
+
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
                                                      'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/user/Iain%20Hunter'))
 
@@ -32,6 +48,6 @@ class TestStatsService(unittest.TestCase):
         parsed_url = urlparse(url)
         query = parse_qs(parsed_url.query)
 
-        self.assertEqual(parsed_url.path, '/api/messages/validate-email')
+        self.assertEqual(parsed_url.path, '/api/auth/email')
         self.assertEqual(query['username'], [test_user])
         self.assertTrue(query['token'])  # Token random every time so just check we have something
