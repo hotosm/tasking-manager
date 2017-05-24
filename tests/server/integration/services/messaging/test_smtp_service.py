@@ -39,6 +39,8 @@ class TestStatsService(unittest.TestCase):
                                                      'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/user/Iain%20Hunter'))
 
     def test_email_verification_url_generated_correctly(self):
+        if self.skip_tests:
+            return
         # Arrange
         test_user = 'mrtest'
 
