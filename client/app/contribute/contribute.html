@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    {{ "Contribute" | translate }}
+                    {{ 'Contribute' | translate }}
                 </h1>
             </div>
         </header>
@@ -14,88 +14,88 @@
                         <div class="search">
                             <form class="form">
                                 <fieldset class="form__fieldset">
-                                     <h2>{{ "Filter" | translate }}</h2>
+                                     <h2>{{ 'Filter' | translate }}</h2>
                                      <div class="form__group">
-                                        <label class="form__label">{{ "Mapping difficulty" | translate }}</label>
+                                        <label class="form__label">{{ 'Mapping difficulty' | translate }}</label>
                                         <div class="button-group button-group--horizontal" role="group"
-                                             aria-label="{{ 'choose mapping difficulty' | translate }}">
+                                             aria-label="{{ 'Mapping difficulty' | translate }}">
                                             <button class="button button--achromic" type="button"
                                                 ng-click="contributeCtrl.setMapperLevel('')"
                                                 ng-class="contributeCtrl.mapperLevel === '' ? 'button--active' : ''">
-                                                {{ "All" | translate }}
+                                                {{ 'All' | translate }}
                                             </button>
                                             <button class="button button--achromic" type="button"
                                                 ng-click="contributeCtrl.setMapperLevel('BEGINNER')"
                                                 ng-class="contributeCtrl.mapperLevel === 'BEGINNER' ? 'button--active' : ''">
-                                                {{ "Beginner" | translate }}
+                                                {{ 'Beginner' | translate }}
                                             </button>
                                             <button class="button button--achromic" type="button"
                                                 ng-click="contributeCtrl.setMapperLevel('INTERMEDIATE')"
                                                 ng-class="contributeCtrl.mapperLevel === 'INTERMEDIATE' ? 'button--active' : ''">
-                                                {{ "Intermediate" | translate }}</button>
+                                                {{ 'Intermediate' | translate }}</button>
                                             <button class="button button--achromic" type="button"
                                                 ng-click="contributeCtrl.setMapperLevel('ADVANCED')"
                                                 ng-class="contributeCtrl.mapperLevel === 'ADVANCED' ? 'button--active' : ''">
-                                                {{ "Advanced" | translate }}</button>
+                                                {{ 'Advanced' | translate }}</button>
                                         </div>
                                     </div>
                                     <div class="form__group">
-                                        <label class="form__label">{{ "Organisation" | translate }}</label>
+                                        <label class="form__label">{{ 'Organisation' | translate }}</label>
                                         <select class="form__control" ng-model="contributeCtrl.searchOrganisation">
-                                            <option value="">{{ "All" | translate }}</option>
+                                            <option value="">{{ 'All' | translate }}</option>
                                             <option ng-repeat="organisation in contributeCtrl.organisations"
                                                     value="{{ organisation }}">{{ organisation }}</option>
                                         </select>
                                     </div>
                                     <div class="form__group">
-                                        <label class="form__label">{{ "Campaign" | translate }}</label>
+                                        <label class="form__label">{{ 'Campaign' | translate }}</label>
                                         <select class="form__control" ng-model="contributeCtrl.searchCampaign">
-                                            <option value="">{{ "All" | translate }}</option>
+                                            <option value="">{{ 'All' | translate }}</option>
                                             <option ng-repeat="campaign in contributeCtrl.campaigns"
                                                     value="{{ campaign }}">{{ campaign }}</option>
                                         </select>
                                     </div>
                                     <div class="form__group">
-                                        <label class="form__label">{{ "Type(s) of mapping" | translate }}</label>
+                                        <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>
                                         <label class="form__option form__option--custom-checkbox">
                                             <input type="checkbox" name="form-custom-checkbox"
                                                    ng-model="contributeCtrl.searchRoads"/>
-                                            <span class="form__option__text">{{ "Roads" | translate }}</span>
+                                            <span class="form__option__text">{{ 'Roads' | translate }}</span>
                                             <span class="form__option__ui"></span>
                                         </label>
                                         <label class="form__option form__option--custom-checkbox">
                                             <input type="checkbox" name="form-custom-checkbox"
                                                 ng-model="contributeCtrl.searchBuildings"/>
-                                            <span class="form__option__text">{{ "Buildings" | translate }}</span>
+                                            <span class="form__option__text">{{ 'Buildings' | translate }}</span>
                                             <span class="form__option__ui"></span>
                                         </label>
                                         <label class="form__option form__option--custom-checkbox">
                                             <input type="checkbox" name="form-custom-checkbox"
                                                 ng-model="contributeCtrl.searchWaterways"/>
-                                            <span class="form__option__text">{{ "Waterways" | translate }}</span>
+                                            <span class="form__option__text">{{ 'Waterways' | translate }}</span>
                                             <span class="form__option__ui"></span>
                                         </label>
                                         <label class="form__option form__option--custom-checkbox">
                                             <input type="checkbox" name="form-custom-checkbox"
                                                 ng-model="contributeCtrl.searchLanduse"/>
-                                            <span class="form__option__text">{{ "Land use" | translate }}</span>
+                                            <span class="form__option__text">{{ 'Land use' | translate }}</span>
                                             <span class="form__option__ui"></span>
                                         </label>
                                         <label class="form__option form__option--custom-checkbox">
                                             <input type="checkbox" name="form-custom-checkbox"
                                                 ng-model="contributeCtrl.searchOther"/>
-                                            <span class="form__option__text">{{ "Other" | translate }}</span>
+                                            <span class="form__option__text">{{ 'Other' | translate }}</span>
                                             <span class="form__option__ui"></span>
                                         </label>
                                     </div>
                                     <div class="form__group">
-                                        <label class="form__label">{{ "Text search" | translate }}</label>
-                                        <input type="text" class="form__control form__control--medium" placeholder="{{ 'Search on description or project number' | translate }}" ng-model="contributeCtrl.searchText"/>
+                                        <label class="form__label">{{ 'Text search' | translate }}</label>
+                                        <input type="text" class="form__control form__control--medium" placeholder="{{ 'Search project description or project number' | translate }}" ng-model="contributeCtrl.searchText"/>
                                     </div>
                                     <div>
                                         <button class="button button--primary pull-right"
                                             ng-click="contributeCtrl.search()">
-                                            {{ "Search" | translate }}
+                                            {{ 'Search' | translate }}
                                         </button>
                                     </div>
                                 </fieldset>
@@ -103,7 +103,7 @@
                         </div>
                         <div class="search-results">
                             <div ng-hide="contributeCtrl.results.length > 0">
-                                <p>{{ "No projects found." | translate }}</p>
+                                <p>{{ 'No projects found.' | translate }}</p>
                             </div>
                             <div ng-show="contributeCtrl.results.length > 0">
                                 <div class="form__group">
@@ -112,12 +112,12 @@
                                         <button class="button button--achromic button--active" type="button"
                                             ng-click="contributeCtrl.resultsView = 'grid'"
                                             ng-class="contributeCtrl.resultsView === 'grid' ? 'button--active' : ''">
-                                            {{ "Grid view" | translate }}
+                                            {{ 'Grid view' | translate }}
                                         </button>
                                         <button class="button button--achromic" type="button"
                                             ng-click="contributeCtrl.resultsView = 'list'"
                                             ng-class="contributeCtrl.resultsView === 'list' ? 'button--active' : ''">
-                                            {{ "List view" | translate }}
+                                            {{ 'List view' | translate }}
                                         </button>
                                     </div>
                                 </div>
@@ -128,9 +128,9 @@
                                                  ng-repeat="project in contributeCtrl.results.slice(((contributeCtrl.currentPage-1)*contributeCtrl.itemsPerPage), ((contributeCtrl.currentPage)*contributeCtrl.itemsPerPage)) track by project.projectId">
                                                 <section class="panel project-result__content">
                                                      <div class="progress-bar-container">
-                                                         <span class="label">{{ project.percentMapped }}{{ "% Mapped" | translate }}</span>
+                                                         <span class="label">{{ project.percentMapped }}{{ '% Mapped' | translate }}</span>
                                                          <uib-progressbar value="project.percentMapped"></uib-progressbar>
-                                                         <span class="label">{{ project.percentValidated }}{{ "% Validated" | translate }}</span>
+                                                         <span class="label">{{ project.percentValidated }}{{ '% Validated' | translate }}</span>
                                                          <uib-progressbar value="project.percentValidated"></uib-progressbar>
                                                     </div>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
@@ -138,13 +138,13 @@
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
                                                     </p>
                                                     <ul>
-                                                        <li ng-show="!project.organisationTag">{{ "Organisation" | translate }}: N/A</li>
-                                                        <li ng-show="project.organisationTag">{{ "Organisation" | translate }}: {{ project.organisationTag }}</li>
-                                                        <li>{{ "Priority" | translate }}: {{ project.priority }}</li>
-                                                        <li>{{ "Level" | translate }}: {{ project.mapperLevel }}</li>
+                                                        <li ng-show="!project.organisationTag">{{ 'Organisation' | translate }}: N/A</li>
+                                                        <li ng-show="project.organisationTag">{{ 'Organisation' | translate }}: {{ project.organisationTag }}</li>
+                                                        <li>{{ 'Priority' | translate }}: {{ project.priority }}</li>
+                                                        <li>{{ 'Level' | translate }}: {{ project.mapperLevel }}</li>
                                                     </ul>
                                                     <a href="/project/{{ project.projectId }}"
-                                                       class="button button--primary">{{ "Contribute" | translate }}</a>
+                                                       class="button button--primary">{{ 'Contribute' | translate }}</a>
                                                 </section>
                                             </div>
                                         </div>
@@ -158,19 +158,19 @@
                                                 <span>#</span>
                                             </th>
                                             <th>
-                                                <span>{{ "Name" | translate }}</span>
+                                                <span>{{ 'Name' | translate }}</span>
                                             </th>
                                             <th>
-                                                <span>{{ "Description" | translate }}</span>
+                                                <span>{{ 'Description' | translate }}</span>
                                             </th>
                                             <th>
-                                                <span>{{ "Level" | translate }}</span>
+                                                <span>{{ 'Level' | translate }}</span>
                                             </th>
                                             <th>
-                                                <span>{{ "Priority" | translate }}</span>
+                                                <span>{{ 'Priority' | translate }}</span>
                                             </th>
                                             <th>
-                                                <span>{{ "Organisation" | translate }}</span>
+                                                <span>{{ 'Organisation' | translate }}</span>
                                             </th>
                                             <th></th>
                                         </tr>
@@ -188,18 +188,18 @@
                                             <td>{{ project.priority }}</td>
                                             <td ng-show="!project.organisationTag">N/A</td>
                                             <td ng-show="project.organisationTag">{{ project.organisationTag }}</td>
-                                            <td><a href="/project/{{ project.projectId }}" class="button button--primary button--small">{{ "Contribute" | translate }}</a></td>
+                                            <td><a href="/project/{{ project.projectId }}" class="button button--primary button--small">{{ 'Contribute' | translate }}</a></td>
                                         </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                     <!-- Pagination -->
                                     <div class="paging">
-                                        <div class="button-group button-group--horizontal" role="group" aria-label="Navigate the results">
+                                        <div class="button-group button-group--horizontal" role="group" aria-label="{{ 'Navigate the results' | translate }}">
                                         <button class="button button--achromic"
                                                 ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
                                                 ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
-                                            {{ "Previous" | translate }}
+                                            {{ 'Previous' | translate }}
                                         </button>
                                         <button class="button button--achromic"
                                                 ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
@@ -237,7 +237,7 @@
                                         <button class="button button--achromic"
                                                 ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
                                                 ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
-                                            {{ "Next" | translate }}
+                                            {{ 'Next' | translate }}
                                         </button>
                                     </div>
                                 </div>
@@ -257,30 +257,30 @@
                             <div id="popup-content"></div>
                         </div>
                         <div id="legend-container" class="ol-control legend-control">
-                            <h3>{{ "Legend" | translate }}</h3>
+                            <h3>{{ 'Legend' | translate }}</h3>
                             <div>
                                 <svg height="25" width="25">
                                     <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1" fill="red" fill-opacity="0.5" />
                                 </svg>
-                                {{ "Urgent" | translate }}
+                                {{ 'Urgent' | translate }}
                             </div>
                             <div>
                                 <svg height="25" width="25">
                                     <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1" fill="orange" fill-opacity="0.5" />
                                 </svg>
-                                {{ "High" | translate }}
+                                {{ 'High' | translate }}
                             </div>
                             <div>
                                 <svg height="25" width="25">
                                     <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1" fill="yellow" fill-opacity="0.5" />
                                 </svg>
-                                {{ "Medium" | translate }}
+                                {{ 'Medium' | translate }}
                             </div>
                             <div>
                                 <svg height="25" width="25">
                                     <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1" fill="blue" fill-opacity="0.5" />
                                 </svg>
-                                {{ "Low" | translate }}
+                                {{ 'Low' | translate }}
                             </div>
                         </div>
                     </div>
