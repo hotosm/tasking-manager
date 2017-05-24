@@ -83,7 +83,7 @@ class OAuthAPI(Resource):
             return {"Error": str(e)}, 500
 
 
-class ValidateEmailAPI(Resource):
+class AuthEmailAPI(Resource):
 
     def get(self):
         """
