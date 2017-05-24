@@ -34,12 +34,19 @@ class MessageService:
         validation_message.add_message()
 
         user = UserService.get_user_by_id(mapped_by)
-        SMTPService.send_verification_email(user.email_address, user.username)
+        SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
         """ Sends supplied message to all contributors on specified project """
-        Message.send_message_to_all_contributors(project_id, message_dto)
+        contributors = Message.get_all_contributors(project_id)
+
+        for contributor in contributors:
+            message = Message.from_dto(contributor[0], message_dto)
+            message.add_message()
+            message.save()
+            user = UserService.get_user_by_id(contributor[0])
+            SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
     def send_message_after_comment(comment_from: int, comment: str, task_id: int, project_id :int):
