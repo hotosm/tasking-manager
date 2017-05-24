@@ -1,7 +1,7 @@
 from flask import current_app
 
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks
+from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks, StopValidationDTO
 from server.models.postgis.statuses import ValidatingNotAllowed
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound, UserLicenseError
@@ -129,28 +129,28 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
-    def stop_validating_tasks(validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
+    def stop_validating_tasks(stop_validating_dto: StopValidationDTO) -> TaskDTOs:
         """
         Unlocks supplied tasks after validation
         :raises ValidatatorServiceError
         """
         # Loop supplied tasks to check they can all be unlocked after validation
         tasks_to_unlock = []
-        for validated_task in validated_dto.validated_tasks:
-            task = Task.get(validated_task.task_id, validated_dto.project_id)
+        for stop_validating_task in stop_validating_dto.reset_tasks:
+            task = Task.get(stop_validating_task.task_id, stop_validating_dto.project_id)
 
             if task is None:
-                raise NotFound(f'Task {validated_task.task_id} not found')
+                raise NotFound(f'Task {stop_validating_task.task_id} not found')
 
             current_state = TaskStatus(task.task_status)
             if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
-                raise ValidatatorServiceError(f'Task {validated_task.task_id} is not LOCKED_FOR_VALIDATION')
+                raise ValidatatorServiceError(f'Task {stop_validating_task.task_id} is not LOCKED_FOR_VALIDATION')
 
-            if task.locked_by != validated_dto.user_id:
+            if task.locked_by != stop_validating_dto.user_id:
                 raise ValidatatorServiceError('Attempting to unlock a task owned by another user')
 
-            tasks_to_unlock.append(dict(task=task, new_state=TaskStatus[validated_task.status],
-                                        comment=validated_task.comment))
+            tasks_to_unlock.append(dict(task=task, new_state=task.task_status,
+                                        comment=stop_validating_task.comment))
 
         # Unlock all tasks
         dtos = []
@@ -159,10 +159,10 @@ class ValidatorService:
 
             if task_to_unlock['comment']:
                 # Parses comment to see if any users have been @'d
-                MessageService.send_message_after_comment(validated_dto.user_id, task_to_unlock['comment'], task.id,
-                                                          validated_dto.project_id)
+                MessageService.send_message_after_comment(stop_validating_dto.user_id, task_to_unlock['comment'], task.id,
+                                                          stop_validating_dto.project_id)
 
-            task.reset_lock(validated_dto.user_id, task_to_unlock['comment'])
+            task.reset_lock(stop_validating_dto.user_id, task_to_unlock['comment'])
             dtos.append(task.as_dto())
 
         task_dtos = TaskDTOs()

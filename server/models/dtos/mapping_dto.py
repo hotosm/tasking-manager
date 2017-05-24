@@ -34,7 +34,7 @@ class MappedTaskDTO(Model):
     project_id = IntType(required=True)
 
 class StopMappingTaskDTO(Model):
-    """ Describes the model used to update the status of one task after mapping """
+    """ Describes the model used to stop mapping and reset the status of one task """
     user_id = IntType(required=True)
     comment = StringType()
     task_id = IntType(required=True)

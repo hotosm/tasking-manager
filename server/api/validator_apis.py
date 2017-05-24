@@ -1,7 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO
+from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, StopValidationDTO
 from server.services.users.authentication_service import token_auth, tm
 from server.services.validator_service import ValidatorService, NotFound, ValidatatorServiceError, UserLicenseError
 
@@ -114,11 +114,11 @@ class StopValidatingAPI(Resource):
               description: JSON object for unlocking a task
               schema:
                   properties:
-                      validatedTasks:
+                      resetTasks:
                           type: array
                           items:
                               schema:
-                                  $ref: "#/definitions/ValidatedTask"
+                                  $ref: "#/definitions/ResetTask"
         responses:
             200:
                 description: Task unlocked
@@ -134,7 +134,7 @@ class StopValidatingAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            validated_dto = UnlockAfterValidationDTO(request.get_json())
+            validated_dto = StopValidationDTO(request.get_json())
             validated_dto.project_id = project_id
             validated_dto.user_id = tm.authenticated_user_id
             validated_dto.validate()

@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
-from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound, UserLicenseError
@@ -96,7 +96,7 @@ class MappingService:
         return task.as_dto()
 
     @staticmethod
-    def stop_mapping_task(mapped_task: MappedTaskDTO) -> TaskDTO:
+    def stop_mapping_task(mapped_task: StopMappingTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
         task = MappingService.get_task(mapped_task.task_id, mapped_task.project_id)
         current_state = TaskStatus(task.task_status)
