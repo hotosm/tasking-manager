@@ -96,23 +96,23 @@ class MappingService:
         return task.as_dto()
 
     @staticmethod
-    def stop_mapping_task(mapped_task: StopMappingTaskDTO) -> TaskDTO:
+    def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
-        task = MappingService.get_task(mapped_task.task_id, mapped_task.project_id)
+        task = MappingService.get_task(stop_task.task_id, stop_task.project_id)
         current_state = TaskStatus(task.task_status)
 
         if current_state != TaskStatus.LOCKED_FOR_MAPPING:
             raise MappingServiceError('Status must be LOCKED_FOR_MAPPING to unlock')
 
-        if task.locked_by != mapped_task.user_id:
+        if task.locked_by != stop_task.user_id:
             raise MappingServiceError('Attempting to unlock a task owned by another user')
 
-        if mapped_task.comment:
+        if stop_task.comment:
             # Parses comment to see if any users have been @'d
-            MessageService.send_message_after_comment(mapped_task.user_id, mapped_task.comment, task.id,
-                                                      mapped_task.project_id)
+            MessageService.send_message_after_comment(stop_task.user_id, stop_task.comment, task.id,
+                                                      stop_task.project_id)
 
-        task.reset_lock(mapped_task.user_id, mapped_task.comment)
+        task.reset_lock(stop_task.user_id, stop_task.comment)
 
         return task.as_dto()
 

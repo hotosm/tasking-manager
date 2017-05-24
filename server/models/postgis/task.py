@@ -329,6 +329,7 @@ class Task(db.Model):
         self.update()
 
     def reset_lock(self, user_id, comment=None):
+        """ Removes a current lock from a task, resets to last status and updates history with duration of lock """
         if comment:
             # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
             # TODO send comment as message to user

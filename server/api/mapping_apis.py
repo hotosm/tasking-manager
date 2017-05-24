@@ -160,8 +160,6 @@ class StopMappingAPI(Resource):
               description: JSON object for unlocking a task
               schema:
                   id: TaskUpdate
-                  required:
-                      - status
                   properties:
                       comment:
                           type: string
@@ -182,17 +180,17 @@ class StopMappingAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            mapped_task = StopMappingTaskDTO(request.get_json())
-            mapped_task.user_id = tm.authenticated_user_id
-            mapped_task.task_id = task_id
-            mapped_task.project_id = project_id
-            mapped_task.validate()
+            stop_task = StopMappingTaskDTO(request.get_json())
+            stop_task.user_id = tm.authenticated_user_id
+            stop_task.task_id = task_id
+            stop_task.project_id = project_id
+            stop_task.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
 
         try:
-            task = MappingService.stop_mapping_task(mapped_task)
+            task = MappingService.stop_mapping_task(stop_task)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
