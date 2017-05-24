@@ -76,7 +76,6 @@
         vm.showLicenseModal = false;
         vm.lockingReason = '';
 
-
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
 
@@ -640,9 +639,15 @@
 
             //update browser address bar with task id search params
             $location.search('task', data.taskId);
-
-
         }
+
+        /**
+         * Get the full URL for the social media widget
+         * @returns {*}
+         */
+        vm.getSocialMediaUrl = function(){
+            return $location.absUrl();
+        };
 
         /**
          * Call api to unlock currently locked task after mapping.  Will pass the comment and new status to api.  Will update view and map after unlock.
