@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    {{ "User Profile" | translate }}
+                    {{ 'User Profile' | translate }}
                 </h1>
             </div>
         </header>
@@ -13,21 +13,21 @@
                     <div class="profile-container">
                         <div class="details">
                             <h1>{{ profileCtrl.username }}</h1>
-                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'BEGINNER'">{{ "Beginner mapper" | translate }}</p>
-                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'INTERMEDIATE'">{{ "Intermediate mapper" | translate }}</p>
-                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'ADVANCED'">{{ "Advanced mapper" | translate }}</p>
+                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'BEGINNER'">{{ 'Beginner mapper' | translate }}</p>
+                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'INTERMEDIATE'">{{ 'Intermediate mapper' | translate }}</p>
+                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'ADVANCED'">{{ 'Advanced mapper' | translate }}</p>
                             <div ng-show="profileCtrl.osmUserDetails">
-                                <p>{{ "Joined OSM" | translate }} <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
-                                <p>{{ profileCtrl.osmUserDetails.changesetCount}} {{ "total OSM changesets" | translate }}</p>
+                                <p>{{ 'Joined OSM' | translate }} <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
+                                <p>{{ profileCtrl.osmUserDetails.changesetCount}} {{ 'Total OSM changesets' | translate }}</p>
                             </div>
                             <p>
                                 <a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}" target="_blank">
-                                    {{ "OSM profile" | translate }}
+                                    {{ 'OSM profile' | translate }}
                                 </a>
                             </p>
                             <p>
                                 <a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}/history" target="_blank">
-                                    {{ "OSM edit history" | translate }}
+                                    {{ 'OSM edit history' | translate }}
                                 </a>
                             </p>
                         </div>
@@ -36,76 +36,76 @@
                                 <!-- User's own profile -->
                                 <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
                                     <h4 ng-show="profileCtrl.userDetails.role === 'VALIDATOR'">
-                                        <i class="hot-ds-icon-circle-tick"></i> {{ "Validator" | translate }}
+                                        <i class="hot-ds-icon-circle-tick"></i> {{ 'Validator' | translate }}
                                     </h4>
                                     <h4 ng-show="profileCtrl.userDetails.role === 'PROJECT_MANAGER'">
-                                        <i class="hot-ds-icon-pencil"></i> {{ "Project Manager" | translate }}
+                                        <i class="hot-ds-icon-pencil"></i> {{ 'Project Manager' | translate }}
                                     </h4>
                                     <h4 ng-show="profileCtrl.userDetails.role === 'ADMIN'">
-                                        <i class="hot-ds-icon-pencil"></i> {{ "Administrator" | translate }}
+                                        <i class="hot-ds-icon-pencil"></i> {{ 'Administrator' | translate }}
                                     </h4>
                                 </div>
                                 <!-- Someone else's profile -->
                                 <div ng-hide="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
                                     <h3 ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'">
-                                        {{ "Set role" | translate }}
+                                        {{ 'Set role' | translate }}
                                     </h3>
                                     <h4 ng-show="profileCtrl.userDetails.role === 'VALIDATOR'">
-                                        <i class="hot-ds-icon-circle-tick"></i> {{ "Validator" | translate }}
+                                        <i class="hot-ds-icon-circle-tick"></i> {{ 'Validator' | translate }}
                                         <button class="button button--achromic"
                                                 ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                                ng-click="profileCtrl.setRole('MAPPER')">{{ "Remove privileges" | translate }}
+                                                ng-click="profileCtrl.setRole('MAPPER')">{{ 'Remove privileges' | translate }}
                                         </button>
                                     </h4>
                                     <h4 ng-show="profileCtrl.userDetails.role === 'PROJECT_MANAGER'">
-                                        <i class="hot-ds-icon-pencil"></i> {{ "Project Manager" | translate }}
+                                        <i class="hot-ds-icon-pencil"></i> {{ 'Project Manager' | translate }}
                                         <button class="button button--achromic"
                                                 ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                                ng-click="profileCtrl.setRole('MAPPER')">{{ "Remove privileges" | translate }}
+                                                ng-click="profileCtrl.setRole('MAPPER')">{{ 'Remove privileges' | translate }}
                                         </button>
                                     </h4>
                                     <h4 ng-show="profileCtrl.userDetails.role === 'ADMIN'">
-                                        <i class="hot-ds-icon-pencil"></i> {{ "Administrator" | translate }}
+                                        <i class="hot-ds-icon-pencil"></i> {{ 'Administrator' | translate }}
                                         <button class="button button--achromic"
                                                 ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                                ng-click="profileCtrl.setRole('MAPPER')">{{ "Remove privileges" | translate }}
+                                                ng-click="profileCtrl.setRole('MAPPER')">{{ 'Remove privileges' | translate }}
                                         </button>
                                     </h4>
                                     <button class="button button--achromic"
                                             ng-show="profileCtrl.userDetails.role != 'PROJECT_MANAGER' && (profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN')"
-                                            ng-click="profileCtrl.setRole('PROJECT_MANAGER')">{{ "Set as Project Manager" | translate }}
+                                            ng-click="profileCtrl.setRole('PROJECT_MANAGER')">{{ 'Set as Project Manager' | translate }}
                                     </button>
                                     <button class="button button--achromic"
                                             ng-show="profileCtrl.userDetails.role != 'VALIDATOR' && (profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN')"
-                                            ng-click="profileCtrl.setRole('VALIDATOR')">{{ "Set as Validator" | translate }}
+                                            ng-click="profileCtrl.setRole('VALIDATOR')">{{ 'Set as Validator' | translate }}
                                     </button>
                                     <button class="button button--achromic"
                                             ng-show="profileCtrl.userDetails.role != 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                            ng-click="profileCtrl.setRole('ADMIN')">{{ "Set as Administrator" | translate }}
+                                            ng-click="profileCtrl.setRole('ADMIN')">{{ 'Set as Administrator' | translate }}
                                     </button>
                                 </div>
-                                <p ng-show="profileCtrl.errorSetRole" class="error">{{ "An error occurred when setting the role." | translate }}</p>
+                                <p ng-show="profileCtrl.errorSetRole" class="error">{{ 'An error occurred when setting the role.' | translate }}</p>
                             </div>
                             <div ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'">
-                                <h3>{{ "Set mapper level" | translate }}</h3>
-                                <p>{{ "Manually set a user's mapper level." | translate }}</p>
-                                <div class="button-group button-group--horizontal" role="group" aria-label="set mapper level">
+                                <h3>{{ 'Set mapper level' | translate }}</h3>
+                                <p>{{ 'Manually set the experience level of a user.' | translate }}</p>
+                                <div class="button-group button-group--horizontal" role="group" aria-label="{{ 'set mapper level' | translate }}">
                                     <button class="button button--achromic"
                                             ng-class="profileCtrl.userDetails.mappingLevel === 'BEGINNER'? 'button--active' : ''"
                                             ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                            ng-click="profileCtrl.setLevel('BEGINNER')">{{ "Beginner" | translate }}
+                                            ng-click="profileCtrl.setLevel('BEGINNER')">{{ 'Beginner' | translate }}
                                     </button>
                                     <button class="button button--achromic"
                                             ng-class="profileCtrl.userDetails.mappingLevel === 'INTERMEDIATE'? 'button--active' : ''"
                                             ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                            ng-click="profileCtrl.setLevel('INTERMEDIATE')">{{ "Intermediate" | translate }}
+                                            ng-click="profileCtrl.setLevel('INTERMEDIATE')">{{ 'Intermediate' | translate }}
                                     </button>
                                     <button class="button button--achromic"
                                             ng-class="profileCtrl.userDetails.mappingLevel === 'ADVANCED'? 'button--active' : ''"
                                             ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                            ng-click="profileCtrl.setLevel('ADVANCED')">{{ "Advanced" | translate }}
+                                            ng-click="profileCtrl.setLevel('ADVANCED')">{{ 'Advanced' | translate }}
                                     </button>
-                                    <p ng-show="profileCtrl.errorSetLevel" class="error">{{ "An error occurred when setting the level." | translate }}</p>
+                                    <p ng-show="profileCtrl.errorSetLevel" class="error">{{ 'An error occurred when setting the level.' | translate }}</p>
                                 </div>
                             </div>
                         </div>
@@ -117,28 +117,28 @@
             <div class="section__inverse--stats">
                 <div class="stats__card">
                     <div class="stats__card--amount"><strong>{{ profileCtrl.userDetails.tasksMapped }}</strong></div>
-                    <div class="stats__card--title">{{ "tasks mapped" | translate }}</div>
+                    <div class="stats__card--title">{{ 'Tasks Mapped' | translate }}</div>
                 </div>
                 <div class="stats__card">
                     <div class="stats__card--amount"><strong>{{ profileCtrl.userDetails.tasksValidated }}</strong></div>
-                    <div class="stats__card--title">{{ "tasks validated" | translate }}</div>
+                    <div class="stats__card--title">{{ 'Tasks Validated' | translate }}</div>
                 </div>
             </div>
         </div>
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <h2>{{ "Projects" | translate }}</h2>
-                     <p ng-show="!profileCtrl.projects.length > 0">{{ "No contributions to projects (yet)." | translate }}</p>
+                    <h2>{{ 'Projects' | translate }}</h2>
+                     <p ng-show="!profileCtrl.projects.length > 0">{{ 'No contributions to projects (yet).' | translate }}</p>
                     <div ng-show="profileCtrl.projects.length > 0" class="profile-projects-list">
                         <table class="table">
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>{{ "Project name" | translate }}</th>
-                                <th>{{ "Number of tasks mapped" | translate }}</th>
-                                <th>{{ "Number of tasks validated" | translate }}</th>
-                                <th>{{ "Status" | translate }}</th>
+                                <th>{{ 'Project name' | translate }}</th>
+                                <th>{{ 'Number of tasks mapped' | translate }}</th>
+                                <th>{{ 'Number of tasks validated' | translate }}</th>
+                                <th>{{ 'Status' | translate }}</th>
                                 <th>Overpass</th>
                             </tr>
                             </thead>
@@ -149,7 +149,7 @@
                                 <td>{{ project.tasksMapped }}</td>
                                 <td>{{ project.tasksValidated }}</td>
                                 <td>{{ project.status }}</td>
-                                <td><a href="" ng-click="profileCtrl.viewOverpassTurbo(project.aoi)">{{ "View in Overpass Turbo" | translate }}</a></td>
+                                <td><a href="" ng-click="profileCtrl.viewOverpassTurbo(project.aoi)">{{ 'View in Overpass Turbo' | translate }}</a></td>
                             </tr>
                             </tbody>
                         </table>
