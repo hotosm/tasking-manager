@@ -154,7 +154,8 @@ class AuthenticationService:
         :param token_expiry: When the token expires in seconds
         :return: True if token is valid, and user_id contained in token
         """
-        serializer = URLSafeTimedSerializer(current_app.secret_key)
+        entropy = current_app.secret_key if current_app.secret_key else 'un1testingmode'
+        serializer = URLSafeTimedSerializer(entropy)
 
         try:
             tokenised_user_id = serializer.loads(token, max_age=token_expiry)
