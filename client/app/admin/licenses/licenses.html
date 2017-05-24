@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    {{ "Licenses" | translate }}
+                    {{ 'Licenses' | translate }}
                 </h1>
             </div>
         </header>
@@ -11,21 +11,21 @@
             <div class="section__body">
                 <div class="inner">
                     <button class="button button--primary pull-right" type="button" ng-click="licensesCtrl.createNewLicense()">
-                        {{ "Create new license" | translate }}
+                        {{ 'Create new license' | translate }}
                     </button>
                     <table class="table table--zebra">
                         <thead>
                         <tr>
-                            <th>{{ "Name" | translate }}</th>
-                            <th>{{ "Plain text" | translate }}</th>
-                            <th>{{ "Edit" | translate }}</th>
+                            <th>{{ 'Name' | translate }}</th>
+                            <th>{{ 'Plain text' | translate }}</th>
+                            <th>{{ 'Edit' | translate }}</th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="license in licensesCtrl.licenses">
                                 <td><strong>{{ license.name }}</strong></td>
                                 <td>{{ license.plainText }}</td>
-                                <td><a href="/admin/licenses/edit/{{ license.licenseId }}">{{ "Edit" | translate }}</a></td>
+                                <td><a href="/admin/licenses/edit/{{ license.licenseId }}">{{ 'Edit' | translate }}</a></td>
                             </tr>
                         </tbody>
                     </table>
