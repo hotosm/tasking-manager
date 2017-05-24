@@ -43,10 +43,6 @@
         
         // Character limit
         vm.characterLimitShortDescription = 100;
-        
-        vm.status = {
-            isopen: false
-        };
 
         // Watch the languageService for change in language and search again when needed
         $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
@@ -117,8 +113,14 @@
             if (vm.mapperLevel){
                 searchParams.mapperLevel = vm.mapperLevel;
             }
-            if (vm.mappingTypes){
-                searchParams.mappingTypes = vm.mappingTypes;
+            if (vm.mappingTypes.length > 0){
+                searchParams.mappingTypes = '';
+                for (var i = 0; i < vm.mappingTypes.length; i++){
+                    searchParams.mappingTypes += vm.mappingTypes[i];
+                    if (i < vm.mappingTypes.length - 1){
+                        searchParams.mappingTypes += ',';
+                    }
+                }
             }
             if (vm.searchOrganisation){
                 searchParams.organisationTag = vm.searchOrganisation;
