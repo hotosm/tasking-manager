@@ -10,25 +10,29 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <div style="width: 100%">
-                         <a class="pull-right" ng-click="showSearchOptions = !showSearchOptions">Advanced search options</a>
-                        <div class="form__input-group">
-                        <input type="text" ng-model="user" placeholder="Search for a project ID etc."
-                               class="form__control form__control--medium">
-                        <span class="form__input-group-button">
-                             <button type="submit" class="button button--achromic button--medium">
-                                 <span>Search</span>
-                             </button>
-                         </span>
+                    <div>
+                        <form ng-submit="contributeCtrl.search()">
+                            <a class="pull-right" ng-click="showSearchOptions = !showSearchOptions">Advanced search options</a>
+                            <div class="form__input-group">
+                                <input type="text" ng-model="contributeCtrl.searchText" placeholder="Search on description or project number"
+                                       class="form__control form__control--medium">
+                                <span class="form__input-group-button">
+                                     <button class="button button--achromic button--medium" type="submit">
+                                         <span>Search</span>
+                                     </button>
+                                 </span>
                             </div>
+                        </form>
                     </div>
                     <div class="search" ng-show="showSearchOptions" ng-init="showSearchOptions = false">
                         <form class="form">
                             <fieldset class="form__fieldset">
                                 <div class="search-options-container">
-                                   <div class="form__group search-option">
+                                    <div class="form__group search-option">
                                         <label class="form__label">Mapping difficulty</label>
-                                        <select class="form__control form__control--small" ng-model="contributeCtrl.mapperLevel">
+                                        <select class="form__control form__control--small"
+                                                ng-click="contributeCtrl.search()"
+                                                ng-model="contributeCtrl.mapperLevel">
                                             <option value="">All</option>
                                             <option value="BEGINNER">Beginner</option>
                                             <option value="INTERMEDIATE">Intermediate</option>
@@ -37,7 +41,9 @@
                                     </div>
                                     <div class="form__group search-option">
                                         <label class="form__label">Organisation</label>
-                                        <select class="form__control form__control--small" ng-model="contributeCtrl.searchOrganisation">
+                                        <select class="form__control form__control--small"
+                                                ng-click="contributeCtrl.search()"
+                                                ng-model="contributeCtrl.searchOrganisation">
                                             <option value="">All</option>
                                             <option ng-repeat="organisation in contributeCtrl.organisations"
                                                     value="{{ organisation }}">{{ organisation }}</option>
@@ -45,102 +51,65 @@
                                     </div>
                                     <div class="form__group search-option">
                                         <label class="form__label">Campaign</label>
-                                        <select class="form__control form__control--small" ng-model="contributeCtrl.searchCampaign">
+                                        <select class="form__control form__control--small"
+                                                ng-click="contributeCtrl.search()"
+                                                ng-model="contributeCtrl.searchCampaign">
                                             <option value="">All</option>
                                             <option ng-repeat="campaign in contributeCtrl.campaigns"
                                                     value="{{ campaign }}">{{ campaign }}</option>
                                         </select>
                                     </div>
-                                   <div class="form__group search-option">
+                                    <div class="form__group search-option">
                                         <label class="form__label">Type(s) of mapping</label>
-                                       <div class="drop drop--down drop--align-left drop--open">
-                                           <a>
-                                               <button class="button button--achromic button--small drop__toggle drop__toggle--caret" type="button"
-                                                    ng-click="contributeCtrl.showDropdown = !contributeCtrl.showDropdown">
+                                        <div class="drop drop--down drop--align-left drop--open drop--full-width">
+                                            <a>
+                                                <button class="button button--achromic button--small drop__toggle drop__toggle--caret drop__toggle--caret-select button--select"
+                                                        type="button"
+                                                        ng-click="contributeCtrl.showDropdown = !contributeCtrl.showDropdown">
                                                     <span>Type(s) of mapping</span>
                                                 </button>
-                                           </a>
-                                        <div ng-show="contributeCtrl.showDropdown" class="drop__content">
-                                            <!--<ul class="drop__menu drop__menu--iconified" role="menu">-->
-                                            <div>
-                                                <label class="form__option form__option--custom-checkbox">
-                                                    <input type="checkbox" name="form-custom-checkbox"
-                                                           ng-model="contributeCtrl.searchRoads"/>
-                                                    <span class="form__option__text">Roads</span>
-                                                    <span class="form__option__ui"></span>
-                                                </label>
-                                                <label class="form__option form__option--custom-checkbox">
-                                                    <input type="checkbox" name="form-custom-checkbox"
-                                                           ng-model="contributeCtrl.searchBuildings"/>
-                                                    <span class="form__option__text">Buildings</span>
-                                                    <span class="form__option__ui"></span>
-                                                </label>
-                                                <label class="form__option form__option--custom-checkbox">
-                                                    <input type="checkbox" name="form-custom-checkbox"
-                                                           ng-model="contributeCtrl.searchWaterways"/>
-                                                    <span class="form__option__text">Waterways</span>
-                                                    <span class="form__option__ui"></span>
-                                                </label>
-                                                <label class="form__option form__option--custom-checkbox">
-                                                    <input type="checkbox" name="form-custom-checkbox"
-                                                           ng-model="contributeCtrl.searchLanduse"/>
-                                                    <span class="form__option__text">Land use</span>
-                                                    <span class="form__option__ui"></span>
-                                                </label>
-                                                <label class="form__option form__option--custom-checkbox">
-                                                    <input type="checkbox" name="form-custom-checkbox"
-                                                           ng-model="contributeCtrl.searchOther"/>
-                                                    <span class="form__option__text">Other</span>
-                                                    <span class="form__option__ui"></span>
-                                                </label>
+                                            </a>
+                                            <div ng-show="contributeCtrl.showDropdown" class="drop__content">
+                                                <div>
+                                                    <label class="form__option form__option--custom-checkbox">
+                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                               ng-click="contributeCtrl.search()"
+                                                               ng-model="contributeCtrl.searchRoads"/>
+                                                        <span class="form__option__text">Roads</span>
+                                                        <span class="form__option__ui"></span>
+                                                    </label>
+                                                    <label class="form__option form__option--custom-checkbox">
+                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                               ng-click="contributeCtrl.search()"
+                                                               ng-model="contributeCtrl.searchBuildings"/>
+                                                        <span class="form__option__text">Buildings</span>
+                                                        <span class="form__option__ui"></span>
+                                                    </label>
+                                                    <label class="form__option form__option--custom-checkbox">
+                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                               ng-click="contributeCtrl.search()"
+                                                               ng-model="contributeCtrl.searchWaterways"/>
+                                                        <span class="form__option__text">Waterways</span>
+                                                        <span class="form__option__ui"></span>
+                                                    </label>
+                                                    <label class="form__option form__option--custom-checkbox">
+                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                               ng-click="contributeCtrl.search()"
+                                                               ng-model="contributeCtrl.searchLanduse"/>
+                                                        <span class="form__option__text">Land use</span>
+                                                        <span class="form__option__ui"></span>
+                                                    </label>
+                                                    <label class="form__option form__option--custom-checkbox">
+                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                               ng-click="contributeCtrl.search()"
+                                                               ng-model="contributeCtrl.searchOther"/>
+                                                        <span class="form__option__text">Other</span>
+                                                        <span class="form__option__ui"></span>
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!--<label class="form__option form__option--custom-checkbox">
-                                        <input type="checkbox" name="form-custom-checkbox"
-                                               ng-model="contributeCtrl.searchRoads"/>
-                                        <span class="form__option__text">Roads</span>
-                                        <span class="form__option__ui"></span>
-                                    </label>
-                                    <label class="form__option form__option--custom-checkbox">
-                                        <input type="checkbox" name="form-custom-checkbox"
-                                               ng-model="contributeCtrl.searchBuildings"/>
-                                        <span class="form__option__text">Buildings</span>
-                                        <span class="form__option__ui"></span>
-                                    </label>
-                                    <label class="form__option form__option--custom-checkbox">
-                                        <input type="checkbox" name="form-custom-checkbox"
-                                               ng-model="contributeCtrl.searchWaterways"/>
-                                        <span class="form__option__text">Waterways</span>
-                                        <span class="form__option__ui"></span>
-                                    </label>
-                                    <label class="form__option form__option--custom-checkbox">
-                                        <input type="checkbox" name="form-custom-checkbox"
-                                               ng-model="contributeCtrl.searchLanduse"/>
-                                        <span class="form__option__text">Land use</span>
-                                        <span class="form__option__ui"></span>
-                                    </label>
-                                    <label class="form__option form__option--custom-checkbox">
-                                        <input type="checkbox" name="form-custom-checkbox"
-                                               ng-model="contributeCtrl.searchOther"/>
-                                        <span class="form__option__text">Other</span>
-                                        <span class="form__option__ui"></span>
-                                    </label>-->
-                                     <!--  <select class="form__control form__control--small">
-                                            <option value="">All</option>
-                                            <option value="beginner">Roads</option>
-                                            <option value="beginner">Buildings</option>
-                                            <option value="beginner">Waterways</option>
-                                            <option value="beginner">Landuse</option>
-                                        </select>-->
-                                </div>
-                                <div class="form__group search-option search-button">
-                                    <button class="button button--primary pull-right"
-                                            ng-click="contributeCtrl.search()">
-                                        Search
-                                    </button>
-                                </div>
                                 </div>
                             </fieldset>
                         </form>

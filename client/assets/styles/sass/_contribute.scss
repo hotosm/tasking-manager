@@ -63,16 +63,35 @@
 }
 
 .search-options-container {
-  @include span(25/25);
+  margin-top: 15px;
+  @include span(20/20);
   .search-option {
-    @include span(25/25);
+    @include span(10/20);
     float: left;
     padding: 0.25em;
      @include media(large-up) {
-      @include span(5/25);
+      @include span(5/20);
     }
   }
   .search-button {
     padding-top: 1.75em;
+  }
+}
+
+/** Make button look like a select button **/
+.drop__toggle--caret-select:after {
+  float:right;
+}
+
+.drop--full-width {
+  width: 100%;
+}
+
+.button--select {
+  font-weight: normal;
+  width: 100%;
+  text-align: left;
+  &drop__toggle--caret:after {
+    float:right
   }
 }
