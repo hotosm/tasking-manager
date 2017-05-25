@@ -141,12 +141,13 @@ class MappingService:
     def generate_osm_xml(project_id: int, task_ids_str: str) -> str:
         """ Generate xml response suitable for loading into JOSM.  A sample output file is in 
             /server/helpers/testfiles/osm-sample.xml """
+        # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
         root = ET.Element('osm', attrib=dict(version='0.6', upload='no', creator='HOT Tasking Manager'))
 
         task_ids = map(int, task_ids_str.split(','))
         tasks = Task.get_tasks(project_id, task_ids)
 
-        fake_id = -1  # We use fake-ids to ensure XML is not accidentally submitted to OSM
+        fake_id = -1  # We use fake-ids to ensure XML will not be validated by OSM
         for task in tasks:
             task_geom = shape.to_shape(task.geometry)
             way = ET.SubElement(root, 'way', attrib=dict(id=str((task.id * -1)), action='modify', visible='true'))
