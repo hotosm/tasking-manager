@@ -174,7 +174,7 @@
                         {{ 'Trim' | translate }}
                     </button>
                     <span ng-show="createProjectCtrl.waiting">
-                        <img src="./assets/img/waiting_spinner.gif"><span>{{ 'Trimming in progress' | translate }}</span>
+                        <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i><span>{{ 'Trimming in progress' | translate }}</span>
                     </span>
                     <div ng-show="createProjectCtrl.trimErrorReason == 400"
                          class="alert alert--danger" role="alert">
@@ -265,7 +265,7 @@
                             </button>
                         </div>
                         <div ng-show="createProjectCtrl.waiting">
-                            <img src="./assets/img/waiting_spinner.gif"/><span>{{ 'Creation in progress...' | translate }}</span>
+                            <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i><span>{{ 'Creation in progress...' | translate }}</span>
                         </div>
 
                     </div>
