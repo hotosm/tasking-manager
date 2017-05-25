@@ -21,15 +21,13 @@ env:
 
 before_install:
   - chmod +x ./devops/ci/shippable_deploy.sh
+  - chmod +x ./devops/ci/travisci_0_build.sh
   - chmod +x ./devops/ci/travisci_1_dependencies.sh
   - chmod +x ./devops/ci/travisci_2_tests.sh
   - deactivate #TravisCI venv
 
-install:
-  - ./devops/ci/travisci_1_dependencies.sh
-
 script:
-  - ./devops/ci/travisci_2_tests.sh
+  - ./devops/ci/travisci_0_build.sh
 
 deploy:
   - provider: script
