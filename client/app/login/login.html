@@ -3,15 +3,15 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Login
+                    {{ 'Login' | translate }}
                 </h1>
             </div>
         </header>
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <button class="button button--achromic" ng-click="loginCtrl.returnToPreviousPage()">Return</button>
-                    <button class="button button--primary" ng-click="loginCtrl.login()">Login</button>
+                    <button class="button button--achromic" ng-click="loginCtrl.returnToPreviousPage()">{{ 'Return' | translate }}</button>
+                    <button class="button button--primary" ng-click="loginCtrl.login()">{{ 'Login' | translate }}</button>
                 </div>
             </div>
         </div>
