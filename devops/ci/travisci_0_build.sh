@@ -9,8 +9,8 @@ node --version
 
 # Install NPM packages and build client from gulpfile
 cd client
-sudo npm install
-./node_modules/.bin/gulp build
+sudo -E npm install
+sudo -E ./node_modules/.bin/gulp build
 cd ..
 
 # Required to display test results in Shippable GUI
