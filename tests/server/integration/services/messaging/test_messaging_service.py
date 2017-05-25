@@ -37,6 +37,8 @@ class TestMessageService(unittest.TestCase):
         self.ctx.pop()
 
     def test_welcome_message_sent(self):
+        if self.skip_tests:
+            return
 
         # Act
         message_id = MessageService.send_welcome_message(self.test_user)
