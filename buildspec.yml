@@ -6,6 +6,7 @@ phases:
       - chmod +x ./devops/ci/aws_0_build.sh
       - ./devops/ci/aws_0_build.sh
       - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+      - apt-get install unzip
       - unzip awscli-bundle.zip
       - which aws
       - ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
