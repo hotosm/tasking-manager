@@ -9,6 +9,8 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
+      - chmod +x ./devops/ci/travisci_0_build.sh
+      - ./devops/ci/travisci_0_build.sh
       - docker build -t $IMAGE_REPO_NAME .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
   post_build:
