@@ -21,6 +21,7 @@ class MessageService:
 
     @staticmethod
     def send_welcome_message(user: User):
+        """ Sends welcome message to all new users at Sign up"""
         text_template = get_template('welcome_message_en.txt')
 
         text_template = text_template.replace('[USERNAME]', user.username)
