@@ -92,6 +92,16 @@ class SwaggerDocsAPI(Resource):
                     comment:
                         type: string
                         default: Nice work :)
+            - schema:
+                id: ResetTask
+                properties:
+                    taskId:
+                        type: integer
+                        default: 1
+                    comment:
+                        type: string
+                        default: Work in progress
+
         """
         swag = swagger(current_app)
         swag['info']['title'] = "HOT Tasking Manager API"
