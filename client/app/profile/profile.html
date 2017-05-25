@@ -40,6 +40,12 @@
                                        class="form__control form__control__inline"
                                        placeholder="Email"
                                        ng-model="profileCtrl.userDetails.emailAddress" />
+                                <span ng-show="profileCtrl.userDetails.isEmailVerified">
+                                    <i class="hot-ds-icon-sm-tick"></i>
+                                </span>
+                                <span ng-show="profileCtrl.userDetails.emailAddress && !profileCtrl.userDetails.isEmailVerified && !profileCtrl.editDetails">
+                                    <button class="button button--achromic button--small" ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
+                                </span>
                             </p>
                             <p>
                                 <span ng-show="profileCtrl.userDetails.facebookId || profileCtrl.editDetails">Facebook:</span>
@@ -85,6 +91,8 @@
                                     <span>Cancel</span>
                                 </button>
                                 <p ng-show="profileCtrl.errorSetContactDetails" class="error">An error occurred when setting your contact details.</p>
+                                <p ng-show="profileCtrl.errorVerificationEmailSent" class="error">An error occurred when sending your verification email.</p>
+                                <p ng-show="profileCtrl.verificationEmailSent">A verification email was sent.</p>
                             </p>
                         </div>
                         <div class="roles pull-right">

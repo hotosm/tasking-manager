@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', 'messageService', profileController]);
 
-    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService) {
+    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService, messageService) {
 
         var vm = this;
         vm.username = '';
@@ -19,9 +19,17 @@
         vm.projects = [];
         vm.map = null;
         vm.highlightSource = null;
+
+        // Errors - for displaying messages when API calls were not successful
         vm.errorSetRole = false;
         vm.errorSetLevel = false;
         vm.errorSetContactDetails = false;
+        vm.errorVerificationEmailSent = false;
+
+        // For showing the user a message when the verification email was sent
+        // which only happens when the user has entered a new email address or
+        // pressed the resent verification email button
+        vm.verificationEmailSent = false;
 
         // Edit user details
         vm.editDetails = false;
@@ -106,7 +114,6 @@
                 if (account) {
                     vm.currentlyLoggedInUser = account;
                 }
-
             }, function () {
                 // Could not find the user, redirect to the homepage
                 $location.path('/');
@@ -128,6 +135,7 @@
             resultsPromise.then(function (data) {
                 // Successfully saved
                 vm.editDetails = false;
+                vm.verificationEmailSent = data.verificationEmailSent;
                 getUser();
             }, function () {
                 vm.editDetails = false;
@@ -135,7 +143,24 @@
                 getUser();
             });
             vm.editDetails = false;
-        }
+        };
+
+        /**
+         * Resend the email verification email
+         */
+        vm.resendVerificationEmail = function(){
+            vm.errorVerificationEmailSent = false;
+            var resultsPromise = messageService.resendEmailVerification();
+            resultsPromise.then(function (data) {
+                // Successfully saved
+                vm.verificationEmailSent = true;
+                getUser();
+            }, function () {
+                vm.verificationEmailSent = false;
+                vm.errorVerificationEmailSent = true;
+                getUser();
+            });
+        };
 
         /**
          * View project for user and bounding box in Overpass Turbo

@@ -155,6 +155,13 @@
                     templateUrl: 'app/login/login.html',
                     controller: 'loginController',
                     controllerAs: 'loginCtrl'
+                })
+            
+                .when('/validate-email', {
+                    templateUrl: 'app/profile/validate-email.html',
+                    controller: 'validateEmailController',
+                    controllerAs: 'validateEmailCtrl',
+                    reloadOnSearch: false
                 });
 
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them
