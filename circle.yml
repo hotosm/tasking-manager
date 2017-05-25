@@ -5,7 +5,7 @@ general:
 
 machine:
   python:
-    version: 3.6
+    version: 3.6.1
   environment:
     PACKER_VERSION: 0.10.2
 
