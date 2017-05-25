@@ -9,8 +9,8 @@ node --version
 
 # Install NPM packages and build client from gulpfile
 cd client
-sudo npm install
-sudo ./node_modules/.bin/gulp build
+npm install
+./node_modules/.bin/gulp build
 cd ..
 
 # Install Python dependencies
