@@ -645,7 +645,7 @@
          * Get the full URL for the social media widget
          * @returns {*}
          */
-        vm.getSocialMediaUrl = function(){
+        vm.getSocialMediaUrl = function () {
             return $location.absUrl();
         };
 
@@ -971,6 +971,17 @@
                         };
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
                     }
+
+                    //load task squares into JOSM
+
+
+                    var importParams = {
+                        //url: encodeURIComponent('http://localhost:3000/assets/img/osmxml3.osm'),
+                        //url: encodeURIComponent('http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/2666/tasks-as-osm-xml?tasks=34,99,98'),
+                        url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
+                        new_layer: true
+                    }
+                    var isImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', importParams);
                 }
                 else {
                     //TODO warn that JSOM couldn't be started
