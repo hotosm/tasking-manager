@@ -30,3 +30,24 @@ pip install -r requirements.txt
 # Run Python tests
 nosetests ./tests/server --with-xunit --xunit-file ./shippable/testresults/unitresults.xml --with-coverage --cover-erase --cover-package=./server || true
 coverage xml -o shippable/codecoverage/coverage.xml || true
+
+# Install AWS CLI
+curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+apt-get install unzip
+unzip awscli-bundle.zip
+./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+
+# Install Docker
+# apt-get install \
+#     apt-transport-https \
+#     ca-certificates \
+#     curl \
+#     software-properties-common
+# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# apt-key fingerprint 0EBFCD88
+# sudo add-apt-repository \
+#    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+#    $(lsb_release -cs) \
+#    stable"
+# apt-get update
+# apt-get install docker-ce

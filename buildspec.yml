@@ -4,28 +4,26 @@ phases:
   pre_build:
     commands:
       - chmod +x ./devops/ci/aws_0_build.sh
+      - chmod +x ./devops/ci/shippable_deploy.sh
       - ./devops/ci/aws_0_build.sh
-      - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-      - apt-get install unzip
-      - unzip awscli-bundle.zip
-      - ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-      - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
-  build:
-    commands:
-      - echo Build started on `date`
-      - echo Building the Docker image...
-      - docker build -t $IMAGE_REPO_NAME .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-  post_build:
-    commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - echo renaming _Dockerrun.aws.json file
-      - mv _Dockerrun.aws.json Dockerrun.aws.json
-      - echo deleting Dockerfile
-      - rm Dockerfile
+      - ./devops/ci/shippable_deploy.sh
+  #     - echo Logging in to Amazon ECR...
+  #     - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
+  # build:
+  #   commands:
+  #     - echo Build started on `date`
+  #     - echo Building the Docker image...
+  #     - docker build -t $IMAGE_REPO_NAME .
+  #     - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+  # post_build:
+  #   commands:
+  #     - echo Build completed on `date`
+  #     - echo Pushing the Docker image...
+  #     - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+  #     - echo renaming _Dockerrun.aws.json file
+  #     - mv _Dockerrun.aws.json Dockerrun.aws.json
+  #     - echo deleting Dockerfile
+  #     - rm Dockerfile
 artifacts:
   files:
     - '**/*'
