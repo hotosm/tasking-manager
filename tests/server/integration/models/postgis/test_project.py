@@ -2,7 +2,7 @@ import os
 import unittest
 import geojson
 from server import create_app
-from server.models.postgis.project import Task, ProjectDTO, ProjectStatus, ProjectPriority
+from server.models.postgis.project import Task, ProjectDTO, ProjectStatus, ProjectPriority, Project
 from server.models.postgis.project_info import ProjectInfoDTO
 from tests.server.helpers.test_helpers import create_canned_project
 
@@ -116,6 +116,18 @@ class TestProject(unittest.TestCase):
         # Assert
         self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
                          'English translation should be returned as Italian name was not provided')
+
+    # def test_project_can_be_cloned(self):
+    #     if self.skip_tests:
+    #         return
+    #
+    #     # Arrange
+    #     self.update_project_with_info()
+    #
+    #     # Act
+    #     Project.clone(self.test_project.id, self.test_user.id)
+
+
 
     def update_project_with_info(self):
 

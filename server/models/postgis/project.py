@@ -4,6 +4,7 @@ from flask import current_app
 from typing import Optional
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm.session import make_transient
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
@@ -119,6 +120,34 @@ class Project(db.Model):
     def save(self):
         """ Save changes to db"""
         db.session.commit()
+
+    @staticmethod
+    def clone(project_id: int, author_id: int):
+        """ Clone project """
+        project_to_clone = Project.get(project_id)
+
+        db.session.expunge(project_to_clone)
+        make_transient(project_to_clone)
+
+        # Reset Counters
+        project_to_clone.total_tasks = 0
+        project_to_clone.tasks_mapped = 0
+        project_to_clone.tasks_validated = 0
+        project_to_clone.tasks_bad_imagery = 0
+
+        # Remove relationships that don't form part of the clone contact, eg anything to do with the AOI
+        #self.tasks = None
+        #self.area_of_interest = None
+        #self.priority_areas = None
+
+        project_to_clone.author_id = author_id
+
+        project_to_clone.id = None  # Should force creation of a new row
+        db.session.add(project_to_clone)
+        db.session.commit()
+
+        iain = 1
+
 
     @staticmethod
     def get(project_id: int):
