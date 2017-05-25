@@ -3,7 +3,7 @@
 echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 
 # We don't want to deploy Pull Requests only builds on develop and master
-if [ $CI_PULL_REQUESTS == true ]
+if [[ ! -z $CI_PULL_REQUEST ]]
     then
         echo Not Deploying Build $CIRCLE_BUILD_NUM - Branch is $CIRCLE_BRANCH, Is Pull Request is $CI_PULL_REQUESTS
         return
