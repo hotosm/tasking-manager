@@ -124,7 +124,6 @@ class LockTaskForMappingAPI(Resource):
             return {"Error": error_msg}, 500
 
 class StopMappingAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
