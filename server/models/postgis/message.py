@@ -48,8 +48,9 @@ class Message(db.Model):
         """ Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
         db.session.add(self)
 
-    def save(self, ):
+    def save(self):
         """ Save """
+        db.session.add(self)
         db.session.commit()
 
     @staticmethod

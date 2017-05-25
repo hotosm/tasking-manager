@@ -1,0 +1,10 @@
+Hi [USERNAME]
+
+Welcome to the HOT Tasking Manager, we hope you'll enjoy helping map the world.
+
+If you would like to be alerted to projects and updates on your mapping please add your email address to your profile.
+
+<a href="[PROFILE_LINK]">See your profile here</a>
+
+Thanks
+Hot Mapping Team

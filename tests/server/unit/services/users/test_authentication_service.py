@@ -3,7 +3,7 @@ from unittest.mock import patch
 from urllib.parse import urlparse, parse_qs
 
 from server import create_app
-from server.services.users.authentication_service import AuthenticationService, AuthServiceError, UserService, NotFound
+from server.services.users.authentication_service import AuthenticationService, AuthServiceError, UserService, NotFound, MessageService
 from server.services.messaging.smtp_service import SMTPService
 from tests.server.helpers.test_helpers import get_canned_osm_user_details
 
@@ -37,9 +37,10 @@ class TestAuthenticationService(unittest.TestCase):
         # Assert
         mock_user_get.assert_called_with(7777777)
 
+    @patch.object(MessageService, 'send_welcome_message')
     @patch.object(UserService, 'register_user')
     @patch.object(UserService, 'get_user_by_id')
-    def test_if_user_create_called_if_user_not_found(self, mock_user_get, mock_user_register):
+    def test_if_user_create_called_if_user_not_found(self, mock_user_get, mock_user_register, mock_message):
         # Arrange
         osm_response = get_canned_osm_user_details()
         mock_user_get.side_effect = NotFound()
