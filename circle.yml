@@ -16,13 +16,13 @@ dependencies:
       curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
       sudo apt-get install nodejs libgeos-c1 libgeos-dev # Required for shapely
       node --version
-      # Install NPM packages and build client from gulpfile
-      cd client
   override:
     - |
       # Install NPM packages and build client from gulpfile
+      cd client
       npm install
       ./node_modules/.bin/gulp build
+      cd ..
       # Install Python dependencies
       virtualenv env
       env/bin/pip install --upgrade pip
