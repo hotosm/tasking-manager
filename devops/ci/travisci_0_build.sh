@@ -2,9 +2,9 @@
 set -ev # halt script on error
 
 # Install latest LTS node
-apt-get update
+sudo apt-get update
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-apt-get install nodejs
+sudo apt-get install nodejs
 node --version
 
 # Install NPM packages and build client from gulpfile
