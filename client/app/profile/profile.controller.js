@@ -19,11 +19,17 @@
         vm.projects = [];
         vm.map = null;
         vm.highlightSource = null;
+
+        // Errors - for displaying messages when API calls were not successful
         vm.errorSetRole = false;
         vm.errorSetLevel = false;
         vm.errorSetContactDetails = false;
-        vm.verificationEmailSent = false;
         vm.errorVerificationEmailSent = false;
+
+        // For showing the user a message when the verification email was sent
+        // which only happens when the user has entered a new email address or
+        // pressed the resent verification email button
+        vm.verificationEmailSent = false;
 
         // Edit user details
         vm.editDetails = false;
