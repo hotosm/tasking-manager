@@ -7,7 +7,7 @@ pwd
 echo $TRAVIS_BUILD_DIR
 sudo apt-get update
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-sudo apt-get install nodejs
+sudo apt-get install nodejs libgeos-c1 libgeos-dev # Required for shapely
 node --version
 
 # Install NPM packages and build client from gulpfile
@@ -18,5 +18,4 @@ cd ..
 
 # Install Python dependencies
 python --version
-sudo apt-get install -y libgeos-c1 libgeos-dev  # Required for shapely
-sudo pip install -r requirements.txt
+pip install -r requirements.txt

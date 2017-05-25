@@ -20,8 +20,10 @@ before_install:
   - chmod +x ./devops/ci/travisci_1_dependencies.sh
   - chmod +x ./devops/ci/travisci_2_tests.sh
 
-script:
+install:
   - ./devops/ci/travisci_1_dependencies.sh
+
+script:
   - ./devops/ci/travisci_2_tests.sh
 
 deploy:
