@@ -23,6 +23,7 @@ before_install:
   - chmod +x ./devops/ci/shippable_deploy.sh
   - chmod +x ./devops/ci/travisci_1_dependencies.sh
   - chmod +x ./devops/ci/travisci_2_tests.sh
+  - pip install virtualenv
   - deactivate #TravisCI venv
 
 install:
