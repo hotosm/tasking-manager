@@ -12,12 +12,3 @@ cd client
 npm install
 ./node_modules/.bin/gulp build
 cd ..
-
-# Install Python dependencies
-virtualenv env
-env/bin/pip install --upgrade pip
-env/bin/pip install -r requirements.txt
-
-# Required to display test results in Shippable GUI
-mkdir -p shippable/testresults
-mkdir -p shippable/codecoverage

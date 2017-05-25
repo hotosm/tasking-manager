@@ -7,9 +7,6 @@ sudo ../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --b
 cd ../..
 
 # Run Python tests
-pwd
-env
-env/bin/pip freeze
-env/bin/nosetests ./tests/server --with-xunit --xunit-file ./shippable/testresults/unitresults.xml \
+nosetests ./tests/server --with-xunit --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
   --with-coverage --cover-erase --cover-package=./server
-env/bin/coverage xml -o shippable/codecoverage/coverage.xml
+coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
