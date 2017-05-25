@@ -9,7 +9,7 @@ node --version
 
 # Install NPM packages and build client from gulpfile
 cd client
-npm install
+sudo npm install
 ./node_modules/.bin/gulp build
 cd ..
 
