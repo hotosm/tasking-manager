@@ -8,8 +8,7 @@ from server.services.mapping_service import MappingService, Task
 from tests.server.helpers.test_helpers import create_canned_project
 
 
-
-class TestAuthenticationService(unittest.TestCase):
+class TestMappingService(unittest.TestCase):
     skip_tests = False
     test_project = None
     test_user = None

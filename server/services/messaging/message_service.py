@@ -32,6 +32,8 @@ class MessageService:
         welcome_message.message = text_template
         welcome_message.save()
 
+        return welcome_message.id
+
     @staticmethod
     def send_message_after_validation(validated_by: int, mapped_by: int, task_id: int, project_id: int):
         """ Sends mapper a thank you, after their task has been marked as valid """
