@@ -13,10 +13,10 @@ node --version
 # Install NPM packages and build client from gulpfile
 cd client
 sudo npm install
-./node_modules/.bin/gulp build
+sudo ./node_modules/.bin/gulp build
 cd ..
 
 # Install Python dependencies
 python --version
-apt-get install -y libgeos-c1 libgeos-dev  # Required for shapely
-pip install -r requirements.txt
+sudo apt-get install -y libgeos-c1 libgeos-dev  # Required for shapely
+sudo pip install -r requirements.txt
