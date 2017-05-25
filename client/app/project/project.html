@@ -293,7 +293,7 @@
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
-                                            ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'READY')">
+                                            ng-click="projectCtrl.stopMapping(projectCtrl.comment)">
                                         Stop Mapping
                                     </button>
                                 </div>
@@ -574,7 +574,7 @@
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
-                                            ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'MAPPED')">
+                                            ng-click="projectCtrl.stopValidating(projectCtrl.comment)">
                                         Stop Validating
                                     </button>
                                 </div>
@@ -659,7 +659,7 @@
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
-                                            ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
+                                            ng-click="projectCtrl.stopMultiTaskValidation(projectCtrl.comment)">
                                         Stop Validating
                                     </button>
                                 </div>
