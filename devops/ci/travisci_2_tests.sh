@@ -7,5 +7,6 @@ sudo ../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --b
 cd ../..
 
 # Run Python tests
+which nosetests
 nosetests ./tests/server --with-xunit --xunit-file ./shippable/testresults/unitresults.xml --with-coverage --cover-erase --cover-package=./server
 coverage xml -o shippable/codecoverage/coverage.xml
