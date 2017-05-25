@@ -178,7 +178,6 @@
                 // Not a full URL - so add the absolute part
                 osmUrl = $location.protocol() + '://' + $location.host() + osmUrl;
             }
-            console.log(osmUrl);
             return encodeURIComponent(osmUrl);
         }
     }

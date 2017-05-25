@@ -1078,8 +1078,6 @@
 
 
                     var importParams = {
-                        //url: encodeURIComponent('http://localhost:3000/assets/img/osmxml3.osm'),
-                        //url: encodeURIComponent('http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/2666/tasks-as-osm-xml?tasks=34,99,98'),
                         url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
                         new_layer: true
                     }
