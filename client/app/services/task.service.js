@@ -13,8 +13,10 @@
         var service = {
             getTask: getTask,
             unLockTaskMapping: unLockTaskMapping,
+            stopMapping: stopMapping,
             lockTaskMapping: lockTaskMapping,
             unLockTaskValidation: unLockTaskValidation,
+            stopValidating: stopValidating,
             lockTasksValidation: lockTasksValidation,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
@@ -22,7 +24,8 @@
             getTaskFeatureById: getTaskFeatureById,
             getTaskFeaturesByIds: getTaskFeaturesByIds,
             getMappedTasksByUser: getMappedTasksByUser,
-            getLockedTasksForCurrentUser: getLockedTasksForCurrentUser
+            getLockedTasksForCurrentUser: getLockedTasksForCurrentUser,
+            splitTask: splitTask
         };
 
         return service;
@@ -81,6 +84,33 @@
             });
         }
 
+/**
+         * Requests stop mapping a task
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @param comment - comment for the unlock status change to be persisted to task history
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function stopMapping(projectId, taskId, comment) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                data: {
+                    comment: comment,
+                },
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/stop-mapping',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback(error) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
+
         /**
          * Requests a task lock for mapping
          * @param projectId - id of the task project
@@ -106,11 +136,9 @@
 
         /**
          * Requests a task unlock after validation
-         * @param projectId - id of the task project
-         * @param taskId - id of the task
-         * @param comment - comment for the unlock status change to be persisted to task history
-         * @param status - new status.  If status not changing, use current status
-         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         * @param projectId
+         * @param tasks -json model for tasks to stop validation
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
          */
         function unLockTaskValidation(projectId, tasks) {
             // Returns a promise
@@ -120,6 +148,32 @@
                     "validatedTasks": tasks
                 },
                 url: configService.tmAPI + '/project/' + projectId + '/unlock-after-validation',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data.tasks);
+            }, function errorCallback(error) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
+
+        /**
+         * Requests stop validating tasks
+         * @param projectId
+         * @param tasks - json model for tasks to stop validation
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function stopValidating(projectId, tasks) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                data: {
+                    "resetTasks": tasks
+                },
+                url: configService.tmAPI + '/project/' + projectId + '/stop-validating',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
@@ -340,5 +394,29 @@
                 return $q.reject("error");
             });
         }
+
+        /**
+         * Requests a task split
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function splitTask(projectId, taskId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/split',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback(error) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
+
     }
 })();

@@ -34,6 +34,7 @@ module.exports = function(config) {
       'node_modules/ment.io/dist/mentio.js',
       'node_modules/angular-translate/dist/angular-translate.js',
       'node_modules/angular-translate/dist/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
+      'node_modules/angular-socialshare/dist/angular-socialshare.js',
       'app/taskingmanager.app.js',
       'app/*.js',
       'app/**/*.js',

@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Users
+                    {{ 'Users' | translate }}
                 </h1>
             </div>
         </header>
@@ -13,71 +13,71 @@
                     <div class="users-container">
                         <div class="filter">
                             <form class="form">
-                                <h3>Search users</h3>
+                                <h3>{{ 'Search Users' | translate }}</h3>
                                 <div class="form__group">
-                                    <label class="form__label">Role</label>
+                                    <label class="form__label">{{ 'Role' | translate }}</label>
                                     <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="" /> All
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="" /> {{ 'All' | translate }}
                                     </label>
                                     <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="MAPPER" /> Mapper
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="MAPPER" /> {{ 'Mapper' | translate }}
                                     </label>
                                      <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="VALIDATOR" /> Validator
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="VALIDATOR" /> {{ 'Validator' | translate }}
                                     </label>
                                      <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="PROJECT_MANAGER" /> Project manager
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="PROJECT_MANAGER" /> {{ 'Project Manager' | translate }}
                                     </label>
                                      <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="ADMIN" /> Admin
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="ADMIN" /> {{ 'Admin' | translate }}
                                     </label>
                                 </div>
                             </form>
                             <form>
                                 <div class="form__group">
-                                    <label class="form__label">Mapping level</label>
+                                    <label class="form__label">{{ 'Mapping level' | translate }}</label>
                                     <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="" /> All
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="" /> {{ 'All' | translate }}
                                     </label>
                                     <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="BEGINNER" /> Beginner
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="BEGINNER" /> {{ 'Beginner' | translate }}
                                     </label>
                                      <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="INTERMEDIATE" /> Intermediate
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="INTERMEDIATE" /> {{ 'Intermediate' | translate }}
                                     </label>
                                      <label class="form__option">
                                         <input ng-click="usersCtrl.searchUsers()"
-                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="ADVANCED" /> Advanced
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="ADVANCED" /> {{ 'Advanced' | translate }}
                                     </label>
                                 </div>
                              </form>
                              <div class="form__group">
-                                  <label class="form__label" for="form-name">Username</label>
+                                  <label class="form__label" for="form-name">{{ 'Username' | translate }}</label>
                                   <input type="text" class="form__control "
-                                         placeholder="Enter a username"
+                                         placeholder="{{ 'Enter a username' | translate }}"
                                          ng-model="usersCtrl.username"
                                          ng-change="usersCtrl.searchUsers()"/>
                              </div>
                         </div>
                         <div class="results">
                             <div>
-                                Total number of users: {{ usersCtrl.pagination.total }}
+                                {{ 'Total number of users:' | translate }} {{ usersCtrl.pagination.total }}
                             </div>
                             <div class="results-table-container">
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <th>Username</th>
-                                        <th>Role</th>
-                                        <th>Mapping level</th>
+                                        <th>{{ 'Username' | translate }}</th>
+                                        <th>{{ 'Role' | translate }}</th>
+                                        <th>{{ 'Mapping level' | translate }}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -90,11 +90,11 @@
                                 </table>
                             </div>
                             <!-- Pagination -->
-                            <div class="button-group button-group--horizontal" role="group" aria-label="Navigate the results">
+                            <div class="button-group button-group--horizontal" role="group" aria-label="{{ 'Navigate the results' | translate }}">
                                 <button class="button button--achromic"
                                         ng-class="!usersCtrl.pagination.hasPrev ? 'disabled' : ''"
                                         ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.prevNum)">
-                                        Previous
+                                        {{ 'Previous' | translate }}
                                 </button>
                                 <button class="button button--achromic"
                                         ng-show="(usersCtrl.pagination.prevNum || usersCtrl.pagination.page) != 1"
@@ -132,7 +132,7 @@
                                 <button class="button button--achromic"
                                         ng-class="!usersCtrl.pagination.hasNext ? 'disabled' : ''"
                                         ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.nextNum)">
-                                        Next
+                                        {{ 'Next' | translate }}
                                 </button>
                             </div>
                             <!-- /Pagination -->

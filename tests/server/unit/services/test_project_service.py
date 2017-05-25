@@ -1,8 +1,7 @@
-import hashlib
 import unittest
 from unittest.mock import patch
 from server.services.project_service import ProjectService, Project, NotFound, ProjectStatus, ProjectServiceError, \
-    MappingLevel, UserService, ProjectSearchDTO, MappingTypes
+    MappingLevel, UserService
 
 
 class TestProjectService(unittest.TestCase):

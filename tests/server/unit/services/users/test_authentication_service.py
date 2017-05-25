@@ -1,9 +1,11 @@
 import unittest
-from urllib.parse import urlparse, parse_qs
 from unittest.mock import patch
-from tests.server.helpers.test_helpers import get_canned_osm_user_details
+from urllib.parse import urlparse, parse_qs
+
 from server import create_app
-from server.services.authentication_service import AuthenticationService, AuthServiceError, UserService, NotFound
+from server.services.users.authentication_service import AuthenticationService, AuthServiceError, UserService, NotFound
+from server.services.messaging.smtp_service import SMTPService
+from tests.server.helpers.test_helpers import get_canned_osm_user_details
 
 
 class TestAuthenticationService(unittest.TestCase):
@@ -71,3 +73,18 @@ class TestAuthenticationService(unittest.TestCase):
         # Assert
         parsed_url = urlparse(auth_failed_url)
         self.assertEqual(parsed_url.path, '/auth-failed')
+
+    def test_can_parse_email_verification_token(self):
+        # Arrange - Generate valid email verification url
+        test_email = 'test@test.com'
+        auth_url = SMTPService._generate_email_verification_url(test_email, 'mrtest')
+
+        parsed_url = urlparse(auth_url)
+        query = parse_qs(parsed_url.query)
+
+        # Arrange
+        is_valid, email_address = AuthenticationService.is_valid_token(query['token'][0], 86400)
+
+        # Assert
+        self.assertTrue(is_valid)
+        self.assertEqual(email_address, test_email)

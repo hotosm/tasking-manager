@@ -1,9 +1,12 @@
 import re
-from flask import current_app
 from typing import List
+
+from flask import current_app
+
 from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message, NotFound
-from server.services.user_service import UserService
+from server.services.users.user_service import SMTPService
+from server.services.users.user_service import UserService
 
 
 class MessageServiceError(Exception):
@@ -30,10 +33,20 @@ class MessageService:
         validation_message.message = f'Hi \n I just validated your mapping on {task_link}.\n\n Awesome work! \n\n Keep mapping :)'
         validation_message.add_message()
 
+        user = UserService.get_user_by_id(mapped_by)
+        SMTPService.send_email_alert(user.email_address, user.username)
+
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
         """ Sends supplied message to all contributors on specified project """
-        Message.send_message_to_all_contributors(project_id, message_dto)
+        contributors = Message.get_all_contributors(project_id)
+
+        for contributor in contributors:
+            message = Message.from_dto(contributor[0], message_dto)
+            message.add_message()
+            message.save()
+            user = UserService.get_user_by_id(contributor[0])
+            SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
     def send_message_after_comment(comment_from: int, comment: str, task_id: int, project_id :int):
@@ -57,6 +70,13 @@ class MessageService:
             message.subject = f'You were mentioned in a comment on {link}'
             message.message = comment
             message.add_message()
+            SMTPService.send_email_alert(user.email_address, user.username)
+
+    @staticmethod
+    def resend_email_validation(user_id: int):
+        """ Resends the email validation email to the logged in user """
+        user = UserService.get_user_by_id(user_id)
+        SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
     def _parse_comment_for_username(comment: str) -> List[str]:

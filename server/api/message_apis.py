@@ -1,8 +1,9 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
+
 from server.models.dtos.message_dto import MessageDTO
-from server.services.authentication_service import token_auth, tm
-from server.services.message_service import MessageService, NotFound, MessageServiceError
+from server.services.messaging.message_service import MessageService, NotFound, MessageServiceError
+from server.services.users.authentication_service import token_auth, tm
 
 
 class ProjectsMessageAll(Resource):
@@ -230,5 +231,39 @@ class MessagesAPI(Resource):
             return {"Error": "No messages found"}, 404
         except Exception as e:
             error_msg = f'Messages GET all - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class ResendEmailValidationAPI(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self):
+        """
+        Resends the validation user to the logged in user
+        ---
+        tags:
+          - messages
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            200:
+                description: Resends the user their email verification email
+            500:
+                description: Internal Server Error
+        """
+        try:
+            MessageService.resend_email_validation(tm.authenticated_user_id)
+            return {"Success": "Verification email resent"}, 200
+        except Exception as e:
+            error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

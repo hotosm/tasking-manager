@@ -1,5 +1,6 @@
 import unittest
-from server.services.message_service import MessageService
+
+from server.services.messaging.message_service import MessageService
 
 
 class TestMessagingService(unittest.TestCase):

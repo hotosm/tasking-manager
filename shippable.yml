@@ -6,7 +6,7 @@ python:
     - "3.5"
 
 env:
-    - secure: PjCTHdC1E/tZkN+kL15okF5j3NFerFBKK3nU7OI9pFHYW8rO2JA5UyhjTbgYzdBvTAhUodBRmy8d82jAqHj2zHSCG0FEq9ehEresLruHm3rhSKFVG9vJSda47Qzm01zo8HTd73lnuq4buMp/fVAlvaKSa7zux90Sx+6xqxrUWeIsEuqxapVaeAouLOXkHrII/ERHJ89UEgJAkn777dWIodJWEXZiWHcMI2to+z19k95ZPSeNL5Q8yaA2r63walA7VewYdCdBNthXNqwI9lCsgOoFZNMREbPhnkszAaNUhm14bi/epU4Z/pvgBvoquAjl697r4r65iEnKGIIHZYAknQ==
+    - secure: FgpDKVKD1xtPHXg9enOJRbE0HIGzj93B9+IMvXFroosA4mFNO/W2cvSGhujU6FMl+9wNqAZmCJV6HGLx02uPvuEkNS90n3fAOR/pJMmKbhxoGbVN/QDAPdKHtEs4nGimzDaIPg4i77pym9lgxMa0PZQGUFNMFmJtdFvDCfStEw6oPME7Gqxni2dm2DGr0w00JU1QZBeYx0SKtBv53x+ehyLOAh5uDB52A6sCmWxWgc6ARlA7pkWc/1al2elhMsAgdmyIAjP9niGXqBEdNHSIBrwI6T2pqaZ5YAjKOUHDF2XRkXVVMzTf8GLdaJN2Xa0MtPZQW960ZktQVN6VbPjyKw==
 
 build:
     # Use the python 3.6 docker container to build the application

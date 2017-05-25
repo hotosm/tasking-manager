@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', 'messageService', profileController]);
 
-    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService) {
+    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService, messageService) {
 
         var vm = this;
         vm.username = '';
@@ -19,8 +19,20 @@
         vm.projects = [];
         vm.map = null;
         vm.highlightSource = null;
+
+        // Errors - for displaying messages when API calls were not successful
         vm.errorSetRole = false;
         vm.errorSetLevel = false;
+        vm.errorSetContactDetails = false;
+        vm.errorVerificationEmailSent = false;
+
+        // For showing the user a message when the verification email was sent
+        // which only happens when the user has entered a new email address or
+        // pressed the resent verification email button
+        vm.verificationEmailSent = false;
+
+        // Edit user details
+        vm.editDetails = false;
 
         activate();
 
@@ -30,7 +42,7 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
-            projectMapService.showInfoOnHoverOrClick();
+            projectMapService.createPopup();
             getUserProjects();
         }
 
@@ -87,7 +99,7 @@
             }, function(){
                 vm.errorSetLevel = true;
             });
-        }
+        };
 
         /**
          * Get the user's details from the account service
@@ -107,6 +119,48 @@
                 $location.path('/');
             });
         }
+
+        /**
+         * Set contact details
+         */
+        vm.setContactDetails = function(){
+            vm.errorSetContactDetails = false;
+            var contactDetails = {
+                emailAddress: vm.userDetails.emailAddress,
+                facebookId: vm.userDetails.facebookId,
+                linkedinId: vm.userDetails.linkedinId,
+                twitterId: vm.userDetails.twitterId
+            };
+            var resultsPromise = userService.setContactDetails(contactDetails);
+            resultsPromise.then(function (data) {
+                // Successfully saved
+                vm.editDetails = false;
+                vm.verificationEmailSent = data.verificationEmailSent;
+                getUser();
+            }, function () {
+                vm.editDetails = false;
+                vm.errorSetContactDetails = true;
+                getUser();
+            });
+            vm.editDetails = false;
+        };
+
+        /**
+         * Resend the email verification email
+         */
+        vm.resendVerificationEmail = function(){
+            vm.errorVerificationEmailSent = false;
+            var resultsPromise = messageService.resendEmailVerification();
+            resultsPromise.then(function (data) {
+                // Successfully saved
+                vm.verificationEmailSent = true;
+                getUser();
+            }, function () {
+                vm.verificationEmailSent = false;
+                vm.errorVerificationEmailSent = true;
+                getUser();
+            });
+        };
 
         /**
          * View project for user and bounding box in Overpass Turbo

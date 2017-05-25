@@ -2,7 +2,7 @@
 
 (function () {
 
-    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', 'taskingmanager.config', 'pascalprecht.translate'])
+    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', '720kb.socialshare', 'pascalprecht.translate', 'taskingmanager.config'])
 
     /**
      * Factory that returns the configuration settings for the current environment
@@ -21,6 +21,7 @@
 
             if (sessionStorage) {
                 authService.setSession(sessionStorage.sessionToken || '', sessionStorage.username || '');
+                accountService.setAccount(sessionStorage.username);
             }
         }])
 
@@ -32,6 +33,8 @@
                 suffix: '.json'
             });
             $translateProvider.preferredLanguage('en');
+            // This escapes HTML in the translation - see https://angular-translate.github.io/docs/#/guide/19_security
+            $translateProvider.useSanitizeValueStrategy('escape');
             
             // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
             $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
@@ -41,6 +44,9 @@
                 $httpProvider.defaults.headers.get = {};
             }
             $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
+
+             // Intercept the response errors and go to the login page if the status is 401
+            $httpProvider.interceptors.push('httpInterceptorService');
 
             ChartJsProvider.setOptions({
                 chartColors: ['#AC3232', '#DCDCDC', '#7A7A7A', '#595959']
@@ -95,8 +101,8 @@
 
                 .when('/authorized', {
                     templateUrl: 'app/login/authorized.html',
-                    controller: 'loginController',
-                    controllerAs: 'loginCtrl'
+                    controller: 'authController',
+                    controllerAs: 'authCtrl'
                 })
 
                 .when('/auth-failed', {
@@ -143,6 +149,19 @@
                     templateUrl: 'app/message/message.html',
                     controller: 'messageController',
                     controllerAs: 'messageCtrl'
+                })
+            
+                .when('/login', {
+                    templateUrl: 'app/login/login.html',
+                    controller: 'loginController',
+                    controllerAs: 'loginCtrl'
+                })
+            
+                .when('/validate-email', {
+                    templateUrl: 'app/profile/validate-email.html',
+                    controller: 'validateEmailController',
+                    controllerAs: 'validateEmailCtrl',
+                    reloadOnSearch: false
                 });
 
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them

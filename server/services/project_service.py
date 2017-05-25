@@ -1,10 +1,11 @@
 from flask import current_app
-from server.models.dtos.project_dto import ProjectDTO, ProjectSearchDTO, LockedTasksForUser
-from server.models.postgis.project import Project, ProjectStatus, MappingLevel, MappingTypes
-from server.models.postgis.task import Task
+
+from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser
+from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
+from server.models.postgis.task import Task
 from server.models.postgis.utils import NotFound
-from server.services.user_service import UserService
+from server.services.users.user_service import UserService
 
 
 class ProjectServiceError(Exception):

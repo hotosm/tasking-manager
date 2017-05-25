@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Project dashboard
+                    {{ 'Project Dashboard' | translate }}
                 </h1>
             </div>
         </header>
@@ -12,18 +12,18 @@
                 <div class="inner">
                      <div class="dashboard-container">
                          <p>
-                             View the projects that you have created
+                             {{ 'View the projects that you have created' | translate }}
                              <a role="button" href="/admin/create-project" class="button button--achromic pull-right">
-                                 Create a new project
+                                 {{ 'Create a new project' | translate }}
                              </a>
                          </p>
                          <div>
-                             <h3>Filter</h3>
+                             <h3>{{ 'Filter' | translate }}</h3>
                              <form class="form">
                                  <div class="form__group">
                                      <input type="text" class="form__control form__control--medium"
                                             size="500"
-                                            placeholder="Filter projects (on name, campaign, ...)" ng-model="dashboardCtrl.searchText"/>
+                                            placeholder="{{ 'Filter projects (on name, campaign, ...)' | translate }}" ng-model="dashboardCtrl.searchText"/>
                                  </div>
                              </form>
                          </div>
@@ -32,34 +32,34 @@
                          <h3 class="pointer" ng-click="dashboardCtrl.toggleActive()">
                              <span ng-show="!dashboardCtrl.showActive">+</span>
                              <span ng-show="dashboardCtrl.showActive">-</span>
-                             Active
+                             {{ 'Active' | translate }}
                          </h3>
                          <div ng-show="dashboardCtrl.showActive">
-                             <p ng-show="!dashboardCtrl.projects.activeProjects.length > 0">No active projects.</p>
+                             <p ng-show="!dashboardCtrl.projects.activeProjects.length > 0">{{ 'No active projects.' | translate }}</p>
                              <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.activeProjects.length > 0">
                                  <table class="table">
                                  <thead>
                                  <tr>
                                      <th ng-click="dashboardCtrl.sortBy('projectId')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>#</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>#</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('name')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Name</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Name' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('campaignTag')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Campaign</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Campaign' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('percentMapped')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>% mapped</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ '% Mapped' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('percentValidated')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>% validated</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ '% Validated' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('created')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Created</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Created' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('lastUpdated')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Last Updated' | translate }}</span></a>
                                      </th>
                                      <th></th>
                                      <th></th>
@@ -82,12 +82,12 @@
                                      </td>
                                      <td>
                                          <a class="button button--primary button--small"
-                                            ng-href="/project/{{ project.projectId }}/dashboard">Activity and Stats
+                                            ng-href="/project/{{ project.projectId }}/dashboard">{{ 'Activity and Stats' | translate }}
                                          </a>
                                      </td>
                                      <td>
                                          <a class="button button--primary button--small"
-                                            ng-href="/admin/edit-project/{{ project.projectId }}">Edit
+                                            ng-href="/admin/edit-project/{{ project.projectId }}">{{ 'Edit' | translate }}
                                          </a>
                                      </td>
                                  </tr>
@@ -100,34 +100,34 @@
                          <h3 class="pointer" ng-click="dashboardCtrl.toggleDraft()">
                              <span ng-show="!dashboardCtrl.showDraft">+</span>
                              <span ng-show="dashboardCtrl.showDraft">-</span>
-                             Draft
+                             {{ 'Draft' | translate }}
                          </h3>
                          <div ng-show="dashboardCtrl.showDraft">
-                             <p ng-show="!dashboardCtrl.projects.draftProjects.length > 0">No draft projects.</p>
+                             <p ng-show="!dashboardCtrl.projects.draftProjects.length > 0">{{ 'No draft projects.' | translate }}</p>
                              <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.draftProjects.length > 0">
                                 <table class="table">
                                  <thead>
                                  <tr>
                                      <th ng-click="dashboardCtrl.sortBy('projectId')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>#</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>#</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('name')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Name</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Name' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('campaignTag')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Campaign</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Campaign' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('percentMapped')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>% mapped</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ '% Mapped' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('percentValidated')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>% validated</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ '% Validated' | translate }}</span></a>
                                      </th>
                                       <th ng-click="dashboardCtrl.sortBy('created')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Created</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Created' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('lastUpdated')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Last Updated' | translate }}</span></a>
                                      </th>
                                      <th></th>
                                      <th></th>
@@ -148,12 +148,12 @@
                                      </td>
                                      <td>
                                          <a class="button button--primary button--small"
-                                            ng-href="/project/{{ project.projectId }}/dashboard">Activity and Stats
+                                            ng-href="/project/{{ project.projectId }}/dashboard">{{ 'Activity and Stats' | translate }}
                                          </a>
                                      </td>
                                      <td>
                                          <a class="button button--primary button--small"
-                                            ng-href="/admin/edit-project/{{ project.projectId }}">Edit
+                                            ng-href="/admin/edit-project/{{ project.projectId }}">{{ 'Edit' | translate }}
                                          </a>
                                      </td>
                                  </tr>
@@ -166,34 +166,34 @@
                          <h3 class="pointer" ng-click="dashboardCtrl.toggleArchived()">
                              <span ng-show="!dashboardCtrl.showArchived">+</span>
                              <span ng-show="dashboardCtrl.showArchived">-</span>
-                             Archived
+                             {{ 'Archived' | translate }}
                          </h3>
                            <div ng-show="dashboardCtrl.showArchived">
-                             <p ng-show="!dashboardCtrl.projects.archivedProjects.length > 0">No active projects.</p>
+                             <p ng-show="!dashboardCtrl.projects.archivedProjects.length > 0">{{ 'No archived projects.' | translate }}</p>
                              <div class="dashboard-my-projects" ng-show="dashboardCtrl.projects.archivedProjects.length > 0">
                                  <table ng-show="dashboardCtrl.projects.archivedProjects" class="table">
                                  <thead>
                                  <tr>
                                      <th ng-click="dashboardCtrl.sortBy('projectId')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>#</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>#</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('name')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Name</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Name' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('campaignTag')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Campaign</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Campaign' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('percentMapped')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>% mapped</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ '% Mapped' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('percentValidated')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>% validated</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ '% Validated' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('created')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Created</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Created' | translate }}</span></a>
                                      </th>
                                      <th ng-click="dashboardCtrl.sortBy('lastUpdated')">
-                                         <a class="table__sort table__sort--none" title="Sort column"><span>Last updated</span></a>
+                                         <a class="table__sort table__sort--none" title="{{ 'Sort column' | translate }}"><span>{{ 'Last Updated' | translate }}</span></a>
                                      </th>
                                      <th></th>
                                      <th></th>
@@ -214,12 +214,12 @@
                                      </td>
                                      <td>
                                          <a class="button button--primary button--small"
-                                            ng-href="/project/{{ project.projectId }}/dashboard">Activity and Stats
+                                            ng-href="/project/{{ project.projectId }}/dashboard">{{ 'Activity and Stats' | translate }}
                                          </a>
                                      </td>
                                      <td>
                                          <a class="button button--primary button--small"
-                                            ng-href="/admin/edit-project/{{ project.projectId }}">Edit
+                                            ng-href="/admin/edit-project/{{ project.projectId }}">{{ 'Edit' | translate }}
                                          </a>
                                      </td>
                                  </tr>
@@ -236,10 +236,6 @@
             <div class="section__body">
                 <div class="inner">
                     <div id="map" class="map-container"></div>
-                    <div id="popup" class="ol-popup">
-                        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-                        <div id="popup-content"></div>
-                    </div>
                 </div>
             </div>
         </div>

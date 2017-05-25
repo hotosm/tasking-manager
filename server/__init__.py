@@ -84,18 +84,18 @@ def init_flask_restful_routes(app):
     app.logger.debug('Initialising API Routes')
     api = Api(app)
 
+    from server.api.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
-    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, TasksAsGPX, TasksAsOSM
-    from server.api.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI
+    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI, TasksAsGPX, TasksAsOSM
+    from server.api.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI, ResendEmailValidationAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
     from server.api.swagger_docs_api import SwaggerDocsAPI
-    from server.api.authentication_apis import LoginAPI, OAuthAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI
-    from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, MappedTasksByUser
+    from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+    from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI, MappedTasksByUser
     from server.api.grid_apis import IntersectingTilesAPI
     from server.api.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
@@ -104,12 +104,14 @@ def init_flask_restful_routes(app):
     api.add_resource(HealthCheckAPI,                '/api/health-check')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
+    api.add_resource(AuthEmailAPI,                  '/api/auth/email')
     api.add_resource(LicenseAPI,                    '/api/v1/license', endpoint="create_license", methods=['PUT'])
     api.add_resource(LicenseAPI,                    '/api/v1/license/<int:license_id>', methods=['GET', 'POST', 'DELETE'])
     api.add_resource(LicenceListAPI,                '/api/v1/license/list')
     api.add_resource(HasNewMessages,                '/api/v1/messages/has-new-messages')
     api.add_resource(GetAllMessages,                '/api/v1/messages/get-all-messages')
     api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
+    api.add_resource(ResendEmailValidationAPI,      '/api/v1/messages/resend-email-verification')
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
@@ -126,8 +128,10 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
     api.add_resource(MappingTaskAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>')
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
+    api.add_resource(StopMappingAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/stop-mapping')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
+    api.add_resource(StopValidatingAPI,             '/api/v1/project/<int:project_id>/stop-validating')
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
@@ -136,6 +140,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UserSearchAllAPI,              '/api/v1/user/search-all')
     api.add_resource(UserSearchFilterAPI,           '/api/v1/user/search/filter/<string:username>')
     api.add_resource(UserAPI,                       '/api/v1/user/<string:username>')
+    api.add_resource(UserUpdateAPI,                 '/api/v1/user/update-details')
     api.add_resource(UserMappedProjects,            '/api/v1/user/<string:username>/mapped-projects')
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')

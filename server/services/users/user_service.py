@@ -4,6 +4,7 @@ from flask import current_app
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
+from server.services.messaging.smtp_service import SMTPService
 
 INTERMEDIATE_MAPPER_LEVEL = 250
 ADVANCED_MAPPER_LEVEL = 500
@@ -59,10 +60,28 @@ class UserService:
         return new_user
 
     @staticmethod
-    def get_user_dto_by_username(username: str) -> UserDTO:
+    def get_user_dto_by_username(requested_username: str, logged_in_user_id: int) -> UserDTO:
         """Gets user DTO for supplied username """
-        user = UserService.get_user_by_username(username)
-        return user.as_dto()
+        requested_user = UserService.get_user_by_username(requested_username)
+        logged_in_user = UserService.get_user_by_id(logged_in_user_id)
+
+        return requested_user.as_dto(logged_in_user.username)
+
+    @staticmethod
+    def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
+        """ Update user with info supplied by user, if they add or change their email address a verification mail 
+            will be sent """
+        user = UserService.get_user_by_id(user_id)
+
+        verification_email_sent = False
+        if user_dto.email_address and user.email_address != user_dto.email_address.lower():
+            # Send user verification email if they are adding or changing their email address
+            SMTPService.send_verification_email(user_dto.email_address.lower(), user.username)
+            user.set_email_verified_status(is_verified=False)
+            verification_email_sent = True
+
+        user.update(user_dto)
+        return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:

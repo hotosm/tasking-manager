@@ -6,9 +6,9 @@
 
     angular
         .module('taskingManager')
-        .service('accountService', ['$http', '$q','configService', accountService]);
+        .service('accountService', ['$http', '$q','configService', 'authService', accountService]);
 
-    function accountService($http, $q, configService) {
+    function accountService($http, $q, configService, authService) {
 
         var account = {
             username: '',
@@ -64,9 +64,7 @@
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/user/' + username,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available

@@ -1,11 +1,13 @@
 import io
 from distutils.util import strtobool
+
 from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
-from server.services.authentication_service import token_auth, tm
+
+from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
+from server.services.users.authentication_service import token_auth, tm
 
 
 class MappingTaskAPI(Resource):
@@ -121,6 +123,82 @@ class LockTaskForMappingAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+class StopMappingAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self, project_id, task_id):
+        """
+        Unlock task that is locked for mapping resetting it to it's last status
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - name: task_id
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for unlocking a task
+              schema:
+                  id: TaskUpdateStop
+                  properties:
+                      comment:
+                          type: string
+                          description: Optional user comment about the task
+                          default: Comment about mapping done before stop
+        responses:
+            200:
+                description: Task unlocked
+            400:
+                description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            404:
+                description: Task not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            stop_task = StopMappingTaskDTO(request.get_json())
+            stop_task.user_id = tm.authenticated_user_id
+            stop_task.task_id = task_id
+            stop_task.project_id = project_id
+            stop_task.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            task = MappingService.stop_mapping_task(stop_task)
+            return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
+        except MappingServiceError as e:
+            return {"Error": str(e)}, 403
+        except Exception as e:
+            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
 
 class UnlockTaskForMappingAPI(Resource):
 
@@ -158,7 +236,7 @@ class UnlockTaskForMappingAPI(Resource):
               required: true
               description: JSON object for unlocking a task
               schema:
-                  id: TaskUpdate
+                  id: TaskUpdateUnlock
                   required:
                       - status
                   properties:
@@ -169,7 +247,7 @@ class UnlockTaskForMappingAPI(Resource):
                       comment:
                           type: string
                           description: Optional user comment about the task
-                          default: Mapping makes me feel good!
+                          default: Comment about the mapping
         responses:
             200:
                 description: Task unlocked
@@ -300,5 +378,9 @@ class TasksAsOSM(Resource):
             500:
                 description: Internal Server Error
         """
-        xml = MappingService.generate_osm_xml()
+        tasks = request.args.get('tasks')
+        if tasks is None:
+            return {"Error": 'No tasks supplied in querystring'}, 400
+
+        xml = MappingService.generate_osm_xml(project_id, tasks)
         return Response(xml, mimetype='text/xml', status=200)

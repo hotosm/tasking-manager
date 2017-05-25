@@ -26,7 +26,6 @@
                     </li>
                 </ul>
                 <div class="content">
-
                     <div ng-show="projectCtrl.currentTab === 'description'">
                         <button class="button button--secondary pull-right"
                                 ng-click="projectCtrl.currentTab = 'instructions'">
@@ -280,7 +279,7 @@
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
-                                            ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'READY')">
+                                            ng-click="projectCtrl.stopMapping(projectCtrl.comment)">
                                         {{ 'Stop Mapping' | translate }}
                                     </button>
                                 </div>
@@ -294,6 +293,21 @@
                                                 ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
                                             {{ 'Mark as Bad Imagery' | translate }}
                                         </button>
+                                    </div>
+                                </div>
+                                <div class="form__group pull-center" ng-show="projectCtrl.isSelectedSplittable">
+                                    <button class="button button--achromic" ng-click="projectCtrl.splitTask()">
+                                        Split Task
+                                    </button>
+                                </div>
+                                <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Task is not splittable</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
+                                    <div class="alert alert--danger" role="alert">
+                                        <p>Task could not be split</p>
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.taskUnLockError">
@@ -339,14 +353,14 @@
                                     <p><strong>{{ 'Option 3:' | translate }} </strong>{{ 'Select by area' | translate }}</p>
                                     <div class="padding-at-bottom">
                                         <button ng-click="projectCtrl.selectByPolygonValidate()"
-                                                 class="button button--achromic pull-center"
-                                                 ng-class="projectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''">
-                                             {{ 'Select area by drawing a polygon' | translate }}
+                                                class="button button--achromic pull-center"
+                                                ng-class="projectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''">
+                                            {{ 'Select area by drawing a polygon' | translate }}
                                         </button>
                                         <button class="button button--secondary"
-                                            ng-class="projectCtrl.selectedTasksForValidation.length < 1 ? 'disabled' : '' "
-                                            ng-click="projectCtrl.lockTasksForValidation(projectCtrl.selectedTasksForValidation)">
-                                            {{ 'Start Validating' | translate }}
+                                                ng-class="projectCtrl.selectedTasksForValidation.length < 1 ? 'disabled' : '' "
+                                                ng-click="projectCtrl.lockTasksForValidation(projectCtrl.selectedTasksForValidation)">
+                                             {{ 'Start Validating' | translate }}
                                         </button>
                                     </div>
                                     <p><strong>{{ 'Option 4:' | translate }} </strong> {{ 'Select by user:' | translate }}</p>
@@ -536,7 +550,7 @@
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
-                                            ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'MAPPED')">
+                                            ng-click="projectCtrl.stopValidating(projectCtrl.comment)">
                                         {{ 'Stop Validating' | translate }}
                                     </button>
                                 </div>
@@ -614,7 +628,7 @@
                                 </div>
                                 <div class="form__group pull-center">
                                     <button class="button button--achromic"
-                                            ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'MAPPED')">
+                                            ng-click="projectCtrl.stopMultiTaskValidation(projectCtrl.comment)">
                                         {{ 'Stop Validating' | translate }}
                                     </button>
                                 </div>
@@ -724,6 +738,30 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div>
+                        <hr/>
+                        <button class="button button--primary"
+                            socialshare
+                            socialshare-provider="twitter"
+                            socialshare-text="I have just contributed to this project"
+                            socialshare-hashtags="hotosm"
+                            socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                            Twitter
+                        </button>
+                        <button class="button button--primary"
+                            socialshare
+                            socialshare-provider="facebook"
+                            socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                            Facebook
+                        </button>
+                        <button class="button button--primary"
+                            socialshare
+                            socialshare-provider="linkedin"
+                            socialshare-text="I have just contributed to this project"
+                            socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                            LinkedIn
+                        </button>
                     </div>
                 </div>
             </div>
