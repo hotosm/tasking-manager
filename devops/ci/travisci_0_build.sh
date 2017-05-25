@@ -24,7 +24,7 @@ cd ../..
 
 # Install Python dependencies
 python --version
-apt-get install -y libgeos-c1 libgeos-dev  # Required for shapely
+sudo apt-get install -y libgeos-c1 libgeos-dev  # Required for shapely
 pip install -r requirements.txt
 
 # Run Python tests
