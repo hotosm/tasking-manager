@@ -19,7 +19,7 @@ mkdir -p shippable/codecoverage
 
 # JS Unit Tests
 cd tests/client
-../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --browsers PhantomJS --reporters junit
+sudo -E ../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --browsers PhantomJS --reporters junit
 cd ../..
 
 # Install Python dependencies
