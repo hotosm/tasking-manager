@@ -17,6 +17,9 @@ dependencies:
 
   post:
     - |
+        ls -lAht
+        env
+        pwd
         chmod +x ./devops/ci/circleci_1_dependencies.sh
         chmod +x ./devops/ci/circleci_2_tests.sh
         chmod +x ./devops/ci/circleci_3_deploy.sh
