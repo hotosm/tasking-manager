@@ -18,7 +18,6 @@
         function activate() {
             // Get the URL parameter
             var isValid = $location.search().is_valid.toLowerCase();
-            // Not sure why this is necessary...
             if (isValid == 'true'){
                 vm.isValidEmail = true;
             }

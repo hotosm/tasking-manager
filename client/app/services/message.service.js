@@ -133,6 +133,10 @@
             });
         }
 
+        /**
+         * Resend the email address verification email
+         * @returns {!jQuery.deferred|*|!jQuery.Promise|!jQuery.jqXHR}
+         */
         function resendEmailVerification(){
              // Returns a promise
             return $http({
