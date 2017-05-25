@@ -5,8 +5,10 @@ phases:
     commands:
       - chmod +x ./devops/ci/aws_0_build.sh
       - ./devops/ci/aws_0_build.sh
-      - pip install awscli --upgrade --user
-      - export PATH=$PATH:~/.local/bin
+      - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+      - unzip awscli-bundle.zip
+      - which aws
+      - ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
   build:
