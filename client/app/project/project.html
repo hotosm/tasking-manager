@@ -251,10 +251,6 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div ng-show="projectCtrl.selectedEditor === 'josm'">{{ 'Download the ' | translate }}
-                                    <a ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">GPX {{ 'file' | translate }}</a>
-                                    {{ 'and open it in JOSM to see the task boundary.' | translate }}
-                                </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                     <div class="alert alert--danger" role="alert">
                                         <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -522,10 +518,6 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div ng-show="projectCtrl.selectedEditor === 'josm'">{{ 'Download the' | translate }}
-                                    <a ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">GPX {{ 'file' | translate }}</a>
-                                    {{ 'and open it in JOSM to see the task boundary.' | translate }}
-                                </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                     <div class="alert alert--danger" role="alert">
                                         <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -600,9 +592,6 @@
                                             </button>
                                         </span>
                                     </div>
-                                </div>
-                                <div ng-show="projectCtrl.selectedEditor === 'josm'">
-                                    {{ 'Since you have multiple tasks selected, you must download the OSM data in JOSM manually. Download the' | translate }} <a ng-href="{{ projectCtrl.getGpxDownloadURL() }}" target="_self">GPX {{ 'file' | translate }}</a> {{ 'and open it in JOSM to see the task boundaries.' | translate }}
                                 </div>
                                 <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                     <div class="alert alert--danger" role="alert">

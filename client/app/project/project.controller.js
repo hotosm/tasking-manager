@@ -645,7 +645,7 @@
          * Get the full URL for the social media widget
          * @returns {*}
          */
-        vm.getSocialMediaUrl = function(){
+        vm.getSocialMediaUrl = function () {
             return $location.absUrl();
         };
 
@@ -1073,6 +1073,15 @@
                         };
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
                     }
+
+                    //load task squares into JOSM
+
+
+                    var importParams = {
+                        url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
+                        new_layer: true
+                    }
+                    var isImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', importParams);
                 }
                 else {
                     //TODO warn that JSOM couldn't be started
