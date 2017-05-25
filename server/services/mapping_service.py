@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
-from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.task import Task, TaskStatus
 from server.models.postgis.utils import NotFound, UserLicenseError
@@ -68,14 +68,7 @@ class MappingService:
     @staticmethod
     def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
-        task = MappingService.get_task(mapped_task.task_id, mapped_task.project_id)
-        current_state = TaskStatus(task.task_status)
-
-        if current_state != TaskStatus.LOCKED_FOR_MAPPING:
-            raise MappingServiceError('Status must be LOCKED_FOR_MAPPING to unlock')
-
-        if task.locked_by != mapped_task.user_id:
-            raise MappingServiceError('Attempting to unlock a task owned by another user')
+        task = MappingService.get_task_locked_by_user(mapped_task.project_id, mapped_task.task_id, mapped_task.user_id)
 
         new_state = TaskStatus[mapped_task.status.upper()]
 
@@ -94,6 +87,39 @@ class MappingService:
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
 
         return task.as_dto()
+
+    @staticmethod
+    def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
+        """ Unlocks the task and sets the task history appropriately """
+        task = MappingService.get_task_locked_by_user(stop_task.project_id, stop_task.task_id, stop_task.user_id)
+
+        if stop_task.comment:
+            # Parses comment to see if any users have been @'d
+            MessageService.send_message_after_comment(stop_task.user_id, stop_task.comment, task.id,
+                                                      stop_task.project_id)
+
+        task.reset_lock(stop_task.user_id, stop_task.comment)
+        return task.as_dto()
+
+    @staticmethod
+    def get_task_locked_by_user(project_id: int, task_id: int, user_id: int) -> Task:
+        """
+        Returns task specified by project id and task id if found and locked for mapping by user, otherwise raises MappingServiceError
+        :param project_id:
+        :param task_id:
+        :param user_id:
+        :return: Task
+        :raises: MappingServiceError
+        """
+        task = MappingService.get_task(task_id, project_id)
+        if task is None:
+            raise MappingServiceError(f'Task {task_id} not found')
+        current_state = TaskStatus(task.task_status)
+        if current_state != TaskStatus.LOCKED_FOR_MAPPING:
+            raise MappingServiceError('Status must be LOCKED_FOR_MAPPING to unlock')
+        if task.locked_by != user_id:
+            raise MappingServiceError('Attempting to unlock a task owned by another user')
+        return task
 
     @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
