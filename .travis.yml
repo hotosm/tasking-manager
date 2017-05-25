@@ -6,10 +6,10 @@ cache: pip
 
 # This before_install list is only used for the test stage.
 before_install:
-  - echo "### before install ###"
+  - echo '### before install ###'
 
 script:
-  - echo "### script ###"
+  - echo '### script ###'
 
 jobs:
   include:
