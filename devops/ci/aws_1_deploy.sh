@@ -3,6 +3,9 @@ set -ev # halt script on error
 
 env
 
+export BRANCH=$(git branch | grep \* | cut -d ' ' -f2 )
+export BUILD_NUMBER="$(aws s3 cp s3://hotosm-terraform/keyvalue/tm3_build_id.txt -)"
+
 echo Running HOT Tasking Manager Deploy, current branch is $BRANCH
 
 # We don't want to deploy Pull Requests only builds on develop and master
