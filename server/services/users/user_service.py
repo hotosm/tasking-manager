@@ -74,8 +74,10 @@ class UserService:
         user = UserService.get_user_by_id(user_id)
 
         verification_email_sent = False
-        if user.email_address != user_dto.email_address.lower():
+        if user_dto.email_address and user.email_address != user_dto.email_address.lower():
+            # Send user verification email if they are adding or changing their email address
             SMTPService.send_verification_email(user_dto.email_address.lower(), user.username)
+            user.set_email_verified_status(is_verified=False)
             verification_email_sent = True
 
         user.update(user_dto)

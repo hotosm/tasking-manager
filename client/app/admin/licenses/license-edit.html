@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Edit license
+                    {{ 'Edit License' | translate }}
                 </h1>
             </div>
         </header>
@@ -13,64 +13,64 @@
                     <form class="form" ng-hide="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
                         <fieldset class="form__fieldset">
                             <div class="form__group">
-                                <label class="form__label" for="form-name">Name*</label>
+                                <label class="form__label" for="form-name">{{ 'Name' | translate }}*</label>
                                 <input type="text" class="form__control form__control--medium" id="form-name"
                                        ng-model="licenseEditCtrl.license.name"
-                                       name="form-name" placeholder="Enter a name for the license (provider for example)"/>
+                                       name="form-name" placeholder="{{ 'Enter a name for the license (provider for example)' | translate }}"/>
                             </div>
                             <div class="form__group">
-                                <label class="form__label" for="form-description">Description*</label>
+                                <label class="form__label" for="form-description">{{ 'Description' | translate }}*</label>
                                 <textarea class="form__control form__control--medium" id="form-description" rows="8"
                                        ng-model="licenseEditCtrl.license.description"
-                                       name="form-name" placeholder="Enter the license terms">
+                                       name="form-name" placeholder="{{ 'Enter the license terms' | translate }}">
                                 </textarea>
                             </div>
                             <div class="form__group">
-                                <label class="form__label" for="form-plaintext">Plain text*</label>
+                                <label class="form__label" for="form-plaintext">{{ 'Plain text' | translate }}*</label>
                                 <textarea class="form__control form__control--medium" id="form-plaintext" rows="2"
                                        ng-model="licenseEditCtrl.license.plainText"
-                                       name="form-name" placeholder="Enter a short version of the terms">
+                                       name="form-name" placeholder="{{ 'Enter a short version of the terms' | translate }}">
                                 </textarea>
                             </div>
                         </fieldset>
                         <fieldset ng-show="!licenseEditCtrl.isNew" class="form__fieldset">
                             <button class="button button--secondary" type="button"
                                     ng-click="licenseEditCtrl.saveEdits()">
-                                Save edits
+                                {{ 'Save edits' | translate }}
                             </button>
                             <button class="button button--base" type="button"
                                     ng-click="licenseEditCtrl.delete()">
-                                Delete
+                                {{ 'Delete' | translate }}
                             </button>
                             <button class="button button--achromic" type="button"
                                     ng-click="licenseEditCtrl.cancel()">
-                                Cancel
+                                {{ 'Cancel' | translate }}
                             </button>
                         </fieldset>
                         <fieldset ng-show="licenseEditCtrl.isNew" class="form__fieldset">
                             <button class="button button--secondary" type="button"
                                     ng-click="licenseEditCtrl.createNewLicense()">
-                                Create new licence
+                                {{ 'Create new license' | translate }}
                             </button>
                             <button class="button button--achromic" type="button"
                                     ng-click="licenseEditCtrl.cancel()">
-                                Cancel
+                                {{ 'Cancel' | translate }}
                             </button>
                         </fieldset>
                     </form>
                     <div class="error">
                         <div ng-show="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
-                            <p>No license found.</p>
-                            <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">Go back to license overview</button>
+                            <p>{{ 'No license found.' | translate }}</p>
+                            <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">{{ 'Go back to license overview' | translate }}</button>
                         </div>
                         <div ng-show="!licenseEditCtrl.isSaveEditsSuccessful">
-                            <p>Saving the edits was not successful. Please try again.</p>
+                            <p>{{ 'Failed to save edits. Please try again.' | translate }}</p>
                         </div>
                         <div ng-show="!licenseEditCtrl.isDeleteSuccessful">
-                            <p>Deleting the license was not successful. Please try again.</p>
+                            <p>{{ 'Failed to delete license. Please try again.' | translate }}</p>
                         </div>
                         <div ng-show="!licenseEditCtrl.isCreateNewSuccessful">
-                            <p>Creating a new license was not successful. Please try again.</p>
+                            <p>{{ 'Failed to create a new license. Please try again.' | translate }}</p>
                         </div>
                     </div>
                 </div>

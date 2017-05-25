@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Messages - inbox
+                    {{ 'Messages - Inbox' | translate }}
                 </h1>
             </div>
         </header>
@@ -14,8 +14,8 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>From</th>
-                                <th>Subject</th>
+                                <th>{{ 'From' | translate }}</th>
+                                <th>{{ 'Subject' | translate }}</th>
                                 <th></th>
                                 <th></th>
                             </tr>
@@ -41,7 +41,7 @@
                         </table>
                     </div>
                     <div ng-hide="inboxCtrl.messages.length > 0">
-                        <p>You have no messages.</p>
+                        <p>{{ 'You have no messages.' | translate }}</p>
                     </div>
                 </div>
             </div>
@@ -54,27 +54,27 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">Delete message</h1>
+                <h1 class="modal__title">{{ 'Delete message' | translate }}</h1>
             </div>
         </header>
         <div class="modal__body">
-            <p>Are you sure you want to delete this message?</p>
+            <p>{{ 'Are you sure you want to delete this message?' | translate }}</p>
         </div>
         <footer class="modal__footer">
             <div ng-hide="inboxCtrl.validateTasksSuccess">
                 <button class="button button--achromic" type="button"
                     ng-click="inboxCtrl.setShowDeleteMessageModal(false)">
-                    Cancel
+                    {{ 'Cancel' | translate }}
                 </button>
                 <button class="button button--base" type="button"
                     ng-click="inboxCtrl.deleteMessage()">
-                    Delete
+                    {{ 'Delete' | translate }}
                 </button>
             </div>
         </footer>
     </div>
-    <button class="modal__button-dismiss" title="Close" ng-click="inboxCtrl.setShowDeleteMessageModal(false)">
-        Dismiss
+    <button class="modal__button-dismiss" title="{{ 'Dismiss' | translate }}" ng-click="inboxCtrl.setShowDeleteMessageModal(false)">
+        {{ 'Dismiss' | translate }}
     </button>
 </section>
 <!-- delete message modal -->

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HOT Tasking Manager</title>
+    <title>{{ 'HOT Tasking Manager' | translate }}</title>
     <base href="/">
 
     <link href="./assets/img/hot-favicon.ico" rel="icon">
@@ -38,10 +38,9 @@
 <div class="mob-disclaimer" ng-show="!hideMobileMessage">
     <p>
         <i class="hot-ds-icon-xmark pull-right pointer" ng-click="hideMobileMessage = true"></i>
-        In order to make full use of Tasking Manager's many features please use a desktop computer rather than a mobile
-        device. If you would like to contribute on a mobile device, please use MapSwipe instead.
+        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
     </p>
-    <a href="https://mapswipe.org" class="button button--achromic">Go to MapSwipe</a>
+    <a href="https://mapswipe.org" class="button button--achromic">{{ 'Go to MapSwipe' | translate }}</a>
 </div>
 <!--/ mobile message -->
 
@@ -50,30 +49,30 @@
     <div class="inner">
         <div class="page__headline">
             <h1 class="page__title">
-                <a href="/" title="Visit homepage">
+                <a href="/" title="{{ 'Visit homepage' | translate }}">
                     <img src="./assets/img/hot-logo.svg" alt="HOT logo" height="34">
                 </a>
             </h1>
         </div>
         <nav class="page__prime-nav" role="navigation">
             <h2 class="toggle-menu">
-                <a title="Show/hide menu" ng-modal="showMenu" ng-click="showMenu = !showMenu"></a>
+                <a title="{{ 'Show/hide menu' | translate }}" ng-modal="showMenu" ng-click="showMenu = !showMenu"></a>
             </h2>
             <div class="menu-wrapper" ng-class="showMenu ? 'menu-wrapper menu-wrapper--open' : 'menu-wrapper'">
                 <ul class="global-menu" id="global-menu">
                     <li>
-                        <a href="/about" title="Visit about" class="global-menu-item">
-                            <span>About</span>
+                        <a href="/about" title="{{ 'Visit about' | translate }}" class="global-menu-item">
+                            <span>{{ 'About' | translate }}</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/learn" title="Visit learn" class="global-menu-item">
-                            <span>Learn</span>
+                        <a href="/learn" title="{{ 'Visit learn' | translate }}" class="global-menu-item">
+                            <span>{{ 'Learn' | translate }}</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/contribute" title="Visit contribute" class="global-menu-item">
-                            <span>Contribute</span>
+                        <a href="/contribute" title="{{ 'Visit contribute' | translate }}" class="global-menu-item">
+                            <span>{{ 'Contribute' | translate }}</span>
                         </a>
                     </li>
                     <li>
@@ -95,10 +94,10 @@
 
 <footer class="page__footer">
     <div class="left">
-        Contact us via the <a href="/about">About page</a>
+        <a href="/about">{{ 'Contact us via the About page.' | translate }}</a>
     </div>
     <div class="right">
-        Fork <a href="https://github.com/hotosm/tasking-manager" target="_blank">the Tasking Manager Code on GitHub</a> and help improve it.
+        <a href="https://github.com/hotosm/tasking-manager" target="_blank">{{ 'Fork the Tasking Manager Code on GitHub' | translate }}</a> {{ 'and help improve it.' | translate }}
     </div>
 </footer>
 
@@ -180,6 +179,10 @@
 
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.15.1/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js-->
 <script src="node_modules/angular-translate/dist/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+<!-- /build -->
+
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular-socialshare/2.3.8/angular-socialshare.min.js -->
+<script src="node_modules/angular-socialshare/dist/angular-socialshare.js"></script>
 <!-- /build -->
 
 <!-- build:js app/taskingmanager.min.js -->
