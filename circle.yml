@@ -6,23 +6,39 @@ general:
 machine:
   python:
     version: 3.6.1
-  environment:
-    PACKER_VERSION: 0.10.2
 
+## Customize dependencies
 dependencies:
-  cache_directories:
-    - node_modules
-    - ~/.cache/pip
-    - ~/build/hotosm/tasking-manager/env
+  pre:
+    - |
+      # Install latest LTS node
+      sudo apt-get update
+      curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+      sudo apt-get install nodejs libgeos-c1 libgeos-dev # Required for shapely
+      node --version
+      # Install NPM packages and build client from gulpfile
+      cd client
+  override:
+    - |
+      # Install NPM packages and build client from gulpfile
+      npm install
+      ./node_modules/.bin/gulp build
+      # Install Python dependencies
+      virtualenv env
+      env/bin/pip install --upgrade pip
+      env/bin/pip install -r requirements.txt
 
-  post:
+
+test:
+  override:
     - |
-        chmod +x ./devops/ci/circleci_1_dependencies.sh
-        chmod +x ./devops/ci/circleci_2_tests.sh
-        chmod +x ./devops/ci/circleci_3_deploy.sh
+      # JS Unit Tests
+      cd tests/client
+      ../../client/node_modules/.bin/karma start ./karma.conf.js \
+        --single-run --browsers PhantomJS --reporters junit
     - |
-        ./devops/ci/circleci_1_dependencies.sh
-    - |
-        ./devops/ci/circleci_2_tests.sh
-    - |
-        ./devops/ci/circleci_3_deploy.sh
+      # Run Python tests
+      env/bin/nosetests ./tests/server --with-xunit \
+        --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
+        --with-coverage --cover-erase --cover-package=./server
+      env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
