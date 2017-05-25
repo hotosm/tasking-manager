@@ -5,8 +5,9 @@ from flask import current_app
 
 from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message, NotFound
-from server.services.users.user_service import SMTPService
-from server.services.users.user_service import UserService
+from server.services.messaging.smtp_service import SMTPService
+from server.services.messaging.template_service import get_template, get_profile_url
+from server.services.users.user_service import UserService, User
 
 
 class MessageServiceError(Exception):
@@ -19,21 +20,41 @@ class MessageServiceError(Exception):
 class MessageService:
 
     @staticmethod
+    def send_welcome_message(user: User):
+        """ Sends welcome message to all new users at Sign up"""
+        text_template = get_template('welcome_message_en.txt')
+
+        text_template = text_template.replace('[USERNAME]', user.username)
+        text_template = text_template.replace('[PROFILE_LINK]', get_profile_url(user.username))
+
+        welcome_message = Message()
+        welcome_message.to_user_id = user.id
+        welcome_message.subject = 'Welcome to the HOT Tasking Manager'
+        welcome_message.message = text_template
+        welcome_message.save()
+
+        return welcome_message.id
+
+    @staticmethod
     def send_message_after_validation(validated_by: int, mapped_by: int, task_id: int, project_id: int):
         """ Sends mapper a thank you, after their task has been marked as valid """
         if validated_by == mapped_by:
             return  # No need to send a thankyou to yourself
 
+        text_template = get_template('validation_message_en.txt')
         task_link = MessageService.get_task_link(project_id, task_id)
+
+        user = UserService.get_user_by_id(mapped_by)
+        text_template = text_template.replace('[USERNAME]', user.username)
+        text_template = text_template.replace('[TASK_LINK]', task_link)
 
         validation_message = Message()
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
         validation_message.subject = f'Your mapping on {task_link} has just been validated'
-        validation_message.message = f'Hi \n I just validated your mapping on {task_link}.\n\n Awesome work! \n\n Keep mapping :)'
+        validation_message.message = text_template
         validation_message.add_message()
 
-        user = UserService.get_user_by_id(mapped_by)
         SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
@@ -43,7 +64,6 @@ class MessageService:
 
         for contributor in contributors:
             message = Message.from_dto(contributor[0], message_dto)
-            message.add_message()
             message.save()
             user = UserService.get_user_by_id(contributor[0])
             SMTPService.send_email_alert(user.email_address, user.username)

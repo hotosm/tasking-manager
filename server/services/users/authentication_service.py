@@ -6,6 +6,7 @@ from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from server.api.utils import TMAPIDecorators
+from server.services.messaging.message_service import MessageService
 from server.services.users.user_service import UserService, NotFound
 
 token_auth = HTTPTokenAuth(scheme='Token')
@@ -75,7 +76,8 @@ class AuthenticationService:
             # User not found, so must be new user
             changesets = osm_user.find('changesets')
             changeset_count = int(changesets.attrib['count'])
-            UserService.register_user(osm_id, username, changeset_count)
+            new_user = UserService.register_user(osm_id, username, changeset_count)
+            MessageService.send_welcome_message(new_user)
 
         session_token = AuthenticationService.generate_session_token_for_user(osm_id)
         authorized_url = AuthenticationService.generate_authorized_url(username, session_token, redirect_to)
