@@ -4,9 +4,9 @@ phases:
   pre_build:
     commands:
       - chmod +x ./devops/ci/aws_0_build.sh
-      - chmod +x ./devops/ci/shippable_deploy.sh
+      - chmod +x ./devops/ci/aws_1_deploy.sh
       - ./devops/ci/aws_0_build.sh
-      - ./devops/ci/shippable_deploy.sh
+      - ./devops/ci/aws_1_deploy.sh
   #     - echo Logging in to Amazon ECR...
   #     - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
   # build:
