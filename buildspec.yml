@@ -3,8 +3,8 @@ version: 0.1
 phases:
   pre_build:
     commands:
-      - chmod +x ./devops/ci/travisci_0_build.sh
-      - ./devops/ci/travisci_0_build.sh
+      - chmod +x ./devops/ci/aws_0_build.sh
+      - ./devops/ci/aws_0_build.sh
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
   build:
