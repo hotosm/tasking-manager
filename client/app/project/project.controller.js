@@ -683,7 +683,7 @@
          * Call api to stop mapping currebtly locked task.  Will pass the comment to api.  Will update view and map after unlock.
          * @param comment
          */
-        vm.unLockTaskMapping = function (comment) {
+        vm.stopMapping = function (comment) {
             var projectId = vm.projectData.projectId;
             var taskId = vm.lockedTaskData.taskId;
             var stopPromise = taskService.stopMapping(projectId, taskId, comment);
