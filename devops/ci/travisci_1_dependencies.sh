@@ -14,6 +14,6 @@ sudo ./node_modules/.bin/gulp build
 cd ..
 
 # Install Python dependencies
-- /home/travis/virtualenv/python3.6.1/bin/virtualenv env
-- env/bin/pip install --upgrade pip
-- env/bin/pip install -r requirements.txt
+virtualenv env
+env/bin/pip install --upgrade pip
+env/bin/pip install -r requirements.txt
