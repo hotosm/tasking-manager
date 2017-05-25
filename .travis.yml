@@ -14,6 +14,7 @@ script:
 jobs:
   include:
     - stage: install dependencies
+      python: "3.6"
       script:
     # Install latest LTS node
       - env
@@ -33,6 +34,7 @@ jobs:
       - apt-get install -y libgeos-c1 libgeos-dev  # Required for shapely
       - pip install -r requirements.txt
     - stage: run tests
+      python: "3.6"
       script:
     # JS Unit Tests
       - cd tests/client
@@ -43,5 +45,6 @@ jobs:
       - nosetests ./tests/server --with-xunit --xunit-file ./shippable/testresults/unitresults.xml --with-coverage --cover-erase --cover-package=./server
       - coverage xml -o shippable/codecoverage/coverage.xml
     - stage: Run deploy script to manage deploy to appropriate environment
+      python: "3.6"
       script:
       - . ./devops/ci/shippable_deploy.sh
