@@ -1,0 +1,26 @@
+general:
+  branches:
+    only:
+      - develop-branch-travis
+
+machine:
+  python:
+    version: 3.6
+  environment:
+    PACKER_VERSION: 0.10.2
+
+dependencies:
+  cache_directories:
+    - node_modules
+    - ~/.cache/pip
+    - ~/build/hotosm/tasking-manager/env
+
+  post:
+    - |
+        chmod +x ./devops/ci/circleci_1_dependencies.sh
+        chmod +x ./devops/ci/circleci_2_tests.sh
+        chmod +x ./devops/ci/circleci_3_deploy.sh
+    - |
+        ./devops/ci/circleci_1_dependencies.sh
+        ./devops/ci/circleci_2_tests.sh
+        ./devops/ci/circleci_3_deploy.sh
