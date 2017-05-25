@@ -302,5 +302,9 @@ class TasksAsOSM(Resource):
             500:
                 description: Internal Server Error
         """
-        xml = MappingService.generate_osm_xml()
+        tasks = request.args.get('tasks')
+        if tasks is None:
+            return {"Error": 'No tasks supplied in querystring'}, 400
+
+        xml = MappingService.generate_osm_xml(project_id, tasks)
         return Response(xml, mimetype='text/xml', status=200)
