@@ -3,7 +3,7 @@ import unittest
 
 from server import create_app
 
-from server.services.messaging.message_service import MessageService, Message
+from server.services.messaging.message_service import MessageService
 from tests.server.helpers.test_helpers import create_canned_user
 
 
