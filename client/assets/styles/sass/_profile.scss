@@ -1,0 +1,66 @@
+.profile-container {
+  @include column(12/12);
+
+  .details {
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(7/12);
+    }
+  }
+
+  .roles {
+    padding-top: 3rem;
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(5/12);
+    }
+  }
+}
+
+.profile-projects-list {
+  max-height: 600px;
+  overflow-y: auto;
+  margin-bottom: 50px;
+}
+
+/* ==========================================================================
+   Stats
+   ========================================================================== */
+.section__inverse--stats {
+  background-color: rgba($base-color, 0.9);
+  color: #eee;
+  text-align: center;
+  left: 0;
+  width: 100%;
+  clear: both;
+  padding: 2rem 0;
+  .stats__card {
+    display: inline-block;
+    margin: 1rem auto;
+    width: 250px;
+  }
+
+  .stats__card--amount {
+    font-size: 2em;
+    letter-spacing: -1px;
+  }
+
+  .stats__card--title {
+    letter-spacing: 1px;
+    opacity: .7;
+    line-height: 18px;
+  }
+}
+
+.roles {
+  button {
+    margin: 0 .5rem .5rem 0;
+  }
+  .button-group {
+    margin: 0 .5rem 1.5rem 0;
+  }
+}
+
+.validator-star {
+  color: #FFCC11;
+}

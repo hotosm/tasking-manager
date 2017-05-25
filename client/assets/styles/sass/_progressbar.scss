@@ -1,0 +1,206 @@
+/* Copyright 2013-2015 etc Chris Tabor. See https://github.com/christabor/css-progress-wizard/blob/master/LICENSE for details. */
+
+// colors
+
+$incomplete: #bbb !default;
+$complete: $secondary-color !default;
+$active: #337AB7 !default;
+$hover: #5671d0 !default;
+$step-danger: #d3140f !default;
+$step-warning: #edb10a !default;
+$step-info: #5b32d6 !default;
+
+// sizing
+
+$bubble-size: 20px !default;
+$bubble-line-thickness: 3px !default;
+$border-thickness: 1px !default;
+$darken-amount: 30% !default;
+
+// misc
+$mobile-size: 400px !default;
+
+@mixin bubble-style($color) {
+    background-color: $color;
+    color: $color;
+    border-color: darken($color, $darken-amount);
+    &:before,
+    &:after {
+        background-color: $color;
+        border-color: darken($color, $darken-amount);
+    }
+}
+.flexer {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+.no-flexer {
+    display: block;
+}
+.no-flexer-element {
+    -ms-flex: 0;
+    -webkit-flex: 0;
+    -moz-flex: 0;
+    flex: 0;
+}
+.flexer-element {
+    -ms-flex: 1;
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    flex: 1;
+}
+.progress-indicator {
+    @extend .flexer;
+    margin: 0;
+    padding: 0;
+    font-size: 80%;
+    text-transform: uppercase;
+    margin-bottom: 1em;
+    > li {
+        @extend .flexer-element;
+        list-style: none;
+        text-align: center;
+        width: auto;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        text-overflow: ellipsis;
+        color: $incomplete;
+        display: block;
+        &:hover {
+            color: darken($incomplete, $darken-amount);
+        }
+    }
+    > li .bubble {
+        border-radius: 1000px;
+        width: $bubble-size;
+        height: $bubble-size;
+        background-color: $incomplete;
+        display: block;
+        margin: 0 auto 0.5em auto;
+        border-bottom: $border-thickness solid darken($incomplete, 20%);
+    }
+
+    // line connectors
+
+    > li .bubble:before,
+    > li .bubble:after {
+        display: block;
+        position: absolute;
+        top: $bubble-size / 2 - $border-thickness;
+        width: 100%;
+        height: $bubble-line-thickness;
+        content: '';
+        background-color: $incomplete;
+    }
+    > li .bubble:before {
+        left: 0;
+    }
+    > li .bubble:after {
+        right: 0;
+    }
+
+    > li:first-child .bubble:before,
+    > li:first-child .bubble:after {
+        width: 50%;
+        margin-left: 50%;
+    }
+
+    > li:last-child .bubble:before,
+    > li:last-child .bubble:after {
+        width: 50%;
+        margin-right: 50%;
+    }
+
+
+    // completed state
+
+    > li.completed {
+        color: $complete;
+        .bubble {
+            @include bubble-style($complete);
+        }
+    }
+
+    // current state
+
+    > li.active {
+        color: $active;
+        .bubble {
+            @include bubble-style($active);
+        }
+    }
+
+    // button states
+
+    > li a:hover .bubble {
+        @include bubble-style($hover);
+    }
+
+    // override states
+
+    > li.danger .bubble {
+        @include bubble-style($step-danger);
+    }
+    > li.warning .bubble {
+        @include bubble-style($step-warning);
+    }
+    > li.info .bubble {
+        @include bubble-style($step-info);
+    }
+
+    // stacked version
+
+    &.stacked {
+        @extend .no-flexer;
+        > li {
+            text-indent: -10px;
+            text-align: center;
+            display: block;
+        }
+        > li .bubble:before,
+        > li .bubble:after {
+            left: 50%;
+            margin-left: -$bubble-line-thickness / 2;
+            width: $bubble-line-thickness;
+            height: 100%;
+        }
+        .stacked-text {
+            position: relative;
+            z-index: 10;
+            top: 0;
+            margin-left: 60% !important;
+            width: 45% !important;
+            display: inline-block;
+            text-align: left;
+            line-height: 1.2em;
+        }
+        > li a {
+            border: none;
+        }
+    }
+    &.stacked.nocenter {
+        > li .bubble {
+            margin-left: 0;
+            margin-right: 0
+        }
+        > li .bubble:before,
+        > li .bubble:after {
+            left: $bubble-size / 2;
+        }
+        .stacked-text {
+            width: auto !important;
+            display: block;
+            margin-left: $bubble-size * 2 !important;
+        }
+    }
+}
+
+@media handheld, screen and (max-width: $mobile-size) {
+    .progress-indicator {
+        font-size: 60%;
+    }
+}

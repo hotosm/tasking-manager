@@ -1,0 +1,101 @@
+.contribute-container {
+  @include column(24/24);
+
+  .search {
+    background: #f6f5f5;
+    box-shadow: 0 2px 12px 2px rgba(34, 10, 10, 0.12), 0 0 0 1px rgba(34, 10, 10, 0.12);
+    border-radius: 0.25rem;
+    border-radius: 20px;
+    padding: 10px;
+    @include column(24/24);
+    @include media(medium-up) {
+      @include column(7/24);
+    }
+  }
+
+  .search-results {
+    @include column(24/24);
+    @include media(medium-up) {
+      @include column(24/24);
+    }
+    .paging {
+      text-align: center !important;
+    }
+  }
+}
+
+.search-container {
+  margin-bottom: 2em;
+}
+
+/* ==========================================================================
+   Search results
+   ========================================================================== */
+.project-result {
+  &__cards {
+    text-align: left;
+    padding-bottom: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-content: top;
+    align-items: stretch;
+  }
+
+  &__card {
+    width: 500px;
+    margin-bottom: 2rem;
+  }
+
+  &__content {
+    padding: 1rem;
+  }
+}
+
+.progress-bar-container {
+  float: right;
+  max-width: 100px;
+  .label {
+    font-size: x-small;
+  }
+  /** Override default styling **/
+  .progress {
+    height: 10px !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+.search-options-container {
+  margin-top: 15px;
+  @include span(20/20);
+  .search-option {
+    @include span(10/20);
+    float: left;
+    padding: 0.25em;
+     @include media(large-up) {
+      @include span(5/20);
+    }
+  }
+  .search-button {
+    padding-top: 1.75em;
+  }
+}
+
+/** Make button look like a select button **/
+.drop__toggle--caret-select:after {
+  float:right;
+}
+
+.drop--full-width {
+  width: 100%;
+}
+
+.button--select {
+  font-weight: normal;
+  width: 100%;
+  text-align: left;
+  &drop__toggle--caret:after {
+    float:right
+  }
+}

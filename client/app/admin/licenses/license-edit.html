@@ -1,0 +1,80 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    {{ 'Edit License' | translate }}
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <form class="form" ng-hide="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
+                        <fieldset class="form__fieldset">
+                            <div class="form__group">
+                                <label class="form__label" for="form-name">{{ 'Name' | translate }}*</label>
+                                <input type="text" class="form__control form__control--medium" id="form-name"
+                                       ng-model="licenseEditCtrl.license.name"
+                                       name="form-name" placeholder="{{ 'Enter a name for the license (provider for example)' | translate }}"/>
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label" for="form-description">{{ 'Description' | translate }}*</label>
+                                <textarea class="form__control form__control--medium" id="form-description" rows="8"
+                                       ng-model="licenseEditCtrl.license.description"
+                                       name="form-name" placeholder="{{ 'Enter the license terms' | translate }}">
+                                </textarea>
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label" for="form-plaintext">{{ 'Plain text' | translate }}*</label>
+                                <textarea class="form__control form__control--medium" id="form-plaintext" rows="2"
+                                       ng-model="licenseEditCtrl.license.plainText"
+                                       name="form-name" placeholder="{{ 'Enter a short version of the terms' | translate }}">
+                                </textarea>
+                            </div>
+                        </fieldset>
+                        <fieldset ng-show="!licenseEditCtrl.isNew" class="form__fieldset">
+                            <button class="button button--secondary" type="button"
+                                    ng-click="licenseEditCtrl.saveEdits()">
+                                {{ 'Save edits' | translate }}
+                            </button>
+                            <button class="button button--base" type="button"
+                                    ng-click="licenseEditCtrl.delete()">
+                                {{ 'Delete' | translate }}
+                            </button>
+                            <button class="button button--achromic" type="button"
+                                    ng-click="licenseEditCtrl.cancel()">
+                                {{ 'Cancel' | translate }}
+                            </button>
+                        </fieldset>
+                        <fieldset ng-show="licenseEditCtrl.isNew" class="form__fieldset">
+                            <button class="button button--secondary" type="button"
+                                    ng-click="licenseEditCtrl.createNewLicense()">
+                                {{ 'Create new license' | translate }}
+                            </button>
+                            <button class="button button--achromic" type="button"
+                                    ng-click="licenseEditCtrl.cancel()">
+                                {{ 'Cancel' | translate }}
+                            </button>
+                        </fieldset>
+                    </form>
+                    <div class="error">
+                        <div ng-show="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
+                            <p>{{ 'No license found.' | translate }}</p>
+                            <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">{{ 'Go back to license overview' | translate }}</button>
+                        </div>
+                        <div ng-show="!licenseEditCtrl.isSaveEditsSuccessful">
+                            <p>{{ 'Failed to save edits. Please try again.' | translate }}</p>
+                        </div>
+                        <div ng-show="!licenseEditCtrl.isDeleteSuccessful">
+                            <p>{{ 'Failed to delete license. Please try again.' | translate }}</p>
+                        </div>
+                        <div ng-show="!licenseEditCtrl.isCreateNewSuccessful">
+                            <p>{{ 'Failed to create a new license. Please try again.' | translate }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

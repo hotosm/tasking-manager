@@ -1,0 +1,65 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    {{ 'About the OSM Tasking Manager' | translate }}
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <p>
+                        {{ "The OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OpenStreetMap Team's collaborative mapping process. The purpose of the tool is to divide up a mapping project into smaller tasks that can be completed rapidly with many people working on the same overall area. It shows which areas need to be mapped and which areas need the mapping validated." | translate }}
+                    </p>
+                    <p>
+                        {{ 'This approach allows the distribution of tasks to many individual mappers in the context of emergency or other humanitarian mapping scenario. It also allows monitoring of the overall project progress and helps improve the consistency of the mapping (e.g., elements to cover, specific tags to use, etc.).' | translate }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <h2>{{ 'Sponsorship and Funding' | translate }}</h2>
+                    <p>
+                        {{ 'The OSM Tasking Manager was designed and built for the' | translate }}
+                        <a href="https://hotosm.org" target="_blank">Humanitarian OpenStreetMap Team.</a>
+                    </p>
+                    <p>
+                        {{ 'With the invaluable support of:' | translate }}
+                        <div class="sponsor__cards">
+                            <div class="sponsor__card"
+                                 ng-repeat="sponsor in aboutCtrl.sponsors">
+                                <section class="panel sponsor__content">
+                                    <h3>{{ sponsor.name }}</h3>
+                                    <div ng-show="sponsor.logo" class="sponsor-logo">
+                                        <span class="helper"></span>
+                                        <a href="{{ sponsor.url }}" target="_blank">
+                                            <img src="{{ sponsor.logo }}"
+                                                 alt="{{ sponsor.name }} + logo">
+                                        </a>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <h2>{{ 'Open Source' | translate }}</h2>
+                    <p>
+                        {{ 'The OSM Tasking Manager is Open Source software. Please feel free to report issues and contribute.' | translate }}
+                    </p>
+                    <p>
+                        <a href="https://github.com/hotosm/tasking-manager" target="_blank">{{ 'The application code is available on GitHub.' | translate }}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

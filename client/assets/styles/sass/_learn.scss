@@ -1,0 +1,17 @@
+.learn-container {
+  @include column(12/12);
+
+  .information {
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(6/12);
+    }
+  }
+
+  .video {
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(6/12);
+    }
+  }
+}

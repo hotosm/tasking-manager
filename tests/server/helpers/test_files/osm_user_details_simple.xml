@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="OpenStreetMap server">
+    <user id="2914943" display_name="Thinkwhere" account_created="2015-05-14T18:10:16Z">
+        <description />
+        <contributor-terms agreed="true" />
+        <roles />
+        <changesets count="16" />
+        <traces count="0" />
+        <blocks>
+            <received count="0" active="0" />
+        </blocks>
+    </user>
+</osm>

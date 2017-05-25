@@ -1,0 +1,11 @@
+# This ignore file instructs the AWS Elastic Beanstalk CLI to not deploy the following directories to beanstalk
+.idea
+*.pyc
+.git/
+.elasticbeanstalk/
+bin/
+tests/
+client/
+logs/
+shippable/
+venv/

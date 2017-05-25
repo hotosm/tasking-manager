@@ -1,0 +1,145 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header">
+            <div class="inner">
+                <h1 class="section__title">
+                    {{ 'Users' | translate }}
+                </h1>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div class="users-container">
+                        <div class="filter">
+                            <form class="form">
+                                <h3>{{ 'Search Users' | translate }}</h3>
+                                <div class="form__group">
+                                    <label class="form__label">{{ 'Role' | translate }}</label>
+                                    <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="" /> {{ 'All' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="MAPPER" /> {{ 'Mapper' | translate }}
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="VALIDATOR" /> {{ 'Validator' | translate }}
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="PROJECT_MANAGER" /> {{ 'Project Manager' | translate }}
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.role value="ADMIN" /> {{ 'Admin' | translate }}
+                                    </label>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="form__group">
+                                    <label class="form__label">{{ 'Mapping level' | translate }}</label>
+                                    <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="" /> {{ 'All' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="BEGINNER" /> {{ 'Beginner' | translate }}
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="INTERMEDIATE" /> {{ 'Intermediate' | translate }}
+                                    </label>
+                                     <label class="form__option">
+                                        <input ng-click="usersCtrl.searchUsers()"
+                                                type="radio" name="form-radio" ng-model=usersCtrl.level value="ADVANCED" /> {{ 'Advanced' | translate }}
+                                    </label>
+                                </div>
+                             </form>
+                             <div class="form__group">
+                                  <label class="form__label" for="form-name">{{ 'Username' | translate }}</label>
+                                  <input type="text" class="form__control "
+                                         placeholder="{{ 'Enter a username' | translate }}"
+                                         ng-model="usersCtrl.username"
+                                         ng-change="usersCtrl.searchUsers()"/>
+                             </div>
+                        </div>
+                        <div class="results">
+                            <div>
+                                {{ 'Total number of users:' | translate }} {{ usersCtrl.pagination.total }}
+                            </div>
+                            <div class="results-table-container">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>{{ 'Username' | translate }}</th>
+                                        <th>{{ 'Role' | translate }}</th>
+                                        <th>{{ 'Mapping level' | translate }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="user in usersCtrl.users track by $index">
+                                        <td><a href="/user/{{ user.username }}">{{ user.username }}</a></td>
+                                        <td>{{ user.role }}</td>
+                                        <td>{{ user.mappingLevel }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Pagination -->
+                            <div class="button-group button-group--horizontal" role="group" aria-label="{{ 'Navigate the results' | translate }}">
+                                <button class="button button--achromic"
+                                        ng-class="!usersCtrl.pagination.hasPrev ? 'disabled' : ''"
+                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.prevNum)">
+                                        {{ 'Previous' | translate }}
+                                </button>
+                                <button class="button button--achromic"
+                                        ng-show="(usersCtrl.pagination.prevNum || usersCtrl.pagination.page) != 1"
+                                        ng-class="usersCtrl.pagination.page === 1 ? 'disabled' : ''"
+                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.lastNum)">
+                                        1
+                                </button>
+                                <button class="button button--achromic disabled"
+                                        ng-show="usersCtrl.pagination.prevNum - 1 > 1">
+                                    ...
+                                </button>
+                                <button class="button button--achromic"
+                                        ng-show="usersCtrl.pagination.prevNum"
+                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.prevNum)">
+                                    {{ usersCtrl.pagination.prevNum }}
+                                </button>
+                                <button class="button button--achromic button--active">
+                                    {{ usersCtrl.pagination.page }}
+                                </button>
+                                <button class="button button--achromic"
+                                        ng-show="usersCtrl.pagination.nextNum"
+                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.nextNum)">
+                                    {{ usersCtrl.pagination.nextNum }}
+                                </button>
+                                <button class="button button--achromic disabled"
+                                        ng-show="usersCtrl.pagination.pages - usersCtrl.pagination.page > 2">
+                                    ...
+                                </button>
+                                <button class="button button--achromic"
+                                        ng-show="(usersCtrl.pagination.nextNum || usersCtrl.pagination.page) != usersCtrl.pagination.pages"
+                                        ng-class="usersCtrl.pagination.pages === usersCtrl.pagination.page ? 'disabled' : ''"
+                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.pages)">
+                                        {{ usersCtrl.pagination.pages }}
+                                </button>
+                                <button class="button button--achromic"
+                                        ng-class="!usersCtrl.pagination.hasNext ? 'disabled' : ''"
+                                        ng-click="usersCtrl.searchUsersWithPage(usersCtrl.pagination.nextNum)">
+                                        {{ 'Next' | translate }}
+                                </button>
+                            </div>
+                            <!-- /Pagination -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

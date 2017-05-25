@@ -1,0 +1,53 @@
+.dashboard-container {
+  @include column(12/12);
+
+  .left {
+    .content {
+      max-height: 650px;
+      overflow-y: auto;
+    }
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(6/12);
+    }
+  }
+
+  .right {
+    .content {
+      max-height: 650px;
+      overflow-y: auto;
+    }
+    @include column(12/12);
+    @include media(medium-up) {
+      @include column(6/12);
+    }
+  }
+}
+
+/* ==========================================================================
+   Dashboard stats
+   ========================================================================== */
+.section__project-dashboard--stats {
+  text-align: center;
+  left: 0;
+  width: 100%;
+  clear: both;
+}
+
+/* ==========================================================================
+   Dashboard comments
+   ========================================================================== */
+.table-dashboard-comments {
+  table-layout: fixed;
+  .td {
+    word-wrap: break-word;
+  }
+}
+
+/* ==========================================================================
+   Admin - my projects dashboard
+   ========================================================================== */
+.dashboard-my-projects {
+  max-height: 350px;
+  overflow-y: auto;
+}

@@ -1,0 +1,111 @@
+/* OpenLayers override */
+.ol-zoom button {
+  background-color: $secondary-color;
+}
+
+.ol-attribution button {
+  background-color: $secondary-color;
+}
+
+.ol-control button, .ol-control button:focus, .ol-control button:hover {
+  background-color: $secondary-color;
+}
+
+.ol-scale-line {
+  background-color: $secondary-color;
+}
+
+.ol-overviewmap {
+  left: 0.5em;
+  top: 5em;
+  bottom: auto;
+}
+
+/* Layer switcher override */
+.layer-switcher {
+  bottom: 3em;
+  top: auto;
+}
+
+/** Add layer control **/
+.add-layer-control {
+  top: 0.5rem;
+  right: 0.5rem;
+  position: absolute;
+  z-index: 1000;
+}
+
+.add-layer-panel {
+  top: 3rem;
+  right: 0.5rem;
+  position: absolute;
+  z-index: 1000;
+}
+
+.add-layer-wrapper {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  select {
+    width: 100%;
+  }
+}
+
+.legend-control {
+  background-color: rgba(255,255,255,0.8);
+  bottom: 2.5em;
+  left: 0.6em;
+  padding: 0.5em;
+  z-index: 5;
+}
+
+.priority-areas {
+  left: 10em !important;
+}
+
+/* ==========================================================================
+   OpenLayers Popup
+   ========================================================================== */
+
+.ol-popup {
+  position: absolute;
+  background-color: white;
+  -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: 280px;
+}
+.ol-popup:after, .ol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.ol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+.ol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
+}
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+}
+.ol-popup-closer:after {
+  content: "x";
+}

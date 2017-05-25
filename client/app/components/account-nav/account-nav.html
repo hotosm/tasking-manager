@@ -1,0 +1,64 @@
+<a ng-show="!accountNavCtrl.account.username" class="button button--primary" role="button"
+    ng-click="accountNavCtrl.login()">
+    <span>{{ 'Login' | translate }}</span>
+</a>
+<a class="global-menu-item" ng-show="accountNavCtrl.account.username">
+    <div class="drop drop--down drop--align-left drop--open">
+        <button class="button button--achromic drop__toggle drop__toggle--caret" type="button"
+            ng-click="accountNavCtrl.toggleMenu($event)">
+            <span>{{ accountNavCtrl.account.username }}</span>
+            <span class="badge" ng-show="accountNavCtrl.userMessages.newMessages">
+                {{ accountNavCtrl.userMessages.unread }}
+            </span>
+        </button>
+        <div ng-show="accountNavCtrl.showDropdown" class="drop__content">
+            <ul class="drop__menu drop__menu--iconified" role="menu">
+                <li>
+                    <a title="{{ 'Your profile' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToProfile()">
+                        {{ 'Your profile' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a title="{{ 'Messages' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToMessages()">
+                        {{ 'Messages' | translate }}
+                        <span class="badge" ng-show="accountNavCtrl.userMessages.newMessages">
+                            {{ accountNavCtrl.userMessages.unread }}
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a title="{{ 'Logout' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.logout()">
+                        {{ 'Logout' | translate }}
+                    </a>
+                </li>
+            </ul>
+            <ul ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'"
+                class="drop__menu drop__menu--iconified" role="menu">
+                <li ng-show="accountNavCtrl.account.role === 'ADMIN' || accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="{{ 'User list' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToUserList()">
+                        {{ 'User list' | translate }}
+                    </a>
+                </li>
+                <li ng-show="accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="{{ 'Manage licenses' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToManageLicenses()">
+                        {{ 'Manage licenses' | translate }}
+                    </a>
+                </li>
+                <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="{{ 'Project dashboard' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToProjectDashboard()">
+                        {{ 'Project dashboard' | translate }}
+                    </a>
+                </li>
+                <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="{{ 'New project' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToCreateNewProject()">
+                        {{ 'Create new Project' | translate }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</a>
+<div ng-show="accountNavCtrl.userMessages.newMessages && accountNavCtrl.newMessageNotification" class="unread-messages-popover">
+    <i class="hot-ds-icon-sm-xmark pull-right pointer" ng-click="accountNavCtrl.hideNotification()"></i>
+    <p class="pull-left">{{ 'You have unread messages.' | translate }}</p>
+</div>
