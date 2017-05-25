@@ -86,7 +86,7 @@ class ValidatorService:
         validated_tasks = validated_dto.validated_tasks
         project_id = validated_dto.project_id
         user_id = validated_dto.user_id
-        tasks_to_unlock = ValidatorService.get_unlockable_tasks(project_id, validated_tasks, user_id)
+        tasks_to_unlock = ValidatorService.get_tasks_locked_by_user(project_id, validated_tasks, user_id)
 
         # Unlock all tasks
         dtos = []
@@ -124,7 +124,7 @@ class ValidatorService:
         reset_tasks = stop_validating_dto.reset_tasks
         project_id = stop_validating_dto.project_id
         user_id = stop_validating_dto.user_id
-        tasks_to_unlock = ValidatorService.get_unlockable_tasks(project_id, reset_tasks, user_id)
+        tasks_to_unlock = ValidatorService.get_tasks_locked_by_user(project_id, reset_tasks, user_id)
 
         dtos = []
         for task_to_unlock in tasks_to_unlock:
@@ -144,7 +144,16 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
-    def get_unlockable_tasks(project_id, unlock_tasks, user_id):
+    def get_tasks_locked_by_user(project_id: int, unlock_tasks, user_id: int):
+        """
+        Returns tasks specified by project id and unlock_tasks list if found and locked for validation by user, otherwise raises ValidatatorServiceError, NotFound
+        :param project_id:
+        :param unlock_tasks: List of tasks to be unlocked
+        :param user_id:
+        :return: List of Tasks
+        :raises ValidatatorServiceError
+        :raises NotFound
+        """
         tasks_to_unlock = []
         # Loop supplied tasks to check they can all be unlocked
         for unlock_task in unlock_tasks:

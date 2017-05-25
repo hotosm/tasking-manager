@@ -68,7 +68,7 @@ class MappingService:
     @staticmethod
     def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
-        task = MappingService.get_task_to_unlock(mapped_task.project_id, mapped_task.task_id, mapped_task.user_id)
+        task = MappingService.get_task_locked_by_user(mapped_task.project_id, mapped_task.task_id, mapped_task.user_id)
 
         new_state = TaskStatus[mapped_task.status.upper()]
 
@@ -91,7 +91,7 @@ class MappingService:
     @staticmethod
     def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
-        task = MappingService.get_task_to_unlock(stop_task.project_id, stop_task.task_id, stop_task.user_id)
+        task = MappingService.get_task_locked_by_user(stop_task.project_id, stop_task.task_id, stop_task.user_id)
 
         if stop_task.comment:
             # Parses comment to see if any users have been @'d
@@ -102,8 +102,18 @@ class MappingService:
         return task.as_dto()
 
     @staticmethod
-    def get_task_to_unlock(project_id, task_id, user_id):
+    def get_task_locked_by_user(project_id: int, task_id: int, user_id: int) -> Task:
+        """
+        Returns task specified by project id and task id if found and locked for mapping by user, otherwise raises MappingServiceError
+        :param project_id:
+        :param task_id:
+        :param user_id:
+        :return: Task
+        :raises: MappingServiceError
+        """
         task = MappingService.get_task(task_id, project_id)
+        if task is None:
+            raise MappingServiceError(f'Task {task_id} not found')
         current_state = TaskStatus(task.task_status)
         if current_state != TaskStatus.LOCKED_FOR_MAPPING:
             raise MappingServiceError('Status must be LOCKED_FOR_MAPPING to unlock')
