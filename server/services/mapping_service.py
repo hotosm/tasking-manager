@@ -98,7 +98,7 @@ class MappingService:
     @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
         """ 
-        Creates a GPX file for supplied tasks.  You can use the following URL to test locally:
+        Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.  You can use the following URL to test locally:
         http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v1/project/111/tasks_as_gpx%3Ftasks=2
         """
         if timestamp is None:
@@ -139,8 +139,8 @@ class MappingService:
 
     @staticmethod
     def generate_osm_xml(project_id: int, task_ids_str: str) -> str:
-        """ Generate xml response suitable for loading into JOSM """
-
+        """ Generate xml response suitable for loading into JOSM.  A sample output file is in 
+            /server/helpers/testfiles/osm-sample.xml """
         root = ET.Element('osm', attrib=dict(version='0.6', upload='no', creator='HOT Tasking Manager'))
 
         task_ids = map(int, task_ids_str.split(','))
@@ -154,14 +154,8 @@ class MappingService:
                 for point in poly.exterior.coords:
                     ET.SubElement(root, 'node', attrib=dict(action='modify', visible='true', id=str(fake_id),
                                                             lon=str(point[0]), lat=str(point[1])))
-                    ET.SubElement(way, 'nd', attrib=dict(id=str(fake_id)))
+                    ET.SubElement(way, 'nd', attrib=dict(ref=str(fake_id)))
                     fake_id -= 1
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
-
-        #tree = ET.parse('osm_sample.xml')
-        #root = tree.getroot()
-        #return ET.tostring(root, encoding='utf8')
-
-
