@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', 'messageService', profileController]);
 
-    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService) {
+    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService, messageService) {
 
         var vm = this;
         vm.username = '';
@@ -22,6 +22,8 @@
         vm.errorSetRole = false;
         vm.errorSetLevel = false;
         vm.errorSetContactDetails = false;
+        vm.verificationEmailSent = false;
+        vm.errorVerificationEmailSent = false;
 
         // Edit user details
         vm.editDetails = false;
@@ -106,7 +108,6 @@
                 if (account) {
                     vm.currentlyLoggedInUser = account;
                 }
-
             }, function () {
                 // Could not find the user, redirect to the homepage
                 $location.path('/');
@@ -128,6 +129,7 @@
             resultsPromise.then(function (data) {
                 // Successfully saved
                 vm.editDetails = false;
+                vm.verificationEmailSent = data.verificationEmailSent;
                 getUser();
             }, function () {
                 vm.editDetails = false;
@@ -135,7 +137,24 @@
                 getUser();
             });
             vm.editDetails = false;
-        }
+        };
+
+        /**
+         * Resend the email verification email
+         */
+        vm.resendVerificationEmail = function(){
+            vm.errorVerificationEmailSent = false;
+            var resultsPromise = messageService.resendEmailVerification();
+            resultsPromise.then(function (data) {
+                // Successfully saved
+                vm.verificationEmailSent = true;
+                getUser();
+            }, function () {
+                vm.verificationEmailSent = false;
+                vm.errorVerificationEmailSent = true;
+                getUser();
+            });
+        };
 
         /**
          * View project for user and bounding box in Overpass Turbo
