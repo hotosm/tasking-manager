@@ -8,5 +8,7 @@ cd ../..
 
 # Run Python tests
 which nosetests
+export SQLALCHEMY_TRACK_MODIFICATIONS=false
+pip freeze
 nosetests ./tests/server --with-xunit --xunit-file ./shippable/testresults/unitresults.xml --with-coverage --cover-erase --cover-package=./server
 coverage xml -o shippable/codecoverage/coverage.xml
