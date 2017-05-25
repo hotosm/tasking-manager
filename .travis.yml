@@ -4,6 +4,8 @@ python:
 
 cache: pip
 
+sudo: false
+
 # This before_install list is only used for the test stage.
 before_install:
   - echo 'before install'
