@@ -158,12 +158,12 @@ class StopMappingAPI(Resource):
               required: true
               description: JSON object for unlocking a task
               schema:
-                  id: TaskUpdate
+                  id: TaskUpdateStop
                   properties:
                       comment:
                           type: string
                           description: Optional user comment about the task
-                          default: Mapping makes me feel good!
+                          default: Comment about mapping done before stop
         responses:
             200:
                 description: Task unlocked
@@ -236,7 +236,7 @@ class UnlockTaskForMappingAPI(Resource):
               required: true
               description: JSON object for unlocking a task
               schema:
-                  id: TaskUpdate
+                  id: TaskUpdateUnlock
                   required:
                       - status
                   properties:
@@ -247,7 +247,7 @@ class UnlockTaskForMappingAPI(Resource):
                       comment:
                           type: string
                           description: Optional user comment about the task
-                          default: Mapping makes me feel good!
+                          default: Comment about the mapping
         responses:
             200:
                 description: Task unlocked
