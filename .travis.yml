@@ -2,11 +2,15 @@ language: python
 python:
     - "3.6"
 
+dist: trusty
+
 cache:
   pip: true
   apt: true
   directories:
     - node_modules
+    - $HOME/.cache/pip
+    - $HOME/build/hotosm/tasking-manager/env
 
 sudo: true
 
@@ -19,6 +23,7 @@ before_install:
   - chmod +x ./devops/ci/shippable_deploy.sh
   - chmod +x ./devops/ci/travisci_1_dependencies.sh
   - chmod +x ./devops/ci/travisci_2_tests.sh
+  - deactivate #TravisCI venv
 
 install:
   - ./devops/ci/travisci_1_dependencies.sh
