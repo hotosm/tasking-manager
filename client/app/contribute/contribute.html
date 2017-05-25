@@ -10,97 +10,113 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <div class="contribute-container">
-                        <div class="search">
+                    <div class="search-container">
+                        <div>
+                            <form ng-submit="contributeCtrl.search()">
+                                <a class="pull-right" ng-click="showSearchOptions = !showSearchOptions">Advanced search options</a>
+                                <div class="form__input-group">
+                                    <input type="text" ng-model="contributeCtrl.searchText" placeholder="{{ 'Search project description or project number' | translate }}"
+                                           class="form__control form__control--large">
+                                    <span class="form__input-group-button">
+                                         <button class="button button--achromic button--large" type="submit">
+                                             <span>{{ 'Search' | translate }}</span>
+                                         </button>
+                                     </span>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="search" ng-show="showSearchOptions" ng-init="showSearchOptions = false">
                             <form class="form">
                                 <fieldset class="form__fieldset">
-                                     <h2>{{ 'Filter' | translate }}</h2>
-                                     <div class="form__group">
-                                        <label class="form__label">{{ 'Mapping difficulty' | translate }}</label>
-                                        <div class="button-group button-group--horizontal" role="group"
-                                             aria-label="{{ 'Mapping difficulty' | translate }}">
-                                            <button class="button button--achromic" type="button"
-                                                ng-click="contributeCtrl.setMapperLevel('')"
-                                                ng-class="contributeCtrl.mapperLevel === '' ? 'button--active' : ''">
-                                                {{ 'All' | translate }}
-                                            </button>
-                                            <button class="button button--achromic" type="button"
-                                                ng-click="contributeCtrl.setMapperLevel('BEGINNER')"
-                                                ng-class="contributeCtrl.mapperLevel === 'BEGINNER' ? 'button--active' : ''">
-                                                {{ 'Beginner' | translate }}
-                                            </button>
-                                            <button class="button button--achromic" type="button"
-                                                ng-click="contributeCtrl.setMapperLevel('INTERMEDIATE')"
-                                                ng-class="contributeCtrl.mapperLevel === 'INTERMEDIATE' ? 'button--active' : ''">
-                                                {{ 'Intermediate' | translate }}</button>
-                                            <button class="button button--achromic" type="button"
-                                                ng-click="contributeCtrl.setMapperLevel('ADVANCED')"
-                                                ng-class="contributeCtrl.mapperLevel === 'ADVANCED' ? 'button--active' : ''">
-                                                {{ 'Advanced' | translate }}</button>
+                                    <div class="search-options-container">
+                                        <div class="form__group search-option">
+                                            <label class="form__label">{{ 'Mapping difficulty' | translate }}</label>
+                                            <select class="form__control form__control--medium"
+                                                    ng-click="contributeCtrl.search()"
+                                                    ng-model="contributeCtrl.mapperLevel">
+                                                <option value="">{{ 'All' | translate }}</option>
+                                                <option value="BEGINNER">{{ 'Beginner' | translate }}</option>
+                                                <option value="INTERMEDIATE">{{ 'Intermediate' | translate }}</option>
+                                                <option value="ADVANCED">{{ 'Advanced' | translate }}</option>
+                                            </select>
                                         </div>
-                                    </div>
-                                    <div class="form__group">
-                                        <label class="form__label">{{ 'Organisation' | translate }}</label>
-                                        <select class="form__control" ng-model="contributeCtrl.searchOrganisation">
-                                            <option value="">{{ 'All' | translate }}</option>
-                                            <option ng-repeat="organisation in contributeCtrl.organisations"
-                                                    value="{{ organisation }}">{{ organisation }}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form__group">
-                                        <label class="form__label">{{ 'Campaign' | translate }}</label>
-                                        <select class="form__control" ng-model="contributeCtrl.searchCampaign">
-                                            <option value="">{{ 'All' | translate }}</option>
-                                            <option ng-repeat="campaign in contributeCtrl.campaigns"
-                                                    value="{{ campaign }}">{{ campaign }}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form__group">
-                                        <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>
-                                        <label class="form__option form__option--custom-checkbox">
-                                            <input type="checkbox" name="form-custom-checkbox"
-                                                   ng-model="contributeCtrl.searchRoads"/>
-                                            <span class="form__option__text">{{ 'Roads' | translate }}</span>
-                                            <span class="form__option__ui"></span>
-                                        </label>
-                                        <label class="form__option form__option--custom-checkbox">
-                                            <input type="checkbox" name="form-custom-checkbox"
-                                                ng-model="contributeCtrl.searchBuildings"/>
-                                            <span class="form__option__text">{{ 'Buildings' | translate }}</span>
-                                            <span class="form__option__ui"></span>
-                                        </label>
-                                        <label class="form__option form__option--custom-checkbox">
-                                            <input type="checkbox" name="form-custom-checkbox"
-                                                ng-model="contributeCtrl.searchWaterways"/>
-                                            <span class="form__option__text">{{ 'Waterways' | translate }}</span>
-                                            <span class="form__option__ui"></span>
-                                        </label>
-                                        <label class="form__option form__option--custom-checkbox">
-                                            <input type="checkbox" name="form-custom-checkbox"
-                                                ng-model="contributeCtrl.searchLanduse"/>
-                                            <span class="form__option__text">{{ 'Land use' | translate }}</span>
-                                            <span class="form__option__ui"></span>
-                                        </label>
-                                        <label class="form__option form__option--custom-checkbox">
-                                            <input type="checkbox" name="form-custom-checkbox"
-                                                ng-model="contributeCtrl.searchOther"/>
-                                            <span class="form__option__text">{{ 'Other' | translate }}</span>
-                                            <span class="form__option__ui"></span>
-                                        </label>
-                                    </div>
-                                    <div class="form__group">
-                                        <label class="form__label">{{ 'Text search' | translate }}</label>
-                                        <input type="text" class="form__control form__control--medium" placeholder="{{ 'Search project description or project number' | translate }}" ng-model="contributeCtrl.searchText"/>
-                                    </div>
-                                    <div>
-                                        <button class="button button--primary pull-right"
-                                            ng-click="contributeCtrl.search()">
-                                            {{ 'Search' | translate }}
-                                        </button>
+                                        <div class="form__group search-option">
+                                            <label class="form__label">{{ 'Organisation' | translate }}</label>
+                                            <select class="form__control form__control--medium"
+                                                    ng-click="contributeCtrl.search()"
+                                                    ng-model="contributeCtrl.searchOrganisation">
+                                                <option value="">{{ 'All' | translate }}</option>
+                                                <option ng-repeat="organisation in contributeCtrl.organisations"
+                                                        value="{{ organisation }}">{{ organisation }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="form__group search-option">
+                                            <label class="form__label">{{ 'Campaign' | translate }}</label>
+                                            <select class="form__control form__control--medium"
+                                                    ng-click="contributeCtrl.search()"
+                                                    ng-model="contributeCtrl.searchCampaign">
+                                                <option value="">{{ 'All' | translate }}</option>
+                                                <option ng-repeat="campaign in contributeCtrl.campaigns"
+                                                        value="{{ campaign }}">{{ campaign }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="form__group search-option">
+                                            <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>
+                                            <div class="drop drop--down drop--align-left drop--open drop--full-width">
+                                                <a>
+                                                    <button class="button button--achromic drop__toggle drop__toggle--caret drop__toggle--caret-select button--select"
+                                                            type="button"
+                                                            ng-click="contributeCtrl.showDropdown = !contributeCtrl.showDropdown">
+                                                        <span>{{ 'Type(s) of mapping' | translate }}</span>
+                                                    </button>
+                                                </a>
+                                                <div ng-show="contributeCtrl.showDropdown" class="drop__content">
+                                                    <div>
+                                                        <label class="form__option form__option--custom-checkbox">
+                                                            <input type="checkbox" name="form-custom-checkbox"
+                                                                   ng-click="contributeCtrl.search()"
+                                                                   ng-model="contributeCtrl.searchRoads"/>
+                                                            <span class="form__option__text">{{ 'Roads' | translate }}</span>
+                                                            <span class="form__option__ui"></span>
+                                                        </label>
+                                                        <label class="form__option form__option--custom-checkbox">
+                                                            <input type="checkbox" name="form-custom-checkbox"
+                                                                   ng-click="contributeCtrl.search()"
+                                                                   ng-model="contributeCtrl.searchBuildings"/>
+                                                            <span class="form__option__text">{{ 'Buildings' | translate }}</span>
+                                                            <span class="form__option__ui"></span>
+                                                        </label>
+                                                        <label class="form__option form__option--custom-checkbox">
+                                                            <input type="checkbox" name="form-custom-checkbox"
+                                                                   ng-click="contributeCtrl.search()"
+                                                                   ng-model="contributeCtrl.searchWaterways"/>
+                                                            <span class="form__option__text">{{ 'Waterways' | translate }}</span>
+                                                            <span class="form__option__ui"></span>
+                                                        </label>
+                                                        <label class="form__option form__option--custom-checkbox">
+                                                            <input type="checkbox" name="form-custom-checkbox"
+                                                                   ng-click="contributeCtrl.search()"
+                                                                   ng-model="contributeCtrl.searchLanduse"/>
+                                                            <span class="form__option__text">{{ 'Land use' | translate }}e</span>
+                                                            <span class="form__option__ui"></span>
+                                                        </label>
+                                                        <label class="form__option form__option--custom-checkbox">
+                                                            <input type="checkbox" name="form-custom-checkbox"
+                                                                   ng-click="contributeCtrl.search()"
+                                                                   ng-model="contributeCtrl.searchOther"/>
+                                                            <span class="form__option__text">{{ 'Other' | translate }}</span>
+                                                            <span class="form__option__ui"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </fieldset>
                             </form>
                         </div>
+                    </div>
+                    <div class="contribute-container">
                         <div class="search-results">
                             <div ng-hide="contributeCtrl.results.length > 0">
                                 <p>{{ 'No projects found.' | translate }}</p>
