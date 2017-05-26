@@ -13,7 +13,7 @@ fi
 VERSION=v.0.0.$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
 
 # Only deploy to Staging if we're on develop
-if [ $CIRCLE_BRANCH == "develop" ]
+if [ $CIRCLE_BRANCH == "develop-branch-travis" ]
     then
         # Install AWS requirements
         pip install -r requirements.aws.txt
