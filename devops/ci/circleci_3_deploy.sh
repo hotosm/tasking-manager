@@ -18,9 +18,9 @@ if [ $CIRCLE_BRANCH == "develop-branch-travis" ]
         # Install AWS requirements
         pip install -r requirements.aws.txt
         printf 'n\n' | eb init hot-tasking-manager --region us-west-1
-        eb use tasking-manager-staging
+        eb use taskingmanager-dev
 
         # Deploy develop builds to Staging environment
-        echo Deploying $VERSION to tasking-manager-staging
+        echo Deploying $VERSION to taskingmanager-dev
         eb deploy -l $VERSION
 fi
