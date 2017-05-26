@@ -1,4 +1,3 @@
-import copy
 import json
 import geojson
 from flask import current_app
