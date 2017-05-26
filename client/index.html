@@ -56,16 +56,6 @@
 </head>
 <body>
 
-<!-- mobile message -->
-<div class="mob-disclaimer" ng-show="!hideMobileMessage">
-    <p>
-        <i class="hot-ds-icon-xmark pull-right pointer" ng-click="hideMobileMessage = true"></i>
-        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
-    </p>
-    <a href="https://mapswipe.org" class="button button--achromic">{{ 'Go to MapSwipe' | translate }}</a>
-</div>
-<!--/ mobile message -->
-
 <!-- header -->
 <header class="page__header page__header__fixed" role="banner">
     <div class="inner">
@@ -113,6 +103,16 @@
 <!-- Main content and injected views -->
 <div class="page__body" id="tm-container" ng-view autoscroll>
 </div>
+
+<!-- mobile message -->
+<div class="mob-disclaimer" ng-show="!hideMobileMessage">
+    <p>
+        <i class="hot-ds-icon-xmark pull-right pointer" ng-click="hideMobileMessage = true"></i>
+        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
+    </p>
+    <a href="https://mapswipe.org" class="button button--achromic">{{ 'Go to MapSwipe' | translate }}</a>
+</div>
+<!--/ mobile message -->
 
 <footer class="page__footer">
     <div class="left">
@@ -205,6 +205,10 @@
 
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular-socialshare/2.3.8/angular-socialshare.min.js -->
 <script src="node_modules/angular-socialshare/dist/angular-socialshare.js"></script>
+<!-- /build -->
+
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/ng-meta/1.0.0/ngMeta.min.js -->
+<script src="node_modules/ng-meta/dist/ngMeta.js"></script>
 <!-- /build -->
 
 <!-- build:js app/taskingmanager.min.js -->
