@@ -1,3 +1,4 @@
+import copy
 import json
 import geojson
 from flask import current_app
@@ -124,30 +125,39 @@ class Project(db.Model):
     @staticmethod
     def clone(project_id: int, author_id: int):
         """ Clone project """
-        project_to_clone = Project.get(project_id)
 
-        db.session.expunge(project_to_clone)
-        make_transient(project_to_clone)
+        cloned_project = Project.get(project_id)
 
-        # Reset Counters
-        project_to_clone.total_tasks = 0
-        project_to_clone.tasks_mapped = 0
-        project_to_clone.tasks_validated = 0
-        project_to_clone.tasks_bad_imagery = 0
+        # Remove clone from session so we can reinsert it as a new object
+        db.session.expunge(cloned_project)
+        make_transient(cloned_project)
 
-        # Remove relationships that don't form part of the clone contact, eg anything to do with the AOI
-        #self.tasks = None
-        #self.area_of_interest = None
-        #self.priority_areas = None
+        # Re-initialise counters and meta-data
+        cloned_project.total_tasks = 0
+        cloned_project.tasks_mapped = 0
+        cloned_project.tasks_validated = 0
+        cloned_project.tasks_bad_imagery = 0
+        cloned_project.aoi_id = None  # TODO this needs looked at
+        cloned_project.last_updated = timestamp()
+        cloned_project.created = timestamp()
+        cloned_project.author_id = author_id
+        cloned_project.status = ProjectStatus.DRAFT.value
+        cloned_project.id = None  # Reset ID so we get a new ID when inserted
 
-        project_to_clone.author_id = author_id
-
-        project_to_clone.id = None  # Should force creation of a new row
-        db.session.add(project_to_clone)
+        db.session.add(cloned_project)
         db.session.commit()
 
-        iain = 1
+        # Now add the project info, we have to do it in a two stage commit because we need to know the new project id
+        original_project = Project.get(project_id)
 
+        for info in original_project.project_info:
+            info.id = None
+            info.project_id_str = str(cloned_project.id)
+            cloned_project.project_info.append(info)
+
+        db.session.commit()
+        
+        return cloned_project.id
 
     @staticmethod
     def get(project_id: int):

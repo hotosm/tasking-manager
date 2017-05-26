@@ -37,8 +37,8 @@ class TestProject(unittest.TestCase):
         if self.skip_tests:
             return
 
-        self.test_project.delete()
-        self.test_user.delete()
+        #self.test_project.delete()
+        #self.test_user.delete()
         self.ctx.pop()
 
     def test_project_can_be_persisted_to_db(self):
@@ -117,15 +117,16 @@ class TestProject(unittest.TestCase):
         self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
                          'English translation should be returned as Italian name was not provided')
 
-    # def test_project_can_be_cloned(self):
-    #     if self.skip_tests:
-    #         return
-    #
-    #     # Arrange
-    #     self.update_project_with_info()
-    #
-    #     # Act
-    #     Project.clone(self.test_project.id, self.test_user.id)
+    def test_project_can_be_cloned(self):
+
+        if self.skip_tests:
+            return
+
+        # Arrange
+        self.update_project_with_info()
+
+        # Act
+        Project.clone(self.test_project.id, 5175337)
 
 
 
