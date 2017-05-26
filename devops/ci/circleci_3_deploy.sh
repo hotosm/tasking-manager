@@ -20,7 +20,7 @@ if [ $CIRCLE_BRANCH == "develop-branch-travis" ]
     then
         # Install AWS requirements
         pip install -r requirements.aws.txt
-        printf 'n\n' | eb init --debug taskingmanager-dev --region us-east-1
+        printf 'n\n' | eb init --debug taskingmanager --region us-east-1
         eb use taskingmanager-dev
 
         # Deploy develop builds to Staging environment
