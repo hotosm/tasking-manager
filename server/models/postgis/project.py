@@ -151,10 +151,13 @@ class Project(db.Model):
         original_project = Project.get(project_id)
 
         for info in original_project.project_info:
+            db.session.expunge(info)
+            make_transient(info)  # Must remove the object from the session or it will be updated rather than inserted
             info.id = None
             info.project_id_str = str(cloned_project.id)
             cloned_project.project_info.append(info)
 
+        db.session.add(cloned_project)
         db.session.commit()
 
         return cloned_project

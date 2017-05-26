@@ -52,7 +52,6 @@ class ProjectAdminService:
             tasks = draft_project_dto.tasks
         ProjectAdminService._attach_tasks_to_project(draft_project, tasks)
 
-
         draft_project.create()
         return draft_project.id
 
@@ -189,3 +188,9 @@ class ProjectAdminService:
     def get_projects_for_admin(admin_id: int, preferred_locale: str):
         """ Get all projects for provided admin """
         return Project.get_projects_for_admin(admin_id, preferred_locale)
+
+    @staticmethod
+    def clone_project(project_to_clone_id: int, user_id: int) -> int:
+        """ Clones the specified project, and returns the new Cloned project id """
+        cloned_project = Project.clone(project_to_clone_id, user_id)
+        return cloned_project.id
