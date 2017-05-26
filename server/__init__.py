@@ -89,7 +89,7 @@ def init_flask_restful_routes(app):
     from server.api.license_apis import LicenseAPI, LicenceListAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI, TasksAsGPX, TasksAsOSM
     from server.api.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI, ResendEmailValidationAPI
-    from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI, ProjectClone
+    from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
@@ -105,7 +105,6 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project', endpoint="create_project", methods=['PUT'])
     api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project/<int:project_id>', methods=['GET', 'POST', 'DELETE'])
     api.add_resource(ProjectCommentsAPI,            '/api/v1/admin/project/<int:project_id>/comments')
-    api.add_resource(ProjectClone,                  '/api/v1/admin/project/<int:project_id>/clone')
     api.add_resource(ProjectInvalidateAll,          '/api/v1/admin/project/<int:project_id>/invalidate-all')
     api.add_resource(ProjectValidateAll,            '/api/v1/admin/project/<int:project_id>/validate-all')
     api.add_resource(ProjectsMessageAll,            '/api/v1/admin/project/<int:project_id>/message-all')

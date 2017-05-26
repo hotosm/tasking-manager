@@ -42,8 +42,13 @@ class ProjectAdminService:
         except InvalidGeoJson as e:
             raise e
 
-        draft_project = Project()
-        draft_project.create_draft_project(draft_project_dto, area_of_interest)
+        # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
+        if draft_project_dto.cloneFromProjectId:
+            draft_project = Project.clone(draft_project_dto.cloneFromProjectId, draft_project_dto.user_id)
+            draft_project.aoi = area_of_interest
+        else:
+            draft_project = Project()
+            draft_project.create_draft_project(draft_project_dto, area_of_interest)
 
         # if arbitrary_tasks requested, create tasks from aoi otherwise use tasks in DTO
         if draft_project_dto.has_arbitrary_tasks:
@@ -188,9 +193,3 @@ class ProjectAdminService:
     def get_projects_for_admin(admin_id: int, preferred_locale: str):
         """ Get all projects for provided admin """
         return Project.get_projects_for_admin(admin_id, preferred_locale)
-
-    @staticmethod
-    def clone_project(project_to_clone_id: int, user_id: int) -> int:
-        """ Clones the specified project, and returns the new Cloned project id """
-        cloned_project = Project.clone(project_to_clone_id, user_id)
-        return cloned_project.id
