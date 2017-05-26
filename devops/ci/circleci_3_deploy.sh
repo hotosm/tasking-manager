@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-set -vex # halt script on error
-
-env
+set -ex # halt script on error
 
 echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 
