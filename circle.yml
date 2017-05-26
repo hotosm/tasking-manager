@@ -52,5 +52,5 @@ deployment:
     branch: develop-branch-travis
     commands:
       - |
-        chmod +x ./devops/ci/circleci_3_deploy.sh
-        ./devops/ci/circleci_3_deploy.sh
+        chmod +x ./devops/ci/circleci_deploy.sh
+        ./devops/ci/circleci_deploy.sh
