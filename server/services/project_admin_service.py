@@ -57,7 +57,10 @@ class ProjectAdminService:
             tasks = draft_project_dto.tasks
         ProjectAdminService._attach_tasks_to_project(draft_project, tasks)
 
-        draft_project.create()
+        if draft_project_dto.cloneFromProjectId:
+            draft_project.save()  # Update the clone
+        else:
+            draft_project.create()  # Create the new project
         return draft_project.id
 
     @staticmethod
