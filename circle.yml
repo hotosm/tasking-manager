@@ -47,11 +47,10 @@ test:
         --with-coverage --cover-erase --cover-package=./server
       env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
 
-## Customize deployment commands
 deployment:
   staging:
     branch: develop-branch-travis
     commands:
       - |
-        chmod +x ./devops/ci/aws_1_deploy.sh
-        ./devops/ci/aws_1_deploy.sh
+        chmod +x ./devops/ci/circleci_3_deploy.sh
+        ./devops/ci/circleci_3_deploy.sh
