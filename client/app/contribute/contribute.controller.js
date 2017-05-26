@@ -64,12 +64,6 @@
             var disableScrollZoom = true;
             mapService.createOSMMap('map', disableScrollZoom);
             vm.map = mapService.getOSMMap();
-            // Get legend element and add it to the map as a control
-            var legendContainer = document.getElementById('legend-container');
-            if (legendContainer){
-                var legendControl = new ol.control.Control({element: legendContainer});
-                vm.map.addControl(legendControl);
-            }
             projectMapService.initialise(vm.map);
             projectMapService.createPopup();
             setOrganisationTags();

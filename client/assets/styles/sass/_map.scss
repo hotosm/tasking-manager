@@ -52,6 +52,7 @@
 }
 
 .legend-control {
+  position: absolute;
   background-color: rgba(255,255,255,0.8);
   bottom: 2.5em;
   left: 0.6em;
@@ -61,6 +62,10 @@
 
 .priority-areas {
   left: 10em !important;
+}
+
+.map-container {
+  position: relative;
 }
 
 /* ==========================================================================
