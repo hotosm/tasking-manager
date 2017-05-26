@@ -1,3 +1,4 @@
+import copy
 import os
 import unittest
 import geojson
@@ -37,8 +38,8 @@ class TestProject(unittest.TestCase):
         if self.skip_tests:
             return
 
-        #self.test_project.delete()
-        #self.test_user.delete()
+        self.test_project.delete()
+        self.test_user.delete()
         self.ctx.pop()
 
     def test_project_can_be_persisted_to_db(self):
@@ -126,9 +127,16 @@ class TestProject(unittest.TestCase):
         self.update_project_with_info()
 
         # Act
-        Project.clone(self.test_project.id, 5175337)
+        original_id = copy.copy(self.test_project.id)
+        cloned_project = Project.clone(original_id, 5175337)
 
+        self.assertTrue(cloned_project)
+        self.assertEqual(cloned_project.project_info[0].name, 'Thinkwhere Test')
 
+        # Tidy Up
+        cloned_project.delete()
+        original_project = Project.get(original_id)  # SQLAlchemy is hanging on to a ref to the old project
+        original_project.delete()
 
     def update_project_with_info(self):
 

@@ -156,8 +156,8 @@ class Project(db.Model):
             cloned_project.project_info.append(info)
 
         db.session.commit()
-        
-        return cloned_project.id
+
+        return cloned_project
 
     @staticmethod
     def get(project_id: int):
