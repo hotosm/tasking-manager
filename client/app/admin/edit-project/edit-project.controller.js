@@ -820,5 +820,31 @@
                 vm.campaignTags = [];
             });
         }
+
+        /**
+         * Clone a project by getting the project ID and name and navigating to the project create page
+         */
+        vm.cloneProject = function(){
+            $location.path('/admin/create-project').search({
+                projectId: vm.project.projectId,
+                projectName: getProjectNameForDefaultLocale()
+            });
+                //id={{ editProjectCtrl.project.projectId }}?{{ editProjectCtrl.project.getProjectNameForDefaultLocale() }}");
+        };
+
+        /**
+         * Get the default language name
+         */
+        function getProjectNameForDefaultLocale(){
+            var projectName = '';
+            var projectInfo = vm.project.projectInfoLocales;
+            for (var i = 0; i < projectInfo.length; i++){
+                if (projectInfo[i].locale === vm.project.defaultLocale){
+                    projectName = projectInfo[i].name;
+                    return projectName;
+                }
+            }
+            return projectName;
+        }
     }
 })();

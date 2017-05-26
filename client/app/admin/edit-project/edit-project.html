@@ -448,6 +448,14 @@
                                         {{ 'Delete project' | translate }}
                                     </button>
                                 </div>
+                                <div class="form__group">
+                                    <label class="form__label">{{ 'Clone project' | translate }}</label>
+                                    <p>{{ 'This will clone all descriptions, instructions, metadata etc. The Area of Interest, the tasks and the priority areas will not be cloned. You will have to redraw/import these. Your newly cloned project will be in draft status.' | translate }}</p>
+                                    <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.cloneProject()">
+                                        {{ 'Clone project' | translate }}
+                                    </button>
+                                </div>
                             </fieldset>
                         </div>
                             <!--/ settings -->
