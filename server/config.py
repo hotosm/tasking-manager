@@ -43,6 +43,13 @@ class StageConfig(EnvironmentConfig):
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
+class StagingConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-stage.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-stage.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
 class DemoConfig(EnvironmentConfig):
     APP_BASE_URL = 'http://tasks-demo.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
