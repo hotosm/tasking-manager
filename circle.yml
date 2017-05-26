@@ -9,6 +9,10 @@ machine:
 
 ## Customize dependencies
 dependencies:
+  cache_directories:
+    # relative to the build directory
+    - "client/node_modules"
+    - "env"
   pre:
     - |
       # Install latest LTS node
