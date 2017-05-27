@@ -21,41 +21,36 @@ fi
 # Set Version Number
 VERSION=v.0.0.$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
 
+if ! [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
+  then
+    # Install AWS requirements
+    pip install -r requirements.aws.txt
+    printf 'n\n1\n' | eb init taskingmanager --region us-east-1
+fi
+
 # Deploy to Demo Env
 if [ $CIRCLE_BRANCH == $DEMO_BRANCH ]
-    then
-        # Install AWS requirements
-        pip install -r requirements.aws.txt
-        printf 'n\n\n' | eb init taskingmanager --region us-east-1
-        eb use $DEMO_ENV
-
-        # Deploy develop builds to Staging environment
-        echo Deploying $VERSION to $DEMO_ENV
-        eb deploy -l $VERSION
+  then
+    # Deploy develop builds to Staging environment
+    eb use $DEMO_ENV
+    echo Deploying $VERSION to $DEMO_ENV
+    eb deploy -l $VERSION
 fi
 
 # Deploy to Stage Env
 if [ $CIRCLE_BRANCH == $STAGE_BRANCH ]
-    then
-        # Install AWS requirements
-        pip install -r requirements.aws.txt
-        printf 'n\n' | eb init taskingmanager --region us-east-1
-        eb use $STAGE_ENV
-
-        # Deploy develop builds to Staging environment
-        echo Deploying $VERSION to $STAGE_ENV
-        eb deploy -l $VERSION
+  then
+    # Deploy develop builds to Staging environment
+    eb use $STAGE_ENV
+    echo Deploying $VERSION to $STAGE_ENV
+    eb deploy -l $VERSION
 fi
 
 # Deploy to Prod Env
 if [ $CIRCLE_BRANCH == $PROD_BRANCH ]
-    then
-        # Install AWS requirements
-        pip install -r requirements.aws.txt
-        printf 'n\n' | eb init taskingmanager --region us-east-1
-        eb use $PROD_ENV
-
-        # Deploy develop builds to Staging environment
-        echo Deploying $VERSION to $PROD_ENV
-        eb deploy -l $VERSION
+  then
+    # Deploy develop builds to Staging environment
+    eb use $PROD_ENV
+    echo Deploying $VERSION to $PROD_ENV
+    eb deploy -l $VERSION
 fi
