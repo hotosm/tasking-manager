@@ -33,6 +33,8 @@
                 suffix: '.json'
             });
             $translateProvider.preferredLanguage('en');
+            // This escapes HTML in the translation - see https://angular-translate.github.io/docs/#/guide/19_security
+            $translateProvider.useSanitizeValueStrategy('escape');
             
             // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
             $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
@@ -153,6 +155,13 @@
                     templateUrl: 'app/login/login.html',
                     controller: 'loginController',
                     controllerAs: 'loginCtrl'
+                })
+            
+                .when('/validate-email', {
+                    templateUrl: 'app/profile/validate-email.html',
+                    controller: 'validateEmailController',
+                    controllerAs: 'validateEmailCtrl',
+                    reloadOnSearch: false
                 });
 
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them

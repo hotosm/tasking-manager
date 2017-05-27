@@ -3,14 +3,19 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    {{ 'Login' | translate }}
+                    Email verification
                 </h1>
             </div>
         </header>
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    {{ 'Authorization failed.' | translate }}
+                    <p ng-show="validateEmailCtrl.isValidEmail">
+                        Thank you for verifying your email.
+                    </p>
+                    <p ng-hide="validateEmailCtrl.isValidEmail">
+                        Something went wrong when verifying your email.
+                    </p>
                 </div>
             </div>
         </div>

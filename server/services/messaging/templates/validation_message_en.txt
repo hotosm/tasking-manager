@@ -1,0 +1,7 @@
+Hi [USERNAME]
+
+I just validated your mapping on [TASK_LINK].
+
+Awesome work!
+
+Keep mapping :)

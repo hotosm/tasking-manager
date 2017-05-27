@@ -31,11 +31,23 @@ class ValidatedTask(Model):
     status = StringType(required=True, validators=[is_valid_validated_status])
     comment = StringType()
 
+class ResetValidatingTask(Model):
+    """ Describes the model used to stop validating and reset the status of one task """
+    task_id = IntType(required=True, serialized_name='taskId')
+    comment = StringType()
+
 
 class UnlockAfterValidationDTO(Model):
     """ DTO used to transmit the status of multiple tasks after validation """
     project_id = IntType(required=True)
     validated_tasks = ListType(ModelType(ValidatedTask), required=True, serialized_name='validatedTasks')
+    user_id = IntType(required=True)
+
+
+class StopValidationDTO(Model):
+    """ DTO used to transmit the the request to stop validating multiple tasks """
+    project_id = IntType(required=True)
+    reset_tasks = ListType(ModelType(ResetValidatingTask), required=True, serialized_name='resetTasks')
     user_id = IntType(required=True)
 
 

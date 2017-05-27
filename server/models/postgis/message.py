@@ -48,20 +48,20 @@ class Message(db.Model):
         """ Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
         db.session.add(self)
 
+    def save(self):
+        """ Save """
+        db.session.add(self)
+        db.session.commit()
+
     @staticmethod
-    def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
-        """ Sends a message to all contributors """
+    def get_all_contributors(project_id: int):
+        """ Get all contributors to a project """
         query = '''SELECT mapped_by as contributors from tasks where project_id = {0} and  mapped_by is not null
                    UNION
                    SELECT validated_by from tasks where tasks.project_id = {0} and validated_by is not null'''.format(project_id)
 
         contributors = db.engine.execute(query)
-
-        for contributor in contributors:
-            message = Message.from_dto(contributor[0], message_dto)
-            db.session.add(message)
-
-        db.session.commit()
+        return contributors
 
     def mark_as_read(self):
         """ Mark the message in scope as Read """

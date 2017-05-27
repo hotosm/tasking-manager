@@ -2,21 +2,30 @@
   @include column(24/24);
 
   .search {
+    background: #f6f5f5;
+    box-shadow: 0 2px 12px 2px rgba(34, 10, 10, 0.12), 0 0 0 1px rgba(34, 10, 10, 0.12);
+    border-radius: 0.25rem;
+    border-radius: 20px;
+    padding: 10px;
     @include column(24/24);
     @include media(medium-up) {
-      @include column(9/24);
+      @include column(7/24);
     }
   }
 
   .search-results {
     @include column(24/24);
     @include media(medium-up) {
-      @include column(15/24);
+      @include column(24/24);
     }
     .paging {
       text-align: center !important;
     }
   }
+}
+
+.search-container {
+  margin-bottom: 2em;
 }
 
 /* ==========================================================================
@@ -35,7 +44,7 @@
   }
 
   &__card {
-    width: 330px;
+    width: 500px;
     margin-bottom: 2rem;
   }
 
@@ -54,5 +63,39 @@
   .progress {
     height: 10px !important;
     margin-bottom: 10px !important;
+  }
+}
+
+.search-options-container {
+  margin-top: 15px;
+  @include span(20/20);
+  .search-option {
+    @include span(10/20);
+    float: left;
+    padding: 0.25em;
+     @include media(large-up) {
+      @include span(5/20);
+    }
+  }
+  .search-button {
+    padding-top: 1.75em;
+  }
+}
+
+/** Make button look like a select button **/
+.drop__toggle--caret-select:after {
+  float:right;
+}
+
+.drop--full-width {
+  width: 100%;
+}
+
+.button--select {
+  font-weight: normal;
+  width: 100%;
+  text-align: left;
+  &drop__toggle--caret:after {
+    float:right
   }
 }

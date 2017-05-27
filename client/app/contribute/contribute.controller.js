@@ -64,12 +64,6 @@
             var disableScrollZoom = true;
             mapService.createOSMMap('map', disableScrollZoom);
             vm.map = mapService.getOSMMap();
-            // Get legend element and add it to the map as a control
-            var legendContainer = document.getElementById('legend-container');
-            if (legendContainer){
-                var legendControl = new ol.control.Control({element: legendContainer});
-                vm.map.addControl(legendControl);
-            }
             projectMapService.initialise(vm.map);
             projectMapService.createPopup();
             setOrganisationTags();
@@ -113,8 +107,14 @@
             if (vm.mapperLevel){
                 searchParams.mapperLevel = vm.mapperLevel;
             }
-            if (vm.mappingTypes){
-                searchParams.mappingTypes = vm.mappingTypes;
+            if (vm.mappingTypes.length > 0){
+                searchParams.mappingTypes = '';
+                for (var i = 0; i < vm.mappingTypes.length; i++){
+                    searchParams.mappingTypes += vm.mappingTypes[i];
+                    if (i < vm.mappingTypes.length - 1){
+                        searchParams.mappingTypes += ',';
+                    }
+                }
             }
             if (vm.searchOrganisation){
                 searchParams.organisationTag = vm.searchOrganisation;
@@ -160,21 +160,6 @@
                 projectMapService.showProjectsOnMap(vm.results);
             });
         }
-
-        /**
-         * Set the mapper level
-         * @param level
-         */
-        vm.setMapperLevel = function(level){
-            vm.mapperLevel = level;
-        };
-
-        /**
-         * Search projects
-         */
-        vm.search = function(){
-            searchProjects();
-        };
 
         /**
          * Set the mapper level

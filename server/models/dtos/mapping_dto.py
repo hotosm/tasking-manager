@@ -33,6 +33,13 @@ class MappedTaskDTO(Model):
     task_id = IntType(required=True)
     project_id = IntType(required=True)
 
+class StopMappingTaskDTO(Model):
+    """ Describes the model used to stop mapping and reset the status of one task """
+    user_id = IntType(required=True)
+    comment = StringType()
+    task_id = IntType(required=True)
+    project_id = IntType(required=True)
+
 
 class TaskHistoryDTO(Model):
     """ Describes an individual action that was performed on a mapping task"""

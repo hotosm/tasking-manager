@@ -16,6 +16,7 @@
             getAllMessages: getAllMessages,
             getMessage: getMessage,
             deleteMessage: deleteMessage,
+            resendEmailVerification: resendEmailVerification,
             formatUserNamesToLink: formatUserNamesToLink
         };
 
@@ -120,6 +121,27 @@
             return $http({
                 method: 'DELETE',
                 url: configService.tmAPI + '/messages/' + messageId,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Resend the email address verification email
+         * @returns {!jQuery.deferred|*|!jQuery.Promise|!jQuery.jqXHR}
+         */
+        function resendEmailVerification(){
+             // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/messages/resend-email-verification',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

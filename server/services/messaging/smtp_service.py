@@ -1,4 +1,3 @@
-import os
 import smtplib
 import urllib.parse
 from email.mime.multipart import MIMEMultipart
@@ -6,6 +5,8 @@ from email.mime.text import MIMEText
 from itsdangerous import URLSafeTimedSerializer
 
 from flask import current_app
+
+from server.services.messaging.template_service import get_template, get_profile_url
 
 
 class SMTPService:
@@ -15,8 +16,8 @@ class SMTPService:
         """ Sends a verification email with a unique token so we can verify user owns this email address """
 
         # TODO these could be localised if needed, in the future
-        html_template = SMTPService._get_template('email_verification_en.html')
-        text_template = SMTPService._get_template('email_verification_en.txt')
+        html_template = get_template('email_verification_en.html')
+        text_template = get_template('email_verification_en.txt')
 
         verification_url = SMTPService._generate_email_verification_url(to_address, username)
 
@@ -32,37 +33,23 @@ class SMTPService:
         return True
 
     @staticmethod
-    def send_email_alert(to_address: str, profile_link: str):
-        from_address = current_app.config['EMAIL_FROM_ADDRESS']
+    def send_email_alert(to_address: str, username: str):
+        """ Send an email to user to alert them they have a new message"""
+        if not to_address:
+            return False  # Many users will not have supplied email address so return
 
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = 'You have a new message on the HOT Tasking Manager'
-        msg['From'] = from_address
-        msg['To'] = to_address
+        # TODO these could be localised if needed, in the future
+        html_template = get_template('message_alert_en.html')
+        text_template = get_template('message_alert_en.txt')
 
-        text = f'Hi\nYou have a new message on the HOT Tasking Manager.\n Messages can be viewed at this link {profile_link}'
-        html = f'''\
-        <html>
-          <head></head>
-          <body>
-            <p>Hi<br>
-               You have a new message on the HOT Tasking Manager.<br>
-               <a href="{profile_link}">Click here to view it.</a>.
-            </p>
-          </body>
-        </html>
-        '''
+        html_template = html_template.replace('[USERNAME]', username)
+        html_template = html_template.replace('[PROFILE_LINK]', get_profile_url(username))
 
-        # Record the MIME types of both parts - text/plain and text/html.
-        part1 = MIMEText(text, 'plain')
-        part2 = MIMEText(html, 'html')
+        text_template = text_template.replace('[USERNAME]', username)
+        text_template = text_template.replace('[PROFILE_LINK]', get_profile_url(username))
 
-        msg.attach(part1)
-        msg.attach(part2)
-
-        sender = SMTPService._init_smtp_client()
-        sender.sendmail(from_address, to_address, msg.as_string())
-        sender.quit()
+        subject = 'You have a new message on the HOT Tasking Manager'
+        SMTPService._send_mesage(to_address, subject, html_template, text_template)
 
         return True
 
@@ -85,23 +72,6 @@ class SMTPService:
         sender = SMTPService._init_smtp_client()
         sender.sendmail(from_address, to_address, msg.as_string())
         sender.quit()
-
-    @staticmethod
-    def _get_template(template_name) -> str:
-        """
-        Helper function to read the template from disk and return as a string to be manipulated
-        :param template_name: The template we want to load
-        :return: Template as a string
-        """
-        current_app.logger.debug('Getting template {0}'.format(template_name))
-
-        try:
-            template_location = os.path.join(os.path.dirname(__file__), 'templates/{0}'.format(template_name))
-            template = open(template_location, mode='r', encoding='utf-8')
-            return template.read()
-        except FileNotFoundError:
-            current_app.logger.error('Unable open file {0}'.format(template_location))
-            raise ValueError('Unable open file {0}'.format(template_location))
 
     @staticmethod
     def _init_smtp_client():

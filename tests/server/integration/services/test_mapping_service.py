@@ -8,8 +8,8 @@ from server.services.mapping_service import MappingService, Task
 from tests.server.helpers.test_helpers import create_canned_project
 
 
+class TestMappingService(unittest.TestCase):
 
-class TestAuthenticationService(unittest.TestCase):
     skip_tests = False
     test_project = None
     test_user = None
@@ -41,7 +41,7 @@ class TestAuthenticationService(unittest.TestCase):
         self.ctx.pop()
 
     @patch.object(Task, 'get_tasks')
-    def test_gpx(self, mock_task):
+    def test_gpx_xml_file_generated_correctly(self, mock_task):
         if self.skip_tests:
             return
 
@@ -53,11 +53,28 @@ class TestAuthenticationService(unittest.TestCase):
         # Act
         gpx_xml = MappingService.generate_gpx(1, '1,2', timestamp)
 
-        # Covert XML into a has that should be identical every time
+        # Covert XML into a hash that should be identical every time
         gpx_xml_str = gpx_xml.decode('utf-8')
         gpx_hash = hashlib.md5(gpx_xml_str.encode('utf-8')).hexdigest()
 
         # Assert
         self.assertEqual(gpx_hash, '97c4274c013964091974916ffee07846')
 
+    @patch.object(Task, 'get_tasks')
+    def test_gpx_xml_file_generated_correctly(self, mock_task):
+        if self.skip_tests:
+            return
 
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        mock_task.return_value = [task]
+
+        # Act
+        osm_xml = MappingService.generate_osm_xml(1, '1,2')
+
+        # Covert XML into a hash that should be identical every time
+        osm_xml_str = osm_xml.decode('utf-8')
+        osm_hash = hashlib.md5(osm_xml_str.encode('utf-8')).hexdigest()
+
+        # Assert
+        self.assertEqual(osm_hash, '76c8cebb99729481d46734463386bad3')
