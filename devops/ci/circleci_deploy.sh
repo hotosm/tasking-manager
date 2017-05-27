@@ -25,7 +25,7 @@ if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
   then
     # Install AWS requirements
     pip install -r requirements.aws.txt
-    printf '1\n' | eb init taskingmanager --region us-east-1
+    printf '1\nn\n' | eb init taskingmanager --region us-east-1
 fi
 
 # Deploy to Demo Env
