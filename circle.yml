@@ -48,8 +48,7 @@ test:
       env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
 
 deployment:
-  staging:
-    branch: develop-branch-travis
+  all:
     commands:
       - |
         chmod +x ./devops/ci/circleci_deploy.sh
