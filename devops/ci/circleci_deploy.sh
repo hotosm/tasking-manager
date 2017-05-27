@@ -26,7 +26,7 @@ if [ $CIRCLE_BRANCH == $DEMO_BRANCH ]
     then
         # Install AWS requirements
         pip install -r requirements.aws.txt
-        printf 'n\n' | eb init taskingmanager --region us-east-1
+        printf 'n\n\n' | eb init taskingmanager --region us-east-1
         eb use $DEMO_ENV
 
         # Deploy develop builds to Staging environment
