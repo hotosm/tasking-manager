@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ev # halt script on error
+set -xev # halt script on error
 
 DEMO_BRANCH="develop-branch-travis"
 STAGE_BRANCH="develop-branch-travis"
@@ -21,11 +21,10 @@ fi
 # Set Version Number
 VERSION=v.0.0.$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
 
-if ! [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
+if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
   then
     # Install AWS requirements
     pip install -r requirements.aws.txt
-    eb --version
     printf '1\n' | eb init taskingmanager --region us-east-1
 fi
 
