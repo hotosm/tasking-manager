@@ -7,7 +7,6 @@ machine:
   python:
     version: 3.6.1
 
-## Customize dependencies
 dependencies:
   cache_directories:
     # relative to the build directory
@@ -31,7 +30,6 @@ dependencies:
       virtualenv env
       env/bin/pip install --upgrade pip
       env/bin/pip install -r requirements.txt
-
 
 test:
   override:
