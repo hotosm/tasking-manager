@@ -4,7 +4,7 @@ import geojson
 from flask import current_app
 
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
-from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, ProjectStatus
+from server.models.postgis.project import Project, InvalidGeoJson, Task, ProjectStatus
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData
 from server.services.grid_service import GridService
@@ -37,18 +37,17 @@ class ProjectAdminService:
         :raises InvalidGeoJson
         :returns ID of new draft project
         """
-        try:
-            area_of_interest = AreaOfInterest(draft_project_dto.area_of_interest)
-        except InvalidGeoJson as e:
-            raise e
+        # try:
+        #     area_of_interest = AreaOfInterest(draft_project_dto.area_of_interest)
+        # except InvalidGeoJson as e:
+        #     raise e
 
         # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
         if draft_project_dto.cloneFromProjectId:
             draft_project = Project.clone(draft_project_dto.cloneFromProjectId, draft_project_dto.user_id)
-            draft_project.aoi = area_of_interest
         else:
             draft_project = Project()
-            draft_project.create_draft_project(draft_project_dto, area_of_interest)
+            draft_project.create_draft_project(draft_project_dto)
 
         # if arbitrary_tasks requested, create tasks from aoi otherwise use tasks in DTO
         if draft_project_dto.has_arbitrary_tasks:

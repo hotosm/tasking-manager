@@ -2,7 +2,7 @@ from server import db
 from server.models.dtos.project_dto import ProjectSummary
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
     ProjectActivityDTO
-from server.models.postgis.project import Project, AreaOfInterest
+from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User
 from server.models.postgis.utils import timestamp, NotFound
@@ -96,6 +96,20 @@ class StatsService:
     @staticmethod
     def get_project_stats(project_id: int, preferred_locale: str) -> ProjectSummary:
         """ Gets stats for the specified project """
+        # AOI Refactor
+        # project = db.session.query(Project.id,
+        #                            Project.status,
+        #                            Project.campaign_tag,
+        #                            Project.total_tasks,
+        #                            Project.tasks_mapped,
+        #                            Project.tasks_validated,
+        #                            Project.tasks_bad_imagery,
+        #                            Project.created,
+        #                            Project.last_updated,
+        #                            Project.default_locale,
+        #                            AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
+        #     .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
+
         project = db.session.query(Project.id,
                                    Project.status,
                                    Project.campaign_tag,
@@ -106,8 +120,8 @@ class StatsService:
                                    Project.created,
                                    Project.last_updated,
                                    Project.default_locale,
-                                   AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
-            .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
+                                   Project.centroid.ST_AsGeoJSON().label('geojson')) \
+            .filter(Project.id == project_id).one_or_none()
 
         pm_project = Project.get_project_summary(project, preferred_locale)
         return pm_project
