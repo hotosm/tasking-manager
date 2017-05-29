@@ -17,6 +17,7 @@ class EnvironmentConfig:
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
     }
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv('TM_SECRET', None)
     SMTP_SETTINGS = {
         'host': 'email-smtp.eu-west-1.amazonaws.com',
