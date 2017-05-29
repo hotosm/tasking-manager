@@ -133,11 +133,32 @@ update hotnew.tasks nt
 
 -- Update PROJECT with task stats.  Don't have info on bad-imagery
 update hotnew.projects p
-  set total_tasks = (select count(id) from hotnew.tasks t where t.project_id = p.id),
-  tasks_mapped = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status in (2,4)),
-  tasks_validated = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status = 4);
+  set total_tasks = (select count(id) from hotnew.tasks t where t.project_id = p.id);
+--  tasks_mapped = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status in (2,4)),
+--  tasks_validated = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status = 4);
 
-  
+-- update tasks mapped count
+UPDATE hotnew.projects
+SET tasks_mapped=subquery.count
+FROM (
+  select project_id, count(project_id)
+  from hotnew.tasks
+  where hotnew.tasks.task_status = 2
+  group by tasks.project_id) AS subquery
+WHERE hotnew.projects.id=subquery.project_id
+;
+
+UPDATE hotnew.projects
+SET tasks_validated=subquery.count
+FROM (
+  select project_id, count(project_id)
+  from hotnew.tasks
+  where tasks.task_status = 4
+  group by tasks.project_id) AS subquery
+WHERE hotnew.projects.id=subquery.project_id
+;
+
+
 -- TASK HISTORY
 --  State Changes
 --   only insert state changes where user_id exists, and only for tasks that have been migrated	
