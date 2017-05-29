@@ -148,12 +148,13 @@ class Project(db.Model):
         cloned_project.tasks_mapped = 0
         cloned_project.tasks_validated = 0
         cloned_project.tasks_bad_imagery = 0
-        cloned_project.aoi_id = None  # TODO this needs looked at
         cloned_project.last_updated = timestamp()
         cloned_project.created = timestamp()
         cloned_project.author_id = author_id
         cloned_project.status = ProjectStatus.DRAFT.value
         cloned_project.id = None  # Reset ID so we get a new ID when inserted
+        cloned_project.geometry = None
+        cloned_project.centroid = None
 
         db.session.add(cloned_project)
         db.session.commit()
