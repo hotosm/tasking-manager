@@ -264,7 +264,8 @@
                                     ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
                                     ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                                     ng-click="createProjectCtrl.createProject()">
-                                <span>{{ 'Create' | translate }}</span>
+                                <span ng-hide="createProjectCtrl.isCloneProject">{{ 'Create' | translate }}</span>
+                                <span ng-show="createProjectCtrl.isCloneProject">Clone</span>
                             </button>
                         </div>
                         <div ng-show="createProjectCtrl.waiting">

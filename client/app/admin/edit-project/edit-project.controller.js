@@ -624,6 +624,7 @@
          * @param id
          */
         function getProjectMetadata(id){
+            vm.errorReturningProjectMetadata = false;
             var resultsPromise = projectService.getProjectMetadata(id);
             resultsPromise.then(function (data) {
                 vm.source.clear(); // clear the priority areas
@@ -664,7 +665,7 @@
                     vm.projectCampaignTag = [vm.project.campaignTag];
                 }
             }, function(){
-               // TODO
+                vm.errorReturningProjectMetadata = true;
             });
         }
 

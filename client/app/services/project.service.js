@@ -341,9 +341,10 @@
          * Creates a project by calling the API with the AOI, a task grid and a project name
          * @param projectName
          * @param isTaskGrid
+         * @param cloneProjectId - the ID of the project to clone
          * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
          */
-        function createProject(projectName, isTaskGrid) {
+        function createProject(projectName, isTaskGrid, cloneProjectId) {
 
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
             var taskGridGeoJSON = isTaskGrid?geospatialService.getGeoJSONObjectFromFeatures(taskGrid):null;
@@ -355,6 +356,10 @@
                 tasks: taskGridGeoJSON,
                 arbitraryTasks: !isTaskGrid
             };
+
+            if (cloneProjectId){
+                newProject.cloneFromProjectId = cloneProjectId;
+            }
 
             // Returns a promise
             return $http({

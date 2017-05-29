@@ -69,6 +69,9 @@
                     <!-- section main content -->
                     <div class="section__main-content">
                         <form class="form" name="editProjectCtrl.editForm">
+                        <!-- error -->
+                        <p class="error" ng-show="editProjectCtrl.errorReturningProjectMetadata">An error occurred.</p>
+                        <!-- /error -->
                         <!-- description section -->
                         <div ng-show="editProjectCtrl.currentSection === 'description'">
                             <fieldset class="form__fieldset">
