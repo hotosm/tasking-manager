@@ -1,13 +1,22 @@
 import geojson
+from shapely.geometry import Polygon, box
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResultsDTO, ProjectSearchResultDTO, Pagination
 from server.models.postgis.project import Project, AreaOfInterest, ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
-from server.models.postgis.utils import NotFound
+from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform
 from server import db
+from flask import current_app
+
+
+class ProjectSearchServiceError(Exception):
+    """ Custom Exception to notify callers an error occurred when handling mapping """
+
+    def __init__(self, message):
+        if current_app:
+            current_app.logger.error(message)
 
 
 class ProjectSearchService:
-
     @staticmethod
     def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
         """ Searches all projects for matches to the criteria provided by the user """
@@ -33,8 +42,10 @@ class ProjectSearchService:
             result_dto.aoi_centroid = geojson.loads(project.centroid)
             result_dto.organisation_tag = project.organisation_tag
             result_dto.campaign_tag = project.campaign_tag
-            result_dto.percent_mapped = round((project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
-            result_dto.percent_validated = round(((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
+            result_dto.percent_mapped = round(
+                (project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
+            result_dto.percent_validated = round(
+                ((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
 
             dto.results.append(result_dto)
 
@@ -56,8 +67,9 @@ class ProjectSearchService:
                                  Project.tasks_bad_imagery,
                                  Project.tasks_mapped,
                                  Project.tasks_validated,
-                                 Project.total_tasks).join(AreaOfInterest).join(ProjectInfo)\
-            .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
+                                 Project.total_tasks).join(AreaOfInterest).join(ProjectInfo) \
+            .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(
+            ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
 
         if search_dto.mapper_level:
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)
@@ -84,3 +96,60 @@ class ProjectSearchService:
         results = query.order_by(Project.priority).paginate(search_dto.page, 4, True)
 
         return results
+
+    @staticmethod
+    def _make_polygon_from_bbox(bbox: str):
+        split_bbox = bbox.split(',')
+        if not len(split_bbox) == 4:
+            raise ProjectSearchServiceError('error parsing coords expected string of format xmin,xmax,ymin,ymax')
+
+        try:
+            coords = [float(split_bbox[x]) for x in range(4)]
+        except Exception as e:
+            raise ProjectSearchServiceError(f'error parsing coords: {e}')
+
+        try:
+            polygon = box(coords[0], coords[1], coords[2], coords[3])
+        except Exception as e:
+            raise ProjectSearchServiceError(f'error making polygon: {e}')
+
+        return polygon
+
+    @staticmethod
+    def get_projects_geojson(bbox: str, locale: str) -> geojson.FeatureCollection:
+
+        polygon = ProjectSearchService._make_polygon_from_bbox(bbox)
+        intersecting_projects = ProjectSearchService._get_intersecting_projects(polygon)
+
+        features = []
+
+        for project in intersecting_projects:
+
+            localDTO = ProjectInfo.get_dto_for_locale(project.id, locale, project.default_locale)
+
+            properties = {
+                "id": project.id,
+                "status": ProjectStatus(project.status).name,
+                "name": localDTO.name
+            }
+            feature = geojson.Feature(geometry=geojson.loads(project.geometry), properties=properties)
+            features.append(feature)
+
+        return geojson.FeatureCollection(features)
+
+    @staticmethod
+    def _get_intersecting_projects(search_polygon: Polygon):
+
+        intersecting_projects = db.session.query(Project.id,
+                                                 Project.status,
+                                                 Project.default_locale,
+                                                 AreaOfInterest.geometry.ST_AsGeoJSON().label('geometry')) \
+            .join(AreaOfInterest) \
+            .join(ProjectInfo) \
+            .filter(ProjectInfo.locale == Project.default_locale) \
+            .filter(ST_Intersects(AreaOfInterest.geometry,
+                                  ST_MakeEnvelope(search_polygon.bounds[0],
+                                                  search_polygon.bounds[1],
+                                                  search_polygon.bounds[2],
+                                                  search_polygon.bounds[3], 4326)))
+        return intersecting_projects
