@@ -77,18 +77,20 @@ class Project(db.Model):
         :param aoi: Area of Interest for the project (eg boundary of project)
         """
         self.project_info.append(ProjectInfo.create_from_name(draft_project_dto.project_name))
+        self.status = ProjectStatus.DRAFT.value
+        self.author_id = draft_project_dto.user_id
+        self.last_updated = timestamp()
+        self.changeset_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
 
+    def set_project_aoi(self, draft_project_dto: DraftProjectDTO):
+        """ Sets the AOI for the supplied project """
         aoi_geojson = geojson.loads(json.dumps(draft_project_dto.area_of_interest))
+
         aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
 
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         self.centroid = ST_Centroid(self.geometry)
-
-        self.status = ProjectStatus.DRAFT.value
-        self.author_id = draft_project_dto.user_id
-        self.last_updated = timestamp()
-        self.changeset_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
 
     def create(self):
         """ Creates and saves the current model to the DB """
