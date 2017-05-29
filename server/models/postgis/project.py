@@ -80,7 +80,6 @@ class Project(db.Model):
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
         self.last_updated = timestamp()
-        self.changeset_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
 
     def set_project_aoi(self, draft_project_dto: DraftProjectDTO):
         """ Sets the AOI for the supplied project """
@@ -91,6 +90,12 @@ class Project(db.Model):
         valid_geojson = geojson.dumps(aoi_geometry)
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         self.centroid = ST_Centroid(self.geometry)
+
+    def set_default_changeset_comment(self):
+        """ Sets the default changeset comment"""
+        default_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
+        self.changeset_comment = f'{default_comment}-{self.id}'
+        self.save()
 
     def create(self):
         """ Creates and saves the current model to the DB """

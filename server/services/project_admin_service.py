@@ -57,7 +57,16 @@ class ProjectAdminService:
             draft_project.save()  # Update the clone
         else:
             draft_project.create()  # Create the new project
+
+        draft_project.set_default_changeset_comment()
         return draft_project.id
+
+    @staticmethod
+    def _set_default_changeset_comment(draft_project: Project):
+        """ Sets the default changesset comment when project created """
+        default_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
+        draft_project.changeset_comment = f'{default_comment}-{draft_project.id}'
+        draft_project.save()
 
     @staticmethod
     def _get_project_by_id(project_id: int) -> Project:
