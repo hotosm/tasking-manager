@@ -1,11 +1,12 @@
 import geojson
 from shapely.geometry import Polygon, box
-from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResultsDTO, ProjectSearchResultDTO, Pagination
+from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResultsDTO, ProjectSearchResultDTO, Pagination, ProjectSearchBBoxDTO
 from server.models.postgis.project import Project, AreaOfInterest, ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
 from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform
 from server import db
 from flask import current_app
+
 
 
 class ProjectSearchServiceError(Exception):
@@ -98,34 +99,31 @@ class ProjectSearchService:
         return results
 
     @staticmethod
-    def _make_polygon_from_bbox(bbox: str):
-        split_bbox = bbox.split(',')
-        if not len(split_bbox) == 4:
-            raise ProjectSearchServiceError('error parsing coords expected string of format xmin,xmax,ymin,ymax')
+    def _make_polygon_from_bbox(bbox: list):
 
         try:
-            coords = [float(split_bbox[x]) for x in range(4)]
-        except Exception as e:
-            raise ProjectSearchServiceError(f'error parsing coords: {e}')
-
-        try:
-            polygon = box(coords[0], coords[1], coords[2], coords[3])
+            polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
         except Exception as e:
             raise ProjectSearchServiceError(f'error making polygon: {e}')
 
         return polygon
 
     @staticmethod
-    def get_projects_geojson(bbox: str, locale: str) -> geojson.FeatureCollection:
+    def get_projects_geojson(search_bbox_dto: ProjectSearchBBoxDTO ) -> geojson.FeatureCollection:
 
-        polygon = ProjectSearchService._make_polygon_from_bbox(bbox)
+        polygon = ProjectSearchService._make_polygon_from_bbox(search_bbox_dto.bbox)
+
+        # TODO: validate the zoom level of the bbox is less than or equal to the max OSM zoom level we are supporting
+
         intersecting_projects = ProjectSearchService._get_intersecting_projects(polygon)
+
+        # todo raise error if no projects found
 
         features = []
 
         for project in intersecting_projects:
 
-            localDTO = ProjectInfo.get_dto_for_locale(project.id, locale, project.default_locale)
+            localDTO = ProjectInfo.get_dto_for_locale(project.id, search_bbox_dto.preferred_locale, project.default_locale)
 
             properties = {
                 "id": project.id,
