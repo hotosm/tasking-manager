@@ -78,6 +78,8 @@ class Project(db.Model):
     josm_preset = db.Column(db.String)
     last_updated = db.Column(db.DateTime, default=timestamp)
     license_id = db.Column(db.Integer, db.ForeignKey('licenses.id', name='fk_licenses'))
+    geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
+    centroid = db.Column(Geometry('POINT', srid=4326))
 
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
