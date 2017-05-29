@@ -4,9 +4,9 @@ import geojson
 from flask import current_app
 
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
-from server.models.postgis.project import AreaOfInterest, Project, InvalidGeoJson, Task, ProjectStatus
+from server.models.postgis.project import Project, Task, ProjectStatus
 from server.models.postgis.task import TaskHistory
-from server.models.postgis.utils import NotFound, InvalidData
+from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from server.services.grid_service import GridService
 from server.services.license_service import LicenseService
 from server.services.users.user_service import UserService
@@ -37,13 +37,12 @@ class ProjectAdminService:
         :raises InvalidGeoJson
         :returns ID of new draft project
         """
-        try:
-            area_of_interest = AreaOfInterest(draft_project_dto.area_of_interest)
-        except InvalidGeoJson as e:
-            raise e
-
-        draft_project = Project()
-        draft_project.create_draft_project(draft_project_dto, area_of_interest)
+        # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
+        if draft_project_dto.cloneFromProjectId:
+            draft_project = Project.clone(draft_project_dto.cloneFromProjectId, draft_project_dto.user_id)
+        else:
+            draft_project = Project()
+            draft_project.create_draft_project(draft_project_dto)
 
         # if arbitrary_tasks requested, create tasks from aoi otherwise use tasks in DTO
         if draft_project_dto.has_arbitrary_tasks:
@@ -52,8 +51,10 @@ class ProjectAdminService:
             tasks = draft_project_dto.tasks
         ProjectAdminService._attach_tasks_to_project(draft_project, tasks)
 
-
-        draft_project.create()
+        if draft_project_dto.cloneFromProjectId:
+            draft_project.save()  # Update the clone
+        else:
+            draft_project.create()  # Create the new project
         return draft_project.id
 
     @staticmethod

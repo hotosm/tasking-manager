@@ -45,12 +45,12 @@ class TestProjectSearchService(unittest.TestCase):
         dto = ProjectSearchBBoxDTO()
         dto.bbox = map(float, '34.404,-1.034, 34.717,-0.624'.split(','))
         dto.preferred_locale = 'en'
-        dto.input_srid = 4327
+        dto.input_srid = 4326
         dto.validate()
 
 
         # act
-        geojson = ProjectSearchService.get_projects_geojson(dto.bbox, dto.preferred_locale)
+        geojson = ProjectSearchService.get_projects_geojson(dto)
 
         # assert
         print(geojson)

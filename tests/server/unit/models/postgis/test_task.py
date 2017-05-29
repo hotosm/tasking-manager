@@ -42,3 +42,11 @@ class TestTask(unittest.TestCase):
 
         # Assert
         self.assertEqual(TaskAction.LOCKED_FOR_MAPPING.name, test_task.task_history[0].action)
+
+    def test_cant_add_task_if_not_supplied_feature_type(self):
+        # Arrange
+        invalid_feature = geojson.MultiPolygon([[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38, 10.33)]])
+        # Arrange
+
+        with self.assertRaises(InvalidGeoJson):
+            Task.from_geojson_feature(1, invalid_feature)

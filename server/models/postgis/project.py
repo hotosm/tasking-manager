@@ -4,6 +4,7 @@ from flask import current_app
 from typing import Optional
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm.session import make_transient
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
@@ -12,7 +13,7 @@ from server.models.postgis.statuses import ProjectStatus, ProjectPriority, Mappi
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
+from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
 from server.services.grid_service import GridService
 
 # Secondary table defining many-to-many join for private projects that only defined users can map on
@@ -24,35 +25,6 @@ project_allowed_users = db.Table(
 )
 
 
-class AreaOfInterest(db.Model):
-    """
-    Describes the Area of Interest (AOI) that the project manager defined when creating a project
-    """
-    __tablename__ = 'areas_of_interest'
-
-    id = db.Column(db.Integer, primary_key=True)
-    geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
-    centroid = db.Column(Geometry('POINT', srid=4326))
-
-    def __init__(self, aoi_geometry_geojson):
-        """
-        AOI Constructor
-        :param aoi_geometry_geojson: AOI GeoJson
-        :raises InvalidGeoJson
-        """
-        aoi_geojson = geojson.loads(json.dumps(aoi_geometry_geojson))
-        aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
-
-        valid_geojson = geojson.dumps(aoi_geometry)
-        self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
-        self.centroid = ST_Centroid(self.geometry)
-
-    def get_aoi_geometry_as_geojson(self):
-        """ Helper which returns the AOI geometry as a geojson object """
-        aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
-        return geojson.loads(aoi_geojson)
-
-
 class Project(db.Model):
     """ Describes a HOT Mapping Project """
     __tablename__ = 'projects'
@@ -60,7 +32,6 @@ class Project(db.Model):
     # Columns
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
-    aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = db.Column(db.String(10),
@@ -77,6 +48,8 @@ class Project(db.Model):
     josm_preset = db.Column(db.String)
     last_updated = db.Column(db.DateTime, default=timestamp)
     license_id = db.Column(db.Integer, db.ForeignKey('licenses.id', name='fk_licenses'))
+    geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
+    centroid = db.Column(Geometry('POINT', srid=4326))
 
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
@@ -91,21 +64,27 @@ class Project(db.Model):
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
-    area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
     author = db.relationship(User)
     allowed_users = db.relationship(User, secondary=project_allowed_users)
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
 
-    def create_draft_project(self, draft_project_dto: DraftProjectDTO, aoi: AreaOfInterest):
+    def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
         Creates a draft project
         :param draft_project_dto: DTO containing draft project details
         :param aoi: Area of Interest for the project (eg boundary of project)
         """
         self.project_info.append(ProjectInfo.create_from_name(draft_project_dto.project_name))
-        self.area_of_interest = aoi
+
+        aoi_geojson = geojson.loads(json.dumps(draft_project_dto.area_of_interest))
+        aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
+
+        valid_geojson = geojson.dumps(aoi_geometry)
+        self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
+        self.centroid = ST_Centroid(self.geometry)
+
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
         self.last_updated = timestamp()
@@ -119,6 +98,47 @@ class Project(db.Model):
     def save(self):
         """ Save changes to db"""
         db.session.commit()
+
+    @staticmethod
+    def clone(project_id: int, author_id: int):
+        """ Clone project """
+
+        cloned_project = Project.get(project_id)
+
+        # Remove clone from session so we can reinsert it as a new object
+        db.session.expunge(cloned_project)
+        make_transient(cloned_project)
+
+        # Re-initialise counters and meta-data
+        cloned_project.total_tasks = 0
+        cloned_project.tasks_mapped = 0
+        cloned_project.tasks_validated = 0
+        cloned_project.tasks_bad_imagery = 0
+        cloned_project.last_updated = timestamp()
+        cloned_project.created = timestamp()
+        cloned_project.author_id = author_id
+        cloned_project.status = ProjectStatus.DRAFT.value
+        cloned_project.id = None  # Reset ID so we get a new ID when inserted
+        cloned_project.geometry = None
+        cloned_project.centroid = None
+
+        db.session.add(cloned_project)
+        db.session.commit()
+
+        # Now add the project info, we have to do it in a two stage commit because we need to know the new project id
+        original_project = Project.get(project_id)
+
+        for info in original_project.project_info:
+            db.session.expunge(info)
+            make_transient(info)  # Must remove the object from the session or it will be updated rather than inserted
+            info.id = None
+            info.project_id_str = str(cloned_project.id)
+            cloned_project.project_info.append(info)
+
+        db.session.add(cloned_project)
+        db.session.commit()
+
+        return cloned_project
 
     @staticmethod
     def get(project_id: int):
@@ -225,8 +245,8 @@ class Project(db.Model):
                                            Project.created,
                                            Project.last_updated,
                                            Project.default_locale,
-                                           AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
-            .join(AreaOfInterest).filter(Project.author_id == admin_id).all()
+                                           Project.centroid.ST_AsGeoJSON().label('geojson'))\
+            .filter(Project.author_id == admin_id).all()
 
         if admins_projects is None:
             raise NotFound('No projects found for admin')
@@ -265,62 +285,60 @@ class Project(db.Model):
 
         return pm_project
 
-    def _get_project_and_base_dto(self, project_id):
+    def get_aoi_geometry_as_geojson(self):
+        """ Helper which returns the AOI geometry as a geojson object """
+        aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
+        return geojson.loads(aoi_geojson)
+
+    def _get_project_and_base_dto(self):
         """ Populates a project DTO with properties common to all roles """
-        project = Project.get(project_id)
-
-        if project is None:
-            return None, None
-
-        aoi = project.area_of_interest
-
         base_dto = ProjectDTO()
-        base_dto.project_id = project_id
-        base_dto.project_status = ProjectStatus(project.status).name
-        base_dto.default_locale = project.default_locale
-        base_dto.project_priority = ProjectPriority(project.priority).name
-        base_dto.area_of_interest = aoi.get_aoi_geometry_as_geojson()
-        base_dto.enforce_mapper_level = project.enforce_mapper_level
-        base_dto.enforce_validator_role = project.enforce_validator_role
-        base_dto.private = project.private
-        base_dto.mapper_level = MappingLevel(project.mapper_level).name
-        base_dto.entities_to_map = project.entities_to_map
-        base_dto.changeset_comment = project.changeset_comment
-        base_dto.due_date = project.due_date
-        base_dto.imagery = project.imagery
-        base_dto.josm_preset = project.josm_preset
-        base_dto.campaign_tag = project.campaign_tag
-        base_dto.organisation_tag = project.organisation_tag
-        base_dto.license_id = project.license_id
-        base_dto.last_updated = project.last_updated
-        base_dto.author = User().get_by_id(project.author_id).username
+        base_dto.project_id = self.id
+        base_dto.project_status = ProjectStatus(self.status).name
+        base_dto.default_locale = self.default_locale
+        base_dto.project_priority = ProjectPriority(self.priority).name
+        base_dto.area_of_interest = self.get_aoi_geometry_as_geojson()
+        base_dto.enforce_mapper_level = self.enforce_mapper_level
+        base_dto.enforce_validator_role = self.enforce_validator_role
+        base_dto.private = self.private
+        base_dto.mapper_level = MappingLevel(self.mapper_level).name
+        base_dto.entities_to_map = self.entities_to_map
+        base_dto.changeset_comment = self.changeset_comment
+        base_dto.due_date = self.due_date
+        base_dto.imagery = self.imagery
+        base_dto.josm_preset = self.josm_preset
+        base_dto.campaign_tag = self.campaign_tag
+        base_dto.organisation_tag = self.organisation_tag
+        base_dto.license_id = self.license_id
+        base_dto.last_updated = self.last_updated
+        base_dto.author = User().get_by_id(self.author_id).username
 
-        if project.private:
+        if self.private:
             # If project is private it should have a list of allowed users
             allowed_usernames = []
-            for user in project.allowed_users:
+            for user in self.allowed_users:
                 allowed_usernames.append(user.username)
             base_dto.allowed_usernames = allowed_usernames
 
-        if project.mapping_types:
+        if self.mapping_types:
             mapping_types = []
-            for mapping_type in project.mapping_types:
+            for mapping_type in self.mapping_types:
                 mapping_types.append(MappingTypes(mapping_type).name)
 
             base_dto.mapping_types = mapping_types
 
-        if project.priority_areas:
+        if self.priority_areas:
             geojson_areas = []
-            for priority_area in project.priority_areas:
+            for priority_area in self.priority_areas:
                 geojson_areas.append(priority_area.get_as_geojson())
 
-            base_dto.priority_areas = geojson_areas
+            self.priority_areas = geojson_areas
 
-        return project, base_dto
+        return self, base_dto
 
     def as_dto_for_mapping(self, locale: str) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
-        project, project_dto = self._get_project_and_base_dto(self.id)
+        project, project_dto = self._get_project_and_base_dto()
 
         project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
         project_dto.project_info = ProjectInfo.get_dto_for_locale(self.id, locale, project.default_locale)
@@ -329,7 +347,7 @@ class Project(db.Model):
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """
-        project, project_dto = self._get_project_and_base_dto(project_id)
+        project, project_dto = self._get_project_and_base_dto()
 
         if project is None:
             return None

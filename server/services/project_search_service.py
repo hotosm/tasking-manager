@@ -1,12 +1,12 @@
 import geojson
+
 from shapely.geometry import Polygon, box
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResultsDTO, ProjectSearchResultDTO, Pagination, ProjectSearchBBoxDTO
-from server.models.postgis.project import Project, AreaOfInterest, ProjectInfo
+from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
 from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform
 from server import db
 from flask import current_app
-
 
 
 class ProjectSearchServiceError(Exception):
@@ -56,19 +56,17 @@ class ProjectSearchService:
     @staticmethod
     def _filter_projects(search_dto: ProjectSearchDTO):
         """ Filters all projects based on criteria provided by user"""
-
-        # Base query, that we'll dynamically chain filters to dependent on supplied criteria
         query = db.session.query(Project.id,
                                  Project.mapper_level,
                                  Project.priority,
                                  Project.default_locale,
-                                 AreaOfInterest.centroid.ST_AsGeoJSON().label('centroid'),
+                                 Project.centroid.ST_AsGeoJSON().label('centroid'),
                                  Project.organisation_tag,
                                  Project.campaign_tag,
                                  Project.tasks_bad_imagery,
                                  Project.tasks_mapped,
                                  Project.tasks_validated,
-                                 Project.total_tasks).join(AreaOfInterest).join(ProjectInfo) \
+                                 Project.total_tasks).join(ProjectInfo) \
             .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
 
@@ -141,11 +139,8 @@ class ProjectSearchService:
         intersecting_projects = db.session.query(Project.id,
                                                  Project.status,
                                                  Project.default_locale,
-                                                 AreaOfInterest.geometry.ST_AsGeoJSON().label('geometry')) \
-            .join(AreaOfInterest) \
-            .join(ProjectInfo) \
-            .filter(ProjectInfo.locale == Project.default_locale) \
-            .filter(ST_Intersects(AreaOfInterest.geometry,
+                                                 Project.geometry.ST_AsGeoJSON().label('geometry')) \
+            .filter(ST_Intersects(Project.geometry,
                                   ST_MakeEnvelope(search_polygon.bounds[0],
                                                   search_polygon.bounds[1],
                                                   search_polygon.bounds[2],
