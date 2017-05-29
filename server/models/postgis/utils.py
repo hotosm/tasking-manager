@@ -60,14 +60,26 @@ class ST_Transform(GenericFunction):
 
 
 class ST_Buffer(GenericFunction):
-    """ Exposes PostGIS ST_Transform function """
+    """ Exposes PostGIS ST_Buffer function """
     name = 'ST_Buffer'
+    type = Geometry
+
+class ST_Intersects(GenericFunction):
+    """ Exposes PostGIS ST_Intersects function """
+    name = 'ST_Intersects'
+    type = Geometry
+
+class ST_MakeEnvelope(GenericFunction):
+    """ Exposes PostGIS ST_MakeEnvelope function """
+    name = 'ST_MakeEnvelope'
     type = Geometry
 
 
 def timestamp():
     """ Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""
     return datetime.datetime.utcnow()
+
+
 
 
 class DateTimeEncoder(json.JSONEncoder):
@@ -84,3 +96,5 @@ class DateTimeEncoder(json.JSONEncoder):
             return (datetime.datetime.min + obj).time().isoformat()
         else:
             return super(DateTimeEncoder, self).default(obj)
+
+

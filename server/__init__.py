@@ -90,7 +90,7 @@ def init_flask_restful_routes(app):
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI, TasksAsGPX, TasksAsOSM
     from server.api.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI, ResendEmailValidationAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
-    from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
+    from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject, ProjectSearchBBoxAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
@@ -120,6 +120,7 @@ def init_flask_restful_routes(app):
     api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
     api.add_resource(ResendEmailValidationAPI,      '/api/v1/messages/resend-email-verification')
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
+    api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
     api.add_resource(MappedTasksByUser,             '/api/v1/project/<int:project_id>/mapped-tasks-by-user')

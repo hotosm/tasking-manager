@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType
+from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
@@ -100,6 +100,10 @@ class ProjectSearchDTO(Model):
     page = IntType(required=True)
     text_search = StringType()
 
+class ProjectSearchBBoxDTO(Model):
+    bbox = ListType(FloatType, required=True, min_size=4, max_size=4)
+    input_srid = IntType(required=True, choices=[4326])
+    preferred_locale = StringType(required=True, default='en')
 
 class ProjectSearchResultDTO(Model):
     """ Describes one search result"""
