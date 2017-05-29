@@ -73,6 +73,7 @@ def create_canned_project() -> Tuple[Project, User]:
     test_project_dto.area_of_interest = test_aoi_geojson
     test_project = Project()
     test_project.create_draft_project(test_project_dto)
+    test_project.set_project_aoi(test_project_dto)
     test_project.total_tasks = 1
 
     # Setup test task
