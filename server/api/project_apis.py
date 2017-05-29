@@ -60,6 +60,9 @@ class ProjectAPI(Resource):
 
 
 class ProjectSearchBBoxAPI(Resource):
+
+    @tm.pm_only(True)
+    @token_auth.login_required
     def get(self):
         """
         Search for projects by bbox projects
