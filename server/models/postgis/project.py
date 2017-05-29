@@ -4,6 +4,7 @@ from flask import current_app
 from typing import Optional
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm.session import make_transient
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
@@ -119,6 +120,46 @@ class Project(db.Model):
     def save(self):
         """ Save changes to db"""
         db.session.commit()
+
+    @staticmethod
+    def clone(project_id: int, author_id: int):
+        """ Clone project """
+
+        cloned_project = Project.get(project_id)
+
+        # Remove clone from session so we can reinsert it as a new object
+        db.session.expunge(cloned_project)
+        make_transient(cloned_project)
+
+        # Re-initialise counters and meta-data
+        cloned_project.total_tasks = 0
+        cloned_project.tasks_mapped = 0
+        cloned_project.tasks_validated = 0
+        cloned_project.tasks_bad_imagery = 0
+        cloned_project.aoi_id = None  # TODO this needs looked at
+        cloned_project.last_updated = timestamp()
+        cloned_project.created = timestamp()
+        cloned_project.author_id = author_id
+        cloned_project.status = ProjectStatus.DRAFT.value
+        cloned_project.id = None  # Reset ID so we get a new ID when inserted
+
+        db.session.add(cloned_project)
+        db.session.commit()
+
+        # Now add the project info, we have to do it in a two stage commit because we need to know the new project id
+        original_project = Project.get(project_id)
+
+        for info in original_project.project_info:
+            db.session.expunge(info)
+            make_transient(info)  # Must remove the object from the session or it will be updated rather than inserted
+            info.id = None
+            info.project_id_str = str(cloned_project.id)
+            cloned_project.project_info.append(info)
+
+        db.session.add(cloned_project)
+        db.session.commit()
+
+        return cloned_project
 
     @staticmethod
     def get(project_id: int):

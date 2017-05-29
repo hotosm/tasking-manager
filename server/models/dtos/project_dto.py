@@ -41,6 +41,7 @@ def is_known_mapping_type(value):
 
 class DraftProjectDTO(Model):
     """ Describes JSON model used for creating draft project """
+    cloneFromProjectId = IntType(serialized_name='cloneFromProjectId')
     project_name = StringType(required=True, serialized_name='projectName')
     area_of_interest = BaseType(required=True, serialized_name='areaOfInterest')
     tasks = BaseType(required=False)

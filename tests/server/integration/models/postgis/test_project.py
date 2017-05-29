@@ -1,8 +1,9 @@
+import copy
 import os
 import unittest
 import geojson
 from server import create_app
-from server.models.postgis.project import Task, ProjectDTO, ProjectStatus, ProjectPriority
+from server.models.postgis.project import Task, ProjectDTO, ProjectStatus, ProjectPriority, Project
 from server.models.postgis.project_info import ProjectInfoDTO
 from tests.server.helpers.test_helpers import create_canned_project
 
@@ -116,6 +117,26 @@ class TestProject(unittest.TestCase):
         # Assert
         self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
                          'English translation should be returned as Italian name was not provided')
+
+    def test_project_can_be_cloned(self):
+
+        if self.skip_tests:
+            return
+
+        # Arrange
+        self.update_project_with_info()
+
+        # Act
+        original_id = copy.copy(self.test_project.id)
+        cloned_project = Project.clone(original_id, 5175337)
+
+        self.assertTrue(cloned_project)
+        self.assertEqual(cloned_project.project_info[0].name, 'Thinkwhere Test')
+
+        # Tidy Up
+        cloned_project.delete()
+        original_project = Project.get(original_id)  # SQLAlchemy is hanging on to a ref to the old project
+        original_project.delete()
 
     def update_project_with_info(self):
 
