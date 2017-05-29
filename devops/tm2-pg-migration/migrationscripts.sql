@@ -7,7 +7,7 @@
 -- USERS Initial Load
 -- make sure new tables emptied of any test data first
 truncate hotnew.users cascade;
-truncate hotnew.areas_of_interest cascade;
+-- truncate hotnew.areas_of_interest cascade;
 
 -- Populate users with ids and default stats - sets users to beginner mapper level
 insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, is_email_verified)
@@ -37,10 +37,10 @@ INSERT INTO hotnew.users_licenses ("user", license)
 -- AREAS OF INTEREST
 
 --populate areas of interest with details from old
-insert into hotnew.areas_of_interest (id, geometry, centroid)
-  (select id, geometry, centroid from hotold.areas);
+--insert into hotnew.areas_of_interest (id, geometry, centroid)
+--  (select id, geometry, centroid from hotold.areas);
  
-select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.areas_of_interest));
+--select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.areas_of_interest));
 
 -- PROJECTS
 -- Transfer project data, all projects set to mapper level beginner
@@ -62,7 +62,18 @@ INSERT INTO hotnew.projects(
             );
 
 select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
-select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.projects));
+
+
+-- Insert AOI and Geom into projects
+Update hotnew.projects
+   set geometry = a.geometry,
+       centroid = a.centroid
+  from hotold.areas as a
+where  a.id = hotnew.projects.aoi_id
+
+
+
+
 
 -- Project info & translations
 -- Skip any records relating to projects that have not been imported

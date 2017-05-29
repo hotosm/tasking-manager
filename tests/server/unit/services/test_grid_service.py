@@ -115,3 +115,25 @@ class TestGridService(unittest.TestCase):
         with self.assertRaises(InvalidGeoJson):
             GridService.merge_to_multi_polygon(grid_dto.area_of_interest, dissolve=True)
 
+    def test_cant_create_aoi_with_non_multipolygon_type(self):
+        # Arrange
+        bad_geom = geojson.Polygon([[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38, 57.322)]])
+        bad_feature = geojson.Feature(geometry=bad_geom)
+        bad_feature_collection = geojson.FeatureCollection([bad_feature])
+
+        # Act / Assert
+        with self.assertRaises(InvalidGeoJson):
+            # Only geometries of type MultiPolygon are valid
+            GridService.merge_to_multi_polygon(geojson.dumps(bad_feature), dissolve=True)
+
+    def test_cant_create_aoi_with_invalid_multipolygon(self):
+        bad_multipolygon = geojson.MultiPolygon([[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38)]])
+        bad_feature = geojson.Feature(geometry=bad_multipolygon)
+        bad_feature_collection = geojson.FeatureCollection([bad_feature])
+
+        # Act / Assert
+        with self.assertRaises(InvalidGeoJson):
+            # Only geometries of type MultiPolygon are valid
+            GridService.merge_to_multi_polygon(geojson.dumps(bad_feature_collection), dissolve=True)
+
+
