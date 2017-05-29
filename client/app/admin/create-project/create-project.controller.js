@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', 'geospatialService', 'accountService', 'authService', createProjectController]);
+        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', 'geospatialService', 'accountService', 'authService','searchService', createProjectController]);
 
-    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService, authService) {
+    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService, authService, searchService) {
 
         var vm = this;
         vm.map = null;
@@ -94,6 +94,8 @@
                 drawService.getSource().clear();
             });
             projectService.initDraw(vm.map);
+
+            addOtherProjectsLayer();
         }
 
         /**
@@ -472,6 +474,32 @@
 
         vm.toggleClipTasksToAoi = function () {
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
+        };
+
+        function addOtherProjectsLayer(){
+            var geoJSONFormat = new ol.format.GeoJSON();
+            var vectorSource = new ol.source.Vector({
+                loader: function(extent, resolution, projection){
+                    var params = {
+                        bbox: geospatialService.transformExtentToLatLonString(extent)
+                    };
+                    var resultsPromise = searchService.getProjectsWithinBBOX(params);
+                    resultsPromise.then(function (data) {
+                        // TODO
+                        var features = geospatialService.getFeaturesFromGeoJSON(data);
+                        vectorSource.addFeatures(features);
+                    }, function (reason) {
+                        // TODO
+                        console.log("fail");
+                    });
+                },
+                strategy: ol.loadingstrategy.bbox
+            });
+            var vector = new ol.layer.Vector({
+                source: vectorSource,
+                maxResolution: 300
+            });
+            vm.map.addLayer(vector);
         }
     }
 })();
