@@ -70,7 +70,7 @@
                     <div class="section__main-content">
                         <form class="form" name="editProjectCtrl.editForm">
                         <!-- error -->
-                        <p class="error" ng-show="editProjectCtrl.errorReturningProjectMetadata">An error occurred.</p>
+                        <p class="error" ng-show="editProjectCtrl.errorReturningProjectMetadata">{{ 'An error occurred' | translate }}</p>
                         <!-- /error -->
                         <!-- description section -->
                         <div ng-show="editProjectCtrl.currentSection === 'description'">

@@ -6,7 +6,7 @@
                     {{ 'Create project' | translate }}
                 </h1>
                 <h1 ng-show="createProjectCtrl.isCloneProject" class="section__title">
-                    Clone project - #{{ createProjectCtrl.cloneProjectId }} {{ createProjectCtrl.cloneProjectName }}
+                    {{ 'Clone project' | translate }} - #{{ createProjectCtrl.cloneProjectId }} {{ createProjectCtrl.cloneProjectName }}
                 </h1>
             </div>
         </header>
@@ -265,7 +265,7 @@
                                     ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                                     ng-click="createProjectCtrl.createProject()">
                                 <span ng-hide="createProjectCtrl.isCloneProject">{{ 'Create' | translate }}</span>
-                                <span ng-show="createProjectCtrl.isCloneProject">Clone</span>
+                                <span ng-show="createProjectCtrl.isCloneProject">{{ 'Clone' | translate }}</span>
                             </button>
                         </div>
                         <div ng-show="createProjectCtrl.waiting">

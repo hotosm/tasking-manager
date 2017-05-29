@@ -830,7 +830,6 @@
                 projectId: vm.project.projectId,
                 projectName: getProjectNameForDefaultLocale()
             });
-                //id={{ editProjectCtrl.project.projectId }}?{{ editProjectCtrl.project.getProjectNameForDefaultLocale() }}");
         };
 
         /**
