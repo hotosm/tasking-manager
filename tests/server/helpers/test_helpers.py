@@ -65,8 +65,6 @@ def create_canned_project() -> Tuple[Project, User]:
 
     task_feature = geojson.loads(json.dumps(get_canned_json('splittable_task.json')))
 
-    #test_aoi = AreaOfInterest(multipoly_geojson)
-
     test_user = create_canned_user()
 
     test_project_dto = DraftProjectDTO()

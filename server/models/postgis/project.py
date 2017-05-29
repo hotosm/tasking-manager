@@ -13,7 +13,7 @@ from server.models.postgis.statuses import ProjectStatus, ProjectPriority, Mappi
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound, ST_AsGeoJSON
+from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
 from server.services.grid_service import GridService
 
 # Secondary table defining many-to-many join for private projects that only defined users can map on
@@ -25,35 +25,6 @@ project_allowed_users = db.Table(
 )
 
 
-# class AreaOfInterest(db.Model):
-#     """
-#     Describes the Area of Interest (AOI) that the project manager defined when creating a project
-#     """
-#     __tablename__ = 'areas_of_interest'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
-#     centroid = db.Column(Geometry('POINT', srid=4326))
-#
-#     def __init__(self, aoi_geometry_geojson):
-#         """
-#         AOI Constructor
-#         :param aoi_geometry_geojson: AOI GeoJson
-#         :raises InvalidGeoJson
-#         """
-#         aoi_geojson = geojson.loads(json.dumps(aoi_geometry_geojson))
-#         aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
-#
-#         valid_geojson = geojson.dumps(aoi_geometry)
-#         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
-#         self.centroid = ST_Centroid(self.geometry)
-#
-#     def get_aoi_geometry_as_geojson(self):
-#         """ Helper which returns the AOI geometry as a geojson object """
-#         aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
-#         return geojson.loads(aoi_geojson)
-
-
 class Project(db.Model):
     """ Describes a HOT Mapping Project """
     __tablename__ = 'projects'
@@ -61,7 +32,6 @@ class Project(db.Model):
     # Columns
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
-    #aoi_id = db.Column(db.Integer, db.ForeignKey('areas_of_interest.id'))
     created = db.Column(db.DateTime, default=timestamp, nullable=False)
     priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = db.Column(db.String(10),
@@ -94,7 +64,6 @@ class Project(db.Model):
 
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
-    #area_of_interest = db.relationship(AreaOfInterest, cascade="all")  # TODO AOI just in project??
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
     author = db.relationship(User)
     allowed_users = db.relationship(User, secondary=project_allowed_users)
@@ -108,7 +77,6 @@ class Project(db.Model):
         :param aoi: Area of Interest for the project (eg boundary of project)
         """
         self.project_info.append(ProjectInfo.create_from_name(draft_project_dto.project_name))
-        # TODO get geoms for project
 
         aoi_geojson = geojson.loads(json.dumps(draft_project_dto.area_of_interest))
         aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
@@ -117,8 +85,6 @@ class Project(db.Model):
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         self.centroid = ST_Centroid(self.geometry)
 
-
-        #self.area_of_interest = aoi
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
         self.last_updated = timestamp()
@@ -269,20 +235,6 @@ class Project(db.Model):
     @staticmethod
     def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
         """ Get projects for admin """
-        # AOI Refactor
-        # admins_projects = db.session.query(Project.id,
-        #                                    Project.status,
-        #                                    Project.campaign_tag,
-        #                                    Project.total_tasks,
-        #                                    Project.tasks_mapped,
-        #                                    Project.tasks_validated,
-        #                                    Project.tasks_bad_imagery,
-        #                                    Project.created,
-        #                                    Project.last_updated,
-        #                                    Project.default_locale,
-        #                                    AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
-        #     .join(AreaOfInterest).filter(Project.author_id == admin_id).all()
-
         admins_projects = db.session.query(Project.id,
                                            Project.status,
                                            Project.campaign_tag,
@@ -340,13 +292,6 @@ class Project(db.Model):
 
     def _get_project_and_base_dto(self):
         """ Populates a project DTO with properties common to all roles """
-        #project = Project.get(project_id)
-
-        #if project is None:
-        #    return None, None
-
-        #aoi = project.area_of_interest
-
         base_dto = ProjectDTO()
         base_dto.project_id = self.id
         base_dto.project_status = ProjectStatus(self.status).name

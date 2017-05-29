@@ -44,22 +44,6 @@ class ProjectSearchService:
     @staticmethod
     def _filter_projects(search_dto: ProjectSearchDTO):
         """ Filters all projects based on criteria provided by user"""
-
-        # AOI REFACTOR
-        # Base query, that we'll dynamically chain filters to dependent on supplied criteria
-        # query = db.session.query(Project.id,
-        #                          Project.mapper_level,
-        #                          Project.priority,
-        #                          Project.default_locale,
-        #                          AreaOfInterest.centroid.ST_AsGeoJSON().label('centroid'),
-        #                          Project.organisation_tag,
-        #                          Project.campaign_tag,
-        #                          Project.tasks_bad_imagery,
-        #                          Project.tasks_mapped,
-        #                          Project.tasks_validated,
-        #                          Project.total_tasks).join(AreaOfInterest).join(ProjectInfo)\
-        #     .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
-
         query = db.session.query(Project.id,
                                  Project.mapper_level,
                                  Project.priority,

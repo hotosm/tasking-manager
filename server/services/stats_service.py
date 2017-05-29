@@ -96,20 +96,6 @@ class StatsService:
     @staticmethod
     def get_project_stats(project_id: int, preferred_locale: str) -> ProjectSummary:
         """ Gets stats for the specified project """
-        # AOI Refactor
-        # project = db.session.query(Project.id,
-        #                            Project.status,
-        #                            Project.campaign_tag,
-        #                            Project.total_tasks,
-        #                            Project.tasks_mapped,
-        #                            Project.tasks_validated,
-        #                            Project.tasks_bad_imagery,
-        #                            Project.created,
-        #                            Project.last_updated,
-        #                            Project.default_locale,
-        #                            AreaOfInterest.centroid.ST_AsGeoJSON().label('geojson'))\
-        #     .join(AreaOfInterest).filter(Project.id == project_id).one_or_none()
-
         project = db.session.query(Project.id,
                                    Project.status,
                                    Project.campaign_tag,
