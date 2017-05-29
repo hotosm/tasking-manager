@@ -40,6 +40,9 @@ class TestProjectSearchService(unittest.TestCase):
         self.ctx.pop()
 
     def test_get_intersecting_projects(self):
+        if self.skip_tests:
+            return
+
         # TODO make this a proper test
         # arrange
         dto = ProjectSearchBBoxDTO()
