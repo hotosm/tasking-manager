@@ -12,11 +12,12 @@ PROD_ENV="taskingmanager-prod"
 echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 
 # We don't want to deploy Pull Requests only builds on develop and master
-if [[ ! -z $CI_PULL_REQUEST ]]
-    then
-        echo Not Deploying Build $CIRCLE_BUILD_NUM - Branch is $CIRCLE_BRANCH, Is Pull Request is $CI_PULL_REQUESTS
-        return
-fi
+# TODO: commenting this out while develop-branch-travis is a PR
+# if [[ ! -z $CI_PULL_REQUEST ]]
+#     then
+#         echo Not Deploying Build $CIRCLE_BUILD_NUM - Branch is $CIRCLE_BRANCH, Is Pull Request is $CI_PULL_REQUESTS
+#         return
+# fi
 
 # Set Version Number
 VERSION=v.0.0.$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
