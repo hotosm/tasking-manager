@@ -278,6 +278,16 @@
                         <i class="hot-ds-icon-hamburger-menu"></i>
                     </button>
                 </div>
+                <div class="show-other-projects"
+                     title="You can only view other projects at smaller scales">
+                    <label class="form__option">
+                        <input type="checkbox"
+                               ng-model="visible"
+                               ng-disabled="createProjectCtrl.map.getView().getResolution() > createProjectCtrl.otherProjectMaxResolution"
+                               ng-change="createProjectCtrl.toggleOtherProjectAreasLayer()" />
+                        Toggle other projects in this area
+                    </label>
+                </div>
                 <div class="add-layer-panel">
                     <add-layer ng-show="createProjectCtrl.isVisible"></add-layer>
                 </div>

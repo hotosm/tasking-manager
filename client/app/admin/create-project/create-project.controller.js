@@ -26,6 +26,10 @@
         vm.isImportedAOI = false;
         vm.clipTasksToAoi = true;
 
+        // Other project AOI
+        vm.otherProjectVectorLayer = null;
+        vm.otherProjectMaxResolution = 300; 
+
         // Grid
         vm.isTaskGrid = false;
         vm.isTaskArbitrary = false;
@@ -226,7 +230,6 @@
             vm.isDrawnAOI = true;
             vm.isImportedAOI = false;
         };
-
 
         /**
          * Trim the task grid to the AOI
@@ -499,7 +502,7 @@
                 },
                 strategy: ol.loadingstrategy.bbox
             });
-            var vector = new ol.layer.Vector({
+            vm.otherProjectVectorLayer = new ol.layer.Vector({
                 source: vectorSource,
                 style: function(feature){
                     var status = feature.getProperties().status;
@@ -516,9 +519,23 @@
                         return styleService.getStyleWithColour("black");
                     }
                 },
-                maxResolution: 300
+                maxResolution: vm.otherProjectMaxResolution
             });
-            vm.map.addLayer(vector);
+            vm.map.addLayer(vm.otherProjectVectorLayer);
+            vm.otherProjectVectorLayer.setVisible(false);
         }
+
+        /**
+         * Toggle the layer with other project AOIs
+         */
+        vm.toggleOtherProjectAreasLayer = function(){
+            if (vm.otherProjectVectorLayer.getVisible()){
+                vm.otherProjectVectorLayer.setVisible(false);
+                projectMapService.closePopup();
+            }
+            else {
+                vm.otherProjectVectorLayer.setVisible(true);
+            }
+        };
     }
 })();

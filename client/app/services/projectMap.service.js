@@ -29,7 +29,8 @@
             highlightProjectOnMap: highlightProjectOnMap,
             removeHighlightOnMap: removeHighlightOnMap,
             addPopupOverlay: addPopupOverlay,
-            closePopup: closePopup
+            closePopup: closePopup,
+            removePopupOverlay: removePopupOverlay
         };
 
         return service;
@@ -195,6 +196,13 @@
             overlay.setPosition(undefined);
         }
 
+        /**
+         * Deactivate popup by setting its position to undefined
+         */
+        function removePopupOverlay(){
+            map.removeOverlay(overlay);
+        }
+        
         /**
          * Close the popup and sets the OpenLayers edit interactions to true so
          * users can edit the features
