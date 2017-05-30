@@ -92,7 +92,7 @@ class ProjectSearchService:
             or_search = search_dto.text_search.replace(' ', ' | ')
             query = query.filter(ProjectInfo.text_searchable.match(or_search, postgresql_regconfig='english'))
 
-        results = query.order_by(Project.priority).paginate(search_dto.page, 4, True)
+        results = query.order_by(Project.priority, Project.id.desc()).paginate(search_dto.page, 6, True)
 
         return results
 
