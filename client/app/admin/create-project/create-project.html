@@ -285,8 +285,9 @@
                                ng-model="visible"
                                ng-disabled="createProjectCtrl.currentResolution > createProjectCtrl.otherProjectMaxResolution"
                                ng-change="createProjectCtrl.toggleOtherProjectAreasLayer()" />
-                        Toggle other projects in this area
+                        Toggle existing projects in this area
                     </label>
+                    <p ng-show="createProjectCtrl.errorLoadingExistingProjects" class="error">Error loading existing projects</p>
                 </div>
                 <div class="add-layer-panel">
                     <add-layer ng-show="createProjectCtrl.isVisible"></add-layer>

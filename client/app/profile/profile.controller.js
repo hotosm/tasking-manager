@@ -42,7 +42,9 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
-            projectMapService.addPopupOverlay();
+            var hoverIdentify = true;
+            var clickIdentify = true;
+            projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             getUserProjects();
         }
 

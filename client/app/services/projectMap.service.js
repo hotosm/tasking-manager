@@ -162,9 +162,10 @@
         /**
          * Creates a popup using a directive and add this popup to an overlay layer
          * TODO: move this to a separate popup service?
+         * @param hover boolean
+         * @param click boolean
          */
-        function addPopupOverlay() {
-
+        function addPopupOverlay(hover, click) {
             overlay = null;
 
             popupContainer = angular.element('<div map-popup id="popup" class="ol-popup"></div>');
@@ -181,16 +182,21 @@
                 }
             });
             
-            map.on('pointermove', function (evt) {
-                if (evt.dragging) {
-                    return;
-                }
-                var pixel = map.getEventPixel(evt.originalEvent);
-                displayFeatureInfo(pixel, evt.coordinate);
-            });
-            map.on('click', function (evt) {
-                displayFeatureInfo(evt.pixel, evt.coordinate);
-            });
+            if (hover){
+                map.on('pointermove', function (evt) {
+                    if (evt.dragging) {
+                        return;
+                    }
+                    var pixel = map.getEventPixel(evt.originalEvent);
+                    displayFeatureInfo(pixel, evt.coordinate);
+                }); 
+            }
+           
+            if (click){
+                 map.on('click', function (evt) {
+                    displayFeatureInfo(evt.pixel, evt.coordinate);
+                });    
+            }
             
             map.addOverlay(overlay);
             overlay.setPosition(undefined);
@@ -202,7 +208,7 @@
         function removePopupOverlay(){
             map.removeOverlay(overlay);
         }
-        
+
         /**
          * Close the popup and sets the OpenLayers edit interactions to true so
          * users can edit the features
@@ -221,7 +227,7 @@
             });
             if (feature){
                 // Only show a popup for features with a project ID
-                if (feature.getProperties().id){
+                if (feature.getProperties().projectId){
                     popupScope_['feature'] = feature;
 
                     // Compile the element, link it to the scope

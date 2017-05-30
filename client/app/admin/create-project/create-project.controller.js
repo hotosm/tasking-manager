@@ -30,6 +30,7 @@
         vm.otherProjectVectorLayer = null;
         vm.otherProjectMaxResolution = 200;
         vm.currentResolution = 0;
+        vm.errorLoadingExistingProjects = false;
 
         // Grid
         vm.isTaskGrid = false;
@@ -103,7 +104,9 @@
             addOtherProjectsLayer();
 
             projectMapService.initialise(vm.map);
-            projectMapService.addPopupOverlay();
+            var hoverIdentify = false;
+            var clickIdentify = true;
+            projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
         }
 
         /**
@@ -118,8 +121,7 @@
                 vm.createArbitaryTasks();
                 vm.setWizardStep('review');
             }
-
-        }
+        };
 
         /**
          * Set the current wizard step in the process of creating a project
@@ -489,9 +491,8 @@
         function addOtherProjectsLayer(){
             var vectorSource = new ol.source.Vector({
                 loader: function(extent){
+                    vm.errorLoadingExistingProjects = false;
                     vectorSource.clear();
-                    console.log(extent);
-                    console.log(vm.map.getView().getResolution());
                     var params = {
                         bbox: geospatialService.transformExtentToLatLonString(extent)
                     };
@@ -500,7 +501,7 @@
                         var features = geospatialService.getFeaturesFromGeoJSON(data);
                         vectorSource.addFeatures(features);
                     }, function (reason) {
-                        // TODO
+                        vm.errorLoadingExistingProjects = true;
                     });
                 },
                 strategy: ol.loadingstrategy.bbox
