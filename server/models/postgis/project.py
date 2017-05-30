@@ -339,7 +339,7 @@ class Project(db.Model):
             for priority_area in self.priority_areas:
                 geojson_areas.append(priority_area.get_as_geojson())
 
-            self.priority_areas = geojson_areas
+            base_dto.priority_areas = geojson_areas
 
         return self, base_dto
 
