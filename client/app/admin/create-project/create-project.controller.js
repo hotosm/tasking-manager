@@ -28,7 +28,8 @@
 
         // Other project AOI
         vm.otherProjectVectorLayer = null;
-        vm.otherProjectMaxResolution = 300; 
+        vm.otherProjectMaxResolution = 200;
+        vm.currentResolution = 0;
 
         // Grid
         vm.isTaskGrid = false;
@@ -489,6 +490,8 @@
             var vectorSource = new ol.source.Vector({
                 loader: function(extent){
                     vectorSource.clear();
+                    console.log(extent);
+                    console.log(vm.map.getView().getResolution());
                     var params = {
                         bbox: geospatialService.transformExtentToLatLonString(extent)
                     };
@@ -523,6 +526,12 @@
             });
             vm.map.addLayer(vm.otherProjectVectorLayer);
             vm.otherProjectVectorLayer.setVisible(false);
+
+            // Update the resolution after moveend
+            vm.map.on('moveend', function(){
+                vm.currentResolution = vm.map.getView().getResolution();
+                $scope.$apply();
+            })
         }
 
         /**
