@@ -56,6 +56,9 @@ class SwaggerDocsAPI(Resource):
                     instructions:
                         type: string
                         default: Complete the tasks
+                    perTaskInstructions:
+                       type: string
+                       default: Use Thinkwhere Imagery Only
             - schema:
                 id: GeoJsonFeature
                 properties:

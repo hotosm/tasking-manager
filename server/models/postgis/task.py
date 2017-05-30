@@ -7,6 +7,7 @@ from server import db
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
+from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, NotFound

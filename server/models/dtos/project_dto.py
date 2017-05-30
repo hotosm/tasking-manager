@@ -56,6 +56,7 @@ class ProjectInfoDTO(Model):
     short_description = StringType(serialized_name='shortDescription', default='')
     description = StringType(default='')
     instructions = StringType(default='')
+    per_task_instructions = StringType(default='', serialized_name='perTaskInstructions')
 
 
 class ProjectDTO(Model):
