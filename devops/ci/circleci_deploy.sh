@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -xev # halt script on error
 
-DEMO_BRANCH="develop-branch-travis"
-STAGE_BRANCH="develop-branch-travis"
-PROD_BRANCH="develop-branch-travis"
+DEMO_BRANCH="develop"
+STAGE_BRANCH="develop"
+PROD_BRANCH="develop"
 
 DEMO_ENV="taskingmanager-demo"
 STAGE_ENV="taskingmanager-stage"
