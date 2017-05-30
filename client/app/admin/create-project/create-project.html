@@ -278,16 +278,8 @@
                         <i class="hot-ds-icon-hamburger-menu"></i>
                     </button>
                 </div>
-                <div class="show-other-projects"
-                     title="You can only view other projects at larger scales">
-                    <label class="form__option">
-                        <input type="checkbox"
-                               ng-model="visible"
-                               ng-disabled="createProjectCtrl.currentResolution > createProjectCtrl.otherProjectMaxResolution"
-                               ng-change="createProjectCtrl.toggleOtherProjectAreasLayer()" />
-                        Toggle existing projects in this area
-                    </label>
-                    <p ng-show="createProjectCtrl.errorLoadingExistingProjects" class="error">Error loading existing projects</p>
+                <div class="show-other-projects">
+                    <show-project-aois your-projects='false'></show-project-aois>
                 </div>
                 <div class="add-layer-panel">
                     <add-layer ng-show="createProjectCtrl.isVisible"></add-layer>
