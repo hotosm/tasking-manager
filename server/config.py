@@ -30,14 +30,33 @@ class EnvironmentConfig:
         'languages': 'English, Français, Español, Deutsch, Português, 日本語, Lietuvos, 中文, Indonesia, Dansk, Português (Brasil), Русский, Slovenščina, Italiano, Nederlands, Українська, தமிழ், සිංහල, Česky, Bokmål, Magyar'
     }
 
-
-class StagingConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com'
+class ProdConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-prod.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/docs'
+                   'url=http://tasks-prod.hotosm.org/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
+class StageConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-stage.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-stage.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+class DemoConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-demo.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-demo.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+class StagingConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-demo.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-stage.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
 
 class DevConfig(EnvironmentConfig):
     APP_BASE_URL = 'http://127.0.0.1:5000'
