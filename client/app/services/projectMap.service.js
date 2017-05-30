@@ -28,7 +28,7 @@
             removeProjectsOnMap: removeProjectsOnMap,
             highlightProjectOnMap: highlightProjectOnMap,
             removeHighlightOnMap: removeHighlightOnMap,
-            createPopup: createPopup,
+            addPopupOverlay: addPopupOverlay,
             closePopup: closePopup
         };
 
@@ -115,7 +115,7 @@
             });
             if (projectVectorSource) {
                 projectVectorSource.addFeature(feature);
-                feature.setStyle(styleService.getProjectStyle(type));
+                feature.setStyle(styleService.getStyleWithColour(type));
             }
             if (zoomTo){
                 map.getView().fit(feature.getGeometry().getExtent(), {
@@ -160,8 +160,9 @@
 
         /**
          * Creates a popup using a directive and add this popup to an overlay layer
+         * TODO: move this to a separate popup service?
          */
-        function createPopup() {
+        function addPopupOverlay() {
 
             overlay = null;
 
@@ -193,7 +194,7 @@
             map.addOverlay(overlay);
             overlay.setPosition(undefined);
         }
-        
+
         /**
          * Close the popup and sets the OpenLayers edit interactions to true so
          * users can edit the features
@@ -211,13 +212,16 @@
                 return feature;
             });
             if (feature){
-                popupScope_['feature'] = feature;
+                // Only show a popup for features with a project ID
+                if (feature.getProperties().id){
+                    popupScope_['feature'] = feature;
 
-                // Compile the element, link it to the scope
-                overlay.setElement(popupContainer[0]);
-                $compile(popupContainer)(popupScope_);
+                    // Compile the element, link it to the scope
+                    overlay.setElement(popupContainer[0]);
+                    $compile(popupContainer)(popupScope_);
 
-                overlay.setPosition(coordinate);
+                    overlay.setPosition(coordinate);
+                }
             }
         }
     }

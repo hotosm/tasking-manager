@@ -1,7 +1,8 @@
 <a href id="popup-closer" class="ol-popup-closer" ng-click="mapPopupCtrl.close()"></a>
 <div id="popup-content">
     <div>
-        <h4># {{ mapPopupCtrl.projectDetails.projectId }} -
+        <h4 ng-show="mapPopupCtrl.projectDetails.projectId">
+            # {{ mapPopupCtrl.projectDetails.projectId }} -
             <a href="/project/{{ mapPopupCtrl.projectDetails.projectId }}"> {{ mapPopupCtrl.projectDetails.projectName }}</a>
         </h4>
         <ul>
@@ -21,6 +22,18 @@
                 {{ mapPopupCtrl.projectDetails.percentValidated }}% validated
             </li>
         </ul>
+        <p ng-show="mapPopupCtrl.projectDetails.projectStatus">
+            <strong>Status: </strong>
+            <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'ARCHIVED'">
+                Archived
+            </span>
+            <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'DRAFT'">
+                Draft
+            </span>
+            <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'PUBLISHED'">
+                Published
+            </span>
+        </p>
         <p markdown-to-html="(mapPopupCtrl.projectDetails.shortDescription | limitTo: mapPopupCtrl.characterLimitShortDescription) +
             (mapPopupCtrl.projectDetails.shortDescription.length > mapPopupCtrl.characterLimitShortDescription ? '...' : '')">
         </p>

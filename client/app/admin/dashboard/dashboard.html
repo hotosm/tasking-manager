@@ -28,6 +28,9 @@
                              </form>
                          </div>
                          <hr>
+                         <!-- error -->
+                         <p class="error" ng-show="dashboardCtrl.errorReturningProjects">An error occurred.</p>
+                         <!-- error -->
                          <!-- active projects -->
                          <h3 class="pointer" ng-click="dashboardCtrl.toggleActive()">
                              <span ng-show="!dashboardCtrl.showActive">+</span>

@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', 'geospatialService', 'accountService', 'authService','searchService', createProjectController]);
+        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', 'geospatialService', 'accountService', 'authService','searchService','styleService','projectMapService', createProjectController]);
 
-    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService, authService, searchService) {
+    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService, authService, searchService, styleService, projectMapService) {
 
         var vm = this;
         vm.map = null;
@@ -33,7 +33,7 @@
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
         vm.MAX_NUMBER_OF_TASKS = 2000;
-        vm.MAX_NUMBER_OF_TASKS_SPLIT = 1500; // by limiting the split button, ythe user will not likely create a project with more than the max number of tasks
+        vm.MAX_NUMBER_OF_TASKS_SPLIT = 1500; // by limiting the split button, the user will not likely create a project with more than the max number of tasks
 
         // Variables for the zoom level used for creating the grid
         vm.DEFAULT_ZOOM_LEVEL_OFFSET = 2;
@@ -96,6 +96,9 @@
             projectService.initDraw(vm.map);
 
             addOtherProjectsLayer();
+
+            projectMapService.initialise(vm.map);
+            projectMapService.addPopupOverlay();
         }
 
         /**
@@ -232,13 +235,13 @@
 
             var taskGrid = projectService.getTaskGrid();
             vm.waiting = true;
-            var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi)
+            var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi);
             trimTaskGridPromise.then(function (data) {
                 vm.waiting = false;
                 vm.trimError = false;
                 vm.trimErrorReason = '';
                 projectService.removeTaskGrid();
-                var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
+                var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857');
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
                 // Get the number of tasks in project
@@ -476,27 +479,43 @@
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
         };
 
+        /**
+         * Add a layer that shows the AOIs of other projects
+         */
         function addOtherProjectsLayer(){
-            var geoJSONFormat = new ol.format.GeoJSON();
             var vectorSource = new ol.source.Vector({
-                loader: function(extent, resolution, projection){
+                loader: function(extent){
+                    vectorSource.clear();
                     var params = {
                         bbox: geospatialService.transformExtentToLatLonString(extent)
                     };
                     var resultsPromise = searchService.getProjectsWithinBBOX(params);
                     resultsPromise.then(function (data) {
-                        // TODO
                         var features = geospatialService.getFeaturesFromGeoJSON(data);
                         vectorSource.addFeatures(features);
                     }, function (reason) {
                         // TODO
-                        console.log("fail");
                     });
                 },
                 strategy: ol.loadingstrategy.bbox
             });
             var vector = new ol.layer.Vector({
                 source: vectorSource,
+                style: function(feature){
+                    var status = feature.getProperties().status;
+                    if (status === 'DRAFT'){
+                        return styleService.getStyleWithColour("blue");
+                    }
+                    else if (status === 'PUBLISHED'){
+                        return styleService.getStyleWithColour("red");
+                    }
+                    else if (status === 'ARCHIVED'){
+                        return styleService.getStyleWithColour("black");
+                    }
+                    else {
+                        return styleService.getStyleWithColour("black");
+                    }
+                },
                 maxResolution: 300
             });
             vm.map.addLayer(vector);
