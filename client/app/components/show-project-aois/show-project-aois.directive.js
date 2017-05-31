@@ -51,6 +51,11 @@
         $scope.$watch('showProjectAoisCtrl.yourProjects', function(yours) {
             // TODO: if yours is true, then only show the projects for a user
             addOtherProjectsLayer();
+            projectMapService.initialise(vm.map);
+            var hoverIdentify = false;
+            var clickIdentify = true;
+            projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
+            vm.currentResolution = vm.map.getView().getResolution();
         });
         
         /**

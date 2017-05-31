@@ -36,17 +36,13 @@
         vm.showArchived = false;
 
         // Errors
-        vm.errorReturningProjects = false
+        vm.errorReturningProjects = false;
 
         activate();
 
         function activate(){
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
-            projectMapService.initialise(vm.map);
-            var hoverIdentify = true;
-            var clickIdentify = true;
-            projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             getProjects();
         }
 

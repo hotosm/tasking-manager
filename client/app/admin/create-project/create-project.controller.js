@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', 'geospatialService', 'accountService', 'authService','searchService','styleService','projectMapService', createProjectController]);
+        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', 'geospatialService', 'accountService', 'authService', createProjectController]);
 
-    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService, authService, searchService, styleService, projectMapService) {
+    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService, authService) {
 
         var vm = this;
         vm.map = null;
@@ -94,11 +94,6 @@
                 drawService.getSource().clear();
             });
             projectService.initDraw(vm.map);
-
-            projectMapService.initialise(vm.map);
-            var hoverIdentify = false;
-            var clickIdentify = true;
-            projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
         }
 
         /**
