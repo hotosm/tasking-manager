@@ -49,6 +49,7 @@ class TestProjectSearchService(unittest.TestCase):
         dto.bbox = map(float, '34.404,-1.034, 34.717,-0.624'.split(','))
         dto.preferred_locale = 'en'
         dto.input_srid = 4326
+        dto.project_author = 'NateHeard'
         dto.validate()
 
 
@@ -61,13 +62,25 @@ class TestProjectSearchService(unittest.TestCase):
     def test_make_polygon_from_bbox(self):
 
         # arrange
-        expected = Polygon([(1,0), (1,1), (0,1), (0,0)])
+        expected = (32.50198296132938, -12.59912449955007, 34.68826225820438, -11.578583176891955)
 
         # act
-        polygon = ProjectSearchService._make_polygon_from_bbox([0,0,1,1])
+        polygon = ProjectSearchService._make_4326_polygon_from_bbox([3618104.193026841, -1413969.7644834695, 3861479.691086842, -1297785.4814900015], 3857)
 
         # assert
-        self.assertEquals(expected, polygon)
+        self.assertEquals(expected, polygon.bounds)
+
+    def test_get_area_from_bbox(self):
+
+        # arrange
+
+        polygon = ProjectSearchService._make_4326_polygon_from_bbox([32.50198296132938, -12.59912449955007, 34.68826225820438, -11.578583176891955], 4326)
+        print(ProjectSearchService._get_area_sqm(polygon))
+        # act
+
+
+        # assert
+        self.assertEquals(1,1)
 
 
 

@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
-from server.services.project_search_service import ProjectSearchService
+from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 from server.services.users.authentication_service import token_auth, tm
 
@@ -94,11 +94,19 @@ class ProjectSearchBBoxAPI(Resource):
               description: srid of bbox coords
               type: integer
               default: 4326
+            - in: query
+              name: projectAuthor
+              description: project author user name
+              type: string
+              required: false
+
         responses:
             200:
-                description: Projects found
-            404:
-                description: No projects found
+                description: ok
+            400:
+                description: Client Error - Invalid Request
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
@@ -107,6 +115,7 @@ class ProjectSearchBBoxAPI(Resource):
             search_dto.bbox = map(float, request.args.get('bbox').split(','))
             search_dto.input_srid = request.args.get('srid')
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            search_dto.project_author = request.args.get('projectAuthor')
             search_dto.validate()
         except Exception as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -114,8 +123,10 @@ class ProjectSearchBBoxAPI(Resource):
         try:
             geojson= ProjectSearchService.get_projects_geojson(search_dto)
             return geojson, 200
-        except NotFound:
-            return {"Error": "No projects found"}, 404
+        except BBoxTooBigError:
+            return {"Error": "Bounding Box too large"}, 403
+        except ProjectSearchServiceError as e:
+            return {"error": str(e)}, 400
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

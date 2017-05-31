@@ -58,6 +58,11 @@ class ST_Transform(GenericFunction):
     name = 'ST_Transform'
     type = Geometry
 
+class ST_Area(GenericFunction):
+    """ Exposes PostGIS ST_Area function """
+    name = 'ST_Area'
+    type = None
+
 
 class ST_Buffer(GenericFunction):
     """ Exposes PostGIS ST_Buffer function """
