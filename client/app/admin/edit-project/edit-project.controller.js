@@ -132,6 +132,9 @@
                 var requiredFieldsMissing = checkRequiredFields();
             }
 
+            // Remove the area of interest before posting it back
+            delete vm.project.areaOfInterest;
+
             // Only one tag is allowed at the moment so get the first item
             vm.project.organisationTag = null;
             vm.project.campaignTag = null;
