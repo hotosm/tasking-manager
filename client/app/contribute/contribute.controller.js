@@ -16,10 +16,6 @@
         vm.results = [];
         vm.vectorSource = null;
 
-        // Paging results
-        vm.itemsPerPage = 4;
-        vm.currentPage = 1;
-
         // Default to grid view
         vm.resultsView = 'grid';
 
