@@ -21,6 +21,12 @@ class MappingTaskAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -42,7 +48,8 @@ class MappingTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = MappingService.get_task_as_dto(task_id, project_id)
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404

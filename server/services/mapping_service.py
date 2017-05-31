@@ -36,10 +36,10 @@ class MappingService:
         return task
 
     @staticmethod
-    def get_task_as_dto(task_id: int, project_id: int) -> TaskDTO:
+    def get_task_as_dto(task_id: int, project_id: int, preferred_local: str = 'en') -> TaskDTO:
         """ Get task as DTO for transmission over API """
         task = MappingService.get_task(task_id, project_id)
-        return task.as_dto()
+        return task.as_dto(preferred_local)
 
     @staticmethod
     def lock_task_for_mapping(lock_task_dto: LockTaskDTO) -> TaskDTO:

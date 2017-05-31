@@ -105,3 +105,7 @@ class ProjectInfo(db.Model):
             project_info_dtos.append(project_info_dto)
 
         return project_info_dtos
+
+
+    def get_per_task_instructions(self, preferred_locale):
+        iain = 1

@@ -412,7 +412,7 @@ class Task(db.Model):
         for row in result:
             return row[0]
 
-    def as_dto(self):
+    def as_dto(self, preferred_locale: str) -> TaskDTO:
         """
         Creates a Task DTO suitable for transmitting via the API
         :param task_id: Task ID in scope
@@ -432,11 +432,22 @@ class Task(db.Model):
 
             task_history.append(history)
 
+        per_task_instructions = self.get_per_task_instructions(preferred_locale)
+
         task_dto = TaskDTO()
         task_dto.task_id = self.id
         task_dto.project_id = self.project_id
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
+        task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(self.projects.default_locale)
 
         return task_dto
+
+    def get_per_task_instructions(self, search_locale):
+
+        project_info = self.projects.project_info.all()
+
+        for info in project_info:
+            if info.locale == search_locale:
+                return info.per_task_instructions
