@@ -57,6 +57,7 @@ class TestTask(unittest.TestCase):
         test_task.x = 1
         test_task.y = 2
         test_task.zoom = 3
+        test_task.splittable = True
 
         # Act
         instructions = test_task.format_per_task_instructions('Test Url is http://test.com/{x}/{y}/{z}')

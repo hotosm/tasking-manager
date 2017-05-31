@@ -462,11 +462,8 @@ class Task(db.Model):
         if not self.splittable and ('{x}/{y}/{z}' in instructions):
             return 'Cannot generate dynamic URL on an Arbitrary or Clipped task'
 
-        if self.x:
-            instructions = instructions.replace('{x}', str(self.x))
-        if self.y:
-            instructions = instructions.replace('{y}', str(self.y))
-        if self.zoom:
-            instructions = instructions.replace('{z}', str(self.zoom))
+        instructions = instructions.replace('{x}', str(self.x))
+        instructions = instructions.replace('{y}', str(self.y))
+        instructions = instructions.replace('{z}', str(self.zoom))
 
         return instructions
