@@ -145,7 +145,7 @@ class ProjectSearchService:
                 localDTO = ProjectInfo.get_dto_for_locale(project.id, search_bbox_dto.preferred_locale,
                                                           project.default_locale)
             except Exception as e:
-                raise ProjectSearchServiceError(f'Error finding project local {str(e)}')
+                pass
 
             properties = {
                 "projectId": project.id,
