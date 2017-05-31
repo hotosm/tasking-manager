@@ -65,7 +65,9 @@
             mapService.createOSMMap('map', disableScrollZoom);
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
-            projectMapService.addPopupOverlay();
+            var hoverIdentify = true;
+            var clickIdentify = true;
+            projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             setOrganisationTags();
             setCampaignTags();
         }
