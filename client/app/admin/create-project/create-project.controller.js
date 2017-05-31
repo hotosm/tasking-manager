@@ -95,8 +95,6 @@
             });
             projectService.initDraw(vm.map);
 
-            //addOtherProjectsLayer();
-
             projectMapService.initialise(vm.map);
             var hoverIdentify = false;
             var clickIdentify = true;
