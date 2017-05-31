@@ -40,9 +40,6 @@
 
         // Paging
         vm.pagination = null;
-        
-        // Character limit
-        vm.characterLimitShortDescription = 100;
 
         // Watch the languageService for change in language and search again when needed
         $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
