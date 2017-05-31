@@ -141,7 +141,7 @@
                                     <div class="search-results-container">
                                         <div class="project-result__cards">
                                             <div class="project-result__card"
-                                                 ng-repeat="project in contributeCtrl.results.slice(((contributeCtrl.currentPage-1)*contributeCtrl.itemsPerPage), ((contributeCtrl.currentPage)*contributeCtrl.itemsPerPage)) track by project.projectId">
+                                                 ng-repeat="project in contributeCtrl.results track by project.projectId">
                                                 <section class="panel project-result__content">
                                                      <div class="progress-bar-container">
                                                          <span class="label">{{ project.percentMapped }}{{ '% Mapped' | translate }}</span>
@@ -150,15 +150,13 @@
                                                          <uib-progressbar value="project.percentValidated"></uib-progressbar>
                                                     </div>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
-                                                    <p markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
-                                                        (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
-                                                    </p>
                                                     <ul>
                                                         <li ng-show="!project.organisationTag">{{ 'Organisation' | translate }}: N/A</li>
                                                         <li ng-show="project.organisationTag">{{ 'Organisation' | translate }}: {{ project.organisationTag }}</li>
                                                         <li>{{ 'Priority' | translate }}: {{ project.priority }}</li>
                                                         <li>{{ 'Level' | translate }}: {{ project.mapperLevel }}</li>
                                                     </ul>
+                                                    <p markdown-to-html="(project.shortDescription)"></p>
                                                     <a href="/project/{{ project.projectId }}"
                                                        class="button button--primary">{{ 'Contribute' | translate }}</a>
                                                 </section>
@@ -196,8 +194,7 @@
                                             <td>{{ project.projectId }}</td>
                                             <td>{{ project.name }}</td>
                                             <td>
-                                                <span markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
-                                                    (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')">
+                                                <span markdown-to-html="(project.shortDescription)">
                                                 </span>
                                             </td>
                                             <td>{{ project.mapperLevel }}</td>
