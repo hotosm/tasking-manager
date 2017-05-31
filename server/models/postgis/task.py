@@ -440,14 +440,29 @@ class Task(db.Model):
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
+        # If we don't have instructions in preferred locale try again for default locale
         task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(self.projects.default_locale)
 
         return task_dto
 
-    def get_per_task_instructions(self, search_locale):
-
+    def get_per_task_instructions(self, search_locale: str) -> str:
+        """ Gets any per task instructions attached to the project """
         project_info = self.projects.project_info.all()
 
         for info in project_info:
             if info.locale == search_locale:
-                return info.per_task_instructions
+                return self.format_per_task_instructions(info.per_task_instructions)
+
+    def format_per_task_instructions(self, instructions):
+        """ Format instructions by looking for X, Y, Z tokens and replacing them with the task values """
+        if not instructions:
+            return ''  # No instructions so return empty string
+
+        if self.x:
+            instructions = instructions.replace('{x}', str(self.x))
+        if self.y:
+            instructions = instructions.replace('{y}', str(self.y))
+        if self.zoom:
+            instructions = instructions.replace('{z}', str(self.zoom))
+
+        return instructions
