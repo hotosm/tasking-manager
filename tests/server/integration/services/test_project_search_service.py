@@ -74,7 +74,7 @@ class TestProjectSearchService(unittest.TestCase):
         dto.bbox = map(float, '34.404,-1.034, 34.717,-0.624'.split(','))
         dto.preferred_locale = 'en'
         dto.input_srid = 4326
-        dto.project_author = 'NateHeard'
+        dto.project_author = 3488526
         dto.validate()
 
         # arrange expected result

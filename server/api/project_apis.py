@@ -1,6 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-
+from distutils.util import strtobool
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
 from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
@@ -95,10 +95,11 @@ class ProjectSearchBBoxAPI(Resource):
               type: integer
               default: 4326
             - in: query
-              name: projectAuthor
-              description: project author user name
-              type: string
-              required: false
+              name: createdByMe
+              description: limit to projects created by authenticated user
+              type: boolean
+              required: true
+              default: false
 
         responses:
             200:
@@ -115,7 +116,9 @@ class ProjectSearchBBoxAPI(Resource):
             search_dto.bbox = map(float, request.args.get('bbox').split(','))
             search_dto.input_srid = request.args.get('srid')
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            search_dto.project_author = request.args.get('projectAuthor')
+            createdByMe = strtobool(request.args.get('createdByMe')) if request.args.get('createdByMe') else False
+            if createdByMe:
+                search_dto.project_author = tm.authenticated_user_id
             search_dto.validate()
         except Exception as e:
             current_app.logger.error(f'Error validating request: {str(e)}')

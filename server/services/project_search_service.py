@@ -11,11 +11,11 @@ from geoalchemy2 import shape
 import math
 from server.services.users.user_service import UserService
 
-# max area allowed for passed in bbox
+# max area allowed for passed in bbox, calculation shown to help future maintenace
 # 243375 is arbitrarily chosen map maximum map width in meters
 # multiply by 1.5 to give a buffer beyond edge of map
 # raise to power 2 to get the maxim allowed area
-MAX_AREA = math.pow(243375 * 1.5, 2)
+MAX_AREA = 133270628906.25
 
 
 class ProjectSearchServiceError(Exception):
@@ -125,17 +125,8 @@ class ProjectSearchService:
         if not ProjectSearchService.validate_bbox_area(polygon):
             raise BBoxTooBigError('Requested bounding box is too large')
 
-        # try to get a user id for the project_author
-        author_id = None
-        if search_bbox_dto.project_author:
-            try:
-                author = UserService.get_user_by_username(search_bbox_dto.project_author)
-                author_id = author.id
-            except NotFound:
-                pass
-
         # get projects intersecting the polygon for created by the author_id
-        intersecting_projects = ProjectSearchService._get_intersecting_projects(polygon, author_id)
+        intersecting_projects = ProjectSearchService._get_intersecting_projects(polygon, search_bbox_dto.project_author)
 
         # allow an empty feature collection to be returned if no intersecting features found, since this is primarily
         # for returning data to show on a map
