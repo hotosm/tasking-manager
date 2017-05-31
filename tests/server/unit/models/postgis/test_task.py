@@ -50,3 +50,16 @@ class TestTask(unittest.TestCase):
 
         with self.assertRaises(InvalidGeoJson):
             Task.from_geojson_feature(1, invalid_feature)
+
+    def test_per_task_instructions_formatted_correctly(self):
+        # Arrange
+        test_task = Task()
+        test_task.x = 1
+        test_task.y = 2
+        test_task.zoom = 3
+
+        # Act
+        instructions = test_task.format_per_task_instructions('Test Url is http://test.com/{x}/{y}/{z}')
+
+        # Assert
+        self.assertEqual(instructions, 'Test Url is http://test.com/1/2/3')
