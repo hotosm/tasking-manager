@@ -134,6 +134,7 @@ class Task(db.Model):
     x = db.Column(db.Integer)
     y = db.Column(db.Integer)
     zoom = db.Column(db.Integer)
+    # Tasks are not splittable if created from an arbitrary grid or were clipped to the edge of the AOI
     splittable = db.Column(db.Boolean, default=True)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
@@ -457,6 +458,9 @@ class Task(db.Model):
         """ Format instructions by looking for X, Y, Z tokens and replacing them with the task values """
         if not instructions:
             return ''  # No instructions so return empty string
+
+        if not self.splittable and ('{x}/{y}/{z}' in instructions):
+            return 'Cannot generate dynamic URL on an Arbitrary or Clipped task'
 
         if self.x:
             instructions = instructions.replace('{x}', str(self.x))
