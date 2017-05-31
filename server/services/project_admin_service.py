@@ -192,6 +192,9 @@ class ProjectAdminService:
             raise ProjectAdminServiceError('Project Info for Default Locale not provided')
 
         for attr, value in default_info.items():
+            if attr == 'per_task_instructions':
+                continue  # Not mandatory field
+
             if not value:
                 raise (ProjectAdminServiceError(f'{attr} not provided for Default Locale'))
 

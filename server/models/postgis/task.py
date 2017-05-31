@@ -413,13 +413,8 @@ class Task(db.Model):
         for row in result:
             return row[0]
 
-    def as_dto(self, preferred_locale: str) -> TaskDTO:
-        """
-        Creates a Task DTO suitable for transmitting via the API
-        :param task_id: Task ID in scope
-        :param project_id: Project ID in scope
-        :return: JSON serializable Task DTO
-        """
+    def as_dto(self) -> TaskDTO:
+        """ Creates a Task DTO suitable for transmitting via the API """
         task_history = []
         for action in self.task_history:
             if action.action_text is None:
@@ -433,16 +428,24 @@ class Task(db.Model):
 
             task_history.append(history)
 
-        per_task_instructions = self.get_per_task_instructions(preferred_locale)
-
         task_dto = TaskDTO()
         task_dto.task_id = self.id
         task_dto.project_id = self.project_id
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
+
+        return task_dto
+
+    def as_dto_with_instructions(self, preferred_locale: str = 'en') -> TaskDTO:
+        """ Get dto with any task instructions """
+        task_dto = self.as_dto()
+
+        per_task_instructions = self.get_per_task_instructions(preferred_locale)
+
         # If we don't have instructions in preferred locale try again for default locale
-        task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(self.projects.default_locale)
+        task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(
+            self.projects.default_locale)
 
         return task_dto
 
@@ -454,7 +457,7 @@ class Task(db.Model):
             if info.locale == search_locale:
                 return self.format_per_task_instructions(info.per_task_instructions)
 
-    def format_per_task_instructions(self, instructions):
+    def format_per_task_instructions(self, instructions) -> str:
         """ Format instructions by looking for X, Y, Z tokens and replacing them with the task values """
         if not instructions:
             return ''  # No instructions so return empty string
