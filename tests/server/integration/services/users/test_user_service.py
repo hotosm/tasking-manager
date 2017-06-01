@@ -1,8 +1,10 @@
 import os
 import unittest
+from unittest.mock import patch
+
 
 from server import create_app
-from server.services.users.user_service import UserService, MappingLevel
+from server.services.users.user_service import UserService, MappingLevel, User
 from tests.server.helpers.test_helpers import create_canned_project
 
 
@@ -60,3 +62,11 @@ class TestAuthenticationService(unittest.TestCase):
 
         # Assert
         self.assertEqual(MappingLevel(user.mapping_level), MappingLevel.ADVANCED)
+
+    @patch.object(User, 'create')
+    def test_user_can_register_with_correct_mapping_level(self, mock_user):
+        # Act
+        test_user = UserService().register_user(12, 'Thinkwhere', 300)
+
+        # Assert
+        self.assertEqual(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)
