@@ -35,13 +35,14 @@
         vm.showDraft = false;
         vm.showArchived = false;
 
+        // Errors
+        vm.errorReturningProjects = false;
+
         activate();
 
         function activate(){
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
-            projectMapService.initialise(vm.map);
-            projectMapService.createPopup();
             getProjects();
         }
 
@@ -79,6 +80,7 @@
          * Get the projects for the logged in user
          */
         function getProjects(){
+            vm.errorReturningProjects = false;
             var resultsPromise = projectService.getMyProjects();
             resultsPromise.then(function (data) {
                 // Return the projects successfully
@@ -86,6 +88,7 @@
                 showOnMap(vm.projects);
             }, function(){
                 // an error occurred
+                vm.errorReturningProjects = true;
                 vm.projects = {};
             });
         }

@@ -28,6 +28,9 @@
                              </form>
                          </div>
                          <hr>
+                         <!-- error -->
+                         <p class="error" ng-show="dashboardCtrl.errorReturningProjects">An error occurred.</p>
+                         <!-- error -->
                          <!-- active projects -->
                          <h3 class="pointer" ng-click="dashboardCtrl.toggleActive()">
                              <span ng-show="!dashboardCtrl.showActive">+</span>
@@ -235,7 +238,11 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <div id="map" class="map-container"></div>
+                    <div id="map" class="map-container">
+                        <div class="show-other-projects">
+                            <show-project-aois your-projects='true'></show-project-aois>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

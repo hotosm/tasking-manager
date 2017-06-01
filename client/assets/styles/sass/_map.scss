@@ -39,8 +39,19 @@
   top: 3rem;
   right: 0.5rem;
   position: absolute;
-  z-index: 1000;
+  z-index: 5;
 }
+
+.show-other-projects {
+  bottom: 2.5rem;
+  left: 0.5rem;
+  position: absolute;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 0.5rem 0rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
 
 .add-layer-wrapper {
   background: rgba(255, 255, 255, 0.9);

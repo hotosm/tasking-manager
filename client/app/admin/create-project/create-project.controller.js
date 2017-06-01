@@ -33,7 +33,7 @@
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
         vm.MAX_NUMBER_OF_TASKS = 2000;
-        vm.MAX_NUMBER_OF_TASKS_SPLIT = 1500; // by limiting the split button, ythe user will not likely create a project with more than the max number of tasks
+        vm.MAX_NUMBER_OF_TASKS_SPLIT = 1500; // by limiting the split button, the user will not likely create a project with more than the max number of tasks
 
         // Variables for the zoom level used for creating the grid
         vm.DEFAULT_ZOOM_LEVEL_OFFSET = 2;
@@ -118,8 +118,7 @@
                 vm.createArbitaryTasks();
                 vm.setWizardStep('review');
             }
-
-        }
+        };
 
         /**
          * Set the current wizard step in the process of creating a project
@@ -232,7 +231,6 @@
             vm.isImportedAOI = false;
         };
 
-
         /**
          * Trim the task grid to the AOI
          */
@@ -240,13 +238,13 @@
 
             var taskGrid = projectService.getTaskGrid();
             vm.waiting = true;
-            var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi)
+            var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi);
             trimTaskGridPromise.then(function (data) {
                 vm.waiting = false;
                 vm.trimError = false;
                 vm.trimErrorReason = '';
                 projectService.removeTaskGrid();
-                var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
+                var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857');
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
                 // Get the number of tasks in project
@@ -486,6 +484,6 @@
 
         vm.toggleClipTasksToAoi = function () {
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
-        }
+        };
     }
 })();

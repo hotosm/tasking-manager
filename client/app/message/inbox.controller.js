@@ -13,6 +13,7 @@
         var vm = this;
         vm.messages = [];
         vm.showDeleteMessageModal = false;
+        vm.errorRetrievingMessages = false;
        
         activate();
 
@@ -58,6 +59,7 @@
          * Get all messages for a user
          */
         function getAllMessages(){
+            vm.errorRetrievingMessages = false;
             var resultsPromise = messageService.getAllMessages();
             resultsPromise.then(function (data) {
                 // success
@@ -70,6 +72,7 @@
             }, function () {
                 // an error occurred
                 vm.messages = [];
+                vm.errorRetrievingMessages = true;
             });
         }
 

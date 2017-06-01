@@ -28,8 +28,9 @@
             removeProjectsOnMap: removeProjectsOnMap,
             highlightProjectOnMap: highlightProjectOnMap,
             removeHighlightOnMap: removeHighlightOnMap,
-            createPopup: createPopup,
-            closePopup: closePopup
+            addPopupOverlay: addPopupOverlay,
+            closePopup: closePopup,
+            removePopupOverlay: removePopupOverlay
         };
 
         return service;
@@ -115,7 +116,7 @@
             });
             if (projectVectorSource) {
                 projectVectorSource.addFeature(feature);
-                feature.setStyle(styleService.getProjectStyle(type));
+                feature.setStyle(styleService.getStyleWithColour(type));
             }
             if (zoomTo){
                 map.getView().fit(feature.getGeometry().getExtent(), {
@@ -160,9 +161,11 @@
 
         /**
          * Creates a popup using a directive and add this popup to an overlay layer
+         * TODO: move this to a separate popup service?
+         * @param hover boolean
+         * @param click boolean
          */
-        function createPopup() {
-
+        function addPopupOverlay(hover, click) {
             overlay = null;
 
             popupContainer = angular.element('<div map-popup id="popup" class="ol-popup"></div>');
@@ -179,21 +182,33 @@
                 }
             });
             
-            map.on('pointermove', function (evt) {
-                if (evt.dragging) {
-                    return;
-                }
-                var pixel = map.getEventPixel(evt.originalEvent);
-                displayFeatureInfo(pixel, evt.coordinate);
-            });
-            map.on('click', function (evt) {
-                displayFeatureInfo(evt.pixel, evt.coordinate);
-            });
+            if (hover){
+                map.on('pointermove', function (evt) {
+                    if (evt.dragging) {
+                        return;
+                    }
+                    var pixel = map.getEventPixel(evt.originalEvent);
+                    displayFeatureInfo(pixel, evt.coordinate);
+                }); 
+            }
+           
+            if (click){
+                 map.on('click', function (evt) {
+                    displayFeatureInfo(evt.pixel, evt.coordinate);
+                });    
+            }
             
             map.addOverlay(overlay);
             overlay.setPosition(undefined);
         }
-        
+
+        /**
+         * Deactivate popup by setting its position to undefined
+         */
+        function removePopupOverlay(){
+            map.removeOverlay(overlay);
+        }
+
         /**
          * Close the popup and sets the OpenLayers edit interactions to true so
          * users can edit the features
@@ -211,13 +226,16 @@
                 return feature;
             });
             if (feature){
-                popupScope_['feature'] = feature;
+                // Only show a popup for features with a project ID
+                if (feature.getProperties().projectId){
+                    popupScope_['feature'] = feature;
 
-                // Compile the element, link it to the scope
-                overlay.setElement(popupContainer[0]);
-                $compile(popupContainer)(popupScope_);
+                    // Compile the element, link it to the scope
+                    overlay.setElement(popupContainer[0]);
+                    $compile(popupContainer)(popupScope_);
 
-                overlay.setPosition(coordinate);
+                    overlay.setPosition(coordinate);
+                }
             }
         }
     }
