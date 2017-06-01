@@ -52,6 +52,7 @@
         vm.shortDescriptionLanguage = 'en';
         vm.nameLanguage = 'en';
         vm.instructionsLanguage = 'en';
+        vm.perTaskInstructionsLanguage = 'en';
 
         vm.descriptionHTML = '';
         
@@ -158,7 +159,7 @@
                 for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
                     var info = vm.project.projectInfoLocales[i];
                     var populatedLocale = false;
-                    if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== '') {
+                    if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== '' || info.perTaskInstructions != '') {
                         populatedLocale = true;
                     }
                     // if no fields for this locale are populated, remove from array
@@ -212,6 +213,14 @@
          */
         vm.changeLanguageInstructions = function(language) {
             vm.instructionsLanguage = language;
+        };
+
+        /**
+         * Change the language per task instructions field
+         * @param language
+         */
+        vm.changeLanguagePerTaskInstructions = function(language){
+            vm.perTaskInstructionsLanguage = language;
         };
 
         /**
@@ -650,7 +659,8 @@
                             "name": "",
                             "shortDescription": "",
                             "description": "",
-                            "instructions": ""
+                            "instructions": "",
+                            "perTaskInstructions": ""
                         };
                         vm.project.projectInfoLocales.push(locale);
                     }
