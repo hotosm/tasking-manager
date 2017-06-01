@@ -6,19 +6,16 @@ from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.messaging.smtp_service import SMTPService
 
-INTERMEDIATE_MAPPER_LEVEL = 250
-ADVANCED_MAPPER_LEVEL = 500
-
 
 class UserServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when in the User Service """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
 
 class UserService:
-
     @staticmethod
     def get_user_by_id(user_id: int) -> User:
         user = User().get_by_id(user_id)
@@ -49,9 +46,12 @@ class UserService:
         new_user.id = osm_id
         new_user.username = username
 
-        if changeset_count > ADVANCED_MAPPER_LEVEL:
+        intermediate_level = current_app.config['MAPPER_LEVEL_INTERMEDIATE']
+        advanced_level = current_app.config['MAPPER_LEVEL_ADVANCED']
+
+        if changeset_count > advanced_level:
             new_user.mapping_level = MappingLevel.ADVANCED.value
-        elif INTERMEDIATE_MAPPER_LEVEL < changeset_count < ADVANCED_MAPPER_LEVEL:
+        elif intermediate_level < changeset_count < advanced_level:
             new_user.mapping_level = MappingLevel.INTERMEDIATE.value
         else:
             new_user.mapping_level = MappingLevel.BEGINNER.value

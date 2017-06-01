@@ -7,22 +7,6 @@ from tests.server.helpers.test_helpers import get_canned_simplified_osm_user_det
 
 class TestUserService(unittest.TestCase):
 
-    user_service = None
-
-    @patch.object(User, 'get_by_id')
-    def set_up_service(self, mock_user, stub_user):
-        """ Helper that sets ups the user service with the supplied user test stub"""
-        mock_user.return_value = stub_user
-        self.user_service = UserService.from_user_id(1)
-
-    @patch.object(User, 'create')
-    def test_user_can_register_with_correct_mapping_level(self, mock_user):
-        # Act
-        test_user = UserService().register_user(12, 'Thinkwhere', 300)
-
-        # Assert
-        self.assertEqual(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)
-
     def test_user_service_can_parse_oms_user_details_xml(self):
         # Arrange
         osm_response = get_canned_simplified_osm_user_details()
