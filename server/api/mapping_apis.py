@@ -78,6 +78,12 @@ class LockTaskForMappingAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -111,6 +117,7 @@ class LockTaskForMappingAPI(Resource):
             lock_task_dto.user_id = tm.authenticated_user_id
             lock_task_dto.project_id = project_id
             lock_task_dto.task_id = task_id
+            lock_task_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             lock_task_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -130,6 +137,7 @@ class LockTaskForMappingAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+
 class StopMappingAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
@@ -148,6 +156,12 @@ class StopMappingAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -190,6 +204,7 @@ class StopMappingAPI(Resource):
             stop_task.user_id = tm.authenticated_user_id
             stop_task.task_id = task_id
             stop_task.project_id = project_id
+            stop_task.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             stop_task.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
