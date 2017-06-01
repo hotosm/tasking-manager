@@ -503,12 +503,11 @@
                             </div>
                             <!-- task locked UI -->
                             <div ng-show="projectCtrl.validatingStep === 'locked'"><!-- task mapping UI -->
-                                <p></p>
+                                <div ng-show="projectCtrl.selectedTaskData.perTaskInstructions">
+                                    <h4>{{ 'Extra Instructions' | translate }}</h4>
+                                    <p markdown-to-html="projectCtrl.selectedTaskData.perTaskInstructions"></p>
+                                </div>
                                 <div class="form__group">
-                                    <div ng-show="projectCtrl.selectedTaskData.perTaskInstructions">
-                                        <h4>{{ 'Extra Instructions' | translate }}</h4>
-                                        <p markdown-to-html="projectCtrl.selectedTaskData.perTaskInstructions"></p>
-                                    </div>
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
                                                 ng-model="projectCtrl.selectedEditor">
