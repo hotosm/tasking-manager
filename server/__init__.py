@@ -1,12 +1,13 @@
 import logging
 import os
+from logging.handlers import RotatingFileHandler
+
 from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-from logging.handlers import RotatingFileHandler
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -96,8 +97,8 @@ def init_flask_restful_routes(app):
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI, MappedTasksByUser
-    from server.api.grid_apis import IntersectingTilesAPI
-    from server.api.split_task_apis import SplitTaskAPI
+    from server.api.grid.grid_apis import IntersectingTilesAPI
+    from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
