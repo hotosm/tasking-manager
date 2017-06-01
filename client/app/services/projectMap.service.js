@@ -227,7 +227,6 @@
             });
             if (feature){
                 // Only show a popup for features with a project ID
-                console.log(feature.getProperties().id);
                 if (feature.getProperties().projectId){
                     popupScope_['feature'] = feature;
 

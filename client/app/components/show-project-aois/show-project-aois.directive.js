@@ -48,8 +48,8 @@
         }
 
         // Watches the isSelectAreaActive variable and deactivates the drawtools if set false
-        $scope.$watch('showProjectAoisCtrl.yourProjects', function(yours) {
-            // TODO: if yours is true, then only show the projects for a user
+        $scope.$watch('showProjectAoisCtrl.yourProjects', function(yourProjects) {
+            vm.yourProjects = yourProjects;
             addOtherProjectsLayer();
             projectMapService.initialise(vm.map);
             var hoverIdentify = false;
@@ -67,7 +67,8 @@
                     vm.errorLoadingExistingProjects = false;
                     vectorSource.clear();
                     var params = {
-                        bbox: geospatialService.transformExtentToLatLonString(extent)
+                        bbox: geospatialService.transformExtentToLatLonString(extent),
+                        createdByMe: vm.yourProjects
                     };
                     var resultsPromise = searchService.getProjectsWithinBBOX(params);
                     resultsPromise.then(function (data) {
@@ -82,7 +83,7 @@
             vm.otherProjectVectorLayer = new ol.layer.Vector({
                 source: vectorSource,
                 style: function(feature){
-                    var status = feature.getProperties().status;
+                    var status = feature.getProperties().projectStatus;
                     if (status === 'DRAFT'){
                         return styleService.getStyleWithColour("blue");
                     }

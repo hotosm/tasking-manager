@@ -52,7 +52,7 @@
             vm.projectDetails.shortDescription = vm.feature.getProperties().shortDescription;
             vm.projectDetails.percentMapped = vm.feature.getProperties().percentMapped;
             vm.projectDetails.percentValidated = vm.feature.getProperties().percentValidated;
-            vm.projectDetails.projectStatus = vm.feature.getProperties().status;
+            vm.projectDetails.projectStatus = vm.feature.getProperties().projectStatus;
         });
 
         vm.close = function(){

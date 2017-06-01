@@ -23,15 +23,15 @@
             </li>
         </ul>
         <p ng-show="mapPopupCtrl.projectDetails.projectStatus">
-            <strong>Status: </strong>
+            <strong>{{ 'Status' | translate}}: </strong>
             <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'ARCHIVED'">
-                Archived
+                {{ 'Archived' | translate }}
             </span>
             <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'DRAFT'">
-                Draft
+                {{ 'Draft' | translate }}
             </span>
             <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'PUBLISHED'">
-                Published
+                {{ 'Published' | translate }}
             </span>
         </p>
         <p markdown-to-html="(mapPopupCtrl.projectDetails.shortDescription | limitTo: mapPopupCtrl.characterLimitShortDescription) +
