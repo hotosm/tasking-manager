@@ -136,7 +136,7 @@ class ValidatorService:
                                                           project_id)
 
             task.reset_lock(user_id, task_to_unlock['comment'])
-            dtos.append(task.as_dto())
+            dtos.append(task.as_dto_with_instructions(stop_validating_dto.preferred_locale))
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos

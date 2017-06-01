@@ -412,8 +412,8 @@ class Task(db.Model):
         for row in result:
             return row[0]
 
-    def as_dto(self) -> TaskDTO:
-        """ Creates a Task DTO suitable for transmitting via the API """
+    def as_dto_with_instructions(self, preferred_locale: str = 'en') -> TaskDTO:
+        """ Get dto with any task instructions """
         task_history = []
         for action in self.task_history:
             if action.action_text is None:
@@ -433,12 +433,6 @@ class Task(db.Model):
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
-
-        return task_dto
-
-    def as_dto_with_instructions(self, preferred_locale: str = 'en') -> TaskDTO:
-        """ Get dto with any task instructions """
-        task_dto = self.as_dto()
 
         per_task_instructions = self.get_per_task_instructions(preferred_locale)
 
