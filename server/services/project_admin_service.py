@@ -7,7 +7,7 @@ from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectC
 from server.models.postgis.project import Project, Task, ProjectStatus
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
-from server.services.grid_service import GridService
+from server.services.grid.grid_service import GridService
 from server.services.license_service import LicenseService
 from server.services.users.user_service import UserService
 

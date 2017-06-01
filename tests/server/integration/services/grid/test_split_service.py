@@ -1,14 +1,16 @@
+import json
 import os
 import unittest
-from server import create_app
-import geojson
-import json
-from server.services.split_service import SplitService, SplitServiceError
-from tests.server.helpers.test_helpers import get_canned_json
-from server.models.postgis.task import Task
-from server.models.postgis.project import Project
-from server.models.dtos.grid_dto import SplitTaskDTO
 from unittest.mock import patch
+
+import geojson
+
+from server import create_app
+from server.models.dtos.grid_dto import SplitTaskDTO
+from server.models.postgis.project import Project
+from server.models.postgis.task import Task
+from server.services.grid.split_service import SplitService, SplitServiceError
+from tests.server.helpers.test_helpers import get_canned_json
 
 
 class TestSplitService(unittest.TestCase):
