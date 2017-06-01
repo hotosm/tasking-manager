@@ -19,8 +19,8 @@ class LanguagesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            languages = SettingsService.get_supported_languages()
-            return languages, 200
+            languages = SettingsService.get_settings()
+            return languages.to_primitive(), 200
         except Exception as e:
             error_msg = f'Languages GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
