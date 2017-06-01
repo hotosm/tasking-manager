@@ -55,7 +55,7 @@ class ValidatorService:
         dtos = []
         for task in tasks_to_lock:
             task.lock_task_for_validating(validation_dto.user_id)
-            dtos.append(task.as_dto())
+            dtos.append(task.as_dto_with_instructions(validation_dto.preferred_locale))
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
@@ -108,7 +108,7 @@ class ValidatorService:
 
             task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'])
 
-            dtos.append(task.as_dto())
+            dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
