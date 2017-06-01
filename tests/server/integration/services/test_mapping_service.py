@@ -77,4 +77,4 @@ class TestMappingService(unittest.TestCase):
         osm_hash = hashlib.md5(osm_xml_str.encode('utf-8')).hexdigest()
 
         # Assert
-        self.assertEqual(osm_hash, '76c8cebb99729481d46734463386bad3')
+        self.assertEqual(osm_hash, 'd5a4cfce79257417052d501ae73982a0')
