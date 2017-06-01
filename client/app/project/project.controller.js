@@ -1046,25 +1046,23 @@
                 editorService.launchFieldPapersEditor(center);
             }
             else if (editor === 'josm') {
-                var changesetSource = "Bing";
-                var hasImagery = false;
-                if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
-                    changesetSource = imageryUrl;
-                    hasImagery = true;
-                }
-                var loadAndZoomParams = {
-                    left: extentTransformed[0],
-                    bottom: extentTransformed[1],
-                    right: extentTransformed[2],
-                    top: extentTransformed[3],
-                    changeset_comment: encodeURIComponent(changesetComment),
-                    changeset_source: encodeURIComponent(changesetSource)
-                };
-                var josm_load = taskCount == 1;
-                var josm_endpoint = josm_load ? 'http://127.0.0.1:8111/load_and_zoom' : 'http://127.0.0.1:8111/zoom';
 
-                var isLoadAndZoomSuccess = editorService.sendJOSMCmd(josm_endpoint, loadAndZoomParams);
-                if (isLoadAndZoomSuccess) {
+                //load task squares into JOSM
+                var importParams = {
+                    url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
+                    new_layer: true
+                }
+                var isImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', importParams);
+
+
+                if (isImportSuccess) {
+                    //load aerial photography if present
+                    var changesetSource = "Bing";
+                    var hasImagery = false;
+                    if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
+                        changesetSource = imageryUrl;
+                        hasImagery = true;
+                    }
                     if (hasImagery) {
                         var imageryParams = {
                             title: encodeURIComponent('Tasking Manager - #' + vm.projectData.projectId),
@@ -1074,14 +1072,20 @@
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
                     }
 
-                    //load task squares into JOSM
+                    //load osm xml data if just one task
+                    if (taskCount == 1) {
+                        var loadAndZoomParams = {
+                            left: extentTransformed[0],
+                            bottom: extentTransformed[1],
+                            right: extentTransformed[2],
+                            top: extentTransformed[3],
+                            changeset_comment: encodeURIComponent(changesetComment),
+                            changeset_source: encodeURIComponent(changesetSource),
+                            new_layer: true
 
-
-                    var importParams = {
-                        url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
-                        new_layer: true
+                        };
+                        editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
                     }
-                    var isImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', importParams);
                 }
                 else {
                     //TODO warn that JSOM couldn't be started
