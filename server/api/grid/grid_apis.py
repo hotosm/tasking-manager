@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from server.models.dtos.grid_dto import GridDTO
-from server.services.grid_service import GridService
+from server.services.grid.grid_service import GridService
 from server.services.project_admin_service import InvalidGeoJson
 from server.services.users.authentication_service import token_auth, tm
 

@@ -1,11 +1,13 @@
+import json
 import unittest
-from server.services.grid_service import GridService
+
+import geojson
+
 from server.models.dtos.grid_dto import GridDTO
 from server.models.dtos.project_dto import DraftProjectDTO
-from tests.server.helpers.test_helpers import get_canned_json
-import geojson
-import json
 from server.models.postgis.utils import InvalidGeoJson
+from server.services.grid.grid_service import GridService
+from tests.server.helpers.test_helpers import get_canned_json
 
 
 class TestGridService(unittest.TestCase):

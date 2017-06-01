@@ -1,10 +1,12 @@
 import json
+from typing import Optional
+
 import geojson
 from flask import current_app
-from typing import Optional
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
+
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
@@ -14,7 +16,7 @@ from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
 from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
-from server.services.grid_service import GridService
+from server.services.grid.grid_service import GridService
 
 # Secondary table defining many-to-many join for private projects that only defined users can map on
 project_allowed_users = db.Table(

@@ -3,7 +3,7 @@ from schematics.exceptions import DataError
 
 from server.models.dtos.grid_dto import SplitTaskDTO
 from server.models.postgis.utils import NotFound
-from server.services.split_service import SplitService, SplitServiceError
+from server.services.grid.split_service import SplitService, SplitServiceError
 from server.services.users.authentication_service import token_auth, tm
 
 
@@ -15,7 +15,7 @@ class SplitTaskAPI(Resource):
         Split a task
         ---
         tags:
-            - splitting
+            - grid
         produces:
             - application/json
         parameters:
