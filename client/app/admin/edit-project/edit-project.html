@@ -222,6 +222,38 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form__group">
+                                    <label class="form__label">{{ 'Per Task Instructions' | translate }} *</label>
+                                    <div>
+                                        <div class="button-group button-group--horizontal"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="{{ 'choose locale' | translate }}">
+                                            <button class="button button--small button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.perTaskInstructionsLanguage === locale ? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.changeLanguagePerTaskInstructions(locale)">
+                                                    {{ locale }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
+                                        <div ng-show="info.locale === editProjectCtrl.perTaskInstructionsLanguage">
+                                            <textarea
+                                                    class="form__control"
+                                                    ng-model="info.perTaskInstructions" rows="4">
+                                            </textarea>
+                                            <p><strong>{{ 'Tip' | translate }}:</strong> {{ 'You can use Markdown. (HTML is not allowed)' | translate }}</p>
+                                            <p>Put here anything that can be useful to users while taking a task. {x}, {y} and {z} will be replaced by the corresponding parameters for each task.
+                                                {x}, {y} and {z} parameters can only be be used on tasks generated in the Tasking Manager and not on imported tasks.
+                                                For example: « This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM ».</p>
+                                            <button class="button button--secondary button--small"
+                                                    ng-click="editProjectCtrl.showPreviewPerTaskInstructions = !editProjectCtrl.showPreviewPerTaskInstructions">
+                                                {{ 'Preview' | translate }}
+                                            </button>
+                                            <p ng-show="editProjectCtrl.showPreviewPerTaskInstructions" markdown-to-html="info.perTaskInstructions"></p>
+                                        </div>
+                                    </div>
+                                </div>
                             </fieldset>
                         </div>
                         <!--/ instructions section -->

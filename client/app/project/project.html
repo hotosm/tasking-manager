@@ -233,7 +233,10 @@
                             </div>
                             <!-- task locked UI -->
                             <div ng-show="projectCtrl.mappingStep === 'locked'"><!-- task mapping UI -->
-                                <p></p>
+                                <div ng-show="projectCtrl.selectedTaskData.perTaskInstructions">
+                                    <h4>{{ 'Extra Instructions' | translate }}</h4>
+                                    <p markdown-to-html="projectCtrl.selectedTaskData.perTaskInstructions"></p>
+                                </div>
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
@@ -502,6 +505,10 @@
                             <div ng-show="projectCtrl.validatingStep === 'locked'"><!-- task mapping UI -->
                                 <p></p>
                                 <div class="form__group">
+                                    <div ng-show="projectCtrl.selectedTaskData.perTaskInstructions">
+                                        <h4>{{ 'Extra Instructions' | translate }}</h4>
+                                        <p markdown-to-html="projectCtrl.selectedTaskData.perTaskInstructions"></p>
+                                    </div>
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
                                                 ng-model="projectCtrl.selectedEditor">
@@ -573,9 +580,9 @@
                             </div>
                             <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
                                 <h2>{{ 'Multi Task Validation' | translate }}</h2>
-                                <h3>{{ 'Tasks' | translate }} {{ projectCtrl.getSelectTaskIds() }}
+                                <p>{{ 'Tasks' | translate }} {{ projectCtrl.getSelectTaskIds() }}
                                     {{ 'are locked for validation by you.' | translate }}
-                                </h3>
+                                </p>
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
