@@ -23,6 +23,7 @@ class LockForValidationDTO(Model):
     project_id = IntType(required=True)
     task_ids = ListType(IntType, required=True, serialized_name='taskIds')
     user_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 
 class ValidatedTask(Model):
@@ -30,6 +31,7 @@ class ValidatedTask(Model):
     task_id = IntType(required=True, serialized_name='taskId')
     status = StringType(required=True, validators=[is_valid_validated_status])
     comment = StringType()
+
 
 class ResetValidatingTask(Model):
     """ Describes the model used to stop validating and reset the status of one task """
@@ -42,6 +44,7 @@ class UnlockAfterValidationDTO(Model):
     project_id = IntType(required=True)
     validated_tasks = ListType(ModelType(ValidatedTask), required=True, serialized_name='validatedTasks')
     user_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 
 class StopValidationDTO(Model):
@@ -49,6 +52,7 @@ class StopValidationDTO(Model):
     project_id = IntType(required=True)
     reset_tasks = ListType(ModelType(ResetValidatingTask), required=True, serialized_name='resetTasks')
     user_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 
 class MappedTasksByUser(Model):
