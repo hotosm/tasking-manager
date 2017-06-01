@@ -1,5 +1,5 @@
 <div title="You can only view other projects at larger scales">
-    <label class="form__option">
+    <label class="form__option" ng-class="{'disabled': showProjectAoisCtrl.currentResolution > showProjectAoisCtrl.otherProjectMaxResolution}">
         <input type="checkbox"
                ng-model="visible"
                ng-disabled="showProjectAoisCtrl.currentResolution > showProjectAoisCtrl.otherProjectMaxResolution"
