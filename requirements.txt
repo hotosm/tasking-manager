@@ -1,5 +1,6 @@
 alembic==0.8.10
 aniso8601==1.2.0
+cachetools==2.0.0
 click==6.7
 coverage==4.3.4
 Flask==0.12.1
