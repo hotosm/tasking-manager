@@ -1,4 +1,4 @@
-from schematics.types import BaseType, BooleanType, IntType
+from schematics.types import BaseType, BooleanType, IntType, StringType
 from schematics import Model
 
 
@@ -8,8 +8,10 @@ class GridDTO(Model):
     grid = BaseType(required=True)
     clip_to_aoi = BooleanType(required=True, serialized_name='clipToAoi')
 
+
 class SplitTaskDTO(Model):
     """ DTO used to split a task """
     user_id = IntType(required=True)
     task_id = IntType(required=True)
     project_id = IntType(required=True)
+    preferred_locale = StringType(default='en')

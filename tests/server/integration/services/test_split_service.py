@@ -58,6 +58,7 @@ class TestSplitService(unittest.TestCase):
         with self.assertRaises(SplitServiceError):
             SplitService._create_split_tasks("foo", "bar", "dum")
 
+    @patch.object(Task, 'get_per_task_instructions')
     @patch.object(Project, 'tasks')
     @patch.object(Project, 'save')
     @patch.object(Project, 'get')
@@ -67,7 +68,7 @@ class TestSplitService(unittest.TestCase):
     @patch.object(Task, 'get')
     def test_split_task_helper(self, mock_task_get, mock_task_get_max_task_id_for_project,
                                mock_task_create, mock_task_delete, mock_project_get, mock_project_save,
-                               mock_project_tasks):
+                               mock_project_tasks, mock_instructions):
         if self.skip_tests:
             return
 
@@ -84,7 +85,7 @@ class TestSplitService(unittest.TestCase):
         task_stub.zoom = 11
         mock_task_get.return_value = task_stub
         mock_task_get_max_task_id_for_project.return_value = 1
-        mock_project_get.return_value = Project();
+        mock_project_get.return_value = Project()
         mock_project_tasks.return_value = [task_stub]
         splitTaskDTO = SplitTaskDTO()
         splitTaskDTO.user_id = 1234

@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from server.models.dtos.grid_dto import SplitTaskDTO
@@ -25,6 +25,12 @@ class SplitTaskAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -56,6 +62,7 @@ class SplitTaskAPI(Resource):
             split_task_dto.user_id = tm.authenticated_user_id
             split_task_dto.project_id = project_id
             split_task_dto.task_id = task_id
+            split_task_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             split_task_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
