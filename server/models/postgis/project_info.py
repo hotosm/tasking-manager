@@ -17,6 +17,7 @@ class ProjectInfo(db.Model):
     instructions = db.Column(db.String)
     project_id_str = db.Column(db.String)
     text_searchable = db.Column(TSVECTOR)  # This contains searchable text and is populated by a DB Trigger
+    per_task_instructions = db.Column(db.String)
 
     __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'),
                       db.Index('textsearch_idx', 'text_searchable'), {})
@@ -46,6 +47,7 @@ class ProjectInfo(db.Model):
         self.short_description = dto.short_description
         self.description = dto.description
         self.instructions = dto.instructions
+        self.per_task_instructions = dto.per_task_instructions
 
     @staticmethod
     def get_dto_for_locale(project_id, locale, default_locale='en') -> ProjectInfoDTO:
@@ -88,7 +90,8 @@ class ProjectInfo(db.Model):
         project_info_dto.name = self.name if self.name else default_locale.name
         project_info_dto.description = self.description if self.description else default_locale.description
         project_info_dto.short_description = self.short_description if self.short_description else default_locale.short_description
-        project_info_dto.instructions = self.instructions if self.description else default_locale.instructions
+        project_info_dto.instructions = self.instructions if self.instructions else default_locale.instructions
+        project_info_dto.per_task_instructions = self.per_task_instructions if self.per_task_instructions else default_locale.per_task_instructions
 
         return project_info_dto
 

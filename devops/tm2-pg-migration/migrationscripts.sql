@@ -112,6 +112,14 @@ INSERT INTO hotnew.tasks(
     where not exists(select id from hotold.task_state ts where ts.task_id = t.id and ts.project_id = t.project_id and ts.state = -1)
     and exists(select id from hotnew.projects p where p.id = t.project_id) );
 
+-- Copy across per-task-instructions
+update hotnew.project_info p
+   set per_task_instructions = old.per_task_instructions
+  from (select id, locale, per_task_instructions from hotold.project_translation
+         where  length(per_task_instructions) > 5) old
+  where project_id = old.id
+    and p.locale = old.locale;
+
 -- Update tasks with "Done" task_status and mapped_by info
 update hotnew.tasks nt
 	set task_status = 2,

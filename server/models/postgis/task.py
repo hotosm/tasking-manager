@@ -133,6 +133,7 @@ class Task(db.Model):
     x = db.Column(db.Integer)
     y = db.Column(db.Integer)
     zoom = db.Column(db.Integer)
+    # Tasks are not splittable if created from an arbitrary grid or were clipped to the edge of the AOI
     splittable = db.Column(db.Boolean, default=True)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
@@ -411,13 +412,8 @@ class Task(db.Model):
         for row in result:
             return row[0]
 
-    def as_dto(self):
-        """
-        Creates a Task DTO suitable for transmitting via the API
-        :param task_id: Task ID in scope
-        :param project_id: Project ID in scope
-        :return: JSON serializable Task DTO
-        """
+    def as_dto(self) -> TaskDTO:
+        """ Creates a Task DTO suitable for transmitting via the API """
         task_history = []
         for action in self.task_history:
             if action.action_text is None:
@@ -439,3 +435,37 @@ class Task(db.Model):
         task_dto.task_history = task_history
 
         return task_dto
+
+    def as_dto_with_instructions(self, preferred_locale: str = 'en') -> TaskDTO:
+        """ Get dto with any task instructions """
+        task_dto = self.as_dto()
+
+        per_task_instructions = self.get_per_task_instructions(preferred_locale)
+
+        # If we don't have instructions in preferred locale try again for default locale
+        task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(
+            self.projects.default_locale)
+
+        return task_dto
+
+    def get_per_task_instructions(self, search_locale: str) -> str:
+        """ Gets any per task instructions attached to the project """
+        project_info = self.projects.project_info.all()
+
+        for info in project_info:
+            if info.locale == search_locale:
+                return self.format_per_task_instructions(info.per_task_instructions)
+
+    def format_per_task_instructions(self, instructions) -> str:
+        """ Format instructions by looking for X, Y, Z tokens and replacing them with the task values """
+        if not instructions:
+            return ''  # No instructions so return empty string
+
+        if not self.splittable and ('{x}/{y}/{z}' in instructions):
+            return 'Cannot generate dynamic URL on an Arbitrary or Clipped task'
+
+        instructions = instructions.replace('{x}', str(self.x))
+        instructions = instructions.replace('{y}', str(self.y))
+        instructions = instructions.replace('{z}', str(self.zoom))
+
+        return instructions
