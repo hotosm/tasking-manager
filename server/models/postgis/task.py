@@ -461,11 +461,11 @@ class Task(db.Model):
         if not instructions:
             return ''  # No instructions so return empty string
 
-        # If there's no dynamic URL (e.g. url containing '{x}/{y}/{z}' pattern) - ALWAYS return instructions
-        # If there is a dyamic URL only return instructions if task is splittable, since we have the X, Y, Z
+        # If there's no dynamic URL (e.g. url containing '{x}/{y}/{z}' pattern) - ALWAYS return instructions unaltered
         if not '{x}/{y}/{z}' in instructions:
             return instructions
 
+        # If there is a dyamic URL only return instructions if task is splittable, since we have the X, Y, Z
         if not self.splittable:
             return 'Cannot generate dynamic URL on an Arbitrary or Clipped task'
 
