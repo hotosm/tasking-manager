@@ -23,7 +23,7 @@ npm install
 ```
 
 ### Running Locally
-If you plan to do client development you can run the app using gulp, without having to worry too much about the server
+If you plan to do client development you can run the app using gulp, without having to worry too much about the server. If you want to point the client at a non-local API (e.g. a staging environment), you'll have to change the environment config for development in client/taskingmanager.config.json.
 
 ```
 cd client   [if not already in client]
