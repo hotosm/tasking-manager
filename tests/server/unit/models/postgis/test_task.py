@@ -77,7 +77,7 @@ class TestTask(unittest.TestCase):
         instructions = test_task.format_per_task_instructions('Test Url is http://test.com/{x}/{y}/{z}')
 
         # Assert
-        self.assertEqual(instructions, 'Cannot generate dynamic URL on an Arbitrary or Clipped task')
+        self.assertEqual(instructions, 'No extra instructions available for this task')
 
     def test_per_task_instructions_returns_instructions_when_no_dynamic_url_and_task_not_splittable(self):
         # Arrange
