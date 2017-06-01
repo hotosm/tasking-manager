@@ -167,7 +167,7 @@ class MappingService:
         """ Generate xml response suitable for loading into JOSM.  A sample output file is in 
             /server/helpers/testfiles/osm-sample.xml """
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
-        root = ET.Element('osm', attrib=dict(version='0.6', upload='no', creator='HOT Tasking Manager'))
+        root = ET.Element('osm', attrib=dict(version='0.6', upload='false', creator='HOT Tasking Manager'))
 
         task_ids = map(int, task_ids_str.split(','))
         tasks = Task.get_tasks(project_id, task_ids)
