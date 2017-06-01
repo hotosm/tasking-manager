@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','languageService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, languageService) {
+    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
 
         var vm = this;
         vm.currentSection = '';
@@ -74,7 +74,7 @@
         function activate() {
 
             // Get available languages
-            var resultsPromise = languageService.getAvailableLanguages();
+            var resultsPromise = settingsService.getSettings();
             resultsPromise.then(function (data) {
                 for (var i = 0; i < data.supportedLanguages.length; i++){
                     vm.locales.push(data.supportedLanguages[i].code);
