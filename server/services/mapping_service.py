@@ -63,7 +63,7 @@ class MappingService:
                 raise MappingServiceError(f'Mapping not allowed because: {error_reason.name}')
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
-        return task.as_dto()
+        return task.as_dto_with_instructions(lock_task_dto.preferred_locale)
 
     @staticmethod
     def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
@@ -83,10 +83,9 @@ class MappingService:
             MessageService.send_message_after_comment(mapped_task.user_id, mapped_task.comment, task.id,
                                                       mapped_task.project_id)
 
-
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
 
-        return task.as_dto()
+        return task.as_dto_with_instructions(mapped_task.preferred_locale)
 
     @staticmethod
     def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
@@ -99,7 +98,7 @@ class MappingService:
                                                       stop_task.project_id)
 
         task.reset_lock(stop_task.user_id, stop_task.comment)
-        return task.as_dto()
+        return task.as_dto_with_instructions(stop_task.preferred_locale)
 
     @staticmethod
     def get_task_locked_by_user(project_id: int, task_id: int, user_id: int) -> Task:

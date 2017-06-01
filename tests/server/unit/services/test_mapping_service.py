@@ -110,11 +110,12 @@ class TestMappingService(unittest.TestCase):
         with self.assertRaises(MappingServiceError):
             MappingService.unlock_task_after_mapping(self.mapped_task_dto)
 
+    @patch.object(Task, 'get_per_task_instructions')
     @patch.object(StatsService, 'update_stats_after_task_state_change')
     @patch.object(Task, 'update')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
     @patch.object(MappingService, 'get_task')
-    def test_unlock_with_comment_sets_history(self, mock_task, mock_history, mock_update, mock_stats):
+    def test_unlock_with_comment_sets_history(self, mock_task, mock_history, mock_update, mock_stats, mock_instructions):
         # Arrange
         self.task_stub.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
         mock_task.return_value = self.task_stub
@@ -128,11 +129,12 @@ class TestMappingService(unittest.TestCase):
         self.assertEqual(TaskAction.COMMENT.name, test_task.task_history[0].action)
         self.assertEqual(test_task.task_history[0].action_text, 'Test comment')
 
+    @patch.object(Task, 'get_per_task_instructions')
     @patch.object(StatsService, 'update_stats_after_task_state_change')
     @patch.object(Task, 'update')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
     @patch.object(MappingService, 'get_task')
-    def test_unlock_with_status_change_sets_history(self, mock_task, mock_history, mock_update, mock_stats):
+    def test_unlock_with_status_change_sets_history(self, mock_task, mock_history, mock_update, mock_stats, mock_instructions):
         # Arrange
         self.task_stub.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
         mock_task.return_value = self.task_stub
