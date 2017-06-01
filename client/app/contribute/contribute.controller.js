@@ -16,10 +16,6 @@
         vm.results = [];
         vm.vectorSource = null;
 
-        // Paging results
-        vm.itemsPerPage = 4;
-        vm.currentPage = 1;
-
         // Default to grid view
         vm.resultsView = 'grid';
 
@@ -40,9 +36,6 @@
 
         // Paging
         vm.pagination = null;
-        
-        // Character limit
-        vm.characterLimitShortDescription = 100;
 
         // Watch the languageService for change in language and search again when needed
         $scope.$watch(function () { return languageService.getLanguageCode();}, function () {

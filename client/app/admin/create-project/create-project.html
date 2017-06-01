@@ -2,8 +2,11 @@
     <section class="section section--asided">
         <header class="section__header">
             <div class="inner">
-                <h1 class="section__title">
+                <h1 ng-hide="createProjectCtrl.isCloneProject" class="section__title">
                     {{ 'Create project' | translate }}
+                </h1>
+                <h1 ng-show="createProjectCtrl.isCloneProject" class="section__title">
+                    {{ 'Clone project' | translate }} - #{{ createProjectCtrl.cloneProjectId }} {{ createProjectCtrl.cloneProjectName }}
                 </h1>
             </div>
         </header>
@@ -261,7 +264,8 @@
                                     ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
                                     ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                                     ng-click="createProjectCtrl.createProject()">
-                                <span>{{ 'Create' | translate }}</span>
+                                <span ng-hide="createProjectCtrl.isCloneProject">{{ 'Create' | translate }}</span>
+                                <span ng-show="createProjectCtrl.isCloneProject">{{ 'Clone' | translate }}</span>
                             </button>
                         </div>
                         <div ng-show="createProjectCtrl.waiting">

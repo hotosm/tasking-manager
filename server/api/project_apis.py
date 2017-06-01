@@ -1,8 +1,8 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-
-from server.models.dtos.project_dto import ProjectSearchDTO
-from server.services.project_search_service import ProjectSearchService
+from distutils.util import strtobool
+from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
+from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 from server.services.users.authentication_service import token_auth, tm
 
@@ -57,6 +57,83 @@ class ProjectAPI(Resource):
                 ProjectService.auto_unlock_tasks(project_id)
             except Exception as e:
                 current_app.logger.critical(str(e))
+
+
+class ProjectSearchBBoxAPI(Resource):
+
+    @tm.pm_only(True)
+    @token_auth.login_required
+    def get(self):
+        """
+        Search for projects by bbox projects
+        ---
+        tags:
+            - search
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - in: query
+              name: bbox
+              description: comma separated list xmin, ymin, xmax, ymax
+              type: string
+              default: 34.404,-1.034, 34.717,-0.624
+            - in: query
+              name: srid
+              description: srid of bbox coords
+              type: integer
+              default: 4326
+            - in: query
+              name: createdByMe
+              description: limit to projects created by authenticated user
+              type: boolean
+              required: true
+              default: false
+
+        responses:
+            200:
+                description: ok
+            400:
+                description: Client Error - Invalid Request
+            403:
+                description: Forbidden
+            500:
+                description: Internal Server Error
+        """
+        try:
+            search_dto = ProjectSearchBBoxDTO()
+            search_dto.bbox = map(float, request.args.get('bbox').split(','))
+            search_dto.input_srid = request.args.get('srid')
+            search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            createdByMe = strtobool(request.args.get('createdByMe')) if request.args.get('createdByMe') else False
+            if createdByMe:
+                search_dto.project_author = tm.authenticated_user_id
+            search_dto.validate()
+        except Exception as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+        try:
+            geojson= ProjectSearchService.get_projects_geojson(search_dto)
+            return geojson, 200
+        except BBoxTooBigError:
+            return {"Error": "Bounding Box too large"}, 403
+        except ProjectSearchServiceError as e:
+            return {"error": str(e)}, 400
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
 
 
 class ProjectSearchAPI(Resource):

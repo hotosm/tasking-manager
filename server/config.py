@@ -17,6 +17,7 @@ class EnvironmentConfig:
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
     }
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv('TM_SECRET', None)
     SMTP_SETTINGS = {
         'host': 'email-smtp.eu-west-1.amazonaws.com',
@@ -30,10 +31,35 @@ class EnvironmentConfig:
     }
 
 
+class ProdConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-prod.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-prod.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
+class StageConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-stage.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-stage.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
+class DemoConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-demo.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-demo.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
 class StagingConfig(EnvironmentConfig):
+    # Currently being used by Thinkwhere
     APP_BASE_URL = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/docs'
+                   'url=http://tasks-stage.hotosm.org/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 

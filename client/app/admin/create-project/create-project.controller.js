@@ -67,6 +67,16 @@
 
         function activate() {
 
+            // Check if cloning a project or creating a new one
+            vm.cloneProjectId = $location.search().projectId;
+            vm.cloneProjectName = $location.search().projectName;
+            if (vm.cloneProjectId){
+                vm.isCloneProject = true;
+                // Clear the URL parameters
+                $location.search('projectId', null);
+                $location.search('projectName', null);
+            }
+
             // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
             var session = authService.getSession();
             if (session) {
@@ -428,11 +438,15 @@
          * Create a new project with a project name
          */
         vm.createProject = function () {
+            var cloneProjectId = null;
+            if (vm.isCloneProject){
+                cloneProjectId = vm.cloneProjectId;
+            }
             vm.createProjectFail = false;
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
                 vm.waiting = true;
-                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid);
+                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId);
                 resultsPromise.then(function (data) {
                     vm.waiting = false;
                     // Project created successfully

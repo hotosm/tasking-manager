@@ -18,7 +18,8 @@ class ProjectInfo(db.Model):
     project_id_str = db.Column(db.String)
     text_searchable = db.Column(TSVECTOR)  # This contains searchable text and is populated by a DB Trigger
 
-    __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'), {})
+    __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'),
+                      db.Index('textsearch_idx', 'text_searchable'), {})
 
     @classmethod
     def create_from_name(cls, name: str):

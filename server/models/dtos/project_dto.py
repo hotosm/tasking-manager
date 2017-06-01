@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType
+from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
@@ -41,6 +41,7 @@ def is_known_mapping_type(value):
 
 class DraftProjectDTO(Model):
     """ Describes JSON model used for creating draft project """
+    cloneFromProjectId = IntType(serialized_name='cloneFromProjectId')
     project_name = StringType(required=True, serialized_name='projectName')
     area_of_interest = BaseType(required=True, serialized_name='areaOfInterest')
     tasks = BaseType(required=False)
@@ -99,6 +100,11 @@ class ProjectSearchDTO(Model):
     page = IntType(required=True)
     text_search = StringType()
 
+class ProjectSearchBBoxDTO(Model):
+    bbox = ListType(FloatType, required=True, min_size=4, max_size=4)
+    input_srid = IntType(required=True, choices=[4326])
+    preferred_locale = StringType(required=True, default='en')
+    project_author = IntType(required=False, serialized_name='projectAuthor')
 
 class ProjectSearchResultDTO(Model):
     """ Describes one search result"""
@@ -113,7 +119,6 @@ class ProjectSearchResultDTO(Model):
     campaign_tag = StringType(serialized_name='campaignTag')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
-
 
 class ProjectSearchResultsDTO(Model):
     """ Contains all results for the search criteria """

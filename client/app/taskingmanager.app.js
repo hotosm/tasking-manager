@@ -61,7 +61,8 @@
                 .when('/admin/create-project', {
                     templateUrl: 'app/admin/create-project/create-project.html',
                     controller: 'createProjectController',
-                    controllerAs: 'createProjectCtrl'
+                    controllerAs: 'createProjectCtrl',
+                    reloadOnSearch: false
                 })
 
                 .when('/admin/edit-project/:id', {
