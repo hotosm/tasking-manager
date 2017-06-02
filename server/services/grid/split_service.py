@@ -122,8 +122,8 @@ class SplitService:
             new_task = Task.from_geojson_feature(i, new_task_geojson)
             new_task.project_id = split_task_dto.project_id
             new_task.task_status = TaskStatus.READY.value
-            new_tasks_dto.append(new_task.as_dto_with_instructions(split_task_dto.preferred_locale))
             new_task.create()
+            new_tasks_dto.append(new_task.as_dto_with_instructions(split_task_dto.preferred_locale))
 
         # delete original task from the database
         original_task.delete()
