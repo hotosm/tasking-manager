@@ -37,10 +37,11 @@ class Message(db.Model):
         dto = MessageDTO()
         dto.message_id = self.id
         dto.message = self.message
-        dto.from_username = self.from_user.username
         dto.sent_date = self.date
         dto.read = self.read
         dto.subject = self.subject
+        if self.from_user_id:
+            dto.from_username = self.from_user.username
 
         return dto
 
@@ -83,15 +84,7 @@ class Message(db.Model):
 
         messages_dto = MessagesDTO()
         for message in user_messages:
-            dto = MessageDTO()
-            dto.message_id = message.id
-            dto.subject = message.subject
-            dto.sent_date = message.date
-            dto.read = message.read
-            if message.from_user_id:
-                dto.from_username = message.from_user.username
-
-            messages_dto.user_messages.append(dto)
+            messages_dto.user_messages.append(message.as_dto())
 
         return messages_dto
 
