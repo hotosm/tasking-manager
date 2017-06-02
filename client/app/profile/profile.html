@@ -28,7 +28,7 @@
                                 </h4>
                             </div>
                             <hr/>
-                            <div ng-show="profileCtrl.mapperLevelAdvanced > profileCtrl.osmUserDetails.changesetCount">
+                            <div>
                                 <h4>Progress</h4>
                                 <div ng-show="profileCtrl.mapperLevelIntermediate > profileCtrl.osmUserDetails.changesetCount">
                                     <span class="label">{{ profileCtrl.mapperLevelIntermediate - profileCtrl.osmUserDetails.changesetCount }} {{ 'OSM changeset(s) to intermediate mapper' | translate }}</span>
@@ -37,6 +37,10 @@
                                 <div ng-show="profileCtrl.mapperLevelAdvanced > profileCtrl.osmUserDetails.changesetCount">
                                     <span class="label">{{ profileCtrl.mapperLevelAdvanced - profileCtrl.osmUserDetails.changesetCount }} {{ 'OSM changeset(s) to advanced mapper' | translate }}</span>
                                     <uib-progressbar value="profileCtrl.osmUserDetails.changesetCount" max="profileCtrl.mapperLevelAdvanced"></uib-progressbar>
+                                </div>
+                                <div ng-show="profileCtrl.osmUserDetails.changesetCount > profileCtrl.mapperLevelAdvanced">
+                                    <span class="label">0 {{ 'OSM changesets to advanced mapper' | translate }}</span>
+                                    <uib-progressbar value="600" max="profileCtrl.mapperLevelAdvanced"></uib-progressbar>
                                 </div>
                                 <hr/>
                             </div>
