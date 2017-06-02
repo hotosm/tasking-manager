@@ -69,10 +69,16 @@
                         vm.messages[i].subject = htmlToPlaintext(vm.messages[i].subject);
                     }
                 }
-            }, function () {
+            }, function (error) {
                 // an error occurred
-                vm.messages = [];
-                vm.errorRetrievingMessages = true;
+                if (error.status == 404){
+                    // No messages found
+                    vm.messages = [];
+                }
+                else {
+                    vm.messages = [];
+                    vm.errorRetrievingMessages = true;
+                }
             });
         }
 
