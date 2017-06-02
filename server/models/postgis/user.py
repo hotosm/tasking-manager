@@ -34,6 +34,9 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def save(self):
+        db.session.commit()
+
     def get_by_id(self, user_id: int):
         """ Return the user for the specified id, or None if not found """
         return User.query.get(user_id)

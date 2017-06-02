@@ -8,6 +8,7 @@ from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
 from server.services.users.authentication_service import token_auth, tm
+from server.services.users.user_service import UserService
 
 
 class MappingTaskAPI(Resource):
@@ -222,6 +223,7 @@ class StopMappingAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+
 class UnlockTaskForMappingAPI(Resource):
 
     @tm.pm_only(False)
@@ -305,6 +307,9 @@ class UnlockTaskForMappingAPI(Resource):
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+        finally:
+            # Refresh mapper level after mapping
+            UserService.check_and_update_mapper_level(tm.authenticated_user_id)
 
 
 class TasksAsGPX(Resource):
