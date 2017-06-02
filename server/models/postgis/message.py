@@ -88,7 +88,8 @@ class Message(db.Model):
             dto.subject = message.subject
             dto.sent_date = message.date
             dto.read = message.read
-            dto.from_username = message.from_user.username
+            if message.from_user_id:
+                dto.from_username = message.from_user.username
 
             messages_dto.user_messages.append(dto)
 

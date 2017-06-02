@@ -9,7 +9,7 @@ class MessageDTO(Model):
     subject = StringType(required=True)
     message = StringType(required=True, serialize_when_none=False)
     from_user_id = IntType(required=True, serialize_when_none=False)
-    from_username = StringType(serialized_name='fromUsername')
+    from_username = StringType(serialized_name='fromUsername', default="")
     sent_date = DateTimeType(serialized_name='sentDate')
     read = BooleanType()
 
