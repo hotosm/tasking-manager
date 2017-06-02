@@ -24,7 +24,7 @@
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/settings/languages',
+                url: configService.tmAPI + '/settings',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
