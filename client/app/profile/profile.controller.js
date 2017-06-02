@@ -37,7 +37,7 @@
         // mapper levels
         vm.mapperLevelIntermediate = 0;
         vm.mapperLevelAdvanced = 0;
-
+        
         activate();
 
         function activate() {
