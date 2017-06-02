@@ -28,7 +28,7 @@
        
         // Order
         vm.propertyName = 'id';
-        vm.reverse = true;
+        vm.reverse = false;
 
         // Show lists
         vm.showActive = true;
