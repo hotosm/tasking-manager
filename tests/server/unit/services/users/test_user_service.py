@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import patch
-
-from server.services.users.user_service import UserService, UserServiceError, User, UserRole, MappingLevel
-from tests.server.helpers.test_helpers import get_canned_simplified_osm_user_details
+from server.models.postgis.user import User
+from server.services.users.user_service import UserService, UserServiceError, UserRole, OSMService, MappingLevel, UserOSMDTO
+from server.models.postgis.project import Project
 
 
 class TestUserService(unittest.TestCase):
@@ -10,6 +10,7 @@ class TestUserService(unittest.TestCase):
     @patch.object(UserService, 'get_user_by_id')
     def test_user_correctly_identified_as_pm(self, mock_user):
         # Arrange
+        test_proj = Project()
         test_user = User()
         test_user.role = UserRole.PROJECT_MANAGER.value
 
@@ -17,6 +18,7 @@ class TestUserService(unittest.TestCase):
 
         # Act / Assert
         self.assertTrue(UserService.is_user_a_project_manager(123))
+        self.assertTrue(test_proj)
 
     @patch.object(UserService, 'get_user_by_id')
     def test_user_not_identified_as_pm(self, mock_user):
@@ -69,4 +71,3 @@ class TestUserService(unittest.TestCase):
         # Act / Assert
         with self.assertRaises(UserServiceError):
             UserService.set_user_mapping_level('test', 'TEST')
-
