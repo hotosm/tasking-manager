@@ -48,6 +48,9 @@ class UserAPI(Resource):
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+        finally:
+            # Refresh mapper level after mapping
+            UserService.check_and_update_mapper_level(tm.authenticated_user_id)
 
 
 class UserUpdateAPI(Resource):

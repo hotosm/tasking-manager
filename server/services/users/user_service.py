@@ -214,6 +214,8 @@ class UserService:
             user.mapping_level = MappingLevel.ADVANCED.value
         elif intermediate_level < osm_details.changeset_count < advanced_level:
             user.mapping_level = MappingLevel.INTERMEDIATE.value
+        else:
+            return
 
         user.save()
         return user
