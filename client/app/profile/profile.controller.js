@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', 'messageService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', 'messageService','settingsService', profileController]);
 
-    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService, messageService) {
+    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService, messageService, settingsService) {
 
         var vm = this;
         vm.username = '';
@@ -33,7 +33,11 @@
 
         // Edit user details
         vm.editDetails = false;
-
+        
+        // mapper levels
+        vm.mapperLevelIntermediate = 0;
+        vm.mapperLevelAdvanced = 0;
+        
         activate();
 
         function activate() {
@@ -46,6 +50,7 @@
             var clickIdentify = true;
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             getUserProjects();
+            getLevelSettings();
         }
 
         /**
@@ -93,6 +98,10 @@
             });
         };
 
+        /**
+         * Set the user's level
+         * @param level
+         */
         vm.setLevel = function(level){
             vm.errorSetLevel = false;
             var resultsPromise = userService.setLevel(vm.username, level);
@@ -180,6 +189,18 @@
                 '<query type="relation"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>';
             var query = queryPrefix + queryMiddle + querySuffix;
             $window.open('http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query));
+        };
+
+
+        /**
+         * Get the settings for the levels
+         */
+        function getLevelSettings(){
+            var resultsPromise = settingsService.getSettings();
+            resultsPromise.then(function (data) {
+                vm.mapperLevelIntermediate = data.mapperLevelIntermediate;
+                vm.mapperLevelAdvanced = data.mapperLevelAdvanced;
+            });
         }
     }
 })();
