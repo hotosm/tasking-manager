@@ -101,11 +101,13 @@ class ProjectSearchDTO(Model):
     page = IntType(required=True)
     text_search = StringType()
 
+
 class ProjectSearchBBoxDTO(Model):
     bbox = ListType(FloatType, required=True, min_size=4, max_size=4)
     input_srid = IntType(required=True, choices=[4326])
     preferred_locale = StringType(required=True, default='en')
     project_author = IntType(required=False, serialized_name='projectAuthor')
+
 
 class ProjectSearchResultDTO(Model):
     """ Describes one search result"""
@@ -120,6 +122,7 @@ class ProjectSearchResultDTO(Model):
     campaign_tag = StringType(serialized_name='campaignTag')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
+
 
 class ProjectSearchResultsDTO(Model):
     """ Contains all results for the search criteria """

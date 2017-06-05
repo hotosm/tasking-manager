@@ -10,10 +10,11 @@ truncate hotnew.users cascade;
 -- truncate hotnew.areas_of_interest cascade;
 
 -- Populate users with ids and default stats - sets users to beginner mapper level
-insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, is_email_verified)
+insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated,
+                          is_email_verified, date_registered, last_validation_date)
 (select id,username,
 	case when role is null then 0 else role end,
-	1,0,0,0, FALSE
+	1,0,0,0, FALSE, current_timestamp, current_timestamp
 	 from hotold.users);
 	 
 -- update sequence  (commented out as not needed. ID comes from OSM not from the sequence.)
@@ -211,6 +212,17 @@ INSERT INTO hotnew.task_history(
 	from hotold.task_comment tc
 	where author_id is not null
 	and exists(select id from hotnew.tasks t where t.project_id = tc.project_id and t.id = tc.task_id ));
+
+
+-- Update date registered based on first contribution in task_history, should cover 90% of users
+update users
+   set date_registered = action_date
+   from (select t.user_id, min(action_date) action_date
+           from users u,
+                task_history t
+          where u.id = t.user_id
+          group by user_id) old
+ where id = old.user_id
 
 	
 -- Update USER STATISTICS
