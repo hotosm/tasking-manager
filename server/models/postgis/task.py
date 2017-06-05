@@ -301,6 +301,9 @@ class Task(db.Model):
             self.mapped_by = user_id
         elif new_state == TaskStatus.VALIDATED:
             self.validated_by = user_id
+        elif new_state == TaskStatus.INVALIDATED:
+            self.mapped_by = None
+            self.validated_by = None
 
         # Using a slightly evil side effect of Actions and Statuses having the same name here :)
         TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))

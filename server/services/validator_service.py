@@ -209,6 +209,7 @@ class ValidatorService:
                                               Task.task_status != TaskStatus.BADIMAGERY.value).all()
 
         for task in tasks_to_validate:
+            task.mapped_by = user_id  # Ensure we set mapped by value
             task.lock_task_for_validating(user_id)
             task.unlock_task(user_id, new_state=TaskStatus.VALIDATED)
 
