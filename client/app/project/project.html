@@ -267,6 +267,15 @@
                                         <p>{{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}</p>
                                     </div>
                                 </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-imagery-error'">
+                                    <div class="alert alert--warning" role="alert">
+                                        <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>{{ 'Dismiss' | translate }}</span>
+                                        </button>
+                                        <p>{{ 'JOSM had a problem loading the project imagery.' | translate }}</p>
+                                    </div>
+                                </div>
                                 <div class="form__group">
                                     <textarea class="form__control" type="text" mentio
                                               rows="4"
@@ -548,6 +557,15 @@
                                         <p>{{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}</p>
                                     </div>
                                 </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-imagery-error'">
+                                    <div class="alert alert--warning" role="alert">
+                                        <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>{{ 'Dismiss' | translate }}</span>
+                                        </button>
+                                        <p>{{ 'JOSM had a problem loading the project imagery.' | translate }}</p>
+                                    </div>
+                                </div>
                                 <div class="form__group">
                                      <textarea class="form__control" type="text" mentio
                                                rows="4"
@@ -577,15 +595,6 @@
                                                 ng-click="projectCtrl.unLockTaskValidation(projectCtrl.comment, 'INVALIDATED')">
                                             {{ 'Mark as Invalid' | translate }}
                                         </button>
-                                    </div>
-                                </div>
-                                <div ng-show="projectCtrl.editorStartError === 'josm-imagery-error'">
-                                    <div class="alert alert--danger" role="alert">
-                                        <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
-                                                ng-click="projectCtrl.editorStartError = ''">
-                                            <span>{{ 'Dismiss' | translate }}</span>
-                                        </button>
-                                        <p>{{ 'JOSM had a problem loading project the imagery.' | translate }}</p>
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.taskUnLockError">
@@ -630,6 +639,15 @@
                                             <span>{{ 'Dismiss' | translate }}</span>
                                         </button>
                                         <p>{{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-imagery-error'">
+                                    <div class="alert alert--warning" role="alert">
+                                        <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>{{ 'Dismiss' | translate }}</span>
+                                        </button>
+                                        <p>{{ 'JOSM had a problem loading the project imagery.' | translate }}</p>
                                     </div>
                                 </div>
                                 <div class="form__group">

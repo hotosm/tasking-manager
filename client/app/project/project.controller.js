@@ -1053,7 +1053,7 @@
                     new_layer: true,
                     mime_type: 'application/x-osm+xml',
                     layer_name: encodeURIComponent('Task Boundaries #'+vm.projectData.projectId+'- Do not edit or upload'),
-                    data: "%3C%3Fxml%20version%3D'1.0'%20encoding%3D'utf8'%3F%3E%3Cosm%20generator%3D%22JOSM%22%20upload%3D%22never%22%20version%3D%220.6%22%3E%3C%2Fosm%3E"
+                    data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
                 }
 
                 var isemptyTaskLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams);
@@ -1094,7 +1094,7 @@
                         new_layer: true,
                         mime_type: 'application/x-osm+xml',
                         layer_name: 'OSM Data layer for validation',
-                        data: "%3C%3Fxml%20version%3D'1.0'%20encoding%3D'utf8'%3F%3E%3Cosm%20generator%3D%22JOSM%22%20upload%3D%22never%22%20version%3D%220.6%22%3E%3C%2Fosm%3E"
+                        data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
                     }
                     var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
 
