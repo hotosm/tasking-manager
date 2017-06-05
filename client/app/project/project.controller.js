@@ -1098,7 +1098,6 @@
                     }
                     var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
 
-                    //load osm xml data if just one task and the empty layer load was ok
                     if (isEmptyOSMLayerSuccess){
                         var loadAndZoomParams = {
                             left: extentTransformed[0],
@@ -1110,8 +1109,10 @@
                             new_layer: false
                         };
                         if(taskCount == 1) {
+                            //load OSM data and zoom to the bbox
                             editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
                         } else {
+                            //zoom to the bbox only, if more than one task, likely too much OSM data to download at once
                             editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
                         }
                     }
