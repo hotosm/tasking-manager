@@ -90,8 +90,8 @@
                 .when('/project/:id', {
                     templateUrl: 'app/project/project.html',
                     controller: 'projectController',
-                    controllerAs: 'projectCtrl',
-                    reloadOnSearch: false
+                    controllerAs: 'projectCtrl'//,
+                    //reloadOnSearch: false
                 })
 
                 .when('/user/:id', {
