@@ -285,27 +285,7 @@ class Task(db.Model):
 
         # clear the lock action for the task in the task history
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
-        last_action.delete();
-
-    @staticmethod
-    def invalidate_all(project_id: int, user_id: int):
-        """ Invalidates all project tasks, except Ready and Bad Imagery """
-        mapped_tasks = Task.query.filter(Task.project_id == project_id,
-                                         ~Task.task_status.in_([TaskStatus.READY.value,
-                                                                TaskStatus.BADIMAGERY.value])).all()
-        for task in mapped_tasks:
-            task.lock_task_for_validating(user_id)
-            task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
-
-    @staticmethod
-    def validate_all(project_id: int, user_id: int):
-        """ Validate all project tasks, except Bad Imagery """
-        tasks_to_validate = Task.query.filter(Task.project_id == project_id,
-                                              Task.task_status != TaskStatus.BADIMAGERY.value).all()
-
-        for task in tasks_to_validate:
-            task.lock_task_for_validating(user_id)
-            task.unlock_task(user_id, new_state=TaskStatus.VALIDATED)
+        last_action.delete()
 
     def unlock_task(self, user_id, new_state=None, comment=None):
         """ Unlock task and ensure duration task locked is saved in History """

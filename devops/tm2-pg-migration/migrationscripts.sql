@@ -151,7 +151,7 @@ SET tasks_mapped=subquery.count
 FROM (
   select project_id, count(project_id)
   from hotnew.tasks
-  where hotnew.tasks.task_status = 2
+  where hotnew.tasks.task_status in (2, 4)
   group by tasks.project_id) AS subquery
 WHERE hotnew.projects.id=subquery.project_id
 ;
