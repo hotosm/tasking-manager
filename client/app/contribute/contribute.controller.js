@@ -33,22 +33,24 @@
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
         vm.searchText = '';
+        vm.accountSet = false;
 
         // Paging
         vm.pagination = null;
 
         // Watch the languageService for change in language and search again when needed
+        // A watch within a watch is necessary to avoid two async calls potentially overriding the results
+        // TODO: not sure if there is a better solution?
         $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
-            searchProjects();
-        }, true);
-
-        // Watch the accountService for change in account
-        $scope.$watch(function () { return accountService.getAccount();}, function (account) {
-            if (account) {
-                // Set the default mapping level to the user's mapping level
-                vm.mapperLevel = account.mappingLevel;
-            }
-            searchProjects();
+             // Watch the accountService for change in account
+            $scope.$watch(function () { return accountService.getAccount();}, function (account) {
+                if (account && vm.accountSet == false) {
+                    // Set the default mapping level to the user's mapping level
+                    vm.mapperLevel = account.mappingLevel;
+                    vm.accountSet = true;
+                }
+                searchProjects();
+            }, true);
         }, true);
 
         activate();
@@ -78,7 +80,6 @@
          * @param page
          */
         function searchProjects(page){
-
             vm.mappingTypes = [];
             if (vm.searchRoads){
                 vm.mappingTypes.push("ROADS");
@@ -151,7 +152,7 @@
 
             }, function(){
                 // On error
-                vm.results = [];
+                vm.results = {};
                 projectMapService.showProjectsOnMap(vm.results);
             });
         }

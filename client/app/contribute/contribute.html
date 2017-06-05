@@ -141,7 +141,7 @@
                                     <div class="search-results-container">
                                         <div class="project-result__cards">
                                             <div class="project-result__card"
-                                                 ng-repeat="project in contributeCtrl.results track by project.projectId">
+                                                 ng-repeat="project in contributeCtrl.results track by $index">
                                                 <section class="panel project-result__content">
                                                      <div class="progress-bar-container">
                                                          <span class="label">{{ project.percentMapped }}{{ '% Mapped' | translate }}</span>
@@ -190,7 +190,7 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr ng-repeat="project in contributeCtrl.results track by project.projectId">
+                                        <tr ng-repeat="project in contributeCtrl.results track by $index">
                                             <td>{{ project.projectId }}</td>
                                             <td>{{ project.name }}</td>
                                             <td>
