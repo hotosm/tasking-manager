@@ -1099,7 +1099,7 @@
                     var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
 
                     //load osm xml data if just one task and the empty layer load was ok
-                    if (isEmptyOSMLayerSuccess && taskCount == 1) {
+                    if (isEmptyOSMLayerSuccess){
                         var loadAndZoomParams = {
                             left: extentTransformed[0],
                             bottom: extentTransformed[1],
@@ -1109,8 +1109,13 @@
                             changeset_source: encodeURIComponent(changesetSource),
                             new_layer: false
                         };
-                        editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                        if(taskCount == 1) {
+                            editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                        } else {
+                            editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
+                        }
                     }
+
                 }
                 else {
                     //warn that JSOM couldn't be started
