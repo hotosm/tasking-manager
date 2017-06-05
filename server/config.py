@@ -62,7 +62,7 @@ class StagingConfig(EnvironmentConfig):
     # Currently being used by Thinkwhere
     APP_BASE_URL = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasks-stage.hotosm.org/api/docs'
+                   'url=http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
