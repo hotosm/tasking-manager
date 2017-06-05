@@ -5,7 +5,7 @@ from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedPr
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
-from server.models.postgis.utils import NotFound
+from server.models.postgis.utils import NotFound, timestamp
 
 
 class User(db.Model):
@@ -25,6 +25,9 @@ class User(db.Model):
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
+    date_registered = db.Column(db.DateTime, default=timestamp)
+    # Represents the date the user last had one of their tasks validated
+    last_validation_date = db.Column(db.DateTime, default=timestamp)
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
