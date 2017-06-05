@@ -211,13 +211,13 @@
                                         <div class="button-group button-group--horizontal" role="group" aria-label="{{ 'Navigate the results' | translate }}">
                                         <button class="button button--achromic"
                                                 ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
-                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
                                             {{ 'Previous' | translate }}
                                         </button>
                                         <button class="button button--achromic"
                                                 ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
                                                 ng-class="contributeCtrl.pagination.page === 1 ? 'disabled' : ''"
-                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.lastNum)">
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.lastNum)">
                                             1
                                         </button>
                                         <button class="button button--achromic disabled"
@@ -226,7 +226,7 @@
                                         </button>
                                         <button class="button button--achromic"
                                                 ng-show="contributeCtrl.pagination.prevNum"
-                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.prevNum)">
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
                                             {{ contributeCtrl.pagination.prevNum }}
                                         </button>
                                         <button class="button button--achromic button--active">
@@ -234,7 +234,7 @@
                                         </button>
                                         <button class="button button--achromic"
                                                 ng-show="contributeCtrl.pagination.nextNum"
-                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
                                             {{ contributeCtrl.pagination.nextNum }}
                                         </button>
                                         <button class="button button--achromic disabled"
@@ -244,12 +244,12 @@
                                         <button class="button button--achromic"
                                                 ng-show="(contributeCtrl.pagination.nextNum || contributeCtrl.pagination.page) != contributeCtrl.pagination.pages"
                                                 ng-class="contributeCtrl.pagination.pages === contributeCtrl.pagination.page ? 'disabled' : ''"
-                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.pages)">
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.pages)">
                                             {{ contributeCtrl.pagination.pages }}
                                         </button>
                                         <button class="button button--achromic"
                                                 ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
-                                                ng-click="contributeCtrl.searchProjectsWithPage(contributeCtrl.pagination.nextNum)">
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
                                             {{ 'Next' | translate }}
                                         </button>
                                     </div>

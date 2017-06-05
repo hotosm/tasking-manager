@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService','accountService', contributeController]);
+        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService','accountService', contributeController]);
 
-    function contributeController($scope, mapService, searchService, projectMapService, tagService, languageService, accountService) {
+    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService, accountService) {
 
         var vm = this;
 
@@ -33,23 +33,25 @@
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
         vm.searchText = '';
-        vm.accountSet = false;
+        vm.mapperLevelSet = false;
 
         // Paging
+        vm.currentPage = 1;
         vm.pagination = null;
 
         // Watch the languageService for change in language and search again when needed
         // A watch within a watch is necessary to avoid two async calls potentially overriding the results
-        // TODO: not sure if there is a better solution?
+        // TODO: there might be a better solution?
         $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
              // Watch the accountService for change in account
             $scope.$watch(function () { return accountService.getAccount();}, function (account) {
-                if (account && vm.accountSet == false) {
+                if (account.username && (vm.mapperLevelSet == false)) {
                     // Set the default mapping level to the user's mapping level
                     vm.mapperLevel = account.mappingLevel;
-                    vm.accountSet = true;
+                    vm.mapperLevelSet = true;
                 }
-                searchProjects();
+                getURLParams();
+                searchProjects(vm.currentPage);
             }, true);
         }, true);
 
@@ -66,14 +68,6 @@
             setOrganisationTags();
             setCampaignTags();
         }
-
-        /**
-         * Search projects with page param
-         * @param page
-         */
-        vm.searchProjectsWithPage = function(page){
-            searchProjects(page);
-        };
 
         /**
          * Search projects with search parameters
@@ -124,6 +118,8 @@
             if (page){
                 searchParams.page = page;
             }
+
+            setURLParams(searchParams);
            
             var resultsPromise = searchService.searchProjects(searchParams);
             resultsPromise.then(function (data) {
@@ -158,18 +154,10 @@
         }
 
         /**
-         * Set the mapper level
-         * @param level
-         */
-        vm.setMapperLevel = function(level){
-            vm.mapperLevel = level;
-        };
-
-        /**
          * Search projects
          */
-        vm.search = function(){
-            searchProjects();
+        vm.search = function(page){
+            searchProjects(page);
         };
 
         /**
@@ -198,6 +186,61 @@
                 // On error
                 vm.campaigns = [];
             });
+        }
+
+        /**
+         * Set the URL parameters so users can bookmark/share the page with search params
+         * @param searchParams
+         */
+        function setURLParams(searchParams){
+            $location.search('difficulty', searchParams.mapperLevel);
+            $location.search('organisation', searchParams.organisationTag);
+            $location.search('campaign', searchParams.campaignTag);
+            $location.search('types', searchParams.mappingTypes);
+            $location.search('page', searchParams.page);
+            $location.search('text', searchParams.textSearch);
+        }
+
+        /**
+         * Get the URL params for searching
+         */
+        function getURLParams(){
+            vm.searchOrganisation = $location.search().organisation;
+            vm.searchCampaign = $location.search().campaign;
+            vm.currentPage = $location.search().page;
+            vm.searchText = $location.search().text;
+            var mappingTypes = $location.search().types;
+            if (mappingTypes){
+                populateMappingTypes(mappingTypes);
+            }
+            // Only update the mapperLevel when it is set
+            if ($location.search().difficulty){
+                vm.mapperLevel = $location.search().difficulty;
+            }
+        }
+
+        /**
+         * Extract the mapping types from a string
+         * @param mappingTypes
+         */
+        function populateMappingTypes(mappingTypes) {
+            var mappingTypesArray = mappingTypes.split(',');
+            for (var i = 0; i < mappingTypesArray.length; i++){
+                if (mappingTypesArray[i] === 'ROADS'){
+                    vm.searchRoads = true;
+                }
+                if (mappingTypesArray[i] === 'BUILDINGS'){
+                    vm.searchBuildings = true;
+                }
+                if (mappingTypesArray[i] == 'WATERWAYS'){
+                    vm.searchWaterways = true;
+                }
+                if (mappingTypesArray[i] === 'LANDUSE'){
+                    vm.searchLanduse = true;
+                }
+                if (mappingTypesArray[i] === 'OTHER')
+                    vm.searchOther = true;
+            }
         }
     }
 })();
