@@ -1047,15 +1047,27 @@
             }
             else if (editor === 'josm') {
 
-                //load task squares into JOSM
-                var importParams = {
-                    url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
-                    new_layer: true
+                //load a new empty layer in josm for task square(s)
+                // use empty, uri encoded osmxml with upload=never for the data param
+                var emptyTaskLayerParams = {
+                    new_layer: true,
+                    mime_type: 'application/x-osm+xml',
+                    layer_name: encodeURIComponent('Task Boundaries #'+vm.projectData.projectId+'- Do not edit or upload'),
+                    data: "%3C%3Fxml%20version%3D'1.0'%20encoding%3D'utf8'%3F%3E%3Cosm%20generator%3D%22JOSM%22%20upload%3D%22never%22%20version%3D%220.6%22%3E%3C%2Fosm%3E"
                 }
-                var isImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', importParams);
+
+                var isemptyTaskLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams);
 
 
-                if (isImportSuccess) {
+                if (isemptyTaskLayerSuccess) {
+
+                    //load task square(s) into JOSM
+                    var importParams = {
+                        url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
+                        new_layer: false
+                    }
+                    var isImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', importParams);
+
                     //load aerial photography if present
                     var changesetSource = "Bing";
                     var hasImagery = false;
@@ -1065,15 +1077,29 @@
                     }
                     if (hasImagery) {
                         var imageryParams = {
-                            title: encodeURIComponent('Tasking Manager - #' + vm.projectData.projectId),
+                            title: encodeURIComponent('Tasking Manager Imagery - #' + vm.projectData.projectId),
                             type: imageryUrl.toLowerCase().substring(0, 3),
                             url: encodeURIComponent(imageryUrl)
                         };
-                        editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
+                        var isImagerySuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
+                        if(!isImagerySuccess){
+                            //warn that imagery couldn't be loaded
+                            vm.editorStartError = 'josm-imagery-error';
+                        }
                     }
 
-                    //load osm xml data if just one task
-                    if (taskCount == 1) {
+                    //load a new empty layer in josm for task square(s)
+                    // use empty, uri encoded osmxml for the data param
+                    var emptyOSMLayerParams = {
+                        new_layer: true,
+                        mime_type: 'application/x-osm+xml',
+                        layer_name: 'OSM Data layer for validation',
+                        data: "%3C%3Fxml%20version%3D'1.0'%20encoding%3D'utf8'%3F%3E%3Cosm%20generator%3D%22JOSM%22%20upload%3D%22never%22%20version%3D%220.6%22%3E%3C%2Fosm%3E"
+                    }
+                    var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
+
+                    //load osm xml data if just one task and the empty layer load was ok
+                    if (isEmptyOSMLayerSuccess && taskCount == 1) {
                         var loadAndZoomParams = {
                             left: extentTransformed[0],
                             bottom: extentTransformed[1],
@@ -1081,14 +1107,13 @@
                             top: extentTransformed[3],
                             changeset_comment: encodeURIComponent(changesetComment),
                             changeset_source: encodeURIComponent(changesetSource),
-                            new_layer: true
-
+                            new_layer: false
                         };
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
                     }
                 }
                 else {
-                    //TODO warn that JSOM couldn't be started
+                    //warn that JSOM couldn't be started
                     vm.editorStartError = 'josm-error';
                 }
             }
