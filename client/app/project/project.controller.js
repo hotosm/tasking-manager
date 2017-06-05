@@ -438,6 +438,17 @@
                     style: styleService.getTaskStyle
                 });
                 vm.map.addLayer(vm.taskVectorLayer);
+
+                // change mouse cursor when over vector feature
+                vm.map.on('pointermove', function(e) {
+                    var pixel = vm.map.getEventPixel(e.originalEvent);
+                    var hit = vm.map.hasFeatureAtPixel(pixel, {
+                        layerFilter : function(layerCandidate) {
+                            return layerCandidate == vm.taskVectorLayer;
+                        }
+                    });
+                    vm.map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+                });
             } else {
                 source = vm.taskVectorLayer.getSource();
                 source.clear();
