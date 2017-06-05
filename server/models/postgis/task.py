@@ -144,6 +144,7 @@ class Task(db.Model):
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
+    mapper = db.relationship(User, foreign_keys=[mapped_by])
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -311,7 +312,6 @@ class Task(db.Model):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
             # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
-            # TODO send comment as message to user
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
@@ -370,7 +370,7 @@ class Task(db.Model):
 
         # Raw SQL is easier to understand that SQL alchemy here :)
         sql = """select u.username, u.mapping_level, count(distinct(t.id)), json_agg(distinct(t.id)),
-                            max(th.action_date) last_seen
+                            max(th.action_date) last_seen, u.date_registered, u.last_validation_date
                       from tasks t,
                            task_history th,
                            users u
@@ -380,13 +380,13 @@ class Task(db.Model):
                        and t.project_id = {0}
                        and t.task_status = 2
                        and th.action_text = 'MAPPED'
-                     group by u.username, u.mapping_level""".format(project_id)
+                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date""".format(project_id)
 
         results = db.engine.execute(sql)
         if results.rowcount == 0:
             raise NotFound()
 
-        mapped_tasks = []
+        mapped_tasks_dto = MappedTasks()
         for row in results:
             user_mapped = MappedTasksByUser()
             user_mapped.username = row[0]
@@ -394,11 +394,10 @@ class Task(db.Model):
             user_mapped.mapped_task_count = row[2]
             user_mapped.tasks_mapped = row[3]
             user_mapped.last_seen = row[4]
+            user_mapped.date_registered = row[5]
+            user_mapped.last_validation_date = row[6]
 
-            mapped_tasks.append(user_mapped)
-
-        mapped_tasks_dto = MappedTasks()
-        mapped_tasks_dto.mapped_tasks = mapped_tasks
+            mapped_tasks_dto.mapped_tasks.append(user_mapped)
 
         return mapped_tasks_dto
 

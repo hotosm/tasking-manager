@@ -62,8 +62,15 @@ class MappedTasksByUser(Model):
     tasks_mapped = ListType(IntType, required=True, serialized_name='tasksMapped')
     last_seen = DateTimeType(required=True, serialized_name='lastSeen')
     mapping_level = StringType(required=True, serialized_name='mappingLevel')
+    date_registered = DateTimeType(serialized_name='dateRegistered')
+    last_validation_date = DateTimeType(serialized_name='lastValidationDate')
 
 
 class MappedTasks(Model):
     """ Describes all tasks currently mapped on a project """
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.mapped_tasks = []
+
     mapped_tasks = ListType(ModelType(MappedTasksByUser), serialized_name='mappedTasks')
