@@ -82,8 +82,9 @@
                                     </i>
                                 </strong>
                                 <div ng-show="showChangesetCommentHelp">
-                                    <small><em>{{ 'A comment entered when you save your mapping to the OSM database. When saving your work, please leave the default comment but add what you actually mapped, for example: Added buildings and a residential road.' | translate }}
-                                    </em></small>
+                                    <small>
+                                        <em>{{ 'A comment entered when you save your mapping to the OSM database. When saving your work, please leave the default comment but add what you actually mapped, for example: Added buildings and a residential road.' | translate }}
+                                        </em></small>
                                 </div>
                                 <div>
                                     <code>{{ projectCtrl.projectData.changesetComment }}</code>
@@ -125,7 +126,9 @@
                                     <div ng-show="projectCtrl.user && projectCtrl.userCanMap">
                                         <p>{{ 'Choose a task for mapping:' | translate }}</p>
 
-                                        <p><strong>{{ 'Option 1:' | translate }} </strong>{{ 'Select a task by clicking on the map' | translate }}</p>
+                                        <p>
+                                            <strong>{{ 'Option 1:' | translate }} </strong>{{ 'Select a task by clicking on the map' | translate }}
+                                        </p>
                                         <p><strong>{{ 'Option 2:' | translate }} </strong>
                                             <button ng-click="projectCtrl.selectRandomTaskMap()"
                                                     class="button button--secondary pull-center">
@@ -142,7 +145,8 @@
                                          class="alert alert--danger"
                                          role="alert">
                                         <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
-                                                ng-click="projectCtrl.clearCurrentSelection()"><span>{{ 'Dismiss' | translate }}</span>
+                                                ng-click="projectCtrl.clearCurrentSelection()">
+                                            <span>{{ 'Dismiss' | translate }}</span>
                                         </button>
                                         <p>{{ 'There was an error retrieving the task from the server.' | translate }}</p>
                                     </div>
@@ -263,6 +267,15 @@
                                         <p>{{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}</p>
                                     </div>
                                 </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-imagery-error'">
+                                    <div class="alert alert--warning" role="alert">
+                                        <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>{{ 'Dismiss' | translate }}</span>
+                                        </button>
+                                        <p>{{ 'JOSM had a problem loading the project imagery.' | translate }}</p>
+                                    </div>
+                                </div>
                                 <div class="form__group">
                                     <textarea class="form__control" type="text" mentio
                                               rows="4"
@@ -342,14 +355,17 @@
                                 </div>
                                 <div ng-show="projectCtrl.userCanValidate">
                                     <p>{{ 'Choose one or more tasks for validation:' | translate }}</p>
-                                    <p><strong>{{ 'Option 1:' | translate }} </strong>{{ 'Select a task by clicking on the map' | translate }}</p>
+                                    <p>
+                                        <strong>{{ 'Option 1:' | translate }} </strong>{{ 'Select a task by clicking on the map' | translate }}
+                                    </p>
                                     <p><strong>{{ 'Option 2:' | translate }} </strong>
                                         <button ng-click="projectCtrl.selectRandomTaskValidate()"
                                                 class="button button--secondary pull-center">
                                             {{ 'Select a random task' | translate }}
                                         </button>
                                     </p>
-                                    <p><strong>{{ 'Option 3:' | translate }} </strong>{{ 'Select by area' | translate }}</p>
+                                    <p><strong>{{ 'Option 3:' | translate }} </strong>{{ 'Select by area' | translate }}
+                                    </p>
                                     <div class="padding-at-bottom">
                                         <button ng-click="projectCtrl.selectByPolygonValidate()"
                                                 class="button button--achromic pull-center"
@@ -359,10 +375,12 @@
                                         <button class="button button--secondary"
                                                 ng-class="projectCtrl.selectedTasksForValidation.length < 1 ? 'disabled' : '' "
                                                 ng-click="projectCtrl.lockTasksForValidation(projectCtrl.selectedTasksForValidation)">
-                                             {{ 'Start Validating' | translate }}
+                                            {{ 'Start Validating' | translate }}
                                         </button>
                                     </div>
-                                    <p><strong>{{ 'Option 4:' | translate }} </strong> {{ 'Select by user:' | translate }}</p>
+                                    <p>
+                                        <strong>{{ 'Option 4:' | translate }} </strong> {{ 'Select by user:' | translate }}
+                                    </p>
                                     <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
                                         <div class="alert alert--danger" role="alert">
                                             <p>{{ 'There are no tasks currently available for validation.' | translate }}</p>
@@ -370,8 +388,10 @@
                                     </div>
                                     <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
                                         <div class="alert alert--danger" role="alert">
-                                            <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
-                                                    ng-click="projectCtrl.clearCurrentSelection()"><span>{{ 'Dismiss' | translate }}</span>
+                                            <button class="alert__button-dismiss"
+                                                    title="{{ 'Dismiss alert' | translate }}"
+                                                    ng-click="projectCtrl.clearCurrentSelection()">
+                                                <span>{{ 'Dismiss' | translate }}</span>
                                             </button>
                                             <p>{{ 'There was an error retrieving the task from the server.' | translate }}</p>
                                         </div>
@@ -391,16 +411,20 @@
                                         <tr>
                                             <th nowrap ng-click="projectCtrl.sortBy('username')"><a
                                                     class="table__sort table__sort--none"
-                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Contributor' | translate }}</span></a></th>
+                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Contributor' | translate }}</span></a>
+                                            </th>
                                             <th nowrap ng-click="projectCtrl.sortBy('mappingLevel')"><a
                                                     class="table__sort table__sort--none"
-                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Level' | translate }}</span></a></th>
+                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Level' | translate }}</span></a>
+                                            </th>
                                             <th nowrap ng-click="projectCtrl.sortBy('mappedTaskCount')"><a
                                                     class="table__sort table__sort--none"
-                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Mapped' | translate }}</span></a></th>
+                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Mapped' | translate }}</span></a>
+                                            </th>
                                             <th nowrap ng-click="projectCtrl.sortBy('lastSeen')"><a
                                                     class="table__sort table__sort--none"
-                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Newest' | translate }}</span></a></th>
+                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Newest' | translate }}</span></a>
+                                            </th>
                                             <th nowrap><span>{{ 'Lock' | translate }}</span></th>
                                         </tr>
                                         </thead>
@@ -533,6 +557,15 @@
                                         <p>{{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}</p>
                                     </div>
                                 </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-imagery-error'">
+                                    <div class="alert alert--warning" role="alert">
+                                        <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>{{ 'Dismiss' | translate }}</span>
+                                        </button>
+                                        <p>{{ 'JOSM had a problem loading the project imagery.' | translate }}</p>
+                                    </div>
+                                </div>
                                 <div class="form__group">
                                      <textarea class="form__control" type="text" mentio
                                                rows="4"
@@ -606,6 +639,15 @@
                                             <span>{{ 'Dismiss' | translate }}</span>
                                         </button>
                                         <p>{{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}</p>
+                                    </div>
+                                </div>
+                                <div ng-show="projectCtrl.editorStartError === 'josm-imagery-error'">
+                                    <div class="alert alert--warning" role="alert">
+                                        <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
+                                                ng-click="projectCtrl.editorStartError = ''">
+                                            <span>{{ 'Dismiss' | translate }}</span>
+                                        </button>
+                                        <p>{{ 'JOSM had a problem loading the project imagery.' | translate }}</p>
                                     </div>
                                 </div>
                                 <div class="form__group">
@@ -737,24 +779,24 @@
                     <div>
                         <hr/>
                         <button class="button button--primary"
-                            socialshare
-                            socialshare-provider="twitter"
-                            socialshare-text="I have just contributed to this project"
-                            socialshare-hashtags="hotosm"
-                            socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                                socialshare
+                                socialshare-provider="twitter"
+                                socialshare-text="I have just contributed to this project"
+                                socialshare-hashtags="hotosm"
+                                socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
                             Twitter
                         </button>
                         <button class="button button--primary"
-                            socialshare
-                            socialshare-provider="facebook"
-                            socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                                socialshare
+                                socialshare-provider="facebook"
+                                socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
                             Facebook
                         </button>
                         <button class="button button--primary"
-                            socialshare
-                            socialshare-provider="linkedin"
-                            socialshare-text="I have just contributed to this project"
-                            socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                                socialshare
+                                socialshare-provider="linkedin"
+                                socialshare-text="I have just contributed to this project"
+                                socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
                             LinkedIn
                         </button>
                     </div>
@@ -874,7 +916,8 @@
             </div>
         </footer>
     </div>
-    <button class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="projectCtrl.setShowLicenseModal(false)">
+    <button class="modal__button-dismiss" title="{{ 'Close' | translate }}"
+            ng-click="projectCtrl.setShowLicenseModal(false)">
         {{ 'Dismiss' | translate }}
     </button>
 </section>
