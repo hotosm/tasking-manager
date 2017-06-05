@@ -144,6 +144,7 @@ class Task(db.Model):
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
+    mapper = db.relationship(User, foreign_keys=[mapped_by])
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -311,7 +312,6 @@ class Task(db.Model):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
             # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
-            # TODO send comment as message to user
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
