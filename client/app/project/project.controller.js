@@ -1062,7 +1062,7 @@
                 // use empty, uri encoded osmxml with upload=never for the data param
                 var emptyTaskLayerParams = {
                     new_layer: true,
-                    mime_type: 'application/x-osm+xml',
+                    mime_type: encodeURIComponent('application/x-osm+xml'),
                     layer_name: encodeURIComponent('Task Boundaries #'+vm.projectData.projectId+'- Do not edit or upload'),
                     data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
                 }
