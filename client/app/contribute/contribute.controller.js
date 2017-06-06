@@ -45,12 +45,12 @@
         $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
              // Watch the accountService for change in account
             $scope.$watch(function () { return accountService.getAccount();}, function (account) {
+                getURLParams();
                 if (account.username && (vm.mapperLevelSet == false)) {
                     // Set the default mapping level to the user's mapping level
                     vm.mapperLevel = account.mappingLevel;
                     vm.mapperLevelSet = true;
                 }
-                getURLParams();
                 searchProjects(vm.currentPage);
             }, true);
         }, true);
@@ -118,8 +118,6 @@
             if (page){
                 searchParams.page = page;
             }
-
-            setURLParams(searchParams);
            
             var resultsPromise = searchService.searchProjects(searchParams);
             resultsPromise.then(function (data) {
@@ -145,9 +143,10 @@
                         projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "red", false);
                     }
                 }
-
+                setURLParams(searchParams);
             }, function(){
                 // On error
+                setURLParams(searchParams);
                 vm.results = {};
                 projectMapService.showProjectsOnMap(vm.results);
             });
@@ -216,6 +215,7 @@
             // Only update the mapperLevel when it is set
             if ($location.search().difficulty && vm.mapperLevelSet == false){
                 vm.mapperLevel = $location.search().difficulty;
+                vm.mapperLevelSet = true;
             }
         }
 
