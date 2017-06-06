@@ -149,7 +149,6 @@
                 setURLParams(searchParams);
                 vm.results = {};
                 projectMapService.showProjectsOnMap(vm.results);
-                
             });
         }
 
