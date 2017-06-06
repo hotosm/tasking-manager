@@ -29,7 +29,7 @@
                             </div>
                             <hr/>
                             <div>
-                                <h4>Progress</h4>
+                                <h4>{{ 'Progress' | translate }}</h4>
                                 <div ng-show="profileCtrl.mapperLevelIntermediate > profileCtrl.osmUserDetails.changesetCount">
                                     <span class="label">{{ profileCtrl.mapperLevelIntermediate - profileCtrl.osmUserDetails.changesetCount }} {{ 'OSM changeset(s) to intermediate mapper' | translate }}</span>
                                     <uib-progressbar value="profileCtrl.osmUserDetails.changesetCount" max="profileCtrl.mapperLevelIntermediate"></uib-progressbar>
@@ -135,30 +135,32 @@
                             <div>
                                 <!-- Someone else's profile -->
                                 <div ng-hide="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
-                                    <h4 ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'">
-                                        {{ 'Set role' | translate }}
-                                    </h4>
-                                    <div class="button-group button-group--horizontal" role="group">
-                                        <button class="button button--achromic"
-                                                ng-class="profileCtrl.userDetails.role === 'MAPPER'? 'button--active' : ''"
-                                                ng-hide="profileCtrl.userDetails.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
-                                                ng-click="profileCtrl.setRole('MAPPER')">{{ 'Mapper' | translate }}
-                                        </button>
-                                        <button class="button button--achromic"
-                                                ng-class="profileCtrl.userDetails.role === 'PROJECT_MANAGER'? 'button--active' : ''"
-                                                ng-hide="profileCtrl.userDetails.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
-                                                ng-click="profileCtrl.setRole('PROJECT_MANAGER')">{{ 'Project Manager' | translate }}
-                                        </button>
-                                        <button class="button button--achromic"
-                                                ng-class="profileCtrl.userDetails.role === 'VALIDATOR'? 'button--active' : ''"
-                                                ng-hide="profileCtrl.userDetails.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
-                                                ng-click="profileCtrl.setRole('VALIDATOR')">{{ 'Validator' | translate }}
-                                        </button>
-                                        <button class="button button--achromic"
-                                                ng-class="profileCtrl.userDetails.role === 'ADMIN'? 'button--active' : ''"
-                                                ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
-                                                ng-click="profileCtrl.setRole('ADMIN')">{{ 'Administrator' | translate }}
-                                        </button>
+                                    <div ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'">
+                                        <h4>
+                                            {{ 'Set role' | translate }}
+                                        </h4>
+                                        <div class="button-group button-group--horizontal" role="group">
+                                            <button class="button button--achromic"
+                                                    ng-class="profileCtrl.userDetails.role === 'MAPPER'? 'button--active' : ''"
+                                                    ng-hide="profileCtrl.userDetails.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
+                                                    ng-click="profileCtrl.setRole('MAPPER')">{{ 'Mapper' | translate }}
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-class="profileCtrl.userDetails.role === 'PROJECT_MANAGER'? 'button--active' : ''"
+                                                    ng-hide="profileCtrl.userDetails.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
+                                                    ng-click="profileCtrl.setRole('PROJECT_MANAGER')">{{ 'Project Manager' | translate }}
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-class="profileCtrl.userDetails.role === 'VALIDATOR'? 'button--active' : ''"
+                                                    ng-hide="profileCtrl.userDetails.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
+                                                    ng-click="profileCtrl.setRole('VALIDATOR')">{{ 'Validator' | translate }}
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-class="profileCtrl.userDetails.role === 'ADMIN'? 'button--active' : ''"
+                                                    ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
+                                                    ng-click="profileCtrl.setRole('ADMIN')">{{ 'Administrator' | translate }}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <p ng-show="profileCtrl.errorSetRole" class="error">{{ 'An error occurred when setting the role.' | translate }}</p>
@@ -169,11 +171,13 @@
                                 <div class="button-group button-group--horizontal" role="group" aria-label="{{ 'Set mapper level' | translate }}">
                                     <button class="button button--achromic"
                                             ng-class="profileCtrl.userDetails.mappingLevel === 'BEGINNER'? 'button--active' : ''"
+                                            ng-disabled="profileCtrl.osmUserDetails.changesetCount > profileCtrl.mapperLevelIntermediate"
                                             ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
                                             ng-click="profileCtrl.setLevel('BEGINNER')">{{ 'Beginner' | translate }}
                                     </button>
                                     <button class="button button--achromic"
                                             ng-class="profileCtrl.userDetails.mappingLevel === 'INTERMEDIATE'? 'button--active' : ''"
+                                            ng-disabled="profileCtrl.osmUserDetails.changesetCount > profileCtrl.mapperLevelAdvanced"
                                             ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
                                             ng-click="profileCtrl.setLevel('INTERMEDIATE')">{{ 'Intermediate' | translate }}
                                     </button>

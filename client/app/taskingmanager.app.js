@@ -84,7 +84,8 @@
                 .when('/contribute', {
                     templateUrl: 'app/contribute/contribute.html',
                     controller: 'contributeController',
-                    controllerAs: 'contributeCtrl'
+                    controllerAs: 'contributeCtrl',
+                    reloadOnSearch: false
                 })
 
                 .when('/project/:id', {

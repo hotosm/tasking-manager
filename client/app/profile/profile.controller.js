@@ -126,8 +126,7 @@
                     vm.currentlyLoggedInUser = account;
                 }
             }, function () {
-                // Could not find the user, redirect to the homepage
-                $location.path('/');
+                // User is not logged in. The httpInterceptor service will handle this
             });
         }
 
