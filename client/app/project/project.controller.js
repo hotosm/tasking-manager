@@ -90,15 +90,6 @@
 
         function activate() {
 
-            // Check the user's role
-            var session = authService.getSession();
-            if (session && session.username && session.username != "") {
-                var resultsPromise = accountService.getUser(session.username);
-                resultsPromise.then(function (user) {
-                    vm.user = user;
-                });
-            }
-
             vm.currentTab = 'description';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
@@ -109,11 +100,25 @@
 
             vm.id = $routeParams.id;
 
-            initialiseProject(vm.id);
             updateMappedTaskPerUser(vm.id);
 
             // Add interactions for drawing a polygon for validation
             addInteractions();
+
+            // Check the user's role and initialise project after the async call has finished
+            var session = authService.getSession();
+            if (session && session.username && session.username != "") {
+                var resultsPromise = accountService.getUser(session.username);
+                resultsPromise.then(function (user) {
+                    vm.user = user;
+                    initialiseProject(vm.id);
+                }, function (){
+                    initialiseProject(vm.id);
+                });
+            }
+            else {
+                initialiseProject(vm.id);
+            }
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
