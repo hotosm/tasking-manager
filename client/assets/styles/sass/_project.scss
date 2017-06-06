@@ -61,10 +61,10 @@
      color: $primary-color;
     }
 
-    @include span(7/12);
+    @include span(6/12);
 
     @include media(medium-up) {
-      @include span(7/12);
+      @include span(6/12);
     }
 
     @include media(large-up) {
@@ -72,11 +72,11 @@
     }
 
     @include media(xlarge-up) {
-      @include span(6/12);
+      @include span(5/12);
     }
 
     @include media(xxlarge-up) {
-      @include span(6/12);
+      @include span(4/12);
     }
 
     img {
@@ -87,10 +87,10 @@
     float: left;
     height: inherit;
     position: relative;
-    @include span(5/12);
+    @include span(6/12);
 
     @include media(medium-up) {
-      @include span(5/12);
+      @include span(6/12);
     }
 
     @include media(large-up) {
@@ -98,11 +98,11 @@
     }
 
     @include media(xlarge-up) {
-      @include span(6/12);
+      @include span(7/12);
     }
 
     @include media(xxlarge-up) {
-      @include span(6/12);
+      @include span(8/12);
     }
   }
 }
