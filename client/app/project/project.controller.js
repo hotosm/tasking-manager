@@ -124,10 +124,12 @@
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
-        $scope.$on('$locationChangeStart', function () {
-            if (angular.isDefined(autoRefresh)) {
-                $interval.cancel(autoRefresh);
-                autoRefresh = undefined;
+        $scope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
+            if (oldUrl.indexOf($location.path()) == -1) { //check that we are navigating away from the page
+                if (angular.isDefined(autoRefresh)) {
+                    $interval.cancel(autoRefresh);
+                    autoRefresh = undefined;
+                }
             }
         })
 
@@ -440,10 +442,10 @@
                 vm.map.addLayer(vm.taskVectorLayer);
 
                 // change mouse cursor when over vector feature
-                vm.map.on('pointermove', function(e) {
+                vm.map.on('pointermove', function (e) {
                     var pixel = vm.map.getEventPixel(e.originalEvent);
                     var hit = vm.map.hasFeatureAtPixel(pixel, {
-                        layerFilter : function(layerCandidate) {
+                        layerFilter: function (layerCandidate) {
                             return layerCandidate == vm.taskVectorLayer;
                         }
                     });
@@ -1063,7 +1065,7 @@
                 var emptyTaskLayerParams = {
                     new_layer: true,
                     mime_type: 'application/x-osm+xml',
-                    layer_name: encodeURIComponent('Task Boundaries #'+vm.projectData.projectId+'- Do not edit or upload'),
+                    layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
                     data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
                 }
 
@@ -1093,7 +1095,7 @@
                             url: encodeURIComponent(imageryUrl)
                         };
                         var isImagerySuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
-                        if(!isImagerySuccess){
+                        if (!isImagerySuccess) {
                             //warn that imagery couldn't be loaded
                             vm.editorStartError = 'josm-imagery-error';
                         }
@@ -1109,7 +1111,7 @@
                     }
                     var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
 
-                    if (isEmptyOSMLayerSuccess){
+                    if (isEmptyOSMLayerSuccess) {
                         var loadAndZoomParams = {
                             left: extentTransformed[0],
                             bottom: extentTransformed[1],
@@ -1119,7 +1121,7 @@
                             changeset_source: encodeURIComponent(changesetSource),
                             new_layer: false
                         };
-                        if(taskCount == 1) {
+                        if (taskCount == 1) {
                             //load OSM data and zoom to the bbox
                             editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
                         } else {
