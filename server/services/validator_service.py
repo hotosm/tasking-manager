@@ -215,6 +215,6 @@ class ValidatorService:
 
         # Set counters to fully mapped and validated
         project = ProjectService.get_project_by_id(project_id)
-        project.tasks_mapped = project.total_tasks
-        project.tasks_validated = project.total_tasks
+        project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
+        project.tasks_validated = (project.total_tasks - project.tasks_bad_imagery)
         project.save()
