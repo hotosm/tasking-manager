@@ -24,7 +24,7 @@
         vm.campaigns = [];
 
         // Search parameters
-        vm.mapperLevel = ''; // default to ALL
+        vm.mapperLevel = 'ALL'; // default to ALL
         vm.searchRoads = false;
         vm.searchBuildings = false;
         vm.searchWaterways = false;
@@ -214,7 +214,7 @@
                 populateMappingTypes(mappingTypes);
             }
             // Only update the mapperLevel when it is set
-            if ($location.search().difficulty){
+            if ($location.search().difficulty && vm.mapperLevelSet == false){
                 vm.mapperLevel = $location.search().difficulty;
             }
         }
