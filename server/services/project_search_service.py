@@ -87,7 +87,7 @@ class ProjectSearchService:
             .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
 
-        if search_dto.mapper_level:
+        if search_dto.mapper_level and search_dto.mapper_level.upper() != 'ALL':
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)
 
         if search_dto.organisation_tag:
