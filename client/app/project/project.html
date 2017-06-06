@@ -409,23 +409,31 @@
                                     <table class="table table-validate_user table--zebra user-activity-for-validation">
                                         <thead>
                                         <tr>
-                                            <th nowrap ng-click="projectCtrl.sortBy('username')"><a
+                                            <th ng-click="projectCtrl.sortBy('username')"><a
                                                     class="table__sort table__sort--none"
                                                     title="{{ 'Sort column' | translate }}"><span>{{ 'Contributor' | translate }}</span></a>
                                             </th>
-                                            <th nowrap ng-click="projectCtrl.sortBy('mappingLevel')"><a
+                                            <th ng-click="projectCtrl.sortBy('mappingLevel')"><a
                                                     class="table__sort table__sort--none"
                                                     title="{{ 'Sort column' | translate }}"><span>{{ 'Level' | translate }}</span></a>
                                             </th>
-                                            <th nowrap ng-click="projectCtrl.sortBy('mappedTaskCount')"><a
+                                            <th ng-click="projectCtrl.sortBy('mappedTaskCount')"><a
                                                     class="table__sort table__sort--none"
                                                     title="{{ 'Sort column' | translate }}"><span>{{ 'Mapped' | translate }}</span></a>
                                             </th>
-                                            <th nowrap ng-click="projectCtrl.sortBy('lastSeen')"><a
+                                            <th ng-click="projectCtrl.sortBy('lastSeen')"><a
                                                     class="table__sort table__sort--none"
                                                     title="{{ 'Sort column' | translate }}"><span>{{ 'Newest' | translate }}</span></a>
                                             </th>
-                                            <th nowrap><span>{{ 'Lock' | translate }}</span></th>
+                                            <th ng-click="projectCtrl.sortBy('dateRegistered')"><a
+                                                    class="table__sort table__sort--none"
+                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Registered' | translate }}</span></a>
+                                            </th>
+                                             <th ng-click="projectCtrl.sortBy('lastValidationDate')"><a
+                                                    class="table__sort table__sort--none"
+                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Last validation' | translate }}</span></a>
+                                            </th>
+                                            <th><span>{{ 'Lock' | translate }}</span></th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -433,10 +441,13 @@
                                             <td>
                                                 <a href="./user/{{ doneTasks.username }}"/>{{ doneTasks.username }}
                                             </td>
-                                            <td>{{ doneTasks.mappingLevel }}</td>
+                                            <td ng-show="doneTasks.mappingLevel === 'BEGINNER'">{{ 'Beginner' | translate }}</td>
+                                            <td ng-show="doneTasks.mappingLevel === 'INTERMEDIATE'">{{ 'Intermediate' | translate }}</td>
+                                            <td ng-show="doneTasks.mappingLevel === 'ADVANCED'">{{ 'Advanced' | translate }}</td>
                                             <td>{{ doneTasks.mappedTaskCount }}</td>
-                                            <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span>
-                                            </td>
+                                            <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span></td>
+                                            <td><span am-time-ago="doneTasks.dateRegistered | amUtc | amLocal"></span></td>
+                                            <td><span am-time-ago="doneTasks.lastValidationDate | amUtc | amLocal"></span></td>
                                             <td>
                                                 <button class="button button--secondary button--small"
                                                         ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
@@ -888,7 +899,7 @@
     </section>
 </div>
 
-<!-- accept license modal -->
+-<!-- accept license modal -->
 <section class="modal modal-tm" ng-show="projectCtrl.showLicenseModal">
     <div class="modal__inner">
         <header class="modal__header">
