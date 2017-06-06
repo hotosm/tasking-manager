@@ -23,7 +23,7 @@
 
 /* Layer switcher override */
 .layer-switcher {
-  bottom: 3em;
+  bottom: 2em;
   top: auto;
 }
 
@@ -124,4 +124,9 @@
 }
 .ol-popup-closer:after {
   content: "x";
+}
+
+.ol-attribution.ol-logo-only, .ol-attribution.ol-uncollapsible {
+    max-width: calc(100% - 3em);
+    height: 1.5em;
 }

@@ -35,15 +35,21 @@
          */
         function createOSMMap(targetElement, disableScrollZoom){
             var scaleLineControl = new ol.control.ScaleLine();
+            var attribution = new ol.control.Attribution({
+                collapsible: false
+            });
 
             map = new ol.Map({
                 layers: [
                     new ol.layer.Tile({
-                        source: new ol.source.OSM(),
+                        source: new ol.source.OSM({
+                            url: "http://{a-c}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+                        }),
                         title: 'OpenStreetMap',
                         type: 'base'
                     })
                 ],
+                controls: ol.control.defaults({attribution: false}).extend([attribution]),
                 target: targetElement,
                 view: new ol.View({
                     center: [0, 0],
@@ -67,10 +73,10 @@
             if (additionalLayers) {
                 for (var i = 0; i < additionalLayers.length; i++) {
                     if (additionalLayers[i].type === 'XYZ') {
-                        addXYZLayer(additionalLayers[i].name, additionalLayers[i].url);
+                        addXYZLayer(additionalLayers[i].name, additionalLayers[i].url, additionalLayers[i].attribution);
                     }
                     if (additionalLayers[i].type === 'WMS'){
-                        addTiledWMSLayer(additionalLayers[i].name, additionalLayers[i].url, additionalLayers[i].layerName)
+                        addTiledWMSLayer(additionalLayers[i].name, additionalLayers[i].url, additionalLayers[i].layerName, additionalLayers[i].attribution)
                     }
                 }
             }
@@ -113,19 +119,23 @@
         /**
          * Adds a XYZ layer to the map
          */
-        function addXYZLayer(name, url, visible){
+        function addXYZLayer(name, url, attribution, visible){
             var visibility = false;
             if (visible){
                 visibility = true;
+            }
+            var source = new ol.source.XYZ({
+                url: url
+            });
+            if (attribution){
+                source.setAttributions(attribution);
             }
             var aerialLayer = new ol.layer.Tile({
                 visible: visibility,
                 preload: Infinity,
                 title: name,
                 type: 'base',
-                source: new ol.source.XYZ({
-                    url: url
-                })
+                source: source
             });
             map.addLayer(aerialLayer);
         }
@@ -137,21 +147,25 @@
          * @param layer
          * @param visible
          */
-        function addTiledWMSLayer(name, url, layer, visible){
+        function addTiledWMSLayer(name, url, layer, attribution, visible){
             var visibility = false;
             if (visible){
                 visibility = true;
+            }
+            var source = new ol.source.TileWMS({
+                url: url,
+                params: {
+                    'LAYERS': layer
+                }
+            });
+            if (attribution){
+                source.setAttributions(attribution);
             }
             var wmsLayer = new ol.layer.Tile({
                 visible: visibility,
                 title: name,
                 type: 'base',
-                source: new ol.source.TileWMS({
-                    url: url,
-                    params: {
-                        'LAYERS': layer
-                    }
-                })
+                source: source
             });
             map.addLayer(wmsLayer);
         }

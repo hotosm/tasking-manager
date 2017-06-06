@@ -51,10 +51,10 @@
             if (vm.layerURL) {
                 if (vm.type === 'xyz'){
                     // Use the type as the layer name
-                    mapService.addXYZLayer(vm.type + ' (temporary)', vm.layerURL, true);
+                    mapService.addXYZLayer(vm.type + ' (temporary)', vm.layerURL, '', true);
                 }
                 if (vm.type === 'wms'){
-                    mapService.addTiledWMSLayer(vm.type + ' (temporary)', vm.layerURL, vm.layerName, true);
+                    mapService.addTiledWMSLayer(vm.type + ' (temporary)', vm.layerURL, vm.layerName, '', true);
                 }
             }
         };
