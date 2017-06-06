@@ -232,9 +232,8 @@
 
                     // Compile the element, link it to the scope
                     overlay.setElement(popupContainer[0]);
-                    $compile(popupContainer)(popupScope_);
-
                     overlay.setPosition(coordinate);
+                    $compile(popupContainer)(popupScope_);
                 }
             }
         }
