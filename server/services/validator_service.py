@@ -191,9 +191,32 @@ class ValidatorService:
     @staticmethod
     def invalidate_all_tasks(project_id: int, user_id: int):
         """ Invalidates all mapped tasks on a project"""
-        Task.invalidate_all(project_id, user_id)
+        mapped_tasks = Task.query.filter(Task.project_id == project_id,
+                                         ~Task.task_status.in_([TaskStatus.READY.value,
+                                                                TaskStatus.BADIMAGERY.value])).all()
+        for task in mapped_tasks:
+            task.lock_task_for_validating(user_id)
+            task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
+
+        # Reset counters
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_mapped = 0
+        project.tasks_validated = 0
+        project.save()
 
     @staticmethod
     def validate_all_tasks(project_id: int, user_id: int):
         """ Validates all mapped tasks on a project"""
-        Task.validate_all(project_id, user_id)
+        tasks_to_validate = Task.query.filter(Task.project_id == project_id,
+                                              Task.task_status != TaskStatus.BADIMAGERY.value).all()
+
+        for task in tasks_to_validate:
+            task.mapped_by = user_id  # Ensure we set mapped by value
+            task.lock_task_for_validating(user_id)
+            task.unlock_task(user_id, new_state=TaskStatus.VALIDATED)
+
+        # Set counters to fully mapped and validated
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
+        project.tasks_validated = (project.total_tasks - project.tasks_bad_imagery)
+        project.save()
