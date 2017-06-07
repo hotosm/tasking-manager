@@ -1,7 +1,6 @@
 import geojson
 import json
 from shapely.geometry import MultiPolygon, mapping
-from geoalchemy2 import shape
 from shapely.ops import cascaded_union
 import shapely.geometry
 from flask import current_app

@@ -55,7 +55,7 @@ class MappingService:
             raise MappingServiceError('Task in invalid state for mapping')
 
         user_can_map, error_reason = ProjectService.is_user_permitted_to_map(lock_task_dto.project_id,
-                                                                              lock_task_dto.user_id)
+                                                                             lock_task_dto.user_id)
         if not user_can_map:
             if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError('User must accept license to map this task')
@@ -103,11 +103,7 @@ class MappingService:
     @staticmethod
     def get_task_locked_by_user(project_id: int, task_id: int, user_id: int) -> Task:
         """
-        Returns task specified by project id and task id if found and locked for mapping by user, otherwise raises MappingServiceError
-        :param project_id:
-        :param task_id:
-        :param user_id:
-        :return: Task
+        Returns task specified by project id and task id if found and locked for mapping by user
         :raises: MappingServiceError
         """
         task = MappingService.get_task(task_id, project_id)
@@ -164,7 +160,7 @@ class MappingService:
 
     @staticmethod
     def generate_osm_xml(project_id: int, task_ids_str: str) -> str:
-        """ Generate xml response suitable for loading into JOSM.  A sample output file is in 
+        """ Generate xml response suitable for loading into JOSM.  A sample output file is in
             /server/helpers/testfiles/osm-sample.xml """
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
         root = ET.Element('osm', attrib=dict(version='0.6', upload='never', creator='HOT Tasking Manager'))

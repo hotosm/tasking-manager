@@ -110,7 +110,7 @@ class TaskHistory(db.Model):
                     TaskHistory.action == TaskAction.STATE_CHANGE.name) \
             .order_by(TaskHistory.action_date.desc()).first()
 
-        if result == None:
+        if result is None:
             return TaskStatus.READY
 
         return TaskStatus[result[0]]

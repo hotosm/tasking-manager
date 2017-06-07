@@ -10,13 +10,13 @@ from server.services.users.user_service import UserService
 
 class ProjectServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when handling projects """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
 
 class ProjectService:
-
     @staticmethod
     def get_project_by_id(project_id: int) -> Project:
         project = Project.get(project_id)
@@ -72,7 +72,7 @@ class ProjectService:
 
         if project.enforce_mapper_level:
             if not ProjectService._is_user_mapping_level_at_or_above_level_requests(MappingLevel(project.mapper_level),
-                                                                                                 user_id):
+                                                                                    user_id):
                 return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
 
         if project.license_id:
