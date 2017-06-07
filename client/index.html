@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ 'HOT Tasking Manager' | translate }}</title>
+    <title>HOT Tasking Manager</title>
     <base href="/">
 
     <!-- for Google -->
@@ -70,7 +70,7 @@
             <h2 class="toggle-menu">
                 <a title="{{ 'Show/hide menu' | translate }}" ng-modal="showMenu" ng-click="showMenu = !showMenu"></a>
             </h2>
-            <div class="menu-wrapper" ng-class="showMenu ? 'menu-wrapper menu-wrapper--open' : 'menu-wrapper'">
+            <div class="menu-wrapper" ng-class="showMenu ? 'menu-wrapper menu-wrapper--open' : 'menu-wrapper'" ng-cloak>
                 <ul class="global-menu" id="global-menu">
                     <li>
                         <a href="/about" title="{{ 'Visit about' | translate }}" class="global-menu-item">
