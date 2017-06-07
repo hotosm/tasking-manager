@@ -1,3 +1,4 @@
+import bleach
 from server import db
 from server.models.postgis.user import User
 from server.models.postgis.utils import timestamp, NotFound
@@ -22,17 +23,21 @@ class ProjectChat(db.Model):
         new_message = cls()
         new_message.project_id = dto.project_id
         new_message.user_id = dto.user_id
-        # TODO bleach input
-        new_message.message = dto.message
+
+        # Use bleach to remove any potential mischief
+        clean_message = bleach.clean(dto.message)
+        clean_message = bleach.linkify(clean_message)
+        new_message.message = clean_message
 
         db.session.add(new_message)
-        db.session.commit()
         return new_message
 
     @staticmethod
     def get_messages(project_id: int, page: int) -> ProjectChatDTO:
+        """ Get all messages on the project """
 
-        project_messages = ProjectChat.query.filter_by(project_id = project_id).paginate(
+        project_messages = ProjectChat.query.filter_by(project_id=project_id).order_by(
+            ProjectChat.time_stamp.desc()).paginate(
             page, 50, True)
 
         if project_messages.total == 0:
