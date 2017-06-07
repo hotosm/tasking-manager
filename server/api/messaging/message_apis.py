@@ -39,7 +39,7 @@ class ProjectsMessageAll(Resource):
                   properties:
                       subject:
                           type: string
-                          default: Thanks 
+                          default: Thanks
                           required: true
                       message:
                           type: string

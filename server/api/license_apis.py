@@ -40,7 +40,7 @@ class LicenseAPI(Resource):
                           default: This imagery is in the public domain.
                       plainText:
                           type: string
-                          default: This imagery is in the public domain.  
+                          default: This imagery is in the public domain.
         responses:
             200:
                 description: New license created
@@ -136,7 +136,7 @@ class LicenseAPI(Resource):
                           default: This imagery is in the public domain.
                       plainText:
                           type: string
-                          default: This imagery is in the public domain.  
+                          default: This imagery is in the public domain.
         responses:
             200:
                 description: New license created
