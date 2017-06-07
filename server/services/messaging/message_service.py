@@ -1,6 +1,7 @@
 import re
-from typing import List
 
+from cachetools import TTLCache, cached
+from typing import List
 from flask import current_app
 
 from server.models.dtos.message_dto import MessageDTO
@@ -8,6 +9,9 @@ from server.models.postgis.message import Message, NotFound
 from server.services.messaging.smtp_service import SMTPService
 from server.services.messaging.template_service import get_template, get_profile_url
 from server.services.users.user_service import UserService, User
+
+
+message_cache = TTLCache(maxsize=256, ttl=30)
 
 
 class MessageServiceError(Exception):
@@ -142,6 +146,7 @@ class MessageService:
         return usernames
 
     @staticmethod
+    @cached(message_cache)
     def has_user_new_messages(user_id: int) -> dict:
         """ Determines if the user has any unread messages """
         count = Message.get_unread_message_count(user_id)
