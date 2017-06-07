@@ -340,7 +340,6 @@
                     <div ng-show="projectCtrl.currentTab === 'validation'">
                         <!-- select UI -->
                         <div ng-show="projectCtrl.validatingStep === 'selecting'">
-
                             <div>
                                 <h3>{{ 'Select for validation' | translate }}</h3>
                                 <div ng-hide="projectCtrl.user"
@@ -348,7 +347,7 @@
                                      role="alert">
                                     <p>{{ 'Please login first.' | translate }}</p>
                                 </div>
-                                <div ng-show="vm.user && !projectCtrl.userCanValidate"
+                                <div ng-show="projectCtrl.user && !projectCtrl.userCanValidate"
                                      class="alert alert--warning"
                                      role="alert">
                                     <p>{{ 'You cannot select tasks for validation on this project because you do not have the Validator role.' | translate }}</p>
