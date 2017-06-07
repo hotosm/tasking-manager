@@ -157,6 +157,7 @@
             vm.lockedTaskData = null;
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
+            vm.lockedTasksForCurrentUser = [];
         }
 
         /**
