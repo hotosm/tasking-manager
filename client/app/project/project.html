@@ -419,11 +419,7 @@
                                             </th>
                                             <th ng-click="projectCtrl.sortBy('mappedTaskCount')"><a
                                                     class="table__sort table__sort--none"
-                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Mapped' | translate }}</span></a>
-                                            </th>
-                                            <th ng-click="projectCtrl.sortBy('lastSeen')"><a
-                                                    class="table__sort table__sort--none"
-                                                    title="{{ 'Sort column' | translate }}"><span>{{ 'Newest' | translate }}</span></a>
+                                                    title="{{ 'Sort column' | translate }}"><span>#</span></a>
                                             </th>
                                             <th ng-click="projectCtrl.sortBy('dateRegistered')"><a
                                                     class="table__sort table__sort--none"
@@ -445,7 +441,6 @@
                                             <td ng-show="doneTasks.mappingLevel === 'INTERMEDIATE'">{{ 'Intermediate' | translate }}</td>
                                             <td ng-show="doneTasks.mappingLevel === 'ADVANCED'">{{ 'Advanced' | translate }}</td>
                                             <td>{{ doneTasks.mappedTaskCount }}</td>
-                                            <td><span am-time-ago="doneTasks.lastSeen | amUtc | amLocal"></span></td>
                                             <td><span am-time-ago="doneTasks.dateRegistered | amUtc | amLocal"></span></td>
                                             <td><span am-time-ago="doneTasks.lastValidationDate | amUtc | amLocal"></span></td>
                                             <td>
@@ -453,7 +448,7 @@
                                                         ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
                                                         ng-mouseover="projectCtrl.highlightTasks(doneTasks.tasksMapped, true)"
                                                         ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
-                                                    {{ 'Start Validating' | translate }}
+                                                    {{ 'Start' | translate }}
                                                 </button>
                                             </td>
                                         </tr>
