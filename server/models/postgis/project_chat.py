@@ -1,7 +1,7 @@
 from server import db
 from server.models.postgis.user import User
-from server.models.postgis.utils import timestamp
-from server.models.dtos.message_dto import ChatMessageDTO
+from server.models.postgis.utils import timestamp, NotFound
+from server.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO, Pagination
 
 
 class ProjectChat(db.Model):
@@ -28,3 +28,25 @@ class ProjectChat(db.Model):
         db.session.add(new_message)
         db.session.commit()
         return new_message
+
+    @staticmethod
+    def get_messages(project_id: int, page: int) -> ProjectChatDTO:
+
+        project_messages = ProjectChat.query.filter_by(project_id = project_id).paginate(
+            page, 50, True)
+
+        if project_messages.total == 0:
+            raise NotFound()
+
+        dto = ProjectChatDTO()
+        for message in project_messages.items:
+            chat_dto = ChatMessageDTO()
+            chat_dto.message = message.message
+            chat_dto.username = message.posted_by.username
+            chat_dto.timestamp = message.time_stamp
+
+            dto.chat.append(chat_dto)
+
+        dto.pagination = Pagination(project_messages)
+
+        return dto

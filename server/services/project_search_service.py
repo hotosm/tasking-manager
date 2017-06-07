@@ -8,12 +8,10 @@ from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
-import math
-from server.services.users.user_service import UserService
+
 
 # max area allowed for passed in bbox, calculation shown to help future maintenace
-# 243375 is arbitrarily chosen map maximum map width in meters
-# multiply by 1.5 to give a buffer beyond edge of map
+# 243375 is arbitrarily chosen map maximum map width in meters multiply by 1.5 to give a buffer beyond edge of map
 # raise to power 2 to get the maxim allowed area
 MAX_AREA = 133270628906.25
 
