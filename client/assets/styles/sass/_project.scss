@@ -64,15 +64,15 @@
     @include span(6/12);
 
     @include media(medium-up) {
-      @include span(6/12);
+      @include span(7/12);
     }
 
     @include media(large-up) {
-      @include span(6/12);
+      @include span(7/12);
     }
 
     @include media(xlarge-up) {
-      @include span(5/12);
+      @include span(6/12);
     }
 
     @include media(xxlarge-up) {
@@ -90,15 +90,15 @@
     @include span(6/12);
 
     @include media(medium-up) {
-      @include span(6/12);
+      @include span(5/12);
     }
 
     @include media(large-up) {
-      @include span(6/12);
+      @include span(5/12);
     }
 
     @include media(xlarge-up) {
-      @include span(7/12);
+      @include span(6/12);
     }
 
     @include media(xxlarge-up) {
