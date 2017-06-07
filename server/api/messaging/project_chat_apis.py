@@ -2,6 +2,7 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
 from server.models.dtos.message_dto import ChatMessageDTO
+from server.models.postgis.utils import NotFound
 from server.services.messaging.chat_service import ChatService
 from server.services.users.authentication_service import token_auth, tm
 
@@ -60,6 +61,45 @@ class ProjectChatAPI(Resource):
         try:
             ChatService.post_message(chat_dto)
             return {"Status": "Message posted successfully"}, 201
+        except Exception as e:
+            error_msg = f'Chat PUT - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    def get(self, project_id):
+        """
+        Get all chat messages for project
+        ---
+        tags:
+          - messages
+        produces:
+          - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The ID of the project to attach the chat message to
+              required: true
+              type: integer
+              default: 1
+            - in: query
+              name: page
+              description: Page of results user requested
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: All messages
+            404:
+                description: No chat messages on project
+            500:
+                description: Internal Server Error
+        """
+        try:
+            page = int(request.args.get('page')) if request.args.get('page') else 1
+            project_messages = ChatService.get_messages(project_id, page)
+            return project_messages.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No chat messages found for project"}, 404
         except Exception as e:
             error_msg = f'Chat PUT - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
