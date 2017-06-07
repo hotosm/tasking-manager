@@ -16,7 +16,7 @@ class ProjectChatAPI(Resource):
         Add a message to project chat
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -59,8 +59,8 @@ class ProjectChatAPI(Resource):
             return str(e), 400
 
         try:
-            ChatService.post_message(chat_dto)
-            return {"Status": "Message posted successfully"}, 201
+            project_messages = ChatService.post_message(chat_dto)
+            return project_messages.to_primitive(), 201
         except Exception as e:
             error_msg = f'Chat PUT - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
@@ -71,7 +71,7 @@ class ProjectChatAPI(Resource):
         Get all chat messages for project
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:

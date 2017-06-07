@@ -69,9 +69,9 @@ class MessageService:
             SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
-    def send_message_after_comment(comment_from: int, comment: str, task_id: int, project_id :int):
+    def send_message_after_comment(comment_from: int, comment: str, task_id: int, project_id: int):
         """ Will send a canned message to anyone @'d in a comment """
-        usernames = MessageService._parse_comment_for_username(comment)
+        usernames = MessageService._parse_message_for_username(comment)
 
         if len(usernames) == 0:
             return  # Nobody @'d so return
@@ -82,6 +82,7 @@ class MessageService:
             try:
                 user = UserService.get_user_by_username(username)
             except NotFound:
+                current_app.logger.error(f'Username {username} not found')
                 continue  # If we can't find the user, keep going no need to fail
 
             message = Message()
@@ -93,19 +94,46 @@ class MessageService:
             SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
+    def send_message_after_chat(chat_from: int, chat: str, project_id: int):
+        """ Send alert to user if they were @'d in a chat message """
+
+        usernames = MessageService._parse_message_for_username(chat)
+
+        if len(usernames) == 0:
+            return  # Nobody @'d so return
+
+        link = MessageService.get_chat_link(project_id)
+
+        for username in usernames:
+
+            try:
+                user = UserService.get_user_by_username(username)
+            except NotFound:
+                current_app.logger.error(f'Username {username} not found')
+                continue  # If we can't find the user, keep going no need to fail
+
+            message = Message()
+            message.from_user_id = chat_from
+            message.to_user_id = user.id
+            message.subject = f'You were mentioned in Project Chat on {link}'
+            message.message = chat
+            message.add_message()
+            SMTPService.send_email_alert(user.email_address, user.username)
+
+    @staticmethod
     def resend_email_validation(user_id: int):
         """ Resends the email validation email to the logged in user """
         user = UserService.get_user_by_id(user_id)
         SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
-    def _parse_comment_for_username(comment: str) -> List[str]:
+    def _parse_message_for_username(message: str) -> List[str]:
         """ Extracts all usernames from a comment looks for format @[user name] """
 
         parser = re.compile('((?<=@)\w+|\[.+?\])')
 
         usernames = []
-        for username in parser.findall(comment):
+        for username in parser.findall(message):
             username = username.replace("[", "", 1)
             index = username.rfind(']')
             username = username.replace("]", "", index)
@@ -162,4 +190,13 @@ class MessageService:
             base_url = current_app.config['APP_BASE_URL']
 
         link = f'<a href="{base_url}/project/{project_id}/?task={task_id}">Task {task_id}</a>'
+        return link
+
+    @staticmethod
+    def get_chat_link(project_id: int, base_url=None) -> str:
+        """ Helper method to generate a link to project chat"""
+        if not base_url:
+            base_url = current_app.config['APP_BASE_URL']
+
+        link = f'<a href="{base_url}/project/{project_id}/chat">Project {project_id}</a>'
         return link
