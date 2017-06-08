@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService','accountService', contributeController]);
+        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService, accountService) {
+    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService) {
 
         var vm = this;
 
