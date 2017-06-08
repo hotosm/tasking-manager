@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService','accountService', contributeController]);
+        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService, accountService) {
+    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService) {
 
         var vm = this;
 
@@ -33,26 +33,15 @@
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
         vm.searchText = '';
-        vm.mapperLevelSet = false;
 
         // Paging
         vm.currentPage = 1;
         vm.pagination = null;
 
         // Watch the languageService for change in language and search again when needed
-        // A watch within a watch is necessary to avoid two async calls potentially overriding the results
-        // TODO: there might be a better solution?
         $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
-             // Watch the accountService for change in account
-            $scope.$watch(function () { return accountService.getAccount();}, function (account) {
-                getURLParams();
-                if (account.username && (vm.mapperLevelSet == false)) {
-                    // Set the default mapping level to the user's mapping level
-                    vm.mapperLevel = account.mappingLevel;
-                    vm.mapperLevelSet = true;
-                }
-                searchProjects(vm.currentPage);
-            }, true);
+            getURLParams();
+            searchProjects(vm.currentPage);
         }, true);
 
         activate();
@@ -213,9 +202,8 @@
                 populateMappingTypes(mappingTypes);
             }
             // Only update the mapperLevel when it is set
-            if ($location.search().difficulty && vm.mapperLevelSet == false){
+            if ($location.search().difficulty){
                 vm.mapperLevel = $location.search().difficulty;
-                vm.mapperLevelSet = true;
             }
         }
 
