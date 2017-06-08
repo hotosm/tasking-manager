@@ -7,7 +7,6 @@ from server.services.users.user_service import UserService, UserServiceError, No
 
 
 class UserAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, username):
@@ -51,7 +50,6 @@ class UserAPI(Resource):
 
 
 class UserUpdateAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self):
@@ -116,7 +114,6 @@ class UserUpdateAPI(Resource):
 
 
 class UserSearchAllAPI(Resource):
-
     def get(self):
         """
         Gets paged list of all usernames
@@ -169,7 +166,6 @@ class UserSearchAllAPI(Resource):
 
 
 class UserSearchFilterAPI(Resource):
-
     def get(self, username):
         """
         Gets paged lists of users matching username filter
@@ -209,7 +205,6 @@ class UserSearchFilterAPI(Resource):
 
 
 class UserOSMAPI(Resource):
-
     def get(self, username):
         """
         Gets details from OSM for the specified username
@@ -249,7 +244,6 @@ class UserOSMAPI(Resource):
 
 
 class UserMappedProjects(Resource):
-
     def get(self, username):
         """
         Gets projects user has mapped
@@ -280,7 +274,8 @@ class UserMappedProjects(Resource):
                 description: Internal Server Error
         """
         try:
-            locale = request.environ.get('HTTP_ACCEPT_LANGUAGE') if request.environ.get('HTTP_ACCEPT_LANGUAGE') else 'en'
+            locale = request.environ.get('HTTP_ACCEPT_LANGUAGE') if request.environ.get(
+                'HTTP_ACCEPT_LANGUAGE') else 'en'
             user_dto = UserService.get_mapped_projects(username, locale)
             return user_dto.to_primitive(), 200
         except NotFound:
@@ -292,7 +287,6 @@ class UserMappedProjects(Resource):
 
 
 class UserSetRole(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, username, role):
@@ -321,7 +315,7 @@ class UserSetRole(Resource):
               description: The role to add
               required: true
               type: string
-              default: ADMIN 
+              default: ADMIN
         responses:
             200:
                 description: Role set
@@ -348,7 +342,6 @@ class UserSetRole(Resource):
 
 
 class UserSetLevel(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, username, level):
@@ -377,7 +370,7 @@ class UserSetLevel(Resource):
               description: The mapping level that should be set
               required: true
               type: string
-              default: ADVANCED 
+              default: ADVANCED
         responses:
             200:
                 description: Level set
@@ -404,7 +397,6 @@ class UserSetLevel(Resource):
 
 
 class UserAcceptLicense(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, license_id):
@@ -427,7 +419,7 @@ class UserAcceptLicense(Resource):
               description: ID of license terms have been accepted for
               required: true
               type: integer
-              default: 1 
+              default: 1
         responses:
             200:
                 description: Terms accepted
@@ -447,6 +439,3 @@ class UserAcceptLicense(Resource):
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
-
-
-

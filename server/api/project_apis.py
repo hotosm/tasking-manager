@@ -124,7 +124,7 @@ class ProjectSearchBBoxAPI(Resource):
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
         try:
-            geojson= ProjectSearchService.get_projects_geojson(search_dto)
+            geojson = ProjectSearchService.get_projects_geojson(search_dto)
             return geojson, 200
         except BBoxTooBigError:
             return {"Error": "Bounding Box too large"}, 403
@@ -215,11 +215,12 @@ class ProjectSearchAPI(Resource):
 
 
 class HasUserTaskOnProject(Resource):
+
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, project_id):
         """
-        Gets any locked task on the project from logged in user 
+        Gets any locked task on the project from logged in user
         ---
         tags:
             - mapping

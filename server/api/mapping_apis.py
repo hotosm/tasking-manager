@@ -339,7 +339,7 @@ class TasksAsGPX(Resource):
               name: as_file
               type: boolean
               description: Set to true if file download preferred
-              default: False 
+              default: False
         responses:
             200:
                 description: GPX XML

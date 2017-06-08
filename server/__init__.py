@@ -1,3 +1,4 @@
+# flake8: noqa
 import logging
 import os
 from logging.handlers import RotatingFileHandler
@@ -88,16 +89,21 @@ def init_flask_restful_routes(app):
     from server.api.users.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
-    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI, TasksAsGPX, TasksAsOSM
-    from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI, ResendEmailValidationAPI
+    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
+        TasksAsGPX, TasksAsOSM
+    from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
+        ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
-    from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
+    from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
+        ProjectValidateAll, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject, ProjectSearchBBoxAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.users.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
-    from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI, MappedTasksByUser
+    from server.api.users.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
+        UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+    from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
+        MappedTasksByUser
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI

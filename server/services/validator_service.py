@@ -76,7 +76,6 @@ class ValidatorService:
             return True
         return False
 
-
     @staticmethod
     def unlock_tasks_after_validation(validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
         """

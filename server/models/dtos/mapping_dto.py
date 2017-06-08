@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, DateTimeType, BooleanType
+from schematics.types import StringType, IntType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import TaskStatus
 

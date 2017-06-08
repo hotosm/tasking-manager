@@ -114,7 +114,6 @@ class AuthenticationService:
         verification_url = '{0}/validate-email?{1}'.format(base_url, urllib.parse.urlencode(verification_params))
         return verification_url
 
-
     @staticmethod
     def get_authentication_failed_url():
         """ Generates the auth-failed URL for the running app """
