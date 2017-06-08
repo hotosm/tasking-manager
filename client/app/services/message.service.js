@@ -15,6 +15,8 @@
             hasNewMessages: hasNewMessages,
             getAllMessages: getAllMessages,
             getMessage: getMessage,
+            getProjectChatMessages: getProjectChatMessages,
+            addProjectChatMessage: addProjectChatMessage,
             deleteMessage: deleteMessage,
             resendEmailVerification: resendEmailVerification,
             formatUserNamesToLink: formatUserNamesToLink
@@ -151,6 +153,52 @@
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get chat messages
+         * @param projectId
+         * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
+         */
+        function getProjectChatMessages(projectId){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + projectId + '/chat'
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback(error) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
+
+        /**
+         * Add project chat message
+         * @param message
+         * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
+         */
+        function addProjectChatMessage(message, projectId){
+            // Returns a promise
+            return $http({
+                method: 'PUT',
+                url: configService.tmAPI + '/project/' + projectId + '/chat',
+                data: {
+                    message: message
+                },
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback(error) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
             });
         }
 

@@ -42,7 +42,7 @@
       background: rgba($base-color, 0.1) none repeat scroll 0 0;
       display: inline-block;
       float: left;
-      width: 25%;
+      width: 20%;
       margin: 0;
       border-right: 1px solid #C6C1B2;
       text-align: center;
@@ -76,7 +76,7 @@
     }
 
     @include media(xxlarge-up) {
-      @include span(4/12);
+      @include span(5/12);
     }
 
     img {
@@ -102,7 +102,7 @@
     }
 
     @include media(xxlarge-up) {
-      @include span(8/12);
+      @include span(7/12);
     }
   }
 }
