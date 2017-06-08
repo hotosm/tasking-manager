@@ -8,9 +8,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
 
         var vm = this;
         vm.id = 0;
@@ -56,7 +56,7 @@
 
         //editor
         vm.editorStartError = '';
-        vm.selectedEditor = '';
+        vm.selectedEditor = 'ideditor';
 
         //interaction
         vm.selectInteraction = null;
@@ -112,7 +112,7 @@
                 resultsPromise.then(function (user) {
                     vm.user = user;
                     initialiseProject(vm.id);
-                }, function (){
+                }, function () {
                     initialiseProject(vm.id);
                 });
             }
@@ -126,6 +126,9 @@
                 updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refesh too
             }, 10000);
+
+            // set up the preferred editor from user preferences
+            vm.selectedEditor = userPreferencesService.getFavouriteEditor();
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -158,6 +161,10 @@
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
             vm.lockedTasksForCurrentUser = [];
+        }
+
+        vm.updatePreferedEditor = function () {
+            userPreferencesService.setFavouriteEditor(vm.selectedEditor);
         }
 
         /**
@@ -1071,7 +1078,7 @@
                 var emptyTaskLayerParams = {
                     new_layer: true,
                     mime_type: encodeURIComponent('application/x-osm+xml'),
-                    layer_name: encodeURIComponent('Task Boundaries #'+vm.projectData.projectId+'- Do not edit or upload'),
+                    layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
                     data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
                 }
 

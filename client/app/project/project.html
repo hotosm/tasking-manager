@@ -244,7 +244,7 @@
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
-                                                ng-model="projectCtrl.selectedEditor">
+                                                ng-model="projectCtrl.selectedEditor" ng-change="projectCtrl.updatePreferedEditor()">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -539,7 +539,7 @@
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
-                                                ng-model="projectCtrl.selectedEditor">
+                                                ng-model="projectCtrl.selectedEditor" ng-change="projectCtrl.updatePreferedEditor()">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -623,7 +623,7 @@
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
-                                                ng-model="projectCtrl.selectedEditor">
+                                                ng-model="projectCtrl.selectedEditor" ng-change="projectCtrl.updatePreferedEditor()">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
