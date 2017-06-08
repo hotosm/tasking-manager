@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('projectChatController', ['$scope', '$anchorScroll', '$location', '$timeout', 'messageService', 'userService', projectChatController])
+        .controller('projectChatController', ['$scope', '$anchorScroll', '$location', '$timeout', '$interval', 'messageService', 'userService', projectChatController])
         .directive('projectChat', projectChatDirective);
 
     /**
@@ -34,7 +34,7 @@
         return directive;
     }
 
-    function projectChatController($scope, $anchorScroll, $location, $timeout, messageService, userService) {
+    function projectChatController($scope, $anchorScroll, $location, $timeout, $interval, messageService, userService) {
 
         var vm = this;
         vm.projectId = 0;
@@ -60,6 +60,11 @@
         $scope.$watch('projectChatCtrl.projectAuthor', function(authorName) {
             vm.author = authorName;
         });
+
+        //start up a timer for autorefreshing the chat.
+        $interval(function () {
+            getChatMessages();
+        }, 10000);
 
         /**
          * Get chat messages
