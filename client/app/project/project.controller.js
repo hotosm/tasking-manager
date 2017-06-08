@@ -120,6 +120,11 @@
                 initialiseProject(vm.id);
             }
 
+            var isTabChat = $location.search().chat;
+            if (isTabChat){
+                vm.currentTab = 'chat';
+            }
+
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
                 refreshProject(vm.id);

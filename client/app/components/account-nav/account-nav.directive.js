@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('accountNavController', ['$scope','$location', '$interval', '$document','$element', 'accountService','authService', 'messageService', accountNavController])
+        .controller('accountNavController', ['$scope','$location', '$interval', '$document','$element', '$timeout', 'accountService','authService', 'messageService', accountNavController])
         .directive('accountNav', accountNavDirective);
 
     /**
@@ -30,7 +30,7 @@
         return directive;
     }
 
-    function accountNavController($scope, $location, $interval, $document, $element, accountService, authService, messageService) {
+    function accountNavController($scope, $location, $interval, $document, $element, $timeout, accountService, authService, messageService) {
 
         var vm = this;
         vm.account = {};
@@ -47,6 +47,10 @@
                 checkIfUserHasMessages();
             }
         }, true);
+
+          $timeout(function () {
+              vm.newMessageNotification = false;
+          }, 10000);
 
         activate();
 

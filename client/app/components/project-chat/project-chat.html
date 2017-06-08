@@ -1,7 +1,10 @@
 <div>
     <div ng-show="!projectChatCtrl.errorGetMessages">
         <div ng-repeat="message in projectChatCtrl.messages track by $index" ng-show="projectChatCtrl.messages.length > 0">
-            <p><strong>{{ message.username }}</strong> <span>{{ message.timestamp | date:'medium' }}</span></p>
+            <p>
+                <strong>
+                    <a href="./user/{{ message.username }}" target="_blank"/>{{ message.username }}</a>
+                </strong> <span>{{ message.timestamp | date:'medium' }}</span></p>
             <p ng-bind-html="message.message"></p>
         </div>
         <div ng-show="projectChatCtrl.messages.length < 1">
@@ -13,7 +16,6 @@
         {{ 'An error occurred' | translate  }}
     </p>
     <div>
-
         <div class="form__group">
             <textarea class="form__control" type="text" mentio
                       rows="4"
@@ -27,9 +29,7 @@
             <p class="pull-right">{{ projectChatCtrl.maxlengthComment - projectChatCtrl.message.length }}
                 {{ 'characters remaining' | translate }}
             </p>
-            <p class="pull-left" ng-show="projectChatCtrl.author">
-                @{{ projectChatCtrl.author }} to message the project manager
-            </p>
+            <button ng-show="projectChatCtrl.author" class="button button--achromic pull-left" ng-click="projectChatCtrl.messageProjectManager()">Message project manager</button>
         </div>
         <div class="pull-center">
             <button class="button button--secondary" ng-click="projectChatCtrl.addMessage()">Add message</button>

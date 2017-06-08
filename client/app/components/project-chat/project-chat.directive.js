@@ -136,8 +136,8 @@
                 }
                 // set the location.hash to the id of the element to scroll to
                 $timeout(function () {
-                    $location.hash('bottom');
-                    $anchorScroll();
+                    // TODO: find out if it is possible remove location hash 
+                    $anchorScroll(['bottom']);
                 }, 1000);
                 vm.message = '';
                 vm.successMessageAdded = true;
@@ -146,6 +146,13 @@
                     vm.errorMessageAdded = true;
                 }
             });
+        };
+
+        /**
+         * Message the project manager by pre-populating the message
+         */
+        vm.messageProjectManager = function(){
+            vm.message += '@[' + vm.author + ']';
         }
     }
 })();
