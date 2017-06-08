@@ -1,0 +1,39 @@
+<div>
+    <div ng-show="!projectChatCtrl.errorGetMessages">
+        <div ng-repeat="message in projectChatCtrl.messages track by $index" ng-show="projectChatCtrl.messages.length > 0">
+            <p><strong>{{ message.username }}</strong> <span>{{ message.timestamp | date:'medium' }}</span></p>
+            <p ng-bind-html="message.message"></p>
+        </div>
+        <div ng-show="projectChatCtrl.messages.length < 1">
+            {{ 'No chat messages yet' | translate }}
+        </div>
+        <a id="bottom"></a>
+    </div>
+    <p class="error" ng-show="projectChatCtrl.errorGetMessages">
+        {{ 'An error occurred' | translate  }}
+    </p>
+    <div>
+
+        <div class="form__group">
+            <textarea class="form__control" type="text" mentio
+                      rows="4"
+                      maxlength="{{ projectChatCtrl.maxlengthComment }}"
+                      placeholder="{{ 'Type a message' | translate }}"
+                      mentio-typed-text="typedTerm"
+                      mentio-search="projectChatCtrl.searchUser(term)"
+                      mentio-select="projectChatCtrl.formatUserTag(item)"
+                      mentio-items="projectChatCtrl.usernames | filter:label:typedTerm"
+                      ng-model="projectChatCtrl.message"></textarea>
+            <p class="pull-right">{{ projectChatCtrl.maxlengthComment - projectChatCtrl.message.length }}
+                {{ 'characters remaining' | translate }}
+            </p>
+            <p class="pull-left" ng-show="projectChatCtrl.author">
+                @{{ projectChatCtrl.author }} to message the project manager
+            </p>
+        </div>
+        <div class="pull-center">
+            <button class="button button--secondary" ng-click="projectChatCtrl.addMessage()">Add message</button>
+        </div>
+    </div>
+    <p ng-show="projectChatCtrl.errorMessageAdded" class="error">{{ 'Error: your message was not added' | translate }}</p>
+</div>

@@ -21,8 +21,14 @@
                         {{ 'Map' | translate }}
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'validation'"
+                        title="{{ 'Go to the validation tab' | translate }}"
                         ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
                         {{ 'Validate' | translate }}
+                    </li>
+                    <li ng-click="projectCtrl.currentTab = 'chat'"
+                        title="{{ 'Go to the chat tab' | translate }}"
+                        ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
+                        {{ 'Chat' | translate }}
                     </li>
                 </ul>
                 <div class="content">
@@ -699,6 +705,9 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div ng-show="projectCtrl.currentTab === 'chat'">
+                        <project-chat project-id="projectCtrl.id" project-author="projectCtrl.projectData.author"></project-chat>
                     </div>
                     <!-- advanced options UI -->
                     <div ng-init="showAdvanced=false"
