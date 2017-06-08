@@ -15,7 +15,7 @@
      * Creates project-chat directive
      * Example:
      *
-     * <project-chat project-id='1'></project-chat>
+     *  <project-chat project-id="projectCtrl.id" project-author="projectCtrl.projectData.author"></project-chat>
      */
     function projectChatDirective() {
 
