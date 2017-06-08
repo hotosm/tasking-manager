@@ -33,7 +33,6 @@
         vm.searchOrganisation = '';
         vm.searchCampaign = '';
         vm.searchText = '';
-        vm.mapperLevelSet = false;
 
         // Paging
         vm.currentPage = 1;
