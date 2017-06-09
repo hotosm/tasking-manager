@@ -51,6 +51,7 @@ class MappingNotAllowed(Enum):
     USER_NOT_CORRECT_MAPPING_LEVEL = 101
     USER_NOT_ACCEPTED_LICENSE = 102
     USER_NOT_ON_ALLOWED_LIST = 103
+    PROJECT_NOT_PUBLISHED = 104
 
 
 class ValidatingNotAllowed(Enum):
