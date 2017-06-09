@@ -120,8 +120,8 @@
                 initialiseProject(vm.id);
             }
 
-            var isTabChat = $location.search().chat;
-            if (isTabChat){
+            var tab = $location.search().tab;
+            if (tab === 'chat'){
                 vm.currentTab = 'chat';
             }
 
