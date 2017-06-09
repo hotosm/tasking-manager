@@ -5,6 +5,7 @@ from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes
+import geojson
 
 
 def is_known_project_status(value):
@@ -133,12 +134,6 @@ class ListSearchResultDTO(Model):
     percent_validated = IntType(serialized_name='percentValidated')
 
 
-class MapSearchResultDTO(Model):
-    """ DTO for search results that will draw all matches on the map """
-    project_id = IntType(required=True, serialized_name='projectId')
-    aoi_centroid = BaseType(serialized_name='aoiCentroid')
-
-
 class ProjectSearchResultsDTO(Model):
     """ Contains all results for the search criteria """
     def __init__(self):
@@ -147,7 +142,7 @@ class ProjectSearchResultsDTO(Model):
         self.results = []
         self.map_results = []
 
-    map_results = ListType(ModelType(MapSearchResultDTO), serialized_name='mapResults')
+    map_results = BaseType(serialized_name='mapResults')
     results = ListType(ModelType(ListSearchResultDTO))
     pagination = ModelType(Pagination)
 

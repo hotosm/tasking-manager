@@ -2,7 +2,7 @@ import geojson
 from cachetools import TTLCache, cached
 from shapely.geometry import Polygon, box
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResultsDTO, ListSearchResultDTO, \
-    Pagination, ProjectSearchBBoxDTO, MapSearchResultDTO
+    Pagination, ProjectSearchBBoxDTO
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
 from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform, ST_Area
@@ -47,13 +47,23 @@ class ProjectSearchService:
         if paginated_results.total == 0:
             raise NotFound()
 
-        dto = ProjectSearchResultsDTO()
+
+        features = []
         for project in all_results:
             # This loop loads the centroids and IDs so you can see all active projects on the map
-            map_dto = MapSearchResultDTO()
-            map_dto.aoi_centroid = geojson.loads(project.centroid)
-            map_dto.project_id = project.id
-            dto.map_results.append(map_dto)
+
+            properties = {
+                "projectId": project.id,
+                "priority": ProjectPriority(project.priority).name
+            }
+            centroid = project.centroid
+            feature = geojson.Feature(geometry=geojson.loads(project.centroid), properties=properties)
+            #dto.map_results.append(feature)
+            features.append(feature)
+
+        feature_collection = geojson.FeatureCollection(features)
+        dto = ProjectSearchResultsDTO()
+        dto.map_results = feature_collection
 
         for project in paginated_results.items:
             # This loop loads the paginated text results
