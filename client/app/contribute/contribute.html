@@ -13,8 +13,6 @@
                     <div class="search-container">
                         <div>
                             <form ng-submit="contributeCtrl.search()">
-                                <a class="pull-right" ng-click="showSearchOptions = !showSearchOptions">Advanced search
-                                    options</a>
                                 <div class="form__input-group">
                                     <input type="text" ng-model="contributeCtrl.searchText"
                                            placeholder="{{ 'Search project description or project number' | translate }}"
@@ -25,6 +23,9 @@
                                          </button>
                                      </span>
                                 </div>
+                                <div><a ng-click="showSearchOptions = !showSearchOptions">Advanced search
+                                    options</a></div>
+
                             </form>
                         </div>
                         <div class="search" ng-show="showSearchOptions" ng-init="showSearchOptions = false">
@@ -34,7 +35,7 @@
                                         <div class="form__group search-option">
                                             <label class="form__label">{{ 'Mapping difficulty' | translate }}</label>
                                             <select class="form__control form__control--medium"
-                                                    ng-click="contributeCtrl.search()"
+                                                    ng-change="contributeCtrl.search()"
                                                     ng-model="contributeCtrl.mapperLevel">
                                                 <option value="ALL">{{ 'All' | translate }}</option>
                                                 <option value="BEGINNER">{{ 'Beginner' | translate }}</option>
@@ -45,7 +46,7 @@
                                         <div class="form__group search-option">
                                             <label class="form__label">{{ 'Organisation' | translate }}</label>
                                             <select class="form__control form__control--medium"
-                                                    ng-click="contributeCtrl.search()"
+                                                    ng-change="contributeCtrl.search()"
                                                     ng-model="contributeCtrl.searchOrganisation">
                                                 <option value="">{{ 'All' | translate }}</option>
                                                 <option ng-repeat="organisation in contributeCtrl.organisations"
@@ -55,7 +56,7 @@
                                         <div class="form__group search-option">
                                             <label class="form__label">{{ 'Campaign' | translate }}</label>
                                             <select class="form__control form__control--medium"
-                                                    ng-click="contributeCtrl.search()"
+                                                    ng-change="contributeCtrl.search()"
                                                     ng-model="contributeCtrl.searchCampaign">
                                                 <option value="">{{ 'All' | translate }}</option>
                                                 <option ng-repeat="campaign in contributeCtrl.campaigns"
@@ -275,37 +276,57 @@
                                         <div id="map" class="map-container">
                                             <div class="legend-control ol-control">
                                                 <h3>{{ 'Legend' | translate }}</h3>
-                                                <div>
-                                                    <svg height="25" width="25">
-                                                        <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1"
-                                                                fill="red"
-                                                                fill-opacity="0.5"/>
-                                                    </svg>
-                                                    {{ 'Urgent' | translate }}
+                                                <div ng-show="contributeCtrl.showVectorLegend">
+                                                    <div>
+                                                        <svg height="25" width="25">
+                                                            <circle cx="15" cy="15" r="8" stroke="black"
+                                                                    stroke-width="1"
+                                                                    fill="red"
+                                                                    fill-opacity="0.5"/>
+                                                        </svg>
+                                                        {{ 'Urgent' | translate }}
+                                                    </div>
+                                                    <div>
+                                                        <svg height="25" width="25">
+                                                            <circle cx="15" cy="15" r="8" stroke="black"
+                                                                    stroke-width="1"
+                                                                    fill="orange"
+                                                                    fill-opacity="0.5"/>
+                                                        </svg>
+                                                        {{ 'High' | translate }}
+                                                    </div>
+                                                    <div>
+                                                        <svg height="25" width="25">
+                                                            <circle cx="15" cy="15" r="8" stroke="black"
+                                                                    stroke-width="1"
+                                                                    fill="yellow"
+                                                                    fill-opacity="0.5"/>
+                                                        </svg>
+                                                        {{ 'Medium' | translate }}
+                                                    </div>
+                                                    <div>
+                                                        <svg height="25" width="25">
+                                                            <circle cx="15" cy="15" r="8" stroke="black"
+                                                                    stroke-width="1"
+                                                                    fill="blue"
+                                                                    fill-opacity="0.5"/>
+                                                        </svg>
+                                                        {{ 'Low' | translate }}
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <svg height="25" width="25">
-                                                        <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1"
-                                                                fill="orange"
-                                                                fill-opacity="0.5"/>
-                                                    </svg>
-                                                    {{ 'High' | translate }}
-                                                </div>
-                                                <div>
-                                                    <svg height="25" width="25">
-                                                        <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1"
-                                                                fill="yellow"
-                                                                fill-opacity="0.5"/>
-                                                    </svg>
-                                                    {{ 'Medium' | translate }}
-                                                </div>
-                                                <div>
-                                                    <svg height="25" width="25">
-                                                        <circle cx="15" cy="15" r="8" stroke="black" stroke-width="1"
-                                                                fill="blue"
-                                                                fill-opacity="0.5"/>
-                                                    </svg>
-                                                    {{ 'Low' | translate }}
+                                                <div ng-show="contributeCtrl.showClusterLegend">
+                                                    <div>
+                                                        <svg height="27" width="27">
+                                                            <circle cx="15" cy="15" r="12" stroke="#fff"
+                                                                    stroke-width="1"
+                                                                    fill='#3399CC'
+                                                            />
+                                                            <text fill="#ffffff" font-size="8" font-family="Verdana"
+                                                                  x="10" y="17">54
+                                                            </text>
+                                                        </svg>
+                                                        {{ 'Project Cluster' | translate }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
