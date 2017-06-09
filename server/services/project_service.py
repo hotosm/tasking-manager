@@ -39,10 +39,6 @@ class ProjectService:
         :raises ProjectServiceError, NotFound
         """
         project = ProjectService.get_project_by_id(project_id)
-
-        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED:
-            raise ProjectServiceError(f'Project {project.id} is not published')
-
         return project.as_dto_for_mapping(locale)
 
     @staticmethod
@@ -64,6 +60,9 @@ class ProjectService:
         """ Check if the user is allowed to map the on the project in scope """
         # TODO check if allowed user for private project
         project = ProjectService.get_project_by_id(project_id)
+
+        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED:
+            return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
         tasks = project.get_locked_tasks_for_user(user_id)
 

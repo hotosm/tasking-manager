@@ -203,5 +203,5 @@ class MessageService:
         if not base_url:
             base_url = current_app.config['APP_BASE_URL']
 
-        link = f'<a href="{base_url}/project/{project_id}/chat">Project {project_id}</a>'
+        link = f'<a href="{base_url}/project/{project_id}?tab=chat">Project {project_id}</a>'
         return link

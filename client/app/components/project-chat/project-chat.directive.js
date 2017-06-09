@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('projectChatController', ['$scope', '$anchorScroll', '$location', '$timeout', 'messageService', 'userService', projectChatController])
+        .controller('projectChatController', ['$scope', '$anchorScroll', '$location', '$timeout', '$interval', 'messageService', 'userService', projectChatController])
         .directive('projectChat', projectChatDirective);
 
     /**
@@ -34,7 +34,7 @@
         return directive;
     }
 
-    function projectChatController($scope, $anchorScroll, $location, $timeout, messageService, userService) {
+    function projectChatController($scope, $anchorScroll, $location, $timeout, $interval, messageService, userService) {
 
         var vm = this;
         vm.projectId = 0;
@@ -60,6 +60,11 @@
         $scope.$watch('projectChatCtrl.projectAuthor', function(authorName) {
             vm.author = authorName;
         });
+
+        //start up a timer for autorefreshing the chat.
+        $interval(function () {
+            getChatMessages();
+        }, 10000);
 
         /**
          * Get chat messages
@@ -131,8 +136,8 @@
                 }
                 // set the location.hash to the id of the element to scroll to
                 $timeout(function () {
-                    $location.hash('bottom');
-                    $anchorScroll();
+                    // TODO: find out if it is possible remove location hash 
+                    $anchorScroll(['bottom']);
                 }, 1000);
                 vm.message = '';
                 vm.successMessageAdded = true;
@@ -141,6 +146,13 @@
                     vm.errorMessageAdded = true;
                 }
             });
+        };
+
+        /**
+         * Message the project manager by pre-populating the message
+         */
+        vm.messageProjectManager = function(){
+            vm.message += '@[' + vm.author + ']';
         }
     }
 })();
