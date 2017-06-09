@@ -97,6 +97,9 @@ class UserUpdateAPI(Resource):
         """
         try:
             user_dto = UserDTO(request.get_json())
+            if user_dto.email_address == '':
+                user_dto.email_address = None  # Replace empty string with None so validation doesn't break
+
             user_dto.validate()
         except DataError as e:
             current_app.logger.error(f'error validating request: {str(e)}')
