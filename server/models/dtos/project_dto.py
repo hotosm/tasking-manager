@@ -5,7 +5,6 @@ from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes
-import geojson
 
 
 def is_known_project_status(value):
