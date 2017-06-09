@@ -47,20 +47,16 @@ class ProjectSearchService:
         if paginated_results.total == 0:
             raise NotFound()
 
-
         features = []
         for project in all_results:
-            # This loop loads the centroids and IDs so you can see all active projects on the map
-
+            # This loop creates a geojson feature collection so you can see all active projects on the map
             properties = {
                 "projectId": project.id,
                 "priority": ProjectPriority(project.priority).name
             }
             centroid = project.centroid
             feature = geojson.Feature(geometry=geojson.loads(project.centroid), properties=properties)
-            #dto.map_results.append(feature)
             features.append(feature)
-
         feature_collection = geojson.FeatureCollection(features)
         dto = ProjectSearchResultsDTO()
         dto.map_results = feature_collection
