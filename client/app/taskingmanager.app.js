@@ -13,7 +13,7 @@
         }])
 
         // Check if user is logged in by checking available cookies
-        .run(['accountService', 'authService', function (accountService, authService) {
+        .run(['accountService', 'authService', 'userPreferencesService', function (accountService, authService, userPreferencesService) {
 
             // Get session storage on application load
             var nameOfLocalStorage = authService.getLocalStorageSessionName();
@@ -23,6 +23,11 @@
                 authService.setSession(sessionStorage.sessionToken || '', sessionStorage.username || '');
                 accountService.setAccount(sessionStorage.username);
             }
+
+            // initialise the userPreferences service which provides an interface to the cookie which stores the
+            // users defaults and preferences
+            userPreferencesService.initialise();
+
         }])
 
         .config(['$routeProvider', '$locationProvider', '$httpProvider', 'ChartJsProvider', '$translateProvider', function ($routeProvider, $locationProvider, $httpProvider, ChartJsProvider, $translateProvider) {
@@ -35,7 +40,7 @@
             $translateProvider.preferredLanguage('en');
             // This escapes HTML in the translation - see https://angular-translate.github.io/docs/#/guide/19_security
             $translateProvider.useSanitizeValueStrategy('escape');
-            
+
             // Disable caching for requests. Bugfix for IE. IE(11) uses cached responses if these headers are not provided.
             $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
             $httpProvider.defaults.cache = false;
@@ -45,13 +50,13 @@
             }
             $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
 
-             // Intercept the response errors and go to the login page if the status is 401
+            // Intercept the response errors and go to the login page if the status is 401
             $httpProvider.interceptors.push('httpInterceptorService');
 
             ChartJsProvider.setOptions({
                 chartColors: ['#AC3232', '#DCDCDC', '#7A7A7A', '#595959']
             });
-            
+
             $routeProvider
 
                 .when('/', {
@@ -140,7 +145,7 @@
                     controller: 'usersController',
                     controllerAs: 'usersCtrl'
                 })
-            
+
                 .when('/inbox', {
                     templateUrl: 'app/message/inbox.html',
                     controller: 'inboxController',
@@ -152,13 +157,13 @@
                     controller: 'messageController',
                     controllerAs: 'messageCtrl'
                 })
-            
+
                 .when('/login', {
                     templateUrl: 'app/login/login.html',
                     controller: 'loginController',
                     controllerAs: 'loginCtrl'
                 })
-            
+
                 .when('/validate-email', {
                     templateUrl: 'app/profile/validate-email.html',
                     controller: 'validateEmailController',
