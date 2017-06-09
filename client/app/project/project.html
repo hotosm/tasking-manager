@@ -40,6 +40,7 @@
                             </div>
                             <p markdown-to-html="projectCtrl.projectData.projectInfo.description"></p>
                             <hr/>
+                            <div><strong>{{ 'Status:' | translate }} </strong><span>{{ projectCtrl.projectData.projectStatus }}</span></div>
                             <div><strong>{{ 'Created by:' | translate }} </strong><span><a
                                     href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></span>
                             </div>
