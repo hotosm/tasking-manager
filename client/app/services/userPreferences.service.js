@@ -1,7 +1,8 @@
 (function () {
     'use strict';
     /**
-     * @fileoverview This file provides a service for getting and setting user preferences and defaults.
+     * @fileoverview This file provides a service for getting and setting user preferences and defaults which are
+     * persisted in localstorage (cookies).
      */
 
     angular
@@ -17,13 +18,16 @@
 
         var service = {
             initialise: initialise,
-            getlocalStorageUserPreferncesName: getlocalStorageUserPreferncesName,
+            getlocalStorageUserPreferencesName: getlocalStorageUserPreferencesName,
             getFavouriteEditor: getFavouriteEditor,
             setFavouriteEditor: setFavouriteEditor
         };
 
         return service;
 
+        /**
+         * Set up the service object by synchrinosing with local storage
+         */
         function initialise() {
             if (localStorage.getItem(localStorageUserPreferncesName)) {
                 userPrefences = JSON.parse(localStorage.getItem(localStorageUserPreferncesName));
@@ -33,15 +37,27 @@
             }
         }
 
-        function getlocalStorageUserPreferncesName(){
+        /**
+         * Get the name of the local storage object used to store user preferences
+         * @returns {string}
+         */
+        function getlocalStorageUserPreferencesName() {
             return localStorageUserPreferncesName;
         }
 
-        function getFavouriteEditor(){
+        /**
+         * Get the user's favourite editor
+         * @returns {string}
+         */
+        function getFavouriteEditor() {
             return userPrefences.favouriteEditor
         }
 
-        function setFavouriteEditor(editorName){
+        /**
+         * Set the user's editor and persist to localstorage
+         * @param editorName
+         */
+        function setFavouriteEditor(editorName) {
             userPrefences.favouriteEditor = editorName;
             localStorage.setItem(localStorageUserPreferncesName, JSON.stringify(userPrefences));
         }

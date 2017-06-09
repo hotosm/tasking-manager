@@ -18,7 +18,7 @@ describe('userPreferencesService.service', function () {
     it('should return ideditor', function () {
 
         //arrange
-        localStorage.removeItem(userPreferencesService.getlocalStorageUserPreferncesName());
+        localStorage.removeItem(userPreferencesService.getlocalStorageUserPreferencesName());
         userPreferencesService.initialise();
         userPreferencesService.setFavouriteEditor('josm');
 
@@ -30,6 +30,6 @@ describe('userPreferencesService.service', function () {
     });
 
     afterEach(function(){
-        localStorage.removeItem(userPreferencesService.getlocalStorageUserPreferncesName());
+        localStorage.removeItem(userPreferencesService.getlocalStorageUserPreferencesName());
     });
 });
