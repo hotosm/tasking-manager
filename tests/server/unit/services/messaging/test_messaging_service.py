@@ -24,4 +24,4 @@ class TestMessagingService(unittest.TestCase):
         # Act
         link = MessageService.get_chat_link(1, 'http://test.com')
 
-        self.assertEqual(link, '<a href="http://test.com/project/1/chat">Project 1</a>')
+        self.assertEqual(link, '<a href="http://test.com/project/1?tab=chat">Project 1</a>')
