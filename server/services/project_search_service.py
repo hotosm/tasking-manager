@@ -75,7 +75,7 @@ class ProjectSearchService:
             list_dto.percent_validated = round(
                 ((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
 
-            dto.paginated_results.append(list_dto)
+            dto.results.append(list_dto)
 
         dto.pagination = Pagination(paginated_results)
         return dto

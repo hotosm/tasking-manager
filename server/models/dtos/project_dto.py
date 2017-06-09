@@ -143,11 +143,11 @@ class ProjectSearchResultsDTO(Model):
     def __init__(self):
         """ DTO constructor initialise all arrays to empty"""
         super().__init__()
-        self.paginated_results = []
+        self.results = []
         self.map_results = []
 
     map_results = ListType(ModelType(MapSearchResultDTO), serialized_name='mapResults')
-    results = ListType(ModelType(ListSearchResultDTO), serialized_name='paginatedResults')
+    results = ListType(ModelType(ListSearchResultDTO))
     pagination = ModelType(Pagination)
 
 
