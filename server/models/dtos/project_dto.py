@@ -134,6 +134,7 @@ class ListSearchResultDTO(Model):
 
 
 class MapSearchResultDTO(Model):
+    """ DTO for search results that will draw all matches on the map """
     project_id = IntType(required=True, serialized_name='projectId')
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
 
