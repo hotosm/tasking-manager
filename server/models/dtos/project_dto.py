@@ -101,6 +101,16 @@ class ProjectSearchDTO(Model):
     page = IntType(required=True)
     text_search = StringType()
 
+    def __hash__(self):
+        """ Make object hashable so we can cache user searches"""
+        hashable_mapping_types = ''
+        if self.mapping_types:
+            for mapping_type in self.mapping_types:
+                hashable_mapping_types = hashable_mapping_types + mapping_type
+
+        return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, self.organisation_tag,
+                     self.campaign_tag, self.page, self.text_search))
+
 
 class ProjectSearchBBoxDTO(Model):
     bbox = ListType(FloatType, required=True, min_size=4, max_size=4)
@@ -109,7 +119,7 @@ class ProjectSearchBBoxDTO(Model):
     project_author = IntType(required=False, serialized_name='projectAuthor')
 
 
-class ProjectSearchResultDTO(Model):
+class ListSearchResultDTO(Model):
     """ Describes one search result"""
     project_id = IntType(required=True, serialized_name='projectId')
     locale = StringType(required=True)
@@ -117,7 +127,6 @@ class ProjectSearchResultDTO(Model):
     short_description = StringType(serialized_name='shortDescription', default='')
     mapper_level = StringType(required=True, serialized_name='mapperLevel')
     priority = StringType(required=True)
-    aoi_centroid = BaseType(serialized_name='aoiCentroid')
     organisation_tag = StringType(serialized_name='organisationTag')
     campaign_tag = StringType(serialized_name='campaignTag')
     percent_mapped = IntType(serialized_name='percentMapped')
@@ -130,8 +139,10 @@ class ProjectSearchResultsDTO(Model):
         """ DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.results = []
+        self.map_results = []
 
-    results = ListType(ModelType(ProjectSearchResultDTO))
+    map_results = BaseType(serialized_name='mapResults')
+    results = ListType(ModelType(ListSearchResultDTO))
     pagination = ModelType(Pagination)
 
 
