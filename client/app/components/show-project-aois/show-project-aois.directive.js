@@ -37,7 +37,7 @@
 
         var vm = this;
         vm.otherProjectVectorLayer = null;
-        vm.otherProjectMaxResolution = 200;
+        vm.otherProjectMaxResolution = 320;
         vm.currentResolution = 0;
         vm.errorLoadingExistingProjects = false;
         
@@ -105,6 +105,7 @@
 
             // Update the resolution after moveend
             vm.map.on('moveend', function(){
+                console.log( vm.map.getView().getResolution());
                 vm.currentResolution = vm.map.getView().getResolution();
                 $scope.$apply();
             })
