@@ -6,9 +6,9 @@
 
     angular
         .module('taskingManager')
-        .service('projectMapService', ['geospatialService', 'styleService', '$rootScope', '$compile', projectMapService]);
+        .service('projectMapService', ['projectService', 'geospatialService', 'styleService', '$rootScope', '$compile', projectMapService]);
 
-    function projectMapService(geospatialService, styleService, $rootScope, $compile) {
+    function projectMapService(projectService, geospatialService, styleService, $rootScope, $compile) {
 
         var map = null;
         var projectVectorSource = null;
@@ -57,42 +57,44 @@
         function addProjectsVectorLayer_() {
             projectVectorSource = new ol.source.Vector();
 
-            var clusterSource = new ol.source.Cluster({
-                distance: 30,
-                source: projectVectorSource
-            });
 
-            var clusterLayer = new ol.layer.Vector({
-                source: clusterSource,
-                style: function (feature, resolution) {
-                    console.log(resolution)
-                    var size = feature.get('features').length;
-                    var style = styleCache[size];
-                    if (!style) {
-                        style = [new ol.style.Style({
-                            image: new ol.style.Circle({
-                                radius: Math.min(5, size / 20) * 3 + 12,
-                                stroke: new ol.style.Stroke({
-                                    color: '#fff'
+            // if there is a cluster threshold resolution specified, add a layer to show the projects clustered
+            if (clusterThresholdResolution_) {
+                var clusterSource = new ol.source.Cluster({
+                    distance: 30,
+                    source: projectVectorSource
+                });
+                var clusterLayer = new ol.layer.Vector({
+                    source: clusterSource,
+                    style: function (feature, resolution) {
+                        var size = feature.get('features').length;
+                        var style = styleCache[size];
+                        if (!style) {
+                            style = [new ol.style.Style({
+                                image: new ol.style.Circle({
+                                    radius: Math.min(5, size / 20) * 3 + 12,
+                                    stroke: new ol.style.Stroke({
+                                        color: '#fff'
+                                    }),
+                                    fill: new ol.style.Fill({
+                                        color: '#3399CC'
+                                    })
                                 }),
-                                fill: new ol.style.Fill({
-                                    color: '#3399CC'
+                                text: new ol.style.Text({
+                                    text: size.toString(),
+                                    fill: new ol.style.Fill({
+                                        color: '#fff'
+                                    })
                                 })
-                            }),
-                            text: new ol.style.Text({
-                                text: size.toString(),
-                                fill: new ol.style.Fill({
-                                    color: '#fff'
-                                })
-                            })
-                        })];
-                        styleCache[size] = style;
+                            })];
+                            styleCache[size] = style;
+                        }
+                        return style;
                     }
-                    return style;
-                }
-            });
-            if (clusterThresholdResolution_) clusterLayer.setMinResolution(clusterThresholdResolution_);
-            map.addLayer(clusterLayer);
+                });
+                if (clusterThresholdResolution_) clusterLayer.setMinResolution(clusterThresholdResolution_);
+                map.addLayer(clusterLayer);
+            }
 
             var vectorLayer = new ol.layer.Vector({
                 source: projectVectorSource,
@@ -296,12 +298,21 @@
             if (feature) {
                 // Only show a popup for features with a project ID
                 if (feature.getProperties().projectId) {
-                    popupScope_['feature'] = feature;
 
-                    // Compile the element, link it to the scope
-                    overlay.setElement(popupContainer[0]);
-                    overlay.setPosition(coordinate);
-                    $compile(popupContainer)(popupScope_);
+                    var resultsPromise = projectService.getProject(feature.getProperties().projectId)
+                    resultsPromise.then(function (data) {
+                        // On success, set the projects details in the popup using the data
+                        popupScope_['feature'] = data;
+                        // Compile the element, link it to the scope
+                        overlay.setElement(popupContainer[0]);
+                        overlay.setPosition(coordinate);
+                        $compile(popupContainer)(popupScope_);
+                    }, function () {
+                        // TODOD - handle error
+
+                    });
+
+
                 }
             }
         }
