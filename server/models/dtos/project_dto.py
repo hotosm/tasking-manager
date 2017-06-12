@@ -156,10 +156,16 @@ class ProjectComment(Model):
     comment = StringType()
     comment_date = DateTimeType(serialized_name='commentDate')
     user_name = StringType(serialized_name='userName')
+    task_id = IntType(serialized_name='taskId')
 
 
 class ProjectCommentsDTO(Model):
     """ Contains all comments on a project """
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.comments = []
+
     comments = ListType(ModelType(ProjectComment))
 
 

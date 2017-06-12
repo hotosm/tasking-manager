@@ -100,7 +100,7 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <h2>{{ 'Comments by users' | translate }}</h2>
+                    <h2>{{ 'Comments by users TEST' | translate }}</h2>
                       <h6 class="heading-alt">{{ projectDashboardCtrl.selectedProject.name }}</h6>
                     <div ng-show="projectDashboardCtrl.projectComments.length < 1">
                         {{ 'No comments (yet).' | translate }}
@@ -112,6 +112,7 @@
                                     <th>{{ 'Comment' | translate }}</th>
                                     <th>{{ 'When' | translate }}</th>
                                     <th>{{ 'User' | translate }}</th>
+                                    <th>{{ 'Task Link' | translate }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -119,6 +120,7 @@
                                     <td>{{ comment.comment }}</td>
                                     <td><span am-time-ago="comment.commentDate | amUtc | amLocal"></span></td>
                                     <td><a href="/user/{{ comment.userName }}" target="_blank">{{ comment.userName }}</a></td>
+                                    <td><a href="/project/{{ projectDashboardCtrl.projectId }}?task={{ comment.taskId}}" target="_blank">Task {{ comment.taskId }}</a></td>
                                 </tr>
                             </tbody>
                         </table>
