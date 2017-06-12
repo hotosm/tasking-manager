@@ -317,6 +317,10 @@
             }
         }
 
+        /**
+         * replace the features in the projectVectorSource with features from a featureCollection
+         * @param featureCollection
+         */
         function replaceFeatures(featureCollection) {
             projectVectorSource.clear();
             var features = geospatialService.getFeaturesFromGeoJSON(featureCollection);
