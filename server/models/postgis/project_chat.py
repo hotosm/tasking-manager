@@ -37,7 +37,7 @@ class ProjectChat(db.Model):
         """ Get all messages on the project """
 
         project_messages = ProjectChat.query.filter_by(project_id=project_id).order_by(
-            ProjectChat.time_stamp).paginate(
+            ProjectChat.time_stamp.desc()).paginate(
             page, 50, True)
 
         if project_messages.total == 0:

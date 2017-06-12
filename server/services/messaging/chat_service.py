@@ -16,7 +16,8 @@ class ChatService:
         chat_message = ProjectChat.create_from_dto(chat_dto)
         MessageService.send_message_after_chat(chat_dto.user_id, chat_message.message, chat_dto.project_id)
         db.session.commit()
-        return ChatService.get_messages(chat_dto.project_id, 1)
+        # Ensure we return latest messages after post
+        return ProjectChat.get_messages(chat_dto.project_id, 1)
 
     @staticmethod
     @cached(chat_cache)
