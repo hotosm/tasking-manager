@@ -37,7 +37,6 @@ def verify_token(token):
             current_app.logger.debug(f'User {user_id} is not a PM {request.base_url}')
             return False
 
-    current_app.logger.debug(f'Validated user {user_id} for {request.base_url}')
     tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
     return True  # All tests passed token is good for the requested resource
 
