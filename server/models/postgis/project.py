@@ -244,18 +244,7 @@ class Project(db.Model):
     @staticmethod
     def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
         """ Get projects for admin """
-        admins_projects = db.session.query(Project.id,
-                                           Project.status,
-                                           Project.campaign_tag,
-                                           Project.total_tasks,
-                                           Project.tasks_mapped,
-                                           Project.tasks_validated,
-                                           Project.tasks_bad_imagery,
-                                           Project.created,
-                                           Project.last_updated,
-                                           Project.default_locale,
-                                           Project.centroid.ST_AsGeoJSON().label('geojson'))\
-            .filter(Project.author_id == admin_id).all()
+        admins_projects = Project.query.filter_by(author_id=admin_id).all()
 
         if admins_projects is None:
             raise NotFound('No projects found for admin')

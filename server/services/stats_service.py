@@ -96,6 +96,7 @@ class StatsService:
     @staticmethod
     def get_project_stats(project_id: int, preferred_locale: str) -> ProjectSummary:
         """ Gets stats for the specified project """
+        # TODO move to project-service
         project = Project.query.filter_by(id=project_id).one_or_none()
         summary = project.get_project_summary(preferred_locale)
         return summary
