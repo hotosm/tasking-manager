@@ -46,6 +46,8 @@
         vm.isSplitPolygonValid = true;
         vm.splitPolygonValidationMessage = '';
         vm.isimportError = false;
+        vm.nonPolygonError = false;
+        vm.selfIntersectionError = false;
         vm.createProjectFail = false;
         vm.createProjectFailReason = '';
         vm.createProjectSuccess = false;
@@ -70,7 +72,7 @@
             // Check if cloning a project or creating a new one
             vm.cloneProjectId = $location.search().projectId;
             vm.cloneProjectName = $location.search().projectName;
-            if (vm.cloneProjectId){
+            if (vm.cloneProjectId) {
                 vm.isCloneProject = true;
                 // Clear the URL parameters
                 $location.search('projectId', null);
@@ -320,7 +322,10 @@
         vm.import = function (file) {
             // Set drawing an AOI to inactive
             vm.drawPolygonInteraction.setActive(false);
-            vm.isImportError = false;
+            vm.isimportError = false;
+            vm.nonPolygonError = false;
+            vm.selfIntersectionError = false;
+
             if (file) {
                 drawService.getSource().clear();
                 var fileReader = new FileReader();
@@ -329,18 +334,29 @@
                     var uploadedFeatures = null;
                     if (file.name.substr(-4) === 'json') {
                         uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(data);
-                        setImportedAOI_(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'kml') {
                         uploadedFeatures = geospatialService.getFeaturesFromKML(data);
-                        setImportedAOI_(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'zip') {
                         // Use the Shapefile.js library to read the zipped Shapefile (with GeoJSON as output)
                         shp(data).then(function (geojson) {
                             var uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(geojson);
-                            setImportedAOI_(uploadedFeatures);
                         });
+                    }
+                    if (uploadedFeatures) {
+                        var aoiValidationResult = projectService.validateAOI(uploadedFeatures);
+                        if (aoiValidationResult.valid) {
+                            setImportedAOI_(uploadedFeatures)
+                        }
+                        else {
+                            if (aoiValidationResult.message == 'CONTAINS_NON_POLYGON_FEATURES') {
+                                vm.nonPolygonError = true;
+                            }
+                            else if (aoiValidationResult.message == 'SELF_INTERSECTIONS') {
+                                vm.selfIntersectionError = true;
+                            }
+                        }
                     }
                 };
                 if (file.name.substr(-4) === 'json') {
@@ -354,6 +370,8 @@
                 }
                 else {
                     vm.isImportError = true;
+                    vm.nonPolygonError = false;
+                    vm.selfIntersectionError = false;
                 }
             }
         };
@@ -439,7 +457,7 @@
          */
         vm.createProject = function () {
             var cloneProjectId = null;
-            if (vm.isCloneProject){
+            if (vm.isCloneProject) {
                 cloneProjectId = vm.cloneProjectId;
             }
             vm.createProjectFail = false;
