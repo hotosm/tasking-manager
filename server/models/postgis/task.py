@@ -82,22 +82,21 @@ class TaskHistory(db.Model):
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
         """ Gets all comments for the supplied project_id"""
 
-        comments = db.session.query(TaskHistory.action_date,
+        comments = db.session.query(TaskHistory.task_id,
+                                    TaskHistory.action_date,
                                     TaskHistory.action_text,
                                     User.username) \
             .join(User) \
             .filter(TaskHistory.project_id == project_id, TaskHistory.action == TaskAction.COMMENT.name).all()
 
-        comment_list = []
+        comments_dto = ProjectCommentsDTO()
         for comment in comments:
             dto = ProjectComment()
             dto.comment = comment.action_text
             dto.comment_date = comment.action_date
             dto.user_name = comment.username
-            comment_list.append(dto)
-
-        comments_dto = ProjectCommentsDTO()
-        comments_dto.comments = comment_list
+            dto.task_id = comment.task_id
+            comments_dto.comments.append(dto)
 
         return comments_dto
 

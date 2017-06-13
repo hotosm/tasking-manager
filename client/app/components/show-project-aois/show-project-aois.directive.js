@@ -37,7 +37,7 @@
 
         var vm = this;
         vm.otherProjectVectorLayer = null;
-        vm.otherProjectMaxResolution = 200;
+        vm.otherProjectMaxResolution = 320;
         vm.currentResolution = 0;
         vm.errorLoadingExistingProjects = false;
         

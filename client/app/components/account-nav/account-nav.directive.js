@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('accountNavController', ['$scope','$location', '$interval', '$document','$element', '$timeout', 'accountService','authService', 'messageService', accountNavController])
+        .controller('accountNavController', ['$scope','$location', '$interval', '$document','$element', '$timeout', '$route', 'accountService','authService', 'messageService', accountNavController])
         .directive('accountNav', accountNavDirective);
 
     /**
@@ -30,7 +30,7 @@
         return directive;
     }
 
-    function accountNavController($scope, $location, $interval, $document, $element, $timeout, accountService, authService, messageService) {
+    function accountNavController($scope, $location, $interval, $document, $element, $timeout, $route, accountService, authService, messageService) {
 
         var vm = this;
         vm.account = {};
@@ -104,6 +104,7 @@
          * Navigate to the create project page
          */
         vm.goToCreateNewProject = function () {
+            $route.reload();
             $location.path('admin/create-project');
             vm.showDropdown = false;
         };
