@@ -272,6 +272,9 @@ class Project(db.Model):
         summary.campaign_tag = self.campaign_tag
         summary.created = self.created
         summary.last_updated = self.last_updated
+        summary.mapper_level = MappingLevel(self.mapper_level).name
+        summary.organisation_tag = self.organisation_tag
+        summary.status = ProjectStatus(self.status).name
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
