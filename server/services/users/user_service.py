@@ -1,9 +1,15 @@
+from cachetools import TTLCache, cached
 from flask import current_app
+
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
+
+
+user_filter_cache = TTLCache(maxsize=1024, ttl=600)
+user_all_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class UserServiceError(Exception):
@@ -84,11 +90,13 @@ class UserService:
         return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
+    @cached(user_all_cache)
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Gets paginated list of users """
         return User.get_all_users(query)
 
     @staticmethod
+    @cached(user_filter_cache)
     def filter_users(username: str, page: int) -> UserFilterDTO:
         """ Gets paginated list of users, filtered by username, for autocomplete """
         return User.filter_users(username, page)
