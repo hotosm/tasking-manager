@@ -262,7 +262,7 @@ class Project(db.Model):
 
         admin_projects_dto = PMDashboardDTO()
         for project in admins_projects:
-            pm_project = Project.get_project_summary(project, preferred_locale)
+            pm_project = project.get_project_summary(preferred_locale)
             project_status = ProjectStatus(project.status)
 
             if project_status == ProjectStatus.DRAFT:
@@ -276,23 +276,25 @@ class Project(db.Model):
 
         return admin_projects_dto
 
-    @staticmethod
-    def get_project_summary(project, preferred_locale) -> ProjectSummary:
+    def get_project_summary(self, preferred_locale) -> ProjectSummary:
         """ Create Project Summary model for postgis project object"""
-        pm_project = ProjectSummary()
-        pm_project.project_id = project.id
-        pm_project.campaign_tag = project.campaign_tag
-        pm_project.created = project.created
-        pm_project.last_updated = project.last_updated
-        pm_project.aoi_centroid = geojson.loads(project.geojson)
+        summary = ProjectSummary()
+        summary.project_id = self.id
+        summary.campaign_tag = self.campaign_tag
+        summary.created = self.created
+        summary.last_updated = self.last_updated
 
-        pm_project.percent_mapped = round((project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
-        pm_project.percent_validated = round(((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
+        centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
+        summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        project_info = ProjectInfo.get_dto_for_locale(project.id, preferred_locale, project.default_locale)
-        pm_project.name = project_info.name
+        summary.percent_mapped = round((self.tasks_mapped / (self.total_tasks - self.tasks_bad_imagery)) * 100, 0)
+        summary.percent_validated = round(((self.tasks_validated + self.tasks_bad_imagery) / self.total_tasks) * 100, 0)
 
-        return pm_project
+        project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
+        summary.name = project_info.name
+        summary.short_description = project_info.short_description
+
+        return summary
 
     def get_aoi_geometry_as_geojson(self):
         """ Helper which returns the AOI geometry as a geojson object """
