@@ -105,7 +105,6 @@
 
             // Update the resolution after moveend
             vm.map.on('moveend', function(){
-                console.log( vm.map.getView().getResolution());
                 vm.currentResolution = vm.map.getView().getResolution();
                 $scope.$apply();
             })
