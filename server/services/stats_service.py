@@ -94,25 +94,6 @@ class StatsService:
         return activity_dto
 
     @staticmethod
-    def get_project_stats(project_id: int, preferred_locale: str) -> ProjectSummary:
-        """ Gets stats for the specified project """
-        project = db.session.query(Project.id,
-                                   Project.status,
-                                   Project.campaign_tag,
-                                   Project.total_tasks,
-                                   Project.tasks_mapped,
-                                   Project.tasks_validated,
-                                   Project.tasks_bad_imagery,
-                                   Project.created,
-                                   Project.last_updated,
-                                   Project.default_locale,
-                                   Project.centroid.ST_AsGeoJSON().label('geojson')) \
-            .filter(Project.id == project_id).one_or_none()
-
-        pm_project = Project.get_project_summary(project, preferred_locale)
-        return pm_project
-
-    @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
         """ Get all user contributions on a project"""
         contrib_query = '''select m.mapped_by, m.username, m.mapped, v.validated_by, v.username, v.validated

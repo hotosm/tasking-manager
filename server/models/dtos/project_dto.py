@@ -179,6 +179,10 @@ class ProjectSummary(Model):
     created = DateTimeType()
     last_updated = DateTimeType(serialized_name='lastUpdated')
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
+    mapper_level = StringType(serialized_name='mapperLevel')
+    organisation_tag = StringType(serialized_name='organisationTag')
+    short_description = StringType(serialized_name='shortDescription')
+    status = StringType()
 
 
 class PMDashboardDTO(Model):

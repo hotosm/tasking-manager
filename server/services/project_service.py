@@ -1,11 +1,15 @@
+from cachetools import TTLCache, cached
 from flask import current_app
 
-from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser
+from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
+
+
+summary_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class ProjectServiceError(Exception):
@@ -121,3 +125,10 @@ class ProjectService:
                 return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         return True, 'User allowed to validate'
+
+    @staticmethod
+    @cached(summary_cache)
+    def get_project_summary(project_id: int, preferred_locale: str = 'en') -> ProjectSummary:
+        """ Gets the project summary DTO """
+        project = ProjectService.get_project_by_id(project_id)
+        return project.get_project_summary(preferred_locale)
