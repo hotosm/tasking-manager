@@ -11,7 +11,7 @@ from server.services.messaging.template_service import get_template, get_profile
 from server.services.users.user_service import UserService, User
 
 
-message_cache = TTLCache(maxsize=256, ttl=30)
+message_cache = TTLCache(maxsize=512, ttl=30)
 
 
 class MessageServiceError(Exception):

@@ -21,6 +21,8 @@ class EnvironmentConfig:
     }
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_POOL_SIZE = 10
+    SQLALCHEMY_MAX_OVERFLOW = 10
     SECRET_KEY = os.getenv('TM_SECRET', None)
     SMTP_SETTINGS = {
         'host': 'email-smtp.eu-west-1.amazonaws.com',
