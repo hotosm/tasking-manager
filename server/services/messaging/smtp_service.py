@@ -41,12 +41,13 @@ class SMTPService:
         # TODO these could be localised if needed, in the future
         html_template = get_template('message_alert_en.html')
         text_template = get_template('message_alert_en.txt')
+        inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox"
 
         html_template = html_template.replace('[USERNAME]', username)
-        html_template = html_template.replace('[PROFILE_LINK]', get_profile_url(username))
+        html_template = html_template.replace('[PROFILE_LINK]', inbox_url)
 
         text_template = text_template.replace('[USERNAME]', username)
-        text_template = text_template.replace('[PROFILE_LINK]', get_profile_url(username))
+        text_template = text_template.replace('[PROFILE_LINK]', inbox_url)
 
         subject = 'You have a new message on the HOT Tasking Manager'
         SMTPService._send_mesage(to_address, subject, html_template, text_template)
