@@ -42,11 +42,14 @@
         vm.message = '';
         vm.messages = [];
         vm.maxlengthComment = 250;
+
+        vm.hasScrolled = false;
         
         // Errors
         vm.successMessageAdded = false;
         vm.errorMessageAdded = false;
         vm.errorGetMessages = false;
+        vm.errorAddPMUsername = false;
         
          /**
          * Watches the selected feature
@@ -79,13 +82,15 @@
                 }
                 // set the location.hash to the id of the element to scroll to
                 $timeout(function () {
-                    $location.hash('bottom');
-                    $anchorScroll();
+                    if (!vm.hasScrolled){
+                        $location.hash('bottom');
+                        $anchorScroll();
+                        vm.hasScrolled = true;
+                    }
                 }, 1000);
             }, function(response){
                 vm.messages = [];
                 if (response.status != 404) {
-                    console.log("404");
                     vm.errorGetMessages = true;
                 }
             });
@@ -152,7 +157,14 @@
          * Message the project manager by pre-populating the message
          */
         vm.messageProjectManager = function(){
-            vm.message += '@[' + vm.author + ']';
+            vm.errorAddPMUsername = false;
+            var author = '@[' + vm.author + ']';
+            if ((vm.message.length + author.length) < vm.maxlengthComment){
+                vm.message += author;
+            }
+            else {
+                vm.errorAddPMUsername = true;
+            }
         }
     }
 })();
