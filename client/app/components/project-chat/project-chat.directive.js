@@ -43,7 +43,7 @@
         vm.messages = [];
         vm.maxlengthComment = 250;
 
-        vm.hasNotScrolledYet = true;
+        vm.hasScrolled = false;
         
         // Errors
         vm.successMessageAdded = false;
@@ -82,10 +82,10 @@
                 }
                 // set the location.hash to the id of the element to scroll to
                 $timeout(function () {
-                    if (vm.hasNotScrolledYet){
+                    if (!vm.hasScrolled){
                         $location.hash('bottom');
                         $anchorScroll();
-                        vm.hasNotScrolledYet = false;
+                        vm.hasScrolled = true;
                     }
                 }, 1000);
             }, function(response){

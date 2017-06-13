@@ -1,6 +1,6 @@
 <div>
     <div ng-show="!projectChatCtrl.errorGetMessages">
-        <div ng-repeat="message in projectChatCtrl.messages | orderBy: '-timestamp' track by $index" ng-show="projectChatCtrl.messages.length > 0">
+        <div ng-repeat="message in projectChatCtrl.messages | orderBy: 'timestamp' track by $index" ng-show="projectChatCtrl.messages.length > 0">
             <p>
                 <strong>
                     <a href="./user/{{ message.username }}" target="_blank"/>{{ message.username }}</a>
