@@ -101,6 +101,8 @@
 }
 
 /** Wider column for project description in list view **/
-.wider-column {
-  width: 25%;
+.list {
+  .wider-column {
+    width: 25%;
+  }
 }
