@@ -175,14 +175,10 @@
             var feature = new ol.Feature({
                 geometry: new ol.geom.Point(projectCenter)
             });
+            // Set the projectId as a property on the feature. When the feature gets identified, this
+            // property can be used to get more details for that feature
             feature.setProperties({
-                'projectId': project.projectId,
-                'projectName': project.name,
-                'mapperLevel': project.mapperLevel,
-                'organisationTag': project.organisationTag,
-                'shortDescription': project.shortDescription,
-                'percentMapped': project.percentMapped,
-                'percentValidated': project.percentValidated
+                'projectId': project.projectId
             });
             if (projectVectorSource) {
                 projectVectorSource.addFeature(feature);
