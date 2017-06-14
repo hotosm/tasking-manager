@@ -43,7 +43,7 @@ class ProjectInfo(db.Model):
         self.name = dto.name
         self.project_id_str = str(self.project_id)  # Allows project_id to be searched
 
-        # TODO bleach input
+        # Note project info not bleached on basis that admins are trusted users and shouldn't be doing anything bad
         self.short_description = dto.short_description
         self.description = dto.description
         self.instructions = dto.instructions

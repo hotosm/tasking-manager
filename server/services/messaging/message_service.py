@@ -66,6 +66,10 @@ class MessageService:
         """ Sends supplied message to all contributors on specified project """
         contributors = Message.get_all_contributors(project_id)
 
+        project_link = MessageService.get_project_link(project_id)
+
+        message_dto.message = f'{project_link}<br/><br/>' + message_dto.message  # Append project link to end of message
+
         for contributor in contributors:
             message = Message.from_dto(contributor[0], message_dto)
             message.save()
@@ -106,7 +110,7 @@ class MessageService:
         if len(usernames) == 0:
             return  # Nobody @'d so return
 
-        link = MessageService.get_chat_link(project_id)
+        link = MessageService.get_project_link(project_id)
 
         for username in usernames:
 
@@ -198,7 +202,7 @@ class MessageService:
         return link
 
     @staticmethod
-    def get_chat_link(project_id: int, base_url=None) -> str:
+    def get_project_link(project_id: int, base_url=None) -> str:
         """ Helper method to generate a link to project chat"""
         if not base_url:
             base_url = current_app.config['APP_BASE_URL']

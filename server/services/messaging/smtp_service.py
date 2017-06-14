@@ -71,8 +71,11 @@ class SMTPService:
         msg.attach(part2)
 
         sender = SMTPService._init_smtp_client()
+
+        current_app.logger.debug(f'Sending email to {to_address}')
         sender.sendmail(from_address, to_address, msg.as_string())
         sender.quit()
+        current_app.logger.debug(f'Email sent {to_address}')
 
     @staticmethod
     def _init_smtp_client():
