@@ -295,7 +295,7 @@
                 // Only show a popup for features with a project ID
                 if (feature.getProperties().projectId) {
 
-                    var resultsPromise = projectService.getProject(feature.getProperties().projectId)
+                    var resultsPromise = projectService.getProjectSummary(feature.getProperties().projectId)
                     resultsPromise.then(function (data) {
                         // On success, set the projects details in the popup using the data
                         popupScope_['feature'] = data;

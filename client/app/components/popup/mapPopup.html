@@ -16,14 +16,14 @@
                 <strong>Organisation: </strong>{{ mapPopupCtrl.projectDetails.organisationTag }}
             </li>
             <li ng-show="mapPopupCtrl.projectDetails.percentMapped">
-                {{ mapPopupCtrl.projectDetails.percentMapped }}% mapped
+                <strong>Mapped: </strong>{{ mapPopupCtrl.projectDetails.percentMapped }}%
             </li>
             <li ng-show="mapPopupCtrl.projectDetails.percentValidated">
-                {{ mapPopupCtrl.projectDetails.percentValidated }}% validated
+                <strong>Validated: </strong>{{ mapPopupCtrl.projectDetails.percentValidated }}%
             </li>
         </ul>
         <p ng-show="mapPopupCtrl.projectDetails.projectStatus">
-            <strong>{{ 'Status' | translate}}: </strong>
+            <strong>{{ 'Status' | translate }}: </strong>
             <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'ARCHIVED'">
                 {{ 'Archived' | translate }}
             </span>
@@ -34,8 +34,10 @@
                 {{ 'Published' | translate }}
             </span>
         </p>
-        <p markdown-to-html="(mapPopupCtrl.projectDetails.shortDescription | limitTo: mapPopupCtrl.characterLimitShortDescription) +
-            (mapPopupCtrl.projectDetails.shortDescription.length > mapPopupCtrl.characterLimitShortDescription ? '...' : '')">
+        <div><strong>Short Description:</strong></div>
+        <div class="popup-short-desc">
+            <p markdown-to-html="mapPopupCtrl.projectDetails.shortDescription">
+        </div>
         </p>
     </div>
 </div>
