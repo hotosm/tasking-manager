@@ -34,10 +34,12 @@
                 {{ 'Published' | translate }}
             </span>
         </p>
-        <div><strong>Short Description:</strong></div>
-        <div class="popup-short-desc">
-            <p markdown-to-html="mapPopupCtrl.projectDetails.shortDescription">
+        <div ng-show="mapPopupCtrl.projectDetails.shortDescription">
+            <div><strong>Short Description:</strong></div>
+            <div class="popup-short-desc">
+                <p markdown-to-html="mapPopupCtrl.projectDetails.shortDescription"></p>
+            </div>
         </div>
-        </p>
+
     </div>
 </div>
