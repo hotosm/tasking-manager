@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', '$location', '$document', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
+        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController($scope, $location, $document, mapService, searchService, projectMapService, tagService, languageService) {
+    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService) {
 
         var vm = this;
 
@@ -37,9 +37,6 @@
         // Paging
         vm.currentPage = 1;
         vm.pagination = null;
-
-        // Types of mapping dropdown
-        vm.showDropdown = false;
 
         //map legend
         vm.showVectorLegend = false;

@@ -72,7 +72,7 @@
 
         // Messages
         vm.messageSubject = '';
-        vm.messageConten = '';
+        vm.messageContent = '';
         
         activate();
 
