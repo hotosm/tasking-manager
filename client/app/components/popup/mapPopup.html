@@ -21,19 +21,19 @@
             <li ng-show="mapPopupCtrl.projectDetails.percentValidated">
                 {{ mapPopupCtrl.projectDetails.percentValidated }}% validated
             </li>
+            <li ng-show="mapPopupCtrl.projectDetails.projectStatus">
+                <strong>{{ 'Status' | translate}}: </strong>
+                <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'ARCHIVED'">
+                    {{ 'Archived' | translate }}
+                </span>
+                <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'DRAFT'">
+                    {{ 'Draft' | translate }}
+                </span>
+                <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'PUBLISHED'">
+                    {{ 'Published' | translate }}
+                </span>
+            </li>
         </ul>
-        <p ng-show="mapPopupCtrl.projectDetails.projectStatus">
-            <strong>{{ 'Status' | translate}}: </strong>
-            <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'ARCHIVED'">
-                {{ 'Archived' | translate }}
-            </span>
-            <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'DRAFT'">
-                {{ 'Draft' | translate }}
-            </span>
-            <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'PUBLISHED'">
-                {{ 'Published' | translate }}
-            </span>
-        </p>
         <p markdown-to-html="(mapPopupCtrl.projectDetails.shortDescription | limitTo: mapPopupCtrl.characterLimitShortDescription) +
             (mapPopupCtrl.projectDetails.shortDescription.length > mapPopupCtrl.characterLimitShortDescription ? '...' : '')">
         </p>
