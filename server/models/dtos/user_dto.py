@@ -74,6 +74,10 @@ class UserSearchQuery(Model):
     mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])
     page = IntType()
 
+    def __hash__(self):
+        """ Make object hashable so we can cache user searches"""
+        return hash((self.username, self.role, self.mapping_level, self.page))
+
 
 class ListedUser(Model):
     """ Describes a user within the User List """

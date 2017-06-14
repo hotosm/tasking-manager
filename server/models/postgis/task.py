@@ -1,9 +1,10 @@
+import bleach
 import datetime
 import geojson
 from enum import Enum
 from geoalchemy2 import Geometry
-from typing import List
 from server import db
+from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
@@ -50,7 +51,8 @@ class TaskHistory(db.Model):
 
     def set_comment_action(self, comment):
         self.action = TaskAction.COMMENT.name
-        self.action_text = comment
+        clean_comment = bleach.clean(comment)  # Bleach input to ensure no nefarious script tags etc
+        self.action_text = clean_comment
 
     def set_state_change_action(self, new_state):
         self.action = TaskAction.STATE_CHANGE.name
@@ -290,7 +292,6 @@ class Task(db.Model):
     def unlock_task(self, user_id, new_state=None, comment=None):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
-            # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
@@ -314,8 +315,6 @@ class Task(db.Model):
     def reset_lock(self, user_id, comment=None):
         """ Removes a current lock from a task, resets to last status and updates history with duration of lock """
         if comment:
-            # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
-            # TODO send comment as message to user
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         # Using a slightly evil side effect of Actions and Statuses having the same name here :)
