@@ -15,10 +15,14 @@
   background-color: $secondary-color;
 }
 
-.ol-overviewmap {
+.ol-custom-overviewmap {
   left: 0.5em;
   top: 5em;
   bottom: auto;
+}
+
+.ol-custom-overviewmap:not(.ol-collapsed) button{
+  top: 1px;
 }
 
 /* Layer switcher override */
