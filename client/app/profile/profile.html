@@ -77,7 +77,7 @@
                                            placeholder="Email"
                                            type="email"
                                            ng-model="profileCtrl.userDetails.emailAddress"/>
-                                    <span ng-show="profileCtrl.userDetails.isEmailVerified">
+                                    <span ng-show="profileCtrl.userDetails.isEmailVerified && profileCtrl.userDetails.emailAddress">
                                         <i class="hot-ds-icon-sm-tick"></i>
                                     </span>
                                     <span ng-show="profileCtrl.userDetails.emailAddress && !profileCtrl.userDetails.isEmailVerified && !profileCtrl.editDetails">
