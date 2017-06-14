@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
+        .controller('contributeController', ['$scope', '$location', '$document', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService) {
+    function contributeController($scope, $location, $document, mapService, searchService, projectMapService, tagService, languageService) {
 
         var vm = this;
 
@@ -38,6 +38,9 @@
         vm.currentPage = 1;
         vm.pagination = null;
 
+        // Types of mapping dropdown
+        vm.showDropdown = false;
+
         //map legend
         vm.showVectorLegend = false;
         vm.showClusterLegend = true;
@@ -62,12 +65,36 @@
                 vm.showVectorLegend = vm.map.getView().getResolution() < CLUSTER_THRESHOLD_RESOLUTION;
                 vm.showClusterLegend = vm.map.getView().getResolution() >= CLUSTER_THRESHOLD_RESOLUTION;
                 $scope.$apply();
-            })
+            });
             var hoverIdentify = false;
             var clickIdentify = true;
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             setOrganisationTags();
             setCampaignTags();
+
+
+            // Catch clicks and check if it was outside of the menu element. If so, close the dropdown menu.
+            $document.bind('click', function(event){
+                console.log("click");
+                var element = angular.element( document.querySelector( '#typesOfMappingSelector' ) );
+                // TODO!
+
+                var isClickedElementChildOfPopup = element
+                  .find(event.target)
+                  .length > 0;
+                if (isClickedElementChildOfPopup){
+                    console.log("return child element of popup");
+                     return;
+                }
+
+                console.log(element.children()[1]);
+                console.log(event.target);
+                if (element.children()[1] == event.target){
+                    vm.showDropdown = false;
+                }
+                //vm.showDropdown = false;
+                $scope.$apply();
+            });
         }
 
         /**
