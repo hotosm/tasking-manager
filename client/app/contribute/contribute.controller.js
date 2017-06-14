@@ -71,30 +71,6 @@
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             setOrganisationTags();
             setCampaignTags();
-
-
-            // Catch clicks and check if it was outside of the menu element. If so, close the dropdown menu.
-            $document.bind('click', function(event){
-                console.log("click");
-                var element = angular.element( document.querySelector( '#typesOfMappingSelector' ) );
-                // TODO!
-
-                var isClickedElementChildOfPopup = element
-                  .find(event.target)
-                  .length > 0;
-                if (isClickedElementChildOfPopup){
-                    console.log("return child element of popup");
-                     return;
-                }
-
-                console.log(element.children()[1]);
-                console.log(event.target);
-                if (element.children()[1] == event.target){
-                    vm.showDropdown = false;
-                }
-                //vm.showDropdown = false;
-                $scope.$apply();
-            });
         }
 
         /**

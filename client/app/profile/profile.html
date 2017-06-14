@@ -63,76 +63,103 @@
                             </div>
                         </div>
                         <div class="roles pull-right">
-                             <div>
-                                <div ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.userDetails.facebookId || profileCtrl.userDetails.twitterId || profileCtrl.userDetails.linkedinId">
-                                    <h4>Contact details</h4>
-                                </div>
-                                <p>
-                                    <span ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.editDetails">Email (only visible to you):</span>
+                            <form name="profileCtrl.contactDetailsForm">
+                                <div class="form__group">
+                                    <label class="form__label"
+                                           ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.editDetails">
+                                        Email (only visible to you):
+                                    </label>
                                     <span ng-hide="profileCtrl.editDetails">
                                         {{ profileCtrl.userDetails.emailAddress }}
                                     </span>
-                                    <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                    <input ng-show="profileCtrl.editDetails" size="30"
                                            class="form__control form__control__inline"
                                            placeholder="Email"
-                                           ng-model="profileCtrl.userDetails.emailAddress" />
+                                           type="email"
+                                           ng-model="profileCtrl.userDetails.emailAddress"/>
                                     <span ng-show="profileCtrl.userDetails.isEmailVerified">
                                         <i class="hot-ds-icon-sm-tick"></i>
                                     </span>
                                     <span ng-show="profileCtrl.userDetails.emailAddress && !profileCtrl.userDetails.isEmailVerified && !profileCtrl.editDetails">
-                                        <button class="button button--achromic button--small" ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
+                                        <button class="button button--achromic button--small"
+                                                ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
                                     </span>
-                                </p>
-                                <p>
-                                    <span ng-show="profileCtrl.userDetails.facebookId || profileCtrl.editDetails">Facebook:</span>
-                                    <a ng-hide="profileCtrl.editDetails" href="http://www.facebook.com/{{ profileCtrl.userDetails.facebookId }}" target="_blank">
+                                </div>
+                                <div class="form__group">
+                                    <label class="form__label"
+                                           ng-show="profileCtrl.userDetails.facebookId || profileCtrl.editDetails">Facebook:</label>
+                                    <a ng-hide="profileCtrl.editDetails"
+                                       href="http://www.facebook.com/{{ profileCtrl.userDetails.facebookId }}"
+                                       target="_blank">
                                         {{ profileCtrl.userDetails.facebookId }}
                                     </a>
                                     <input ng-show="profileCtrl.editDetails" type="text" size="30"
                                            class="form__control form__control__inline"
                                            placeholder="Facebook ID (e.g. hotosm)"
-                                           ng-model="profileCtrl.userDetails.facebookId" />
-                                </p>
-                                <p>
-                                    <span ng-show="profileCtrl.userDetails.twitterId || profileCtrl.editDetails">Twitter:</span>
-                                    <a ng-hide="profileCtrl.editDetails" href="http://www.twitter.com/{{ profileCtrl.userDetails.twitterId }}" target="_blank">
+                                           ng-model="profileCtrl.userDetails.facebookId"/>
+                                </div>
+                                <div class="form__group">
+                                    <label class="form__label"
+                                           ng-show="profileCtrl.userDetails.twitterId || profileCtrl.editDetails">Twitter:</label>
+                                    <a ng-hide="profileCtrl.editDetails"
+                                       href="http://www.twitter.com/{{ profileCtrl.userDetails.twitterId }}"
+                                       target="_blank">
                                         {{ profileCtrl.userDetails.twitterId }}
                                     </a>
                                     <input ng-show="profileCtrl.editDetails" type="text" size="30"
                                            class="form__control form__control__inline"
                                            placeholder="Twitter ID (e.g. hotosm)"
-                                           ng-model="profileCtrl.userDetails.twitterId" />
-                                </p>
-                                <p>
-                                    <span ng-show="profileCtrl.userDetails.linkedinId || profileCtrl.editDetails">LinkedIn:</span>
-                                    <a ng-hide="profileCtrl.editDetails" href="http://www.linkedin.com/in{{ profileCtrl.userDetails.linkedinId }}" target="_blank">
+                                           ng-model="profileCtrl.userDetails.twitterId"/>
+                                </div>
+                                <div>
+                                    <label class="form__label"
+                                           ng-show="profileCtrl.userDetails.linkedinId || profileCtrl.editDetails">LinkedIn:</label>
+                                    <a ng-hide="profileCtrl.editDetails"
+                                       href="http://www.linkedin.com/in/{{ profileCtrl.userDetails.linkedinId }}"
+                                       target="_blank">
                                         {{ profileCtrl.userDetails.linkedinId }}
                                     </a>
                                     <input ng-show="profileCtrl.editDetails" type="text" size="30"
                                            class="form__control form__control__inline"
                                            placeholder="LinkedIn ID (personal)"
-                                           ng-model="profileCtrl.userDetails.linkedinId" />
-                                </p>
-                                <p ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
-                                    <button class="button button--achromic" type="button" ng-click="profileCtrl.editDetails = !profileCtrl.editDetails" ng-show="!profileCtrl.editDetails">
+                                           ng-model="profileCtrl.userDetails.linkedinId"/>
+                                </div>
+                                <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
+                                    <button class="button button--achromic" type="button"
+                                            ng-click="profileCtrl.editDetails = !profileCtrl.editDetails"
+                                            ng-show="!profileCtrl.editDetails">
                                         <i class="hot-ds-icon-pencil" title="Edit Twitter URL"></i>
-                                        <span>Add/edit contact details</span>
+                                        <span>{{ 'Add/edit contact details' | translate}}</span>
                                     </button>
-                                    <button class="button button--achromic" type="button" ng-click="profileCtrl.setContactDetails()" ng-show="profileCtrl.editDetails">
+                                    <button class="button button--achromic" type="button"
+                                            ng-click="profileCtrl.setContactDetails()"
+                                            ng-disabled="profileCtrl.contactDetailsForm.$invalid"
+                                            ng-show="profileCtrl.editDetails">
                                         <i class="hot-ds-icon-tick" title="Save edits"></i>
-                                        <span>Save</span>
+                                        <span>{{ 'Save' | translate }}</span>
                                     </button>
-                                    <button class="button button--achromic" type="button" ng-click="profileCtrl.editDetails = false" ng-show="profileCtrl.editDetails">
+                                    <button class="button button--achromic" type="button"
+                                            ng-click="profileCtrl.editDetails = false"
+                                            ng-show="profileCtrl.editDetails">
                                         <i class="hot-ds-icon-xmark" title="Cancel edits"></i>
-                                        <span>Cancel</span>
+                                        <span>{{ 'Cancel' | translate }}</span>
                                     </button>
-                                    <p ng-show="profileCtrl.errorSetContactDetails" class="error">An error occurred when setting your contact details.</p>
-                                    <p ng-show="profileCtrl.errorVerificationEmailSent" class="error">An error occurred when sending your verification email.</p>
-                                    <p ng-show="profileCtrl.verificationEmailSent">A verification email was sent.</p>
-                                </p>
-                                 <hr ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.userDetails.facebookId || profileCtrl.userDetails.twitterId || profileCtrl.userDetails.linkedinId"/>
-                            </div>
-                            <div>
+                                    <p ng-show="!profileCtrl.contactDetailsForm.$valid" class="error">
+                                        {{ 'Not a valid email address' | translate }}
+                                    </p>
+                                    <p ng-show="profileCtrl.errorSetContactDetails" class="error">
+                                        {{ 'Error: setting your contact details' | translate }}
+                                    </p>
+                                    <p ng-show="profileCtrl.errorVerificationEmailSent" class="error">
+                                        {{ 'Error: sending your verification email' }}
+                                    </p>
+                                    <p ng-show="profileCtrl.verificationEmailSent">
+                                        {{ 'A verification email was sent.' | translate }}
+                                    </p>
+                                    <hr ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.userDetails.facebookId || profileCtrl.userDetails.twitterId || profileCtrl.userDetails.linkedinId"/>
+                                </div>
+                            </form>
+                            <div class="form__group">
                                 <!-- Someone else's profile -->
                                 <div ng-hide="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
                                     <div ng-show="profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER' || profileCtrl.currentlyLoggedInUser.role === 'ADMIN'">
