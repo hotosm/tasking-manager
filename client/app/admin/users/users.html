@@ -70,9 +70,18 @@
                         <div class="results">
                             <div ng-show="usersCtrl.errorGetUsers" class="error">
                                 {{ 'Error: cannot get user list' | translate }}
+                                  <div ng-show="usersCtrl.locale === 'en'">
+                                    {{ 'Total number of users:' | translate }} {{ '123456'| number : fractionSize}}
+                                </div>
+                                <div ng-show="usersCtrl.locale !== 'en'">
+                                    {{ 'Total number of users:' | translate }} {{ '123456' }}
+                                </div>
                             </div>
                             <div ng-show="!usersCtrl.errorGetUsers">
-                                <div>
+                                <div ng-show="usersCtrl.locale === 'en'">
+                                    {{ 'Total number of users:' | translate }} {{ usersCtrl.pagination.total | number : fractionSize}}
+                                </div>
+                                <div ng-show="usersCtrl.locale !== 'en'">
                                     {{ 'Total number of users:' | translate }} {{ usersCtrl.pagination.total }}
                                 </div>
                                 <div class="results-table-container">

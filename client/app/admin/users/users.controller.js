@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('usersController', ['$location', 'userService', usersController]);
+        .controller('usersController', ['$scope', '$location', '$translate', 'userService', 'languageService', usersController]);
 
-    function usersController($location, userService) {
+    function usersController($scope, $location, $translate, userService, languageService) {
         var vm = this;
 
         // Filter
@@ -31,13 +31,24 @@
         // Error
         vm.errorGetUsers = false;
         
+        // Locale
+        vm.locale = 'en';
+        
         vm.users = [];
         
         activate();
 
         function activate() {
             getUsers(1, '', '', '');
+            vm.locale = $translate.use();
         }
+
+         // Watch the languageService for change in language and update the locale when needed
+        $scope.$watch(function () {
+            return languageService.getLanguageCode();
+        }, function () {
+            vm.locale = $translate.use();
+        }, true);
         
         /**
          * Gets users after changing the search parameter 

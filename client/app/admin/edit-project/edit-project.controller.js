@@ -69,6 +69,10 @@
         vm.invalidateTasksSuccess = false;
         vm.validateTasksFail = false;
         vm.validateTasksSuccess = false;
+
+        // Messages
+        vm.messageSubject = '';
+        vm.messageConten = '';
         
         activate();
 
@@ -405,17 +409,19 @@
          * @param subject
          * @param message
          */
-        vm.sendMessage = function(subject, message){
+        vm.sendMessage = function(){
             vm.sendMessageInProgress = true;
             vm.sendMessageFail = false;
             vm.sendMessageSuccess = false;
-            messageSubject, messageContent
             var resultsPromise = messageService.messageAll(vm.project.projectId, vm.messageSubject, vm.messageContent);
             resultsPromise.then(function(){
                 // Messages sent successfully
                 vm.sendMessageFail = false;
                 vm.sendMessageSuccess = true;
                 vm.sendMessageInProgress = false;
+                vm.messageSubject = '';
+                vm.messageContent = '';
+                vm.showMessageContributorsModal = false;
             }, function(){
                 // Messages not sent successfully
                 vm.sendMessageFail = true;
