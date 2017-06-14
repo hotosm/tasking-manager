@@ -44,7 +44,7 @@
          * @param mapForProjects - OL map
          */
         function initialise(mapForProjects, clusterThresholdResolution) {
-            if (clusterThresholdResolution) clusterThresholdResolution_ = clusterThresholdResolution;
+            clusterThresholdResolution_ = clusterThresholdResolution ? clusterThresholdResolution: null;
             map = mapForProjects;
             addProjectsVectorLayer_();
             addHighlightsVectorLayer_();
