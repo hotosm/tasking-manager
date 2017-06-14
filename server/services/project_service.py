@@ -62,7 +62,6 @@ class ProjectService:
     @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):
         """ Check if the user is allowed to map the on the project in scope """
-        # TODO check if allowed user for private project
         project = ProjectService.get_project_by_id(project_id)
 
         if ProjectStatus(project.status) != ProjectStatus.PUBLISHED:
