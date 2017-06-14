@@ -122,6 +122,7 @@
                                     <input ng-show="profileCtrl.editDetails" type="text" size="30"
                                            class="form__control form__control__inline"
                                            placeholder="LinkedIn ID (personal)"
+                                           title="{{ 'Your ID is the part after https://www.linkedin.com/in/....' | translate}}"
                                            ng-model="profileCtrl.userDetails.linkedinId"/>
                                 </div>
                                 <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
