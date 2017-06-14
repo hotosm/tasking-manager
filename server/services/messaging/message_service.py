@@ -104,7 +104,7 @@ class MessageService:
     @staticmethod
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
         """ Send alert to user if they were @'d in a chat message """
-
+        current_app.logger.debug('Sending Message After Chat')
         usernames = MessageService._parse_message_for_username(chat)
 
         if len(usernames) == 0:
@@ -113,7 +113,7 @@ class MessageService:
         link = MessageService.get_project_link(project_id)
 
         for username in usernames:
-
+            current_app.logger.debug(f'Searching for {username}')
             try:
                 user = UserService.get_user_by_username(username)
             except NotFound:
