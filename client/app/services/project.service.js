@@ -50,7 +50,8 @@
             userCanMapProject: userCanMapProject,
             userCanValidateProject: userCanValidateProject,
             getMyProjects: getMyProjects,
-            trimTaskGrid: trimTaskGrid
+            trimTaskGrid: trimTaskGrid,
+            getProjectSummary: getProjectSummary
         };
 
         return service;
@@ -652,6 +653,34 @@
                 return $q.reject(reason);
             });
 
+        }
+
+ /**
+         * Get a project summary JSON
+         * @param id - project id
+         * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function getProjectSummary(id) {
+
+            var preferredLanguage = languageService.getLanguageCode();
+
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + id + '/summary',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Accept-Language': preferredLanguage
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
         }
     }
 })();
