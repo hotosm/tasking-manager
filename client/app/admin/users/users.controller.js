@@ -28,6 +28,9 @@
         vm.username = '';
         vm.page = 1;
         
+        // Error
+        vm.errorGetUsers = false;
+        
         vm.users = [];
         
         activate();
@@ -59,6 +62,7 @@
          * @returns {!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
          */
         function getUsers(page, role, level, username){
+            vm.errorGetUsers = false;
             var pageParam = page || 1;
             var roleParam = role || '';
             var levelParam = level || '';
@@ -70,6 +74,7 @@
                 vm.pagination = data.pagination;
             }, function(){
                 // On error
+                vm.errorGetUsers = true;
             });
         }
 

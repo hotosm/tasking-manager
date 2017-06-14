@@ -409,7 +409,8 @@
             vm.sendMessageInProgress = true;
             vm.sendMessageFail = false;
             vm.sendMessageSuccess = false;
-            var resultsPromise = messageService.messageAll(vm.project.projectId, subject, message);
+            messageSubject, messageContent
+            var resultsPromise = messageService.messageAll(vm.project.projectId, vm.messageSubject, vm.messageContent);
             resultsPromise.then(function(){
                 // Messages sent successfully
                 vm.sendMessageFail = false;
