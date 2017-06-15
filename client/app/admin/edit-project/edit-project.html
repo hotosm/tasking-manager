@@ -692,8 +692,8 @@
                 <p>
                     {{ 'This will send a Tasking Manager message to every contributor of the current project. Please use this feature carefully.' | translate }}
                 </p>
-                <input type="text" class="form__control" ng-model="messageSubject" placeholder="{{ 'Subject' | translate }}*" />
-                <textarea class="form__control" rows="4" ng-model="messageContent" placeholder="{{ 'Message' | translate }}*"></textarea>
+                <input type="text" class="form__control" ng-model="editProjectCtrl.messageSubject" placeholder="{{ 'Subject' | translate }}*" />
+                <textarea class="form__control" rows="4" ng-model="editProjectCtrl.messageContent" placeholder="{{ 'Message' | translate }}*"></textarea>
                 <p>
                     {{ 'This message is not translated to the selected language of the user, so you may want to include your own translations.' | translate }}
                 </p>
@@ -711,7 +711,7 @@
                         ng-click="editProjectCtrl.showMessageContributors(false)">{{ 'Cancel' | translate }}
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.sendMessage(messageSubject, messageContent)">{{ 'Message all contributors' | translate }}
+                        ng-click="editProjectCtrl.sendMessage()">{{ 'Message all contributors' | translate }}
                 </button>
                 <span ng-show="editProjectCtrl.sendMessageInProgress">{{ 'Sending...' | translate }}</span>
             </div>

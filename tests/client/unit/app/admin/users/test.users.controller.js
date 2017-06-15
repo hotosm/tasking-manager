@@ -1,13 +1,14 @@
 'use strict';
 
 describe('users.controller', function () {
-    var usersController = null;
+    var usersController, scope = null;
 
     beforeEach(function () {
         module('taskingManager');
 
-        inject(function ($controller) {
-            usersController = $controller('usersController');
+        inject(function ($controller, $rootScope) {
+            scope = $rootScope.$new();
+            usersController = $controller('usersController', {$scope: scope});
         });
     });
 

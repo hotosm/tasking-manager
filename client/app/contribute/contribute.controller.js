@@ -62,7 +62,7 @@
                 vm.showVectorLegend = vm.map.getView().getResolution() < CLUSTER_THRESHOLD_RESOLUTION;
                 vm.showClusterLegend = vm.map.getView().getResolution() >= CLUSTER_THRESHOLD_RESOLUTION;
                 $scope.$apply();
-            })
+            });
             var hoverIdentify = false;
             var clickIdentify = true;
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);

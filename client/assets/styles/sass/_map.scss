@@ -15,10 +15,14 @@
   background-color: $secondary-color;
 }
 
-.ol-overviewmap {
+.ol-custom-overviewmap {
   left: 0.5em;
   top: 5em;
   bottom: auto;
+}
+
+.ol-custom-overviewmap:not(.ol-collapsed) button{
+  top: 1px;
 }
 
 /* Layer switcher override */
@@ -71,6 +75,10 @@
   z-index: 5;
 }
 
+.legend-control-offset {
+  bottom: 6.5em;
+}
+
 .priority-areas {
   left: 10em !important;
 }
@@ -121,6 +129,7 @@
   position: absolute;
   top: 2px;
   right: 8px;
+  color: black !important;
 }
 .ol-popup-closer:after {
   content: "x";

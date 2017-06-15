@@ -50,6 +50,9 @@
         vm.errorMessageAdded = false;
         vm.errorGetMessages = false;
         vm.errorAddPMUsername = false;
+
+        //interval timer promise for autorefresh
+        var autoRefresh = undefined;
         
          /**
          * Watches the selected feature
@@ -64,10 +67,20 @@
             vm.author = authorName;
         });
 
-        //start up a timer for autorefreshing the chat.
-        $interval(function () {
+        //start up a timer for getting the chat messages
+        autoRefresh = $interval(function () {
             getChatMessages();
         }, 10000);
+
+           // listen for navigation away from the page event and stop the autrefresh timer
+        $scope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
+            if (oldUrl.indexOf($location.path()) == -1) { //check that we are navigating away from the page
+                if (angular.isDefined(autoRefresh)) {
+                    $interval.cancel(autoRefresh);
+                    autoRefresh = undefined;
+                }
+            }
+        });
 
         /**
          * Get chat messages
