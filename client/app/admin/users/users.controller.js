@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('usersController', ['$location', 'userService', usersController]);
+        .controller('usersController', ['$scope', '$location', '$translate', 'userService', 'languageService', usersController]);
 
-    function usersController($location, userService) {
+    function usersController($scope, $location, $translate, userService, languageService) {
         var vm = this;
 
         // Filter
@@ -28,13 +28,27 @@
         vm.username = '';
         vm.page = 1;
         
+        // Error
+        vm.errorGetUsers = false;
+        
+        // Locale
+        vm.locale = 'en';
+        
         vm.users = [];
         
         activate();
 
         function activate() {
             getUsers(1, '', '', '');
+            vm.locale = $translate.use();
         }
+
+         // Watch the languageService for change in language and update the locale when needed
+        $scope.$watch(function () {
+            return languageService.getLanguageCode();
+        }, function () {
+            vm.locale = $translate.use();
+        }, true);
         
         /**
          * Gets users after changing the search parameter 
@@ -59,6 +73,7 @@
          * @returns {!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
          */
         function getUsers(page, role, level, username){
+            vm.errorGetUsers = false;
             var pageParam = page || 1;
             var roleParam = role || '';
             var levelParam = level || '';
@@ -70,6 +85,7 @@
                 vm.pagination = data.pagination;
             }, function(){
                 // On error
+                vm.errorGetUsers = true;
             });
         }
 

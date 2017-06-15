@@ -239,6 +239,38 @@
             <div class="section__body">
                 <div class="inner">
                     <div id="map" class="map-container">
+                        <div class="legend-control ol-control legend-control-offset">
+                            <h3>{{ 'Legend' | translate }}</h3>
+                            <div>
+                                <div>
+                                    <svg height="25" width="25">
+                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                stroke-width="1"
+                                                fill="blue"
+                                                fill-opacity="0.5"/>
+                                    </svg>
+                                    {{ 'Draft' | translate }}
+                                </div>
+                                <div>
+                                    <svg height="25" width="25">
+                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                stroke-width="1"
+                                                fill="red"
+                                                fill-opacity="0.5"/>
+                                    </svg>
+                                    {{ 'Published' | translate }}
+                                </div>
+                                <div>
+                                    <svg height="25" width="25">
+                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                stroke-width="1"
+                                                fill="black"
+                                                fill-opacity="0.5"/>
+                                    </svg>
+                                    {{ 'Archived' | translate }}
+                                </div>
+                            </div>
+                        </div>
                         <div class="show-other-projects">
                             <show-project-aois your-projects='true'></show-project-aois>
                         </div>

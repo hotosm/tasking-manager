@@ -110,6 +110,7 @@
         function addOverviewMap(){
             var restrictedResolution = map.getView().getMaxResolution();
             var overviewMapControl = new ol.control.OverviewMap({
+                className: 'ol-overviewmap ol-custom-overviewmap',
                 view: new ol.View({
                     resolutions: [restrictedResolution]
                 })

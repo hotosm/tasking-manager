@@ -31,7 +31,8 @@
         // pressed the resent verification email button
         vm.verificationEmailSent = false;
 
-        // Edit user details
+        // User details
+        vm.contactDetailsForm = {};
         vm.editDetails = false;
         
         // mapper levels
@@ -134,25 +135,27 @@
          * Set contact details
          */
         vm.setContactDetails = function(){
-            vm.errorSetContactDetails = false;
-            var contactDetails = {
-                emailAddress: vm.userDetails.emailAddress,
-                facebookId: vm.userDetails.facebookId,
-                linkedinId: vm.userDetails.linkedinId,
-                twitterId: vm.userDetails.twitterId
-            };
-            var resultsPromise = userService.setContactDetails(contactDetails);
-            resultsPromise.then(function (data) {
-                // Successfully saved
+            if (vm.contactDetailsForm.$valid){
+                vm.errorSetContactDetails = false;
+                var contactDetails = {
+                    emailAddress: vm.userDetails.emailAddress,
+                    facebookId: vm.userDetails.facebookId,
+                    linkedinId: vm.userDetails.linkedinId,
+                    twitterId: vm.userDetails.twitterId
+                };
+                var resultsPromise = userService.setContactDetails(contactDetails);
+                resultsPromise.then(function (data) {
+                    // Successfully saved
+                    vm.editDetails = false;
+                    vm.verificationEmailSent = data.verificationEmailSent;
+                    getUser();
+                }, function () {
+                    vm.editDetails = false;
+                    vm.errorSetContactDetails = true;
+                    getUser();
+                });
                 vm.editDetails = false;
-                vm.verificationEmailSent = data.verificationEmailSent;
-                getUser();
-            }, function () {
-                vm.editDetails = false;
-                vm.errorSetContactDetails = true;
-                getUser();
-            });
-            vm.editDetails = false;
+            }
         };
 
         /**
