@@ -57,7 +57,7 @@
                 chartColors: ['#AC3232', '#DCDCDC', '#7A7A7A', '#595959']
             });
 
-            // Set showdowns default options
+            // Set showdown's default options
             showdown.setOption('openLinksInNewWindow', true);
 
             $routeProvider
