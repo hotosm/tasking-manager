@@ -1,4 +1,5 @@
 import bleach
+from flask import current_app
 from server import db
 from server.models.postgis.user import User
 from server.models.postgis.utils import timestamp, NotFound
@@ -20,6 +21,7 @@ class ProjectChat(db.Model):
     @classmethod
     def create_from_dto(cls, dto: ChatMessageDTO):
         """ Creates a new ProjectInfo class from dto, used from project edit """
+        current_app.logger.debug('Create chat message from DTO')
         new_message = cls()
         new_message.project_id = dto.project_id
         new_message.user_id = dto.user_id

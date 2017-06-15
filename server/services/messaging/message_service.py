@@ -66,6 +66,10 @@ class MessageService:
         """ Sends supplied message to all contributors on specified project """
         contributors = Message.get_all_contributors(project_id)
 
+        project_link = MessageService.get_project_link(project_id)
+
+        message_dto.message = f'{project_link}<br/><br/>' + message_dto.message  # Append project link to end of message
+
         for contributor in contributors:
             message = Message.from_dto(contributor[0], message_dto)
             message.save()
@@ -100,16 +104,16 @@ class MessageService:
     @staticmethod
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
         """ Send alert to user if they were @'d in a chat message """
-
+        current_app.logger.debug('Sending Message After Chat')
         usernames = MessageService._parse_message_for_username(chat)
 
         if len(usernames) == 0:
             return  # Nobody @'d so return
 
-        link = MessageService.get_chat_link(project_id)
+        link = MessageService.get_project_link(project_id)
 
         for username in usernames:
-
+            current_app.logger.debug(f'Searching for {username}')
             try:
                 user = UserService.get_user_by_username(username)
             except NotFound:
@@ -198,7 +202,7 @@ class MessageService:
         return link
 
     @staticmethod
-    def get_chat_link(project_id: int, base_url=None) -> str:
+    def get_project_link(project_id: int, base_url=None) -> str:
         """ Helper method to generate a link to project chat"""
         if not base_url:
             base_url = current_app.config['APP_BASE_URL']

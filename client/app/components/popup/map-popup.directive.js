@@ -46,14 +46,14 @@
         $scope.$watch('mapPopupCtrl.selectedFeature', function(data) {
 
             vm.feature = data;
-            vm.projectDetails.projectId = vm.feature.projectId;
-            vm.projectDetails.projectName = vm.feature.projectInfo.name;
-            vm.projectDetails.mapperLevel = vm.feature.mapperLevel;
-            vm.projectDetails.organisationTag = vm.feature.organisationTag;
-            vm.projectDetails.shortDescription = vm.feature.projectInfo.shortDescription;
-            vm.projectDetails.percentMapped = vm.feature.percentMapped;
-            vm.projectDetails.percentValidated = vm.feature.percentValidated;
-            vm.projectDetails.projectStatus = vm.feature.projectStatus;
+            vm.projectDetails.projectId = data.projectId;
+            vm.projectDetails.projectName = data.name;
+            vm.projectDetails.mapperLevel = data.mapperLevel;
+            vm.projectDetails.organisationTag = data.organisationTag;
+            vm.projectDetails.shortDescription = data.shortDescription;
+            vm.projectDetails.percentMapped = data.percentMapped;
+            vm.projectDetails.percentValidated = data.percentValidated;
+            vm.projectDetails.projectStatus = data.status;
         });
 
         vm.close = function(){

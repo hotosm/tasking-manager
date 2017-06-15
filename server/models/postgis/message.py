@@ -1,4 +1,5 @@
 from server import db
+from flask import current_app
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.postgis.user import User
 from server.models.postgis.utils import timestamp
@@ -47,6 +48,7 @@ class Message(db.Model):
 
     def add_message(self):
         """ Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
+        current_app.logger.debug('Adding message to session')
         db.session.add(self)
 
     def save(self):

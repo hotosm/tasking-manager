@@ -66,26 +66,17 @@ class User(db.Model):
         """ Search and filter all users """
 
         # Base query that applies to all searches
-        base = db.session.query(User.username, User.mapping_level, User.role).order_by(User.username)
+        base = db.session.query(User.username, User.mapping_level, User.role)
 
         # Add filter to query as required
-        if query.mapping_level and query.username is None and query.role is None:
+        if query.mapping_level:
             base = base.filter(User.mapping_level == MappingLevel[query.mapping_level.upper()].value)
-        elif query.mapping_level is None and query.username and query.role is None:
+        if query.username:
             base = base.filter(User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level is None and query.username is None and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value).order_by(User.username)
-        elif query.mapping_level and query.username and query.role is None:
-            base = base.filter(User.mapping_level == MappingLevel[query.mapping_level.upper()].value,
-                               User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level is None and query.username and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value,
-                               User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level and query.username is None and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value,
-                               User.mapping_level == MappingLevel[query.mapping_level.upper()].value)
+        if query.role:
+            base = base.filter(User.role == UserRole[query.role.upper()].value)
 
-        results = base.paginate(query.page, 20, True)
+        results = base.order_by(User.username).paginate(query.page, 20, True)
 
         dto = UserSearchDTO()
         for result in results.items:

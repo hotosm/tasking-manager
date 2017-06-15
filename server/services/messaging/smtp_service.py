@@ -35,6 +35,7 @@ class SMTPService:
     @staticmethod
     def send_email_alert(to_address: str, username: str):
         """ Send an email to user to alert them they have a new message"""
+        current_app.logger.debug(f'Test if email required {to_address}')
         if not to_address:
             return False  # Many users will not have supplied email address so return
 
@@ -71,8 +72,11 @@ class SMTPService:
         msg.attach(part2)
 
         sender = SMTPService._init_smtp_client()
+
+        current_app.logger.debug(f'Sending email via SMTP {to_address}')
         sender.sendmail(from_address, to_address, msg.as_string())
         sender.quit()
+        current_app.logger.debug(f'Email sent {to_address}')
 
     @staticmethod
     def _init_smtp_client():
