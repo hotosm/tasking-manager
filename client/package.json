@@ -53,7 +53,7 @@
     "react-dom": "^15.4.2",
     "react-tether": "^0.5.5",
     "run-sequence": "^1.2.2",
-    "showdown": "^1.6.4",
+    "showdown": "^1.7.1",
     "turf": "^3.0.14"
   }
 }
