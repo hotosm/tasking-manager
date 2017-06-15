@@ -1,13 +1,3 @@
-# Security Notice
-
-There is a known SECURITY VULNERABILITY in the current release and previous releases of this software. Please contact info@hotosm.org for information on how to fix this vulnerability if you have it deployed publicly.
-
-We will fix the vulnerability in the code in this GitHub repository in the next 2 weeks (by May 29th, 2017) but are giving current users of the software time to implement the fix before releasing it publicly.
-
-If you have a public installation of the software, please email info at hotosm.org for information on how to fix the bug.
-
-Please delay downloading and installing the current version of the software on a public server until the fix is merged into this repository.
-
 # OpenStreetMap Tasking Manager
 
 [![Build Status](https://travis-ci.org/hotosm/osm-tasking-manager2.svg?branch=master)](https://travis-ci.org/hotosm/osm-tasking-manager2)
@@ -99,12 +89,12 @@ You need to make the following changes to the osmtm/views/osmauth.py file.
     import httplib2
     httplib2.debuglevel = 4
     PROXY = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, 'PROXY-SERVER', PROXY-PORT)
-    
-NOTE: Replace the PROXY-SERVER with your proxy server address and PROXY-PORT with the port number on which your proxy is established. 
-    
-    # then add "proxy_info=PROXY" for every line in oauth.Client. 
+
+NOTE: Replace the PROXY-SERVER with your proxy server address and PROXY-PORT with the port number on which your proxy is established.
+
+    # then add "proxy_info=PROXY" for every line in oauth.Client.
     client = oauth.Client(consumer, proxy_info=PROXY)
-    
+
     client = oauth.Client(consumer, token, proxy_info=PROXY)
 
 Replace the host address in the development.ini file with your IP address of the system.

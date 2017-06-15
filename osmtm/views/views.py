@@ -152,7 +152,11 @@ def get_projects(request, items_per_page):
         filter = and_(Project.status != Project.status_archived, filter)
 
     sort_by = 'project.%s' % request.params.get('sort_by', 'priority')
+    if sort_by not in ['project.priority', 'project.created', 'project.last_update']:
+        sort_by = 'project.priority'
     direction = request.params.get('direction', 'asc')
+    if direction not in ['asc', 'desc']:
+        direction = 'asc
     direction_func = getattr(sqlalchemy, direction, None)
     sort_by = direction_func(sort_by)
 
