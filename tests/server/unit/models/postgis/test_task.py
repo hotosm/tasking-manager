@@ -5,7 +5,6 @@ from server.models.postgis.task import InvalidGeoJson, InvalidData, Task, TaskAc
 
 
 class TestTask(unittest.TestCase):
-
     def setUp(self):
         self.app = create_app()
         self.ctx = self.app.app_context()
@@ -64,6 +63,19 @@ class TestTask(unittest.TestCase):
 
         # Assert
         self.assertEqual(instructions, 'Test Url is http://test.com/1/2/3')
+
+    def test_per_task_instructions_with_underscores_formatted_correctly(self):
+        test_task = Task()
+        test_task.x = 1
+        test_task.y = 2
+        test_task.zoom = 3
+        test_task.splittable = True
+
+        # Act
+        instructions = test_task.format_per_task_instructions('Test Url is http://test.com/{x}_{y}_{z}')
+
+        # Assert
+        self.assertEqual(instructions, 'Test Url is http://test.com/1_2_3')
 
     def test_per_task_instructions_warning_returned_on_clipped_grids(self):
         # Arrange
