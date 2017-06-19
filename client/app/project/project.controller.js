@@ -1132,7 +1132,7 @@
                 var emptyOSMLayerParams = {
                     new_layer: true,
                     mime_type: 'application/x-osm+xml',
-                    layer_name: 'OSM Data layer for validation',
+                    layer_name: 'OSM Data',
                     data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
                 }
                 var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
