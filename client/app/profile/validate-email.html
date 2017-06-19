@@ -3,7 +3,7 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    Email verification
+                    {{ 'Email verification' | translate }}
                 </h1>
             </div>
         </header>
@@ -11,10 +11,10 @@
             <div class="section__body">
                 <div class="inner">
                     <p ng-show="validateEmailCtrl.isValidEmail">
-                        Thank you for verifying your email.
+                        {{ 'Thank you for verifying your email.' | translate }}
                     </p>
                     <p ng-hide="validateEmailCtrl.isValidEmail">
-                        Something went wrong when verifying your email.
+                        {{ 'Something went wrong when verifying your email.' | translate }}
                     </p>
                 </div>
             </div>

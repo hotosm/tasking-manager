@@ -4,7 +4,7 @@
                ng-model="visible"
                ng-disabled="showProjectAoisCtrl.currentResolution > showProjectAoisCtrl.otherProjectMaxResolution"
                ng-change="showProjectAoisCtrl.toggleOtherProjectAreasLayer()" />
-        Toggle the Area of Interest of projects
+        {{ 'Toggle the Area of Interest of existing projects' | translate }}
     </label>
-    <p ng-show="showProjectAoisCtrl.errorLoadingExistingProjects" class="error">Error loading the projects</p>
+    <p ng-show="showProjectAoisCtrl.errorLoadingExistingProjects" class="error">{{ 'Error loading the projects' | translate }}</p>
 </div>
