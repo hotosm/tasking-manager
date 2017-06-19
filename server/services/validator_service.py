@@ -34,11 +34,11 @@ class ValidatorService:
             if task is None:
                 raise NotFound(f'Task {task_id} not found')
 
-            if TaskStatus(task.task_status) not in [TaskStatus.MAPPED, TaskStatus.VALIDATED]:
-                raise ValidatatorServiceError(f'Task {task_id} is not MAPPED or VALIDATED')
+            if TaskStatus(task.task_status) not in [TaskStatus.MAPPED, TaskStatus.VALIDATED, TaskStatus.BADIMAGERY]:
+                raise ValidatatorServiceError(f'Task {task_id} is not MAPPED, BADIMAGERY or VALIDATED')
 
             if not ValidatorService._user_can_validate_task(validation_dto.user_id, task.mapped_by):
-                raise ValidatatorServiceError(f'Tasks cannot be mapped and validated by the same user')
+                raise ValidatatorServiceError(f'Tasks cannot be validated by the same user who marked task as mapped or badimagery')
 
             tasks_to_lock.append(task)
 
