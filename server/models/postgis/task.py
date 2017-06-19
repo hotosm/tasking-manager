@@ -237,7 +237,7 @@ class Task(db.Model):
 
     def is_mappable(self):
         """ Determines if task in scope is in suitable state for mapping """
-        if TaskStatus(self.task_status) not in [TaskStatus.READY, TaskStatus.INVALIDATED, TaskStatus.BADIMAGERY]:
+        if TaskStatus(self.task_status) not in [TaskStatus.READY, TaskStatus.INVALIDATED]:
             return False
 
         return True
@@ -296,7 +296,7 @@ class Task(db.Model):
 
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
 
-        if new_state == TaskStatus.MAPPED and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
+        if new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY] and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
             # Don't set mapped if state being set back to mapped after validation
             self.mapped_by = user_id
         elif new_state == TaskStatus.VALIDATED:
