@@ -46,7 +46,7 @@ INSERT INTO hotnew.users_licenses ("user", license)
 -- PROJECTS
 -- Transfer project data, all projects set to mapper level beginner
 -- Skipped projects with null author_id
-INSERT INTO public.projects(
+INSERT INTO hotnew.projects(
             id, status, created, priority, default_locale, author_id,
             mapper_level, enforce_mapper_level, enforce_validator_role, private,
             entities_to_map, changeset_comment, due_date, imagery, josm_preset,
