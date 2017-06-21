@@ -1091,7 +1091,6 @@
                     if (!isEmptyTaskLayerSuccess) {
                         //warn that JSOM couldn't be started
                         vm.editorStartError = 'josm-error';
-                        return;
                     }
 
                     //load task square(s) into JOSM
@@ -1103,7 +1102,6 @@
                     if (!isTaskImportSuccess) {
                         //warn that JSOM couldn't be started
                         vm.editorStartError = 'josm-error';
-                        return;
                     }
                 }
 
@@ -1139,8 +1137,8 @@
                 if (!isEmptyOSMLayerSuccess) {
                     //warn that JSOM couldn't be started
                     vm.editorStartError = 'josm-error';
-                    return;
                 }
+
                 var loadAndZoomParams = {
                     left: extentTransformed[0],
                     bottom: extentTransformed[1],
