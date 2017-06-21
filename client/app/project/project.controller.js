@@ -1091,7 +1091,6 @@
                     if (!isEmptyTaskLayerSuccess) {
                         //warn that JSOM couldn't be started
                         vm.editorStartError = 'josm-error';
-                        return;
                     }
 
                     //load task square(s) into JOSM
@@ -1103,7 +1102,6 @@
                     if (!isTaskImportSuccess) {
                         //warn that JSOM couldn't be started
                         vm.editorStartError = 'josm-error';
-                        return;
                     }
                 }
 
@@ -1139,22 +1137,24 @@
                 if (!isEmptyOSMLayerSuccess) {
                     //warn that JSOM couldn't be started
                     vm.editorStartError = 'josm-error';
-                    return;
                 }
 
-                //download the osm data if only 1 task square
+                var loadAndZoomParams = {
+                    left: extentTransformed[0],
+                    bottom: extentTransformed[1],
+                    right: extentTransformed[2],
+                    top: extentTransformed[3],
+                    changeset_comment: encodeURIComponent(changesetComment),
+                    changeset_source: encodeURIComponent(changesetSource),
+                    new_layer: false
+                };
+
                 if (taskCount == 1) {
-                    var loadAndZoomParams = {
-                        left: extentTransformed[0],
-                        bottom: extentTransformed[1],
-                        right: extentTransformed[2],
-                        top: extentTransformed[3],
-                        changeset_comment: encodeURIComponent(changesetComment),
-                        changeset_source: encodeURIComponent(changesetSource),
-                        new_layer: false
-                    };
                     //load OSM data and zoom to the bbox
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                } else {
+                    //probably too much OSM data to download, just zoom to the bbox
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
                 }
 
             }
