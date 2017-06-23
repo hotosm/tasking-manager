@@ -156,7 +156,7 @@ def get_projects(request, items_per_page):
         sort_by = 'project.priority'
     direction = request.params.get('direction', 'asc')
     if direction not in ['asc', 'desc']:
-        direction = 'asc
+        direction = 'asc'
     direction_func = getattr(sqlalchemy, direction, None)
     sort_by = direction_func(sort_by)
 
