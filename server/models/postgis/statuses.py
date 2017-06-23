@@ -16,6 +16,12 @@ class ProjectPriority(Enum):
     LOW = 3
 
 
+class TaskCreationMode(Enum):
+    """ Enum to describe task creation mode """
+    GRID = 0
+    ARBITRARY = 1
+
+
 class TaskStatus(Enum):
     """ Enum describing available Task Statuses """
     READY = 0
