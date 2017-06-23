@@ -44,7 +44,7 @@
         vm.maxlengthComment = 250;
 
         vm.hasScrolled = false;
-        
+
         // Errors
         vm.successMessageAdded = false;
         vm.errorMessageAdded = false;
@@ -53,17 +53,17 @@
 
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
-        
-         /**
+
+        /**
          * Watches the selected feature
          */
-        $scope.$watch('projectChatCtrl.projectId', function(id) {
+        $scope.$watch('projectChatCtrl.projectId', function (id) {
             vm.projectId = id;
-            if (vm.projectId){
+            if (vm.projectId) {
                 getChatMessages();
             }
         });
-        $scope.$watch('projectChatCtrl.projectAuthor', function(authorName) {
+        $scope.$watch('projectChatCtrl.projectAuthor', function (authorName) {
             vm.author = authorName;
         });
 
@@ -72,36 +72,36 @@
             getChatMessages();
         }, 10000);
 
-           // listen for navigation away from the page event and stop the autrefresh timer
-        $scope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
-            if (oldUrl.indexOf($location.path()) == -1) { //check that we are navigating away from the page
-                if (angular.isDefined(autoRefresh)) {
-                    $interval.cancel(autoRefresh);
-                    autoRefresh = undefined;
-                }
+        // listen for navigation away from the page event and stop the autrefresh timer
+        $scope.$on('$routeChangeStart', function () {
+            console.log('routeChangeStart');
+            if (angular.isDefined(autoRefresh)) {
+                $interval.cancel(autoRefresh);
+                autoRefresh = undefined;
             }
-        });
+        })
+
 
         /**
          * Get chat messages
          */
-        function getChatMessages(){
+        function getChatMessages() {
             vm.errorGetMessages = false;
             var resultsPromise = messageService.getProjectChatMessages(vm.projectId);
             resultsPromise.then(function (data) {
                 vm.messages = data.chat;
-                for (var i = 0; i < vm.messages.length; i++){
+                for (var i = 0; i < vm.messages.length; i++) {
                     vm.messages[i].message = messageService.formatUserNamesToLink(vm.messages[i].message);
                 }
                 // set the location.hash to the id of the element to scroll to
                 $timeout(function () {
-                    if (!vm.hasScrolled){
+                    if (!vm.hasScrolled) {
                         $location.hash('bottom');
                         $anchorScroll();
                         vm.hasScrolled = true;
                     }
                 }, 1000);
-            }, function(response){
+            }, function (response) {
                 vm.messages = [];
                 if (response.status != 404) {
                     vm.errorGetMessages = true;
@@ -109,7 +109,7 @@
             });
         }
 
-         /**
+        /**
          * Search for a user
          * @param searchValue
          */
@@ -143,13 +143,13 @@
         /**
          * Add message to the chat
          */
-        vm.addMessage = function(){
+        vm.addMessage = function () {
             vm.successMessageAdded = false;
             vm.errorMessageAdded = false;
             var resultsPromise = messageService.addProjectChatMessage(vm.message, vm.projectId);
             resultsPromise.then(function (data) {
                 vm.messages = data.chat;
-                for (var i = 0; i < vm.messages.length; i++){
+                for (var i = 0; i < vm.messages.length; i++) {
                     vm.messages[i].message = messageService.formatUserNamesToLink(vm.messages[i].message);
                 }
                 // set the location.hash to the id of the element to scroll to
@@ -159,7 +159,7 @@
                 }, 1000);
                 vm.message = '';
                 vm.successMessageAdded = true;
-            }, function(response){
+            }, function (response) {
                 if (response.status !== '404') {
                     vm.errorMessageAdded = true;
                 }
@@ -169,10 +169,10 @@
         /**
          * Message the project manager by pre-populating the message
          */
-        vm.messageProjectManager = function(){
+        vm.messageProjectManager = function () {
             vm.errorAddPMUsername = false;
             var author = '@[' + vm.author + ']';
-            if ((vm.message.length + author.length) < vm.maxlengthComment){
+            if ((vm.message.length + author.length) < vm.maxlengthComment) {
                 vm.message += author;
             }
             else {
