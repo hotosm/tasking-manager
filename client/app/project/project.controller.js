@@ -137,14 +137,13 @@
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
-        $scope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
-            if (oldUrl.indexOf($location.path()) == -1) { //check that we are navigating away from the page
-                if (angular.isDefined(autoRefresh)) {
-                    $interval.cancel(autoRefresh);
-                    autoRefresh = undefined;
-                }
+        $scope.$on('$routeChangeStart', function () {
+            if (angular.isDefined(autoRefresh)) {
+                $interval.cancel(autoRefresh);
+                autoRefresh = undefined;
             }
         })
+
 
         /**
          * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual
