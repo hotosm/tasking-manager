@@ -23,7 +23,7 @@ def is_known_project_priority(value):
     except KeyError:
         raise ValidationError(f'Unknown projectStatus: {value} Valid values are {ProjectPriority.LOW.name}, '
                               f'{ProjectPriority.MEDIUM.name}, {ProjectPriority.HIGH.name}, '
-                              f'{ProjectPriority.URGENT.HIGH}')
+                              f'{ProjectPriority.URGENT.name}')
 
 
 def is_known_mapping_type(value):
