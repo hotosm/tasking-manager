@@ -74,7 +74,6 @@
 
         // listen for navigation away from the page event and stop the autrefresh timer
         $scope.$on('$routeChangeStart', function () {
-            console.log('routeChangeStart');
             if (angular.isDefined(autoRefresh)) {
                 $interval.cancel(autoRefresh);
                 autoRefresh = undefined;
