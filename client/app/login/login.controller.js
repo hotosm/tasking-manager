@@ -23,6 +23,9 @@
          * Login
          */
         vm.login = function(){
+            // Force a logout first by clearing cookies. This prevents getting stuck in a loop with an invalid/expired token
+            // (the GET user API is called on loading the page before it can get the new token)
+            authService.logout();
             authService.login(vm.redirectURL);
         };
         
