@@ -23,8 +23,10 @@
          * Login
          */
         vm.login = function(){
-            // Force a logout first by clearing cookies. This prevents getting stuck in a loop with an invalid/expired token
-            // (the GET user API is called on loading the page before it can get the new token)
+            // Force a logout first by clearing the local storage. This prevents getting stuck in a loop with an 
+            // invalid/expired token. The GET user API is called if a token is there on loading the page, so also if 
+            // there was an invalid/expired one. By removing the token before logging in, it doesn't have an invalid 
+            // token when it returns from OpenStreetMap.
             authService.logout();
             authService.login(vm.redirectURL);
         };
