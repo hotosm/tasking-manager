@@ -3,7 +3,7 @@ from flask import current_app
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks, StopValidationDTO
 from server.models.postgis.statuses import ValidatingNotAllowed
-from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound, UserLicenseError, timestamp
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
@@ -104,8 +104,11 @@ class ValidatorService:
                 # Set last_validation_date for the mapper to current date
                 task.mapper.last_validation_date = timestamp()
 
-            StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
-                                                              task_to_unlock['new_state'], task.id)
+            # Update stats if user setting task to a different state from previous state
+            prev_status = TaskHistory.get_last_status(project_id, task.id)
+            if prev_status != task_to_unlock['new_state']:
+                StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
+                                                                  task_to_unlock['new_state'], task.id)
 
             task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'])
 
@@ -194,7 +197,9 @@ class ValidatorService:
                                          ~Task.task_status.in_([TaskStatus.READY.value,
                                                                 TaskStatus.BADIMAGERY.value])).all()
         for task in mapped_tasks:
-            task.lock_task_for_validating(user_id)
+            if TaskStatus(task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
+                # Only lock tasks that are not already locked to avoid double lock issue.
+                task.lock_task_for_validating(user_id)
             task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
 
         # Reset counters
