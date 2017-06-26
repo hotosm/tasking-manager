@@ -73,6 +73,12 @@ Update hotnew.projects
 where  a.id = hotnew.projects.aoi_id
 
 
+-- Set the task_creation_mode to 'arbitrary' when project's zoom was None in
+-- TM2
+Update hotnew.projects
+   set task_creation_mode = 1
+  from hotold.projects as p
+ where p.id = hotnew.projects.id and p.zoom is NULL;
 
 
 
