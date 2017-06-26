@@ -73,6 +73,8 @@ class Project(db.Model):
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
 
+
+
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
         Creates a draft project
@@ -360,3 +362,7 @@ class Project(db.Model):
         project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(project_id)
 
         return project_dto
+
+
+# Add index on project geometry
+db.Index('idx_geometry', Project.geometry, postgresql_using='gist')
