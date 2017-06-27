@@ -45,21 +45,22 @@ INSERT INTO hotnew.users_licenses ("user", license)
 
 -- PROJECTS
 -- Transfer project data, all projects set to mapper level beginner
--- TODO:   tasks_bad_imagery
 -- Skipped projects with null author_id
 INSERT INTO hotnew.projects(
-            id, status, aoi_id, created, priority, default_locale, author_id, 
-            mapper_level, enforce_mapper_level, enforce_validator_role, private, 
-            entities_to_map, changeset_comment, due_date, imagery, josm_preset, 
-            last_updated, mapping_types, organisation_tag, campaign_tag, 
-            total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery)
-  (select id, status, area_id, created, priority, 'en', author_id, 
-            0, false, false, private, 
-            entities_to_map, changeset_comment, due_date, imagery, josm_preset, 
-            last_update, null, '', '', 
-            1, 0, 0, 0
-            from hotold.project
-            where author_id is not null
+            id, status, created, priority, default_locale, author_id,
+            mapper_level, enforce_mapper_level, enforce_validator_role, private,
+            entities_to_map, changeset_comment, due_date, imagery, josm_preset,
+            last_updated, mapping_types, organisation_tag, campaign_tag,
+            total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery, centroid, geometry)
+  (select p.id, p.status, p.created, p.priority, 'en', p.author_id,
+            1, false, false, p.private,
+            p.entities_to_map, p.changeset_comment, p.due_date, p.imagery, p.josm_preset,
+            p.last_update, null, '', '',
+            1, 0, 0, 0, a.centroid, a.geometry
+            from hotold.project p,
+                 hotold.areas a
+            where p.area_id = a.id
+            and p.author_id is not null
             );
 
 select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
@@ -85,7 +86,7 @@ INSERT INTO hotnew.project_info(
     where exists(select p.id from hotnew.projects p where p.id = pt.id));
 
 -- Delete empty languages
-delete from project_info where name = '' and short_description = '' and description = '' and instructions = '';
+delete from hotnew.project_info where name = '' and short_description = '' and description = '' and instructions = '';
 
 -- Create trigger for text search
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
@@ -215,14 +216,14 @@ INSERT INTO hotnew.task_history(
 
 
 -- Update date registered based on first contribution in task_history, should cover 90% of users
-update users
+update hotnew.users
    set date_registered = action_date
    from (select t.user_id, min(action_date) action_date
-           from users u,
-                task_history t
+           from hotnew.users u,
+                hotnew.task_history t
           where u.id = t.user_id
           group by user_id) old
- where id = old.user_id
+ where id = old.user_id;
 
 	
 -- Update USER STATISTICS
