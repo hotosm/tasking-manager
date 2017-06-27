@@ -8,7 +8,7 @@
             <p ng-bind-html="message.message"></p>
         </div>
         <div ng-show="projectChatCtrl.messages.length < 1">
-            {{ 'No chat messages yet' | translate }}
+            {{ 'No project discussion yet' | translate }}
         </div>
         <a id="bottom"></a>
     </div>
@@ -31,7 +31,7 @@
             </p>
             <button ng-show="projectChatCtrl.author" class="button button--achromic pull-left"
                     ng-click="projectChatCtrl.messageProjectManager()">
-                Message project manager
+                {{ 'Contact project manager' | translate }}
             </button>
         </div>
         <div class="pull-center">

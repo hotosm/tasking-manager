@@ -28,7 +28,7 @@
                     <li ng-click="projectCtrl.currentTab = 'chat'"
                         title="{{ 'Go to the chat tab' | translate }}"
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
-                        {{ 'Chat' | translate }}
+                        {{ 'Discussion' | translate }}
                     </li>
                 </ul>
                 <div class="content">
@@ -316,17 +316,17 @@
                                 </div>
                                 <div class="form__group pull-center" ng-show="projectCtrl.isSelectedSplittable">
                                     <button class="button button--achromic" ng-click="projectCtrl.splitTask()">
-                                        Split Task
+                                        {{ 'Split Task' | translate }}
                                     </button>
                                 </div>
                                 <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
                                     <div class="alert alert--danger" role="alert">
-                                        <p>Task is not splittable</p>
+                                        <p>{{ 'Task is not splittable' | translate }}</p>
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
                                     <div class="alert alert--danger" role="alert">
-                                        <p>Task could not be split</p>
+                                        <p>{{ 'Task could not be split' | translate }}</p>
                                     </div>
                                 </div>
                                 <div ng-show="projectCtrl.taskUnLockError">

@@ -137,14 +137,13 @@
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
-        $scope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
-            if (oldUrl.indexOf($location.path()) == -1) { //check that we are navigating away from the page
-                if (angular.isDefined(autoRefresh)) {
-                    $interval.cancel(autoRefresh);
-                    autoRefresh = undefined;
-                }
+        $scope.$on('$routeChangeStart', function () {
+            if (angular.isDefined(autoRefresh)) {
+                $interval.cancel(autoRefresh);
+                autoRefresh = undefined;
             }
         })
+
 
         /**
          * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual
@@ -636,8 +635,8 @@
         function setUpSelectedTask(data) {
             var isLockedByMeMapping = data.taskStatus === 'LOCKED_FOR_MAPPING' && data.lockHolder === vm.user.username;
             var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
-            vm.isSelectedMappable = (isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
-            vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED');
+            vm.isSelectedMappable = (isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
+            vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED' || data.taskStatus === 'BADIMAGERY');
             vm.selectedTaskData = data;
 
             // Format the comments by adding links to the usernames
@@ -1091,7 +1090,6 @@
                     if (!isEmptyTaskLayerSuccess) {
                         //warn that JSOM couldn't be started
                         vm.editorStartError = 'josm-error';
-                        return;
                     }
 
                     //load task square(s) into JOSM
@@ -1103,7 +1101,6 @@
                     if (!isTaskImportSuccess) {
                         //warn that JSOM couldn't be started
                         vm.editorStartError = 'josm-error';
-                        return;
                     }
                 }
 
@@ -1132,29 +1129,31 @@
                 var emptyOSMLayerParams = {
                     new_layer: true,
                     mime_type: 'application/x-osm+xml',
-                    layer_name: 'OSM Data layer for validation',
+                    layer_name: 'OSM Data',
                     data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
                 }
                 var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
                 if (!isEmptyOSMLayerSuccess) {
                     //warn that JSOM couldn't be started
                     vm.editorStartError = 'josm-error';
-                    return;
                 }
 
-                //download the osm data if only 1 task square
+                var loadAndZoomParams = {
+                    left: extentTransformed[0],
+                    bottom: extentTransformed[1],
+                    right: extentTransformed[2],
+                    top: extentTransformed[3],
+                    changeset_comment: encodeURIComponent(changesetComment),
+                    changeset_source: encodeURIComponent(changesetSource),
+                    new_layer: false
+                };
+
                 if (taskCount == 1) {
-                    var loadAndZoomParams = {
-                        left: extentTransformed[0],
-                        bottom: extentTransformed[1],
-                        right: extentTransformed[2],
-                        top: extentTransformed[3],
-                        changeset_comment: encodeURIComponent(changesetComment),
-                        changeset_source: encodeURIComponent(changesetSource),
-                        new_layer: false
-                    };
                     //load OSM data and zoom to the bbox
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                } else {
+                    //probably too much OSM data to download, just zoom to the bbox
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
                 }
 
             }

@@ -23,7 +23,7 @@ def is_known_project_priority(value):
     except KeyError:
         raise ValidationError(f'Unknown projectStatus: {value} Valid values are {ProjectPriority.LOW.name}, '
                               f'{ProjectPriority.MEDIUM.name}, {ProjectPriority.HIGH.name}, '
-                              f'{ProjectPriority.URGENT.HIGH}')
+                              f'{ProjectPriority.URGENT.name}')
 
 
 def is_known_mapping_type(value):
@@ -37,6 +37,15 @@ def is_known_mapping_type(value):
         raise ValidationError(f'Unknown mappingType: {value} Valid values are {MappingTypes.ROADS.name}, '
                               f'{MappingTypes.BUILDINGS.name}, {MappingTypes.WATERWAYS.name}, '
                               f'{MappingTypes.LAND_USE.name}, {MappingTypes.OTHER.name}')
+
+
+def is_known_task_creation_mode(value):
+    """ Validates Task Creation Mode is known value """
+    try:
+        TaskCreationMode[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown taskCreationMode: {value} Valid values are {TaskCreationMode.GRID.name}, '
+                              f'{TaskCreationMode.ARBITRARY.name}')
 
 
 class DraftProjectDTO(Model):
@@ -89,6 +98,8 @@ class ProjectDTO(Model):
     priority_areas = BaseType(serialized_name='priorityAreas')
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
+    task_creation_mode = StringType(required=True, serialized_name='taskCreationMode',
+                                    validators=[is_known_task_creation_mode], serialize_when_none=False)
 
 
 class ProjectSearchDTO(Model):

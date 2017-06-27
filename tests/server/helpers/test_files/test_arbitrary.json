@@ -1,9 +1,12 @@
 {
-  "features": [
-    {
-      "geometry": {
-        "coordinates": [
-          [
+  "areaOfInterest": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
             [
               [
                 1275275.3796814454,
@@ -23,20 +26,11 @@
               ]
             ]
           ]
-        ],
-        "type": "MultiPolygon"
-      },
-      "properties": {
-        "splittable": false,
-        "x": null,
-        "y": null,
-        "zoom": null,
-        "extra_properties": {
+        },
+        "properties": {
           "foo": "bar"
         }
-      },
-      "type": "Feature"
-    }
-  ],
-  "type": "FeatureCollection"
+      }
+    ]
+  }
 }
