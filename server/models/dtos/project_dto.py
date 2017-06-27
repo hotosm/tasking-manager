@@ -39,15 +39,6 @@ def is_known_mapping_type(value):
                               f'{MappingTypes.LAND_USE.name}, {MappingTypes.OTHER.name}')
 
 
-def is_known_task_creation_mode(value):
-    """ Validates Task Creation Mode is known value """
-    try:
-        TaskCreationMode[value.upper()]
-    except KeyError:
-        raise ValidationError(f'Unknown taskCreationMode: {value} Valid values are {TaskCreationMode.GRID.name}, '
-                              f'{TaskCreationMode.ARBITRARY.name}')
-
-
 class DraftProjectDTO(Model):
     """ Describes JSON model used for creating draft project """
     cloneFromProjectId = IntType(serialized_name='cloneFromProjectId')
@@ -98,8 +89,6 @@ class ProjectDTO(Model):
     priority_areas = BaseType(serialized_name='priorityAreas')
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
-    task_creation_mode = StringType(required=True, serialized_name='taskCreationMode',
-                                    validators=[is_known_task_creation_mode], serialize_when_none=False)
 
 
 class ProjectSearchDTO(Model):

@@ -71,11 +71,11 @@ class TestGridService(unittest.TestCase):
 
     def test_tasks_from_aoi_features(self):
         # arrange
-        grid_json = get_canned_json('test_arbitrary.json')
+        grid_json = get_canned_json('test_grid.json')
         grid_dto = GridDTO(grid_json)
         expected = geojson.loads(json.dumps(get_canned_json('tasks_from_aoi_features.json')))
-
         # act
+
         result = GridService.tasks_from_aoi_features(grid_dto.area_of_interest)
         # assert
         self.assertEquals(str(expected), str(result))
