@@ -66,13 +66,11 @@ class GridService:
             feature.geometry = shapely.geometry.mapping(feature.geometry)
 
             # set default properties
-            # and put any already existing properties in `extra_properties`
             feature.properties = {
                 'x': None,
                 'y': None,
                 'zoom': None,
-                'splittable': False,
-                'extra_properties': feature.properties
+                'splittable': False
             }
 
             tasks.append(feature)

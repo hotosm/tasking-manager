@@ -5,7 +5,6 @@ from flask import current_app
 
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
 from server.models.postgis.project import Project, Task, ProjectStatus
-from server.models.postgis.statuses import TaskCreationMode
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from server.services.grid.grid_service import GridService
@@ -50,7 +49,6 @@ class ProjectAdminService:
         # if arbitrary_tasks requested, create tasks from aoi otherwise use tasks in DTO
         if draft_project_dto.has_arbitrary_tasks:
             tasks = GridService.tasks_from_aoi_features(draft_project_dto.area_of_interest)
-            draf_project.task_creation_mode = TaskCreationMode.ARBITRARY.value
         else:
             tasks = draft_project_dto.tasks
         ProjectAdminService._attach_tasks_to_project(draft_project, tasks)

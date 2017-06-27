@@ -243,14 +243,9 @@
                                                     ng-model="info.perTaskInstructions" rows="4">
                                             </textarea>
                                             <p><strong>{{ 'Tip' | translate }}:</strong> {{ 'You can use Markdown. (HTML is not allowed)' | translate }}</p>
-                                            <p ng-if="editProjectCtrl.project.taskCreationMode == 'GRID' ">
-                                                Put here anything that can be useful to users while taking a task. {x}, {y} and {z} will be replaced by the corresponding parameters for each task.
+                                            <p>Put here anything that can be useful to users while taking a task. {x}, {y} and {z} will be replaced by the corresponding parameters for each task.
                                                 {x}, {y} and {z} parameters can only be be used on tasks generated in the Tasking Manager and not on imported tasks.
                                                 For example: « This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM ».</p>
-                                            <p ng-if="editProjectCtrl.project.taskCreationMode == 'ARBITRARY'">
-                                                Put here anything that can be useful to users while taking a task. If you have added extra properties within the GeoJSON of the task, they can be referenced by surrounding them in curly braces. For eg. if you have a property called "import_url" in your GeoJSON, you can reference it like:
-                                                <code>This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url={import_url}) to load the data into JOSM</code>
-                                            </p>
                                             <button class="button button--secondary button--small"
                                                     ng-click="editProjectCtrl.showPreviewPerTaskInstructions = !editProjectCtrl.showPreviewPerTaskInstructions">
                                                 {{ 'Preview' | translate }}
