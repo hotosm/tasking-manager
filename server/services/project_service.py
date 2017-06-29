@@ -1,13 +1,13 @@
 from cachetools import TTLCache, cached
 from flask import current_app
 
+from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
-
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -58,6 +58,26 @@ class ProjectService:
         tasks_dto = LockedTasksForUser()
         tasks_dto.locked_tasks = tasks
         return tasks_dto
+
+    @staticmethod
+    def get_task_details_for_logged_in_user(project_id: int, user_id: int, preferred_locale: str):
+        """ if the user is working on a task in the project return it """
+        project = ProjectService.get_project_by_id(project_id)
+
+        tasks = project.get_locked_tasks_details_for_user(user_id)
+
+        if len(tasks) == 0:
+            raise NotFound()
+
+        # TODO put the task details in to a DTO
+        dtos = []
+        for task in tasks:
+            dtos.append(task.as_dto_with_instructions(preferred_locale))
+
+        task_dtos = TaskDTOs()
+        task_dtos.tasks = dtos
+
+        return task_dtos
 
     @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):

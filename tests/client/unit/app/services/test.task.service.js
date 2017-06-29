@@ -216,6 +216,80 @@ describe('task.service', function () {
         expect(returnedFeatures).toEqual([]);
     });
 
+    it('should return an array of locked for mapping features', function () {
+
+        //arrange
+        var ids = [99, 100, 101];
+        var status = 'LOCKED_FOR_MAPPING';
+
+        var features = [
+            new ol.Feature({
+                taskId: 99,
+                taskStatus: 'LOCKED_FOR_MAPPING'
+            }),
+            new ol.Feature({
+                taskId: 100,
+                taskStatus: 'LOCKED_FOR_VALIDATION'
+            }),
+            new ol.Feature({
+                taskId: 101,
+                taskStatus: 'LOCKED_FOR_VALIDATION'
+            }),
+            new ol.Feature({
+                taskId: 102,
+                taskStatus: 'READY'
+            })
+        ];
+
+
+        //act
+        var returnedFeatures = taskService.getTaskFeaturesByIdAndStatus(features, ids, status);
+
+        //assert returnedFeatures meet the criteria
+        var candidates = returnedFeatures.filter(function (item) {
+            if (item.get('taskStatus') === status) return item;
+
+        });
+        expect(returnedFeatures.length).toEqual(candidates.length);
+    });
+
+    it('should return an array of locked for validation features', function () {
+
+        //arrange
+        var ids = [99, 100, 101];
+        var status = 'LOCKED_FOR_VALIDATION';
+
+        var features = [
+            new ol.Feature({
+                taskId: 99,
+                taskStatus: 'LOCKED_FOR_MAPPING'
+            }),
+            new ol.Feature({
+                taskId: 100,
+                taskStatus: 'LOCKED_FOR_VALIDATION'
+            }),
+            new ol.Feature({
+                taskId: 101,
+                taskStatus: 'LOCKED_FOR_VALIDATION'
+            }),
+            new ol.Feature({
+                taskId: 102,
+                taskStatus: 'READY'
+            })
+        ];
+
+
+        //act
+        var returnedFeatures = taskService.getTaskFeaturesByIdAndStatus(features, ids, status);
+
+        //assert returnedFeatures meet the criteria
+        var candidates = returnedFeatures.filter(function (item) {
+            if (item.get('taskStatus') === status) return item;
+
+        });
+        expect(returnedFeatures.length).toEqual(candidates.length);
+    });
+
 
 });
 
