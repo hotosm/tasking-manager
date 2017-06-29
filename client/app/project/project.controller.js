@@ -580,6 +580,18 @@
          * @param feature
          */
         function onTaskSelection(feature) {
+
+            //if no feature has been clicked on, go to unselected more
+            if (!feature) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+                return;
+            }
+
             //we don't want to allow selection of multiple features by map click
             //get id from feature
             var taskId = feature.get('taskId');
