@@ -46,7 +46,9 @@
                             </div>
                             <p markdown-to-html="projectCtrl.projectData.projectInfo.description"></p>
                             <hr/>
-                            <div><strong>{{ 'Status:' | translate }} </strong><span>{{ projectCtrl.projectData.projectStatus }}</span></div>
+                            <div>
+                                <strong>{{ 'Status:' | translate }} </strong><span>{{ projectCtrl.projectData.projectStatus }}</span>
+                            </div>
                             <div><strong>{{ 'Created by:' | translate }} </strong><span><a
                                     href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></span>
                             </div>
@@ -171,6 +173,11 @@
                                      role="alert">
                                     <p>{{ 'You cannot select tasks for mapping because you already have one or more tasks locked. Use the map to re-select that task and complete it or stop mapping it.' | translate }}</p>
                                 </div>
+                                <div ng-show="projectCtrl.user && !projectCtrl.isSelectedMappable"
+                                     class="alert alert--danger"
+                                     role="alert">
+                                    <p>{{ 'The selected task is not in a state that allows mapping.' | translate }}</p>
+                                </div>
                                 <div ng-hide="projectCtrl.lockedTasksForCurrentUser.length > 0">
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
@@ -196,11 +203,6 @@
                                                 <div class="alert alert--warning" role="alert">
                                                     <p>{{ 'Please login to start mapping.' | translate }}</p>
                                                 </div>
-                                            </div>
-                                            <div ng-show="projectCtrl.user && !projectCtrl.isSelectedMappable"
-                                                 class="alert alert--danger"
-                                                 role="alert">
-                                                <p>{{ 'The selected task is not in a state that allows mapping.' | translate }}</p>
                                             </div>
                                             <div ng-show="projectCtrl.user && projectCtrl.taskLockError"
                                                  class="alert alert--danger"
@@ -251,7 +253,8 @@
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
-                                                ng-model="projectCtrl.selectedEditor" ng-change="projectCtrl.updatePreferedEditor()">
+                                                ng-model="projectCtrl.selectedEditor"
+                                                ng-change="projectCtrl.updatePreferedEditor()">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -431,7 +434,7 @@
                                                     class="table__sort table__sort--none"
                                                     title="{{ 'Sort column' | translate }}"><span>{{ 'Registered' | translate }}</span></a>
                                             </th>
-                                             <th ng-click="projectCtrl.sortBy('lastValidationDate')"><a
+                                            <th ng-click="projectCtrl.sortBy('lastValidationDate')"><a
                                                     class="table__sort table__sort--none"
                                                     title="{{ 'Sort column' | translate }}"><span>{{ 'Last validation' | translate }}</span></a>
                                             </th>
@@ -447,8 +450,11 @@
                                             <td ng-show="doneTasks.mappingLevel === 'INTERMEDIATE'">{{ 'Intermediate' | translate }}</td>
                                             <td ng-show="doneTasks.mappingLevel === 'ADVANCED'">{{ 'Advanced' | translate }}</td>
                                             <td>{{ doneTasks.mappedTaskCount }}</td>
-                                            <td><span am-time-ago="doneTasks.dateRegistered | amUtc | amLocal"></span></td>
-                                            <td><span am-time-ago="doneTasks.lastValidationDate | amUtc | amLocal"></span></td>
+                                            <td><span am-time-ago="doneTasks.dateRegistered | amUtc | amLocal"></span>
+                                            </td>
+                                            <td><span
+                                                    am-time-ago="doneTasks.lastValidationDate | amUtc | amLocal"></span>
+                                            </td>
                                             <td>
                                                 <button class="button button--secondary button--small"
                                                         ng-click="projectCtrl.lockTasksForValidation(doneTasks.tasksMapped)"
@@ -546,7 +552,8 @@
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
-                                                ng-model="projectCtrl.selectedEditor" ng-change="projectCtrl.updatePreferedEditor()">
+                                                ng-model="projectCtrl.selectedEditor"
+                                                ng-change="projectCtrl.updatePreferedEditor()">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -630,7 +637,8 @@
                                 <div class="form__group">
                                     <div class="form__input-group">
                                         <select class="form__control form__control__medium"
-                                                ng-model="projectCtrl.selectedEditor" ng-change="projectCtrl.updatePreferedEditor()">
+                                                ng-model="projectCtrl.selectedEditor"
+                                                ng-change="projectCtrl.updatePreferedEditor()">
                                             <option value="ideditor" selected="true">iD Editor</option>
                                             <option value="josm">JOSM</option>
                                             <option value="potlatch2">Potlatch 2</option>
@@ -708,7 +716,8 @@
                         </div>
                     </div>
                     <div ng-show="projectCtrl.currentTab === 'chat'">
-                        <project-chat project-id="projectCtrl.id" project-author="projectCtrl.projectData.author"></project-chat>
+                        <project-chat project-id="projectCtrl.id"
+                                      project-author="projectCtrl.projectData.author"></project-chat>
                     </div>
                     <!-- advanced options UI -->
                     <div ng-init="showAdvanced=false"

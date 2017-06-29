@@ -505,8 +505,8 @@
          * @param projectId
          */
         function updateLockedTasksForCurrentUser(projectId) {
-            var mappedTasksByUserPromise = taskService.getLockedTasksForCurrentUser(projectId);
-            mappedTasksByUserPromise.then(function (mappedTasks) {
+            var lockedTasksPromise = taskService.getLockedTasksForCurrentUser(projectId);
+            lockedTasksPromise.then(function (mappedTasks) {
                 vm.lockedTasksForCurrentUser = mappedTasks;
                 vm.lockedByCurrentUserVectorLayer.getSource().clear();
                 if (vm.lockedTasksForCurrentUser.length > 0) {
@@ -580,6 +580,21 @@
          * @param feature
          */
         function onTaskSelection(feature) {
+
+            //if no feature has been clicked on, go to unselected more
+            if (!feature) {
+                vm.selectedTaskData = null;
+                vm.lockedTaskData = null;
+                vm.multiSelectedTasksData = [];
+                vm.multiLockedTasks = [];
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+                return;
+            }
+
             //we don't want to allow selection of multiple features by map click
             //get id from feature
             var taskId = feature.get('taskId');
@@ -597,7 +612,10 @@
                 //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
-                vm.resetTaskData();
+                vm.selectedTaskData = null;
+                vm.lockedTaskData = null;
+                vm.multiSelectedTasksData = [];
+                vm.multiLockedTasks = [];
                 setUpSelectedTask(data);
                 // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
                 // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
