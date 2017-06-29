@@ -566,6 +566,9 @@
                     lockedFeatures.forEach(function (feature) {
                         vm.selectInteraction.getFeatures().push(feature);
                     });
+                    var extent = geospatialService.getBoundingExtentFromFeatures(lockedFeatures);
+                    // Zoom to the extent to get the right zoom level for the editorsgit commit -a
+                    vm.map.getView().fit(extent);
 
                     //put the UI in to locked for multi validation mode
                     var lockPromise = taskService.getLockedTaskDetailsForCurrentUser(vm.projectData.projectId);
