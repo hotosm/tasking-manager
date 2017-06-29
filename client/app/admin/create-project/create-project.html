@@ -221,6 +221,19 @@
                             <strong>{{ 'Error' | translate }}:</strong> {{ 'The Project could not be trimmed. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks.' | translate }}
                         </p>
                     </div>
+                    <div ng-show="createProjectCtrl.trimErrorReason == 504"
+                         class="alert alert--danger" role="alert">
+                        <p>
+                            <strong>{{ 'Error' | translate }}:</strong> {{ 'The Project trim timed out.  Try again with a smaller AOI or fewer tasks.' | translate }}
+                        </p>
+                    </div>
+                    <div ng-show="createProjectCtrl.trimError && [400,500,-1,504].indexOf(createProjectCtrl.trimErrorReason) == -1"
+                         class="alert alert--danger" role="alert">
+                        <p>
+                            <strong>{{ 'Error' | translate }}:</strong> {{ 'Trim failed with unexpected error status.' | translate }}[{{ createProjectCtrl.trimErrorReason }}]
+                        </p>
+                    </div>
+
 
                     <hr/>
                     <div class="navigation-steps">
@@ -248,12 +261,6 @@
                             />
                         </div>
                         <p>{{ 'Project has' | translate }} {{ createProjectCtrl.numberOfTasks }} {{ 'tasks.' | translate }}</p>
-                        <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
-                             class="alert alert--danger" role="alert">
-                            <p>
-                                <strong>{{ 'Error' | translate }}:</strong> {{ 'Unable to create project because there are more than' | translate }} {{ createProjectCtrl.MAX_NUMBER_OF_TASKS }} {{ 'tasks. Use a smaller AOI and/or fewer tasks.' | translate }}
-                            </p>
-                        </div>
                         <div role="alert">
                             <span class="error"
                                   ng-show="createProjectCtrl.projectNameForm.submitted && createProjectCtrl.projectNameForm.projectName.$error.required">
@@ -292,8 +299,6 @@
                                 <span>{{ 'Previous' | translate }}</span>
                             </button>
                             <button class="button button--primary" type="button"
-                                    ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
-                                    ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                                     ng-click="createProjectCtrl.createProject()">
                                 <span ng-hide="createProjectCtrl.isCloneProject">{{ 'Create' | translate }}</span>
                                 <span ng-show="createProjectCtrl.isCloneProject">{{ 'Clone' | translate }}</span>
