@@ -121,13 +121,13 @@
                                          role="alert">
                                         <p>{{ 'You cannot select tasks for mapping because you already have task(s) locked.' | translate }}</p>
                                     </div>
-                                    <div ng-show="projectCtrl.hasTaskLockedForMapping()">
+                                    <div ng-show="projectCtrl.hasTaskLockedForMapping()" class="padding-at-bottom">
                                         <button ng-click="projectCtrl.reselectTaskForMapping()"
                                                 class="button button--secondary pull-center">
                                             {{ 'Reselect tasks locked for mapping ' | translate }}
                                         </button>
                                     </div>
-                                    <div ng-show="projectCtrl.hasTasksLockedForValidation()">
+                                    <div ng-show="projectCtrl.hasTasksLockedForValidation()" class="padding-at-bottom">
                                         <button ng-click="projectCtrl.reselectTasksForValidation()"
                                                 class="button button--secondary pull-center">
                                             {{ 'Reselect tasks locked for validation ' | translate }}
@@ -186,13 +186,13 @@
                                          role="alert">
                                         <p>{{ 'You cannot select tasks for mapping because you already have task(s) locked.' | translate }}</p>
                                     </div>
-                                    <div ng-show="projectCtrl.hasTaskLockedForMapping()">
+                                    <div ng-show="projectCtrl.hasTaskLockedForMapping()" class="padding-at-bottom">
                                         <button ng-click="projectCtrl.reselectTaskForMapping()"
                                                 class="button button--secondary pull-center">
                                             {{ 'Reselect tasks locked for mapping ' | translate }}
                                         </button>
                                     </div>
-                                    <div ng-show="projectCtrl.hasTasksLockedForValidation()">
+                                    <div ng-show="projectCtrl.hasTasksLockedForValidation()" class="padding-at-bottom">
                                         <button ng-click="projectCtrl.reselectTasksForValidation()"
                                                 class="button button--secondary pull-center">
                                             {{ 'Reselect tasks locked for validation ' | translate }}
@@ -399,9 +399,7 @@
                                             {{ 'Select a random task' | translate }}
                                         </button>
                                     </p>
-                                    <p><strong>{{ 'Option 3:' | translate }} </strong>{{ 'Select by area' | translate }}
-                                    </p>
-                                    <div class="padding-at-bottom">
+                                    <p><strong>{{ 'Option 3:' | translate }} </strong>
                                         <button ng-click="projectCtrl.selectByPolygonValidate()"
                                                 class="button button--achromic pull-center"
                                                 ng-class="projectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''">
@@ -412,7 +410,7 @@
                                                 ng-click="projectCtrl.lockTasksForValidation(projectCtrl.selectedTasksForValidation)">
                                             {{ 'Start Validating' | translate }}
                                         </button>
-                                    </div>
+                                    </p>
                                     <p>
                                         <strong>{{ 'Option 4:' | translate }} </strong>
                                         <button ng-click="projectCtrl.reselectTasksForValidation()"

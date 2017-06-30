@@ -566,6 +566,7 @@
                     lockedFeatures.forEach(function (feature) {
                         vm.selectInteraction.getFeatures().push(feature);
                     });
+
                     var extent = geospatialService.getBoundingExtentFromFeatures(lockedFeatures);
                     // Zoom to the extent to get the right zoom level for the editorsgit commit -a
                     vm.map.getView().fit(extent);
@@ -573,6 +574,14 @@
                     //put the UI in to locked for multi validation mode
                     var lockPromise = taskService.getLockedTaskDetailsForCurrentUser(vm.projectData.projectId);
                     lockPromise.then(function (tasks) {
+
+                        // Filter to get the ones locked for validation
+                        var tasksLockedForValidation = tasks.filter(function (task) {
+                            if (task.taskStatus == 'LOCKED_FOR_VALIDATION'){
+                                return task;
+                            }
+                        });
+
                         // refresh the project, to ensure we catch up with any status changes that have happened meantime
                         // on the server
                         // TODO - The following reset lines are repeated in several places in this file.
@@ -585,8 +594,8 @@
                         vm.resetTaskData();
                         vm.currentTab = 'validation';
                         vm.validatingStep = 'multi-locked';
-                        vm.multiSelectedTasksData = tasks;
-                        vm.multiLockedTasks = tasks;
+                        vm.multiSelectedTasksData = tasksLockedForValidation;
+                        vm.multiLockedTasks = tasksLockedForValidation;
                         vm.isSelectedValidatable = true;
 
                     }, function (error) {
