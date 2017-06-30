@@ -614,7 +614,6 @@
 
                     }, function (error) {
                         // TODO - handle error
-                        // onLockError(vm.projectData.projectId, error)
                     });
                 }
             }
