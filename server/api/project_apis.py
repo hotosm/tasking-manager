@@ -265,7 +265,7 @@ class HasUserTaskOnProjectDetails(Resource):
     @token_auth.login_required
     def get(self, project_id):
         """
-        Gets any locked task on the project from logged in user
+        Gets details of any locked task on the project from logged in user
         ---
         tags:
             - mapping

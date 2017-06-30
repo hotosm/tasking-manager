@@ -352,9 +352,10 @@
         }
 
         /**
-         *
-         * @param features {Array<ol.Feature>}
-         * @param ids {Array}
+         * Filters features by id and status
+         * @param features {Array<ol.Feature>} Features to be filtered
+         * @param ids {Array} task ids to filter on
+         * @param status to filter on
          * @returns {Array<ol.Feature>}
          */
         function getTaskFeaturesByIdAndStatus(features, ids, status) {
@@ -427,7 +428,7 @@
         }
 
        /**
-         * Gets ids of tasks which are locked by the current user
+         * Gets details of tasks which are locked by the current user
          * @param projectId
          * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
          */

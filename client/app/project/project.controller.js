@@ -521,6 +521,10 @@
             });
         }
 
+        /**
+         * Has the current user got tasks locked for mapping
+         * @returns {boolean}
+         */
         vm.hasTaskLockedForMapping = function () {
             if (vm.taskVectorLayer) {
                 var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_MAPPING');
@@ -529,6 +533,9 @@
 
         };
 
+        /**
+         * Reselect tasks user has locked for mapping
+         */
         vm.reselectTaskForMapping = function () {
             if (vm.taskVectorLayer) {
                 var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_MAPPING');
@@ -542,6 +549,10 @@
 
         };
 
+        /**
+         * Has the current user got tasks locked for validation
+         * @returns {boolean}
+         */
         vm.hasTasksLockedForValidation = function () {
             if (vm.taskVectorLayer) {
                 var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_VALIDATION');
@@ -549,6 +560,9 @@
             }
         };
 
+        /**
+         * Reselect tasks user has locked for validation
+         */
         vm.reselectTasksForValidation = function () {
             if (vm.taskVectorLayer) {
                 var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_VALIDATION');
@@ -602,7 +616,6 @@
                         // TODO - handle error
                         // onLockError(vm.projectData.projectId, error)
                     });
-
                 }
             }
         };
