@@ -225,6 +225,10 @@
                                                     ng-click="projectCtrl.lockSelectedTaskMapping()">
                                                 {{ 'Start Mapping' | translate }}
                                             </button>
+                                            <button ng-click="projectCtrl.startEditor('ideditor')"
+                                                    class="button button--achromic  button--large">
+                                                {{ 'Preview Mapping' | translate }}
+                                            </button>
                                         </div>
                                         <hr/>
                                         <div class="pull-center">
@@ -235,6 +239,8 @@
                                                         class="button button--achromic">
                                                     {{ 'Select another task' | translate }}
                                                 </button>
+
+
                                                 <button class="button button--achromic"
                                                         ng-click="projectCtrl.resetToSelectingStep()">
                                                     {{ 'Cancel' | translate }}
@@ -525,6 +531,10 @@
                                                 ng-click="projectCtrl.lockSelectedTaskValidation()">
                                             {{ 'Start Validating' | translate }}
                                         </button>
+                                        <button ng-click="projectCtrl.startEditor('ideditor')"
+                                                class="button button--achromic  button--large">
+                                            {{ 'Preview Mapping' | translate }}
+                                        </button>
                                     </div>
                                     <hr/>
                                     <div class="pull-center">
@@ -720,8 +730,9 @@
                                       project-author="projectCtrl.projectData.author"></project-chat>
                     </div>
                     <!-- advanced options UI -->
+
                     <div ng-init="showAdvanced=false"
-                         ng-show="projectCtrl.selectedTaskData && (projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') && (projectCtrl.mappingStep === 'mapping' || projectCtrl.mappingStep === 'viewing')">
+                         ng-show="projectCtrl.selectedTaskData && (projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') ">
                         <div>
                             <hr/>
                             <h6 class="heading-alt">{{ 'History' | translate }}</h6>
