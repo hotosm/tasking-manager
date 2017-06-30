@@ -243,6 +243,17 @@ class Project(db.Model):
 
         return locked_tasks
 
+    def get_locked_tasks_details_for_user(self, user_id: int):
+        """ Gets tasks on project owned by specifed user id"""
+        tasks = self.tasks.filter_by(locked_by=user_id)
+
+        locked_tasks = []
+        for task in tasks:
+            locked_tasks.append(task)
+
+        return locked_tasks
+
+
     @staticmethod
     def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
         """ Get projects for admin """

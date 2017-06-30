@@ -25,7 +25,9 @@
             getTaskFeaturesByIds: getTaskFeaturesByIds,
             getMappedTasksByUser: getMappedTasksByUser,
             getLockedTasksForCurrentUser: getLockedTasksForCurrentUser,
-            splitTask: splitTask
+            getLockedTaskDetailsForCurrentUser: getLockedTaskDetailsForCurrentUser,
+            splitTask: splitTask,
+            getTaskFeaturesByIdAndStatus: getTaskFeaturesByIdAndStatus
         };
 
         return service;
@@ -84,7 +86,7 @@
             });
         }
 
-/**
+        /**
          * Requests stop mapping a task
          * @param projectId - id of the task project
          * @param taskId - id of the task
@@ -350,6 +352,36 @@
         }
 
         /**
+         * Filters features by id and status
+         * @param features {Array<ol.Feature>} Features to be filtered
+         * @param ids {Array} task ids to filter on
+         * @param status to filter on
+         * @returns {Array<ol.Feature>}
+         */
+        function getTaskFeaturesByIdAndStatus(features, ids, status) {
+
+            candidates = [];
+            //first check we are working with a non empty array
+            if (features && (features instanceof Array) && features.length > 0) {
+                // get all tasks with taskId= id
+                var candidates = features.filter(function (item) {
+                    //check we are working with an ol.Feature
+                    if (item instanceof ol.Feature) {
+                        // safe to use the function
+                        var taskId = item.get('taskId');
+                        var taskStatus = item.get('taskStatus');
+                        var i = ids.indexOf(taskId);
+                        if (i !== -1 && taskStatus === status) {
+                            return item;
+                        }
+                    }
+                });
+            }
+            return candidates;
+
+        }
+
+        /**
          * Gets mapped tasks grouped by user and returns a promise
          * @param projectId
          * @returns {!jQuery.jqXHR|*|!jQuery.Promise|!jQuery.deferred}
@@ -388,6 +420,28 @@
                 // this callback will be called asynchronously
                 // when the response is available
                 return (response.data.lockedTasks);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+       /**
+         * Gets details of tasks which are locked by the current user
+         * @param projectId
+         * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function getLockedTaskDetailsForCurrentUser(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + projectId + '/has-user-locked-tasks/details',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data.tasks);
             }, function errorCallback() {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.

@@ -259,6 +259,58 @@ class HasUserTaskOnProject(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+class HasUserTaskOnProjectDetails(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self, project_id):
+        """
+        Gets details of any locked task on the project from logged in user
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Task user is working on
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: User is not working on any tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id, tm.authenticated_user_id, preferred_locale)
+            return locked_tasks.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User has no locked tasks"}, 404
+        except Exception as e:
+            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
 
 class ProjectSummaryAPI(Resource):
 

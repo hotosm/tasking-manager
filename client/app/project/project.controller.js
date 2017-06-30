@@ -506,8 +506,8 @@
          */
         function updateLockedTasksForCurrentUser(projectId) {
             var lockedTasksPromise = taskService.getLockedTasksForCurrentUser(projectId);
-            lockedTasksPromise.then(function (mappedTasks) {
-                vm.lockedTasksForCurrentUser = mappedTasks;
+            lockedTasksPromise.then(function (lockedTasks) {
+                vm.lockedTasksForCurrentUser = lockedTasks;
                 vm.lockedByCurrentUserVectorLayer.getSource().clear();
                 if (vm.lockedTasksForCurrentUser.length > 0) {
                     var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser);
@@ -520,6 +520,105 @@
                 vm.lockedTasksForCurrentUser = [];
             });
         }
+
+        /**
+         * Has the current user got tasks locked for mapping
+         * @returns {boolean}
+         */
+        vm.hasTaskLockedForMapping = function () {
+            if (vm.taskVectorLayer) {
+                var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_MAPPING');
+                return lockedFeatures.length == 1;
+            }
+
+        };
+
+        /**
+         * Reselect tasks user has locked for mapping
+         */
+        vm.reselectTaskForMapping = function () {
+            if (vm.taskVectorLayer) {
+                var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_MAPPING');
+                if (lockedFeatures.length == 1) {
+                    selectFeature(lockedFeatures[0]);
+                    onTaskSelection(lockedFeatures[0]);
+                    var padding = getPaddingSize();
+                    vm.map.getView().fit(lockedFeatures[0].getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+                }
+            }
+
+        };
+
+        /**
+         * Has the current user got tasks locked for validation
+         * @returns {boolean}
+         */
+        vm.hasTasksLockedForValidation = function () {
+            if (vm.taskVectorLayer) {
+                var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_VALIDATION');
+                return lockedFeatures.length > 0;
+            }
+        };
+
+        /**
+         * Reselect tasks user has locked for validation
+         */
+        vm.reselectTasksForValidation = function () {
+            if (vm.taskVectorLayer) {
+                var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_VALIDATION');
+                if (lockedFeatures.length == 1) {
+                    selectFeature(lockedFeatures[0]);
+                    onTaskSelection(lockedFeatures[0]);
+                    var padding = getPaddingSize();
+                    vm.map.getView().fit(lockedFeatures[0].getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+                }
+                else if (lockedFeatures.length > 1) {
+
+                    vm.selectInteraction.getFeatures().clear();
+
+                    //select each one by one
+                    lockedFeatures.forEach(function (feature) {
+                        vm.selectInteraction.getFeatures().push(feature);
+                    });
+
+                    var extent = geospatialService.getBoundingExtentFromFeatures(lockedFeatures);
+                    // Zoom to the extent to get the right zoom level for the editorsgit commit -a
+                    vm.map.getView().fit(extent);
+
+                    //put the UI in to locked for multi validation mode
+                    var lockPromise = taskService.getLockedTaskDetailsForCurrentUser(vm.projectData.projectId);
+                    lockPromise.then(function (tasks) {
+
+                        // Filter to get the ones locked for validation
+                        var tasksLockedForValidation = tasks.filter(function (task) {
+                            if (task.taskStatus == 'LOCKED_FOR_VALIDATION'){
+                                return task;
+                            }
+                        });
+
+                        // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                        // on the server
+                        // TODO - The following reset lines are repeated in several places in this file.
+                        // Refactoring to a single function call was considered, however it was decided that the ability to
+                        // call the resets individually was desirable and would help readability.
+                        // The downside is that any change will have to be replicated in several places.
+                        // A fundamental refactor of this controller should be considered at some stage.
+                        vm.resetErrors();
+                        vm.resetStatusFlags();
+                        vm.resetTaskData();
+                        vm.currentTab = 'validation';
+                        vm.validatingStep = 'multi-locked';
+                        vm.multiSelectedTasksData = tasksLockedForValidation;
+                        vm.multiLockedTasks = tasksLockedForValidation;
+                        vm.isSelectedValidatable = true;
+
+                    }, function (error) {
+                        // TODO - handle error
+                    });
+                }
+            }
+        };
+
 
         /**
          * Adds the aoi feature to the map
@@ -1318,11 +1417,11 @@
             lockPromise.then(function (tasks) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
-                //TODO - The following reset lines are repeated in several places in this file.
-                //Refactoring to a single function call was considered, however it was decided that the ability to
-                //call the resets individually was desirable and would help readability.
-                //The downside is that any change will have to be replicated in several places.
-                //A fundamental refactor of this controller should be considered at some stage.
+                // TODO - The following reset lines are repeated in several places in this file.
+                // Refactoring to a single function call was considered, however it was decided that the ability to
+                // call the resets individually was desirable and would help readability.
+                // The downside is that any change will have to be replicated in several places.
+                // A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -1402,7 +1501,7 @@
             // Format the user tag by wrapping into brackets so it is easier to detect that it is a username
             // especially when there are spaces in the username
             return '@[' + item.label + ']';
-        }
+        };
     }
 })
 ();
