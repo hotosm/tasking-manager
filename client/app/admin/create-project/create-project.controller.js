@@ -32,7 +32,6 @@
         vm.sizeOfTasks = 0;
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
-        vm.MAX_NUMBER_OF_TASKS = 2000;
         vm.MAX_NUMBER_OF_TASKS_SPLIT = 1500; // by limiting the split button, the user will not likely create a project with more than the max number of tasks
 
         // Variables for the zoom level used for creating the grid
