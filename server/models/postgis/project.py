@@ -72,8 +72,6 @@ class Project(db.Model):
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
 
-
-
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
         Creates a draft project
@@ -145,6 +143,10 @@ class Project(db.Model):
             info.id = None
             info.project_id_str = str(cloned_project.id)
             cloned_project.project_info.append(info)
+
+        # Now add allowed users now we know new project id, if there are any
+        for user in original_project.allowed_users:
+            cloned_project.allowed_users.append(user)
 
         db.session.add(cloned_project)
         db.session.commit()
