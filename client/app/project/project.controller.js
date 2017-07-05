@@ -334,6 +334,7 @@
          * @param id - id of the project to initialise
          */
         function initialiseProject(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
@@ -376,7 +377,7 @@
                 }
             }, function () {
                 // project not returned successfully
-                // TODO - may want to handle error
+                vm.errorGetProject = true;
             });
         }
 
@@ -385,9 +386,13 @@
          * @param id
          */
         function updateDescriptionAndInstructions(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 vm.projectData = data;
+            }, function () {
+                // project not returned successfully
+                vm.errorGetProject = true;
             });
         }
 
@@ -396,6 +401,7 @@
          * @param id - id of project to be refreshed
          */
         function refreshProject(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
@@ -422,7 +428,7 @@
 
             }, function () {
                 // project not returned successfully
-                // TODO - may want to handle error
+                vm.errorGetProject = true;
             });
         }
 
