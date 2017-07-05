@@ -7,7 +7,7 @@ from schematics.exceptions import DataError
 
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.users.user_service import UserService
 
 
@@ -22,6 +22,12 @@ class MappingTaskAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: false
+              type: string
+              default: Token sessionTokenHere==
             - in: header
               name: Accept-Language
               description: Language user is requesting
@@ -50,7 +56,15 @@ class MappingTaskAPI(Resource):
         """
         try:
             preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale)
+            token = request.environ.get('HTTP_AUTHORIZATION')
+
+            # Login isn't required here, but if we have a token we can find out if the user can undo the task
+            if token:
+                verify_token(token[6:])
+
+            user_id = tm.authenticated_user_id
+
+            task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale, user_id)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
