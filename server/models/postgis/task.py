@@ -103,18 +103,26 @@ class TaskHistory(db.Model):
         return comments_dto
 
     @staticmethod
-    def get_last_status(project_id: int, task_id: int):
+    def get_last_status(project_id: int, task_id: int, for_undo: bool = False):
         """ Get the status the task was set to the last time the task had a STATUS_CHANGE"""
         result = db.session.query(TaskHistory.action_text) \
             .filter(TaskHistory.project_id == project_id,
                     TaskHistory.task_id == task_id,
                     TaskHistory.action == TaskAction.STATE_CHANGE.name) \
-            .order_by(TaskHistory.action_date.desc()).first()
+            .order_by(TaskHistory.action_date.desc()).all()
 
         if result is None:
             return TaskStatus.READY
 
-        return TaskStatus[result[0]]
+        if len(result) == 1 and for_undo:
+            # We're looking for the previous status, however, there isn't any so we'll return Ready
+            return TaskStatus.READY
+
+        if for_undo:
+            # Return the second last status which was status the task was previously set to
+            return TaskStatus[result[1][0]]
+        else:
+            return TaskStatus[result[0][0]]
 
     @staticmethod
     def get_last_action(project_id: int, task_id: int):
@@ -289,7 +297,7 @@ class Task(db.Model):
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
         last_action.delete()
 
-    def unlock_task(self, user_id, new_state=None, comment=None):
+    def unlock_task(self, user_id, new_state=None, comment=None, undo=False):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
@@ -305,8 +313,9 @@ class Task(db.Model):
             self.mapped_by = None
             self.validated_by = None
 
-        # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-        TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
+        if not undo:
+            # Using a slightly evil side effect of Actions and Statuses having the same name here :)
+            TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
 
         self.task_status = new_state.value
         self.locked_by = None

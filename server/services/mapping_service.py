@@ -202,3 +202,18 @@ class MappingService:
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
+
+    @staticmethod
+    def undo_mapping(project_id: int, task_id: int, user_id: int):
+        task = MappingService.get_task(task_id, project_id)
+
+        # if not MappingService._is_task_undoable(user_id, task):
+        #     raise MappingServiceError('Undo not allowed for this user')
+
+        previous_state = TaskHistory.get_last_status(project_id, task_id, True)
+
+        # TODO rewind stat counters
+        task.unlock_task(user_id, previous_state,
+                         f'Undo state from {TaskStatus(task.task_status).name} to {previous_state.name}', True)
+
+        return task.as_dto_with_instructions()
