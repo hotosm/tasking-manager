@@ -55,6 +55,7 @@ class StatsService:
 
     @staticmethod
     def set_counters_after_undo(project_id: int, user_id: int, current_state: TaskStatus, undo_state: TaskStatus):
+        """ Resets counters after a user undoes their task"""
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_id(user_id)
 

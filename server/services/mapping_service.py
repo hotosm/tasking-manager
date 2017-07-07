@@ -205,10 +205,11 @@ class MappingService:
 
     @staticmethod
     def undo_mapping(project_id: int, task_id: int, user_id: int):
+        """ Allows a user to Undo the task state they updated """
         task = MappingService.get_task(task_id, project_id)
 
-        # if not MappingService._is_task_undoable(user_id, task):
-        #     raise MappingServiceError('Undo not allowed for this user')
+        if not MappingService._is_task_undoable(user_id, task):
+            raise MappingServiceError('Undo not allowed for this user')
 
         current_state = TaskStatus(task.task_status)
         undo_state = TaskHistory.get_last_status(project_id, task_id, True)
