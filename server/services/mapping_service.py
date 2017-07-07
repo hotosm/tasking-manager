@@ -204,7 +204,7 @@ class MappingService:
         return xml_gpx
 
     @staticmethod
-    def undo_mapping(project_id: int, task_id: int, user_id: int):
+    def undo_mapping(project_id: int, task_id: int, user_id: int, preferred_locale: str = 'en') -> TaskDTO:
         """ Allows a user to Undo the task state they updated """
         task = MappingService.get_task(task_id, project_id)
 
@@ -218,4 +218,4 @@ class MappingService:
         task.unlock_task(user_id, undo_state,
                          f'Undo state from {current_state.name} to {undo_state.name}', True)
 
-        return task.as_dto_with_instructions()
+        return task.as_dto_with_instructions(preferred_locale)

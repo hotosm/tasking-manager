@@ -475,7 +475,8 @@ class UndoMappingAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = MappingService.undo_mapping(project_id, task_id, tm.authenticated_user_id)
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            task = MappingService.undo_mapping(project_id, task_id, tm.authenticated_user_id, preferred_locale)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
