@@ -44,6 +44,7 @@ class StatsService:
     @staticmethod
     def _set_counters_after_validated(project: Project, user: User):
         """ Set counters after user has validated a task """
+        # TODO - There is a potential problem with the counters if people mark bad imagery tasks validated
         project.tasks_validated += 1
         user.tasks_validated += 1
 
@@ -51,6 +52,39 @@ class StatsService:
     def _set_counters_after_bad_imagery(project: Project):
         """ Set counters after user has marked a task as Bad Imagery """
         project.tasks_bad_imagery += 1
+
+    @staticmethod
+    def set_counters_after_undo(project_id: int, user_id: int, current_state: TaskStatus, undo_state: TaskStatus):
+        project = ProjectService.get_project_by_id(project_id)
+        user = UserService.get_user_by_id(user_id)
+
+        # This is best endeavours to reset the stats and may have missed some edge cases, hopefully majority of
+        # cases will be Mapped to Ready
+        if current_state == TaskStatus.MAPPED and undo_state == TaskStatus.READY:
+            project.tasks_mapped -= 1
+            user.tasks_mapped -= 1
+        if current_state == TaskStatus.MAPPED and undo_state == TaskStatus.INVALIDATED:
+            user.tasks_mapped -= 1
+            project.tasks_mapped -= 1
+        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.READY:
+            project.tasks_bad_imagery -= 1
+        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.MAPPED:
+            project.tasks_mapped += 1
+            project.tasks_bad_imagery -= 1
+        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.INVALIDATED:
+            project.tasks_bad_imagery -= 1
+        elif current_state == TaskStatus.INVALIDATED and undo_state == TaskStatus.MAPPED:
+            user.tasks_invalidated -= 1
+            project.tasks_mapped += 1
+        elif current_state == TaskStatus.INVALIDATED and undo_state == TaskStatus.VALIDATED:
+            user.tasks_invalidated -= 1
+            project.tasks_validated += 1
+        elif current_state == TaskStatus.VALIDATED and undo_state == TaskStatus.MAPPED:
+            user.tasks_validated -= 1
+            project.tasks_validated -= 1
+        elif current_state == TaskStatus.VALIDATED and undo_state == TaskStatus.BADIMAGERY:
+            user.tasks_validated -= 1
+            project.tasks_validated -= 1
 
     @staticmethod
     def _set_counters_after_invalidated(task_id: int, project: Project, user: User):
