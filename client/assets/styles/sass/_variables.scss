@@ -1,1 +1,83 @@
 $xxlarge-range: (1600px);
+
+/* Colors
+   ========================================================================== */
+
+$orange: #FB6624;
+$darker-red: #D73F3F;
+$red: #FE0303;
+$yellow: #FFD709;
+$darker-yellow: #F2C40A;
+
+$darkest-grey: #494646;
+$medium-grey: #6E6767;
+$grey: #938C8C;
+$lightgrey: #B7B0B0;
+
+$base-color: #220A0A;                                   // Midnight Blue
+$primary-color: #AC3232;                                // Boston Blue
+$secondary-color: #46828F;                              // Silver Tree
+
+$danger-color: #ea4f54;                                 // Mandy
+$success-color: $secondary-color;                       //
+$warning-color: #f6d55f;                                // Energy Yellow
+$info-color: $primary-color;                            //
+
+$link-color: $primary-color;
+$base-alpha-color: rgba($base-color, 0.12);
+$base-semi-alpha-color: rgba($base-color, 0.08);
+
+
+/* Typography
+   ========================================================================== */
+
+$root-font-size: 16px;
+
+$base-font-color: $base-color;
+$base-font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$base-font-style: normal;
+$base-font-light: 300;
+$base-font-regular: 400;
+$base-font-bold: 700;
+$base-font-weight: $base-font-light;
+$base-font-size: 1rem;
+$base-line-height: 1.5;
+
+$code-font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+
+
+/* Decoration
+   ========================================================================== */
+
+/* Border radius */
+
+$base-border-radius: 0.25rem;
+$full-border-radius: 60rem;
+
+
+/* Sizing, spacing and media queries
+   ========================================================================== */
+
+/* Sizing */
+
+$page-header-y: 0 !default;
+
+/* Spacing */
+
+$global-spacing: 1rem;
+
+/* Rows */
+
+$row-min-width: 320px;
+$row-max-width: 1280px;
+$jeet-max-width: $row-max-width; // reset jeet.gs max width
+
+/* Media queries */
+
+$xsmall-range: (0, 543px);
+$small-range: (544px, 767px);
+$medium-range: (768px, 991px);
+$large-range: (992px, 1199px);
+$xlarge-range: (1200px);
+
+$screen: "only screen";

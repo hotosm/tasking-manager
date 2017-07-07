@@ -1,4 +1,7 @@
 @import "variables";
+@import "mixins";
+@import "normalize";
+@import "utilities";
 
 /**
  * Bourbon for extended SASS functionality:
@@ -13,13 +16,10 @@
 @import "node_modules/jeet/jeet";
 
 /**
- * OpenAerialMap Design System
- */
-@import "hot-design-system";
-
-/**
  * Custom
  */
+@import "typography";
+@import "base";
 @import "about";
 @import "admin";
 @import "accountnav";

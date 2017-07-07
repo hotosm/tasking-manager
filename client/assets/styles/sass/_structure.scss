@@ -66,11 +66,9 @@
     margin: 0;
 
     a {
-      @extend .button, .button--base-unbounded, .button--medium, .button--text-hidden;
       vertical-align: top;
 
       &:before {
-        @extend %hot-ds-icon-hamburger-menu;
       }
 
       @include media(medium-up) {
@@ -193,7 +191,6 @@
   text-align: center;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: rgba($base-font-color, 0.64);
   @include column(12/12);
 
   .left {
