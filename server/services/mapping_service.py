@@ -6,7 +6,7 @@ from geoalchemy2 import shape
 
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.models.postgis.statuses import MappingNotAllowed
-from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound, UserLicenseError
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
@@ -36,10 +36,31 @@ class MappingService:
         return task
 
     @staticmethod
-    def get_task_as_dto(task_id: int, project_id: int, preferred_local: str = 'en') -> TaskDTO:
+    def get_task_as_dto(task_id: int, project_id: int, preferred_local: str = 'en', logged_in_user_id: int = None) -> TaskDTO:
         """ Get task as DTO for transmission over API """
         task = MappingService.get_task(task_id, project_id)
-        return task.as_dto_with_instructions(preferred_local)
+        task_dto = task.as_dto_with_instructions(preferred_local)
+        task_dto.is_undoable =MappingService._is_task_undoable(logged_in_user_id, task)
+
+        MappingService._is_task_unlockable(logged_in_user_id, project_id, task, task_dto, task_id)
+
+        return task_dto
+
+    @staticmethod
+    def _is_task_undoable(logged_in_user_id: int, task: Task) -> bool:
+        """ Determines if the current task status can be undone by the logged in user """
+        # Test to see if user can undo status on this task
+        if logged_in_user_id and TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING,
+                                                                      TaskStatus.LOCKED_FOR_VALIDATION,
+                                                                      TaskStatus.READY]:
+
+            last_action = TaskHistory.get_last_action(task.project_id, task.id)
+
+            # User requesting task made the last change, so they are allowed to undo it.
+            if last_action.user_id == int(logged_in_user_id):
+                return True
+            else:
+                return False
 
     @staticmethod
     def lock_task_for_mapping(lock_task_dto: LockTaskDTO) -> TaskDTO:
@@ -181,3 +202,20 @@ class MappingService:
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
+
+    @staticmethod
+    def undo_mapping(project_id: int, task_id: int, user_id: int, preferred_locale: str = 'en') -> TaskDTO:
+        """ Allows a user to Undo the task state they updated """
+        task = MappingService.get_task(task_id, project_id)
+
+        if not MappingService._is_task_undoable(user_id, task):
+            raise MappingServiceError('Undo not allowed for this user')
+
+        current_state = TaskStatus(task.task_status)
+        undo_state = TaskHistory.get_last_status(project_id, task_id, True)
+
+        StatsService.set_counters_after_undo(project_id, user_id, current_state, undo_state)
+        task.unlock_task(user_id, undo_state,
+                         f'Undo state from {current_state.name} to {undo_state.name}', True)
+
+        return task.as_dto_with_instructions(preferred_locale)
