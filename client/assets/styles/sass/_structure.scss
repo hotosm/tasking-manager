@@ -21,10 +21,6 @@
   > .inner {
     @extend .row, .row--centered;
   }
-
-  @include media(medium-up) {
-    padding: ($global-spacing * 2) 0;
-  }
 }
 
 .page__header__fixed {
@@ -36,7 +32,6 @@
 
 .page__headline {
   float: left;
-  margin: -0.5rem 0;
 }
 
 .page__title {
@@ -52,11 +47,10 @@
 /* Navigation */
 
 .page__prime-nav {
-  font-weight: $base-font-bold;
-
+  width: 80%;
   @include media(medium-up) {
-    float: right;
-    margin: -0.5rem 0;
+    float: left;
+    margin: 0 1em;
   }
 
   .toggle-menu {
@@ -89,22 +83,7 @@
 }
 
 .menu-wrapper {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  clear: both;
-  background: #fff;
-  padding: $global-spacing;
-  box-shadow: 0 4px 12px 0 $base-alpha-color, 0 1px 0 0 $base-alpha-color;
-
-  /* Animation */
-
-  margin-top: - $global-spacing;
-  opacity: 0;
-  visibility: hidden;
   transition: opacity 0.16s ease 0s, margin 0.16s ease 0s, visibility 0.16s linear 0s;
-
   &.menu-wrapper--open {
     margin-top: 0;
     opacity: 1;
@@ -116,12 +95,6 @@
   }
 
   @include media(medium-up) {
-    position: initial;
-    float: left;
-    width: auto;
-    margin-top: 0;
-    background: none;
-    box-shadow: none;
     padding: 0;
     opacity: 1;
     visibility: visible;
@@ -132,10 +105,10 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  float: left;
   @include media(medium-up) {
-    float: left;
-    > li {
-      float: left;
+    li {
+      display: inline-block;
       margin: 0 ($global-spacing / 2) 0 0;
       &:last-child {
         margin-right: 0;
@@ -144,10 +117,14 @@
   }
 }
 
+.menu-secondary-wrapper {
+  float: right;
+  list-style: none;
+}
+
 .global-menu-item {
-  display: block;
+  display: inline-block;
   line-height: 2rem;
-  font-size: 0.9rem !important;
   padding: 0 ($global-spacing / 2);
   border-radius: $base-border-radius;
   .button {
@@ -165,6 +142,10 @@
   @include media(large-up) {
     font-size: 1rem !important;
   }
+}
+
+.language-dropown-wrapper {
+  display: inline-block;
 }
 
 /* ==========================================================================
@@ -244,17 +225,6 @@
       background: linear-gradient(rgba(#fff, 0.92), rgba(#fff, 0.80), rgba(#fff, 0.64));
     }
 
-    &::after {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      z-index: 1;
-      height: 1px;
-      width: 100%;
-      content: "";
-      background: $base-alpha-color;
-    }
-
     @include media(medium-up) {
       text-align: center;
       padding: {
@@ -306,17 +276,6 @@
       bottom: 0;
       content: "";
       background: linear-gradient(rgba(#fff, 0.64), rgba(#fff, 0.80), rgba(#fff, 0.92));
-    }
-
-    &::after {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      z-index: 1;
-      height: 1px;
-      width: 100%;
-      content: "";
-      background: $base-alpha-color;
     }
 
     @include media(medium-up) {
@@ -465,6 +424,6 @@
   margin-bottom: $global-spacing;
 }
 
-.section-container {
+/*.section-container {
   box-shadow: inset 0 1px 0 0 $base-alpha-color;
-}
+}*/
