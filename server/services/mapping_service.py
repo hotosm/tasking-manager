@@ -40,10 +40,7 @@ class MappingService:
         """ Get task as DTO for transmission over API """
         task = MappingService.get_task(task_id, project_id)
         task_dto = task.as_dto_with_instructions(preferred_local)
-        task_dto.is_undoable =MappingService._is_task_undoable(logged_in_user_id, task)
-
-        MappingService._is_task_unlockable(logged_in_user_id, project_id, task, task_dto, task_id)
-
+        task_dto.is_undoable = MappingService._is_task_undoable(logged_in_user_id, task)
         return task_dto
 
     @staticmethod
@@ -59,8 +56,8 @@ class MappingService:
             # User requesting task made the last change, so they are allowed to undo it.
             if last_action.user_id == int(logged_in_user_id):
                 return True
-            else:
-                return False
+
+        return False
 
     @staticmethod
     def lock_task_for_mapping(lock_task_dto: LockTaskDTO) -> TaskDTO:
