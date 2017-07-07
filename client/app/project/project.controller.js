@@ -192,6 +192,7 @@
             vm.taskUnLockErrorMessage = '';
             vm.taskSplitError = false;
             vm.taskSplitCode == null;
+            vm.taskUndoError = false;
         }
 
         /**
@@ -330,6 +331,23 @@
         };
 
         /**
+         * Undo task status change
+         */
+        vm.undo = function(){
+            vm.taskUndoError = false;
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var resultsPromise = taskService.undo(projectId, taskId);
+            resultsPromise.then(function (data) {
+                setUpSelectedTask(data);
+                refreshProject(vm.projectData.projectId);
+            }, function (error) {
+                // TODO - show message
+                vm.taskUndoError = true;
+            });
+        };
+
+        /**
          * Initilaise a project using it's id
          * @param id - id of the project to initialise
          */
@@ -370,7 +388,6 @@
                 } else {
                     vm.highlightVectorLayer.getSource().clear();
                 }
-
 
                 if ($location.search().task) {
                     selectTaskById($location.search().task);
@@ -433,7 +450,7 @@
         }
 
         /**
-         * Select a task using it's ID.
+         * Select a task using its ID.
          * @param taskId
          */
         function selectTaskById(taskId) {
@@ -444,7 +461,6 @@
                 var padding = getPaddingSize();
                 vm.map.getView().fit(task.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
             }
-
         }
 
         /**
