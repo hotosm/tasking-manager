@@ -1,6 +1,18 @@
 machine:
   python:
     version: 3.6.1
+  services:
+    - postgres
+  environment:
+    TM_DB: postgresql://ubuntu:@127.0.0.1:5432/tm3
+  pre:
+    - |
+      # Add a password to the `ubuntu` user, since Postgres is configured to
+      # always ask for a password without sudo, and fails without one.
+      sudo -u postgres psql -p 5433 -c "create user ubuntu with password 'ubuntu';"
+      sudo -u postgres psql -p 5433 -c "alter user ubuntu with superuser;"
+      # Create a new test database.
+      sudo -u postgres psql -p 5433 -c "create database test;"
 
 dependencies:
   cache_directories:
@@ -39,6 +51,9 @@ test:
         --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
         --with-coverage --cover-erase --cover-package=./server
       env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
+    - |
+      # Run migrations
+      env/bin/python manage.py db upgrade
   post:
     - |
       chmod +x ./devops/ci/circleci_deploy.sh
