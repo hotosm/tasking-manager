@@ -25,7 +25,7 @@
 }
 
 .search-container {
-  margin-bottom: 2em;
+  float: right;
 }
 
 /* ==========================================================================
@@ -33,7 +33,6 @@
    ========================================================================== */
 .project-result {
   &__cards {
-    text-align: left;
     padding-bottom: 2em;
     display: flex;
     flex-direction: row;
@@ -45,11 +44,34 @@
 
   &__card {
     width: 500px;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    margin-top: 1em;
+    background-color: #fff;
+    -moz-box-shadow:    0px 2px 3px 1px darken($lightest-background-grey, 8%);
+    -webkit-box-shadow: 0px 2px 3px 1px darken($lightest-background-grey, 8%);
+    box-shadow:         0px 2px 3px 1px darken($lightest-background-grey, 8%);
+    transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+
+    &:hover {
+      -moz-box-shadow:    0px 5px 5px 1px darken($lightest-background-grey, 11%);
+      -webkit-box-shadow: 0px 5px 5px 1px darken($lightest-background-grey, 11%);
+      box-shadow:         0px 5px 5px 1px darken($lightest-background-grey, 11%);
+      margin-top: .5em;
+      margin-bottom: 1.5em;
+    }
+
+    ul {
+      padding: 0;
+      list-style-type: none;
+    }
   }
 
+
+
   &__content {
-    padding: 1rem;
+    padding: 2.5rem 2.5rem 3rem;
   }
 }
 

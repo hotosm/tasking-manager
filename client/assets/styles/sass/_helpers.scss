@@ -25,9 +25,6 @@
 }
 
 /** Override the OSM design system **/
-.form__group {
-  margin-top: $global-spacing;
-}
 
 hr {
   width: 100%;
@@ -35,11 +32,11 @@ hr {
 }
 
 .tr-hover:hover {
-  background-color: rgba($base-color, 0.1);
+  background-color: rgba($medium-grey, 0.1);
 }
 
 .tr-darker {
-  background-color: rgba($base-color, 0.1);
+  background-color: rgba($medium-grey, 0.1);
 }
 
 .pagination {
@@ -146,7 +143,7 @@ hr {
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
-  background-color: $base-color;
+  background-color: $medium-grey;
   border-radius: 10px;
 }
 

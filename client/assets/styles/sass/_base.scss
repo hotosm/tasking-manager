@@ -49,16 +49,16 @@ body {
 
 a {
   cursor: pointer;
-  color: $link-color;
+  color: $base-font-color;
   text-decoration: none;
   transition: opacity 0.24s ease 0s;
 }
 
-a:visited {
+.normallink, .normallink:visited {
   color: $link-color;
 }
 
-a:hover {
+.normallink:hover {
   opacity: 0.64;
 }
 
@@ -99,6 +99,18 @@ a:active {
  * https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile
  */
 
+ .button, .button:visited {
+   -webkit-border-radius: 4px;
+   -moz-border-radius: 4px;
+   border-radius: 4px;
+   background-color: $orange;
+   padding: .5em 2.1em;
+   color: #fff;
+   border: none;
+   text-transform: uppercase;
+   font-weight: 400;
+ }
+
 [role="button"] {
   cursor: pointer;
 }
@@ -112,6 +124,7 @@ input, select, textarea {
   height: auto;
   width: auto;
   margin: 0;
+  padding: .4em .8em;
 }
 
 
@@ -125,14 +138,4 @@ input, select, textarea {
 table {
   border-collapse: collapse;
   border-spacing: 0;
-}
-
-.button, .button:visited {
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  background-color: $orange;
-  padding: .5em 1em;
-  color: #fff;
-  border: none;
 }

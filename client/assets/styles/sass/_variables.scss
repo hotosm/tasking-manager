@@ -13,8 +13,8 @@ $darkest-grey: #494646;
 $medium-grey: #6E6767;
 $grey: #938C8C;
 $lightgrey: #B7B0B0;
+$lightest-background-grey: #F9F9F9;
 
-$base-color: #220A0A;                                   // Midnight Blue
 $primary-color: #AC3232;                                // Boston Blue
 $secondary-color: #46828F;                              // Silver Tree
 
@@ -24,8 +24,8 @@ $warning-color: #f6d55f;                                // Energy Yellow
 $info-color: $primary-color;                            //
 
 $link-color: $orange;
-$base-alpha-color: rgba($base-color, 0.12);
-$base-semi-alpha-color: rgba($base-color, 0.08);
+$base-alpha-color: rgba($medium-grey, 0.12);
+$base-semi-alpha-color: rgba($medium-grey, 0.08);
 
 
 /* Typography
@@ -33,7 +33,7 @@ $base-semi-alpha-color: rgba($base-color, 0.08);
 
 $root-font-size: 14px;
 
-$base-font-color: $base-color;
+$base-font-color: $medium-grey;
 $base-font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $base-font-style: normal;
 $base-font-light: 300;

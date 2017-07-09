@@ -213,6 +213,10 @@ abbr[title] {
   margin-bottom: $global-spacing;
 }
 
+h1, h2, h3 {
+  color: $darkest-grey;
+}
+
 .heading--xlarge {
   @include heading(1.75rem, xlarge-up);   // 28, 32, 36, 40
 }
@@ -238,19 +242,27 @@ abbr[title] {
 }
 
 h1 {
-  @include heading(1.75rem);   // 28
+  @include heading(2.571rem);   // 36
 }
 
 h2 {
-  @include heading(1.5rem);    // 24
+  @include heading(2.0rem);    // 28
 }
 
 h3 {
-  @include heading(1.25rem);   // 20
+  @include heading(1.714rem);   // 24
 }
 
-h4, h5, h6 {
-  @include heading(1rem);      // 16
+h4 {
+  @include heading(1.571rem);      // 22
+}
+
+h5 {
+  @include heading(1.286rem);      // 18
+}
+
+h6 {
+  @include heading(1rem);      // 14
 }
 
 /* Prose specific */

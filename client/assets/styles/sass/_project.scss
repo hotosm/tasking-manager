@@ -39,7 +39,7 @@
     }
 
     .navigation > li {
-      background: rgba($base-color, 0.1) none repeat scroll 0 0;
+      background: rgba($medium-grey, 0.1) none repeat scroll 0 0;
       display: inline-block;
       float: left;
       width: 20%;
@@ -49,7 +49,7 @@
       padding-bottom: 20px;
       padding-top: 20px;
       cursor: pointer;
-      color: rgba($base-color, 0.6);
+      color: rgba($medium-grey, 0.6);
       font-size: 0.8rem;
       font-weight: bold;
     }
@@ -110,7 +110,7 @@
   font-size: smaller;
 
   .odd {
-    background-color: rgba($base-color, 0.1);
+    background-color: rgba($medium-grey, 0.1);
     padding: 5px;
     border-radius: 5px;
   }

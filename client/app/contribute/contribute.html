@@ -8,324 +8,314 @@
             </div>
         </header>
         <div class="section-container">
-            <div class="section__body">
+            <div class="section__body section__body--projects">
                 <div class="inner">
-                    <div class="search-container">
-                        <div>
-                            <form ng-submit="contributeCtrl.search()">
-                                <div class="form__input-group">
-                                    <input type="text" ng-model="contributeCtrl.searchText"
-                                           placeholder="{{ 'Search project description or project number' | translate }}"
-                                           class="form__control form__control--large">
-                                    <span class="form__input-group-button">
-                                         <button class="button button--achromic button--large" type="submit">
-                                             <span>{{ 'Search' | translate }}</span>
-                                         </button>
-                                     </span>
-                                </div>
-                                <div><a ng-click="showSearchOptions = !showSearchOptions">{{ 'Advanced search options' | translate }}</a></div>
-
-                            </form>
-                        </div>
-                        <div class="search" ng-show="showSearchOptions" ng-init="showSearchOptions = false">
-                            <form class="form">
-                                <fieldset class="form__fieldset">
-                                    <div class="search-options-container">
-                                        <div class="form__group search-option">
-                                            <label class="form__label">{{ 'Mapping difficulty' | translate }}</label>
-                                            <select class="form__control form__control--medium"
-                                                    ng-change="contributeCtrl.search()"
-                                                    ng-model="contributeCtrl.mapperLevel">
-                                                <option value="ALL">{{ 'All' | translate }}</option>
-                                                <option value="BEGINNER">{{ 'Beginner' | translate }}</option>
-                                                <option value="INTERMEDIATE">{{ 'Intermediate' | translate }}</option>
-                                                <option value="ADVANCED">{{ 'Advanced' | translate }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="form__group search-option">
-                                            <label class="form__label">{{ 'Organisation' | translate }}</label>
-                                            <select class="form__control form__control--medium"
-                                                    ng-change="contributeCtrl.search()"
-                                                    ng-model="contributeCtrl.searchOrganisation">
-                                                <option value="">{{ 'All' | translate }}</option>
-                                                <option ng-repeat="organisation in contributeCtrl.organisations"
-                                                        value="{{ organisation }}">{{ organisation }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="form__group search-option">
-                                            <label class="form__label">{{ 'Campaign' | translate }}</label>
-                                            <select class="form__control form__control--medium"
-                                                    ng-change="contributeCtrl.search()"
-                                                    ng-model="contributeCtrl.searchCampaign">
-                                                <option value="">{{ 'All' | translate }}</option>
-                                                <option ng-repeat="campaign in contributeCtrl.campaigns"
-                                                        value="{{ campaign }}">{{ campaign }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="form__group search-option">
-                                            <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>
-                                            <div class="drop drop--down drop--align-left drop--open drop--full-width">
-                                                <a>
-                                                    <button class="button button--achromic drop__toggle drop__toggle--caret drop__toggle--caret-select button--select"
-                                                            type="button"
-                                                            ng-click="contributeCtrl.showDropdown = !contributeCtrl.showDropdown">
-                                                        <span>{{ 'Type(s) of mapping' | translate }}</span>
-                                                    </button>
-                                                </a>
-                                                <div ng-show="contributeCtrl.showDropdown" class="drop__content">
-                                                    <div>
-                                                        <label class="form__option form__option--custom-checkbox">
-                                                            <input type="checkbox" name="form-custom-checkbox"
-                                                                   ng-click="contributeCtrl.search()"
-                                                                   ng-model="contributeCtrl.searchRoads"/>
-                                                            <span class="form__option__text">{{ 'Roads' | translate }}</span>
-                                                            <span class="form__option__ui"></span>
-                                                        </label>
-                                                        <label class="form__option form__option--custom-checkbox">
-                                                            <input type="checkbox" name="form-custom-checkbox"
-                                                                   ng-click="contributeCtrl.search()"
-                                                                   ng-model="contributeCtrl.searchBuildings"/>
-                                                            <span class="form__option__text">{{ 'Buildings' | translate }}</span>
-                                                            <span class="form__option__ui"></span>
-                                                        </label>
-                                                        <label class="form__option form__option--custom-checkbox">
-                                                            <input type="checkbox" name="form-custom-checkbox"
-                                                                   ng-click="contributeCtrl.search()"
-                                                                   ng-model="contributeCtrl.searchWaterways"/>
-                                                            <span class="form__option__text">{{ 'Waterways' | translate }}</span>
-                                                            <span class="form__option__ui"></span>
-                                                        </label>
-                                                        <label class="form__option form__option--custom-checkbox">
-                                                            <input type="checkbox" name="form-custom-checkbox"
-                                                                   ng-click="contributeCtrl.search()"
-                                                                   ng-model="contributeCtrl.searchLanduse"/>
-                                                            <span class="form__option__text">{{ 'Land use' | translate }}</span>
-                                                            <span class="form__option__ui"></span>
-                                                        </label>
-                                                        <label class="form__option form__option--custom-checkbox">
-                                                            <input type="checkbox" name="form-custom-checkbox"
-                                                                   ng-click="contributeCtrl.search()"
-                                                                   ng-model="contributeCtrl.searchOther"/>
-                                                            <span class="form__option__text">{{ 'Other' | translate }}</span>
-                                                            <span class="form__option__ui"></span>
-                                                        </label>
+                    <div class="search-results">
+                        <div ng-show="contributeCtrl.results.length > 0">
+                            <div class="form__group">
+                                <ul class="tab--wrapper" role="group"
+                                     aria-label="{{ 'choose results view' | translate }}">
+                                    <li class="tab--item"
+                                            ng-click="contributeCtrl.resultsView = 'grid'"
+                                            ng-class="contributeCtrl.resultsView === 'grid' ? 'button--active' : ''">
+                                        {{ 'Grid view' | translate }}
+                                    </li>
+                                    <li class="tab--item"
+                                            ng-click="contributeCtrl.resultsView = 'map'"
+                                            ng-class="contributeCtrl.resultsView === 'map' ? 'button--active' : ''">
+                                        {{ 'Map view' | translate }}
+                                    </li>
+                                </ul>
+                                <div class="search-container">
+                                    <div>
+                                        <form ng-submit="contributeCtrl.search()">
+                                            <div class="form__input-group">
+                                                <input type="text" ng-model="contributeCtrl.searchText"
+                                                       placeholder="{{ 'Search project description or project number' | translate }}"
+                                                       class="form__control form__control--large">
+                                                <span class="form__input-group-button">
+                                                     <button class="button button--achromic button--large" type="submit">
+                                                         <span>{{ 'Search' | translate }}</span>
+                                                     </button>
+                                                 </span>
+                                            </div>
+                                            <div><a ng-click="showSearchOptions = !showSearchOptions">{{ 'Advanced search options' | translate }}</a></div>
+                                        </form>
+                                    </div>
+                                    <div class="search" ng-show="showSearchOptions" ng-init="showSearchOptions = false">
+                                        <form class="form">
+                                            <fieldset class="form__fieldset">
+                                                <div class="search-options-container">
+                                                    <div class="form__group search-option">
+                                                        <label class="form__label">{{ 'Mapping difficulty' | translate }}</label>
+                                                        <select class="form__control form__control--medium"
+                                                                ng-change="contributeCtrl.search()"
+                                                                ng-model="contributeCtrl.mapperLevel">
+                                                            <option value="ALL">{{ 'All' | translate }}</option>
+                                                            <option value="BEGINNER">{{ 'Beginner' | translate }}</option>
+                                                            <option value="INTERMEDIATE">{{ 'Intermediate' | translate }}</option>
+                                                            <option value="ADVANCED">{{ 'Advanced' | translate }}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form__group search-option">
+                                                        <label class="form__label">{{ 'Organisation' | translate }}</label>
+                                                        <select class="form__control form__control--medium"
+                                                                ng-change="contributeCtrl.search()"
+                                                                ng-model="contributeCtrl.searchOrganisation">
+                                                            <option value="">{{ 'All' | translate }}</option>
+                                                            <option ng-repeat="organisation in contributeCtrl.organisations"
+                                                                    value="{{ organisation }}">{{ organisation }}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form__group search-option">
+                                                        <label class="form__label">{{ 'Campaign' | translate }}</label>
+                                                        <select class="form__control form__control--medium"
+                                                                ng-change="contributeCtrl.search()"
+                                                                ng-model="contributeCtrl.searchCampaign">
+                                                            <option value="">{{ 'All' | translate }}</option>
+                                                            <option ng-repeat="campaign in contributeCtrl.campaigns"
+                                                                    value="{{ campaign }}">{{ campaign }}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form__group search-option">
+                                                        <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>
+                                                        <div class="drop drop--down drop--align-left drop--open drop--full-width">
+                                                            <a>
+                                                                <button class="button button--achromic drop__toggle drop__toggle--caret drop__toggle--caret-select button--select"
+                                                                        type="button"
+                                                                        ng-click="contributeCtrl.showDropdown = !contributeCtrl.showDropdown">
+                                                                    <span>{{ 'Type(s) of mapping' | translate }}</span>
+                                                                </button>
+                                                            </a>
+                                                            <div ng-show="contributeCtrl.showDropdown" class="drop__content">
+                                                                <div>
+                                                                    <label class="form__option form__option--custom-checkbox">
+                                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                                               ng-click="contributeCtrl.search()"
+                                                                               ng-model="contributeCtrl.searchRoads"/>
+                                                                        <span class="form__option__text">{{ 'Roads' | translate }}</span>
+                                                                        <span class="form__option__ui"></span>
+                                                                    </label>
+                                                                    <label class="form__option form__option--custom-checkbox">
+                                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                                               ng-click="contributeCtrl.search()"
+                                                                               ng-model="contributeCtrl.searchBuildings"/>
+                                                                        <span class="form__option__text">{{ 'Buildings' | translate }}</span>
+                                                                        <span class="form__option__ui"></span>
+                                                                    </label>
+                                                                    <label class="form__option form__option--custom-checkbox">
+                                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                                               ng-click="contributeCtrl.search()"
+                                                                               ng-model="contributeCtrl.searchWaterways"/>
+                                                                        <span class="form__option__text">{{ 'Waterways' | translate }}</span>
+                                                                        <span class="form__option__ui"></span>
+                                                                    </label>
+                                                                    <label class="form__option form__option--custom-checkbox">
+                                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                                               ng-click="contributeCtrl.search()"
+                                                                               ng-model="contributeCtrl.searchLanduse"/>
+                                                                        <span class="form__option__text">{{ 'Land use' | translate }}</span>
+                                                                        <span class="form__option__ui"></span>
+                                                                    </label>
+                                                                    <label class="form__option form__option--custom-checkbox">
+                                                                        <input type="checkbox" name="form-custom-checkbox"
+                                                                               ng-click="contributeCtrl.search()"
+                                                                               ng-model="contributeCtrl.searchOther"/>
+                                                                        <span class="form__option__text">{{ 'Other' | translate }}</span>
+                                                                        <span class="form__option__ui"></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </fieldset>
+                                        </form>
                                     </div>
-                                </fieldset>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="contribute-container">
-                        <div class="search-results">
+                                </div>
+                            </div>
                             <div ng-hide="contributeCtrl.results.length > 0">
                                 <p>{{ 'No projects found.' | translate }}</p>
                             </div>
-                            <div ng-show="contributeCtrl.results.length > 0">
-                                <div class="form__group">
+                            <div ng-hide="contributeCtrl.resultsView === 'map'">
+                                <div ng-show="contributeCtrl.resultsView === 'grid'">
+                                    <div class="search-results-container">
+                                        <div class="project-result__cards">
+                                            <a href="/project/{{ project.projectId }}" class="project-result__card"
+                                                 ng-repeat="project in contributeCtrl.results track by $index">
+                                                <section class="panel project-result__content">
+                                                    <span>{{ project.priority }}</span>
+                                                    <h4>#{{ project.projectId }} {{ project.name }}</h4>
+                                                    <p markdown-to-html="(project.shortDescription)"></p>
+                                                    <ul>
+                                                        <li ng-show="!project.organisationTag">{{ 'Organisation' | translate }}:
+                                                            N/A
+                                                        </li>
+                                                        <li ng-show="project.organisationTag">{{ 'Organisation' | translate }}: {{ project.organisationTag }}</li>
+                                                        <li>{{ 'Level' | translate }}: {{ project.mapperLevel }}</li>
+                                                    </ul>
+                                                    <div class="progress-bar-container">
+                                                        <span class="label">{{ project.percentMapped }}{{ '% Mapped' | translate }}</span>
+                                                        <uib-progressbar
+                                                                value="project.percentMapped"></uib-progressbar>
+                                                        <span class="label">{{ project.percentValidated }}{{ '% Validated' | translate }}</span>
+                                                        <uib-progressbar
+                                                                value="project.percentValidated"></uib-progressbar>
+                                                    </div>
+                                                </section>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list" ng-show="contributeCtrl.resultsView === 'list'">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                <span>#</span>
+                                            </th>
+                                            <th>
+                                                <span>{{ 'Name' | translate }}</span>
+                                            </th>
+                                            <th>
+                                                <span>{{ 'Description' | translate }}</span>
+                                            </th>
+                                            <th>
+                                                <span>{{ 'Level' | translate }}</span>
+                                            </th>
+                                            <th>
+                                                <span>{{ 'Priority' | translate }}</span>
+                                            </th>
+                                            <th>
+                                                <span>{{ 'Organisation' | translate }}</span>
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="project in contributeCtrl.results track by $index">
+                                            <td>{{ project.projectId }}</td>
+                                            <td class="wider-column">{{ project.name }}</td>
+                                            <td>
+                                            <span markdown-to-html="(project.shortDescription)">
+                                            </span>
+                                            </td>
+                                            <td>{{ project.mapperLevel }}</td>
+                                            <td>{{ project.priority }}</td>
+                                            <td ng-show="!project.organisationTag">N/A</td>
+                                            <td ng-show="project.organisationTag">{{ project.organisationTag }}</td>
+                                            <td><a href="/project/{{ project.projectId }}"
+                                                   class="button button--primary button--small">{{ 'Contribute' | translate }}</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Pagination -->
+                                <div class="paging">
                                     <div class="button-group button-group--horizontal" role="group"
-                                         aria-label="{{ 'choose results view' | translate }}">
-                                        <button class="button button--achromic button--active" type="button"
-                                                ng-click="contributeCtrl.resultsView = 'grid'"
-                                                ng-class="contributeCtrl.resultsView === 'grid' ? 'button--active' : ''">
-                                            {{ 'Grid view' | translate }}
+                                         aria-label="{{ 'Navigate the results' | translate }}">
+                                        <button class="button button--achromic"
+                                                ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
+                                            {{ 'Previous' | translate }}
                                         </button>
-                                        <button class="button button--achromic" type="button"
-                                                ng-click="contributeCtrl.resultsView = 'list'"
-                                                ng-class="contributeCtrl.resultsView === 'list' ? 'button--active' : ''">
-                                            {{ 'List view' | translate }}
+                                        <button class="button button--achromic"
+                                                ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
+                                                ng-class="contributeCtrl.pagination.page === 1 ? 'disabled' : ''"
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.lastNum)">
+                                            1
                                         </button>
-                                        <button class="button button--achromic" type="button"
-                                                ng-click="contributeCtrl.resultsView = 'map'"
-                                                ng-class="contributeCtrl.resultsView === 'map' ? 'button--active' : ''">
-                                            {{ 'Map view' | translate }}
+                                        <button class="button button--achromic disabled"
+                                                ng-show="contributeCtrl.pagination.prevNum - 1 > 1">
+                                            ...
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-show="contributeCtrl.pagination.prevNum"
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
+                                            {{ contributeCtrl.pagination.prevNum }}
+                                        </button>
+                                        <button class="button button--achromic button--active">
+                                            {{ contributeCtrl.pagination.page }}
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-show="contributeCtrl.pagination.nextNum"
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
+                                            {{ contributeCtrl.pagination.nextNum }}
+                                        </button>
+                                        <button class="button button--achromic disabled"
+                                                ng-show="contributeCtrl.pagination.pages - contributeCtrl.pagination.page > 2">
+                                            ...
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-show="(contributeCtrl.pagination.nextNum || contributeCtrl.pagination.page) != contributeCtrl.pagination.pages"
+                                                ng-class="contributeCtrl.pagination.pages === contributeCtrl.pagination.page ? 'disabled' : ''"
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.pages)">
+                                            {{ contributeCtrl.pagination.pages }}
+                                        </button>
+                                        <button class="button button--achromic"
+                                                ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
+                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
+                                            {{ 'Next' | translate }}
                                         </button>
                                     </div>
                                 </div>
-                                <div ng-hide="contributeCtrl.resultsView === 'map'">
-                                    <div ng-show="contributeCtrl.resultsView === 'grid'">
-                                        <div class="search-results-container">
-                                            <div class="project-result__cards">
-                                                <div class="project-result__card"
-                                                     ng-repeat="project in contributeCtrl.results track by $index">
-                                                    <section class="panel project-result__content">
-                                                        <div class="progress-bar-container">
-                                                            <span class="label">{{ project.percentMapped }}{{ '% Mapped' | translate }}</span>
-                                                            <uib-progressbar
-                                                                    value="project.percentMapped"></uib-progressbar>
-                                                            <span class="label">{{ project.percentValidated }}{{ '% Validated' | translate }}</span>
-                                                            <uib-progressbar
-                                                                    value="project.percentValidated"></uib-progressbar>
-                                                        </div>
-                                                        <h4>#{{ project.projectId }} {{ project.name }}</h4>
-                                                        <ul>
-                                                            <li ng-show="!project.organisationTag">{{ 'Organisation' | translate }}:
-                                                                N/A
-                                                            </li>
-                                                            <li ng-show="project.organisationTag">{{ 'Organisation' | translate }}: {{ project.organisationTag }}</li>
-                                                            <li>{{ 'Priority' | translate }}: {{ project.priority }}</li>
-                                                            <li>{{ 'Level' | translate }}: {{ project.mapperLevel }}</li>
-                                                        </ul>
-                                                        <p markdown-to-html="(project.shortDescription)"></p>
-                                                        <a href="/project/{{ project.projectId }}"
-                                                           class="button button--primary">{{ 'Contribute' | translate }}</a>
-                                                    </section>
+                            </div>
+                            <div ng-show="contributeCtrl.resultsView === ''">
+                                <div>
+                                    <div id="map" class="map-container">
+                                        <div class="legend-control ol-control">
+                                            <h3>{{ 'Legend' | translate }}</h3>
+                                            <div ng-show="contributeCtrl.showVectorLegend">
+                                                <div>
+                                                    <svg height="25" width="25">
+                                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                                stroke-width="1"
+                                                                fill="red"
+                                                                fill-opacity="0.5"/>
+                                                    </svg>
+                                                    {{ 'Urgent' | translate }}
+                                                </div>
+                                                <div>
+                                                    <svg height="25" width="25">
+                                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                                stroke-width="1"
+                                                                fill="orange"
+                                                                fill-opacity="0.5"/>
+                                                    </svg>
+                                                    {{ 'High' | translate }}
+                                                </div>
+                                                <div>
+                                                    <svg height="25" width="25">
+                                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                                stroke-width="1"
+                                                                fill="yellow"
+                                                                fill-opacity="0.5"/>
+                                                    </svg>
+                                                    {{ 'Medium' | translate }}
+                                                </div>
+                                                <div>
+                                                    <svg height="25" width="25">
+                                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                                stroke-width="1"
+                                                                fill="blue"
+                                                                fill-opacity="0.5"/>
+                                                    </svg>
+                                                    {{ 'Low' | translate }}
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="list" ng-show="contributeCtrl.resultsView === 'list'">
-                                        <table class="table">
-                                            <thead>
-                                            <tr>
-                                                <th>
-                                                    <span>#</span>
-                                                </th>
-                                                <th>
-                                                    <span>{{ 'Name' | translate }}</span>
-                                                </th>
-                                                <th>
-                                                    <span>{{ 'Description' | translate }}</span>
-                                                </th>
-                                                <th>
-                                                    <span>{{ 'Level' | translate }}</span>
-                                                </th>
-                                                <th>
-                                                    <span>{{ 'Priority' | translate }}</span>
-                                                </th>
-                                                <th>
-                                                    <span>{{ 'Organisation' | translate }}</span>
-                                                </th>
-                                                <th></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr ng-repeat="project in contributeCtrl.results track by $index">
-                                                <td>{{ project.projectId }}</td>
-                                                <td class="wider-column">{{ project.name }}</td>
-                                                <td>
-                                                <span markdown-to-html="(project.shortDescription)">
-                                                </span>
-                                                </td>
-                                                <td>{{ project.mapperLevel }}</td>
-                                                <td>{{ project.priority }}</td>
-                                                <td ng-show="!project.organisationTag">N/A</td>
-                                                <td ng-show="project.organisationTag">{{ project.organisationTag }}</td>
-                                                <td><a href="/project/{{ project.projectId }}"
-                                                       class="button button--primary button--small">{{ 'Contribute' | translate }}</a>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <!-- Pagination -->
-                                    <div class="paging">
-                                        <div class="button-group button-group--horizontal" role="group"
-                                             aria-label="{{ 'Navigate the results' | translate }}">
-                                            <button class="button button--achromic"
-                                                    ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
-                                                    ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
-                                                {{ 'Previous' | translate }}
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
-                                                    ng-class="contributeCtrl.pagination.page === 1 ? 'disabled' : ''"
-                                                    ng-click="contributeCtrl.search(contributeCtrl.pagination.lastNum)">
-                                                1
-                                            </button>
-                                            <button class="button button--achromic disabled"
-                                                    ng-show="contributeCtrl.pagination.prevNum - 1 > 1">
-                                                ...
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-show="contributeCtrl.pagination.prevNum"
-                                                    ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
-                                                {{ contributeCtrl.pagination.prevNum }}
-                                            </button>
-                                            <button class="button button--achromic button--active">
-                                                {{ contributeCtrl.pagination.page }}
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-show="contributeCtrl.pagination.nextNum"
-                                                    ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
-                                                {{ contributeCtrl.pagination.nextNum }}
-                                            </button>
-                                            <button class="button button--achromic disabled"
-                                                    ng-show="contributeCtrl.pagination.pages - contributeCtrl.pagination.page > 2">
-                                                ...
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-show="(contributeCtrl.pagination.nextNum || contributeCtrl.pagination.page) != contributeCtrl.pagination.pages"
-                                                    ng-class="contributeCtrl.pagination.pages === contributeCtrl.pagination.page ? 'disabled' : ''"
-                                                    ng-click="contributeCtrl.search(contributeCtrl.pagination.pages)">
-                                                {{ contributeCtrl.pagination.pages }}
-                                            </button>
-                                            <button class="button button--achromic"
-                                                    ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
-                                                    ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
-                                                {{ 'Next' | translate }}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div ng-show="contributeCtrl.resultsView === 'map'">
-                                    <div>
-                                        <div id="map" class="map-container">
-                                            <div class="legend-control ol-control">
-                                                <h3>{{ 'Legend' | translate }}</h3>
-                                                <div ng-show="contributeCtrl.showVectorLegend">
-                                                    <div>
-                                                        <svg height="25" width="25">
-                                                            <circle cx="15" cy="15" r="8" stroke="black"
-                                                                    stroke-width="1"
-                                                                    fill="red"
-                                                                    fill-opacity="0.5"/>
-                                                        </svg>
-                                                        {{ 'Urgent' | translate }}
-                                                    </div>
-                                                    <div>
-                                                        <svg height="25" width="25">
-                                                            <circle cx="15" cy="15" r="8" stroke="black"
-                                                                    stroke-width="1"
-                                                                    fill="orange"
-                                                                    fill-opacity="0.5"/>
-                                                        </svg>
-                                                        {{ 'High' | translate }}
-                                                    </div>
-                                                    <div>
-                                                        <svg height="25" width="25">
-                                                            <circle cx="15" cy="15" r="8" stroke="black"
-                                                                    stroke-width="1"
-                                                                    fill="yellow"
-                                                                    fill-opacity="0.5"/>
-                                                        </svg>
-                                                        {{ 'Medium' | translate }}
-                                                    </div>
-                                                    <div>
-                                                        <svg height="25" width="25">
-                                                            <circle cx="15" cy="15" r="8" stroke="black"
-                                                                    stroke-width="1"
-                                                                    fill="blue"
-                                                                    fill-opacity="0.5"/>
-                                                        </svg>
-                                                        {{ 'Low' | translate }}
-                                                    </div>
-                                                </div>
-                                                <div ng-show="contributeCtrl.showClusterLegend">
-                                                    <div>
-                                                        <svg height="27" width="27">
-                                                            <circle cx="15" cy="15" r="12" stroke="#fff"
-                                                                    stroke-width="1"
-                                                                    fill='#3399CC'
-                                                            />
-                                                            <text fill="#ffffff" font-size="8" font-family="Verdana"
-                                                                  x="10" y="17">54
-                                                            </text>
-                                                        </svg>
-                                                        {{ 'Project Cluster' | translate }}
-                                                    </div>
+                                            <div ng-show="contributeCtrl.showClusterLegend">
+                                                <div>
+                                                    <svg height="27" width="27">
+                                                        <circle cx="15" cy="15" r="12" stroke="#fff"
+                                                                stroke-width="1"
+                                                                fill='#3399CC'
+                                                        />
+                                                        <text fill="#ffffff" font-size="8" font-family="Verdana"
+                                                              x="10" y="17">54
+                                                        </text>
+                                                    </svg>
+                                                    {{ 'Project Cluster' | translate }}
                                                 </div>
                                             </div>
                                         </div>
