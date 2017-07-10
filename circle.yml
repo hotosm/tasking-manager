@@ -1,8 +1,6 @@
 machine:
   python:
     version: 3.6.1
-  services:
-    - postgres
   environment:
     TM_DB: postgresql://ubuntu:@127.0.0.1:5432/circle_test
     PYTHON_VERSION: 3.6.1
