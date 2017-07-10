@@ -25,7 +25,9 @@
 }
 
 .search-container {
-  float: right;
+  width: 18%;
+  float: left;
+  margin-right: 3%;
 }
 
 /* ==========================================================================
@@ -43,7 +45,7 @@
   }
 
   &__card {
-    width: 500px;
+    width: 47%;
     margin-bottom: 1rem;
     margin-top: 1em;
     background-color: #fff;
@@ -54,6 +56,14 @@
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     position: relative;
+    margin-right: 1%;
+    min-height: 450px;
+
+    @include media(large-up) {
+      &:nth-child(2n) {
+        margin-right: 0;
+      }
+    }
 
     &:hover {
       -moz-box-shadow:    0px 5px 5px 1px darken($lightest-background-grey, 11%);
@@ -69,10 +79,11 @@
     }
   }
 
-
-
   &__content {
     padding: 2.5rem 2.5rem 3rem;
+    dt {
+      padding-top: .2em;
+    }
   }
 
   &__footer {
@@ -103,12 +114,7 @@
   margin-top: 15px;
   @include span(20/20);
   .search-option {
-    @include span(10/20);
-    float: left;
-    padding: 0.25em;
-    @include media(large-up) {
-      @include span(5/20);
-    }
+    padding-bottom: 2em;
   }
   .search-button {
     padding-top: 1.75em;
@@ -143,4 +149,10 @@
 .popup-short-desc {
   height: 10em;
   overflow-y: auto;
+}
+
+.ng-isolate-scope {
+  overflow-y: hidden;
+  max-height: 100px;
+  margin-bottom: 1em;
 }

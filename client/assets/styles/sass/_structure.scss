@@ -111,6 +111,7 @@
     li {
       display: inline-block;
       margin: 0 ($global-spacing / 2) 0 0;
+      position: relative;
       &:last-child {
         margin-right: 0;
       }
@@ -126,7 +127,7 @@
 .global-menu-item {
   display: inline-block;
   line-height: 2rem;
-  padding: .2rem 1rem;
+  padding: .3rem 1rem .1rem;
   border-radius: $base-border-radius;
   .button {
     font-size: 0.9rem !important;
@@ -145,8 +146,44 @@
   }
 }
 
+.global-menu-item--pipe {
+  margin-right: 1.2em;
+  padding-right: 1.5em;
+  border-right: 1px solid darken($lightest-background-grey, 5%);
+}
+
 .language-dropown-wrapper {
   display: inline-block;
+}
+
+.drop__content {
+  position: absolute;
+  width: 180px;
+  max-height: 300px;
+  overflow-y: scroll;
+  background-color: #fff;
+  border: 1px solid darken($lightest-background-grey, 5%);
+  -moz-box-shadow:    0px 1px 2px 1px darken($lightest-background-grey, 5%);
+  -webkit-box-shadow: 0px 1px 2px 1px darken($lightest-background-grey, 5%);
+  box-shadow:         0px 1px 2px 1px darken($lightest-background-grey, 5%);
+  right: 0em;
+  top: 3em;
+}
+
+.drop__menu {
+  margin: 0;
+  padding: 0;
+  li {
+    display: block;
+    padding: .5em 1em;
+    transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    margin: 0;
+    &:hover {
+      background-color: $lightest-background-grey;
+    }
+  }
 }
 
 /* ==========================================================================
@@ -454,4 +491,9 @@
   border-bottom: 1px solid darken($lightest-background-grey, 8%);
   margin-bottom: 2em;
   @extend .clearfix;
+}
+
+.search-results-container--wrapper {
+  float: left;
+  width: 78%;
 }

@@ -141,5 +141,10 @@ table {
 }
 
 .dropdown-arrow {
-
+  background-image: url('../../icons/chevron-down.svg');
+  width: 20px;
+  height: 10px;
+  content: '';
+  background-size: 20px 10px;
+  display: inline-block;
 }
