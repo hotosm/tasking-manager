@@ -240,12 +240,17 @@
                                                 <div ng-show="projectCtrl.user && projectCtrl.taskLockError"
                                                      class="alert alert--danger"
                                                      role="alert">
-                                                    <p>{{ 'The selected task could be locked.' | translate }}</p>
+                                                    <p>{{ 'The selected task could not be locked.' | translate }}</p>
                                                 </div>
                                                 <div ng-show="projectCtrl.user && !projectCtrl.userCanMap"
                                                      class="alert alert--danger"
                                                      role="alert">
                                                     <p>{{ 'You cannot select tasks for mapping on this project because you do not have the required mapper experience level.' | translate }}</p>
+                                                </div>
+                                                <div ng-show="projectCtrl.taskUndoError"
+                                                    class="alert alert--danger"
+                                                    role="alert">
+                                                   <p>{{ 'The selected task status could not be undone.' | translate }}</p>
                                                 </div>
                                             </div>
 
@@ -272,8 +277,11 @@
                                                             class="button button--achromic">
                                                         {{ 'Select another task' | translate }}
                                                     </button>
-
-
+                                                    <button ng-show="projectCtrl.selectedTaskData.isUndoable"
+                                                            class="button button--achromic"
+                                                            ng-click="projectCtrl.undo()">
+                                                        {{ 'Undo' | translate }}
+                                                    </button>
                                                     <button class="button button--achromic"
                                                             ng-click="projectCtrl.resetToSelectingStep()">
                                                         {{ 'Cancel' | translate }}
@@ -585,6 +593,11 @@
                                                         ng-click="projectCtrl.selectRandomTaskValidate()"
                                                         class="button button--achromic">
                                                     {{ 'Select another task' | translate }}
+                                                </button>
+                                                <button ng-show="projectCtrl.selectedTaskData.isUndoable"
+                                                        class="button button--achromic"
+                                                        ng-click="projectCtrl.undo()">
+                                                        {{ 'Undo' | translate }}
                                                 </button>
                                                 <button class="button button--achromic"
                                                         ng-click="projectCtrl.resetToSelectingStep()">
