@@ -339,6 +339,9 @@
             var taskId = vm.selectedTaskData.taskId;
             var resultsPromise = taskService.undo(projectId, taskId);
             resultsPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
                 setUpSelectedTask(data);
                 refreshProject(vm.projectData.projectId);
             }, function (error) {
