@@ -13,6 +13,8 @@
   &__card {
     width: 350px;
     margin-bottom: 2rem;
+    border: 1px solid darken($lightest-background-grey, 8%);
+    background-color: #fff;
   }
 
   &__content {

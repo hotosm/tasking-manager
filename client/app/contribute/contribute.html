@@ -1,6 +1,6 @@
 <div class="inner">
     <section class="section section--asided">
-        <header class="section__header">
+        <header class="section__header section__header--nodescription">
             <div class="inner">
                 <h1 class="section__title">
                     {{ 'Contribute' | translate }}
@@ -8,7 +8,7 @@
             </div>
         </header>
         <div class="section-container">
-            <div class="section__body section__body--projects">
+            <div class="section__body section__body--secondary">
                 <div class="inner">
                     <div class="search-results">
                         <div ng-show="contributeCtrl.results.length > 0">
@@ -147,22 +147,28 @@
                                                     <span>{{ project.priority }}</span>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
                                                     <p markdown-to-html="(project.shortDescription)"></p>
-                                                    <ul>
-                                                        <li ng-show="!project.organisationTag">{{ 'Organisation' | translate }}:
-                                                            N/A
-                                                        </li>
-                                                        <li ng-show="project.organisationTag">{{ 'Organisation' | translate }}: {{ project.organisationTag }}</li>
-                                                        <li>{{ 'Level' | translate }}: {{ project.mapperLevel }}</li>
-                                                    </ul>
-                                                    <div class="progress-bar-container">
-                                                        <span class="label">{{ project.percentMapped }}{{ '% Mapped' | translate }}</span>
-                                                        <uib-progressbar
-                                                                value="project.percentMapped"></uib-progressbar>
-                                                        <span class="label">{{ project.percentValidated }}{{ '% Validated' | translate }}</span>
-                                                        <uib-progressbar
-                                                                value="project.percentValidated"></uib-progressbar>
-                                                    </div>
+                                                    <dl>
+                                                        <dt ng-show="!project.organisationTag">{{ 'Organization' | translate }}:</dt>
+                                                        <dd>N/A</dd>
+
+                                                        <dt ng-show="project.organisationTag">{{ 'Organization' | translate }}:</dt>
+                                                        <dd>{{ project.organisationTag }}</dd>
+
+                                                        <dt>{{ 'Level' | translate }}:</dt>
+                                                        <dd>{{ project.mapperLevel }}</dd>
+                                                    </dl>
                                                 </section>
+                                                <section class="panel project-result__content project-result__footer">
+                                                    <dl>
+                                                        <dt class='num--large'>{{ project.percentMapped }}%</dt>
+                                                        <dd>{{ 'Mapped' | translate }}</dd>
+                                                    <!--<uib-progressbar
+                                                            value="project.percentMapped"></uib-progressbar>-->
+                                                        <dt class='num--large'>{{ project.percentValidated }}%</dt>
+                                                        <dd>{{ 'Validated' | translate }}</dd>
+                                                    <!--<uib-progressbar
+                                                            value="project.percentValidated"></uib-progressbar>-->
+                                               </section>
                                             </a>
                                         </div>
                                     </div>

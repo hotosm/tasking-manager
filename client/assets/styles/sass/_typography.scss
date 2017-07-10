@@ -38,6 +38,10 @@ p, ul, ol, dl, pre, blockquote {
   margin: 0 0 $global-spacing 0;
 }
 
+p {
+  max-width: 800px;
+}
+
 
 /* Lead
    ========================================================================== */
@@ -75,13 +79,21 @@ ol {
 }
 
 dt {
-  @extend .heading-alt;
+  float: left;
+  margin-right: 1em;
   font-size: 0.875rem;
   line-height: 1.25rem;
+  clear: left;
+  font-weight: 400;
+  margin-bottom: .5em;
 }
 
 dd {
-  margin: 0 0 ($global-spacing / 2) 0;
+  float: left;
+  font-size: 0.875rem;
+  margin: 0;
+  margin-bottom: .5em;
+  color: $grey;
 
   &:last-child {
     margin-bottom: 0;
@@ -107,6 +119,14 @@ dd {
   dd + dd {
     margin-left: 32%;
   }
+}
+
+.num--large {
+  font-size: 1.5em;
+  color: $link-color;
+  clear: none;
+  margin-right: .2em;
+  font-weight: 100;
 }
 
 /* Prose specific */

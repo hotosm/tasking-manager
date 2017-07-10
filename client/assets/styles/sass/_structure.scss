@@ -48,7 +48,7 @@
 /* Navigation */
 
 .page__prime-nav {
-  width: 80%;
+  width: 85%;
   @include media(medium-up) {
     float: left;
     margin: 0 1em;
@@ -289,9 +289,13 @@
 
     @include media(large-up) {
       padding: {
-        top: ($global-spacing * 10);
-        bottom: ($global-spacing * 2);
+        top: ($global-spacing * 12);
+        bottom: ($global-spacing * 3);
       }
+    }
+
+    &--nodescription {
+      padding-bottom: 1em;
     }
   }
 
@@ -400,7 +404,7 @@
   }
 }
 
-.section__body--projects {
+.section__body--secondary {
   background-color: $lightest-background-grey;
   border-top: 1px solid darken($lightest-background-grey, 3%)
 }
@@ -441,6 +445,9 @@
   display: inline-block;
   padding: .5em .8em;
   margin-right: .5em;
+  &:hover {
+    color: $link-color;
+  }
 }
 
 .form__group {

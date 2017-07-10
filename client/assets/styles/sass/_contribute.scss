@@ -53,6 +53,7 @@
     transition: all 0.3s ease 0s;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
+    position: relative;
 
     &:hover {
       -moz-box-shadow:    0px 5px 5px 1px darken($lightest-background-grey, 11%);
@@ -73,11 +74,21 @@
   &__content {
     padding: 2.5rem 2.5rem 3rem;
   }
+
+  &__footer {
+    position: absolute;
+    bottom: 0;
+    padding: 1.5rem 2.5rem;
+    width: 100%;
+    border-top: 1px solid darken($lightest-background-grey, 2%);
+    dt, dd {
+      margin-bottom: 0;
+    }
+    dd { margin-right: 3em; }
+  }
 }
 
 .progress-bar-container {
-  float: right;
-  max-width: 100px;
   .label {
     font-size: x-small;
   }
