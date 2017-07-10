@@ -4,15 +4,8 @@ machine:
   services:
     - postgres
   environment:
-    TM_DB: postgresql://ubuntu:@127.0.0.1:5432/tm3
-  pre:
-    - |
-      # Add a password to the `ubuntu` user, since Postgres is configured to
-      # always ask for a password without sudo, and fails without one.
-      sudo -u postgres psql -p 5433 -c "create user ubuntu with password 'ubuntu';"
-      sudo -u postgres psql -p 5433 -c "alter user ubuntu with superuser;"
-      # Create a new test database.
-      sudo -u postgres psql -p 5433 -c "create database test;"
+    TM_DB: postgresql://ubuntu:@127.0.0.1:5432/circle_test
+    PYTHON_VERSION: 3.6.1
 
 dependencies:
   cache_directories:
@@ -34,7 +27,7 @@ dependencies:
       ./node_modules/.bin/gulp build
       cd ..
       # Install Python dependencies
-      virtualenv env
+      /opt/circleci/python/$PYTHON_VERSION/bin/virtualenv env
       env/bin/pip install --upgrade pip
       env/bin/pip install -r requirements.txt
 
