@@ -1,0 +1,15 @@
+FROM python:3.6
+
+RUN \
+  apt-get update \
+  && apt-get install --no-install-recommends -y \
+      libgeos-c1 \
+      libgeos-dev \
+      postgresql-client-9.4 \
+  && apt-get clean \
+  && apt-get autoremove \
+  && rm -rf /var/lib/apt/lists/*
+
+ADD requirements.txt .
+
+RUN pip install -r requirements.txt

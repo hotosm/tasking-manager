@@ -1,0 +1,9 @@
+# universal
+.git
+.gitignore
+LICENSE
+README.md
+docker-compose.yml
+
+# app specific
+./client/node_modules/
