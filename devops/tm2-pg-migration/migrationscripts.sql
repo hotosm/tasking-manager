@@ -85,7 +85,7 @@ tsvector_update_trigger(text_searchable, 'pg_catalog.english', project_id_str, s
 -- set project-id which will update text search index
 update hotnew.project_info set project_id_str = project_id::text;
 
-CREATE INDEX textsearch_idx ON project_info USING GIN (text_searchable);
+CREATE INDEX textsearch_idx ON hotnew.project_info USING GIN (text_searchable);
 
 -- TASKS
 -- Get all tasks that don't have a state of -1 (removed) and where they relate to a project that has been migrated above
