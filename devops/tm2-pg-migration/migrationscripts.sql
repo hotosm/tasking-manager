@@ -66,15 +66,6 @@ INSERT INTO hotnew.projects(
 select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
 
 
--- Insert AOI and Geom into projects
-Update hotnew.projects
-   set geometry = a.geometry,
-       centroid = a.centroid
-  from hotold.areas as a
-where  a.id = hotnew.projects.aoi_id;
-
-
-
 -- Project info & translations
 -- Skip any records relating to projects that have not been imported
 INSERT INTO hotnew.project_info(
