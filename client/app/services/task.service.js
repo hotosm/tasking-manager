@@ -27,7 +27,8 @@
             getLockedTasksForCurrentUser: getLockedTasksForCurrentUser,
             getLockedTaskDetailsForCurrentUser: getLockedTaskDetailsForCurrentUser,
             splitTask: splitTask,
-            getTaskFeaturesByIdAndStatus: getTaskFeaturesByIdAndStatus
+            getTaskFeaturesByIdAndStatus: getTaskFeaturesByIdAndStatus,
+            undo: undo
         };
 
         return service;
@@ -39,13 +40,19 @@
          * @returns {!jQuery.jqXHR|!jQuery.deferred|!jQuery.Promise|*}
          */
         function getTask(projectId, taskId) {
+
+            // Optionally pass in an authenticated header (only when available)
+            var headers = {'Content-Type': 'application/json; charset=UTF-8'};
+            var authenticatedHeaders = authService.getAuthenticatedHeader();
+            if (authenticatedHeaders){
+                headers = authenticatedHeaders;
+            }
+
             // Returns a promise
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: headers
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -472,5 +479,27 @@
             });
         }
 
+        /**
+         * Undo marking a task. It returns it to its previous state.
+         * @param projectId
+         * @param taskId
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         */
+        function undo(projectId, taskId){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/undo-mapping',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response){
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback(error) {
+                 // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
     }
 })();
