@@ -25,8 +25,8 @@ class EnvironmentConfig:
     SQLALCHEMY_MAX_OVERFLOW = 10
     SECRET_KEY = os.getenv('TM_SECRET', None)
     SMTP_SETTINGS = {
-        'host': 'email-smtp.eu-west-1.amazonaws.com',
-        'smtp_user': 'AKIAIIBGP3IBB3NWDX5Q',
+        'host': os.getenv('TM_SMTP_HOST', None),
+        'smtp_user': os.getenv('TM_SMTP_USER', None),
         'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
     }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
