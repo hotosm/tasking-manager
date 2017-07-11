@@ -71,9 +71,7 @@ Update hotnew.projects
    set geometry = a.geometry,
        centroid = a.centroid
   from hotold.areas as a
-where  a.id = hotnew.projects.aoi_id
-
-
+where  a.id = hotnew.projects.aoi_id;
 
 
 
