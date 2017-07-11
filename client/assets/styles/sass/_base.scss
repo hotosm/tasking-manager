@@ -111,6 +111,12 @@ a:active {
    font-weight: 400;
  }
 
+ .button--outline, .button--outline:visited {
+   background-color: inherit;
+   border: 2px solid $darkest-grey;
+   color: $darkest-grey;
+ }
+
 [role="button"] {
   cursor: pointer;
 }
@@ -124,7 +130,7 @@ input, select, textarea {
   height: auto;
   width: auto;
   margin: 0;
-  padding: .4em .8em;
+  padding: .2em .8em;
 }
 
 
@@ -147,4 +153,53 @@ table {
   content: '';
   background-size: 20px 10px;
   display: inline-block;
+}
+
+.search--wrapper {
+  position: relative;
+  input {
+    width: 100%;
+  }
+}
+
+.icon--search {
+  background-image: url('../../icons/magnifier-left.svg');
+  width: 18px;
+  height: 18px;
+  content: '';
+  background-size: 18px 18px;
+  display: inline-block;
+  position: absolute;
+  border: none;
+  background-color: inherit;
+  top: .6em;
+  right: .6em;
+  span {
+    visibility: hidden;
+  }
+}
+
+/*pagination*/
+.paging {
+  text-align: center;
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      display: inline-block;
+      padding: 0 .3em;
+      margin: 0 .3em;
+    }
+    .paging--next {
+      margin-left: 1em;
+    }
+
+    .paging--previous {
+      margin-right: 1em;
+    }
+  }
+  .button--active {
+    font-weight: 600;
+  }
 }

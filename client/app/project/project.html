@@ -1,61 +1,97 @@
 <div>
-    <section class="section">
-        <div class="project-container">
-            <!-- side bar -->
-            <div class="sidebar">
-                <!-- tabs -->
-                <ul class="navigation">
-                    <li ng-click="projectCtrl.currentTab = 'description'"
-                        title="{{ 'Go to the description tab' | translate }}"
-                        ng-class="projectCtrl.currentTab == 'description'? 'active':''">
-                        {{ 'Description' | translate }}
-                    </li>
+    <section class="section__header page__project">
+        <div class="inner">
+            <div>
+                <mark>{{ projectCtrl.projectData.projectPriority }}</mark>
+            </div>
+            <div class="header--withShare">
+                <h2 class="section__title">
+                    #{{ projectCtrl.projectData.projectId }}
+                    - {{ projectCtrl.projectData.projectInfo.name }}
+                </h2>
+                <div class="component--share">
+                    <a class="button button--outline" href="">Share</a>
+                    <div class="drop__content">
+                    <ul class="share--options drop__menu">
+                        <li>
+                            <a class=""
+                                    socialshare
+                                    socialshare-provider="twitter"
+                                    socialshare-text="I have just contributed to this project"
+                                    socialshare-hashtags="hotosm"
+                                    socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                                Twitter
+                            </a>
+                        </li>
+                        <li>
+                            <a class=""
+                                    socialshare
+                                    socialshare-provider="facebook"
+                                    socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                                Facebook
+                            </a>
+                        </li>
+                        <li>
+                            <a class=""
+                                    socialshare
+                                    socialshare-provider="linkedin"
+                                    socialshare-text="I have just contributed to this project"
+                                    socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
+                                LinkedIn
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>
+            <p markdown-to-html="projectCtrl.projectData.projectInfo.description"></p>
+            <dl>
+                <dt>{{ 'Status:' | translate }} </dt>
+                <dd>{{ projectCtrl.projectData.projectStatus }}</dd>
+
+                <dt>{{ 'Created by:' | translate }} </dt>
+                <dd><a href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></dd>
+
+                <dt>{{ 'Last updated' | translate }}: </dt>
+                <dd am-time-ago="projectCtrl.projectData.lastUpdated | amUtc | amLocal"></dd>
+            </dl>
+
+        </div>
+    </section>
+    <section class="section__body">
+        <div class="project-container inner">
+            <div class="form__group">
+                <ul class="tab--wrapper">
                     <li ng-click="projectCtrl.currentTab = 'instructions'"
                         title="{{ 'Go to the instructions tab' | translate }}"
+                        class='tab--item'
                         ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
                         {{ 'Instructions' | translate }}
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'mapping'"
                         title="{{ 'Go to the mapping tab' | translate }}"
+                        class='tab--item'
                         ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
                         {{ 'Map' | translate }}
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'validation'"
                         title="{{ 'Go to the validation tab' | translate }}"
+                        class='tab--item'
                         ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
                         {{ 'Validate' | translate }}
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'chat'"
                         title="{{ 'Go to the chat tab' | translate }}"
+                        class='tab--item'
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
                         {{ 'Discussion' | translate }}
                     </li>
                 </ul>
+            </div>
+            <!-- side bar -->
+            <div class="sidebar">
+                <!-- tabs -->
                 <div class="content">
-                    <div ng-show="projectCtrl.currentTab === 'description'">
-                        <button class="button button--secondary pull-right"
-                                ng-click="projectCtrl.currentTab = 'instructions'">
-                            {{ 'Instructions' | translate }} <i class="hot-ds-icon-sm-chevron-right"></i>
-                        </button>
-                        <section>
-                            <h2>{{ 'Description' | translate }}</h2>
-                            <h4>
-                                #{{ projectCtrl.projectData.projectId }}-{{ projectCtrl.projectData.projectInfo.name }}</h4>
-                            <div>
-                                <mark>{{ 'Priority' | translate }}: {{ projectCtrl.projectData.projectPriority }}</mark>
-                            </div>
-                            <p markdown-to-html="projectCtrl.projectData.projectInfo.description"></p>
-                            <hr/>
-                            <div>
-                                <strong>{{ 'Status:' | translate }} </strong><span>{{ projectCtrl.projectData.projectStatus }}</span>
-                            </div>
-                            <div><strong>{{ 'Created by:' | translate }} </strong><span><a
-                                    href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></span>
-                            </div>
-                            <div><strong>{{ 'Last updated' | translate }}: </strong> <span
-                                    am-time-ago="projectCtrl.projectData.lastUpdated | amUtc | amLocal"></span></div>
-                        </section>
-                    </div>
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
                         <button class="button button--secondary pull-right"
                                 ng-click="projectCtrl.currentTab = 'validation'">{{ 'Validate' | translate }}
@@ -66,7 +102,7 @@
                             <i class="hot-ds-icon-sm-chevron-right"></i>
                         </button>
                         <section>
-                            <h2>{{ 'Instructions' | translate }}</h2>
+                            <h3>{{ 'Instructions' | translate }}</h3>
                             <div ng-show="projectCtrl.projectData.entitiesToMap" ng-init="showEntitiesHelp = false">
                                 <strong>
                                     {{ 'Entities to map' | translate }}
@@ -180,7 +216,7 @@
                             <!-- task viewing UI -->
                             <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                 <!-- task information -->
-                                <h2>{{ 'Mapping' | translate }}</h2>
+                                <h3>{{ 'Mapping' | translate }}</h3>
                                 <div ng-show="projectCtrl.lockedTasksForCurrentUser.length > 0">
                                     <div class="alert alert--warning"
                                          role="alert">
@@ -834,39 +870,9 @@
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <hr/>
-                        <button class="button button--primary"
-                                socialshare
-                                socialshare-provider="twitter"
-                                socialshare-text="I have just contributed to this project"
-                                socialshare-hashtags="hotosm"
-                                socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
-                            Twitter
-                        </button>
-                        <button class="button button--primary"
-                                socialshare
-                                socialshare-provider="facebook"
-                                socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
-                            Facebook
-                        </button>
-                        <button class="button button--primary"
-                                socialshare
-                                socialshare-provider="linkedin"
-                                socialshare-text="I have just contributed to this project"
-                                socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
-                            LinkedIn
-                        </button>
-                    </div>
                 </div>
             </div>
             <div id="map" class="map-container">
-                <div class="project-title">
-                    <h3 class="section__title">
-                        #{{ projectCtrl.projectData.projectId }}
-                        - {{ projectCtrl.projectData.projectInfo.name }}
-                    </h3>
-                </div>
                 <div>
                     <div class="activity-project-button">
                         <a ng-href="/project/{{ projectCtrl.projectData.projectId }}/dashboard"

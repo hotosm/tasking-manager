@@ -196,6 +196,9 @@
     .inner {
       padding-top: 3rem;
     }
+    .project-container {
+      padding-top: 1rem;
+    }
   }
 }
 
@@ -317,7 +320,6 @@
     }
 
     @include media(medium-up) {
-      text-align: center;
       padding: {
         top: ($global-spacing * 7);
         bottom: ($global-spacing * 1);
@@ -397,6 +399,27 @@
     > *:last-child {
       margin-bottom: 0;
     }
+  }
+}
+
+.header--withShare {
+  @extend .clearfix;
+
+  .section__title {
+    float: left;
+    width: 85%;
+  }
+  .component--share {
+    float: right;
+    width: 15%;
+    text-align: right;
+    position: relative;
+  }
+  .share--options {
+    text-align: left;
+  }
+  .drop__content {
+    width: 140px;
   }
 }
 
@@ -489,7 +512,7 @@
 
 .form__group {
   border-bottom: 1px solid darken($lightest-background-grey, 8%);
-  margin-bottom: 2em;
+  margin-bottom: 3em;
   @extend .clearfix;
 }
 

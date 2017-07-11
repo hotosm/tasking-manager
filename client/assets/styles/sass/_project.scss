@@ -3,9 +3,6 @@
    ========================================================================== */
 
 .project-container {
-  height: 100%;
-  position: absolute;
-  width: 100%;
   padding-top: $global-spacing * 3;
 
   @include media(medium-up) {
@@ -28,7 +25,6 @@
     .content {
       height: calc(100% - 64px);
       overflow-y: auto;
-      padding: 25px;
     }
 
     > ul {

@@ -156,3 +156,20 @@
   max-height: 100px;
   margin-bottom: 1em;
 }
+
+.page__project {
+  .ng-isolate-scope {
+    overflow-y: visible;
+    max-height: 100%;
+    margin-bottom: 2em;
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      li {
+        display: inline-block;
+        margin-right: 1em;
+      }
+    }
+  }
+}

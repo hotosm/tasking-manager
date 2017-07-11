@@ -134,6 +134,15 @@ dd {
   font-weight: 400;
 }
 
+.input--description {
+  font-style: italic;
+  color: $lightgrey;
+  font-size: .86em;
+  line-height: 1.5em;
+  margin: .2em 0;
+  display: block;
+}
+
 /* Prose specific */
 
 .prose--responsive {
@@ -288,6 +297,10 @@ h5 {
 
 h6 {
   @include heading(1rem);      // 14
+}
+
+.withDescription {
+  margin-bottom: 0;
 }
 
 /* Prose specific */

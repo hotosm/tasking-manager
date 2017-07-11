@@ -34,15 +34,15 @@
                                 <h5>Filter</h5>
                                 <div>
                                     <form ng-submit="contributeCtrl.search()">
-                                        <div class="form__input-group">
+                                        <h6 class="withDescription">Search</h6>
+                                        <span class="input--description">Search project description or project number</span>
+                                        <div class="search--wrapper">
                                             <input type="text" ng-model="contributeCtrl.searchText"
-                                                   placeholder="{{ 'Search project description or project number' | translate }}"
+                                                   placeholder="{{ '' | translate }}"
                                                    class="form__control form__control--large">
-                                            <span class="form__input-group-button">
-                                                 <button class="" type="submit">
-                                                     <span>{{ 'Search' | translate }}</span>
-                                                 </button>
-                                             </span>
+                                             <button class="icon--search" type="submit">
+                                                 <span>{{ 'Search' | translate }}</span>
+                                             </button>
                                         </div>
                                     </form>
                                 </div>
@@ -221,7 +221,7 @@
                                 <div class="paging">
                                     <ul class="" role="group"
                                          aria-label="{{ 'Navigate the results' | translate }}">
-                                        <li class=""
+                                        <li class="paging--previous"
                                                 ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
                                                 ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
                                             {{ 'Previous' | translate }}
@@ -259,7 +259,7 @@
                                                 ng-click="contributeCtrl.search(contributeCtrl.pagination.pages)">
                                             {{ contributeCtrl.pagination.pages }}
                                         </li>
-                                        <li class=""
+                                        <li class="paging--next"
                                                 ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
                                                 ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
                                             {{ 'Next' | translate }}
