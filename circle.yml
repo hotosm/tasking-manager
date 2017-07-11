@@ -44,7 +44,7 @@ test:
       env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
     - |
       # Ensure postgis
-      sudo -u postgres psql -p 5433 -c "CREATE EXTENSION postgis;"
+      psql -p 5433 -c "CREATE EXTENSION postgis;"
       # Run migrations
       env/bin/python manage.py db upgrade
   post:
