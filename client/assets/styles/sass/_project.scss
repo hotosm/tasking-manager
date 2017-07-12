@@ -4,6 +4,7 @@
 
 .project-container {
   padding-top: $global-spacing * 3;
+  padding-bottom: $global-spacing * 4;
 
   @include media(medium-up) {
     padding-top: $global-spacing * 5;
@@ -67,10 +68,8 @@
 
     @include media(xlarge-up) {
       @include span(6/12);
-    }
-
-    @include media(xxlarge-up) {
-      @include span(5/12);
+      width: 44%;
+      margin-right: 4%;
     }
 
     img {
@@ -152,4 +151,13 @@
 
 .imagery-container {
   word-wrap:break-word;
+}
+
+.container__nextsteps {
+  background-color: #fff;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  padding: 2em;
+  border: 1px solid darken($lightest-background-grey, 6%);
 }

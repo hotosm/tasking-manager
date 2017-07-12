@@ -58,7 +58,7 @@
 
         </div>
     </section>
-    <section class="section__body">
+    <section class="section__body section__body--secondary">
         <div class="project-container inner">
             <div class="form__group">
                 <ul class="tab--wrapper">
@@ -93,14 +93,6 @@
                 <!-- tabs -->
                 <div class="content">
                     <div ng-show="projectCtrl.currentTab === 'instructions'">
-                        <button class="button button--secondary pull-right"
-                                ng-click="projectCtrl.currentTab = 'validation'">{{ 'Validate' | translate }}
-                            <i class="hot-ds-icon-sm-chevron-right"></i>
-                        </button>
-                        <button class="button button--secondary pull-right"
-                                ng-click="projectCtrl.currentTab = 'mapping'">{{ 'Map' | translate }}
-                            <i class="hot-ds-icon-sm-chevron-right"></i>
-                        </button>
                         <section>
                             <h3>{{ 'Instructions' | translate }}</h3>
                             <div ng-show="projectCtrl.projectData.entitiesToMap" ng-init="showEntitiesHelp = false">
@@ -144,6 +136,16 @@
                                 <hr/>
                             </div>
                             <p markdown-to-html="projectCtrl.projectData.projectInfo.instructions"></p>
+                            <div class="container__nextsteps">
+                                <h5 class="withDescription">Ready to get started?</h5>
+                                <p>Contribute by mapping or validating work that has already been done.</p>
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.currentTab = 'mapping'">{{ 'Map' | translate }}
+                                </button>
+                                <button class="button button--secondary"
+                                        ng-click="projectCtrl.currentTab = 'validation'">{{ 'Validate' | translate }}
+                                </button>
+                            </div>
                         </section>
 
                     </div>
@@ -887,52 +889,52 @@
                     </div>
                 </div>
                 <div class="ol-control legend-control">
-                    <h3>{{ 'Legend' | translate }}</h3>
+                    <h5>{{ 'Legend' | translate }}</h5>
                     <div>
-                        <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
                                   fill="rgba(223, 223, 223, 0.1)"/>
                         </svg>
                         {{ 'Ready' | translate }}
                     </div>
                     <div>
-                        <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
                                   fill="rgba(255, 198, 12, 0.4)"/>
                         </svg>
                         {{ 'Mapped' | translate }}
                     </div>
                     <div>
-                        <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
                                   fill="rgba(0, 0, 0, 0.4)"/>
                         </svg>
                         {{ 'Bad imagery' | translate }}
                     </div>
                     <div>
-                        <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
                                   fill="rgba(0, 128, 0, 0.4)"/>
                         </svg>
                         {{ 'Validated' | translate }}
                     </div>
                     <div>
-                        <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
                                   fill="rgba(233, 11, 67, 0.4)"/>
                         </svg>
                         {{ 'Invalidated' | translate }}
                     </div>
                     <div>
-                        <svg height="20" width="20">
+                        <svg height="15" width="15">
                             <rect width="20" height="20" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
                                   fill="rgba(18, 89, 240, 0.4)"/>
                         </svg>
                         {{ 'Locked' | translate }}
                     </div>
                     <div>
-                        <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(18, 89, 240, 1)" stroke-width="5"
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(18, 89, 240, 1)" stroke-width="5"
                                   fill="rgba(18, 89, 240, 0.4)"/>
                         </svg>
                         {{ 'Locked by you' | translate }}
@@ -940,8 +942,8 @@
                 </div>
                 <div ng-show="projectCtrl.hasPriorityArea" class="ol-control legend-control priority-areas">
                     <div>
-                        <svg height="20" width="20">
-                            <rect width="20" height="20" stroke="rgba(255, 0, 0, 1)" stroke-width="3"
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(255, 0, 0, 1)" stroke-width="3"
                                   fill="rgba(255, 0, 0, 0.3)"/>
                         </svg>
                         {{ 'Priority area' | translate }}
