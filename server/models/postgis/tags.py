@@ -13,28 +13,28 @@ class Tags(db.Model):
     @staticmethod
     def upsert_organistion_tag(organisation_tag: str) -> str:
         """ Insert organisation tag if it doesn't exists otherwise return matching tag """
-        org_tag = Tags.query.filter_by(organisations=organisation_tag.lower()).one_or_none()
+        org_tag = Tags.query.filter_by(organisations=organisation_tag).one_or_none()
 
         if org_tag is not None:
             return org_tag.organisations
 
         tag = Tags()
-        tag.organisations = organisation_tag.lower()
+        tag.organisations = organisation_tag
         db.session.add(tag)  # Note no commit here, done as part of project update transaction
-        return organisation_tag.lower()
+        return organisation_tag
 
     @staticmethod
     def upsert_campaign_tag(campaign_tag: str) -> str:
         """ Insert campaign tag if doesn't exist otherwise return matching tag"""
-        camp_tag = Tags.query.filter_by(campaigns=campaign_tag.lower()).one_or_none()
+        camp_tag = Tags.query.filter_by(campaigns=campaign_tag).one_or_none()
 
         if camp_tag is not None:
             return camp_tag.campaigns
 
         tag = Tags()
-        tag.campaigns = campaign_tag.lower()
+        tag.campaigns = campaign_tag
         db.session.add(tag)  # Note no commit here, done as part of project update transaction
-        return campaign_tag.lower()
+        return campaign_tag
 
     @staticmethod
     def get_all_organisations():

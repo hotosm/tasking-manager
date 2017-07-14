@@ -9,7 +9,6 @@ from alembic import op
 import sqlalchemy as sa
 from server.models.postgis.project import Project
 from server.models.postgis.task import Task
-from server.models.postgis.statuses import TaskCreationMode
 
 # revision identifiers, used by Alembic.
 revision = '7d55a089b5bc'
@@ -38,7 +37,7 @@ def upgrade():
         if len(zooms) == 1 and zooms[0] == (None,):
             op.execute(
                 projects.update().where(projects.c.id == project.id)
-                    .values(task_creation_mode=TaskCreationMode.ARBITRARY.value))
+                    .values(task_creation_mode=1))
     # ### end Alembic commands ###
 
 

@@ -66,17 +66,6 @@ INSERT INTO hotnew.projects(
 select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
 
 
--- Insert AOI and Geom into projects
-Update hotnew.projects
-   set geometry = a.geometry,
-       centroid = a.centroid
-  from hotold.areas as a
-where  a.id = hotnew.projects.aoi_id
-
-
-
-
-
 -- Project info & translations
 -- Skip any records relating to projects that have not been imported
 INSERT INTO hotnew.project_info(
@@ -90,13 +79,13 @@ delete from hotnew.project_info where name = '' and short_description = '' and d
 
 -- Create trigger for text search
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
-ON project_info FOR EACH ROW EXECUTE PROCEDURE
+ON hotnew.project_info FOR EACH ROW EXECUTE PROCEDURE
 tsvector_update_trigger(text_searchable, 'pg_catalog.english', project_id_str, short_description, description);
 
 -- set project-id which will update text search index
-update project_info set project_id_str = project_id::text;
+update hotnew.project_info set project_id_str = project_id::text;
 
-CREATE INDEX textsearch_idx ON project_info USING GIN (text_searchable);
+CREATE INDEX textsearch_idx ON hotnew.project_info USING GIN (text_searchable);
 
 -- TASKS
 -- Get all tasks that don't have a state of -1 (removed) and where they relate to a project that has been migrated above

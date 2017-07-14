@@ -192,6 +192,7 @@
             vm.taskUnLockErrorMessage = '';
             vm.taskSplitError = false;
             vm.taskSplitCode == null;
+            vm.taskUndoError = false;
         }
 
         /**
@@ -330,10 +331,31 @@
         };
 
         /**
+         * Undo task status change
+         */
+        vm.undo = function(){
+            vm.taskUndoError = false;
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var resultsPromise = taskService.undo(projectId, taskId);
+            resultsPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                setUpSelectedTask(data);
+                refreshProject(vm.projectData.projectId);
+            }, function (error) {
+                // TODO - show message
+                vm.taskUndoError = true;
+            });
+        };
+
+        /**
          * Initilaise a project using it's id
          * @param id - id of the project to initialise
          */
         function initialiseProject(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
@@ -370,13 +392,12 @@
                     vm.highlightVectorLayer.getSource().clear();
                 }
 
-
                 if ($location.search().task) {
                     selectTaskById($location.search().task);
                 }
             }, function () {
                 // project not returned successfully
-                // TODO - may want to handle error
+                vm.errorGetProject = true;
             });
         }
 
@@ -385,9 +406,13 @@
          * @param id
          */
         function updateDescriptionAndInstructions(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 vm.projectData = data;
+            }, function () {
+                // project not returned successfully
+                vm.errorGetProject = true;
             });
         }
 
@@ -396,6 +421,7 @@
          * @param id - id of project to be refreshed
          */
         function refreshProject(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
@@ -422,12 +448,12 @@
 
             }, function () {
                 // project not returned successfully
-                // TODO - may want to handle error
+                vm.errorGetProject = true;
             });
         }
 
         /**
-         * Select a task using it's ID.
+         * Select a task using its ID.
          * @param taskId
          */
         function selectTaskById(taskId) {
@@ -438,7 +464,6 @@
                 var padding = getPaddingSize();
                 vm.map.getView().fit(task.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
             }
-
         }
 
         /**
