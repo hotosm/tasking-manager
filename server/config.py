@@ -39,9 +39,9 @@ class EnvironmentConfig:
 
 
 class ProdConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tasks-prod.hotosm.org'
+    APP_BASE_URL = 'http://tm3.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasks-prod.hotosm.org/api/docs'
+                   'url=http://tm3.hotosm.org/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
