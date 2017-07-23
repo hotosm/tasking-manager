@@ -13,7 +13,7 @@ dependencies:
   pre:
     - |
       # Ensure postgis
-      psql -c "CREATE EXTENSION postgis;"
+      psql circle_test -c "CREATE EXTENSION postgis;"
       # Install latest LTS node
       sudo apt-get update
       curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
