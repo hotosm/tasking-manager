@@ -33,6 +33,7 @@
 
 .page__headline {
   float: left;
+  margin-right: 1em;
 }
 
 .page__title {
@@ -48,10 +49,7 @@
 /* Navigation */
 
 .page__prime-nav {
-  width: 85%;
   @include media(medium-up) {
-    float: left;
-    margin: 0 1em;
   }
 
   .toggle-menu {
@@ -189,13 +187,12 @@
 /* ==========================================================================
    Body
    ========================================================================== */
+.section__body {
+  @extend .clearfix;
 
-.page__body {
-  .section__body {
-    @extend .clearfix;
-    .inner {
-      padding-top: 3rem;
-    }
+  .inner {
+    padding-top: 5rem;
+    padding-bottom: 5em;
   }
 }
 
@@ -211,13 +208,19 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   @include column(12/12);
+  margin-top: -3.5em;
 
-  .left {
-    @include column(5/12, $offset: 1/12);
+  .inner {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 4rem;
+    padding-right: 4rem;
   }
 
   .right {
-    @include column(6/12);
+    text-align: right;
+    float: right;
   }
 }
 
@@ -252,29 +255,11 @@
       @extend .row--centered;
     }
 
-    &::before {
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      content: "";
-      background: linear-gradient(rgba(#fff, 0.92), rgba(#fff, 0.80), rgba(#fff, 0.64));
-    }
-
-    @include media(medium-up) {
+    @include media(large-up) {
       text-align: center;
       padding: {
-        top: ($global-spacing * 8);
-        bottom: ($global-spacing * 3);
-      }
-    }
-
-    @include media(large-up) {
-      padding: {
-        top: ($global-spacing * 8);
-        bottom: ($global-spacing * 4);
+        top: ($global-spacing * 9);
+        bottom: ($global-spacing * 6);
       }
     }
   }
@@ -463,7 +448,8 @@
 
 .section__body--secondary {
   background-color: $lightest-background-grey;
-  border-top: 1px solid darken($lightest-background-grey, 3%)
+  border-top: 1px solid darken($lightest-background-grey, 3%);
+  margin-bottom: 0;
 }
 
 /* Section aside

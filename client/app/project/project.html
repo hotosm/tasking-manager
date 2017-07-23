@@ -100,14 +100,6 @@
                     <div ng-hide="projectCtrl.errorGetProject">
                          <!-- /invalid project -->
                         <div ng-show="projectCtrl.currentTab === 'instructions'">
-                            <button class="button button--secondary pull-right"
-                                    ng-click="projectCtrl.currentTab = 'validation'">{{ 'Validate' | translate }}
-                                <i class="hot-ds-icon-sm-chevron-right"></i>
-                            </button>
-                            <button class="button button--secondary pull-right"
-                                    ng-click="projectCtrl.currentTab = 'mapping'">{{ 'Map' | translate }}
-                                <i class="hot-ds-icon-sm-chevron-right"></i>
-                            </button>
                             <section>
                                 <h2>{{ 'Instructions' | translate }}</h2>
                                 <div ng-show="projectCtrl.projectData.entitiesToMap" ng-init="showEntitiesHelp = false">
@@ -910,30 +902,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <hr/>
-                            <button class="button button--primary"
-                                    socialshare
-                                    socialshare-provider="twitter"
-                                    socialshare-text="I have just contributed to this project"
-                                    socialshare-hashtags="hotosm"
-                                    socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
-                                Twitter
-                            </button>
-                            <button class="button button--primary"
-                                    socialshare
-                                    socialshare-provider="facebook"
-                                    socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
-                                Facebook
-                            </button>
-                            <button class="button button--primary"
-                                    socialshare
-                                    socialshare-provider="linkedin"
-                                    socialshare-text="I have just contributed to this project"
-                                    socialshare-url="{{ projectCtrl.getSocialMediaUrl() }}">
-                                LinkedIn
-                            </button>
                         </div>
                     </div>
                 </div>

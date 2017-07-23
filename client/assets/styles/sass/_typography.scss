@@ -162,7 +162,7 @@ dd {
 
 blockquote {
   box-shadow: inset 1px 0 0 0 $base-alpha-color;
-  padding: ($global-spacing / 2) $global-spacing;
+  padding: 0em 0em 0em 1.75em;
   *:last-child {
     margin-bottom: 0;
   }

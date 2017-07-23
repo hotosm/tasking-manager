@@ -2,39 +2,22 @@
    Header
    ========================================================================== */
 .tm-header {
-  background-image: url('../../img/background-header.png');
+  background-image: url('../../img/homepage-img.jpg');
+  h1, p {
+    color: #fff;
+  }
+  p {
+    margin-bottom: 3em;
+  }
   .inner {
     padding-top: 5rem;
     padding-bottom: 5rem;
-  }
-  .image-credit {
-    float: right;
-    padding-right: 2em;
   }
 }
 
 /* ==========================================================================
    Get involved
    ========================================================================== */
-.get-involved-container {
-  @include span(12/12);
-
-  .description {
-    @include span(4/12);
-    padding: 1rem;
-    @include media(medium-down) {
-      @include stack();
-    }
-  }
-  .action {
-    @include span(4/12);
-    padding: 1rem;
-    @include media(medium-down) {
-      @include stack();
-    }
-  }
-}
-
 .get-involved-section {
   border-bottom: 10px solid $base-alpha-color;
 }
@@ -58,16 +41,17 @@
     justify-content: center;
     align-content: top;
     align-items: center;
+    padding-left: 3%;
+    margin-top: 3em;
   }
 
   &__card {
-    margin: 1rem;
-    width: 312px;
-    height: 400px;
-  }
-
-  &__content {
-    padding: 1rem;
+    margin-right: 3.5%;
+    width: 31%;
+    align-self: flex-start;
+    &:last-of-type {
+      margin-right: 0;
+    }
   }
 }
 
