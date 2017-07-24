@@ -452,6 +452,12 @@
   margin-bottom: 0;
 }
 
+.section__body {
+    .section--centered--sm {
+        max-width: 80%;
+    }
+}
+
 /* Section aside
    ========================================================================== */
 

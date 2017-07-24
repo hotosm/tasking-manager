@@ -117,8 +117,8 @@ a:active {
    color: #fff;
    border: none;
    text-transform: uppercase;
-   font-weight: 400;
    display: inline-block;
+   font-weight: 600;
  }
 
  .button--outline, .button--outline:visited {
@@ -146,6 +146,15 @@ a:active {
 
 [role="button"] {
   cursor: pointer;
+}
+
+.button-group {
+  margin-top: 1.5em;
+  a {
+  &:first-of-type {
+    margin-right: 1em;
+  }
+}
 }
 
 
@@ -229,4 +238,15 @@ table {
   .button--active {
     font-weight: 600;
   }
+}
+
+
+.content--left {
+  float: left;
+  margin-right: 5%;
+}
+
+.content--right {
+  float: left;
+  width: 52%;
 }
