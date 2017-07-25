@@ -158,6 +158,9 @@
   margin-right: 1.2em;
   padding-right: 1.5em;
   border-right: 1px solid darken($lightest-background-grey, 5%);
+  &:hover {
+    border-bottom: 2px solid #fff;
+  }
 }
 
 .language-dropown-wrapper {

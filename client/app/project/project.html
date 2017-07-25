@@ -183,7 +183,7 @@
                                         <div ng-hide="projectCtrl.user"
                                              class="alert alert--warning"
                                              role="alert">
-                                            <p>{{ 'Please login first.' | translate }}</p>
+                                            <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
                                         </div>
                                         <div ng-show="projectCtrl.user && projectCtrl.userCanMap === false"
                                              class="alert alert--warning"
@@ -257,7 +257,7 @@
                                         </div>
                                         <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
                                             <div class="alert alert--danger" role="alert">
-                                                <p>{{ 'Please login first.' | translate }}</p>
+                                                <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
                                             </div>
                                         </div>
                                         <div ng-hide="projectCtrl.taskLockError">
@@ -272,7 +272,7 @@
                                             <div>
                                                 <div ng-hide="projectCtrl.user">
                                                     <div class="alert alert--warning" role="alert">
-                                                        <p>{{ 'Please login to start mapping.' | translate }}</p>
+                                                        <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
                                                     </div>
                                                 </div>
                                                 <div ng-show="projectCtrl.user && projectCtrl.taskLockError"
@@ -440,7 +440,7 @@
                                     <div ng-hide="projectCtrl.user"
                                          class="alert alert--warning"
                                          role="alert">
-                                        <p>{{ 'Please login first.' | translate }}</p>
+                                        <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
                                     </div>
                                     <div ng-show="projectCtrl.user && !projectCtrl.userCanValidate"
                                          class="alert alert--warning"
