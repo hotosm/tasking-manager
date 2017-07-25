@@ -157,6 +157,18 @@ a:active {
 }
 }
 
+.search-options-container {
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+}
+
+.form__option--custom-checkbox {
+  span {
+    padding-left: .3em;
+  }
+}
 
 /* Forms
    ========================================================================== */

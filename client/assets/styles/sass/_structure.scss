@@ -208,7 +208,6 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   @include column(12/12);
-  margin-top: -3.5em;
 
   .inner {
     max-width: 1280px;
@@ -506,8 +505,12 @@
 
 .form__group {
   border-bottom: 1px solid darken($lightest-background-grey, 8%);
-  margin-bottom: 2em;
+  margin-bottom: 3em;
   @extend .clearfix;
+  ul {
+    max-height: 200px;
+    overflow-y: scroll;
+  }
 }
 
 .search-results-container--wrapper {

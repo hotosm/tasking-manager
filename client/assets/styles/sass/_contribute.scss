@@ -113,7 +113,8 @@
   margin-top: 15px;
   @include span(20/20);
   .search-option {
-    padding-bottom: 2em;
+    padding-bottom: 1em;
+    margin-bottom: 2em;
   }
   .search-button {
     padding-top: 1.75em;
