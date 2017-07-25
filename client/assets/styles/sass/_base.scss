@@ -63,12 +63,14 @@ a {
   transition: opacity 0.24s ease 0s;
 }
 
-.normallink, .normallink:visited {
+.normallink, .normallink:visited, footer a, footer a:visited, p a, p a:visited {
   color: $link-color;
-}
-
-.normallink:hover {
-  opacity: 0.64;
+  &:hover {
+    border-bottom: 1px solid $lighter-orange;
+    transition: all 0.6s ease 0.2s;
+    -webkit-transition: all 0.6s;
+    -moz-transition: all 0.6s;
+  }
 }
 
 a:active {
@@ -113,12 +115,21 @@ a:active {
    -moz-border-radius: 4px;
    border-radius: 4px;
    background-color: $orange;
-   padding: .5em 2.5em;
+   padding: .3em 2.5em;
    color: #fff;
    border: none;
    text-transform: uppercase;
    display: inline-block;
    font-weight: 600;
+   border: 2px solid $link-color;
+   &:hover {
+     transition: all 0.3s ease 0s;
+     -webkit-transition: all 0.3s;
+     -moz-transition: all 0.3s;
+     color: $link-color;
+     background-color: inherit;
+     border: 2px solid $link-color;
+   }
  }
 
  .button--outline, .button--outline:visited {
@@ -141,6 +152,7 @@ a:active {
      color: $link-color;
      margin-top: -.3em;
      margin-bottom: .3em;
+     border: 3px solid #FFF;
    }
  }
 
@@ -151,10 +163,10 @@ a:active {
 .button-group {
   margin-top: 1.5em;
   a {
-  &:first-of-type {
-    margin-right: 1em;
+    &:first-of-type {
+      margin-right: 1em;
+    }
   }
-}
 }
 
 .search-options-container {

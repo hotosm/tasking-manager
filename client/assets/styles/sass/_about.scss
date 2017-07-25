@@ -22,7 +22,7 @@
     height: 250px;
     text-align: center;
     .sponsor-logo {
-      height: 125px;
+      height: 140px;
       white-space: nowrap;
       text-align: center;
       margin: 1em 0;
@@ -36,5 +36,21 @@
       height: 100%;
       vertical-align: middle;
     }
+    span {
+      font-size: .86em;
+      font-style: italic;
+      color: $lightgrey;
+    }
   }
+}
+
+.sponsor__card--become {
+    position: relative;
+    .sponsor__content {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        height: inherit;
+        padding: 2em;
+    }
 }

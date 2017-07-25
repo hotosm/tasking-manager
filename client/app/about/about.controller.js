@@ -11,7 +11,7 @@
 
     function aboutController() {
         var vm = this;
-       
+
         vm.sponsors = [
             {
                 name: 'Australia-Indonesia Facility for Disaster Reduction',
@@ -37,11 +37,6 @@
                 name: 'The George Washington University',
                 logo: './assets/img/gwu-logo.png',
                 url: 'https://www.gwu.edu'
-            },
-            {
-                name: 'Your organisation?',
-                logo: '',
-                url: ''
             }
         ]
     }
