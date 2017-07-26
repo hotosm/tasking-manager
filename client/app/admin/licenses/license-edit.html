@@ -1,6 +1,6 @@
 <div class="inner">
     <section class="section section--asided">
-        <header class="section__header">
+        <header class="section__header section__header--nodescription">
             <div class="inner">
                 <h1 class="section__title">
                     {{ 'Edit License' | translate }}
@@ -8,32 +8,32 @@
             </div>
         </header>
         <div class="section-container">
-            <div class="section__body">
+            <div class="section__body section__body--secondary">
                 <div class="inner">
                     <form class="form" ng-hide="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
-                        <fieldset class="form__fieldset">
-                            <div class="form__group">
+                        <ul class="form__standard">
+                            <li>
                                 <label class="form__label" for="form-name">{{ 'Name' | translate }}*</label>
                                 <input type="text" class="form__control form__control--medium" id="form-name"
                                        ng-model="licenseEditCtrl.license.name"
                                        name="form-name" placeholder="{{ 'Enter a name for the license (provider for example)' | translate }}"/>
-                            </div>
-                            <div class="form__group">
+                            </li>
+                            <li>
                                 <label class="form__label" for="form-description">{{ 'Description' | translate }}*</label>
                                 <textarea class="form__control form__control--medium" id="form-description" rows="8"
                                        ng-model="licenseEditCtrl.license.description"
                                        name="form-name" placeholder="{{ 'Enter the license terms' | translate }}">
                                 </textarea>
-                            </div>
-                            <div class="form__group">
+                            </li>
+                            <li>
                                 <label class="form__label" for="form-plaintext">{{ 'Plain text' | translate }}*</label>
                                 <textarea class="form__control form__control--medium" id="form-plaintext" rows="2"
                                        ng-model="licenseEditCtrl.license.plainText"
                                        name="form-name" placeholder="{{ 'Enter a short version of the terms' | translate }}">
                                 </textarea>
-                            </div>
-                        </fieldset>
-                        <fieldset ng-show="!licenseEditCtrl.isNew" class="form__fieldset">
+                            </li>
+                        </ul>
+                        <div ng-show="!licenseEditCtrl.isNew">
                             <button class="button button--secondary" type="button"
                                     ng-click="licenseEditCtrl.saveEdits()">
                                 {{ 'Save edits' | translate }}
@@ -46,8 +46,8 @@
                                     ng-click="licenseEditCtrl.cancel()">
                                 {{ 'Cancel' | translate }}
                             </button>
-                        </fieldset>
-                        <fieldset ng-show="licenseEditCtrl.isNew" class="form__fieldset">
+                        </div>
+                        <div ng-show="licenseEditCtrl.isNew">
                             <button class="button button--secondary" type="button"
                                     ng-click="licenseEditCtrl.createNewLicense()">
                                 {{ 'Create new license' | translate }}
@@ -56,7 +56,7 @@
                                     ng-click="licenseEditCtrl.cancel()">
                                 {{ 'Cancel' | translate }}
                             </button>
-                        </fieldset>
+                        </div>
                     </form>
                     <div class="error">
                         <div ng-show="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">

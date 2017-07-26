@@ -4,15 +4,14 @@
   .details {
     @include column(12/12);
     @include media(medium-up) {
-      @include column(6/12);
+      @include column(7/12);
     }
   }
 
   .roles {
-    padding-top: 3rem;
     @include column(12/12);
     @include media(medium-up) {
-      @include column(6/12);
+      @include column(4/12);
     }
   }
 }
@@ -26,18 +25,17 @@
 /* ==========================================================================
    Stats
    ========================================================================== */
+.section__header--left {
+  float: left;
+}
+
 .section__inverse--stats {
-  background-color: rgba($medium-grey, 0.9);
-  color: #eee;
   text-align: center;
   left: 0;
-  width: 100%;
-  clear: both;
-  padding: 2rem 0;
+  float: right;
   .stats__card {
     display: inline-block;
-    margin: 1rem auto;
-    width: 250px;
+    width: 200px;
   }
 
   .stats__card--amount {

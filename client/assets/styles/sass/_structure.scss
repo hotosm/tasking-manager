@@ -170,7 +170,7 @@
 .drop__content {
   position: absolute;
   width: 180px;
-  max-height: 300px;
+  max-height: 350px;
   overflow-y: scroll;
   background-color: #fff;
   border: 1px solid darken($lightest-background-grey, 5%);
@@ -178,7 +178,7 @@
   -webkit-box-shadow: 0px 1px 2px 1px darken($lightest-background-grey, 5%);
   box-shadow:         0px 1px 2px 1px darken($lightest-background-grey, 5%);
   right: 0em;
-  top: 3em;
+  top: 3.5em;
 }
 
 .drop__menu {
@@ -194,6 +194,17 @@
     &:hover {
       background-color: $lightest-background-grey;
     }
+  }
+}
+
+.drop__menu--iconified {
+  margin-bottom: 1em;
+  border-bottom: 1px solid darken($lightest-background-grey, 5%);
+  padding-bottom: 1em;
+  &:last-of-type {
+    margin-bottom: 0em;
+    border-bottom: none;
+    padding-bottom: 0em;
   }
 }
 

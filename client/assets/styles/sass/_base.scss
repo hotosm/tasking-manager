@@ -63,7 +63,7 @@ a {
   transition: opacity 0.24s ease 0s;
 }
 
-.normallink, .normallink:visited, footer a, footer a:visited, p a, p a:visited {
+.normallink, .normallink:visited, footer a, footer a:visited, p a, p a:visited, table a, table a:visited {
   color: $link-color;
   &:hover {
     border-bottom: 1px solid $lighter-orange;
@@ -169,14 +169,14 @@ a:active {
   }
 }
 
-.search-options-container {
+.search-options-container, .list-type--none {
   ul {
     list-style: none;
     padding-left: 0;
   }
 }
 
-.form__option--custom-checkbox {
+.form__option--custom-checkbox, .form__option--radio {
   span {
     padding-left: .3em;
   }
@@ -193,6 +193,34 @@ input, select, textarea {
   padding: .2em .8em;
 }
 
+input, textarea {
+  width: 80%;
+}
+
+.form__standard {
+  margin-bottom: 2em;
+  list-style: none;
+  padding-left: 0;
+  label {
+    font-weight: 600;
+    margin-bottom: .5em;
+    display: block;
+  }
+  li {
+    margin-bottom: 1.3em;
+
+  }
+}
+
+.search-option  {
+  padding-bottom: 1em;
+  margin-bottom: 2em;
+}
+
+[type="radio"], [type="checkbox"] {
+  margin-left: .1em;
+  width: 15px;
+}
 
 /* Tables
    ========================================================================== */
@@ -273,4 +301,19 @@ table {
 .content--right {
   float: left;
   width: 52%;
+}
+
+.list--piped {
+  list-style: none;
+  padding-left: 0;
+  li {
+    margin-right: 1em;
+    padding-right: 1em;
+    border-right: 1px solid $lightgrey;
+    display: inline-block;
+
+    &:last-of-type {
+      border-right: none;
+    }
+  }
 }
