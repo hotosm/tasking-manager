@@ -1,12 +1,14 @@
+# flake8: noqa
 import logging
 import os
+from logging.handlers import RotatingFileHandler
+
 from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-from logging.handlers import RotatingFileHandler
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -84,24 +86,37 @@ def init_flask_restful_routes(app):
     app.logger.debug('Initialising API Routes')
     api = Api(app)
 
-    from server.api.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
+    from server.api.users.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
-    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI, TasksAsGPX, TasksAsOSM
-    from server.api.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI, ResendEmailValidationAPI
-    from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll, ProjectValidateAll, ProjectsForAdminAPI
-    from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject
+    from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
+        TasksAsGPX, TasksAsOSM, UndoMappingAPI
+    from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
+        ResendEmailValidationAPI
+    from server.api.messaging.project_chat_apis import ProjectChatAPI
+    from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
+        ProjectValidateAll, ProjectsForAdminAPI
+    from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject, HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
-    from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI, MappedTasksByUser
-    from server.api.grid_apis import IntersectingTilesAPI
-    from server.api.split_task_apis import SplitTaskAPI
+    from server.api.users.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
+        UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+    from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
+        MappedTasksByUser
+    from server.api.grid.grid_apis import IntersectingTilesAPI
+    from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
+    api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project', endpoint="create_project", methods=['PUT'])
+    api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project/<int:project_id>', methods=['GET', 'POST', 'DELETE'])
+    api.add_resource(ProjectCommentsAPI,            '/api/v1/admin/project/<int:project_id>/comments')
+    api.add_resource(ProjectInvalidateAll,          '/api/v1/admin/project/<int:project_id>/invalidate-all')
+    api.add_resource(ProjectValidateAll,            '/api/v1/admin/project/<int:project_id>/validate-all')
+    api.add_resource(ProjectsMessageAll,            '/api/v1/admin/project/<int:project_id>/message-all')
+    api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
     api.add_resource(AuthEmailAPI,                  '/api/auth/email')
@@ -113,19 +128,17 @@ def init_flask_restful_routes(app):
     api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
     api.add_resource(ResendEmailValidationAPI,      '/api/v1/messages/resend-email-verification')
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
+    api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
+    api.add_resource(ProjectChatAPI,                '/api/v1/project/<int:project_id>/chat')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
+    api.add_resource(HasUserTaskOnProjectDetails,   '/api/v1/project/<int:project_id>/has-user-locked-tasks/details')
     api.add_resource(MappedTasksByUser,             '/api/v1/project/<int:project_id>/mapped-tasks-by-user')
+    api.add_resource(ProjectSummaryAPI,             '/api/v1/project/<int:project_id>/summary')
     api.add_resource(TasksAsGPX,                    '/api/v1/project/<int:project_id>/tasks_as_gpx')
     api.add_resource(TasksAsOSM,                    '/api/v1/project/<int:project_id>/tasks-as-osm-xml')
     api.add_resource(LockTaskForMappingAPI,         '/api/v1/project/<int:project_id>/task/<int:task_id>/lock-for-mapping')
-    api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project', endpoint="create_project", methods=['PUT'])
-    api.add_resource(ProjectAdminAPI,               '/api/v1/admin/project/<int:project_id>', methods=['GET', 'POST', 'DELETE'])
-    api.add_resource(ProjectCommentsAPI,            '/api/v1/admin/project/<int:project_id>/comments')
-    api.add_resource(ProjectInvalidateAll,          '/api/v1/admin/project/<int:project_id>/invalidate-all')
-    api.add_resource(ProjectValidateAll,            '/api/v1/admin/project/<int:project_id>/validate-all')
-    api.add_resource(ProjectsMessageAll,            '/api/v1/admin/project/<int:project_id>/message-all')
-    api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
+    api.add_resource(UndoMappingAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/undo-mapping')
     api.add_resource(MappingTaskAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>')
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
     api.add_resource(StopMappingAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/stop-mapping')
@@ -148,4 +161,4 @@ def init_flask_restful_routes(app):
     api.add_resource(UserAcceptLicense,             '/api/v1/user/accept-license/<int:license_id>')
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')
     api.add_resource(SplitTaskAPI,                  '/api/v1/project/<int:project_id>/task/<int:task_id>/split')
-    api.add_resource(LanguagesAPI,                  '/api/v1/settings/languages')
+    api.add_resource(LanguagesAPI,                  '/api/v1/settings')

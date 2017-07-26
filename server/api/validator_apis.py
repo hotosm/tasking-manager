@@ -25,6 +25,12 @@ class LockTasksForValidationAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the tasks are associated with
@@ -63,6 +69,7 @@ class LockTasksForValidationAPI(Resource):
             validator_dto = LockForValidationDTO(request.get_json())
             validator_dto.project_id = project_id
             validator_dto.user_id = tm.authenticated_user_id
+            validator_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             validator_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -102,6 +109,12 @@ class StopValidatingAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -137,6 +150,7 @@ class StopValidatingAPI(Resource):
             validated_dto = StopValidationDTO(request.get_json())
             validated_dto.project_id = project_id
             validated_dto.user_id = tm.authenticated_user_id
+            validated_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             validated_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -153,6 +167,7 @@ class StopValidatingAPI(Resource):
             error_msg = f'Stop Validating API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+
 
 class UnlockTasksAfterValidationAPI(Resource):
 
@@ -173,6 +188,12 @@ class UnlockTasksAfterValidationAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -208,6 +229,7 @@ class UnlockTasksAfterValidationAPI(Resource):
             validated_dto = UnlockAfterValidationDTO(request.get_json())
             validated_dto.project_id = project_id
             validated_dto.user_id = tm.authenticated_user_id
+            validated_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             validated_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')

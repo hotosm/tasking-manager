@@ -15,7 +15,7 @@ class ProjectsMessageAll(Resource):
         Send message to all contributors to a project
         ---
         tags:
-            - messages
+            - messaging
         produces:
             - application/json
         parameters:
@@ -39,7 +39,7 @@ class ProjectsMessageAll(Resource):
                   properties:
                       subject:
                           type: string
-                          default: Thanks 
+                          default: Thanks
                           required: true
                       message:
                           type: string
@@ -79,7 +79,7 @@ class HasNewMessages(Resource):
         Gets count of unread messages
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -113,7 +113,7 @@ class GetAllMessages(Resource):
         Get all messages for logged in user
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -151,7 +151,7 @@ class MessagesAPI(Resource):
         Gets the specified message
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -196,7 +196,7 @@ class MessagesAPI(Resource):
         Deletes the specified message
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -244,7 +244,7 @@ class ResendEmailValidationAPI(Resource):
         Resends the validation user to the logged in user
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:

@@ -4,10 +4,8 @@ from server import create_app
 from server.services.license_service import LicenseService, LicenseDTO, NotFound
 
 
-class TestAuthenticationService(unittest.TestCase):
+class TestLicenseService(unittest.TestCase):
     skip_tests = False
-    test_user = None
-    test_project = None
 
     @classmethod
     def setUpClass(cls):

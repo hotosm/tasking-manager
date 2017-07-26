@@ -3,8 +3,8 @@ from flask import current_app
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks, StopValidationDTO
 from server.models.postgis.statuses import ValidatingNotAllowed
-from server.models.postgis.task import Task, TaskStatus
-from server.models.postgis.utils import NotFound, UserLicenseError
+from server.models.postgis.task import Task, TaskStatus, TaskHistory
+from server.models.postgis.utils import NotFound, UserLicenseError, timestamp
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
@@ -34,11 +34,11 @@ class ValidatorService:
             if task is None:
                 raise NotFound(f'Task {task_id} not found')
 
-            if TaskStatus(task.task_status) not in [TaskStatus.MAPPED, TaskStatus.VALIDATED]:
-                raise ValidatatorServiceError(f'Task {task_id} is not MAPPED or VALIDATED')
+            if TaskStatus(task.task_status) not in [TaskStatus.MAPPED, TaskStatus.VALIDATED, TaskStatus.BADIMAGERY]:
+                raise ValidatatorServiceError(f'Task {task_id} is not MAPPED, BADIMAGERY or VALIDATED')
 
             if not ValidatorService._user_can_validate_task(validation_dto.user_id, task.mapped_by):
-                raise ValidatatorServiceError(f'Tasks cannot be mapped and validated by the same user')
+                raise ValidatatorServiceError(f'Tasks cannot be validated by the same user who marked task as mapped or badimagery')
 
             tasks_to_lock.append(task)
 
@@ -55,7 +55,7 @@ class ValidatorService:
         dtos = []
         for task in tasks_to_lock:
             task.lock_task_for_validating(validation_dto.user_id)
-            dtos.append(task.as_dto())
+            dtos.append(task.as_dto_with_instructions(validation_dto.preferred_locale))
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
@@ -76,7 +76,6 @@ class ValidatorService:
             return True
         return False
 
-
     @staticmethod
     def unlock_tasks_after_validation(validated_dto: UnlockAfterValidationDTO) -> TaskDTOs:
         """
@@ -90,6 +89,7 @@ class ValidatorService:
 
         # Unlock all tasks
         dtos = []
+        message_sent_to = []
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock['task']
 
@@ -98,17 +98,23 @@ class ValidatorService:
                 MessageService.send_message_after_comment(validated_dto.user_id, task_to_unlock['comment'], task.id,
                                                           validated_dto.project_id)
 
-            if task_to_unlock['new_state'] == TaskStatus.VALIDATED:
-                # All mappers get a thankyou if their task has been validated :)
+            if task_to_unlock['new_state'] == TaskStatus.VALIDATED and task.mapped_by not in message_sent_to:
+                # All mappers get a thankyou if their task has been validated :)  Only once if multiple tasks mapped
                 MessageService.send_message_after_validation(validated_dto.user_id, task.mapped_by, task.id,
                                                              validated_dto.project_id)
+                # Set last_validation_date for the mapper to current date
+                task.mapper.last_validation_date = timestamp()
+                message_sent_to.append(task.mapped_by)
 
-            StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
-                                                              task_to_unlock['new_state'], task.id)
+            # Update stats if user setting task to a different state from previous state
+            prev_status = TaskHistory.get_last_status(project_id, task.id)
+            if prev_status != task_to_unlock['new_state']:
+                StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
+                                                                  task_to_unlock['new_state'], task.id)
 
             task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'])
 
-            dtos.append(task.as_dto())
+            dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
@@ -136,7 +142,7 @@ class ValidatorService:
                                                           project_id)
 
             task.reset_lock(user_id, task_to_unlock['comment'])
-            dtos.append(task.as_dto())
+            dtos.append(task.as_dto_with_instructions(stop_validating_dto.preferred_locale))
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
@@ -189,9 +195,34 @@ class ValidatorService:
     @staticmethod
     def invalidate_all_tasks(project_id: int, user_id: int):
         """ Invalidates all mapped tasks on a project"""
-        Task.invalidate_all(project_id, user_id)
+        mapped_tasks = Task.query.filter(Task.project_id == project_id,
+                                         ~Task.task_status.in_([TaskStatus.READY.value,
+                                                                TaskStatus.BADIMAGERY.value])).all()
+        for task in mapped_tasks:
+            if TaskStatus(task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
+                # Only lock tasks that are not already locked to avoid double lock issue.
+                task.lock_task_for_validating(user_id)
+            task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
+
+        # Reset counters
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_mapped = 0
+        project.tasks_validated = 0
+        project.save()
 
     @staticmethod
     def validate_all_tasks(project_id: int, user_id: int):
         """ Validates all mapped tasks on a project"""
-        Task.validate_all(project_id, user_id)
+        tasks_to_validate = Task.query.filter(Task.project_id == project_id,
+                                              Task.task_status != TaskStatus.BADIMAGERY.value).all()
+
+        for task in tasks_to_validate:
+            task.mapped_by = user_id  # Ensure we set mapped by value
+            task.lock_task_for_validating(user_id)
+            task.unlock_task(user_id, new_state=TaskStatus.VALIDATED)
+
+        # Set counters to fully mapped and validated
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
+        project.tasks_validated = (project.total_tasks - project.tasks_bad_imagery)
+        project.save()

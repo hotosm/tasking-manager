@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','languageService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, languageService) {
+    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
 
         var vm = this;
         vm.currentSection = '';
@@ -52,6 +52,7 @@
         vm.shortDescriptionLanguage = 'en';
         vm.nameLanguage = 'en';
         vm.instructionsLanguage = 'en';
+        vm.perTaskInstructionsLanguage = 'en';
 
         vm.descriptionHTML = '';
         
@@ -68,13 +69,17 @@
         vm.invalidateTasksSuccess = false;
         vm.validateTasksFail = false;
         vm.validateTasksSuccess = false;
+
+        // Messages
+        vm.messageSubject = '';
+        vm.messageContent = '';
         
         activate();
 
         function activate() {
 
             // Get available languages
-            var resultsPromise = languageService.getAvailableLanguages();
+            var resultsPromise = settingsService.getSettings();
             resultsPromise.then(function (data) {
                 for (var i = 0; i < data.supportedLanguages.length; i++){
                     vm.locales.push(data.supportedLanguages[i].code);
@@ -132,6 +137,9 @@
                 var requiredFieldsMissing = checkRequiredFields();
             }
 
+            // Remove the area of interest before posting it back
+            delete vm.project.areaOfInterest;
+
             // Only one tag is allowed at the moment so get the first item
             vm.project.organisationTag = null;
             vm.project.campaignTag = null;
@@ -155,7 +163,7 @@
                 for (var i = 0; i < vm.project.projectInfoLocales.length; i++){
                     var info = vm.project.projectInfoLocales[i];
                     var populatedLocale = false;
-                    if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== '') {
+                    if (info.description !== '' || info.shortDescription !== '' || info.name !== '' || info.instructions !== '' || info.perTaskInstructions != '') {
                         populatedLocale = true;
                     }
                     // if no fields for this locale are populated, remove from array
@@ -209,6 +217,14 @@
          */
         vm.changeLanguageInstructions = function(language) {
             vm.instructionsLanguage = language;
+        };
+
+        /**
+         * Change the language per task instructions field
+         * @param language
+         */
+        vm.changeLanguagePerTaskInstructions = function(language){
+            vm.perTaskInstructionsLanguage = language;
         };
 
         /**
@@ -393,16 +409,19 @@
          * @param subject
          * @param message
          */
-        vm.sendMessage = function(subject, message){
+        vm.sendMessage = function(){
             vm.sendMessageInProgress = true;
             vm.sendMessageFail = false;
             vm.sendMessageSuccess = false;
-            var resultsPromise = messageService.messageAll(vm.project.projectId, subject, message);
+            var resultsPromise = messageService.messageAll(vm.project.projectId, vm.messageSubject, vm.messageContent);
             resultsPromise.then(function(){
                 // Messages sent successfully
                 vm.sendMessageFail = false;
                 vm.sendMessageSuccess = true;
                 vm.sendMessageInProgress = false;
+                vm.messageSubject = '';
+                vm.messageContent = '';
+                vm.showMessageContributorsModal = false;
             }, function(){
                 // Messages not sent successfully
                 vm.sendMessageFail = true;
@@ -624,6 +643,7 @@
          * @param id
          */
         function getProjectMetadata(id){
+            vm.errorReturningProjectMetadata = false;
             var resultsPromise = projectService.getProjectMetadata(id);
             resultsPromise.then(function (data) {
                 vm.source.clear(); // clear the priority areas
@@ -646,7 +666,8 @@
                             "name": "",
                             "shortDescription": "",
                             "description": "",
-                            "instructions": ""
+                            "instructions": "",
+                            "perTaskInstructions": ""
                         };
                         vm.project.projectInfoLocales.push(locale);
                     }
@@ -664,7 +685,7 @@
                     vm.projectCampaignTag = [vm.project.campaignTag];
                 }
             }, function(){
-               // TODO
+                vm.errorReturningProjectMetadata = true;
             });
         }
 
@@ -819,6 +840,31 @@
                 // On error
                 vm.campaignTags = [];
             });
+        }
+
+        /**
+         * Clone a project by getting the project ID and name and navigating to the project create page
+         */
+        vm.cloneProject = function(){
+            $location.path('/admin/create-project').search({
+                projectId: vm.project.projectId,
+                projectName: getProjectNameForDefaultLocale()
+            });
+        };
+
+        /**
+         * Get the default language name
+         */
+        function getProjectNameForDefaultLocale(){
+            var projectName = '';
+            var projectInfo = vm.project.projectInfoLocales;
+            for (var i = 0; i < projectInfo.length; i++){
+                if (projectInfo[i].locale === vm.project.defaultLocale){
+                    projectName = projectInfo[i].name;
+                    return projectName;
+                }
+            }
+            return projectName;
         }
     }
 })();

@@ -5,7 +5,7 @@ from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedPr
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
-from server.models.postgis.utils import NotFound
+from server.models.postgis.utils import NotFound, timestamp
 
 
 class User(db.Model):
@@ -25,6 +25,9 @@ class User(db.Model):
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
+    date_registered = db.Column(db.DateTime, default=timestamp)
+    # Represents the date the user last had one of their tasks validated
+    last_validation_date = db.Column(db.DateTime, default=timestamp)
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
@@ -32,6 +35,9 @@ class User(db.Model):
     def create(self):
         """ Creates and saves the current model to the DB """
         db.session.add(self)
+        db.session.commit()
+
+    def save(self):
         db.session.commit()
 
     def get_by_id(self, user_id: int):
@@ -60,26 +66,17 @@ class User(db.Model):
         """ Search and filter all users """
 
         # Base query that applies to all searches
-        base = db.session.query(User.username, User.mapping_level, User.role).order_by(User.username)
+        base = db.session.query(User.username, User.mapping_level, User.role)
 
         # Add filter to query as required
-        if query.mapping_level and query.username is None and query.role is None:
+        if query.mapping_level:
             base = base.filter(User.mapping_level == MappingLevel[query.mapping_level.upper()].value)
-        elif query.mapping_level is None and query.username and query.role is None:
+        if query.username:
             base = base.filter(User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level is None and query.username is None and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value).order_by(User.username)
-        elif query.mapping_level and query.username and query.role is None:
-            base = base.filter(User.mapping_level == MappingLevel[query.mapping_level.upper()].value,
-                               User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level is None and query.username and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value,
-                               User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level and query.username is None and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value,
-                               User.mapping_level == MappingLevel[query.mapping_level.upper()].value)
+        if query.role:
+            base = base.filter(User.role == UserRole[query.role.upper()].value)
 
-        results = base.paginate(query.page, 20, True)
+        results = base.order_by(User.username).paginate(query.page, 20, True)
 
         dto = UserSearchDTO()
         for result in results.items:
@@ -127,17 +124,15 @@ class User(db.Model):
     @staticmethod
     def get_mapped_projects(user_id: int, preferred_locale: str) -> UserMappedProjectsDTO:
         """ Get all projects a user has mapped on """
-        sql = '''select p.id, p.status, p.default_locale, count(t.mapped_by), count(t.validated_by), st_asgeojson(a.centroid),
-                        st_asgeojson(a.geometry)
+        sql = '''select p.id, p.status, p.default_locale, count(t.mapped_by), count(t.validated_by), st_asgeojson(p.centroid),
+                        st_asgeojson(p.geometry)
                    from projects p,
-                        tasks t,
-                        areas_of_interest a
+                        tasks t
                   where p.id in (select unnest(projects_mapped) from users where id = {0})
                     and p.id = t.project_id
-                    and p.id = a.id
                     and (t.mapped_by = {0} or t.mapped_by is null)
                     and (t.validated_by = {0} or t.validated_by is null)
-               GROUP BY p.id, p.status, a.centroid, a.geometry'''.format(user_id)
+               GROUP BY p.id, p.status, p.centroid, p.geometry'''.format(user_id)
 
         results = db.engine.execute(sql)
 

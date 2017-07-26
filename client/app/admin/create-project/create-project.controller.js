@@ -32,8 +32,7 @@
         vm.sizeOfTasks = 0;
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
-        vm.MAX_NUMBER_OF_TASKS = 2000;
-        vm.MAX_NUMBER_OF_TASKS_SPLIT = 1500; // by limiting the split button, ythe user will not likely create a project with more than the max number of tasks
+        vm.MAX_NUMBER_OF_TASKS_SPLIT = 1500; // by limiting the split button, the user will not likely create a project with more than the max number of tasks
 
         // Variables for the zoom level used for creating the grid
         vm.DEFAULT_ZOOM_LEVEL_OFFSET = 2;
@@ -46,6 +45,8 @@
         vm.isSplitPolygonValid = true;
         vm.splitPolygonValidationMessage = '';
         vm.isimportError = false;
+        vm.nonPolygonError = false;
+        vm.selfIntersectionError = false;
         vm.createProjectFail = false;
         vm.createProjectFailReason = '';
         vm.createProjectSuccess = false;
@@ -66,6 +67,16 @@
         activate();
 
         function activate() {
+
+            // Check if cloning a project or creating a new one
+            vm.cloneProjectId = $location.search().projectId;
+            vm.cloneProjectName = $location.search().projectName;
+            if (vm.cloneProjectId) {
+                vm.isCloneProject = true;
+                // Clear the URL parameters
+                $location.search('projectId', null);
+                $location.search('projectName', null);
+            }
 
             // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
             var session = authService.getSession();
@@ -108,8 +119,7 @@
                 vm.createArbitaryTasks();
                 vm.setWizardStep('review');
             }
-
-        }
+        };
 
         /**
          * Set the current wizard step in the process of creating a project
@@ -222,7 +232,6 @@
             vm.isImportedAOI = false;
         };
 
-
         /**
          * Trim the task grid to the AOI
          */
@@ -230,13 +239,13 @@
 
             var taskGrid = projectService.getTaskGrid();
             vm.waiting = true;
-            var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi)
+            var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi);
             trimTaskGridPromise.then(function (data) {
                 vm.waiting = false;
                 vm.trimError = false;
                 vm.trimErrorReason = '';
                 projectService.removeTaskGrid();
-                var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857')
+                var tasksGeoJson = geospatialService.getFeaturesFromGeoJSON(data, 'EPSG:3857');
                 projectService.setTaskGrid(tasksGeoJson);
                 projectService.addTaskGridToMap();
                 // Get the number of tasks in project
@@ -312,7 +321,10 @@
         vm.import = function (file) {
             // Set drawing an AOI to inactive
             vm.drawPolygonInteraction.setActive(false);
-            vm.isImportError = false;
+            vm.isimportError = false;
+            vm.nonPolygonError = false;
+            vm.selfIntersectionError = false;
+
             if (file) {
                 drawService.getSource().clear();
                 var fileReader = new FileReader();
@@ -321,18 +333,29 @@
                     var uploadedFeatures = null;
                     if (file.name.substr(-4) === 'json') {
                         uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(data);
-                        setImportedAOI_(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'kml') {
                         uploadedFeatures = geospatialService.getFeaturesFromKML(data);
-                        setImportedAOI_(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'zip') {
                         // Use the Shapefile.js library to read the zipped Shapefile (with GeoJSON as output)
                         shp(data).then(function (geojson) {
                             var uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(geojson);
-                            setImportedAOI_(uploadedFeatures);
                         });
+                    }
+                    if (uploadedFeatures) {
+                        var aoiValidationResult = projectService.validateAOI(uploadedFeatures);
+                        if (aoiValidationResult.valid) {
+                            setImportedAOI_(uploadedFeatures)
+                        }
+                        else {
+                            if (aoiValidationResult.message == 'CONTAINS_NON_POLYGON_FEATURES') {
+                                vm.nonPolygonError = true;
+                            }
+                            else if (aoiValidationResult.message == 'SELF_INTERSECTIONS') {
+                                vm.selfIntersectionError = true;
+                            }
+                        }
                     }
                 };
                 if (file.name.substr(-4) === 'json') {
@@ -346,6 +369,8 @@
                 }
                 else {
                     vm.isImportError = true;
+                    vm.nonPolygonError = false;
+                    vm.selfIntersectionError = false;
                 }
             }
         };
@@ -430,11 +455,15 @@
          * Create a new project with a project name
          */
         vm.createProject = function () {
+            var cloneProjectId = null;
+            if (vm.isCloneProject) {
+                cloneProjectId = vm.cloneProjectId;
+            }
             vm.createProjectFail = false;
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
                 vm.waiting = true;
-                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid);
+                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId);
                 resultsPromise.then(function (data) {
                     vm.waiting = false;
                     // Project created successfully
@@ -472,6 +501,6 @@
 
         vm.toggleClipTasksToAoi = function () {
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
-        }
+        };
     }
 })();

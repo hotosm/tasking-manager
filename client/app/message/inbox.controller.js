@@ -13,6 +13,7 @@
         var vm = this;
         vm.messages = [];
         vm.showDeleteMessageModal = false;
+        vm.errorRetrievingMessages = false;
        
         activate();
 
@@ -58,6 +59,7 @@
          * Get all messages for a user
          */
         function getAllMessages(){
+            vm.errorRetrievingMessages = false;
             var resultsPromise = messageService.getAllMessages();
             resultsPromise.then(function (data) {
                 // success
@@ -67,9 +69,16 @@
                         vm.messages[i].subject = htmlToPlaintext(vm.messages[i].subject);
                     }
                 }
-            }, function () {
+            }, function (error) {
                 // an error occurred
-                vm.messages = [];
+                if (error.status == 404){
+                    // No messages found
+                    vm.messages = [];
+                }
+                else {
+                    vm.messages = [];
+                    vm.errorRetrievingMessages = true;
+                }
             });
         }
 

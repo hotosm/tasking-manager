@@ -7,13 +7,14 @@
 -- USERS Initial Load
 -- make sure new tables emptied of any test data first
 truncate hotnew.users cascade;
-truncate hotnew.areas_of_interest cascade;
+-- truncate hotnew.areas_of_interest cascade;
 
 -- Populate users with ids and default stats - sets users to beginner mapper level
-insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, is_email_verified)
+insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated,
+                          is_email_verified, date_registered, last_validation_date)
 (select id,username,
 	case when role is null then 0 else role end,
-	1,0,0,0, FALSE
+	1,0,0,0, FALSE, current_timestamp, current_timestamp
 	 from hotold.users);
 	 
 -- update sequence  (commented out as not needed. ID comes from OSM not from the sequence.)
@@ -37,32 +38,33 @@ INSERT INTO hotnew.users_licenses ("user", license)
 -- AREAS OF INTEREST
 
 --populate areas of interest with details from old
-insert into hotnew.areas_of_interest (id, geometry, centroid)
-  (select id, geometry, centroid from hotold.areas);
+--insert into hotnew.areas_of_interest (id, geometry, centroid)
+--  (select id, geometry, centroid from hotold.areas);
  
-select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.areas_of_interest));
+--select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.areas_of_interest));
 
 -- PROJECTS
 -- Transfer project data, all projects set to mapper level beginner
--- TODO:   tasks_bad_imagery
 -- Skipped projects with null author_id
 INSERT INTO hotnew.projects(
-            id, status, aoi_id, created, priority, default_locale, author_id, 
-            mapper_level, enforce_mapper_level, enforce_validator_role, private, 
-            entities_to_map, changeset_comment, due_date, imagery, josm_preset, 
-            last_updated, mapping_types, organisation_tag, campaign_tag, 
-            total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery)
-  (select id, status, area_id, created, priority, 'en', author_id, 
-            0, false, false, private, 
-            entities_to_map, changeset_comment, due_date, imagery, josm_preset, 
-            last_update, null, '', '', 
-            1, 0, 0, 0
-            from hotold.project
-            where author_id is not null
+            id, status, created, priority, default_locale, author_id,
+            mapper_level, enforce_mapper_level, enforce_validator_role, private,
+            entities_to_map, changeset_comment, due_date, imagery, josm_preset,
+            last_updated, mapping_types, organisation_tag, campaign_tag,
+            total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery, centroid, geometry)
+  (select p.id, p.status, p.created, p.priority, 'en', p.author_id,
+            1, false, false, p.private,
+            p.entities_to_map, p.changeset_comment, p.due_date, p.imagery, p.josm_preset,
+            p.last_update, null, '', '',
+            1, 0, 0, 0, a.centroid, a.geometry
+            from hotold.project p,
+                 hotold.areas a
+            where p.area_id = a.id
+            and p.author_id is not null
             );
 
 select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
-select setval('hotnew.areas_of_interest_id_seq',(select max(id) from hotnew.projects));
+
 
 -- Project info & translations
 -- Skip any records relating to projects that have not been imported
@@ -73,17 +75,17 @@ INSERT INTO hotnew.project_info(
     where exists(select p.id from hotnew.projects p where p.id = pt.id));
 
 -- Delete empty languages
-delete from project_info where name = '' and short_description = '' and description = '' and instructions = '';
+delete from hotnew.project_info where name = '' and short_description = '' and description = '' and instructions = '';
 
 -- Create trigger for text search
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
-ON project_info FOR EACH ROW EXECUTE PROCEDURE
+ON hotnew.project_info FOR EACH ROW EXECUTE PROCEDURE
 tsvector_update_trigger(text_searchable, 'pg_catalog.english', project_id_str, short_description, description);
 
 -- set project-id which will update text search index
-update project_info set project_id_str = project_id::text;
+update hotnew.project_info set project_id_str = project_id::text;
 
-CREATE INDEX textsearch_idx ON project_info USING GIN (text_searchable);
+CREATE INDEX textsearch_idx ON hotnew.project_info USING GIN (text_searchable);
 
 -- TASKS
 -- Get all tasks that don't have a state of -1 (removed) and where they relate to a project that has been migrated above
@@ -100,6 +102,14 @@ INSERT INTO hotnew.tasks(
     from hotold.task t
     where not exists(select id from hotold.task_state ts where ts.task_id = t.id and ts.project_id = t.project_id and ts.state = -1)
     and exists(select id from hotnew.projects p where p.id = t.project_id) );
+
+-- Copy across per-task-instructions
+update hotnew.project_info p
+   set per_task_instructions = old.per_task_instructions
+  from (select id, locale, per_task_instructions from hotold.project_translation
+         where  length(per_task_instructions) > 5) old
+  where project_id = old.id
+    and p.locale = old.locale;
 
 -- Update tasks with "Done" task_status and mapped_by info
 update hotnew.tasks nt
@@ -122,11 +132,32 @@ update hotnew.tasks nt
 
 -- Update PROJECT with task stats.  Don't have info on bad-imagery
 update hotnew.projects p
-  set total_tasks = (select count(id) from hotnew.tasks t where t.project_id = p.id),
-  tasks_mapped = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status in (2,4)),
-  tasks_validated = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status = 4);
+  set total_tasks = (select count(id) from hotnew.tasks t where t.project_id = p.id);
+--  tasks_mapped = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status in (2,4)),
+--  tasks_validated = (select count(id) from hotnew.tasks t where t.project_id = p.id and task_status = 4);
 
-  
+-- update tasks mapped count
+UPDATE hotnew.projects
+SET tasks_mapped=subquery.count
+FROM (
+  select project_id, count(project_id)
+  from hotnew.tasks
+  where hotnew.tasks.task_status in (2, 4)
+  group by tasks.project_id) AS subquery
+WHERE hotnew.projects.id=subquery.project_id
+;
+
+UPDATE hotnew.projects
+SET tasks_validated=subquery.count
+FROM (
+  select project_id, count(project_id)
+  from hotnew.tasks
+  where tasks.task_status = 4
+  group by tasks.project_id) AS subquery
+WHERE hotnew.projects.id=subquery.project_id
+;
+
+
 -- TASK HISTORY
 --  State Changes
 --   only insert state changes where user_id exists, and only for tasks that have been migrated	
@@ -171,6 +202,17 @@ INSERT INTO hotnew.task_history(
 	from hotold.task_comment tc
 	where author_id is not null
 	and exists(select id from hotnew.tasks t where t.project_id = tc.project_id and t.id = tc.task_id ));
+
+
+-- Update date registered based on first contribution in task_history, should cover 90% of users
+update hotnew.users
+   set date_registered = action_date
+   from (select t.user_id, min(action_date) action_date
+           from hotnew.users u,
+                hotnew.task_history t
+          where u.id = t.user_id
+          group by user_id) old
+ where id = old.user_id;
 
 	
 -- Update USER STATISTICS
@@ -249,6 +291,10 @@ INSERT INTO hotnew.project_allowed_users(
             project_id, user_id)
     (select distinct project_id, user_id
     from hotold.project_allowed_users);
+
+-- TASK SPLITTABLE FLAG
+-- Ensure the splittable flag is consistent with the x,y,zoom values
+UPDATE hotnew.tasks SET splittable = (x IS NOT NULL AND y IS NOT NULL AND zoom IS NOT NULL);
 
 
 --------------------------------------------------	

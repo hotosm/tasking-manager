@@ -6,9 +6,9 @@
 
     angular
         .module('taskingManager')
-        .service('authService', ['$window', '$location', 'configService', authService]);
+        .service('authService', ['$window', '$location', 'configService','languageService', authService]);
 
-    function authService($window, $location, configService) {
+    function authService($window, $location, configService, languageService) {
 
         var session = {};
         var sessionToken = '';
@@ -77,9 +77,12 @@
          */
         function getAuthenticatedHeader(){
 
+            var preferredLanguage = languageService.getLanguageCode();
+
             var header = {
                 'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': 'Token ' + btoa(sessionToken)
+                'Authorization': 'Token ' + btoa(sessionToken),
+                'Accept-Language': preferredLanguage
             };
             return header;
         }

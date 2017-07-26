@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType
+from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
@@ -23,7 +23,7 @@ def is_known_project_priority(value):
     except KeyError:
         raise ValidationError(f'Unknown projectStatus: {value} Valid values are {ProjectPriority.LOW.name}, '
                               f'{ProjectPriority.MEDIUM.name}, {ProjectPriority.HIGH.name}, '
-                              f'{ProjectPriority.URGENT.HIGH}')
+                              f'{ProjectPriority.URGENT.name}')
 
 
 def is_known_mapping_type(value):
@@ -41,6 +41,7 @@ def is_known_mapping_type(value):
 
 class DraftProjectDTO(Model):
     """ Describes JSON model used for creating draft project """
+    cloneFromProjectId = IntType(serialized_name='cloneFromProjectId')
     project_name = StringType(required=True, serialized_name='projectName')
     area_of_interest = BaseType(required=True, serialized_name='areaOfInterest')
     tasks = BaseType(required=False)
@@ -55,6 +56,7 @@ class ProjectInfoDTO(Model):
     short_description = StringType(serialized_name='shortDescription', default='')
     description = StringType(default='')
     instructions = StringType(default='')
+    per_task_instructions = StringType(default='', serialized_name='perTaskInstructions')
 
 
 class ProjectDTO(Model):
@@ -99,8 +101,25 @@ class ProjectSearchDTO(Model):
     page = IntType(required=True)
     text_search = StringType()
 
+    def __hash__(self):
+        """ Make object hashable so we can cache user searches"""
+        hashable_mapping_types = ''
+        if self.mapping_types:
+            for mapping_type in self.mapping_types:
+                hashable_mapping_types = hashable_mapping_types + mapping_type
 
-class ProjectSearchResultDTO(Model):
+        return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, self.organisation_tag,
+                     self.campaign_tag, self.page, self.text_search))
+
+
+class ProjectSearchBBoxDTO(Model):
+    bbox = ListType(FloatType, required=True, min_size=4, max_size=4)
+    input_srid = IntType(required=True, choices=[4326])
+    preferred_locale = StringType(required=True, default='en')
+    project_author = IntType(required=False, serialized_name='projectAuthor')
+
+
+class ListSearchResultDTO(Model):
     """ Describes one search result"""
     project_id = IntType(required=True, serialized_name='projectId')
     locale = StringType(required=True)
@@ -108,7 +127,6 @@ class ProjectSearchResultDTO(Model):
     short_description = StringType(serialized_name='shortDescription', default='')
     mapper_level = StringType(required=True, serialized_name='mapperLevel')
     priority = StringType(required=True)
-    aoi_centroid = BaseType(serialized_name='aoiCentroid')
     organisation_tag = StringType(serialized_name='organisationTag')
     campaign_tag = StringType(serialized_name='campaignTag')
     percent_mapped = IntType(serialized_name='percentMapped')
@@ -121,8 +139,10 @@ class ProjectSearchResultsDTO(Model):
         """ DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.results = []
+        self.map_results = []
 
-    results = ListType(ModelType(ProjectSearchResultDTO))
+    map_results = BaseType(serialized_name='mapResults')
+    results = ListType(ModelType(ListSearchResultDTO))
     pagination = ModelType(Pagination)
 
 
@@ -136,10 +156,16 @@ class ProjectComment(Model):
     comment = StringType()
     comment_date = DateTimeType(serialized_name='commentDate')
     user_name = StringType(serialized_name='userName')
+    task_id = IntType(serialized_name='taskId')
 
 
 class ProjectCommentsDTO(Model):
     """ Contains all comments on a project """
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.comments = []
+
     comments = ListType(ModelType(ProjectComment))
 
 
@@ -153,6 +179,10 @@ class ProjectSummary(Model):
     created = DateTimeType()
     last_updated = DateTimeType(serialized_name='lastUpdated')
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
+    mapper_level = StringType(serialized_name='mapperLevel')
+    organisation_tag = StringType(serialized_name='organisationTag')
+    short_description = StringType(serialized_name='shortDescription')
+    status = StringType()
 
 
 class PMDashboardDTO(Model):

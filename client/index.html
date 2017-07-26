@@ -4,8 +4,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ 'HOT Tasking Manager' | translate }}</title>
+    <title>HOT Tasking Manager</title>
     <base href="/">
+
+    <!-- for Google -->
+    <meta name="description" content="OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping.">
+    <meta name="keywords" content="OpenStreetMap, Tasking Manager, OSM">
+    <meta name="author" content="Humanitarian OpenStreetMap Team">
+    <meta name="application-name" content="OSM Tasking Manager" />
+
+	<!-- for Facebook -->
+	<meta property="og:title" content="OSM Tasking Manager" />
+	<meta property="og:site_name" content="OSM Tasking Manager" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="tasks.hotosm.org" />
+	<meta property="og:description" content="OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping." />
+
+    <!-- for Twitter -->
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="OSM Tasking Manager" />
+	<meta name="twitter:description" content="OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping." />
 
     <link href="./assets/img/hot-favicon.ico" rel="icon">
 
@@ -38,16 +56,6 @@
 </head>
 <body>
 
-<!-- mobile message -->
-<div class="mob-disclaimer" ng-show="!hideMobileMessage">
-    <p>
-        <i class="hot-ds-icon-xmark pull-right pointer" ng-click="hideMobileMessage = true"></i>
-        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
-    </p>
-    <a href="https://mapswipe.org" class="button button--achromic">{{ 'Go to MapSwipe' | translate }}</a>
-</div>
-<!--/ mobile message -->
-
 <!-- header -->
 <header class="page__header page__header__fixed" role="banner">
     <div class="inner">
@@ -62,7 +70,7 @@
             <h2 class="toggle-menu">
                 <a title="{{ 'Show/hide menu' | translate }}" ng-modal="showMenu" ng-click="showMenu = !showMenu"></a>
             </h2>
-            <div class="menu-wrapper" ng-class="showMenu ? 'menu-wrapper menu-wrapper--open' : 'menu-wrapper'">
+            <div class="menu-wrapper" ng-class="showMenu ? 'menu-wrapper menu-wrapper--open' : 'menu-wrapper'" ng-cloak>
                 <ul class="global-menu" id="global-menu">
                     <li>
                         <a href="/about" title="{{ 'Visit about' | translate }}" class="global-menu-item">
@@ -95,6 +103,16 @@
 <!-- Main content and injected views -->
 <div class="page__body" id="tm-container" ng-view autoscroll>
 </div>
+
+<!-- mobile message -->
+<div class="mob-disclaimer" ng-show="!hideMobileMessage">
+    <p>
+        <i class="hot-ds-icon-xmark pull-right pointer" ng-click="hideMobileMessage = true"></i>
+        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
+    </p>
+    <a href="https://mapswipe.org" class="button button--achromic">{{ 'Go to MapSwipe' | translate }}</a>
+</div>
+<!--/ mobile message -->
 
 <footer class="page__footer">
     <div class="left">
@@ -145,7 +163,7 @@
 <script src="https://cdn.rawgit.com/calvinmetcalf/shapefile-js/gh-pages/dist/shp.min.js"></script>
 <!-- /build -->
 
-<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/showdown/1.6.4/showdown.min.js-->
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/showdown/1.7.1/showdown.min.js-->
 <script src="node_modules/showdown/dist/showdown.js"></script>
 <!-- /build -->
 
@@ -174,7 +192,7 @@
 <!-- /build -->
 
 <!-- build:js https://cdn.jsdelivr.net/angular.ment-io/0.9.24/mentio.min.js-->
-<script src="node_modules/ment.io/dist/mentio.js"></script>
+<script src="https://cdn.jsdelivr.net/angular.ment-io/0.9.24/mentio.min.js"></script>
 <!-- /build -->
 
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.15.1/angular-translate.min.js -->
@@ -228,12 +246,16 @@
 <script src="app/services/message.service.js"></script>
 <script src="app/services/language.service.js"></script>
 <script src="app/services/httpInterceptor.service.js"></script>
+<script src="app/services/settings.service.js"></script>
+<script src="app/services/userPreferences.service.js"></script>
 
 <script src="app/components/add-layer/add-layer.directive.js"></script>
 <script src="app/components/account-nav/account-nav.directive.js"></script>
 <script src="app/components/fileread.directive.js"></script>
 <script src="app/components/language/language-switch.directive.js"></script>
 <script src="app/components/popup/map-popup.directive.js"></script>
+<script src="app/components/show-project-aois/show-project-aois.directive.js"></script>
+<script src="app/components/project-chat/project-chat.directive.js"></script>
 <!-- /build -->
 
 </body>

@@ -1,8 +1,8 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-
-from server.models.dtos.project_dto import ProjectSearchDTO
-from server.services.project_search_service import ProjectSearchService
+from distutils.util import strtobool
+from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
+from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 from server.services.users.authentication_service import token_auth, tm
 
@@ -57,6 +57,83 @@ class ProjectAPI(Resource):
                 ProjectService.auto_unlock_tasks(project_id)
             except Exception as e:
                 current_app.logger.critical(str(e))
+
+
+class ProjectSearchBBoxAPI(Resource):
+
+    @tm.pm_only(True)
+    @token_auth.login_required
+    def get(self):
+        """
+        Search for projects by bbox projects
+        ---
+        tags:
+            - search
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - in: query
+              name: bbox
+              description: comma separated list xmin, ymin, xmax, ymax
+              type: string
+              default: 34.404,-1.034, 34.717,-0.624
+            - in: query
+              name: srid
+              description: srid of bbox coords
+              type: integer
+              default: 4326
+            - in: query
+              name: createdByMe
+              description: limit to projects created by authenticated user
+              type: boolean
+              required: true
+              default: false
+
+        responses:
+            200:
+                description: ok
+            400:
+                description: Client Error - Invalid Request
+            403:
+                description: Forbidden
+            500:
+                description: Internal Server Error
+        """
+        try:
+            search_dto = ProjectSearchBBoxDTO()
+            search_dto.bbox = map(float, request.args.get('bbox').split(','))
+            search_dto.input_srid = request.args.get('srid')
+            search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            createdByMe = strtobool(request.args.get('createdByMe')) if request.args.get('createdByMe') else False
+            if createdByMe:
+                search_dto.project_author = tm.authenticated_user_id
+            search_dto.validate()
+        except Exception as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+        try:
+            geojson = ProjectSearchService.get_projects_geojson(search_dto)
+            return geojson, 200
+        except BBoxTooBigError:
+            return {"Error": "Bounding Box too large"}, 403
+        except ProjectSearchServiceError as e:
+            return {"error": str(e)}, 400
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
 
 
 class ProjectSearchAPI(Resource):
@@ -138,11 +215,12 @@ class ProjectSearchAPI(Resource):
 
 
 class HasUserTaskOnProject(Resource):
+
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, project_id):
         """
-        Gets any locked task on the project from logged in user 
+        Gets any locked task on the project from logged in user
         ---
         tags:
             - mapping
@@ -180,3 +258,98 @@ class HasUserTaskOnProject(Resource):
             error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+
+class HasUserTaskOnProjectDetails(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self, project_id):
+        """
+        Gets details of any locked task on the project from logged in user
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Task user is working on
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: User is not working on any tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id, tm.authenticated_user_id, preferred_locale)
+            return locked_tasks.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User has no locked tasks"}, 404
+        except Exception as e:
+            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class ProjectSummaryAPI(Resource):
+
+    def get(self, project_id: int):
+        """
+        Gets project summary
+        ---
+        tags:
+          - mapping
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Project Summary
+            404:
+                description: Project not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            summary = ProjectService.get_project_summary(project_id, preferred_locale)
+            return summary.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Project not found"}, 404
+        except Exception as e:
+            error_msg = f'Project Summary GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

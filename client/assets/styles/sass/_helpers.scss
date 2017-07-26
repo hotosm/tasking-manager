@@ -1,5 +1,6 @@
-.darkened-background {
-  background-color: #f6f7f8;
+/** CSS rule for Angular ng-cloak; see https://docs.angularjs.org/api/ng/directive/ngCloak **/
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
 }
 
 .pull-right {
@@ -84,7 +85,6 @@ hr {
   width: 0;
   height: 100%;
   font-size: 12px;
-  line-height: 12px;
   color: #fff;
   text-align: center;
   background-color: $secondary-color;
@@ -155,4 +155,8 @@ hr {
 .form__control__inline {
   width: auto;
   display: inline;
+}
+
+.button[disabled]{
+  cursor: not-allowed;
 }

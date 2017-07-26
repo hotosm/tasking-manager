@@ -1,9 +1,10 @@
+import bleach
 import datetime
 import geojson
 from enum import Enum
 from geoalchemy2 import Geometry
-from typing import List
 from server import db
+from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
@@ -50,7 +51,8 @@ class TaskHistory(db.Model):
 
     def set_comment_action(self, comment):
         self.action = TaskAction.COMMENT.name
-        self.action_text = comment
+        clean_comment = bleach.clean(comment)  # Bleach input to ensure no nefarious script tags etc
+        self.action_text = clean_comment
 
     def set_state_change_action(self, new_state):
         self.action = TaskAction.STATE_CHANGE.name
@@ -82,38 +84,45 @@ class TaskHistory(db.Model):
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
         """ Gets all comments for the supplied project_id"""
 
-        comments = db.session.query(TaskHistory.action_date,
+        comments = db.session.query(TaskHistory.task_id,
+                                    TaskHistory.action_date,
                                     TaskHistory.action_text,
                                     User.username) \
             .join(User) \
             .filter(TaskHistory.project_id == project_id, TaskHistory.action == TaskAction.COMMENT.name).all()
 
-        comment_list = []
+        comments_dto = ProjectCommentsDTO()
         for comment in comments:
             dto = ProjectComment()
             dto.comment = comment.action_text
             dto.comment_date = comment.action_date
             dto.user_name = comment.username
-            comment_list.append(dto)
-
-        comments_dto = ProjectCommentsDTO()
-        comments_dto.comments = comment_list
+            dto.task_id = comment.task_id
+            comments_dto.comments.append(dto)
 
         return comments_dto
 
     @staticmethod
-    def get_last_status(project_id: int, task_id: int):
+    def get_last_status(project_id: int, task_id: int, for_undo: bool = False):
         """ Get the status the task was set to the last time the task had a STATUS_CHANGE"""
         result = db.session.query(TaskHistory.action_text) \
             .filter(TaskHistory.project_id == project_id,
                     TaskHistory.task_id == task_id,
                     TaskHistory.action == TaskAction.STATE_CHANGE.name) \
-            .order_by(TaskHistory.action_date.desc()).first()
+            .order_by(TaskHistory.action_date.desc()).all()
 
-        if result == None:
+        if result is None:
             return TaskStatus.READY
 
-        return TaskStatus[result[0]]
+        if len(result) == 1 and for_undo:
+            # We're looking for the previous status, however, there isn't any so we'll return Ready
+            return TaskStatus.READY
+
+        if for_undo:
+            # Return the second last status which was status the task was previously set to
+            return TaskStatus[result[1][0]]
+        else:
+            return TaskStatus[result[0][0]]
 
     @staticmethod
     def get_last_action(project_id: int, task_id: int):
@@ -133,6 +142,7 @@ class Task(db.Model):
     x = db.Column(db.Integer)
     y = db.Column(db.Integer)
     zoom = db.Column(db.Integer)
+    # Tasks are not splittable if created from an arbitrary grid or were clipped to the edge of the AOI
     splittable = db.Column(db.Boolean, default=True)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
@@ -143,6 +153,7 @@ class Task(db.Model):
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
+    mapper = db.relationship(User, foreign_keys=[mapped_by])
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -234,7 +245,7 @@ class Task(db.Model):
 
     def is_mappable(self):
         """ Determines if task in scope is in suitable state for mapping """
-        if TaskStatus(self.task_status) not in [TaskStatus.READY, TaskStatus.INVALIDATED, TaskStatus.BADIMAGERY]:
+        if TaskStatus(self.task_status) not in [TaskStatus.READY, TaskStatus.INVALIDATED]:
             return False
 
         return True
@@ -284,45 +295,27 @@ class Task(db.Model):
 
         # clear the lock action for the task in the task history
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
-        last_action.delete();
+        last_action.delete()
 
-    @staticmethod
-    def invalidate_all(project_id: int, user_id: int):
-        """ Invalidates all project tasks, except Ready and Bad Imagery """
-        mapped_tasks = Task.query.filter(Task.project_id == project_id,
-                                         ~Task.task_status.in_([TaskStatus.READY.value,
-                                                                TaskStatus.BADIMAGERY.value])).all()
-        for task in mapped_tasks:
-            task.lock_task_for_validating(user_id)
-            task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
-
-    @staticmethod
-    def validate_all(project_id: int, user_id: int):
-        """ Validate all project tasks, except Bad Imagery """
-        tasks_to_validate = Task.query.filter(Task.project_id == project_id,
-                                              Task.task_status != TaskStatus.BADIMAGERY.value).all()
-
-        for task in tasks_to_validate:
-            task.lock_task_for_validating(user_id)
-            task.unlock_task(user_id, new_state=TaskStatus.VALIDATED)
-
-    def unlock_task(self, user_id, new_state=None, comment=None):
+    def unlock_task(self, user_id, new_state=None, comment=None, undo=False):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
-            # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
-            # TODO send comment as message to user
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
 
-        if new_state == TaskStatus.MAPPED and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
+        if new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY] and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
             # Don't set mapped if state being set back to mapped after validation
             self.mapped_by = user_id
         elif new_state == TaskStatus.VALIDATED:
             self.validated_by = user_id
+        elif new_state == TaskStatus.INVALIDATED:
+            self.mapped_by = None
+            self.validated_by = None
 
-        # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-        TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
+        if not undo:
+            # Using a slightly evil side effect of Actions and Statuses having the same name here :)
+            TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
 
         self.task_status = new_state.value
         self.locked_by = None
@@ -331,8 +324,6 @@ class Task(db.Model):
     def reset_lock(self, user_id, comment=None):
         """ Removes a current lock from a task, resets to last status and updates history with duration of lock """
         if comment:
-            # TODO need to clean comment to avoid injection attacks, maybe just raise error if html detected
-            # TODO send comment as message to user
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         # Using a slightly evil side effect of Actions and Statuses having the same name here :)
@@ -369,7 +360,7 @@ class Task(db.Model):
 
         # Raw SQL is easier to understand that SQL alchemy here :)
         sql = """select u.username, u.mapping_level, count(distinct(t.id)), json_agg(distinct(t.id)),
-                            max(th.action_date) last_seen
+                            max(th.action_date) last_seen, u.date_registered, u.last_validation_date
                       from tasks t,
                            task_history th,
                            users u
@@ -379,13 +370,13 @@ class Task(db.Model):
                        and t.project_id = {0}
                        and t.task_status = 2
                        and th.action_text = 'MAPPED'
-                     group by u.username, u.mapping_level""".format(project_id)
+                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date""".format(project_id)
 
         results = db.engine.execute(sql)
         if results.rowcount == 0:
             raise NotFound()
 
-        mapped_tasks = []
+        mapped_tasks_dto = MappedTasks()
         for row in results:
             user_mapped = MappedTasksByUser()
             user_mapped.username = row[0]
@@ -393,11 +384,10 @@ class Task(db.Model):
             user_mapped.mapped_task_count = row[2]
             user_mapped.tasks_mapped = row[3]
             user_mapped.last_seen = row[4]
+            user_mapped.date_registered = row[5]
+            user_mapped.last_validation_date = row[6]
 
-            mapped_tasks.append(user_mapped)
-
-        mapped_tasks_dto = MappedTasks()
-        mapped_tasks_dto.mapped_tasks = mapped_tasks
+            mapped_tasks_dto.mapped_tasks.append(user_mapped)
 
         return mapped_tasks_dto
 
@@ -411,13 +401,8 @@ class Task(db.Model):
         for row in result:
             return row[0]
 
-    def as_dto(self):
-        """
-        Creates a Task DTO suitable for transmitting via the API
-        :param task_id: Task ID in scope
-        :param project_id: Project ID in scope
-        :return: JSON serializable Task DTO
-        """
+    def as_dto_with_instructions(self, preferred_locale: str = 'en') -> TaskDTO:
+        """ Get dto with any task instructions """
         task_history = []
         for action in self.task_history:
             if action.action_text is None:
@@ -438,4 +423,39 @@ class Task(db.Model):
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
 
+        per_task_instructions = self.get_per_task_instructions(preferred_locale)
+
+        # If we don't have instructions in preferred locale try again for default locale
+        task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(
+            self.projects.default_locale)
+
         return task_dto
+
+    def get_per_task_instructions(self, search_locale: str) -> str:
+        """ Gets any per task instructions attached to the project """
+        project_info = self.projects.project_info.all()
+
+        for info in project_info:
+            if info.locale == search_locale:
+                return self.format_per_task_instructions(info.per_task_instructions)
+
+    def format_per_task_instructions(self, instructions) -> str:
+        """ Format instructions by looking for X, Y, Z tokens and replacing them with the task values """
+        if not instructions:
+            return ''  # No instructions so return empty string
+
+        # If there's no dynamic URL (e.g. url containing '{x}, {y} and {z}' pattern)
+        # - ALWAYS return instructions unaltered
+
+        if not all(item in instructions for item in ['{x}','{y}','{z}']):
+            return instructions
+
+        # If there is a dyamic URL only return instructions if task is splittable, since we have the X, Y, Z
+        if not self.splittable:
+            return 'No extra instructions available for this task'
+
+        instructions = instructions.replace('{x}', str(self.x))
+        instructions = instructions.replace('{y}', str(self.y))
+        instructions = instructions.replace('{z}', str(self.zoom))
+
+        return instructions

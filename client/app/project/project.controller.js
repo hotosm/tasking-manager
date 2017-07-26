@@ -8,9 +8,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
 
         var vm = this;
         vm.id = 0;
@@ -56,7 +56,7 @@
 
         //editor
         vm.editorStartError = '';
-        vm.selectedEditor = '';
+        vm.selectedEditor = 'ideditor';
 
         //interaction
         vm.selectInteraction = null;
@@ -90,15 +90,6 @@
 
         function activate() {
 
-            // Check the user's role
-            var session = authService.getSession();
-            if (session && session.username && session.username != "") {
-                var resultsPromise = accountService.getUser(session.username);
-                resultsPromise.then(function (user) {
-                    vm.user = user;
-                });
-            }
-
             vm.currentTab = 'description';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
@@ -109,11 +100,30 @@
 
             vm.id = $routeParams.id;
 
-            initialiseProject(vm.id);
             updateMappedTaskPerUser(vm.id);
 
             // Add interactions for drawing a polygon for validation
             addInteractions();
+
+            // Check the user's role and initialise project after the async call has finished
+            var session = authService.getSession();
+            if (session && session.username && session.username != "") {
+                var resultsPromise = accountService.getUser(session.username);
+                resultsPromise.then(function (user) {
+                    vm.user = user;
+                    initialiseProject(vm.id);
+                }, function () {
+                    initialiseProject(vm.id);
+                });
+            }
+            else {
+                initialiseProject(vm.id);
+            }
+
+            var tab = $location.search().tab;
+            if (tab === 'chat') {
+                vm.currentTab = 'chat';
+            }
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
@@ -121,15 +131,19 @@
                 updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refesh too
             }, 10000);
+
+            // set up the preferred editor from user preferences
+            vm.selectedEditor = userPreferencesService.getFavouriteEditor();
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
-        $scope.$on('$locationChangeStart', function () {
+        $scope.$on('$routeChangeStart', function () {
             if (angular.isDefined(autoRefresh)) {
                 $interval.cancel(autoRefresh);
                 autoRefresh = undefined;
             }
         })
+
 
         /**
          * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual
@@ -150,6 +164,11 @@
             vm.lockedTaskData = null;
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
+            vm.lockedTasksForCurrentUser = [];
+        }
+
+        vm.updatePreferedEditor = function () {
+            userPreferencesService.setFavouriteEditor(vm.selectedEditor);
         }
 
         /**
@@ -173,6 +192,7 @@
             vm.taskUnLockErrorMessage = '';
             vm.taskSplitError = false;
             vm.taskSplitCode == null;
+            vm.taskUndoError = false;
         }
 
         /**
@@ -311,10 +331,31 @@
         };
 
         /**
+         * Undo task status change
+         */
+        vm.undo = function(){
+            vm.taskUndoError = false;
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var resultsPromise = taskService.undo(projectId, taskId);
+            resultsPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                setUpSelectedTask(data);
+                refreshProject(vm.projectData.projectId);
+            }, function (error) {
+                // TODO - show message
+                vm.taskUndoError = true;
+            });
+        };
+
+        /**
          * Initilaise a project using it's id
          * @param id - id of the project to initialise
          */
         function initialiseProject(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
@@ -351,13 +392,12 @@
                     vm.highlightVectorLayer.getSource().clear();
                 }
 
-
                 if ($location.search().task) {
                     selectTaskById($location.search().task);
                 }
             }, function () {
                 // project not returned successfully
-                // TODO - may want to handle error
+                vm.errorGetProject = true;
             });
         }
 
@@ -366,9 +406,13 @@
          * @param id
          */
         function updateDescriptionAndInstructions(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 vm.projectData = data;
+            }, function () {
+                // project not returned successfully
+                vm.errorGetProject = true;
             });
         }
 
@@ -377,6 +421,7 @@
          * @param id - id of project to be refreshed
          */
         function refreshProject(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
@@ -403,12 +448,12 @@
 
             }, function () {
                 // project not returned successfully
-                // TODO - may want to handle error
+                vm.errorGetProject = true;
             });
         }
 
         /**
-         * Select a task using it's ID.
+         * Select a task using its ID.
          * @param taskId
          */
         function selectTaskById(taskId) {
@@ -419,7 +464,6 @@
                 var padding = getPaddingSize();
                 vm.map.getView().fit(task.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
             }
-
         }
 
         /**
@@ -438,6 +482,17 @@
                     style: styleService.getTaskStyle
                 });
                 vm.map.addLayer(vm.taskVectorLayer);
+
+                // change mouse cursor when over vector feature
+                vm.map.on('pointermove', function (e) {
+                    var pixel = vm.map.getEventPixel(e.originalEvent);
+                    var hit = vm.map.hasFeatureAtPixel(pixel, {
+                        layerFilter: function (layerCandidate) {
+                            return layerCandidate == vm.taskVectorLayer;
+                        }
+                    });
+                    vm.map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+                });
             } else {
                 source = vm.taskVectorLayer.getSource();
                 source.clear();
@@ -475,9 +530,9 @@
          * @param projectId
          */
         function updateLockedTasksForCurrentUser(projectId) {
-            var mappedTasksByUserPromise = taskService.getLockedTasksForCurrentUser(projectId);
-            mappedTasksByUserPromise.then(function (mappedTasks) {
-                vm.lockedTasksForCurrentUser = mappedTasks;
+            var lockedTasksPromise = taskService.getLockedTasksForCurrentUser(projectId);
+            lockedTasksPromise.then(function (lockedTasks) {
+                vm.lockedTasksForCurrentUser = lockedTasks;
                 vm.lockedByCurrentUserVectorLayer.getSource().clear();
                 if (vm.lockedTasksForCurrentUser.length > 0) {
                     var features = taskService.getTaskFeaturesByIds(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser);
@@ -490,6 +545,105 @@
                 vm.lockedTasksForCurrentUser = [];
             });
         }
+
+        /**
+         * Has the current user got tasks locked for mapping
+         * @returns {boolean}
+         */
+        vm.hasTaskLockedForMapping = function () {
+            if (vm.taskVectorLayer) {
+                var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_MAPPING');
+                return lockedFeatures.length == 1;
+            }
+
+        };
+
+        /**
+         * Reselect tasks user has locked for mapping
+         */
+        vm.reselectTaskForMapping = function () {
+            if (vm.taskVectorLayer) {
+                var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_MAPPING');
+                if (lockedFeatures.length == 1) {
+                    selectFeature(lockedFeatures[0]);
+                    onTaskSelection(lockedFeatures[0]);
+                    var padding = getPaddingSize();
+                    vm.map.getView().fit(lockedFeatures[0].getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+                }
+            }
+
+        };
+
+        /**
+         * Has the current user got tasks locked for validation
+         * @returns {boolean}
+         */
+        vm.hasTasksLockedForValidation = function () {
+            if (vm.taskVectorLayer) {
+                var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_VALIDATION');
+                return lockedFeatures.length > 0;
+            }
+        };
+
+        /**
+         * Reselect tasks user has locked for validation
+         */
+        vm.reselectTasksForValidation = function () {
+            if (vm.taskVectorLayer) {
+                var lockedFeatures = taskService.getTaskFeaturesByIdAndStatus(vm.taskVectorLayer.getSource().getFeatures(), vm.lockedTasksForCurrentUser, 'LOCKED_FOR_VALIDATION');
+                if (lockedFeatures.length == 1) {
+                    selectFeature(lockedFeatures[0]);
+                    onTaskSelection(lockedFeatures[0]);
+                    var padding = getPaddingSize();
+                    vm.map.getView().fit(lockedFeatures[0].getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+                }
+                else if (lockedFeatures.length > 1) {
+
+                    vm.selectInteraction.getFeatures().clear();
+
+                    //select each one by one
+                    lockedFeatures.forEach(function (feature) {
+                        vm.selectInteraction.getFeatures().push(feature);
+                    });
+
+                    var extent = geospatialService.getBoundingExtentFromFeatures(lockedFeatures);
+                    // Zoom to the extent to get the right zoom level for the editorsgit commit -a
+                    vm.map.getView().fit(extent);
+
+                    //put the UI in to locked for multi validation mode
+                    var lockPromise = taskService.getLockedTaskDetailsForCurrentUser(vm.projectData.projectId);
+                    lockPromise.then(function (tasks) {
+
+                        // Filter to get the ones locked for validation
+                        var tasksLockedForValidation = tasks.filter(function (task) {
+                            if (task.taskStatus == 'LOCKED_FOR_VALIDATION'){
+                                return task;
+                            }
+                        });
+
+                        // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                        // on the server
+                        // TODO - The following reset lines are repeated in several places in this file.
+                        // Refactoring to a single function call was considered, however it was decided that the ability to
+                        // call the resets individually was desirable and would help readability.
+                        // The downside is that any change will have to be replicated in several places.
+                        // A fundamental refactor of this controller should be considered at some stage.
+                        vm.resetErrors();
+                        vm.resetStatusFlags();
+                        vm.resetTaskData();
+                        vm.currentTab = 'validation';
+                        vm.validatingStep = 'multi-locked';
+                        vm.multiSelectedTasksData = tasksLockedForValidation;
+                        vm.multiLockedTasks = tasksLockedForValidation;
+                        vm.isSelectedValidatable = true;
+
+                    }, function (error) {
+                        // TODO - handle error
+                    });
+                }
+            }
+        };
+
 
         /**
          * Adds the aoi feature to the map
@@ -550,6 +704,21 @@
          * @param feature
          */
         function onTaskSelection(feature) {
+
+            //if no feature has been clicked on, go to unselected more
+            if (!feature) {
+                vm.selectedTaskData = null;
+                vm.lockedTaskData = null;
+                vm.multiSelectedTasksData = [];
+                vm.multiLockedTasks = [];
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.clearCurrentSelection();
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+                return;
+            }
+
             //we don't want to allow selection of multiple features by map click
             //get id from feature
             var taskId = feature.get('taskId');
@@ -567,7 +736,10 @@
                 //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
-                vm.resetTaskData();
+                vm.selectedTaskData = null;
+                vm.lockedTaskData = null;
+                vm.multiSelectedTasksData = [];
+                vm.multiLockedTasks = [];
                 setUpSelectedTask(data);
                 // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
                 // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
@@ -605,8 +777,8 @@
         function setUpSelectedTask(data) {
             var isLockedByMeMapping = data.taskStatus === 'LOCKED_FOR_MAPPING' && data.lockHolder === vm.user.username;
             var isLockedByMeValidation = data.taskStatus === 'LOCKED_FOR_VALIDATION' && data.lockHolder === vm.user.username;
-            vm.isSelectedMappable = (isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED' || data.taskStatus === 'BADIMAGERY');
-            vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED');
+            vm.isSelectedMappable = (isLockedByMeMapping || data.taskStatus === 'READY' || data.taskStatus === 'INVALIDATED');
+            vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED' || data.taskStatus === 'BADIMAGERY');
             vm.selectedTaskData = data;
 
             // Format the comments by adding links to the usernames
@@ -1046,47 +1218,86 @@
                 editorService.launchFieldPapersEditor(center);
             }
             else if (editor === 'josm') {
+
+                if (taskCount > 1) {
+                    // load a new empty layer in josm for task square(s).  This step required to get custom name for layer
+                    // use empty, uri encoded osmxml with upload=never for the data para
+                    var emptyTaskLayerParams = {
+                        new_layer: true,
+                        mime_type: encodeURIComponent('application/x-osm+xml'),
+                        layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
+                        data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
+                    }
+                    var isEmptyTaskLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams);
+                    if (!isEmptyTaskLayerSuccess) {
+                        //warn that JSOM couldn't be started
+                        vm.editorStartError = 'josm-error';
+                    }
+
+                    //load task square(s) into JOSM
+                    var taskImportParams = {
+                        url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
+                        new_layer: false
+                    }
+                    var isTaskImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams);
+                    if (!isTaskImportSuccess) {
+                        //warn that JSOM couldn't be started
+                        vm.editorStartError = 'josm-error';
+                    }
+                }
+
+                //load aerial photography if present
                 var changesetSource = "Bing";
                 var hasImagery = false;
                 if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
                     changesetSource = imageryUrl;
                     hasImagery = true;
                 }
+                if (hasImagery) {
+                    var imageryParams = {
+                        title: encodeURIComponent('Tasking Manager Imagery - #' + vm.projectData.projectId),
+                        type: imageryUrl.toLowerCase().substring(0, 3),
+                        url: encodeURIComponent(imageryUrl)
+                    };
+                    var isImagerySuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
+                    if (!isImagerySuccess) {
+                        //warn that imagery couldn't be loaded
+                        vm.editorStartError = 'josm-imagery-error';
+                    }
+                }
+
+                // load a new empty layer in josm for osm data, this step necessary to have a custom name for the layer
+                // use empty, uri encoded osmxml for the data param
+                var emptyOSMLayerParams = {
+                    new_layer: true,
+                    mime_type: 'application/x-osm+xml',
+                    layer_name: 'OSM Data',
+                    data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
+                }
+                var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
+                if (!isEmptyOSMLayerSuccess) {
+                    //warn that JSOM couldn't be started
+                    vm.editorStartError = 'josm-error';
+                }
+
                 var loadAndZoomParams = {
                     left: extentTransformed[0],
                     bottom: extentTransformed[1],
                     right: extentTransformed[2],
                     top: extentTransformed[3],
                     changeset_comment: encodeURIComponent(changesetComment),
-                    changeset_source: encodeURIComponent(changesetSource)
+                    changeset_source: encodeURIComponent(changesetSource),
+                    new_layer: false
                 };
-                var josm_load = taskCount == 1;
-                var josm_endpoint = josm_load ? 'http://127.0.0.1:8111/load_and_zoom' : 'http://127.0.0.1:8111/zoom';
 
-                var isLoadAndZoomSuccess = editorService.sendJOSMCmd(josm_endpoint, loadAndZoomParams);
-                if (isLoadAndZoomSuccess) {
-                    if (hasImagery) {
-                        var imageryParams = {
-                            title: encodeURIComponent('Tasking Manager - #' + vm.projectData.projectId),
-                            type: imageryUrl.toLowerCase().substring(0, 3),
-                            url: encodeURIComponent(imageryUrl)
-                        };
-                        editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
-                    }
-
-                    //load task squares into JOSM
-
-
-                    var importParams = {
-                        url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
-                        new_layer: true
-                    }
-                    var isImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', importParams);
+                if (taskCount == 1) {
+                    //load OSM data and zoom to the bbox
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                } else {
+                    //probably too much OSM data to download, just zoom to the bbox
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
                 }
-                else {
-                    //TODO warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                }
+
             }
         };
 
@@ -1231,11 +1442,11 @@
             lockPromise.then(function (tasks) {
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
-                //TODO - The following reset lines are repeated in several places in this file.
-                //Refactoring to a single function call was considered, however it was decided that the ability to
-                //call the resets individually was desirable and would help readability.
-                //The downside is that any change will have to be replicated in several places.
-                //A fundamental refactor of this controller should be considered at some stage.
+                // TODO - The following reset lines are repeated in several places in this file.
+                // Refactoring to a single function call was considered, however it was decided that the ability to
+                // call the resets individually was desirable and would help readability.
+                // The downside is that any change will have to be replicated in several places.
+                // A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
@@ -1315,7 +1526,7 @@
             // Format the user tag by wrapping into brackets so it is easier to detect that it is a username
             // especially when there are spaces in the username
             return '@[' + item.label + ']';
-        }
+        };
     }
 })
 ();

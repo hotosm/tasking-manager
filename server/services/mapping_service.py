@@ -6,7 +6,7 @@ from geoalchemy2 import shape
 
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.models.postgis.statuses import MappingNotAllowed
-from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound, UserLicenseError
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
@@ -36,10 +36,28 @@ class MappingService:
         return task
 
     @staticmethod
-    def get_task_as_dto(task_id: int, project_id: int) -> TaskDTO:
+    def get_task_as_dto(task_id: int, project_id: int, preferred_local: str = 'en', logged_in_user_id: int = None) -> TaskDTO:
         """ Get task as DTO for transmission over API """
         task = MappingService.get_task(task_id, project_id)
-        return task.as_dto()
+        task_dto = task.as_dto_with_instructions(preferred_local)
+        task_dto.is_undoable = MappingService._is_task_undoable(logged_in_user_id, task)
+        return task_dto
+
+    @staticmethod
+    def _is_task_undoable(logged_in_user_id: int, task: Task) -> bool:
+        """ Determines if the current task status can be undone by the logged in user """
+        # Test to see if user can undo status on this task
+        if logged_in_user_id and TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING,
+                                                                      TaskStatus.LOCKED_FOR_VALIDATION,
+                                                                      TaskStatus.READY]:
+
+            last_action = TaskHistory.get_last_action(task.project_id, task.id)
+
+            # User requesting task made the last change, so they are allowed to undo it.
+            if last_action.user_id == int(logged_in_user_id):
+                return True
+
+        return False
 
     @staticmethod
     def lock_task_for_mapping(lock_task_dto: LockTaskDTO) -> TaskDTO:
@@ -55,7 +73,7 @@ class MappingService:
             raise MappingServiceError('Task in invalid state for mapping')
 
         user_can_map, error_reason = ProjectService.is_user_permitted_to_map(lock_task_dto.project_id,
-                                                                              lock_task_dto.user_id)
+                                                                             lock_task_dto.user_id)
         if not user_can_map:
             if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError('User must accept license to map this task')
@@ -63,7 +81,7 @@ class MappingService:
                 raise MappingServiceError(f'Mapping not allowed because: {error_reason.name}')
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
-        return task.as_dto()
+        return task.as_dto_with_instructions(lock_task_dto.preferred_locale)
 
     @staticmethod
     def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
@@ -83,10 +101,9 @@ class MappingService:
             MessageService.send_message_after_comment(mapped_task.user_id, mapped_task.comment, task.id,
                                                       mapped_task.project_id)
 
-
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
 
-        return task.as_dto()
+        return task.as_dto_with_instructions(mapped_task.preferred_locale)
 
     @staticmethod
     def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
@@ -99,16 +116,12 @@ class MappingService:
                                                       stop_task.project_id)
 
         task.reset_lock(stop_task.user_id, stop_task.comment)
-        return task.as_dto()
+        return task.as_dto_with_instructions(stop_task.preferred_locale)
 
     @staticmethod
     def get_task_locked_by_user(project_id: int, task_id: int, user_id: int) -> Task:
         """
-        Returns task specified by project id and task id if found and locked for mapping by user, otherwise raises MappingServiceError
-        :param project_id:
-        :param task_id:
-        :param user_id:
-        :return: Task
+        Returns task specified by project id and task id if found and locked for mapping by user
         :raises: MappingServiceError
         """
         task = MappingService.get_task(task_id, project_id)
@@ -165,10 +178,10 @@ class MappingService:
 
     @staticmethod
     def generate_osm_xml(project_id: int, task_ids_str: str) -> str:
-        """ Generate xml response suitable for loading into JOSM.  A sample output file is in 
+        """ Generate xml response suitable for loading into JOSM.  A sample output file is in
             /server/helpers/testfiles/osm-sample.xml """
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
-        root = ET.Element('osm', attrib=dict(version='0.6', upload='no', creator='HOT Tasking Manager'))
+        root = ET.Element('osm', attrib=dict(version='0.6', upload='never', creator='HOT Tasking Manager'))
 
         task_ids = map(int, task_ids_str.split(','))
         tasks = Task.get_tasks(project_id, task_ids)
@@ -186,3 +199,20 @@ class MappingService:
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
+
+    @staticmethod
+    def undo_mapping(project_id: int, task_id: int, user_id: int, preferred_locale: str = 'en') -> TaskDTO:
+        """ Allows a user to Undo the task state they updated """
+        task = MappingService.get_task(task_id, project_id)
+
+        if not MappingService._is_task_undoable(user_id, task):
+            raise MappingServiceError('Undo not allowed for this user')
+
+        current_state = TaskStatus(task.task_status)
+        undo_state = TaskHistory.get_last_status(project_id, task_id, True)
+
+        StatsService.set_counters_after_undo(project_id, user_id, current_state, undo_state)
+        task.unlock_task(user_id, undo_state,
+                         f'Undo state from {current_state.name} to {undo_state.name}', True)
+
+        return task.as_dto_with_instructions(preferred_locale)

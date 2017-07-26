@@ -59,9 +59,27 @@ class ST_Transform(GenericFunction):
     type = Geometry
 
 
+class ST_Area(GenericFunction):
+    """ Exposes PostGIS ST_Area function """
+    name = 'ST_Area'
+    type = None
+
+
 class ST_Buffer(GenericFunction):
-    """ Exposes PostGIS ST_Transform function """
+    """ Exposes PostGIS ST_Buffer function """
     name = 'ST_Buffer'
+    type = Geometry
+
+
+class ST_Intersects(GenericFunction):
+    """ Exposes PostGIS ST_Intersects function """
+    name = 'ST_Intersects'
+    type = Geometry
+
+
+class ST_MakeEnvelope(GenericFunction):
+    """ Exposes PostGIS ST_MakeEnvelope function """
+    name = 'ST_MakeEnvelope'
     type = Geometry
 
 

@@ -32,6 +32,10 @@ class ProjectAdminAPI(Resource):
               description: JSON object for creating draft project
               schema:
                   properties:
+                      cloneFromProjectId:
+                          type: int
+                          default: 1
+                          description: Specify this value if you want to clone a project, otherwise leave out of request
                       projectName:
                           type: string
                           default: HOT Project

@@ -8,6 +8,9 @@ class EnvironmentConfig:
     # This is the address we'll use as the sender on all auto generated emails
     EMAIL_FROM_ADDRESS = 'noreply@hotosmmail.org'
     LOG_LEVEL = logging.ERROR
+    # Mapper Level values represent number of OSM changesets
+    MAPPER_LEVEL_INTERMEDIATE = 250
+    MAPPER_LEVEL_ADVANCED = 500
     OSM_OAUTH_SETTINGS = {
         'base_url': 'https://www.openstreetmap.org/api/0.6/',
         'consumer_key': os.getenv('TM_CONSUMER_KEY', None),
@@ -17,20 +20,50 @@ class EnvironmentConfig:
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
     }
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_POOL_SIZE = 10
+    SQLALCHEMY_MAX_OVERFLOW = 10
     SECRET_KEY = os.getenv('TM_SECRET', None)
     SMTP_SETTINGS = {
-        'host': 'email-smtp.eu-west-1.amazonaws.com',
-        'smtp_user': 'AKIAIIBGP3IBB3NWDX5Q',
+        'host': os.getenv('TM_SMTP_HOST', None),
+        'smtp_user': os.getenv('TM_SMTP_USER', None),
         'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
     }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {
         'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu',
-        'languages': 'English, Français, Español, Deutsch, Português, 日本語, Lietuvos, 中文, Indonesia, Dansk, Português (Brasil), Русский, Slovenščina, Italiano, Nederlands, Українська, தமிழ், සිංහල, Česky, Bokmål, Magyar'
+        'languages': 'English, Français, Español, Deutsch, Português, 日本語, Lietuvos, 中文, Indonesia, Dansk,'
+                     ' Português (Brasil), Русский, Slovenščina, Italiano, Nederlands, Українська, தமிழ், සිංහල,'
+                     ' Česky, Bokmål, Magyar'
     }
 
 
+class ProdConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tm3.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tm3.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
+class StageConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-stage.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-stage.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
+class DemoConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://tasks-demo.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   'url=http://tasks-demo.hotosm.org/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
 class StagingConfig(EnvironmentConfig):
+    # Currently being used by Thinkwhere
     APP_BASE_URL = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    'url=http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/docs'

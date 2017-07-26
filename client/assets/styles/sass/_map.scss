@@ -15,15 +15,19 @@
   background-color: $secondary-color;
 }
 
-.ol-overviewmap {
+.ol-custom-overviewmap {
   left: 0.5em;
   top: 5em;
   bottom: auto;
 }
 
+.ol-custom-overviewmap:not(.ol-collapsed) button{
+  top: 1px;
+}
+
 /* Layer switcher override */
 .layer-switcher {
-  bottom: 3em;
+  bottom: 2em;
   top: auto;
 }
 
@@ -39,8 +43,19 @@
   top: 3rem;
   right: 0.5rem;
   position: absolute;
-  z-index: 1000;
+  z-index: 5;
 }
+
+.show-other-projects {
+  bottom: 2.5rem;
+  left: 0.5rem;
+  position: absolute;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 0.5rem 0rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
 
 .add-layer-wrapper {
   background: rgba(255, 255, 255, 0.9);
@@ -52,6 +67,7 @@
 }
 
 .legend-control {
+  position: absolute;
   background-color: rgba(255,255,255,0.8);
   bottom: 2.5em;
   left: 0.6em;
@@ -59,8 +75,16 @@
   z-index: 5;
 }
 
+.legend-control-offset {
+  bottom: 6.5em;
+}
+
 .priority-areas {
   left: 10em !important;
+}
+
+.map-container {
+  position: relative;
 }
 
 /* ==========================================================================
@@ -105,7 +129,13 @@
   position: absolute;
   top: 2px;
   right: 8px;
+  color: black !important;
 }
 .ol-popup-closer:after {
   content: "x";
+}
+
+.ol-attribution.ol-logo-only, .ol-attribution.ol-uncollapsible {
+    max-width: calc(100% - 3em);
+    height: 1.5em;
 }

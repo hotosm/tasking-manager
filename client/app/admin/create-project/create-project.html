@@ -2,8 +2,12 @@
     <section class="section section--asided">
         <header class="section__header">
             <div class="inner">
-                <h1 class="section__title">
+                <h1 ng-hide="createProjectCtrl.isCloneProject" class="section__title">
                     {{ 'Create project' | translate }}
+                </h1>
+                <h1 ng-show="createProjectCtrl.isCloneProject" class="section__title">
+                    {{ 'Clone project' | translate }} -
+                    #{{ createProjectCtrl.cloneProjectId }} {{ createProjectCtrl.cloneProjectName }}
                 </h1>
             </div>
         </header>
@@ -31,7 +35,8 @@
                     <form class="form">
                         <div class="form__group">
                             <button class="button button--achromic" type="button"
-                                    ng-click="createProjectCtrl.drawAOI()"><span>{{ 'Draw' | translate }}</span></button>
+                                    ng-click="createProjectCtrl.drawAOI()"><span>{{ 'Draw' | translate }}</span>
+                            </button>
                             <p>{{ 'Draw the Area of Interest on the map.' | translate }}</p>
                             <div>
                                 <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
@@ -44,18 +49,36 @@
                             </div>
                         </div>
                         <div class="form__group">
-                            <div class="button button--achromic" ngf-select="createProjectCtrl.import($file)">{{ 'Import' | translate }}
+                            <div class="button button--achromic"
+                                 ngf-select="createProjectCtrl.import($file)">{{ 'Import' | translate }}
                             </div>
                             <p>{{ 'Import a GeoJSON, KML, or zipped SHP file.' | translate }}</p>
-                            <div>
-                                <span class="error" ng-show="createProjectCtrl.isImportError">
-                                    {{ 'Please provide a valid GeoJSON, KML or zipped Shapefile.' | translate }}
-                                </span>
+
+                            <div ng-show="createProjectCtrl.isImportError"
+                                 class="alert alert--danger" role="alert">
+                                <p>
+                                    <strong>{{ 'Error' | translate }}:</strong> {{ 'Please provide a valid GeoJSON, KML or zipped Shapefile.' | translate }}
+                                </p>
                             </div>
+
+                            <div ng-show="createProjectCtrl.nonPolygonError"
+                                 class="alert alert--danger" role="alert">
+                                <p>
+                                    <strong>{{ 'Error' | translate }}:</strong> {{ 'The AOI contains geometries which are not polygons or multipolygons' | translate }}
+                                </p>
+                            </div>
+                            <div ng-show="createProjectCtrl.selfIntersectionError"
+                                 class="alert alert--danger" role="alert">
+                                <p>
+                                    <strong>{{ 'Error' | translate }}:</strong> {{ 'The AOI contains self intersections' | translate }}
+                                </p>
+                            </div>
+
                         </div>
                         <div class="form__group">
-                            <p>{{ 'Want to use an .osm file instead? You can use' | translate }} <a href="http://geojson.io"
-                                                                                target="_blank">GeoJSON.io</a>
+                            <p>{{ 'Want to use an .osm file instead? You can use' | translate }} <a
+                                    href="http://geojson.io"
+                                    target="_blank">GeoJSON.io</a>
                                 {{ 'to convert it to GeoJSON.' | translate }}</p>
                         </div>
                     </form>
@@ -82,7 +105,8 @@
                                 <label class="form__option form__option--inline">
                                     <input ng-disabled="createProjectCtrl.isDrawnAOI"
                                            ng-model="createProjectCtrl.taskType" type="radio" name="form-tasks-type"
-                                           id="arbitrary-tasks" value="arbitrary-tasks"/> <span>{{ 'Arbitrary Tasks' | translate }}</span>
+                                           id="arbitrary-tasks" value="arbitrary-tasks"/>
+                                    <span>{{ 'Arbitrary Tasks' | translate }}</span>
                                 </label>
                             </div>
                         </div>
@@ -132,16 +156,19 @@
                         </div>
                         <hr/>
                         <p>{{ 'A new project will be created with' | translate }} {{ createProjectCtrl.numberOfTasks }} {{ 'tasks.' | translate }}</p>
-                        <p>{{ 'The size of each task is approximately' | translate }} {{ createProjectCtrl.sizeOfTasks | number : 2 }}
+                        <p>{{ 'The size of each task is approximately' | translate }}
+                            {{ createProjectCtrl.sizeOfTasks | number : 2 }}
                             km<sup>2</sup>.</p>
                         <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS_SPLIT"
                              class="alert alert--warning" role="alert">
-                            <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'Maximum number of tasks reached. If smaller tasks are required please make the Area of Interest smaller.' | translate }}
+                            <p>
+                                <strong>{{ 'Warning' | translate }}:</strong> {{ 'Maximum number of tasks reached. If smaller tasks are required please make the Area of Interest smaller.' | translate }}
                             </p>
                         </div>
                         <div ng-show="createProjectCtrl.sizeOfTasks > createProjectCtrl.MAX_SIZE_OF_TASKS"
                              class="alert alert--warning" role="alert">
-                            <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'It is recommended to keep the size of the tasks small. Please review the size of the tasks and/or consider creating multiple projects.' | translate }}
+                            <p>
+                                <strong>{{ 'Warning' | translate }}:</strong> {{ 'It is recommended to keep the size of the tasks small. Please review the size of the tasks and/or consider creating multiple projects.' | translate }}
                             </p>
                         </div>
                     </div>
@@ -178,19 +205,35 @@
                     </span>
                     <div ng-show="createProjectCtrl.trimErrorReason == 400"
                          class="alert alert--danger" role="alert">
-                        <p><strong>{{ 'Error' | translate }}:</strong> {{ 'AOI geometry must be a valid MultiPolygon.' | translate }}
+                        <p>
+                            <strong>{{ 'Error' | translate }}:</strong> {{ 'AOI geometry must be a valid MultiPolygon.' | translate }}
                         </p>
                     </div>
                     <div ng-show="createProjectCtrl.trimErrorReason == 500"
                          class="alert alert--danger" role="alert">
-                        <p><strong>{{ 'Error' | translate }}:</strong> {{ 'Project grid could not be trimmed to the AOI.' | translate }}
+                        <p>
+                            <strong>{{ 'Error' | translate }}:</strong> {{ 'Project grid could not be trimmed to the AOI.' | translate }}
                         </p>
                     </div>
                     <div ng-show="createProjectCtrl.trimErrorReason == -1"
                          class="alert alert--danger" role="alert">
-                        <p><strong>{{ 'Error' | translate }}:</strong> {{ 'The Project could not be trimmed. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks.' | translate }}
+                        <p>
+                            <strong>{{ 'Error' | translate }}:</strong> {{ 'The Project could not be trimmed. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks.' | translate }}
                         </p>
                     </div>
+                    <div ng-show="createProjectCtrl.trimErrorReason == 504"
+                         class="alert alert--danger" role="alert">
+                        <p>
+                            <strong>{{ 'Error' | translate }}:</strong> {{ 'The Project trim timed out.  Try again with a smaller AOI or fewer tasks.' | translate }}
+                        </p>
+                    </div>
+                    <div ng-show="createProjectCtrl.trimError && [400,500,-1,504].indexOf(createProjectCtrl.trimErrorReason) == -1"
+                         class="alert alert--danger" role="alert">
+                        <p>
+                            <strong>{{ 'Error' | translate }}:</strong> {{ 'Trim failed with unexpected error status.' | translate }}[{{ createProjectCtrl.trimErrorReason }}]
+                        </p>
+                    </div>
+
 
                     <hr/>
                     <div class="navigation-steps">
@@ -218,11 +261,6 @@
                             />
                         </div>
                         <p>{{ 'Project has' | translate }} {{ createProjectCtrl.numberOfTasks }} {{ 'tasks.' | translate }}</p>
-                        <div ng-show="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
-                             class="alert alert--danger" role="alert">
-                            <p><strong>{{ 'Error' | translate }}:</strong> {{ 'Unable to create project because there are more than' | translate }} {{ createProjectCtrl.MAX_NUMBER_OF_TASKS }} {{ 'tasks. Use a smaller AOI and/or fewer tasks.' | translate }}
-                            </p>
-                        </div>
                         <div role="alert">
                             <span class="error"
                                   ng-show="createProjectCtrl.projectNameForm.submitted && createProjectCtrl.projectNameForm.projectName.$error.required">
@@ -230,17 +268,20 @@
                             </span>
                             <div ng-show="createProjectCtrl.createProjectFailReason == 400"
                                  class="alert alert--danger" role="alert">
-                                <p><strong>{{ 'Error' | translate }}:</strong> {{ 'AOI geometry must be a valid MultiPolygon.' | translate }}
+                                <p>
+                                    <strong>{{ 'Error' | translate }}:</strong> {{ 'AOI geometry must be a valid MultiPolygon.' | translate }}
                                 </p>
                             </div>
                             <div ng-show="createProjectCtrl.createProjectFailReason == 500"
                                  class="alert alert--danger" role="alert">
-                                <p><strong>{{ 'Error' | translate }}:</strong> {{ 'Project could not be created. The exact reason could not be determined.' | translate }}
+                                <p>
+                                    <strong>{{ 'Error' | translate }}:</strong> {{ 'Project could not be created. The exact reason could not be determined.' | translate }}
                                 </p>
                             </div>
                             <div ng-show="createProjectCtrl.createProjectFailReason == -1"
                                  class="alert alert--danger" role="alert">
-                                <p><strong>{{ 'Error' | translate }}:</strong> {{ 'The Project could not be created. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks.' | translate }}
+                                <p>
+                                    <strong>{{ 'Error' | translate }}:</strong> {{ 'The Project could not be created. This may be because the combined data size of the AOI and the grid is too large to send to the server. Try again with a smaller AOI or fewer tasks.' | translate }}
                                 </p>
                             </div>
 
@@ -258,10 +299,9 @@
                                 <span>{{ 'Previous' | translate }}</span>
                             </button>
                             <button class="button button--primary" type="button"
-                                    ng-class="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS ? 'disabled' : ''"
-                                    ng-disabled="createProjectCtrl.numberOfTasks > createProjectCtrl.MAX_NUMBER_OF_TASKS"
                                     ng-click="createProjectCtrl.createProject()">
-                                <span>{{ 'Create' | translate }}</span>
+                                <span ng-hide="createProjectCtrl.isCloneProject">{{ 'Create' | translate }}</span>
+                                <span ng-show="createProjectCtrl.isCloneProject">{{ 'Clone' | translate }}</span>
                             </button>
                         </div>
                         <div ng-show="createProjectCtrl.waiting">
@@ -277,6 +317,9 @@
                             ng-click="createProjectCtrl.isVisible = !createProjectCtrl.isVisible">
                         <i class="hot-ds-icon-hamburger-menu"></i>
                     </button>
+                </div>
+                <div class="show-other-projects">
+                    <show-project-aois your-projects='false'></show-project-aois>
                 </div>
                 <div class="add-layer-panel">
                     <add-layer ng-show="createProjectCtrl.isVisible"></add-layer>

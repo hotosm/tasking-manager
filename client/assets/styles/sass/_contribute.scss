@@ -73,7 +73,7 @@
     @include span(10/20);
     float: left;
     padding: 0.25em;
-     @include media(large-up) {
+    @include media(large-up) {
       @include span(5/20);
     }
   }
@@ -84,7 +84,7 @@
 
 /** Make button look like a select button **/
 .drop__toggle--caret-select:after {
-  float:right;
+  float: right;
 }
 
 .drop--full-width {
@@ -96,6 +96,18 @@
   width: 100%;
   text-align: left;
   &drop__toggle--caret:after {
-    float:right
+    float: right
   }
+}
+
+/** Wider column for project description in list view **/
+.list {
+  .wider-column {
+    width: 25%;
+  }
+}
+
+.popup-short-desc {
+  height: 10em;
+  overflow-y: auto;
 }

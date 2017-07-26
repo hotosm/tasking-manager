@@ -8,11 +8,14 @@ from server.models.postgis.statuses import MappingLevel, UserRole
 
 def is_known_mapping_level(value):
     """ Validates that supplied mapping level is known value """
+    if value.upper() == 'ALL':
+        return True
+
     try:
         MappingLevel[value.upper()]
     except KeyError:
         raise ValidationError(f'Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, '
-                              f'{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}')
+                              f'{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}, ALL')
 
 
 def is_known_role(value):
@@ -70,6 +73,10 @@ class UserSearchQuery(Model):
     role = StringType(validators=[is_known_role])
     mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])
     page = IntType()
+
+    def __hash__(self):
+        """ Make object hashable so we can cache user searches"""
+        return hash((self.username, self.role, self.mapping_level, self.page))
 
 
 class ListedUser(Model):

@@ -23,7 +23,7 @@ npm install
 ```
 
 ### Running Locally
-If you plan to do client development you can run the app using gulp, without having to worry too much about the server
+If you plan to do client development you can run the app using gulp, without having to worry too much about the server. If you want to point the client at a non-local API (e.g. a staging environment), you'll have to change the environment config for development in client/taskingmanager.config.json.
 
 ```
 cd client   [if not already in client]
@@ -54,7 +54,7 @@ Following must be available locally:
     * Windows (use installer because of precompiled libs):
         * ```.\venv\scripts\activate```
         * ```.\devops\win\install.bat```
-        
+
 ### Environment vars:
 As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
 
@@ -62,6 +62,8 @@ As the project is open source we have to keep secrets out of the repo.  You will
 * **TM_SECRET** - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
 * **TM_CONSUMER_KEY** - This is the OAUTH Consumer Key used for authenticating the Tasking Manager App in OSM
 * **TM_CONSUMER_SECRET** - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
+* **TM_SMTP_HOST** - The hostname for the SMTP server that is used to send email alerts
+* **TM_SMTP_USER** - The user for the SMTP server that is used to send email alerts
 * **TM_SMTP_PASSWORD** - The password for the SMTP server that is used to send email alerts
 
 * Linux/Mac
@@ -70,12 +72,16 @@ As the project is open source we have to keep secrets out of the repo.  You will
     * ```export TM_SECRET=secret-key-here```
     * ```export TM_CONSUMER_KEY=oauth-consumer-key-goes-here```
     * ```export TM_CONSUMER_SECRET=oauth-consumer-secret-key-goes-here```
+    * ```export TM_SMTP_HOST=smtp-server-host-here```
+    * ```export TM_SMTP_USER=smtp-server-user-here```
     * ```export TM_SMTP_PASSWORD=smtp-server-password-here```
 * Windows:
     * ```setx TM_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
     * ```setx TM_SECRET "secret-key-here"```
     * ```setx TM_CONSUMER_KEY "oauth-consumer-key-goes-here"```
     * ```setx TM_CONSUMER_SECRET "oauth-consumer-secret-key-goes-here"```
+    * ```setx TM_SMTP_HOST "smtp-server-host-here"```
+    * ```setx TM_SMTP_USER "smtp-server-user-here"```
     * ```setx TM_SMTP_PASSWORD "smtp-server-password-here"```
 
 ### Creating the DB
@@ -94,7 +100,7 @@ If you plan to only work on the API you don't need to build the client and can r
     * ``` python manage.py runserver -d ```
 * Point your browser to:
     * [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
-    
+
 #### Seeing the client
 If you want to see the client you will need to follow all the instruction in **Client Development** section then build the client as follows:
 

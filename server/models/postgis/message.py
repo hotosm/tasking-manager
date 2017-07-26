@@ -1,4 +1,5 @@
 from server import db
+from flask import current_app
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.postgis.user import User
 from server.models.postgis.utils import timestamp
@@ -37,15 +38,17 @@ class Message(db.Model):
         dto = MessageDTO()
         dto.message_id = self.id
         dto.message = self.message
-        dto.from_username = self.from_user.username
         dto.sent_date = self.date
         dto.read = self.read
         dto.subject = self.subject
+        if self.from_user_id:
+            dto.from_username = self.from_user.username
 
         return dto
 
     def add_message(self):
         """ Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
+        current_app.logger.debug('Adding message to session')
         db.session.add(self)
 
     def save(self):
@@ -83,14 +86,7 @@ class Message(db.Model):
 
         messages_dto = MessagesDTO()
         for message in user_messages:
-            dto = MessageDTO()
-            dto.message_id = message.id
-            dto.subject = message.subject
-            dto.sent_date = message.date
-            dto.read = message.read
-            dto.from_username = message.from_user.username
-
-            messages_dto.user_messages.append(dto)
+            messages_dto.user_messages.append(message.as_dto())
 
         return messages_dto
 

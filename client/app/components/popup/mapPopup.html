@@ -1,28 +1,46 @@
 <a href id="popup-closer" class="ol-popup-closer" ng-click="mapPopupCtrl.close()"></a>
 <div id="popup-content">
     <div>
-        <h4># {{ mapPopupCtrl.projectDetails.projectId }} -
+        <h4 ng-show="mapPopupCtrl.projectDetails.projectId">
+            # {{ mapPopupCtrl.projectDetails.projectId }} -
             <a href="/project/{{ mapPopupCtrl.projectDetails.projectId }}"> {{ mapPopupCtrl.projectDetails.projectName }}</a>
         </h4>
         <ul>
             <li ng-show="mapPopupCtrl.projectDetails.mapperLevel">
-                <strong>Mapper level: </strong>
-                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'BEGINNER'">Beginner</span>
-                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'INTERMEDIATE'">Intermediate</span>
-                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'ADVANCED'">Advanced</span>
+                <strong>{{ 'Mapper level' | translate }}: </strong>
+                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'BEGINNER'">{{ 'Beginner' | translate }}</span>
+                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'INTERMEDIATE'">{{ 'Intermediate' | translate }}</span>
+                <span ng-show="mapPopupCtrl.projectDetails.mapperLevel === 'ADVANCED'">{{ 'Advanced' | translate }}</span>
             </li>
             <li ng-show="mapPopupCtrl.projectDetails.organisationTag">
-                <strong>Organisation: </strong>{{ mapPopupCtrl.projectDetails.organisationTag }}
+                <strong>{{ 'Organisation' | translate }}: </strong>{{ mapPopupCtrl.projectDetails.organisationTag }}
             </li>
             <li ng-show="mapPopupCtrl.projectDetails.percentMapped">
-                {{ mapPopupCtrl.projectDetails.percentMapped }}% mapped
+                <strong>{{ 'Mapped' | translate }}: </strong>{{ mapPopupCtrl.projectDetails.percentMapped }}%
             </li>
             <li ng-show="mapPopupCtrl.projectDetails.percentValidated">
-                {{ mapPopupCtrl.projectDetails.percentValidated }}% validated
+                <strong>{{ 'Validated' | translate }}: </strong>{{ mapPopupCtrl.projectDetails.percentValidated }}%
+            </li>
+            <li ng-show="mapPopupCtrl.projectDetails.projectStatus">
+                <strong>{{ 'Status' | translate }}: </strong>
+                <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'ARCHIVED'">
+                {{ 'Archived' | translate }}
+            </span>
+                <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'DRAFT'">
+                {{ 'Draft' | translate }}
+            </span>
+                <span ng-show="mapPopupCtrl.projectDetails.projectStatus === 'PUBLISHED'">
+                {{ 'Published' | translate }}
+            </span>
             </li>
         </ul>
-        <p markdown-to-html="(mapPopupCtrl.projectDetails.shortDescription | limitTo: mapPopupCtrl.characterLimitShortDescription) +
-            (mapPopupCtrl.projectDetails.shortDescription.length > mapPopupCtrl.characterLimitShortDescription ? '...' : '')">
-        </p>
+
+        <div ng-show="mapPopupCtrl.projectDetails.shortDescription">
+            <div><strong>{{ 'Short Description' | translate }}:</strong></div>
+            <div class="popup-short-desc">
+                <p markdown-to-html="mapPopupCtrl.projectDetails.shortDescription"></p>
+            </div>
+        </div>
+
     </div>
 </div>

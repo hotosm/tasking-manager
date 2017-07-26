@@ -7,18 +7,14 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService','accountService', contributeController]);
+        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController($scope, mapService, searchService, projectMapService, tagService, languageService, accountService) {
+    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService) {
 
         var vm = this;
 
         vm.results = [];
         vm.vectorSource = null;
-
-        // Paging results
-        vm.itemsPerPage = 4;
-        vm.currentPage = 1;
 
         // Default to grid view
         vm.resultsView = 'grid';
@@ -28,7 +24,7 @@
         vm.campaigns = [];
 
         // Search parameters
-        vm.mapperLevel = ''; // default to ALL
+        vm.mapperLevel = 'ALL'; // default to ALL
         vm.searchRoads = false;
         vm.searchBuildings = false;
         vm.searchWaterways = false;
@@ -39,147 +35,111 @@
         vm.searchText = '';
 
         // Paging
+        vm.currentPage = 1;
         vm.pagination = null;
-        
-        // Character limit
-        vm.characterLimitShortDescription = 100;
+
+        //map legend
+        vm.showVectorLegend = false;
+        vm.showClusterLegend = true;
+        var CLUSTER_THRESHOLD_RESOLUTION = 4891.96981025128;
 
         // Watch the languageService for change in language and search again when needed
-        $scope.$watch(function () { return languageService.getLanguageCode();}, function () {
-            searchProjects();
-        }, true);
-
-        // Watch the accountService for change in account
-        $scope.$watch(function () { return accountService.getAccount();}, function (account) {
-            if (account) {
-                // Set the default mapping level to the user's mapping level
-                vm.mapperLevel = account.mappingLevel;
-            }
-            searchProjects();
+        $scope.$watch(function () {
+            return languageService.getLanguageCode();
+        }, function () {
+            getURLParams();
+            searchProjects(vm.currentPage);
         }, true);
 
         activate();
 
         function activate() {
-            var disableScrollZoom = true;
+            var disableScrollZoom = false;
             mapService.createOSMMap('map', disableScrollZoom);
             vm.map = mapService.getOSMMap();
-            // Get legend element and add it to the map as a control
-            var legendContainer = document.getElementById('legend-container');
-            if (legendContainer){
-                var legendControl = new ol.control.Control({element: legendContainer});
-                vm.map.addControl(legendControl);
-            }
-            projectMapService.initialise(vm.map);
-            projectMapService.createPopup();
+            projectMapService.initialise(vm.map, CLUSTER_THRESHOLD_RESOLUTION);
+            vm.map.on('moveend', function () {
+                vm.showVectorLegend = vm.map.getView().getResolution() < CLUSTER_THRESHOLD_RESOLUTION;
+                vm.showClusterLegend = vm.map.getView().getResolution() >= CLUSTER_THRESHOLD_RESOLUTION;
+                $scope.$apply();
+            });
+            var hoverIdentify = false;
+            var clickIdentify = true;
+            projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             setOrganisationTags();
             setCampaignTags();
         }
 
         /**
-         * Search projects with page param
-         * @param page
-         */
-        vm.searchProjectsWithPage = function(page){
-            searchProjects(page);
-        };
-
-        /**
          * Search projects with search parameters
          * @param page
          */
-        function searchProjects(page){
-
+        function searchProjects(page) {
             vm.mappingTypes = [];
-            if (vm.searchRoads){
+            if (vm.searchRoads) {
                 vm.mappingTypes.push("ROADS");
             }
-            if (vm.searchBuildings){
+            if (vm.searchBuildings) {
                 vm.mappingTypes.push("BUILDINGS");
             }
-            if (vm.searchWaterways){
+            if (vm.searchWaterways) {
                 vm.mappingTypes.push("WATERWAYS");
             }
-            if (vm.searchLanduse){
+            if (vm.searchLanduse) {
                 vm.mappingTypes.push("LANDUSE");
             }
-            if (vm.searchOther){
+            if (vm.searchOther) {
                 vm.mappingTypes.push("OTHER");
             }
 
             var searchParams = {};
 
             // Only add parameters if set
-            if (vm.mapperLevel){
+            if (vm.mapperLevel) {
                 searchParams.mapperLevel = vm.mapperLevel;
             }
-            if (vm.mappingTypes.length > 0){
+            if (vm.mappingTypes.length > 0) {
                 searchParams.mappingTypes = '';
-                for (var i = 0; i < vm.mappingTypes.length; i++){
+                for (var i = 0; i < vm.mappingTypes.length; i++) {
                     searchParams.mappingTypes += vm.mappingTypes[i];
-                    if (i < vm.mappingTypes.length - 1){
+                    if (i < vm.mappingTypes.length - 1) {
                         searchParams.mappingTypes += ',';
                     }
                 }
             }
-            if (vm.searchOrganisation){
+            if (vm.searchOrganisation) {
                 searchParams.organisationTag = vm.searchOrganisation;
             }
-            if (vm.searchCampaign){
+            if (vm.searchCampaign) {
                 searchParams.campaignTag = vm.searchCampaign;
             }
-            if (vm.searchText){
+            if (vm.searchText) {
                 searchParams.textSearch = vm.searchText;
             }
-            if (page){
+            if (page) {
                 searchParams.page = page;
             }
-           
+
             var resultsPromise = searchService.searchProjects(searchParams);
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.results = data.results;
                 vm.pagination = data.pagination;
-                // First remove all projects from the map before adding the results
-                projectMapService.removeProjectsOnMap();
-                for (var i = 0; i < vm.results.length; i++){
-                    if (vm.results[i].priority === 'URGENT'){
-                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "red", false);
-                    }
-                    else if (vm.results[i].priority === 'HIGH'){
-                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "orange", false);
-                    }
-                    else if (vm.results[i].priority === 'MEDIUM'){
-                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "yellow", false);
-                    }
-                    else if (vm.results[i].priority === 'LOW'){
-                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "blue", false);
-                    }
-                    else {
-                        projectMapService.showProjectOnMap(vm.results[i], vm.results[i].aoiCentroid, "red", false);
-                    }
-                }
-
-            }, function(){
+                projectMapService.replaceFeatures(data.mapResults)
+                setURLParams(searchParams);
+            }, function () {
                 // On error
-                vm.results = [];
+                setURLParams(searchParams);
+                vm.results = {};
                 projectMapService.showProjectsOnMap(vm.results);
             });
         }
 
         /**
-         * Set the mapper level
-         * @param level
-         */
-        vm.setMapperLevel = function(level){
-            vm.mapperLevel = level;
-        };
-
-        /**
          * Search projects
          */
-        vm.search = function(){
-            searchProjects();
+        vm.search = function (page) {
+            searchProjects(page);
         };
 
         /**
@@ -199,7 +159,7 @@
         /**
          * Set campaign tags
          */
-        function setCampaignTags(){
+        function setCampaignTags() {
             var resultsPromise = tagService.getCampaignTags();
             resultsPromise.then(function (data) {
                 // On success, set the projects results
@@ -208,6 +168,61 @@
                 // On error
                 vm.campaigns = [];
             });
+        }
+
+        /**
+         * Set the URL parameters so users can bookmark/share the page with search params
+         * @param searchParams
+         */
+        function setURLParams(searchParams) {
+            $location.search('difficulty', searchParams.mapperLevel);
+            $location.search('organisation', searchParams.organisationTag);
+            $location.search('campaign', searchParams.campaignTag);
+            $location.search('types', searchParams.mappingTypes);
+            $location.search('page', searchParams.page);
+            $location.search('text', searchParams.textSearch);
+        }
+
+        /**
+         * Get the URL params for searching
+         */
+        function getURLParams() {
+            vm.searchOrganisation = $location.search().organisation;
+            vm.searchCampaign = $location.search().campaign;
+            vm.currentPage = $location.search().page;
+            vm.searchText = $location.search().text;
+            var mappingTypes = $location.search().types;
+            if (mappingTypes) {
+                populateMappingTypes(mappingTypes);
+            }
+            // Only update the mapperLevel when it is set
+            if ($location.search().difficulty) {
+                vm.mapperLevel = $location.search().difficulty;
+            }
+        }
+
+        /**
+         * Extract the mapping types from a string
+         * @param mappingTypes
+         */
+        function populateMappingTypes(mappingTypes) {
+            var mappingTypesArray = mappingTypes.split(',');
+            for (var i = 0; i < mappingTypesArray.length; i++) {
+                if (mappingTypesArray[i] === 'ROADS') {
+                    vm.searchRoads = true;
+                }
+                if (mappingTypesArray[i] === 'BUILDINGS') {
+                    vm.searchBuildings = true;
+                }
+                if (mappingTypesArray[i] == 'WATERWAYS') {
+                    vm.searchWaterways = true;
+                }
+                if (mappingTypesArray[i] === 'LANDUSE') {
+                    vm.searchLanduse = true;
+                }
+                if (mappingTypesArray[i] === 'OTHER')
+                    vm.searchOther = true;
+            }
         }
     }
 })();

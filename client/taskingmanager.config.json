@@ -7,14 +7,16 @@
           "id": "mapBoxAerial",
           "name": "MapBox Aerial",
           "url": "https://api.mapbox.com/v4/openstreetmap.map-inh7ifmo/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoib3BlbnN0cmVldG1hcCIsImEiOiJhNVlHd29ZIn0.ti6wATGDWOmCnCYen-Ip7Q",
-          "type": "XYZ"
+          "type": "XYZ",
+          "attribution": "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox</a> <a href='http://www.openstreetmap.org/about/' target='_blank'>© OpenStreetMap</a> <a href='https://www.mapbox.com/feedback/#/-74.5/40/10' target='_blank'>Improve this map</a>"
         },
         {
           "id": "Population density WMS",
           "name": "Population density",
           "url": "http://sedac.ciesin.columbia.edu/geoserver/wms",
           "layerName": "gpw-v3:gpw-v3-population-density-future-estimates_2005",
-          "type": "WMS"
+          "type": "WMS",
+          "attribution": "test"
         }
       ]
     }
@@ -27,7 +29,8 @@
           "id": "mapBoxAerial",
           "name": "MapBox Aerial",
           "url": "https://api.mapbox.com/v4/openstreetmap.map-inh7ifmo/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoib3BlbnN0cmVldG1hcCIsImEiOiJhNVlHd29ZIn0.ti6wATGDWOmCnCYen-Ip7Q",
-          "type": "XYZ"
+          "type": "XYZ",
+          "attribution": "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox</a> <a href='http://www.openstreetmap.org/about/' target='_blank'>© OpenStreetMap</a> <a href='https://www.mapbox.com/feedback/#/-74.5/40/10' target='_blank'>Improve this map</a>"
         }
       ]
     }

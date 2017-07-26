@@ -1,8 +1,10 @@
 import os
 import unittest
+from unittest.mock import patch
+
 
 from server import create_app
-from server.services.users.user_service import UserService, MappingLevel
+from server.services.users.user_service import UserService, MappingLevel, User, OSMService, UserOSMDTO
 from tests.server.helpers.test_helpers import create_canned_project
 
 
@@ -60,3 +62,30 @@ class TestAuthenticationService(unittest.TestCase):
 
         # Assert
         self.assertEqual(MappingLevel(user.mapping_level), MappingLevel.ADVANCED)
+
+    @patch.object(User, 'create')
+    def test_user_can_register_with_correct_mapping_level(self, mock_user):
+        # Act
+        test_user = UserService().register_user(12, 'Thinkwhere', 300)
+
+        # Assert
+        self.assertEqual(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)
+
+    @patch.object(User, 'save')
+    @patch.object(OSMService, 'get_osm_details_for_user')
+    @patch.object(UserService, 'get_user_by_id')
+    def test_mapper_level_updates_correctly(self, mock_user, mock_osm, mock_save):
+        # Arrange
+        test_user = User()
+        test_user.mapping_level = MappingLevel.BEGINNER.value
+        mock_user.return_value = test_user
+
+        test_osm = UserOSMDTO()
+        test_osm.changeset_count = 350
+        mock_osm.return_value = test_osm
+
+        # Act
+        UserService.check_and_update_mapper_level(123)
+
+        #Assert
+        self.assertTrue(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)

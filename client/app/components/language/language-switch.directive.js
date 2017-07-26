@@ -13,7 +13,7 @@
 
     angular
         .module('taskingManager')
-        .controller('languageSwitchController', ['$scope','$document','$element', '$translate','languageService', languageSwitchController])
+        .controller('languageSwitchController', ['$scope','$document','$element', '$translate','languageService','settingsService', languageSwitchController])
         .directive('languageSwitch', languageSwitchDirective);
     
     function languageSwitchDirective() {
@@ -29,7 +29,7 @@
         return directive;
     }
 
-    function languageSwitchController($scope, $document, $element, $translate, languageService) {
+    function languageSwitchController($scope, $document, $element, $translate, languageService, settingsService) {
 
         var vm = this;
         vm.showDropdown = false;
@@ -41,7 +41,7 @@
         function activate() {
             
             // Get available languages
-            var resultsPromise = languageService.getAvailableLanguages();
+            var resultsPromise = settingsService.getSettings();
             resultsPromise.then(function (data) {
                 vm.availableLanguages = data.supportedLanguages;
             });

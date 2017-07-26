@@ -69,6 +69,9 @@
                     <!-- section main content -->
                     <div class="section__main-content">
                         <form class="form" name="editProjectCtrl.editForm">
+                        <!-- error -->
+                        <p class="error" ng-show="editProjectCtrl.errorReturningProjectMetadata">{{ 'An error occurred' | translate }}</p>
+                        <!-- /error -->
                         <!-- description section -->
                         <div ng-show="editProjectCtrl.currentSection === 'description'">
                             <fieldset class="form__fieldset">
@@ -216,6 +219,38 @@
                                                 {{ 'Preview' | translate }}
                                             </button>
                                             <p ng-show="editProjectCtrl.showPreviewInstructions" markdown-to-html="info.instructions"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form__group">
+                                    <label class="form__label">{{ 'Per Task Instructions' | translate }}</label>
+                                    <div>
+                                        <div class="button-group button-group--horizontal"
+                                             ng-repeat="locale in editProjectCtrl.locales"
+                                             role="group"
+                                             aria-label="{{ 'choose locale' | translate }}">
+                                            <button class="button button--small button--achromic" type="button"
+                                                    ng-class="editProjectCtrl.perTaskInstructionsLanguage === locale ? 'button--active' : ''"
+                                                    ng-click="editProjectCtrl.changeLanguagePerTaskInstructions(locale)">
+                                                    {{ locale }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div ng-repeat="info in editProjectCtrl.project.projectInfoLocales">
+                                        <div ng-show="info.locale === editProjectCtrl.perTaskInstructionsLanguage">
+                                            <textarea
+                                                    class="form__control"
+                                                    ng-model="info.perTaskInstructions" rows="4">
+                                            </textarea>
+                                            <p><strong>{{ 'Tip' | translate }}:</strong> {{ 'You can use Markdown. (HTML is not allowed)' | translate }}</p>
+                                            <p>Put here anything that can be useful to users while taking a task. {x}, {y} and {z} will be replaced by the corresponding parameters for each task.
+                                                {x}, {y} and {z} parameters can only be be used on tasks generated in the Tasking Manager and not on imported tasks.
+                                                For example: « This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM ».</p>
+                                            <button class="button button--secondary button--small"
+                                                    ng-click="editProjectCtrl.showPreviewPerTaskInstructions = !editProjectCtrl.showPreviewPerTaskInstructions">
+                                                {{ 'Preview' | translate }}
+                                            </button>
+                                            <p ng-show="editProjectCtrl.showPreviewPerTaskInstructions" markdown-to-html="info.perTaskInstructions"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -448,6 +483,14 @@
                                         {{ 'Delete project' | translate }}
                                     </button>
                                 </div>
+                                <div class="form__group">
+                                    <label class="form__label">{{ 'Clone project' | translate }}</label>
+                                    <p>{{ 'This will clone all descriptions, instructions, metadata etc. The Area of Interest, the tasks and the priority areas will not be cloned. You will have to redraw/import these. Your newly cloned project will be in draft status.' | translate }}</p>
+                                    <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.cloneProject()">
+                                        {{ 'Clone project' | translate }}
+                                    </button>
+                                </div>
                             </fieldset>
                         </div>
                             <!--/ settings -->
@@ -649,8 +692,8 @@
                 <p>
                     {{ 'This will send a Tasking Manager message to every contributor of the current project. Please use this feature carefully.' | translate }}
                 </p>
-                <input type="text" class="form__control" ng-model="messageSubject" placeholder="{{ 'Subject' | translate }}*" />
-                <textarea class="form__control" rows="4" ng-model="messageContent" placeholder="{{ 'Message' | translate }}*"></textarea>
+                <input type="text" class="form__control" ng-model="editProjectCtrl.messageSubject" placeholder="{{ 'Subject' | translate }}*" />
+                <textarea class="form__control" rows="4" ng-model="editProjectCtrl.messageContent" placeholder="{{ 'Message' | translate }}*"></textarea>
                 <p>
                     {{ 'This message is not translated to the selected language of the user, so you may want to include your own translations.' | translate }}
                 </p>
@@ -668,7 +711,7 @@
                         ng-click="editProjectCtrl.showMessageContributors(false)">{{ 'Cancel' | translate }}
                 </button>
                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.sendMessage(messageSubject, messageContent)">{{ 'Message all contributors' | translate }}
+                        ng-click="editProjectCtrl.sendMessage()">{{ 'Message all contributors' | translate }}
                 </button>
                 <span ng-show="editProjectCtrl.sendMessageInProgress">{{ 'Sending...' | translate }}</span>
             </div>

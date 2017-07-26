@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', 'messageService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'accountService','mapService','projectMapService','userService', 'geospatialService', 'messageService','settingsService', profileController]);
 
-    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService, messageService) {
+    function profileController($routeParams, $location, $window, accountService, mapService, projectMapService, userService, geospatialService, messageService, settingsService) {
 
         var vm = this;
         vm.username = '';
@@ -31,9 +31,14 @@
         // pressed the resent verification email button
         vm.verificationEmailSent = false;
 
-        // Edit user details
+        // User details
+        vm.contactDetailsForm = {};
         vm.editDetails = false;
-
+        
+        // mapper levels
+        vm.mapperLevelIntermediate = 0;
+        vm.mapperLevelAdvanced = 0;
+        
         activate();
 
         function activate() {
@@ -42,8 +47,11 @@
             mapService.createOSMMap('map');
             vm.map = mapService.getOSMMap();
             projectMapService.initialise(vm.map);
-            projectMapService.createPopup();
+            var hoverIdentify = true;
+            var clickIdentify = true;
+            projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             getUserProjects();
+            getLevelSettings();
         }
 
         /**
@@ -91,6 +99,10 @@
             });
         };
 
+        /**
+         * Set the user's level
+         * @param level
+         */
         vm.setLevel = function(level){
             vm.errorSetLevel = false;
             var resultsPromise = userService.setLevel(vm.username, level);
@@ -115,8 +127,7 @@
                     vm.currentlyLoggedInUser = account;
                 }
             }, function () {
-                // Could not find the user, redirect to the homepage
-                $location.path('/');
+                // User is not logged in. The httpInterceptor service will handle this
             });
         }
 
@@ -124,25 +135,27 @@
          * Set contact details
          */
         vm.setContactDetails = function(){
-            vm.errorSetContactDetails = false;
-            var contactDetails = {
-                emailAddress: vm.userDetails.emailAddress,
-                facebookId: vm.userDetails.facebookId,
-                linkedinId: vm.userDetails.linkedinId,
-                twitterId: vm.userDetails.twitterId
-            };
-            var resultsPromise = userService.setContactDetails(contactDetails);
-            resultsPromise.then(function (data) {
-                // Successfully saved
+            if (vm.contactDetailsForm.$valid){
+                vm.errorSetContactDetails = false;
+                var contactDetails = {
+                    emailAddress: vm.userDetails.emailAddress,
+                    facebookId: vm.userDetails.facebookId,
+                    linkedinId: vm.userDetails.linkedinId,
+                    twitterId: vm.userDetails.twitterId
+                };
+                var resultsPromise = userService.setContactDetails(contactDetails);
+                resultsPromise.then(function (data) {
+                    // Successfully saved
+                    vm.editDetails = false;
+                    vm.verificationEmailSent = data.verificationEmailSent;
+                    getUser();
+                }, function () {
+                    vm.editDetails = false;
+                    vm.errorSetContactDetails = true;
+                    getUser();
+                });
                 vm.editDetails = false;
-                vm.verificationEmailSent = data.verificationEmailSent;
-                getUser();
-            }, function () {
-                vm.editDetails = false;
-                vm.errorSetContactDetails = true;
-                getUser();
-            });
-            vm.editDetails = false;
+            }
         };
 
         /**
@@ -178,6 +191,18 @@
                 '<query type="relation"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>';
             var query = queryPrefix + queryMiddle + querySuffix;
             $window.open('http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query));
+        };
+
+
+        /**
+         * Get the settings for the levels
+         */
+        function getLevelSettings(){
+            var resultsPromise = settingsService.getSettings();
+            resultsPromise.then(function (data) {
+                vm.mapperLevelIntermediate = data.mapperLevelIntermediate;
+                vm.mapperLevelAdvanced = data.mapperLevelAdvanced;
+            });
         }
     }
 })();

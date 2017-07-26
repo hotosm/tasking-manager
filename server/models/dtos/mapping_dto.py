@@ -23,6 +23,7 @@ class LockTaskDTO(Model):
     user_id = IntType(required=True)
     task_id = IntType(required=True)
     project_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 
 class MappedTaskDTO(Model):
@@ -32,6 +33,8 @@ class MappedTaskDTO(Model):
     comment = StringType()
     task_id = IntType(required=True)
     project_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
+
 
 class StopMappingTaskDTO(Model):
     """ Describes the model used to stop mapping and reset the status of one task """
@@ -39,6 +42,7 @@ class StopMappingTaskDTO(Model):
     comment = StringType()
     task_id = IntType(required=True)
     project_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 
 class TaskHistoryDTO(Model):
@@ -56,6 +60,8 @@ class TaskDTO(Model):
     task_status = StringType(serialized_name='taskStatus')
     lock_holder = StringType(serialized_name='lockHolder', serialize_when_none=False)
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
+    per_task_instructions = StringType(serialized_name='perTaskInstructions', serialize_when_none=False)
+    is_undoable = BooleanType(serialized_name='isUndoable', default=False)
 
 
 class TaskDTOs(Model):

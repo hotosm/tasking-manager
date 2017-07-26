@@ -7,7 +7,8 @@ from schematics.exceptions import DataError
 
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, verify_token
+from server.services.users.user_service import UserService
 
 
 class MappingTaskAPI(Resource):
@@ -21,6 +22,18 @@ class MappingTaskAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: false
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -42,7 +55,16 @@ class MappingTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            task = MappingService.get_task_as_dto(task_id, project_id)
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            token = request.environ.get('HTTP_AUTHORIZATION')
+
+            # Login isn't required here, but if we have a token we can find out if the user can undo the task
+            if token:
+                verify_token(token[6:])
+
+            user_id = tm.authenticated_user_id
+
+            task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale, user_id)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
@@ -71,6 +93,12 @@ class LockTaskForMappingAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -104,6 +132,7 @@ class LockTaskForMappingAPI(Resource):
             lock_task_dto.user_id = tm.authenticated_user_id
             lock_task_dto.project_id = project_id
             lock_task_dto.task_id = task_id
+            lock_task_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             lock_task_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -123,6 +152,7 @@ class LockTaskForMappingAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+
 class StopMappingAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
@@ -141,6 +171,12 @@ class StopMappingAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
               in: path
               description: The ID of the project the task is associated with
@@ -183,6 +219,7 @@ class StopMappingAPI(Resource):
             stop_task.user_id = tm.authenticated_user_id
             stop_task.task_id = task_id
             stop_task.project_id = project_id
+            stop_task.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             stop_task.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -199,6 +236,7 @@ class StopMappingAPI(Resource):
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+
 
 class UnlockTaskForMappingAPI(Resource):
 
@@ -283,6 +321,9 @@ class UnlockTaskForMappingAPI(Resource):
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+        finally:
+            # Refresh mapper level after mapping
+            UserService.check_and_update_mapper_level(tm.authenticated_user_id)
 
 
 class TasksAsGPX(Resource):
@@ -312,7 +353,7 @@ class TasksAsGPX(Resource):
               name: as_file
               type: boolean
               description: Set to true if file download preferred
-              default: False 
+              default: False
         responses:
             200:
                 description: GPX XML
@@ -384,3 +425,64 @@ class TasksAsOSM(Resource):
 
         xml = MappingService.generate_osm_xml(project_id, tasks)
         return Response(xml, mimetype='text/xml', status=200)
+
+
+class UndoMappingAPI(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self, project_id, task_id):
+        """
+        Get task for mapping
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - name: task_id
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Task found
+            403:
+                description: Forbidden
+            404:
+                description: Task not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            task = MappingService.undo_mapping(project_id, task_id, tm.authenticated_user_id, preferred_locale)
+            return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
+        except MappingServiceError:
+            return {"Error": "User not permitted to undo task"}, 403
+        except Exception as e:
+            error_msg = f'Task GET API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500

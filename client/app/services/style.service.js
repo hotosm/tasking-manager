@@ -48,7 +48,7 @@
             getTaskStyle: getTaskStyle,
             getSelectedTaskStyle: getSelectedTaskStyle,
             getHighlightedTaskStyle: getHighlightedTaskStyle,
-            getProjectStyle: getProjectStyle,
+            getStyleWithColour: getStyleWithColour,
             getHighlightedProjectStyle: getHighlightedProjectStyle,
             getLockedByCurrentUserTaskStyle: getLockedByCurrentUserTaskStyle
         };
@@ -156,7 +156,7 @@
          * @param colour - optional. supported colours: red, orange, yellow, blue, black. Defaults to red.
          * @returns {ol.style.Style}
          */
-        function getProjectStyle(colour) {
+        function getStyleWithColour(colour) {
             var fillColour = [255, 0, 0, 0.5]; // red
             var strokeColour = [0, 0, 0, 1]; // black
             if (colour){
@@ -190,6 +190,8 @@
                 width: 1
             });
             var style = new ol.style.Style({
+                fill: fill,
+                stroke: stroke,
                 image: new ol.style.Circle({
                     fill: fill,
                     stroke: stroke,

@@ -23,6 +23,7 @@ class LockForValidationDTO(Model):
     project_id = IntType(required=True)
     task_ids = ListType(IntType, required=True, serialized_name='taskIds')
     user_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 
 class ValidatedTask(Model):
@@ -30,6 +31,7 @@ class ValidatedTask(Model):
     task_id = IntType(required=True, serialized_name='taskId')
     status = StringType(required=True, validators=[is_valid_validated_status])
     comment = StringType()
+
 
 class ResetValidatingTask(Model):
     """ Describes the model used to stop validating and reset the status of one task """
@@ -42,6 +44,7 @@ class UnlockAfterValidationDTO(Model):
     project_id = IntType(required=True)
     validated_tasks = ListType(ModelType(ValidatedTask), required=True, serialized_name='validatedTasks')
     user_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 
 class StopValidationDTO(Model):
@@ -49,6 +52,7 @@ class StopValidationDTO(Model):
     project_id = IntType(required=True)
     reset_tasks = ListType(ModelType(ResetValidatingTask), required=True, serialized_name='resetTasks')
     user_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 
 class MappedTasksByUser(Model):
@@ -58,8 +62,15 @@ class MappedTasksByUser(Model):
     tasks_mapped = ListType(IntType, required=True, serialized_name='tasksMapped')
     last_seen = DateTimeType(required=True, serialized_name='lastSeen')
     mapping_level = StringType(required=True, serialized_name='mappingLevel')
+    date_registered = DateTimeType(serialized_name='dateRegistered')
+    last_validation_date = DateTimeType(serialized_name='lastValidationDate')
 
 
 class MappedTasks(Model):
     """ Describes all tasks currently mapped on a project """
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.mapped_tasks = []
+
     mapped_tasks = ListType(ModelType(MappedTasksByUser), serialized_name='mappedTasks')

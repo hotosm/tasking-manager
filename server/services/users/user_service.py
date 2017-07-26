@@ -1,24 +1,26 @@
-import requests
-import xml.etree.ElementTree as ET
+from cachetools import TTLCache, cached
 from flask import current_app
+
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
+from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
 
-INTERMEDIATE_MAPPER_LEVEL = 250
-ADVANCED_MAPPER_LEVEL = 500
+
+user_filter_cache = TTLCache(maxsize=1024, ttl=600)
+user_all_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class UserServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when in the User Service """
+
     def __init__(self, message):
         if current_app:
             current_app.logger.error(message)
 
 
 class UserService:
-
     @staticmethod
     def get_user_by_id(user_id: int) -> User:
         user = User().get_by_id(user_id)
@@ -49,9 +51,12 @@ class UserService:
         new_user.id = osm_id
         new_user.username = username
 
-        if changeset_count > ADVANCED_MAPPER_LEVEL:
+        intermediate_level = current_app.config['MAPPER_LEVEL_INTERMEDIATE']
+        advanced_level = current_app.config['MAPPER_LEVEL_ADVANCED']
+
+        if changeset_count > advanced_level:
             new_user.mapping_level = MappingLevel.ADVANCED.value
-        elif INTERMEDIATE_MAPPER_LEVEL < changeset_count < ADVANCED_MAPPER_LEVEL:
+        elif intermediate_level < changeset_count < advanced_level:
             new_user.mapping_level = MappingLevel.INTERMEDIATE.value
         else:
             new_user.mapping_level = MappingLevel.BEGINNER.value
@@ -64,6 +69,7 @@ class UserService:
         """Gets user DTO for supplied username """
         requested_user = UserService.get_user_by_username(requested_username)
         logged_in_user = UserService.get_user_by_id(logged_in_user_id)
+        UserService.check_and_update_mapper_level(requested_user.id)
 
         return requested_user.as_dto(logged_in_user.username)
 
@@ -84,11 +90,13 @@ class UserService:
         return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
+    @cached(user_all_cache)
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Gets paginated list of users """
         return User.get_all_users(query)
 
     @staticmethod
+    @cached(user_filter_cache)
     def filter_users(username: str, page: int) -> UserFilterDTO:
         """ Gets paginated list of users, filtered by username, for autocomplete """
         return User.filter_users(username, page)
@@ -189,28 +197,34 @@ class UserService:
         :raises UserServiceError, NotFound
         """
         user = UserService.get_user_by_username(username)
-        osm_user_details_url = f'http://www.openstreetmap.org/api/0.6/user/{user.id}'
-        response = requests.get(osm_user_details_url)
-
-        if response.status_code != 200:
-            raise UserServiceError('Bad response from OSM')
-
-        return UserService._parse_osm_user_details_response(response.text)
+        osm_dto = OSMService.get_osm_details_for_user(user.id)
+        return osm_dto
 
     @staticmethod
-    def _parse_osm_user_details_response(osm_response: str, user_element='user') -> UserOSMDTO:
-        """ Parses the OSM user details response and extracts user info """
-        root = ET.fromstring(osm_response)
+    def check_and_update_mapper_level(user_id: int):
+        """ Check users mapping level and update if they have crossed threshold """
+        user = UserService.get_user_by_id(user_id)
+        user_level = MappingLevel(user.mapping_level)
 
-        osm_user = root.find(user_element)
-        if osm_user is None:
-            raise UserServiceError('User element not found in OSM response')
+        if user_level == MappingLevel.ADVANCED:
+            return  # User has achieved highest level, so no need to do further checking
 
-        account_created = osm_user.attrib['account_created']
-        changesets = osm_user.find('changesets')
-        changeset_count = int(changesets.attrib['count'])
+        intermediate_level = current_app.config['MAPPER_LEVEL_INTERMEDIATE']
+        advanced_level = current_app.config['MAPPER_LEVEL_ADVANCED']
 
-        osm_dto = UserOSMDTO()
-        osm_dto.account_created = account_created
-        osm_dto.changeset_count = changeset_count
-        return osm_dto
+        try:
+            osm_details = OSMService.get_osm_details_for_user(user_id)
+        except OSMServiceError:
+            # Swallow exception as we don't want to blow up the server for this
+            current_app.logger.error('Error attempting to update mapper level')
+            return
+
+        if osm_details.changeset_count > advanced_level:
+            user.mapping_level = MappingLevel.ADVANCED.value
+        elif intermediate_level < osm_details.changeset_count < advanced_level:
+            user.mapping_level = MappingLevel.INTERMEDIATE.value
+        else:
+            return
+
+        user.save()
+        return user
