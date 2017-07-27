@@ -16,6 +16,7 @@
 
   p {
     font-size: 0.90rem;
+    max-height: 100%;
   }
 
   .sidebar {
@@ -100,12 +101,15 @@
 
   .odd {
     background-color: rgba($medium-grey, 0.1);
-    padding: 5px;
+    padding: .5em .8em;
     border-radius: 5px;
   }
   .even {
-    padding: 5px;
+    padding: .5em .8em;
     border-radius: 5px;
+  }
+  a {
+    color: $link-color;
   }
 }
 
@@ -113,8 +117,8 @@
   font-size: smaller;
 }
 
-.user-activity-for-validation td{
-  padding: 0;
+.chat--individual {
+  margin-bottom: 1.5em;
 }
 
 .project-title {

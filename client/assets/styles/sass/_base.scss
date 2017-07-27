@@ -132,6 +132,13 @@ a:active {
    }
  }
 
+ button:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
  .button--outline, .button--outline:visited {
    background-color: inherit;
    border: 2px solid $darkest-grey;

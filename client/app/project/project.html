@@ -461,6 +461,31 @@
                                     </div>
                                     <div ng-show="projectCtrl.userCanValidate">
                                         <p class="description--block">{{ 'Find a task for validation through one of the options below.' | translate }}</p>
+                                        <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
+                                            <div class="error" role="alert">
+                                                <p>{{ 'There are no tasks currently available for validation.' | translate }}</p>
+                                            </div>
+                                        </div>
+                                        <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
+                                            <div class="error" role="alert">
+                                                <p>{{ 'There was an error retrieving the task from the server.' | translate }}</p>
+                                                <a class="alert__button-dismiss"
+                                                        title="{{ 'Dismiss alert' | translate }}"
+                                                        ng-click="projectCtrl.clearCurrentSelection()">
+                                                    <span>{{ 'Dismiss' | translate }}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
+                                            <div class="error" role="alert">
+                                                <p>{{ 'The tasks could not be locked.' | translate }} {{ projectCtrl.taskLockErrorMessage }}</p>
+                                            </div>
+                                        </div>
+                                        <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
+                                            <div class="alert" role="alert">
+                                                <p>{{ 'Please login first.' | translate }}</p>
+                                            </div>
+                                        </div>
                                         <dl class="definition-list--options">
                                             <dt>{{ 'Option 1:' | translate }}</dt>
                                             <dd>{{ 'Select a task by clicking on the map' | translate }}</dd>
@@ -500,31 +525,6 @@
                                             <dd>{{ 'Select by user below' | translate }}</dd>
 
                                         </dl>
-                                        <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
-                                            <div class="alert alert--danger" role="alert">
-                                                <p>{{ 'There are no tasks currently available for validation.' | translate }}</p>
-                                            </div>
-                                        </div>
-                                        <div ng-show="projectCtrl.taskErrorValidation === 'task-get-error'">
-                                            <div class="alert alert--danger" role="alert">
-                                                <button class="alert__button-dismiss"
-                                                        title="{{ 'Dismiss alert' | translate }}"
-                                                        ng-click="projectCtrl.clearCurrentSelection()">
-                                                    <span>{{ 'Dismiss' | translate }}</span>
-                                                </button>
-                                                <p>{{ 'There was an error retrieving the task from the server.' | translate }}</p>
-                                            </div>
-                                        </div>
-                                        <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
-                                            <div class="alert alert--danger" role="alert">
-                                                <p>{{ 'The tasks could not be locked.' | translate }} {{ projectCtrl.taskLockErrorMessage }}</p>
-                                            </div>
-                                        </div>
-                                        <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
-                                            <div class="alert alert--danger" role="alert">
-                                                <p>{{ 'Please login first.' | translate }}</p>
-                                            </div>
-                                        </div>
                                         <table class="table table-validate_user table--zebra user-activity-for-validation">
                                             <thead>
                                             <tr>
@@ -755,9 +755,9 @@
 
                                 </div>
                                 <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
-                                    <h2>{{ 'Multi Task Validation' | translate }}</h2>
+                                    <p>Multiple Tasks are locked for you for validation.</p>
                                     <p>{{ 'Tasks' | translate }} {{ projectCtrl.getSelectTaskIds() }}
-                                        {{ 'are locked for validation by you.' | translate }}
+                                        {{ 'are locked for validation.' | translate }}
                                     </p>
                                     <div class="form__group form__group--section">
                                         <div>
@@ -811,24 +811,27 @@
                                                    ng-model="projectCtrl.comment"></textarea>
                                         <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                             {{ 'characters remaining' | translate }}</p>
-                                    </div>
-                                    <div class="form__group pull-center">
-                                        <button class="button button--achromic"
-                                                ng-click="projectCtrl.stopMultiTaskValidation(projectCtrl.comment)">
-                                            {{ 'Stop Validating' | translate }}
-                                        </button>
-                                    </div>
-                                    <div class="form__group pull-center">
-                                        <div class="button-group button-group--horizontal" role="group">
-                                            <button class="button button--secondary"
-                                                    ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'VALIDATED')">
-                                                {{ 'Mark all as Valid' | translate }}
-                                            </button>
-                                            <button class="button button--secondary"
-                                                    ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'INVALIDATED')">
-                                                {{ 'Mark all as Invalid' | translate }}
-                                            </button>
-                                        </div>
+
+                                        <ul class="list-type--none buttons--sidebyside">
+                                            <li>
+                                                <button class="button"
+                                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'VALIDATED')">
+                                                    {{ 'Mark all as Valid' | translate }}
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="button button--secondary"
+                                                        ng-click="projectCtrl.unLockMultiTaskValidation(projectCtrl.comment, 'INVALIDATED')">
+                                                    {{ 'Mark all as Invalid' | translate }}
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="button button--achromic button--outline--secondary"
+                                                        ng-click="projectCtrl.stopMultiTaskValidation(projectCtrl.comment)">
+                                                    {{ 'Quit Task' | translate }}
+                                                </button>
+                                            </li>
+                                        </ul>
                                     </div>
                                     <div ng-show="projectCtrl.taskUnLockError">
                                         <div>
@@ -880,7 +883,7 @@
                                         <div>
                                             <span ng-bind-html="item.actionText" ng-show="item.action === 'COMMENT'"></span>
                                         </div>
-                                        <div>
+                                        <div class="metadata">
                                             <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
                                             <span ng-show="item.action === 'LOCKED_FOR_MAPPING'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                             <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
