@@ -2,9 +2,12 @@
     <section class="section section--asided">
         <header class="section__header section__header--nodescription">
             <div class="inner">
-                <h1 class="section__title">
+                <h1 class="section__title section__header--left">
                     {{ 'Project Dashboard' | translate }}
                 </h1>
+                <a role="button" href="/admin/create-project" class="button button--achromic pull-right">
+                    {{ 'Create a new project' | translate }}
+                </a>
             </div>
         </header>
         <div class="section-container">
@@ -13,21 +16,17 @@
                      <div class="dashboard-container">
                          <p>
                              {{ 'View the projects that you have created' | translate }}
-                             <a role="button" href="/admin/create-project" class="button button--achromic pull-right">
-                                 {{ 'Create a new project' | translate }}
-                             </a>
                          </p>
                          <div>
                              <h3>{{ 'Filter' | translate }}</h3>
                              <form class="form">
-                                 <div class="form__group">
+                                 <div class="form__group form__group--section">
                                      <input type="text" class="form__control form__control--medium"
                                             size="500"
                                             placeholder="{{ 'Filter projects (on name, campaign, ...)' | translate }}" ng-model="dashboardCtrl.searchText"/>
                                  </div>
                              </form>
                          </div>
-                         <hr>
                          <!-- error -->
                          <p class="error" ng-show="dashboardCtrl.errorReturningProjects">An error occurred.</p>
                          <!-- error -->

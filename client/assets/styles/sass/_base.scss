@@ -224,6 +224,15 @@ a:active {
   }
 }
 
+.button-group--horizontal {
+  button {
+    margin-bottom: .5em;
+  }
+  .button--active {
+    background-color: darken($link-color, 13%);
+    border: 2px solid darken($link-color, 13%);
+  }
+}
 
 
 .search-options-container, .list-type--none {

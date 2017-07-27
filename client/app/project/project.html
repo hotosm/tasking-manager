@@ -5,10 +5,18 @@
                 <mark>{{ projectCtrl.projectData.projectPriority }}</mark>
             </div>
             <div class="header--withShare">
-                <h2 class="section__title">
-                    #{{ projectCtrl.projectData.projectId }}
-                    - {{ projectCtrl.projectData.projectInfo.name }}
-                </h2>
+                <div class="section__header--left">
+                    <h2 class="section__title">
+                        #{{ projectCtrl.projectData.projectId }}
+                        - {{ projectCtrl.projectData.projectInfo.name }}
+                    </h2>
+                    <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'"
+                         class="edit-project-button">
+                        <a ng-href="/admin/edit-project/{{ projectCtrl.id }}"
+                           class="button button--secondary">{{ 'Edit project' | translate }}
+                        </a>
+                    </div>
+                </div>
                 <div class="component--share">
                     <a class="button button--outline" href="">Share</a>
                     <div class="drop__content">
@@ -142,7 +150,7 @@
                                     </div>
                                     <hr/>
                                 </div>
-                                <p markdown-to-html="projectCtrl.projectData.projectInfo.instructions"></p>
+                                <p class="project--notes" markdown-to-html="projectCtrl.projectData.projectInfo.instructions"></p>
                                 <div class="container__nextsteps">
                                     <h5 class="withDescription">Ready to get started?</h5>
                                     <p>Contribute by mapping or validating work that has already been done.</p>
@@ -945,12 +953,6 @@
                     <div class="activity-project-button">
                         <a ng-href="/project/{{ projectCtrl.projectData.projectId }}/dashboard"
                            class="button button--secondary">{{ 'Activity and Stats' | translate }}
-                        </a>
-                    </div>
-                    <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'"
-                         class="edit-project-button">
-                        <a ng-href="/admin/edit-project/{{ projectCtrl.id }}"
-                           class="button button--secondary">{{ 'Edit project' | translate }}
                         </a>
                     </div>
                 </div>

@@ -141,10 +141,22 @@
 }
 
 .edit-project-button {
-  top: 3.0rem;
-  right: 0.5rem;
-  position: absolute;
-  z-index: 5;
+  margin-bottom: 2em;
+}
+
+.project--notes {
+  h1 {
+    font-size: 1.714rem;
+  }
+  h2 {
+    font-size: 1.571rem;
+  }
+  h3 {
+    font-size: 1.286rem;
+  }
+  h4 {
+    font-size: 1rem;
+  }
 }
 
 .imagery-container {

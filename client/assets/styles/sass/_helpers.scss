@@ -24,7 +24,12 @@
   margin-bottom: 1.5em;
   p {
     margin-bottom: 0;
+    max-width: none;
   }
+}
+
+.error--below {
+  margin-top: 2em;
 }
 
 .pointer {

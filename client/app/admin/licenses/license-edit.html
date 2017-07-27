@@ -34,42 +34,42 @@
                             </li>
                         </ul>
                         <div ng-show="!licenseEditCtrl.isNew">
-                            <button class="button button--secondary" type="button"
+                            <button class="button" type="button"
                                     ng-click="licenseEditCtrl.saveEdits()">
                                 {{ 'Save edits' | translate }}
                             </button>
-                            <button class="button button--base" type="button"
+                            <button class="button button--secondary" type="button"
                                     ng-click="licenseEditCtrl.delete()">
                                 {{ 'Delete' | translate }}
                             </button>
-                            <button class="button button--achromic" type="button"
+                            <button class="button button--achromic button--secondary" type="button"
                                     ng-click="licenseEditCtrl.cancel()">
                                 {{ 'Cancel' | translate }}
                             </button>
                         </div>
                         <div ng-show="licenseEditCtrl.isNew">
-                            <button class="button button--secondary" type="button"
+                            <button class="button" type="button"
                                     ng-click="licenseEditCtrl.createNewLicense()">
                                 {{ 'Create new license' | translate }}
                             </button>
-                            <button class="button button--achromic" type="button"
+                            <button class="button button--achromic button--secondary" type="button"
                                     ng-click="licenseEditCtrl.cancel()">
                                 {{ 'Cancel' | translate }}
                             </button>
                         </div>
                     </form>
-                    <div class="error">
-                        <div ng-show="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
+                    <div>
+                        <div class="error error--below" ng-show="!licenseEditCtrl.isNew && !licenseEditCtrl.isLicenseFound">
                             <p>{{ 'No license found.' | translate }}</p>
                             <button class="button button--achromic" type="button" ng-click="licenseEditCtrl.cancel()">{{ 'Go back to license overview' | translate }}</button>
                         </div>
-                        <div ng-show="!licenseEditCtrl.isSaveEditsSuccessful">
+                        <div class="error error--below" ng-show="!licenseEditCtrl.isSaveEditsSuccessful">
                             <p>{{ 'Failed to save edits. Please try again.' | translate }}</p>
                         </div>
-                        <div ng-show="!licenseEditCtrl.isDeleteSuccessful">
+                        <div class="error error--below" ng-show="!licenseEditCtrl.isDeleteSuccessful">
                             <p>{{ 'Failed to delete license. Please try again.' | translate }}</p>
                         </div>
-                        <div ng-show="!licenseEditCtrl.isCreateNewSuccessful">
+                        <div class="error error--below" ng-show="!licenseEditCtrl.isCreateNewSuccessful">
                             <p>{{ 'Failed to create a new license. Please try again.' | translate }}</p>
                         </div>
                     </div>
