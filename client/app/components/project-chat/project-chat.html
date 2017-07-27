@@ -16,8 +16,8 @@
         {{ 'An error occurred' | translate  }}
     </p>
     <div>
-        <div class="form__group">
-            <textarea class="form__control" type="text" mentio
+        <div>
+            <textarea class="form__control space-bottom--none" type="text" mentio
                       rows="4"
                       maxlength="{{ projectChatCtrl.maxlengthComment }}"
                       placeholder="{{ 'Type a message' | translate }}"
@@ -26,16 +26,14 @@
                       mentio-select="projectChatCtrl.formatUserTag(item)"
                       mentio-items="projectChatCtrl.usernames | filter:label:typedTerm"
                       ng-model="projectChatCtrl.message"></textarea>
-            <p class="pull-right">{{ projectChatCtrl.maxlengthComment - projectChatCtrl.message.length }}
+            <p>{{ projectChatCtrl.maxlengthComment - projectChatCtrl.message.length }}
                 {{ 'characters remaining' | translate }}
             </p>
-            <button ng-show="projectChatCtrl.author" class="button button--achromic pull-left"
+            <a ng-show="projectChatCtrl.author" class="normallink"
                     ng-click="projectChatCtrl.messageProjectManager()">
                 {{ 'Contact project manager' | translate }}
-            </button>
-        </div>
-        <div class="pull-center">
-            <button class="button button--secondary" ng-click="projectChatCtrl.addMessage()">Add message</button>
+            </a>
+            <button class="button object--primary" ng-click="projectChatCtrl.addMessage()">Add message</button>
         </div>
     </div>
     <p ng-show="projectChatCtrl.errorMessageAdded" class="error">{{ 'Error: your message was not added' | translate }}</p>

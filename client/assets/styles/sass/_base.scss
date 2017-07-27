@@ -156,6 +156,10 @@ a:active {
    }
  }
 
+ .button--sm {
+  padding: 0em 2.5em;
+ }
+
 [role="button"] {
   cursor: pointer;
 }
@@ -198,10 +202,18 @@ a:active {
   transition: all 0.3s ease 0s;
   -webkit-transition: all 0.3s;
   -moz-transition: all 0.3s;
-  
+
   &:hover {
     color: darken($warm-grey, 20%);
     border: 2px solid darken($warm-grey, 20%);
+  }
+}
+
+.button-group--stacked {
+  button {
+    &:first-of-type {
+      margin-bottom: .5em;
+    }
   }
 }
 
@@ -228,6 +240,11 @@ input, select, textarea {
   width: auto;
   margin: 0;
   padding: .2em .8em;
+
+}
+
+textarea {
+  border: 1px solid $lightgrey;
 }
 
 input, textarea {
@@ -365,4 +382,9 @@ table {
       border-right: none;
     }
   }
+}
+
+.object--primary {
+  display: block;
+  margin-top: .5em;
 }

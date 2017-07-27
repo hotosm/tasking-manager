@@ -62,3 +62,19 @@
 .validator-star {
   color: #FFCC11;
 }
+
+.icon-sm-chevron-down, .icon-sm-chevron-up {
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+}
+
+.icon-sm-chevron-down {
+  background-image: url('../../icons/chevron-right.svg');
+}
+
+.icon-sm-chevron-up {
+  background-image: url('../../icons/chevron-down.svg');
+}

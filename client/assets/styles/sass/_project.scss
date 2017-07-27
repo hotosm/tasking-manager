@@ -21,12 +21,6 @@
   .sidebar {
     float: left;
     height: inherit;
-    overflow-y: auto;
-
-    .content {
-      height: calc(100% - 64px);
-      overflow-y: auto;
-    }
 
     > ul {
       overflow: hidden;
@@ -160,4 +154,9 @@
   border-radius: 4px;
   padding: 2em;
   border: 1px solid darken($lightest-background-grey, 6%);
+  margin-top: 3em;
+}
+
+.indent--right {
+  padding-left: 1.5em;
 }
