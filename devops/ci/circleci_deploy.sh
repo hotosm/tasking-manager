@@ -2,8 +2,8 @@
 set -xev # halt script on error
 
 DEMO_BRANCH="develop"
-STAGE_BRANCH="develop"
-PROD_BRANCH="develop"
+STAGE_BRANCH="stage"
+PROD_BRANCH="master"
 
 DEMO_ENV="taskingmanager-demo"
 STAGE_ENV="taskingmanager-stage"
