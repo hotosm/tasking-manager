@@ -50,8 +50,7 @@
 /* Navigation */
 
 .page__prime-nav {
-  @include media(medium-up) {
-  }
+  position: relative;
 
   .toggle-menu {
     position: absolute;
@@ -60,10 +59,12 @@
     margin: 0;
 
     a {
-      vertical-align: top;
-
-      &:before {
-      }
+      background-image: url('../../icons/hamburger-menu.svg');
+      width: 23px;
+      height: 23px;
+      background-size: 23px 23px;
+      display: inline-block;
+      margin-top: .4em;
 
       @include media(medium-up) {
         &:before {
@@ -84,20 +85,31 @@
 
 .menu-wrapper {
   transition: opacity 0.16s ease 0s, margin 0.16s ease 0s, visibility 0.16s linear 0s;
-  &.menu-wrapper--open {
-    margin-top: 0;
-    opacity: 1;
-    visibility: visible;
-  }
 
   @include media(small-up) {
-    padding: $global-spacing ($global-spacing * 2);
+    display: none;
+    &.menu-wrapper--open {
+      margin-top: 0;
+      display: inline-block;
+      position: absolute;
+      max-width: 200px;
+      background-color: #fff;
+      right: 0;
+      top: 3.5em;
+      border: 1px solid lighten($lightgrey, 10%);
+      z-index: 30;
+
+      .global-menu-item--pipe {
+        border-right: 0;
+      }
+    }
   }
 
   @include media(medium-up) {
     padding: 0;
-    opacity: 1;
-    visibility: visible;
+    display: block;
+    position: inherit;
+    max-width: 1200px;
   }
 }
 
@@ -131,17 +143,8 @@
   transition: all 0.3s ease 0s;
   -webkit-transition: all 0.3s;
   -moz-transition: all 0.3s;
-  .button {
-    font-size: 0.9rem !important;
-    @include media(large-up) {
-      font-size: 1rem !important;
-    }
-  }
   &, &:visited {
     color: $base-font-color;
-  }
-  &--active {
-    background: rgba($medium-grey, 0.08);
   }
   @include media(large-up) {
     font-size: 1rem !important;
@@ -198,9 +201,6 @@
 }
 
 .drop__menu--iconified {
-  margin-bottom: 1em;
-  border-bottom: 1px solid darken($lightest-background-grey, 5%);
-  padding-bottom: 1em;
   &:last-of-type {
     margin-bottom: 0em;
     border-bottom: none;
@@ -261,8 +261,6 @@
       bottom: ($global-spacing * 2);
       left: 0;
     }
-    background-color: #fff;
-    background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
     transform: translateZ(0);

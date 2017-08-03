@@ -323,25 +323,6 @@ h6 {
 
 /* Prose specific */
 
-.prose {
-  > h1:not(:first-child),
-  > h2:not(:first-child),
-  > h3:not(:first-child),
-  > h4:not(:first-child),
-  > h5:not(:first-child),
-  > h6:not(:first-child) {
-    margin-top: $global-spacing * 2.5;
-  }
-
-  > h1 + h2:not(:first-child),
-  > h2 + h3:not(:first-child),
-  > h3 + h4:not(:first-child),
-  > h4 + h5:not(:first-child),
-  > h5 + h6:not(:first-child) {
-    margin-top: 0;
-  }
-}
-
 .prose--responsive {
   > h1 { @include heading(1.75rem, xlarge-up); }            // 28, 32, 36, 40
   > h2 { @include heading(1.5rem, xlarge-up); }             // 24, 28, 32, 36
