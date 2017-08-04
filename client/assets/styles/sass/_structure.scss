@@ -40,7 +40,7 @@
   line-height: 1;
   margin: 0;
   padding-top: .8em;
-  padding-bottom: .9em;
+  padding-bottom: 1em;
   a {
     display: inline-block;
     vertical-align: top;
@@ -530,10 +530,6 @@
   border-bottom: 1px solid darken($lightest-background-grey, 8%);
   margin-bottom: 3em;
   @extend .clearfix;
-  ul {
-    max-height: 200px;
-    overflow-y: scroll;
-  }
 }
 
 .form__group--section {

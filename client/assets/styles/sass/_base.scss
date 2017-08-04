@@ -318,11 +318,13 @@ table {
 
 .dropdown-arrow {
   background-image: url('../../icons/chevron-down.svg');
-  width: 20px;
-  height: 10px;
+  width: 18px;
+  height: 13px;
   content: '';
-  background-size: 20px 10px;
+  background-size: 18px 13px;
   display: inline-block;
+  background-repeat: no-repeat;
+  margin-left: .3em;
 }
 
 .search--wrapper {
