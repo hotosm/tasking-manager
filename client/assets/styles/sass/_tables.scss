@@ -35,20 +35,32 @@
     a {
       display: inline-block;
       &.table__sort:after {
-        font-size: 1rem;
         margin-left: 0.375rem;
-        vertical-align: top;
         display: inline-block;
-        line-height: inherit !important;
+        background-image: url('../../icons/sort.svg');
+        background-size: 8px 11px;
+        display: inline-block;
+        width: 8px;
+        height: 11px;
+        content: " ";
       }
       &.table__sort--none:after {
-        /*@extend %hot-ds-icon-sort-none;*/
+        display: none;
       }
       &.table__sort--asc:after {
-        /*@extend %hot-ds-icon-sort-asc;*/
+        background-image: url('../../icons/chevron-up.svg');
+        background-size: 8px 8px;
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        vertical-align: top;
       }
       &.table__sort--desc:after {
-        /*@extend %hot-ds-icon-sort-desc;*/
+        background-image: url('../../icons/chevron-down.svg');
+        background-size: 8px 8px;
+        display: inline-block;
+        width: 8px;
+        height: 8px;
       }
     }
     a, a:visited, a:hover {

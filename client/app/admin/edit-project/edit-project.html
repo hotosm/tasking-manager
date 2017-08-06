@@ -139,7 +139,7 @@
                                                     ng-click="editProjectCtrl.showPreviewShortDescription = !editProjectCtrl.showPreviewShortDescription">
                                                 {{ 'Preview' | translate }}
                                             </button>
-                                            <p ng-show="editProjectCtrl.showPreviewShortDescription" markdown-to-html="info.shortDescription"></p>
+                                            <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewShortDescription" markdown-to-html="info.shortDescription"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -168,7 +168,7 @@
                                                     ng-click="editProjectCtrl.showPreviewDescription = !editProjectCtrl.showPreviewDescription">
                                                 {{ 'Preview' | translate }}
                                             </button>
-                                            <p ng-show="editProjectCtrl.showPreviewDescription"
+                                            <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewDescription"
                                                markdown-to-html="info.description"
                                                ng-model="editProjectCtrl.descriptionHTML">
                                             </p>
@@ -218,7 +218,7 @@
                                                     ng-click="editProjectCtrl.showPreviewInstructions = !editProjectCtrl.showPreviewInstructions">
                                                 {{ 'Preview' | translate }}
                                             </button>
-                                            <p ng-show="editProjectCtrl.showPreviewInstructions" markdown-to-html="info.instructions"></p>
+                                            <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewInstructions" markdown-to-html="info.instructions"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -250,7 +250,7 @@
                                                     ng-click="editProjectCtrl.showPreviewPerTaskInstructions = !editProjectCtrl.showPreviewPerTaskInstructions">
                                                 {{ 'Preview' | translate }}
                                             </button>
-                                            <p ng-show="editProjectCtrl.showPreviewPerTaskInstructions" markdown-to-html="info.perTaskInstructions"></p>
+                                            <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewPerTaskInstructions" markdown-to-html="info.perTaskInstructions"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -350,22 +350,22 @@
                                 <p>{{ 'If you want mappers to work on the highest priority areas first, draw one of more polygons within the project area.' | translate }}</p>
                             </div>
                             <div class="button-group button-group--horizontal" role="group" aria-label="{{ 'priority area drawing tools' | translate }}">
-                                <button class="button button--achromic"
+                                <button class="button button--sm"
                                         ng-class="editProjectCtrl.drawPolygonInteraction.getActive() ? 'button--active' : ''"
                                         ng-click="editProjectCtrl.drawPriorityPolygon()">{{ 'Draw polygon' | translate }}</button>
-                                <button class="button button--achromic"
+                                <button class="button button--sm"
                                         ng-class="editProjectCtrl.drawRectangleInteraction.getActive() ? 'button--active' : ''"
                                         ng-click="editProjectCtrl.drawPriorityRectangle()">{{ 'Draw rectangle' | translate }}</button>
-                                <button class="button button--achromic"
+                                <button class="button button--sm"
                                         ng-class="editProjectCtrl.drawCircleInteraction.getActive() ? 'button--active' : ''"
                                         ng-click="editProjectCtrl.drawPriorityCircle()">{{ 'Draw circle' | translate }}</button>
-                                <button class="button button--achromic"
+                                <button class="button button--sm new-line"
                                         ng-class="editProjectCtrl.editPriority ? 'button--active' : ''"
                                         ng-click="editProjectCtrl.editPriorityArea()">{{ 'Edit' | translate }}</button>
-                                <button class="button button--achromic"
+                                <button class="button button--sm button--secondary"
                                         ng-class="editProjectCtrl.deletePriority ? 'button--active' : ''"
                                         ng-click="editProjectCtrl.deletePriorityArea()">{{ 'Delete' | translate }}</button>
-                                <button class="button button--base"
+                                <button class="button button--sm button--outline--secondary"
                                         ng-click="editProjectCtrl.clearAllPriorityAreas()">{{ 'Clear all' | translate }}</button>
                             </div>
                             <div id="map" class="map-container"></div>
@@ -495,7 +495,7 @@
                         </div>
                             <!--/ settings -->
                             <div ng-show="editProjectCtrl.currentSection !== 'actions'">
-                                <div>
+                                <div class="button-group">
                                     <button class="button button--primary" type="button"
                                             ng-click="editProjectCtrl.saveEdits()">{{ 'Save changes' | translate }}
                                     </button>
@@ -504,8 +504,8 @@
                                         {{ 'Go to project' | translate }}
                                     </button>
                                 </div>
-                                <div class="pull-right">
-                                    <div class="form__group">
+                                <div class="button-group">
+                                    <div>
                                         <p ng-show="editProjectCtrl.updateProjectSuccess">{{ 'Your project has been updated successfully.' | translate }}</p>
                                         <p class="error" ng-show="editProjectCtrl.updateProjectFail">{{ 'There was an error updating your project. Please try again.' | translate }}</p>
                                     </div>

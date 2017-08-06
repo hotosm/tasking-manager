@@ -10,8 +10,8 @@
 }
 
 .search {
-  padding-bottom: 2.5em;
-  margin-bottom: 1.5em;
+  padding-bottom: 2em;
+  margin-bottom: 1em;
   border-bottom: 1px solid darken($lightest-background-grey, 8%);
 }
 
@@ -19,6 +19,9 @@
   width: 18%;
   float: left;
   margin-right: 3%;
+  select {
+    width: 100%;
+  }
 }
 
 .page__body {
@@ -56,13 +59,26 @@
     -moz-transition: all 0.3s;
     position: relative;
     margin-right: 1%;
-    min-height: 450px;
+    min-height: 500px;
     border: 1px solid darken($lightest-background-grey, 6%);
+
+    .ng-isolate-scope {
+      overflow-y: hidden;
+      max-height: 180px;
+      margin-bottom: 1em;
+    }
 
     @include media(large-up) {
       &:nth-child(2n) {
         margin-right: 0;
       }
+    }
+
+    &:active {
+      border: 1.5px solid darken($lightest-background-grey, 40%);
+      -moz-box-shadow:    0px 5px 5px 1px darken($lightest-background-grey, 18%);
+      -webkit-box-shadow: 0px 5px 5px 1px darken($lightest-background-grey, 18%);
+      box-shadow:         0px 5px 5px 1px darken($lightest-background-grey, 18%);
     }
 
     &:hover {
@@ -146,12 +162,6 @@
 .popup-short-desc {
   height: 10em;
   overflow-y: auto;
-}
-
-.ng-isolate-scope {
-  overflow-y: hidden;
-  max-height: 100px;
-  margin-bottom: 1em;
 }
 
 .page__project {

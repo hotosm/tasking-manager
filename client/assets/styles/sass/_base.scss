@@ -63,7 +63,7 @@ a {
   transition: opacity 0.24s ease 0s;
 }
 
-.normallink, .normallink:visited, footer a, footer a:visited, p a, p a:visited, table a, table a:visited {
+.normallink, .normallink:visited, footer a, footer a:visited, p a, p a:visited, tbody a, tbody a:visited {
   color: $link-color;
   &:hover {
     border-bottom: 1px solid $lighter-orange;
@@ -163,8 +163,9 @@ a:active {
    }
  }
 
- .button--sm {
-  padding: 0em 2.5em;
+ .button--sm, .button--small {
+  padding: 0em 1.8em;
+  font-size: .86em;
  }
 
 [role="button"] {

@@ -219,12 +219,17 @@ svg:not(:root) {
  * 2. Correct the odd `em` font sizing in all browsers.
  */
 
-code,
+
 kbd,
 pre,
 samp {
   font-family: monospace, monospace; /* 1 */
   font-size: 1em; /* 2 */
+}
+
+code {
+  font-family: $base-font-family;
+  font-size: $base-font-size;
 }
 
 /**

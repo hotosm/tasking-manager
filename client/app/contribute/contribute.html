@@ -50,60 +50,36 @@
                                     <form class="form">
                                         <fieldset class="form__fieldset">
                                             <div class="search-options-container">
-                                                <div class="form__group search-option">
+                                                <div class="form__group search-option form__group--section--sm">
                                                     <label class="form__label">{{ 'Mapping difficulty' | translate }}</label>
-                                                    <ul>
-                                                        <li>
-                                                            <label class="form__option form__option--custom-checkbox">
-                                                                <input type="checkbox" name="form-custom-checkbox"
-                                                                       ng-click="contributeCtrl.search()"
-                                                                       ng-model="contributeCtrl.mapperLevel"/>
-                                                                <span class="form__option__text">{{ 'Beginner' | translate }}</span>
-                                                            </label>
-                                                        </li>
-                                                        <li>
-                                                            <label class="form__option form__option--custom-checkbox">
-                                                                <input type="checkbox" name="form-custom-checkbox"
-                                                                       ng-click="contributeCtrl.search()"
-                                                                       ng-model="contributeCtrl.mapperLevel"/>
-                                                                <span class="form__option__text">{{ 'Intermediate' | translate }}</span>
-                                                            </label>
-                                                        </li>
-                                                        <li>
-                                                            <label class="form__option form__option--custom-checkbox">
-                                                                <input type="checkbox" name="form-custom-checkbox"
-                                                                       ng-click="contributeCtrl.search()"
-                                                                       ng-model="contributeCtrl.mapperLevel"/>
-                                                                <span class="form__option__text">{{ 'Advanced' | translate }}</span>
-                                                            </label>
-                                                        </li>
-                                                    </ul>
+                                                    <select class="form__control form__control--medium"
+                                                    ng-change="contributeCtrl.search()"
+                                                    ng-model="contributeCtrl.mapperLevel">
+                                                        <option value="ALL">{{ 'All' | translate }}</option>
+                                                        <option value="BEGINNER">{{ 'Beginner' | translate }}</option>
+                                                        <option value="INTERMEDIATE">{{ 'Intermediate' | translate }}</option>
+                                                        <option value="ADVANCED">{{ 'Advanced' | translate }}</option>
+                                                    </select>
                                                 </div>
-                                                <div class="form__group search-option">
+                                                <div class="form__group search-option form__group--section--sm">
                                                     <label class="form__label">{{ 'Organisation' | translate }}</label>
-                                                    <ul class="form__control form__control--medium"
-                                                            ng-change="contributeCtrl.search()"
-                                                            ng-model="contributeCtrl.searchOrganisation">
-                                                        <li  ng-repeat="organisation in contributeCtrl.organisations" value="{{ organisation }}">
-                                                            <label class="form__option form__option--custom-checkbox">
-                                                                <input type="checkbox" name="form-custom-checkbox" />
-                                                                <span class="form__option__text">{{ organisation }}</span>
-                                                            </label>
-                                                        </li>
-                                                    </ul>
+                                                    <select class="form__control form__control--medium"
+                                                    ng-change="contributeCtrl.search()"
+                                                    ng-model="contributeCtrl.searchOrganisation">
+                                                        <option value="">{{ 'All' | translate }}</option>
+                                                        <option ng-repeat="organisation in contributeCtrl.organisations"
+                                                                value="{{ organisation }}">{{ organisation }}</option>
+                                                    </select>
                                                 </div>
-                                                <div class="form__group search-option">
+                                                <div class="form__group search-option form__group--section--sm">
                                                     <label class="form__label">{{ 'Campaign' | translate }}</label>
-                                                    <ul class="form__control form__control--medium"
-                                                            ng-change="contributeCtrl.search()"
-                                                            ng-model="contributeCtrl.searchCampaign">
-                                                        <li ng-repeat="campaign in contributeCtrl.campaigns" value="{{ campaign }}">
-                                                            <label class="form__option form__option--custom-checkbox">
-                                                                <input type="checkbox" name="form-custom-checkbox" />
-                                                                <span class="form__option__text">{{ campaign }}</span>
-                                                            </label>
-                                                        </li>
-                                                    </ul>
+                                                    <select class="form__control form__control--medium"
+                                                    ng-change="contributeCtrl.search()"
+                                                    ng-model="contributeCtrl.searchCampaign">
+                                                        <option value="">{{ 'All' | translate }}</option>
+                                                        <option ng-repeat="campaign in contributeCtrl.campaigns"
+                                                                value="{{ campaign }}">{{ campaign }}</option>
+                                                    </select>
                                                 </div>
                                                 <div class="form__group search-option">
                                                     <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>

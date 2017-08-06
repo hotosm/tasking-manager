@@ -19,6 +19,10 @@
     max-height: 100%;
   }
 
+  code {
+    font-size: 0.90rem;
+  }
+
   .sidebar {
     float: left;
     height: inherit;
@@ -82,15 +86,7 @@
     }
 
     @include media(large-up) {
-      @include span(5/12);
-    }
-
-    @include media(xlarge-up) {
       @include span(6/12);
-    }
-
-    @include media(xxlarge-up) {
-      @include span(7/12);
     }
   }
 }

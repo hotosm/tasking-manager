@@ -35,7 +35,7 @@
                 <div ng-show="createProjectCtrl.currentStep === 'area'" class="content">
                     <h4>{{ 'Step 1: Define Area' | translate }}</h4>
                     <form class="form">
-                        <div class="form__group form__group--section">
+                        <div class="form__group form__group--section--sm">
                             <dl>
                                 <dt>Option 1:</dt>
                                 <dd>
@@ -55,7 +55,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="form__group form__group--section">
+                        <div class="form__group form__group--section--sm">
                             <dl>
                                 <dt>Option 2:</dt>
                                 <dd>
@@ -86,7 +86,7 @@
                             </div>
 
                         </div>
-                        <div class="form__group form__group--section">
+                        <div class="form__group form__group--section--sm">
                             <dl>
                                 <dt>Option 3:</dt>
                                 <dd>
@@ -131,14 +131,14 @@
                         </div>
                     </form>
                     <div class="navigation-steps">
-                        <div class="button-group button-group--horizontal" role="group">
-                            <a class="normallink" type=""
-                                    ng-click="createProjectCtrl.setWizardStep('area')">
-                                <span>{{ 'Back to Previous' | translate }}</span>
-                            </a>
+                        <div class="button-group button-group--stacked" role="group">
                             <button class="button" type="button"
                                     ng-click="createProjectCtrl.setWizardStepAfterTaskTypeSelection()">
                                 <span>{{ 'Next' | translate }}</span>
+                            </button>
+                            <button class="button button--secondary" type=""
+                                    ng-click="createProjectCtrl.setWizardStep('area')">
+                                <span>{{ 'Back to Previous' | translate }}</span>
                             </button>
                         </div>
                     </div>
@@ -193,14 +193,14 @@
                         </div>
                     </div>
                     <div class="navigation-steps">
-                        <div class="button-group button-group--horizontal" role="group">
-                            <a class="normallink" type=""
-                                    ng-click="createProjectCtrl.setWizardStep('tasks')">
-                                <span>{{ 'Back to Previous' | translate }}</span>
-                            </a>
+                        <div class="button-group button-group--stacked" role="group">
                             <button class="button" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('trim')">
                                 <span>{{ 'Next' | translate }}</span>
+                            </button>
+                            <button class="button button--secondary" type=""
+                                    ng-click="createProjectCtrl.setWizardStep('tasks')">
+                                <span>{{ 'Back to Previous' | translate }}</span>
                             </button>
                         </div>
                     </div>
@@ -256,14 +256,14 @@
 
                     <hr/>
                     <div class="navigation-steps">
-                        <div class="button-group button-group--horizontal" role="group">
-                            <a class="normallink" type=""
-                                    ng-click="createProjectCtrl.setWizardStep('taskSize')">
-                                <span>{{ 'Back to Previous' | translate }}</span>
-                            </a>
+                        <div class="button-group button-group--stacked" role="group">
                             <button class="button" type="button"
                                     ng-click="createProjectCtrl.setWizardStep('review')">
                                 <span>{{ 'Next' | translate }}</span>
+                            </button>
+                            <button class="button button--secondary" type=""
+                                    ng-click="createProjectCtrl.setWizardStep('taskSize')">
+                                <span>{{ 'Back to Previous' | translate }}</span>
                             </button>
                         </div>
                     </div>
@@ -310,16 +310,15 @@
                         </div>
                     </form>
                     <div class="navigation-steps">
-                        <div class="button-group button-group--horizontal" role="group">
-
-                            <a class="normallink" type=""
-                                    ng-click="createProjectCtrl.setWizardStep(createProjectCtrl.isTaskArbitrary?'tasks':'trim')">
-                                <span>{{ 'Back to Previous' | translate }}</span>
-                            </a>
+                        <div class="button-group button-group--stacked" role="group">
                             <button class="button button--primary" type="button"
                                     ng-click="createProjectCtrl.createProject()">
                                 <span ng-hide="createProjectCtrl.isCloneProject">{{ 'Create' | translate }}</span>
                                 <span ng-show="createProjectCtrl.isCloneProject">{{ 'Clone' | translate }}</span>
+                            </button>
+                            <button class="button button--secondary" type=""
+                                    ng-click="createProjectCtrl.setWizardStep(createProjectCtrl.isTaskArbitrary?'tasks':'trim')">
+                                <span>{{ 'Back to Previous' | translate }}</span>
                             </button>
                         </div>
                         <div ng-show="createProjectCtrl.waiting">

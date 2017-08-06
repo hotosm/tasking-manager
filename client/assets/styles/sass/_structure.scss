@@ -279,8 +279,8 @@
     @include media(large-up) {
       text-align: center;
       padding: {
-        top: ($global-spacing * 9);
-        bottom: ($global-spacing * 6);
+        top: ($global-spacing * 7);
+        bottom: ($global-spacing * 4);
       }
     }
   }
@@ -534,6 +534,11 @@
 
 .form__group--section {
   padding-bottom: 3em;
+}
+
+.form__group--section--sm {
+  padding-bottom: 2em;
+  margin-bottom: 2em;
 }
 
 .search-results-container--wrapper {
