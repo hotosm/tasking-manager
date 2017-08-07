@@ -16,9 +16,13 @@
 }
 
 .search-container {
-  width: 18%;
+  width: 25%;
   float: left;
   margin-right: 3%;
+  @include media(large-up) {
+    width: 18%;
+  }
+
   select {
     width: 100%;
   }
@@ -47,7 +51,7 @@
   }
 
   &__card {
-    width: 47%;
+    width: 88%;
     margin-bottom: 1rem;
     margin-top: 1em;
     background-color: #fff;
@@ -58,7 +62,7 @@
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     position: relative;
-    margin-right: 1%;
+    margin-right: 0;
     min-height: 500px;
     border: 1px solid darken($lightest-background-grey, 6%);
 
@@ -69,6 +73,8 @@
     }
 
     @include media(large-up) {
+      width: 47%;
+      margin-right: 1%;
       &:nth-child(2n) {
         margin-right: 0;
       }
@@ -96,7 +102,12 @@
   }
 
   &__content {
-    padding: 2.5rem 2.5rem 3rem;
+    padding: 1.3rem 1.8rem 1.75rem;
+
+    @include media(medium-up) {
+      padding: 2.5rem 2.5rem 3rem;
+    }
+
     dt {
       padding-top: .2em;
     }

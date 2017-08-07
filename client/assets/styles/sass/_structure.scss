@@ -282,7 +282,7 @@
     position: relative;
     color: inherit;
     padding: {
-      top: ($global-spacing * 4);
+      top: ($global-spacing * 8);
       right: 0;
       bottom: ($global-spacing * 0.5);
       left: 0;
@@ -317,7 +317,7 @@
 
     @include media(medium-up) {
       padding: {
-        top: ($global-spacing * 7);
+        top: ($global-spacing * 8);
         bottom: ($global-spacing * 1);
       }
     }
@@ -469,7 +469,10 @@
 
 .section__body {
     .section--centered--sm {
-        max-width: 80%;
+        max-width: 100%;
+        @include media(medium-up) {
+            max-width: 80%;
+        }
     }
 }
 

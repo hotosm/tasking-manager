@@ -383,9 +383,30 @@ table {
   margin-right: 5%;
 }
 
+.block--action {
+  .content--left {
+    width: 300px;
+    margin-bottom: 2em;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+    display: block;
+    float: none;
+    @include media(medium-up) {
+      float: left;
+      margin-right: 5%;
+      width: 43%;
+    }
+  }
+}
+
 .content--right {
   float: left;
-  width: 52%;
+  width: 100%;
+  @include media(medium-up) {
+    float: left;
+    width: 52%;
+  }
 }
 
 .list--piped {

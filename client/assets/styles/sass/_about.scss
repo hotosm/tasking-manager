@@ -47,10 +47,13 @@
 .sponsor__card--become {
     position: relative;
     .sponsor__content {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        height: inherit;
+        transform: translateY(20%);
         padding: 2em;
+        @include media(medium-up) {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          height: inherit;
+        }
     }
 }

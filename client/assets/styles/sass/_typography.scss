@@ -298,23 +298,38 @@ h4, h5, h6 {
 }
 
 h1 {
-  @include heading(2.571rem);   // 36
+  @include heading(2.0rem);
+  @include media(medium-up) {
+    @include heading(2.571rem);   // 36
+  }
 }
 
 h2 {
-  @include heading(2.0rem);    // 28
+  @include heading(1.714rem);
+  @include media(medium-up) {
+    @include heading(2.0rem);    // 28
+  }
 }
 
 h3 {
-  @include heading(1.714rem);   // 24
+  @include heading(1.571rem);
+  @include media(medium-up) {
+    @include heading(1.714rem);   // 24
+  }
 }
 
 h4 {
-  @include heading(1.571rem);      // 22
+  @include heading(1.286rem);
+  @include media(medium-up) {
+    @include heading(1.571rem);      // 22
+  }
 }
 
 h5 {
-  @include heading(1.286rem);      // 18
+  @include heading(1rem);
+  @include media(medium-up) {
+    @include heading(1.286rem);      // 18
+  }
 }
 
 h6 {

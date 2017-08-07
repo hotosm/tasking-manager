@@ -26,16 +26,29 @@
    Stats
    ========================================================================== */
 .section__header--left {
-  float: left;
+
+  @include media(medium-up) {
+    float: left;
+  }
 }
 
 .section__inverse--stats {
-  text-align: center;
   left: 0;
-  float: right;
+  display: block;
+
+  @include media(medium-up) {
+    float: right;
+    text-align: center;
+  }
+
   .stats__card {
     display: inline-block;
-    width: 200px;
+    margin-right: 1em;
+    margin-bottom: 2em;
+    
+    @include media(medium-up) {
+      width: 200px;
+    }
   }
 
   .stats__card--amount {
