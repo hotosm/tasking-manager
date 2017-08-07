@@ -142,10 +142,6 @@
     }
   }
 
-  &__title {
-    /*@extend .heading, .heading--medium;*/
-  }
-
   &__subtitle {
     text-transform: uppercase;
     font-weight: $base-font-regular;
@@ -188,14 +184,19 @@
   top: $global-spacing / 4;
   right: $global-spacing / 4;
   z-index: 10;
-  opacity: 0.48;
 
   &:hover {
-    opacity: 1;
+    opacity: .8;
   }
 
   &:before {
-    /*@extend %hot-ds-icon-xmark;*/
+    width: 12px;
+    height: 12px;
+    background-size: 12px 12px;
+    content: " ";
+    background-image: url('../../icons/xmark.svg');
+    display: inline-block;
+    margin-right: .3em;
   }
 
   @include media(medium-up) {

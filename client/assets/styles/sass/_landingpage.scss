@@ -33,7 +33,6 @@
   &__cards {
     text-align: left;
     list-style: none;
-    padding-bottom: 2em;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -46,10 +45,13 @@
 
   &__card {
     margin-right: 3.5%;
-    width: 31%;
+    width: 100%;
     align-self: flex-start;
     &:last-of-type {
       margin-right: 0;
+    }
+    @include media(medium-up) {
+      width: 31%;
     }
   }
 }

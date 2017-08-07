@@ -678,7 +678,7 @@
     <div class="modal__inner">
         <header class="modal__header">
             <div class="modal__headline">
-                <h1 class="modal__title">{{ 'Message all contributors' | translate }}</h1>
+                <h3 class="modal__title">{{ 'Message all contributors' | translate }}</h3>
             </div>
         </header>
         <div class="modal__body">
@@ -686,8 +686,14 @@
                 <p>
                     {{ 'This will send a Tasking Manager message to every contributor of the current project. Please use this feature carefully.' | translate }}
                 </p>
-                <input type="text" class="form__control" ng-model="editProjectCtrl.messageSubject" placeholder="{{ 'Subject' | translate }}*" />
-                <textarea class="form__control" rows="4" ng-model="editProjectCtrl.messageContent" placeholder="{{ 'Message' | translate }}*"></textarea>
+                <ul class="list-type--none form__standard">
+                    <li>
+                        <input type="text" class="form__control" ng-model="editProjectCtrl.messageSubject" placeholder="{{ 'Subject' | translate }}*" />
+                    </li>
+                    <li>
+                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.messageContent" placeholder="{{ 'Message' | translate }}*"></textarea>
+                    </li>
+                </ul>
                 <p>
                     {{ 'This message is not translated to the selected language of the user, so you may want to include your own translations.' | translate }}
                 </p>
@@ -701,11 +707,11 @@
         </div>
         <footer class="modal__footer">
             <div ng-hide="editProjectCtrl.sendMessageSuccess">
-                <button class="button button--achromic" type="button"
-                        ng-click="editProjectCtrl.showMessageContributors(false)">{{ 'Cancel' | translate }}
-                </button>
-                <button class="button button--base" type="button"
+                <button class="button" type="button"
                         ng-click="editProjectCtrl.sendMessage()">{{ 'Message all contributors' | translate }}
+                </button>
+                <button class="button button--secondary" type="button"
+                        ng-click="editProjectCtrl.showMessageContributors(false)">{{ 'Cancel' | translate }}
                 </button>
                 <span ng-show="editProjectCtrl.sendMessageInProgress">{{ 'Sending...' | translate }}</span>
             </div>
@@ -716,8 +722,8 @@
             </div>
         </footer>
     </div>
-    <button class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showMessageContributors(false)">
+    <a class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showMessageContributors(false)">
         {{ 'Dismiss' | translate }}
-    </button>
+    </a>
 </section>
 <!-- message contributors modal -->
