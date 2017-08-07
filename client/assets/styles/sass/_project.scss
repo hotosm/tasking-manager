@@ -96,7 +96,7 @@
   font-size: smaller;
 
   .odd {
-    background-color: rgba($medium-grey, 0.1);
+    background-color: rgba($lightgrey, 0.15);
     padding: .5em .8em;
     border-radius: 5px;
   }
@@ -106,6 +106,18 @@
   }
   a {
     color: $link-color;
+  }
+}
+
+.list--zebra {
+  &:nth-child(odd) {
+    background-color: rgba($lightgrey, 0.15);
+    padding: .5em .8em;
+    border-radius: 5px;
+  }
+  &:nth-child(even) {
+    padding: .5em .8em;
+    border-radius: 5px;
   }
 }
 

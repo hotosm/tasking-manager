@@ -269,6 +269,10 @@ h1, h2, h3 {
   color: $darkest-grey;
 }
 
+h4, h5, h6 {
+  color: $medium-grey;
+}
+
 .heading--xlarge {
   @include heading(1.75rem, xlarge-up);   // 28, 32, 36, 40
 }

@@ -306,20 +306,19 @@
 
                                         </div>
                                         <!-- task action buttons -->
-                                        <div>
-                                            <div class="pull-center">
+                                        <div class="form__group form__group--section">
+                                            <div>
                                                 <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
-                                                        class="button button--secondary button--large"
+                                                        class="button button--large"
                                                         ng-click="projectCtrl.lockSelectedTaskMapping()">
                                                     {{ 'Start Mapping' | translate }}
                                                 </button>
                                                 <button ng-click="projectCtrl.startEditor('ideditor')"
-                                                        class="button button--achromic  button--large">
+                                                        class="button button--secondary button--large">
                                                     {{ 'Preview Task on OSM' | translate }}
                                                 </button>
                                             </div>
-                                            <hr/>
-                                            <div class="pull-center">
+                                            <div>
                                                 <div class="button-group button-group--horizontal" role="group"
                                                      aria-label="{{ 'Other options' | translate }}">
                                                     <button ng-hide="projectCtrl.taskErrorMapping === 'none-available' || !projectCtrl.userCanMap"
