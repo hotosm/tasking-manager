@@ -65,6 +65,36 @@
 
                 <dt>{{ 'Last updated' | translate }}: </dt>
                 <dd am-time-ago="projectCtrl.projectData.lastUpdated | amUtc | amLocal"></dd>
+
+                <dt>{{ 'Difficulty' | translate }}: </dt>
+                <dd>{{ projectCtrl.projectData.mapperLevel }}</dd>
+
+                <dt>{{ 'Priority' | translate }}: </dt>
+                <dd>{{ projectCtrl.projectData.projectPriority }}</dd>
+
+                <dt>{{ 'Type(s) of mapping' | translate }}: </dt>
+                <dd>
+                    <span ng-repeat="type in projectCtrl.projectData.mappingTypes">{{ type }}
+                        <span ng-show="!$last">| </span>
+                    </span>
+                </dd>
+
+                <dt>{{ 'Organisation' | translate }}: </dt>
+                <dd ng-show="projectCtrl.projectData.organisationTag">{{ projectCtrl.projectData.organisationTag }}</dd>
+                <dd ng-show="!projectCtrl.projectData.organisationTag">{{ 'N/A' | translate }}</dd>
+
+                <dt>{{ 'Campaign' | translate }}: </dt>
+                <dd ng-show="projectCtrl.projectData.campaignTag">{{ projectCtrl.projectData.campaignTag }}</dd>
+                <dd ng-show="!projectCtrl.projectData.campaignTag">{{ 'N/A' | translate }}</dd>
+
+                <dt>{{ 'Mapper level required' | translate }}: </dt>
+                <dd ng-show="projectCtrl.projectData.enforceMapperLevel">{{ 'Yes' | translate }}</dd>
+                <dd ng-show="!projectCtrl.projectData.enforceMapperLevel">{{ 'No' | translate }}</dd>
+
+                <dt>{{ 'Validator role required' | translate }}: </dt>
+                <dd ng-show="projectCtrl.projectData.enforceValidatorRole">{{ 'Yes' | translate }}</dd>
+                <dd ng-show="!projectCtrl.projectData.enforceValidatorRole">{{ 'No' | translate }}</dd>
+
             </dl>
 
         </div>
