@@ -18,9 +18,12 @@
                     </div>
                 </div>
                 <div class="component--share">
-                    <a class="button button--outline" href="">Share</a>
+                    <a class="button button--outline" href=""
+                       ng-click="projectCtrl.areSocialShareOptionsVisible = !projectCtrl.areSocialShareOptionsVisible">
+                        Share
+                    </a>
                     <div class="drop__content">
-                    <ul class="share--options drop__menu">
+                    <ul class="share--options drop__menu" ng-show="projectCtrl.areSocialShareOptionsVisible">
                         <li>
                             <a class=""
                                     socialshare
