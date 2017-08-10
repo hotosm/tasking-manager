@@ -21,7 +21,7 @@ echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 # fi
 
 # Set Version Number
-VERSION=v.0.0.$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
+VERSION=v.0.0.$CIRCLE_BUILD_NUM-$(echo $CIRCLE_BRANCH | tr -cd '[[:alnum:]]._-')
 
 if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
   then
