@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -xev # halt script on error
 
-DEMO_BRANCH="develop"
+# demo branch is set via environment variables in CircleCI
+#DEMO_BRANCH="develop"
 STAGE_BRANCH="stage"
 PROD_BRANCH="master"
 
@@ -27,6 +28,8 @@ if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
     # Install AWS requirements
     pip install -r requirements.aws.txt
     printf '1\nn\n' | eb init taskingmanager --region us-east-1
+  else
+    echo "$CIRCLE_BRANCH does not match"
 fi
 
 # Deploy to Demo Env
