@@ -135,7 +135,8 @@
                                                 <section class="panel project-result__content">
                                                     <span>{{ project.priority }}</span>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
-                                                    <p markdown-to-html="(project.shortDescription)"></p>
+                                                    <p markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
+                                                        (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')"></p>
                                                     <dl>
                                                         <dt ng-show="!project.organisationTag">{{ 'Organization' | translate }}:</dt>
                                                         <dd>N/A</dd>
