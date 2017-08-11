@@ -23,6 +23,15 @@
     font-size: 0.90rem;
   }
 
+  .instructions {
+    ul {
+      padding-left: 1.5em;
+      li {
+        margin-bottom: .5em;
+      }
+    }
+  }
+
   .sidebar {
     float: left;
     height: inherit;

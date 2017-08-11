@@ -140,7 +140,7 @@
                     </div>
                     <div ng-hide="projectCtrl.errorGetProject">
                          <!-- /invalid project -->
-                        <div ng-show="projectCtrl.currentTab === 'instructions'">
+                        <div class="instructions" ng-show="projectCtrl.currentTab === 'instructions'">
                             <section>
                                 <h2>{{ 'Instructions' | translate }}</h2>
                                 <div ng-show="projectCtrl.projectData.entitiesToMap" ng-init="showEntitiesHelp = false">
@@ -452,33 +452,34 @@
                                                     {{ 'Quit Task' | translate }}
                                                 </button>
                                             </li>
+                                            <li>
                                         </ul>
-                                    </div>
-                                    <div class="form__group pull-center" ng-show="projectCtrl.isSelectedSplittable">
-                                        <button class="button button--achromic" ng-click="projectCtrl.splitTask()">
-                                            {{ 'Split Task' | translate }}
-                                        </button>
-                                    </div>
-                                    <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
-                                        <div class="alert alert--danger" role="alert">
-                                            <p>{{ 'Task is not splittable' | translate }}</p>
+                                        <div ng-show="projectCtrl.isSelectedSplittable">
+                                            <button class="button" ng-click="projectCtrl.splitTask()">
+                                                {{ 'Split Task' | translate }}
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
-                                        <div class="alert alert--danger" role="alert">
-                                            <p>{{ 'Task could not be split' | translate }}</p>
-                                        </div>
-                                    </div>
-                                    <div ng-show="projectCtrl.taskUnLockError">
-                                        <div>
+                                        <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
                                             <div class="error" role="alert">
-                                                <p>{{ 'There was a problem unlocking the task.' | translate }} {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                                <p>{{ 'Task is not splittable' | translate }}</p>
                                             </div>
                                         </div>
-                                        <button class="button button--achromic button--secondary"
-                                                ng-click="projectCtrl.resetToSelectingStep()">
-                                            {{ 'Cancel' | translate }}
-                                        </button>
+                                        <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
+                                            <div class="error" role="alert">
+                                                <p>{{ 'Task could not be split' | translate }}</p>
+                                            </div>
+                                        </div>
+                                        <div ng-show="projectCtrl.taskUnLockError">
+                                            <div>
+                                                <div class="error" role="alert">
+                                                    <p>{{ 'There was a problem unlocking the task.' | translate }} {{ projectCtrl.taskUnLockErrorMessage }}</p>
+                                                </div>
+                                            </div>
+                                            <button class="button button--achromic button--secondary"
+                                                    ng-click="projectCtrl.resetToSelectingStep()">
+                                                {{ 'Cancel' | translate }}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 

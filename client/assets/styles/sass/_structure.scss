@@ -417,6 +417,12 @@
   .drop__content {
     width: 140px;
   }
+  .section__header--left {
+    width: 100%;
+    @include media(medium-up) {
+      width: 80%;
+    }
+  }
 }
 
 /* Section layout modifiers

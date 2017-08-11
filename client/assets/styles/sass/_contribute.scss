@@ -175,6 +175,23 @@
 }
 
 .page__project {
+  dd {
+    width: 45%;
+    margin-right: 4%;
+    @include media(medium-up) {
+      width: 15%;
+    }
+  }
+  dt {
+    width: 45%;
+    clear: none;
+    &:nth-of-type(odd) {
+      clear: left;
+    }
+    @include media(medium-up) {
+      width: 20%;
+    }
+  }
   .ng-isolate-scope {
     overflow-y: visible;
     max-height: 100%;
