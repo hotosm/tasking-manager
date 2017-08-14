@@ -15,7 +15,7 @@ var paths = {
     scripts: ['app/**/*.js'],
     html: ['./**/*.html', '!node_modules/**/*.html'],
     styles: ['assets/styles/css/*.css'],
-    images: ['assets/img/**/*'],
+    images: ['assets/img/**/*', 'assets/icons/**/*'],
     locale: ['locale/*.json']
 };
 
@@ -142,4 +142,3 @@ gulp.task('run', function (callback) {
     )
     ;
 });
-
