@@ -63,8 +63,9 @@
     -moz-transition: all 0.3s;
     position: relative;
     margin-right: 0;
-    min-height: 500px;
+    min-height: 420px;
     border: 1px solid darken($lightest-background-grey, 6%);
+    font-size: .86em;
 
     .ng-isolate-scope {
       max-height: 180px;
@@ -115,7 +116,7 @@
   &__footer {
     position: absolute;
     bottom: 0;
-    padding: 1.5rem 2.5rem;
+    padding: 1rem 2.5rem;
     width: 100%;
     border-top: 1px solid darken($lightest-background-grey, 2%);
     dt, dd {

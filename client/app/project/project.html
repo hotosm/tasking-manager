@@ -142,7 +142,7 @@
                          <!-- /invalid project -->
                         <div class="instructions" ng-show="projectCtrl.currentTab === 'instructions'">
                             <section>
-                                <h2>{{ 'Instructions' | translate }}</h2>
+                                <h3>{{ 'Instructions' | translate }}</h3>
                                 <div ng-show="projectCtrl.projectData.entitiesToMap" ng-init="showEntitiesHelp = false">
                                     <strong>
                                         {{ 'Entities to map' | translate }}
@@ -267,7 +267,7 @@
                             <!-- task viewing and mapping UI's -->
                             <div ng-show="projectCtrl.mappingStep === 'viewing' || projectCtrl.mappingStep === 'locked'">
                                 <!-- task viewing UI -->
-                                <h2>{{ 'Mapping' | translate }}</h2>
+                                <h3>{{ 'Mapping' | translate }}</h3>
                                 <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                     <!-- task information -->
 
@@ -889,7 +889,7 @@
                             </div>
                         </div>
                         <div ng-show="projectCtrl.currentTab === 'chat'">
-                            <h2>{{ 'Discussion' | translate }}</h2>
+                            <h3>{{ 'Discussion' | translate }}</h3>
                             <project-chat project-id="projectCtrl.id"
                                           project-author="projectCtrl.projectData.author"></project-chat>
                         </div>

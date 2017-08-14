@@ -140,7 +140,7 @@ dd {
 }
 
 .num--large {
-  font-size: 1.5em;
+  font-size: 1.22em;
   color: $link-color;
   clear: none;
   margin-right: .2em;
@@ -300,7 +300,7 @@ h4, h5, h6 {
 h1 {
   @include heading(2.0rem);
   @include media(medium-up) {
-    @include heading(2.571rem);   // 36
+    @include heading(2.429rem);   // 34
   }
 }
 
@@ -314,14 +314,14 @@ h2 {
 h3 {
   @include heading(1.571rem);
   @include media(medium-up) {
-    @include heading(1.714rem);   // 24
+    @include heading(1.571rem);   // 22
   }
 }
 
 h4 {
   @include heading(1.286rem);
   @include media(medium-up) {
-    @include heading(1.571rem);      // 22
+    @include heading(1.429rem);      // 20
   }
 }
 
