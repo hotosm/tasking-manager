@@ -14,8 +14,8 @@
 
         vm.sponsors = [
             {
-                name: 'Australia-Indonesia Facility for Disaster Reduction',
-                logo: './assets/img/aifdr-logo.png',
+                name: 'The Austrialian Government',
+                logo: './assets/img/aus-gov-logo-stacked-black.jpg',
                 url: 'https://www.aifdr.org'
             },
             {
