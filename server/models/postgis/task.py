@@ -111,8 +111,8 @@ class TaskHistory(db.Model):
                     TaskHistory.action == TaskAction.STATE_CHANGE.name) \
             .order_by(TaskHistory.action_date.desc()).all()
 
-        if result is None:
-            return TaskStatus.READY
+        if not result:
+            return TaskStatus.READY  # No result so default to ready status
 
         if len(result) == 1 and for_undo:
             # We're looking for the previous status, however, there isn't any so we'll return Ready
