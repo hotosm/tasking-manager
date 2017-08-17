@@ -39,8 +39,8 @@
   font-size: inherit;
   line-height: 1;
   margin: 0;
-  padding-top: .8em;
-  padding-bottom: 1em;
+  padding-top: .7em;
+  padding-bottom: .8em;
   a {
     display: inline-block;
     vertical-align: top;
@@ -131,7 +131,7 @@
 .global-menu-item {
   display: inline-block;
   line-height: 2rem;
-  padding: 1.1rem 1rem 1rem;
+  padding: 1em 1rem .7rem;
   border-bottom: 2px solid #fff;
   transition: all 0.3s ease 0s;
   -webkit-transition: all 0.3s;
@@ -324,7 +324,7 @@
 
     @include media(large-up) {
       padding: {
-        top: ($global-spacing * 12);
+        top: ($global-spacing * 10);
         bottom: ($global-spacing * 3);
       }
     }

@@ -1,7 +1,6 @@
 .sponsor {
   &__cards {
     text-align: left;
-    padding-bottom: 2em;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -12,7 +11,7 @@
 
   &__card {
     width: 350px;
-    margin-bottom: 2rem;
+    margin: 1rem 0 1rem;
     border: 1px solid darken($lightest-background-grey, 8%);
     background-color: #fff;
   }
