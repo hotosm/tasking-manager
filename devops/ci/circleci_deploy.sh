@@ -3,7 +3,7 @@ set -xev # halt script on error
 
 # demo branch is set via environment variables in CircleCI
 #DEMO_BRANCH="develop"
-STAGE_BRANCH="stage"
+#STAGE_BRANCH="stage"
 PROD_BRANCH="master"
 
 DEMO_ENV="taskingmanager-demo"
