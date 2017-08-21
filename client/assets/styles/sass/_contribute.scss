@@ -67,6 +67,10 @@
     border: 1px solid darken($lightest-background-grey, 6%);
     font-size: .86em;
 
+    code {
+      color: $red;
+    }
+
     .ng-isolate-scope {
       max-height: 180px;
       margin-bottom: 1em;

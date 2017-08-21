@@ -159,6 +159,54 @@
                                                </section>
                                             </a>
                                         </div>
+                                        <div class="paging">
+                                            <ul class="" role="group"
+                                                 aria-label="{{ 'Navigate the results' | translate }}">
+                                                <li class="paging--previous"
+                                                        ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
+                                                        ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
+                                                    {{ 'Previous' | translate }}
+                                                </li>
+                                                <li class=""
+                                                        ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
+                                                        ng-class="contributeCtrl.pagination.page === 1 ? 'disabled' : ''"
+                                                        ng-click="contributeCtrl.search(contributeCtrl.pagination.lastNum)">
+                                                    1
+                                                </li>
+                                                <li class=" disabled"
+                                                        ng-show="contributeCtrl.pagination.prevNum - 1 > 1">
+                                                    ...
+                                                </li>
+                                                <li class=""
+                                                        ng-show="contributeCtrl.pagination.prevNum"
+                                                        ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
+                                                    {{ contributeCtrl.pagination.prevNum }}
+                                                </li>
+                                                <li class="button--active">
+                                                    {{ contributeCtrl.pagination.page }}
+                                                </li>
+                                                <li class=""
+                                                        ng-show="contributeCtrl.pagination.nextNum"
+                                                        ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
+                                                    {{ contributeCtrl.pagination.nextNum }}
+                                                </li>
+                                                <li class="disabled"
+                                                        ng-show="contributeCtrl.pagination.pages - contributeCtrl.pagination.page > 2">
+                                                    ...
+                                                </li>
+                                                <li class=""
+                                                        ng-show="(contributeCtrl.pagination.nextNum || contributeCtrl.pagination.page) != contributeCtrl.pagination.pages"
+                                                        ng-class="contributeCtrl.pagination.pages === contributeCtrl.pagination.page ? 'disabled' : ''"
+                                                        ng-click="contributeCtrl.search(contributeCtrl.pagination.pages)">
+                                                    {{ contributeCtrl.pagination.pages }}
+                                                </li>
+                                                <li class="paging--next"
+                                                        ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
+                                                        ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
+                                                    {{ 'Next' | translate }}
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="list" ng-show="contributeCtrl.resultsView === 'list'">
@@ -204,55 +252,6 @@
                                         </tr>
                                         </tbody>
                                     </table>
-                                </div>
-                                <!-- Pagination -->
-                                <div class="paging">
-                                    <ul class="" role="group"
-                                         aria-label="{{ 'Navigate the results' | translate }}">
-                                        <li class="paging--previous"
-                                                ng-class="!contributeCtrl.pagination.hasPrev ? 'disabled' : ''"
-                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
-                                            {{ 'Previous' | translate }}
-                                        </li>
-                                        <li class=""
-                                                ng-show="(contributeCtrl.pagination.prevNum || contributeCtrl.pagination.page) != 1"
-                                                ng-class="contributeCtrl.pagination.page === 1 ? 'disabled' : ''"
-                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.lastNum)">
-                                            1
-                                        </li>
-                                        <li class=" disabled"
-                                                ng-show="contributeCtrl.pagination.prevNum - 1 > 1">
-                                            ...
-                                        </li>
-                                        <li class=""
-                                                ng-show="contributeCtrl.pagination.prevNum"
-                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.prevNum)">
-                                            {{ contributeCtrl.pagination.prevNum }}
-                                        </li>
-                                        <li class="button--active">
-                                            {{ contributeCtrl.pagination.page }}
-                                        </li>
-                                        <li class=""
-                                                ng-show="contributeCtrl.pagination.nextNum"
-                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
-                                            {{ contributeCtrl.pagination.nextNum }}
-                                        </li>
-                                        <li class="disabled"
-                                                ng-show="contributeCtrl.pagination.pages - contributeCtrl.pagination.page > 2">
-                                            ...
-                                        </li>
-                                        <li class=""
-                                                ng-show="(contributeCtrl.pagination.nextNum || contributeCtrl.pagination.page) != contributeCtrl.pagination.pages"
-                                                ng-class="contributeCtrl.pagination.pages === contributeCtrl.pagination.page ? 'disabled' : ''"
-                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.pages)">
-                                            {{ contributeCtrl.pagination.pages }}
-                                        </li>
-                                        <li class="paging--next"
-                                                ng-class="!contributeCtrl.pagination.hasNext ? 'disabled' : ''"
-                                                ng-click="contributeCtrl.search(contributeCtrl.pagination.nextNum)">
-                                            {{ 'Next' | translate }}
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
                             <div class="search-results-container--wrapper" ng-show="contributeCtrl.resultsView === 'map'">
