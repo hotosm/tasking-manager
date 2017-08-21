@@ -125,7 +125,7 @@
                         title="{{ 'Go to the chat tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
-                        {{ 'Discussion' | translate }}
+                        {{ 'Questions and Comments' | translate }}
                     </li>
                 </ul>
             </div>
@@ -889,7 +889,7 @@
                             </div>
                         </div>
                         <div ng-show="projectCtrl.currentTab === 'chat'">
-                            <h3>{{ 'Discussion' | translate }}</h3>
+                            <h3>{{ 'Project Questions and Comments' | translate }}</h3>
                             <project-chat project-id="projectCtrl.id"
                                           project-author="projectCtrl.projectData.author"></project-chat>
                         </div>
