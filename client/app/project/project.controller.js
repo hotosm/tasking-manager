@@ -90,7 +90,7 @@
 
         function activate() {
 
-            vm.currentTab = 'description';
+            vm.currentTab = 'instructions';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
             vm.selectedEditor = 'ideditor'; // default to iD editor

@@ -1,35 +1,49 @@
 <div class="inner">
     <section class="section section--asided">
-        <header class="section__header">
+        <header class="section__header section__header--nodescription">
             <div class="inner">
-                <h1 class="section__title">
-                    {{ 'User Profile' | translate }}
-                </h1>
+                <div class="section__header--left">
+                    <h1 class="section__title">
+                        {{ 'User Profile' | translate }} - {{ profileCtrl.username }}
+                    </h1>
+                    <ul class="list--piped">
+                        <li>
+                            <span ng-show="profileCtrl.userDetails.mappingLevel === 'BEGINNER'">{{ 'Beginner mapper' | translate }}</span>
+                            <span ng-show="profileCtrl.userDetails.mappingLevel === 'INTERMEDIATE'">{{ 'Intermediate mapper' | translate }}</p>
+                            <span ng-show="profileCtrl.userDetails.mappingLevel === 'ADVANCED'">{{ 'Advanced mapper' | translate }}</span>
+                        </li>
+                        <li>
+                            <span ng-show="profileCtrl.userDetails.role === 'VALIDATOR'">
+                                <i class="fa fa-star fa-2x validator-star"></i> {{ 'Validator' | translate }}
+                            </span>
+                            <span ng-show="profileCtrl.userDetails.role === 'PROJECT_MANAGER'">
+                                <i class="hot-ds-icon-pencil"></i> {{ 'Project Manager' | translate }}
+                            </span>
+                            <span ng-show="profileCtrl.userDetails.role === 'ADMIN'">
+                                <i class="hot-ds-icon-pencil"></i> {{ 'Administrator' | translate }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="section__inverse--stats">
+                    <div class="stats__card">
+                        <div class="stats__card--amount"><strong>{{ profileCtrl.userDetails.tasksMapped }}</strong></div>
+                        <div class="stats__card--title">{{ 'Tasks Mapped' | translate }}</div>
+                    </div>
+                    <div class="stats__card">
+                        <div class="stats__card--amount"><strong>{{ profileCtrl.userDetails.tasksValidated }}</strong></div>
+                        <div class="stats__card--title">{{ 'Tasks Validated' | translate }}</div>
+                    </div>
+                </div>
             </div>
         </header>
         <div class="section-container">
-            <div class="section__body">
+            <div class="section__body section__body--secondary">
                 <div class="inner">
                     <div class="profile-container">
                         <div class="details">
-                            <h1>{{ profileCtrl.username }}</h1>
-                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'BEGINNER'">{{ 'Beginner mapper' | translate }}</p>
-                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'INTERMEDIATE'">{{ 'Intermediate mapper' | translate }}</p>
-                            <p ng-show="profileCtrl.userDetails.mappingLevel === 'ADVANCED'">{{ 'Advanced mapper' | translate }}</p>
                             <div>
-                                <h4 ng-show="profileCtrl.userDetails.role === 'VALIDATOR'">
-                                    <i class="fa fa-star fa-2x validator-star"></i> {{ 'Validator' | translate }}
-                                </h4>
-                                <h4 ng-show="profileCtrl.userDetails.role === 'PROJECT_MANAGER'">
-                                    <i class="hot-ds-icon-pencil"></i> {{ 'Project Manager' | translate }}
-                                </h4>
-                                <h4 ng-show="profileCtrl.userDetails.role === 'ADMIN'">
-                                    <i class="hot-ds-icon-pencil"></i> {{ 'Administrator' | translate }}
-                                </h4>
-                            </div>
-                            <hr/>
-                            <div>
-                                <h4>{{ 'Progress' | translate }}</h4>
+                                <h4>{{ profileCtrl.username }}'s {{ 'Progress' | translate }}</h4>
                                 <div ng-show="profileCtrl.mapperLevelIntermediate > profileCtrl.osmUserDetails.changesetCount">
                                     <span class="label">{{ profileCtrl.mapperLevelIntermediate - profileCtrl.osmUserDetails.changesetCount }} {{ 'OSM changeset(s) to intermediate mapper' | translate }}</span>
                                     <uib-progressbar value="profileCtrl.osmUserDetails.changesetCount" max="profileCtrl.mapperLevelIntermediate"></uib-progressbar>
@@ -63,68 +77,70 @@
                             </div>
                         </div>
                         <div class="roles pull-right">
-                            <form name="profileCtrl.contactDetailsForm">
-                                <div class="form__group">
-                                    <label class="form__label"
-                                           ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.editDetails">
-                                        Email (only visible to you):
-                                    </label>
-                                    <span ng-hide="profileCtrl.editDetails">
-                                        {{ profileCtrl.userDetails.emailAddress }}
-                                    </span>
-                                    <input ng-show="profileCtrl.editDetails" size="30"
-                                           class="form__control form__control__inline"
-                                           placeholder="Email"
-                                           type="email"
-                                           ng-model="profileCtrl.userDetails.emailAddress"/>
-                                    <span ng-show="profileCtrl.userDetails.isEmailVerified && profileCtrl.userDetails.emailAddress">
-                                        <i class="hot-ds-icon-sm-tick"></i>
-                                    </span>
-                                    <span ng-show="profileCtrl.userDetails.emailAddress && !profileCtrl.userDetails.isEmailVerified && !profileCtrl.editDetails">
-                                        <button class="button button--achromic button--small"
-                                                ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
-                                    </span>
-                                </div>
-                                <div class="form__group">
-                                    <label class="form__label"
-                                           ng-show="profileCtrl.userDetails.facebookId || profileCtrl.editDetails">Facebook:</label>
-                                    <a ng-hide="profileCtrl.editDetails"
-                                       href="http://www.facebook.com/{{ profileCtrl.userDetails.facebookId }}"
-                                       target="_blank">
-                                        {{ profileCtrl.userDetails.facebookId }}
-                                    </a>
-                                    <input ng-show="profileCtrl.editDetails" type="text" size="30"
-                                           class="form__control form__control__inline"
-                                           placeholder="Facebook ID (e.g. hotosm)"
-                                           ng-model="profileCtrl.userDetails.facebookId"/>
-                                </div>
-                                <div class="form__group">
-                                    <label class="form__label"
-                                           ng-show="profileCtrl.userDetails.twitterId || profileCtrl.editDetails">Twitter:</label>
-                                    <a ng-hide="profileCtrl.editDetails"
-                                       href="http://www.twitter.com/{{ profileCtrl.userDetails.twitterId }}"
-                                       target="_blank">
-                                        {{ profileCtrl.userDetails.twitterId }}
-                                    </a>
-                                    <input ng-show="profileCtrl.editDetails" type="text" size="30"
-                                           class="form__control form__control__inline"
-                                           placeholder="Twitter ID (e.g. hotosm)"
-                                           ng-model="profileCtrl.userDetails.twitterId"/>
-                                </div>
-                                <div>
-                                    <label class="form__label"
-                                           ng-show="profileCtrl.userDetails.linkedinId || profileCtrl.editDetails">LinkedIn:</label>
-                                    <a ng-hide="profileCtrl.editDetails"
-                                       href="http://www.linkedin.com/in/{{ profileCtrl.userDetails.linkedinId }}"
-                                       target="_blank">
-                                        {{ profileCtrl.userDetails.linkedinId }}
-                                    </a>
-                                    <input ng-show="profileCtrl.editDetails" type="text" size="30"
-                                           class="form__control form__control__inline"
-                                           placeholder="LinkedIn ID (personal)"
-                                           title="{{ 'Your ID is the part after https://www.linkedin.com/in/....' | translate}}"
-                                           ng-model="profileCtrl.userDetails.linkedinId"/>
-                                </div>
+                            <form name="profileCtrl.contactDetailsForm" class='form__standard'>
+                                <ul class='form__standard'>
+                                    <li>
+                                        <label class="form__label"
+                                               ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.editDetails">
+                                            Email (only visible to you):
+                                        </label>
+                                        <span ng-hide="profileCtrl.editDetails">
+                                            {{ profileCtrl.userDetails.emailAddress }}
+                                        </span>
+                                        <input ng-show="profileCtrl.editDetails" size="30"
+                                               class="form__control form__control__inline"
+                                               placeholder="Email"
+                                               type="email"
+                                               ng-model="profileCtrl.userDetails.emailAddress"/>
+                                        <span ng-show="profileCtrl.userDetails.isEmailVerified && profileCtrl.userDetails.emailAddress">
+                                            <i class="hot-ds-icon-sm-tick"></i>
+                                        </span>
+                                        <span ng-show="profileCtrl.userDetails.emailAddress && !profileCtrl.userDetails.isEmailVerified && !profileCtrl.editDetails">
+                                            <button class="button button--achromic button--small"
+                                                    ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <label class="form__label"
+                                               ng-show="profileCtrl.userDetails.facebookId || profileCtrl.editDetails">Facebook:</label>
+                                        <a ng-hide="profileCtrl.editDetails"
+                                           href="http://www.facebook.com/{{ profileCtrl.userDetails.facebookId }}"
+                                           target="_blank">
+                                            {{ profileCtrl.userDetails.facebookId }}
+                                        </a>
+                                        <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                               class="form__control form__control__inline"
+                                               placeholder="Facebook ID (e.g. hotosm)"
+                                               ng-model="profileCtrl.userDetails.facebookId"/>
+                                    </li>
+                                    <li>
+                                        <label class="form__label"
+                                               ng-show="profileCtrl.userDetails.twitterId || profileCtrl.editDetails">Twitter:</label>
+                                        <a ng-hide="profileCtrl.editDetails"
+                                           href="http://www.twitter.com/{{ profileCtrl.userDetails.twitterId }}"
+                                           target="_blank">
+                                            {{ profileCtrl.userDetails.twitterId }}
+                                        </a>
+                                        <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                               class="form__control form__control__inline"
+                                               placeholder="Twitter ID (e.g. hotosm)"
+                                               ng-model="profileCtrl.userDetails.twitterId"/>
+                                    </li>
+                                    <li>
+                                        <label class="form__label"
+                                               ng-show="profileCtrl.userDetails.linkedinId || profileCtrl.editDetails">LinkedIn:</label>
+                                        <a ng-hide="profileCtrl.editDetails"
+                                           href="http://www.linkedin.com/in/{{ profileCtrl.userDetails.linkedinId }}"
+                                           target="_blank">
+                                            {{ profileCtrl.userDetails.linkedinId }}
+                                        </a>
+                                        <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                               class="form__control form__control__inline"
+                                               placeholder="LinkedIn ID (personal)"
+                                               title="{{ 'Your ID is the part after https://www.linkedin.com/in/....' | translate}}"
+                                               ng-model="profileCtrl.userDetails.linkedinId"/>
+                                    </li>
+                                </ul>
                                 <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
                                     <button class="button button--achromic" type="button"
                                             ng-click="profileCtrl.editDetails = !profileCtrl.editDetails"
@@ -139,10 +155,9 @@
                                         <i class="hot-ds-icon-tick" title="Save edits"></i>
                                         <span>{{ 'Save' | translate }}</span>
                                     </button>
-                                    <button class="button button--achromic" type="button"
+                                    <button class="button button--achromic button--secondary" type="button"
                                             ng-click="profileCtrl.editDetails = false"
                                             ng-show="profileCtrl.editDetails">
-                                        <i class="hot-ds-icon-xmark" title="Cancel edits"></i>
                                         <span>{{ 'Cancel' | translate }}</span>
                                     </button>
                                     <p ng-show="!profileCtrl.contactDetailsForm.$valid" class="error">
@@ -223,16 +238,7 @@
             </div>
         </div>
         <div class="section-container">
-            <div class="section__inverse--stats">
-                <div class="stats__card">
-                    <div class="stats__card--amount"><strong>{{ profileCtrl.userDetails.tasksMapped }}</strong></div>
-                    <div class="stats__card--title">{{ 'Tasks Mapped' | translate }}</div>
-                </div>
-                <div class="stats__card">
-                    <div class="stats__card--amount"><strong>{{ profileCtrl.userDetails.tasksValidated }}</strong></div>
-                    <div class="stats__card--title">{{ 'Tasks Validated' | translate }}</div>
-                </div>
-            </div>
+
         </div>
         <div class="section-container">
             <div class="section__body">

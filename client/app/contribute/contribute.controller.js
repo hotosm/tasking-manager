@@ -41,6 +41,10 @@
         //map legend
         vm.showVectorLegend = false;
         vm.showClusterLegend = true;
+
+        // Character limit
+        vm.characterLimitShortDescription = 250;
+
         var CLUSTER_THRESHOLD_RESOLUTION = 4891.96981025128;
 
         // Watch the languageService for change in language and search again when needed

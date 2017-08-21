@@ -4,15 +4,14 @@
   .details {
     @include column(12/12);
     @include media(medium-up) {
-      @include column(6/12);
+      @include column(7/12);
     }
   }
 
   .roles {
-    padding-top: 3rem;
     @include column(12/12);
     @include media(medium-up) {
-      @include column(6/12);
+      @include column(4/12);
     }
   }
 }
@@ -26,18 +25,30 @@
 /* ==========================================================================
    Stats
    ========================================================================== */
+.section__header--left {
+
+  @include media(medium-up) {
+    float: left;
+  }
+}
+
 .section__inverse--stats {
-  background-color: rgba($base-color, 0.9);
-  color: #eee;
-  text-align: center;
   left: 0;
-  width: 100%;
-  clear: both;
-  padding: 2rem 0;
+  display: block;
+
+  @include media(medium-up) {
+    float: right;
+    text-align: center;
+  }
+
   .stats__card {
     display: inline-block;
-    margin: 1rem auto;
-    width: 250px;
+    margin-right: 1em;
+    margin-bottom: 2em;
+    
+    @include media(medium-up) {
+      width: 200px;
+    }
   }
 
   .stats__card--amount {
@@ -63,4 +74,20 @@
 
 .validator-star {
   color: #FFCC11;
+}
+
+.icon-sm-chevron-down, .icon-sm-chevron-up {
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+}
+
+.icon-sm-chevron-down {
+  background-image: url('../../icons/chevron-right.svg');
+}
+
+.icon-sm-chevron-up {
+  background-image: url('../../icons/chevron-down.svg');
 }

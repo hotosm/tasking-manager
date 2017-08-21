@@ -1,16 +1,16 @@
-<a ng-show="!accountNavCtrl.account.username" class="button button--primary" role="button"
+<a ng-show="!accountNavCtrl.account.username"
     ng-click="accountNavCtrl.login()">
     <span>{{ 'Login' | translate }}</span>
 </a>
-<a class="global-menu-item" ng-show="accountNavCtrl.account.username">
-    <div class="drop drop--down drop--align-left drop--open">
-        <button class="button button--achromic drop__toggle drop__toggle--caret" type="button"
-            ng-click="accountNavCtrl.toggleMenu($event)">
+<a ng-show="accountNavCtrl.account.username">
+    <div class="drop drop--down drop--align-left drop--open" ng-click="accountNavCtrl.toggleMenu($event)">
+        <div>
             <span>{{ accountNavCtrl.account.username }}</span>
             <span class="badge" ng-show="accountNavCtrl.userMessages.newMessages">
                 {{ accountNavCtrl.userMessages.unread }}
             </span>
-        </button>
+            <i class="dropdown-arrow"></i>
+        </div>
         <div ng-show="accountNavCtrl.showDropdown" class="drop__content">
             <ul class="drop__menu drop__menu--iconified" role="menu">
                 <li>
