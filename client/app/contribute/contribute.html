@@ -121,11 +121,11 @@
                                   </form>
                               </div>
                             </div>
-                            <div ng-hide="contributeCtrl.resultsView === 'map'">
+                          <div ng-hide="contributeCtrl.resultsView === 'map'">
                                 <div ng-hide="contributeCtrl.results.length > 0">
                                     <p>{{ 'No projects found.' | translate }}</p>
                                 </div>
-                                <div ng-show="contributeCtrl.resultsView === 'grid'">
+                                <div ng-show="contributeCtrl.resultsView === 'grid' && contributeCtrl.results.length > 0">
                                     <div class="search-results-container">
                                         <div class="project-result__cards">
                                             <a href="/project/{{ project.projectId }}" class="project-result__card"
