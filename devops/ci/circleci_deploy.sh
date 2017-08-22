@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -xev # halt script on error
 
-# demo branch is set via environment variables in CircleCI
-#DEMO_BRANCH="develop"
-STAGE_BRANCH="stage"
+# demo and stage branch are set via environment variables in CircleCI
+# DEMO_BRANCH="testing branch"
+# STAGE_BRANCH="develop"
 PROD_BRANCH="master"
 
 DEMO_ENV="taskingmanager-demo"
