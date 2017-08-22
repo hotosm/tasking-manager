@@ -90,6 +90,10 @@
                     templateUrl: 'app/learn/learn.html'
                 })
 
+                .when('/news', {
+                    templateUrl: 'app/about/news.html'
+                })
+
                 .when('/contribute', {
                     templateUrl: 'app/contribute/contribute.html',
                     controller: 'contributeController',
