@@ -72,6 +72,6 @@
 </%block>
 
 <%block name="extrascripts">
-<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/colorselector/lib/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css')}">
-<script src="${request.static_url('osmtm:static/js/lib/colorselector/lib/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js')}"></script>
+<link rel="stylesheet" href="${request.static_path('osmtm:static/js/lib/colorselector/lib/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css')}">
+<script src="${request.static_path('osmtm:static/js/lib/colorselector/lib/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js')}"></script>
 </%block>

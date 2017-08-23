@@ -116,6 +116,6 @@ $('input[name=role]').change(function() {
 </%def>
 
 <%block name="extrascripts">
-<link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/JavaScript-AutoComplete/auto-complete.css')}">
-<script src="${request.static_url('osmtm:static/js/lib/JavaScript-AutoComplete/auto-complete.js')}"></script>
+<link rel="stylesheet" href="${request.static_path('osmtm:static/js/lib/JavaScript-AutoComplete/auto-complete.css')}">
+<script src="${request.static_path('osmtm:static/js/lib/JavaScript-AutoComplete/auto-complete.js')}"></script>
 </%block>

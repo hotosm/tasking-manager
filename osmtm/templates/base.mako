@@ -5,33 +5,33 @@
 <html>
   <head>
   <title>${custom.instance_name()} - ${self.title()}</title>
-    <link rel="shortcut icon" href="${request.static_url('osmtm:static/img/favicon.ico')}">
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/css/main.css')}">
-    <link rel="stylesheet" href="${request.static_url('osmtm:static/js/lib/leaflet.css')}">
-    <script src="${request.static_url('osmtm:static/js/lib/jquery-1.12.3.min.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/velocity.min.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/velocity.ui.min.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/showdown/dist/showdown.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/showdown-youtube.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/moment/min/moment.min.js')}"></script>
+    <link rel="shortcut icon" href="${request.static_path('osmtm:static/img/favicon.ico')}">
+    <link rel="stylesheet" href="${request.static_path('osmtm:static/css/main.css')}">
+    <link rel="stylesheet" href="${request.static_path('osmtm:static/js/lib/leaflet.css')}">
+    <script src="${request.static_path('osmtm:static/js/lib/jquery-1.12.3.min.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/lib/velocity.min.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/lib/velocity.ui.min.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/lib/showdown/dist/showdown.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/lib/showdown-youtube.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/lib/moment/min/moment.min.js')}"></script>
     <%
       moment_locale_baseurl = 'osmtm:static/js/lib/moment/locale/%s.js'
       try:
-        moment_locale = request.static_url(moment_locale_baseurl % request.locale_name.replace('_', '-'))
+        moment_locale = request.static_path(moment_locale_baseurl % request.locale_name.replace('_', '-'))
       except IOError:
         try:
-          moment_locale = request.static_url(moment_locale_baseurl % request.locale_name[:2])
+          moment_locale = request.static_path(moment_locale_baseurl % request.locale_name[:2])
         except:
           moment_locale = None
     %>
     % if moment_locale:
     <script src="${moment_locale}"></script>
     % endif
-    <script src="${request.static_url('osmtm:static/js/timeago.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/duration.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
-    <script src="${request.static_url('osmtm:static/bootstrap/dist/js/bootstrap.min.js')}"></script>
-    <script src="${request.static_url('osmtm:static/js/shared.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/timeago.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/duration.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/lib/sammy-latest.min.js')}"></script>
+    <script src="${request.static_path('osmtm:static/bootstrap/dist/js/bootstrap.min.js')}"></script>
+    <script src="${request.static_path('osmtm:static/js/shared.js')}"></script>
 
 <%
 from osmtm.models import DBSession, TaskComment

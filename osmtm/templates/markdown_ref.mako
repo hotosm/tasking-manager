@@ -112,7 +112,7 @@ ${_('Paragraphs are separated<br />by a blank line.')|n}</pre>
         <pre>![${_('alternate text')}](http://hotosm.org/logo.png)</pre>
       </div>
       <div class="col-md-6">
-        <img src="${request.static_url('osmtm:static/img/hot.png')}" alt=${_('alternate text')}>
+        <img src="${request.static_path('osmtm:static/img/hot.png')}" alt=${_('alternate text')}>
       </div>
     </div>
     <div class="row">
