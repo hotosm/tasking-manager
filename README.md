@@ -45,7 +45,7 @@ Then create a database named `osmtm`:
     sudo -u postgres createdb -T template0 osmtm -E UTF8 -O www-data
     sudo -u postgres psql -d osmtm -c "CREATE EXTENSION postgis;"
 
-### Local settings
+### Local settings
 
 You certainly will need some local specific settings, like the db user or
 password. For this, you can create a `local.ini` file in the project root,
