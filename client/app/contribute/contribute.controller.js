@@ -90,7 +90,7 @@
                 vm.mappingTypes.push("WATERWAYS");
             }
             if (vm.searchLanduse) {
-                vm.mappingTypes.push("LANDUSE");
+                vm.mappingTypes.push("LAND_USE");
             }
             if (vm.searchOther) {
                 vm.mappingTypes.push("OTHER");
@@ -221,7 +221,7 @@
                 if (mappingTypesArray[i] == 'WATERWAYS') {
                     vm.searchWaterways = true;
                 }
-                if (mappingTypesArray[i] === 'LANDUSE') {
+                if (mappingTypesArray[i] === 'LAND_USE') {
                     vm.searchLanduse = true;
                 }
                 if (mappingTypesArray[i] === 'OTHER')
