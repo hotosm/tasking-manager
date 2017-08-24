@@ -43,8 +43,8 @@
                 layers: [
                     new ol.layer.Tile({
                         source: new ol.source.OSM({
-                            url: "http://{a-c}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
-                            attributions: "<a href='http://www.openstreetmap.org/copyright/' target='_blank'>© OpenStreetMap</a> contributors"
+                            url: "{a-c}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+                            attributions: "<a href='www.openstreetmap.org/copyright/' target='_blank' rel='noopener'>© OpenStreetMap</a> contributors"
                         }),
                         title: 'OpenStreetMap',
                         type: 'base'
