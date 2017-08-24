@@ -66,14 +66,14 @@
       display: inline-block;
       margin-top: .4em;
 
-      @include media(medium-up) {
+      @include media(large-up) {
         &:before {
           font-size: 1.5rem;
         }
       }
     }
 
-    @include media(medium-up) {
+    @include media(large-up) {
       display: none;
     }
   }
@@ -98,7 +98,7 @@
     }
   }
 
-  @include media(medium-up) {
+  @include media(large-up) {
     padding: 0;
     display: block;
     position: inherit;
@@ -111,7 +111,7 @@
   margin: 0;
   padding: 0;
   float: left;
-  @include media(medium-up) {
+  @include media(large-up) {
     li {
       display: inline-block;
       margin: 0 ($global-spacing / 2) 0 0;
