@@ -34,7 +34,7 @@
             </ul>
             <ul ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'"
                 class="drop__menu drop__menu--iconified" role="menu">
-                <li ng-show="accountNavCtrl.account.role === 'ADMIN' || accountNavCtrl.account.role === 'ADMIN'">
+                <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
                     <a title="{{ 'User list' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToUserList()">
                         {{ 'User list' | translate }}
                     </a>
