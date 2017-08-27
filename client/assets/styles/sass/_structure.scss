@@ -519,10 +519,13 @@
 .tab--item {
   list-style: none;
   display: inline-block;
-  padding: .5em .8em;
   margin-right: .5em;
-  &:hover {
-    color: $link-color;
+  a {
+    padding: .5em .8em;
+    display: block;
+    &:hover {
+      color: $link-color;
+    }
   }
 }
 
