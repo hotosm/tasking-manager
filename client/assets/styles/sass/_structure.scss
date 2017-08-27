@@ -92,10 +92,6 @@
     top: 3.5em;
     border: 1px solid lighten($lightgrey, 10%);
     z-index: 30;
-
-    .global-menu-item--pipe {
-      border-right: 0;
-    }
   }
 
   @include media(large-up) {
@@ -124,8 +120,10 @@
 }
 
 .menu-secondary-wrapper {
-  float: right;
   list-style: none;
+  @include media(large-up) {
+    float: right;
+  }
 }
 
 .global-menu-item {
@@ -150,12 +148,12 @@
   }
 }
 
-.global-menu-item--pipe {
-  margin-right: 1.2em;
-  padding-right: 1.5em;
-  border-right: 1px solid darken($lightest-background-grey, 5%);
-  &:hover {
-    border-bottom: 2px solid #fff;
+@include media(large-up) {
+  .global-menu-divider {
+    border-right: 1px solid darken($lightest-background-grey, 5%);
+    &:after {
+      content: '\00a0';
+    }
   }
 }
 
