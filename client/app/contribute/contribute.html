@@ -17,12 +17,16 @@
                                   <li class="tab--item"
                                           ng-click="contributeCtrl.resultsView = 'grid'"
                                           ng-class="contributeCtrl.resultsView === 'grid' ? 'button--active' : ''">
-                                      {{ 'Grid view' | translate }}
+                                      <a href="#">
+                                          {{ 'Grid view' | translate }}
+                                      </a>
                                   </li>
                                   <li class="tab--item"
                                           ng-click="contributeCtrl.resultsView = 'map'"
                                           ng-class="contributeCtrl.resultsView === 'map' ? 'button--active' : ''">
-                                      {{ 'Map view' | translate }}
+                                      <a href="#">
+                                          {{ 'Map view' | translate }}
+                                      </a>
                                   </li>
                               </ul>
                           </div>

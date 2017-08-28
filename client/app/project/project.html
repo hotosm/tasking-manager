@@ -107,25 +107,33 @@
                         title="{{ 'Go to the instructions tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
-                        {{ 'Instructions' | translate }}
+                        <a href="#">
+                            {{ 'Instructions' | translate }}
+                        </a>
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'mapping'"
                         title="{{ 'Go to the mapping tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
-                        {{ 'Map' | translate }}
+                        <a href="#">
+                            {{ 'Map' | translate }}
+                        </a>
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'validation'"
                         title="{{ 'Go to the validation tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
-                        {{ 'Validate' | translate }}
+                        <a href="#">
+                            {{ 'Validate' | translate }}
+                        </a>
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'chat'"
                         title="{{ 'Go to the chat tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
-                        {{ 'Questions and Comments' | translate }}
+                        <a href="#">
+                            {{ 'Questions and Comments' | translate }}
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -535,7 +543,7 @@
                                             <dd>
                                                 <button ng-click="projectCtrl.selectRandomTaskValidate()"
                                                         class="button">
-                                                    {{ 'Generate a Random Task' | translate }}
+                                                    {{ 'Validate a Random Task' | translate }}
                                                 </button>
                                             </dd>
 
