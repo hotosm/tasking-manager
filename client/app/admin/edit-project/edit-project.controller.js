@@ -73,6 +73,9 @@
         // Messages
         vm.messageSubject = '';
         vm.messageContent = '';
+
+        // Form
+        vm.form = {};
         
         activate();
 
@@ -412,12 +415,10 @@
         vm.sendMessage = function(){
             vm.sendMessageInProgress = true;
             vm.sendMessageFail = false;
-            vm.sendMessageSuccess = false;
             var resultsPromise = messageService.messageAll(vm.project.projectId, vm.messageSubject, vm.messageContent);
             resultsPromise.then(function(){
                 // Messages sent successfully
                 vm.sendMessageFail = false;
-                vm.sendMessageSuccess = true;
                 vm.sendMessageInProgress = false;
                 vm.messageSubject = '';
                 vm.messageContent = '';
@@ -425,7 +426,6 @@
             }, function(){
                 // Messages not sent successfully
                 vm.sendMessageFail = true;
-                vm.sendMessageSuccess = false;
                 vm.sendMessageInProgress = false;
             })
         };
