@@ -319,7 +319,6 @@
          * @param file
          */
         vm.import = function (file) {
-            console.log(file);
             // Set drawing an AOI to inactive
             vm.drawPolygonInteraction.setActive(false);
             vm.isimportError = false;
@@ -332,48 +331,20 @@
                 fileReader.onloadend = function (e) {
                     var data = e.target.result;
                     var uploadedFeatures = null;
-                    console.log(file.name);
                     if (file.name.substr(-4) === 'json') {
                         uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(data);
+                        setUploadedFeatures(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'kml') {
                         uploadedFeatures = geospatialService.getFeaturesFromKML(data);
+                        setUploadedFeatures(uploadedFeatures);
                     }
                     else if (file.name.substr(-3) === 'zip') {
                         // Use the Shapefile.js library to read the zipped Shapefile (with GeoJSON as output)
                         shp(data).then(function (geojson) {
-                            // TODO: rework
                             var uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(geojson);
-                            if (uploadedFeatures) {
-                                var aoiValidationResult = projectService.validateAOI(uploadedFeatures);
-                                if (aoiValidationResult.valid) {
-                                    setImportedAOI_(uploadedFeatures)
-                                }
-                                else {
-                                    if (aoiValidationResult.message == 'CONTAINS_NON_POLYGON_FEATURES') {
-                                        vm.nonPolygonError = true;
-                                    }
-                                    else if (aoiValidationResult.message == 'SELF_INTERSECTIONS') {
-                                        vm.selfIntersectionError = true;
-                                    }
-                                }
-                            }
+                            setUploadedFeatures(uploadedFeatures);
                         });
-                    }
-                    console.log(uploadedFeatures);
-                    if (uploadedFeatures) {
-                        var aoiValidationResult = projectService.validateAOI(uploadedFeatures);
-                        if (aoiValidationResult.valid) {
-                            setImportedAOI_(uploadedFeatures)
-                        }
-                        else {
-                            if (aoiValidationResult.message == 'CONTAINS_NON_POLYGON_FEATURES') {
-                                vm.nonPolygonError = true;
-                            }
-                            else if (aoiValidationResult.message == 'SELF_INTERSECTIONS') {
-                                vm.selfIntersectionError = true;
-                            }
-                        }
                     }
                 };
                 if (file.name.substr(-4) === 'json') {
@@ -392,6 +363,27 @@
                 }
             }
         };
+
+        /**
+         * Set the uploaded features
+         * @param uploadedFeatures
+         */
+        function setUploadedFeatures(uploadedFeatures) {
+            if (uploadedFeatures) {
+                var aoiValidationResult = projectService.validateAOI(uploadedFeatures);
+                if (aoiValidationResult.valid) {
+                    setImportedAOI_(uploadedFeatures)
+                }
+                else {
+                    if (aoiValidationResult.message == 'CONTAINS_NON_POLYGON_FEATURES') {
+                        vm.nonPolygonError = true;
+                    }
+                    else if (aoiValidationResult.message == 'SELF_INTERSECTIONS') {
+                        vm.selfIntersectionError = true;
+                    }
+                }
+            }
+        }
 
         /**
          * Set the AOI to the imported AOI
