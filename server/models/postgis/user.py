@@ -92,6 +92,7 @@ class User(db.Model):
 
     @staticmethod
     def get_all_users_not_pagainated():
+        """ Get all users in DB"""
         return db.session.query(User.id).all()
 
 
