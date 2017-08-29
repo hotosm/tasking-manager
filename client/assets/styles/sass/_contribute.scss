@@ -74,6 +74,7 @@
     .ng-isolate-scope {
       max-height: 180px;
       margin-bottom: 1em;
+      overflow: hidden;
     }
 
     @include media(large-up) {
