@@ -37,7 +37,7 @@
                                     <span am-time-ago="message.sentDate | amUtc | amLocal"></span>
                                 </td>
                                 <td>
-                                    <button type="button ng-binding" class="button"
+                                    <button class="button"
                                        ng-click="inboxCtrl.confirmDeleteMessage(message.messageId)">
                                         {{ 'Delete' | translate }}
                                     </button>
@@ -76,8 +76,8 @@
             </div>
         </footer>
     </div>
-    <button class="modal__button-dismiss" title="{{ 'Dismiss' | translate }}" ng-click="inboxCtrl.setShowDeleteMessageModal(false)">
+    <a class="modal__button-dismiss" title="{{ 'Dismiss' | translate }}" ng-click="inboxCtrl.setShowDeleteMessageModal(false)">
         {{ 'Dismiss' | translate }}
-    </button>
+    </a>
 </section>
 <!-- delete message modal -->
