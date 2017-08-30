@@ -140,11 +140,13 @@
                                                     <p markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')"></p>
                                                     <dl>
-                                                        <dt ng-show="!project.organisationTag">{{ 'Organization' | translate }}:</dt>
-                                                        <dd>N/A</dd>
+                                                        <dt>{{ 'Organization' | translate }}:</dt>
+                                                        <dd ng-show="!project.organisationTag">{{ 'N/A' | translate }}</dd>
+                                                        <dd ng-show="project.organisationTag">{{ project.organisationTag }}</dd>
 
-                                                        <dt ng-show="project.organisationTag">{{ 'Organization' | translate }}:</dt>
-                                                        <dd>{{ project.organisationTag }}</dd>
+                                                        <dt>{{ 'Campaign' | translate }}:</dt>
+                                                        <dd ng-show="!project.campaignTag">{{ 'N/A' | translate }}</dd>
+                                                        <dd ng-show="project.campaignTag">{{ project.campaignTag }}</dd>
 
                                                         <dt>{{ 'Level' | translate }}:</dt>
                                                         <dd>{{ project.mapperLevel }}</dd>
