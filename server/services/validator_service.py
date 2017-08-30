@@ -219,6 +219,7 @@ class ValidatorService:
         for task in tasks_to_validate:
             task.mapped_by = user_id  # Ensure we set mapped by value
             if TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
+                # Only lock tasks that are not already locked to avoid double lock issue
                 task.lock_task_for_validating(user_id)
 
             task.unlock_task(user_id, new_state=TaskStatus.VALIDATED)
