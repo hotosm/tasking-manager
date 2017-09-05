@@ -37,8 +37,10 @@
                                     <span am-time-ago="message.sentDate | amUtc | amLocal"></span>
                                 </td>
                                 <td>
-                                    <i class="hot-ds-icon-trash-bin pointer"
-                                       ng-click="inboxCtrl.confirmDeleteMessage(message.messageId)"></i>
+                                    <button type="button ng-binding" class="button"
+                                       ng-click="inboxCtrl.confirmDeleteMessage(message.messageId)">
+                                        {{ 'Delete' | translate }}
+                                    </button>
                                 </td>
                             </tr>
                             </tbody>
