@@ -96,7 +96,8 @@ def init_flask_restful_routes(app):
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
         ProjectValidateAll, ProjectsForAdminAPI
-    from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject, HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
+    from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
+        HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
@@ -130,6 +131,7 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
+    api.add_resource(ProjectAOIAPI,                 '/api/v1/project/<int:project_id>/aoi')
     api.add_resource(ProjectChatAPI,                '/api/v1/project/<int:project_id>/chat')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
     api.add_resource(HasUserTaskOnProjectDetails,   '/api/v1/project/<int:project_id>/has-user-locked-tasks/details')
