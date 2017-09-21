@@ -1,7 +1,3 @@
-# To use this file, issue `docker-compose up`.
-# If Python says the database is not running,
-#    Ctrl+C and run it one more time.
-# Note this currently only runs the backend.
 version: '2'
 services:
   base:
@@ -17,12 +13,12 @@ services:
     depends_on:
       - postgresql
     expose:
-      - "5000"
+      - "8000"
     ports:
-      - "5000:5000"
+      - "8000:8000"
     links:
       - postgresql
-    command: python manage.py runserver -h 0.0.0.0
+    command: python manage.py runserver
   migration:
     extends:
       service: base
