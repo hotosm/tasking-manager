@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # To use this file, run `docker-compose up`.
 version: '3'
 
@@ -23,10 +24,37 @@ services:
   migration:
     build: devops/docker/tasking-manager
     env_file: tasking-manager.env
+=======
+version: '2'
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - TM_DB=postgresql://hottm:hottm@postgresql/tasking-manager
+    command: "false"
+  app:
+    extends:
+      service: base
+    depends_on:
+      - postgresql
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    links:
+      - postgresql
+    command: python manage.py runserver
+  migration:
+    extends:
+      service: base
+>>>>>>> docker-compose.yml for starting quickly
     depends_on:
       - postgresql
     links:
       - postgresql
+<<<<<<< HEAD
     volumes:
       - .:/usr/src/app
     command: python manage.py db upgrade
@@ -35,13 +63,25 @@ services:
   postgresql:
     image: mdillon/postgis:9.6
     env_file: tasking-manager.env
+=======
+    command: python manage.py db upgrade
+  postgresql:
+    image: mdillon/postgis:9.6
+    environment:
+      - POSTGRES_USER=hottm
+      - POSTGRES_PASSWORD=hottm
+      - POSTGRES_DB=tasking-manager
+>>>>>>> docker-compose.yml for starting quickly
     expose:
       - "5432"
     logging:
       driver: none
     volumes:
       - pgdata:/var/lib/postgresql/data
+<<<<<<< HEAD
 
+=======
+>>>>>>> docker-compose.yml for starting quickly
 volumes:
   pgdata:
   stage:
