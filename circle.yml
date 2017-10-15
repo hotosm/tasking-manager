@@ -1,45 +1,58 @@
-machine:
-  python:
-    version: 3.6.1
-
-dependencies:
-  cache_directories:
-    # relative to the build directory
-    - "client/node_modules"
-    - "env"
-  pre:
-    - |
-      # Install latest LTS node
-      sudo apt-get update
-      curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-      sudo apt-get install nodejs libgeos-c1 libgeos-dev # Required for shapely
-      node --version
-  override:
-    - |
-      # Install NPM packages and build client from gulpfile
-      cd client
-      npm install
-      ./node_modules/.bin/gulp build
-      cd ..
-      # Install Python dependencies
-      virtualenv env
-      env/bin/pip install --upgrade pip
-      env/bin/pip install -r requirements.txt
-
-test:
-  override:
-    - |
-      # JS Unit Tests
-      cd tests/client
-      ../../client/node_modules/.bin/karma start ./karma.conf.js \
-        --single-run --browsers PhantomJS --reporters junit
-    - |
-      # Run Python tests
-      env/bin/nosetests ./tests/server --with-xunit \
-        --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
-        --with-coverage --cover-erase --cover-package=./server
-      env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
-  post:
-    - |
-      chmod +x ./devops/ci/circleci_deploy.sh
-      ./devops/ci/circleci_deploy.sh
+version: 2
+jobs:
+  build:
+    working_directory: /app
+    docker:
+      - image: python:3.6
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+              # Install latest LTS node
+              sudo apt-get update
+              curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+              sudo apt-get install nodejs libgeos-c1 libgeos-dev # Required for shapely
+              node --version
+      - restore_cache:
+          keys:
+            - cached-directories
+          paths:
+            - client/node_modules
+            - env
+      - run:
+          name: Install requirements
+          command: |
+            set +o pipefail
+            # Install NPM packages and build client from gulpfile
+            cd client
+            npm install
+            ./node_modules/.bin/gulp build
+            cd ..
+            # Install Python dependencies
+            virtualenv env
+            env/bin/pip install --upgrade pip
+            env/bin/pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: |
+            # JS Unit Tests
+            cd tests/client
+            ../../client/node_modules/.bin/karma start ./karma.conf.js \
+              --single-run --browsers PhantomJS --reporters junit
+            # Run Python tests
+            env/bin/nosetests ./tests/server --with-xunit \
+              --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
+              --with-coverage --cover-erase --cover-package=./server
+            env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
+      - save_cache:
+          key: cached-directories
+          paths:
+            - client/node_modules
+            - env
+      - deploy:
+          name: Deploy application
+          command: |
+            chmod +x ./devops/ci/circleci_deploy.sh
+            ./devops/ci/circleci_deploy.sh
