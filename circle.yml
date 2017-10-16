@@ -39,7 +39,7 @@ jobs:
           command: |
             # JS Unit Tests
             cd /app/tests/client
-            ../../client/node_modules/.bin/karma ./karma.conf.js \
+            ../../client/node_modules/.bin/karma start ./karma.conf.js \
               --single-run --browsers PhantomJS --reporters junit
             # Run Python tests
             cd /app
