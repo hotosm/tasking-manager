@@ -27,7 +27,7 @@ jobs:
             # Install NPM packages and build client from gulpfile
             cd /app/client
             npm install
-            /app/node_modules/.bin/gulp build
+            ./node_modules/.bin/gulp build
             cd /app
             # Install Python dependencies
             pip install virtualenv
