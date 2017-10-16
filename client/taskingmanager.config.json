@@ -17,6 +17,13 @@
           "layerName": "gpw-v3:gpw-v3-population-density-future-estimates_2005",
           "type": "WMS",
           "attribution": "test"
+        },
+        {
+          "id": "bing",
+          "name": "Bing Imagery",
+          "type": "bing",
+          "key": "AioPAglzP9Qw32KN17dOkKYRdSlzj7W5kIQY6zct_UCmGc0WRxAh-QeiRBpRUgrv",
+          "imagerySet": "Aerial"
         }
       ]
     }
