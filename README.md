@@ -1,18 +1,18 @@
-# OpenStreetMap Tasking Manager
+# OpenStreetMap Tasking Manager v2
 
 [![Build Status](https://travis-ci.org/hotosm/osm-tasking-manager2.svg?branch=master)](https://travis-ci.org/hotosm/osm-tasking-manager2)
 [![Coverage Status](https://coveralls.io/repos/hotosm/osm-tasking-manager2/badge.png?branch=master)](https://coveralls.io/r/hotosm/osm-tasking-manager2?branch=master)
 
 ## About
 
-OSMTM enables collaborative work on specific areas in OpenStreetMap by defining
+OpenStreetMap Tasking Manager enables collaborative work on specific areas in OpenStreetMap by defining
 clear workflows to be achieved and by breaking tasks down into pieces.
 
-The application is written in Python using the Pyramid framework.
+This is version 2.0 of the Tasking Manager.
+**[Most development work is now taking place on version 3.0](https://github.com/hotosm/tasking-manager/)**
 
-This is the 2.0 version of the Tasking Manager.
-
-See a list of Tasking Manager installations [here](https://wiki.openstreetmap.org/wiki/OSM_Tasking_Manager#Operational_installations_of_the_Tasking_Manager).
+V2 Tasking Manager still powers [many Tasking Manager installations](https://wiki.openstreetmap.org/wiki/OSM_Tasking_Manager#Operational_installations_of_the_Tasking_Manager).
+It is written in Python using the Pyramid framework.
 
 ## Installation
 
