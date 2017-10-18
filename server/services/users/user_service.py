@@ -228,3 +228,20 @@ class UserService:
 
         user.save()
         return user
+
+    @staticmethod
+    def refresh_mapper_level() -> int:
+        """ Helper function to run thru all users in the DB and update their mapper level """
+        users = User.get_all_users_not_pagainated()
+        users_updated = 1
+        total_users = len(users)
+
+        for user in users:
+            UserService.check_and_update_mapper_level(user.id)
+
+            if users_updated % 50 == 0:
+                print(f'{users_updated} users updated of {total_users}')
+
+            users_updated += 1
+
+        return users_updated
