@@ -102,9 +102,6 @@
 
             updateMappedTaskPerUser(vm.id);
 
-            // Add interactions for drawing a polygon for validation
-            addInteractions();
-
             // Check the user's role and initialise project after the async call has finished
             var session = authService.getSession();
             if (session && session.username && session.username != "") {
@@ -283,7 +280,8 @@
             vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
             // Select interaction
             vm.selectInteraction = new ol.interaction.Select({
-                style: styleService.getSelectedTaskStyle
+                style: styleService.getSelectedTaskStyle,
+                layers: [vm.taskVectorLayer]
             });
             vm.map.addInteraction(vm.selectInteraction);
             vm.selectInteraction.on('select', function (event) {
@@ -365,6 +363,8 @@
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+                // Add OpenLayers interactions
+                addInteractions();
 
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {

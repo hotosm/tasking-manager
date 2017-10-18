@@ -90,8 +90,12 @@
                     templateUrl: 'app/learn/learn.html'
                 })
 
-                .when('/whatisnew', {
-                    templateUrl: 'app/about/whatisnew.html'
+                .when('/what-is-new', {
+                    templateUrl: 'app/about/what-is-new.html'
+                })
+
+                .when('/faq', {
+                    templateUrl: 'app/about/faq.html'
                 })
 
                 .when('/contribute', {

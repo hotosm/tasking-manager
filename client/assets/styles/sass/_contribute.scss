@@ -107,6 +107,7 @@
 
   &__content {
     padding: 1.3rem 1.8rem 1.75rem;
+    overflow: hidden;
 
     @include media(medium-up) {
       padding: 2.5rem 2.5rem 3rem;
