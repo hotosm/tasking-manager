@@ -99,7 +99,7 @@ class ProjectAOIAPI(Resource):
 
             if as_file:
                 return send_file(io.BytesIO(geojson.dumps(project_aoi).encode('utf-8')), mimetype='application/json',
-                                 as_attachment=True, attachment_filename=f'project.geoJSON')
+                                 as_attachment=True, attachment_filename=f'{str(project_id)}.geoJSON')
 
             return project_aoi, 200
         except NotFound:
