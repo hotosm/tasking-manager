@@ -90,7 +90,7 @@ def init_flask_restful_routes(app):
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
-        TasksAsGPX, TasksAsOSM, UndoMappingAPI
+        TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
     from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
         ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
@@ -137,6 +137,7 @@ def init_flask_restful_routes(app):
     api.add_resource(HasUserTaskOnProjectDetails,   '/api/v1/project/<int:project_id>/has-user-locked-tasks/details')
     api.add_resource(MappedTasksByUser,             '/api/v1/project/<int:project_id>/mapped-tasks-by-user')
     api.add_resource(ProjectSummaryAPI,             '/api/v1/project/<int:project_id>/summary')
+    api.add_resource(TasksAsJson,                   '/api/v1/project/<int:project_id>/tasks')
     api.add_resource(TasksAsGPX,                    '/api/v1/project/<int:project_id>/tasks_as_gpx')
     api.add_resource(TasksAsOSM,                    '/api/v1/project/<int:project_id>/tasks-as-osm-xml')
     api.add_resource(LockTaskForMappingAPI,         '/api/v1/project/<int:project_id>/task/<int:task_id>/lock-for-mapping')
