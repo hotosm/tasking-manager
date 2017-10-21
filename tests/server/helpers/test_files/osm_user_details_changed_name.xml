@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="OpenStreetMap server">
+    <user id="7777777" display_name="Thinkwhere Test Changed" account_created="2017-01-23T16:23:22Z">
+        <description />
+        <contributor-terms agreed="true" pd="false" />
+        <roles />
+        <changesets count="16" />
+        <traces count="0" />
+        <blocks>
+            <received count="0" active="0" />
+        </blocks>
+        <languages>
+            <lang>en-GB</lang>
+            <lang>en</lang>
+        </languages>
+        <messages>
+            <received count="0" unread="0" />
+            <sent count="0" />
+        </messages>
+    </user>
+</osm>
