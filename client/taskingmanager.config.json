@@ -38,23 +38,23 @@
           "url": "https://api.mapbox.com/v4/openstreetmap.map-inh7ifmo/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoib3BlbnN0cmVldG1hcCIsImEiOiJhNVlHd29ZIn0.ti6wATGDWOmCnCYen-Ip7Q",
           "type": "XYZ",
           "attribution": "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox</a> <a href='http://www.openstreetmap.org/about/' target='_blank'>© OpenStreetMap</a> <a href='https://www.mapbox.com/feedback/#/-74.5/40/10' target='_blank'>Improve this map</a>"
-      },
-      {
-        "id": "Population density WMS",
-        "name": "Population density",
-        "url": "http://sedac.ciesin.columbia.edu/geoserver/wms",
-        "layerName": "gpw-v3:gpw-v3-population-density-future-estimates_2005",
-        "type": "WMS",
-        "attribution": "Source: SEDAC gpw-v3-population-density-future-estimates_2005"
-      },
-      {
-        "id": "bing",
-        "name": "Bing Imagery",
-        "type": "bing",
-        "key": "AioPAglzP9Qw32KN17dOkKYRdSlzj7W5kIQY6zct_UCmGc0WRxAh-QeiRBpRUgrv",
-        "attribution": "Courtesy of Microsoft Bing",
-        "imagerySet": "Aerial"
-      }
+        },
+        {
+          "id": "Population density WMS",
+          "name": "Population density",
+          "url": "http://sedac.ciesin.columbia.edu/geoserver/wms",
+          "layerName": "gpw-v3:gpw-v3-population-density-future-estimates_2005",
+          "type": "WMS",
+          "attribution": "Source: SEDAC gpw-v3-population-density-future-estimates_2005"
+        },
+        {
+          "id": "bing",
+          "name": "Bing Imagery",
+          "type": "bing",
+          "key": "AioPAglzP9Qw32KN17dOkKYRdSlzj7W5kIQY6zct_UCmGc0WRxAh-QeiRBpRUgrv",
+          "attribution": "Courtesy of Microsoft Bing",
+          "imagerySet": "Aerial"
+        }
       ]
     }
   }
