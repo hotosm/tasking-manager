@@ -40,6 +40,14 @@ class UserService:
         return user
 
     @staticmethod
+    def update_username(user_id: int, osm_username: str) -> User:
+        user = UserService.get_user_by_id(user_id)
+        if user.username != osm_username:
+            user.update_username(osm_username)
+
+        return user
+
+    @staticmethod
     def register_user(osm_id, username, changeset_count):
         """
         Creates user in DB 
