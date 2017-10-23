@@ -59,9 +59,10 @@ class Message(db.Model):
     @staticmethod
     def get_all_contributors(project_id: int):
         """ Get all contributors to a project """
-        query = '''SELECT mapped_by as contributors from tasks where project_id = {0} and  mapped_by is not null
-                   UNION
-                   SELECT validated_by from tasks where tasks.project_id = {0} and validated_by is not null'''.format(project_id)
+        query = '''
+        SELECT mapped_by as contributors from tasks where project_id = {0} and  mapped_by is not null
+        UNION
+        SELECT validated_by from tasks where tasks.project_id = {0} and validated_by is not null'''.format(project_id)
 
         contributors = db.engine.execute(query)
         return contributors
@@ -74,7 +75,7 @@ class Message(db.Model):
     @staticmethod
     def get_unread_message_count(user_id: int):
         """ Get count of unread messages for user """
-        return Message.query.filter(Message.to_user_id == user_id, Message.read == False).count()
+        return Message.query.filter(Message.to_user_id == user_id, Message.read.is_(False)).count()
 
     @staticmethod
     def get_all_messages(user_id: int) -> MessagesDTO:

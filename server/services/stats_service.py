@@ -1,5 +1,4 @@
 from server import db
-from server.models.dtos.project_dto import ProjectSummary
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
     ProjectActivityDTO
 from server.models.postgis.project import Project
@@ -107,7 +106,8 @@ class StatsService:
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
         """ Gets all the activity on a project """
 
-        results = db.session.query(TaskHistory.action, TaskHistory.action_date, TaskHistory.action_text, User.username) \
+        results = db.session.query(TaskHistory.action, TaskHistory.action_date,
+                                   TaskHistory.action_text, User.username) \
             .join(User).filter(TaskHistory.project_id == project_id, TaskHistory.action != 'COMMENT')\
             .order_by(TaskHistory.action_date.desc())\
             .paginate(page, 10, True)

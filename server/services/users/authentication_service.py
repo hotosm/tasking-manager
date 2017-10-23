@@ -143,7 +143,8 @@ class AuthenticationService:
             redirect_query = f'&redirect_to={urllib.parse.quote(redirect_to)}'
 
         # Trailing & added as Angular a bit flaky with parsing querystring
-        authorized_url = f'{base_url}/authorized?username={urllib.parse.quote(username)}&session_token={session_token}&ng=0' \
+        authorized_url = f'{base_url}/authorized?username={urllib.parse.quote(username)}' \
+                         f'&session_token={session_token}&ng=0' \
                          f'{redirect_query}'
         return authorized_url
 

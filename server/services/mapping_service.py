@@ -36,7 +36,8 @@ class MappingService:
         return task
 
     @staticmethod
-    def get_task_as_dto(task_id: int, project_id: int, preferred_local: str = 'en', logged_in_user_id: int = None) -> TaskDTO:
+    def get_task_as_dto(task_id: int, project_id: int, preferred_local: str = 'en',
+                        logged_in_user_id: int = None) -> TaskDTO:
         """ Get task as DTO for transmission over API """
         task = MappingService.get_task(task_id, project_id)
         task_dto = task.as_dto_with_instructions(preferred_local)
@@ -136,10 +137,10 @@ class MappingService:
 
     @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
-        """ 
+        """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.  You can use the following URL to test locally:
         http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v1/project/111/tasks_as_gpx%3Ftasks=2
-        """
+        """  # noqa E501
         if timestamp is None:
             timestamp = datetime.datetime.utcnow()
 

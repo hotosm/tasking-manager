@@ -89,9 +89,11 @@ class ProjectInfo(db.Model):
         project_info_dto.locale = self.locale
         project_info_dto.name = self.name if self.name else default_locale.name
         project_info_dto.description = self.description if self.description else default_locale.description
-        project_info_dto.short_description = self.short_description if self.short_description else default_locale.short_description
+        project_info_dto.short_description = self.short_description if self.short_description \
+            else default_locale.short_description
         project_info_dto.instructions = self.instructions if self.instructions else default_locale.instructions
-        project_info_dto.per_task_instructions = self.per_task_instructions if self.per_task_instructions else default_locale.per_task_instructions
+        project_info_dto.per_task_instructions = self.per_task_instructions if self.per_task_instructions \
+            else default_locale.per_task_instructions
 
         return project_info_dto
 

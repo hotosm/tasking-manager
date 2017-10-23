@@ -255,7 +255,6 @@ class Project(db.Model):
 
         return locked_tasks
 
-
     @staticmethod
     def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
         """ Get projects for admin """

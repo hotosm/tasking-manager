@@ -100,7 +100,6 @@ class User(db.Model):
         """ Get all users in DB"""
         return db.session.query(User.id).all()
 
-
     @staticmethod
     def filter_users(user_filter: str, page: int) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete """

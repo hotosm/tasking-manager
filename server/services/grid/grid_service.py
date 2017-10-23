@@ -94,7 +94,7 @@ class GridService:
         multi_polygon = GridService._convert_to_multipolygon(parsed_geojson)
         if dissolve:
             multi_polygon = GridService._dissolve(multi_polygon)
-        aoi_multi_polygon_geojson =  geojson.loads(json.dumps(mapping(multi_polygon)))
+        aoi_multi_polygon_geojson = geojson.loads(json.dumps(mapping(multi_polygon)))
 
         # validate the geometry
         if type(aoi_multi_polygon_geojson) is not geojson.MultiPolygon:
@@ -130,7 +130,8 @@ class GridService:
     @staticmethod
     def _to_shapely_geometries(input: str) -> list:
         """
-        Parses the input geojson and returns a list of geojson.Feature objects with their geometries adapted to shapely geometries
+        Parses the input geojson and returns a list of geojson.Feature objects with their geometries adapted to
+        shapely geometries
         :param input: string of geojson
         :return: list of geojson.Feature objects with their geometries adapted to shapely geometries
         """
@@ -153,7 +154,8 @@ class GridService:
         """
         if isinstance(feature.geometry, (geojson.geometry.Polygon,
                                          geojson.geometry.MultiPolygon)):
-            # adapt the geometry for use as a shapely geometry http://toblerity.org/shapely/manual.html#shapely.geometry.asShape
+            # adapt the geometry for use as a shapely geometry
+            # http://toblerity.org/shapely/manual.html#shapely.geometry.asShape
             feature.geometry = shapely.geometry.asShape(feature.geometry)
             return feature
         else:

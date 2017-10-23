@@ -304,7 +304,8 @@ class Task(db.Model):
 
         self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
 
-        if new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY] and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
+        if new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY] \
+                and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
             # Don't set mapped if state being set back to mapped after validation
             self.mapped_by = user_id
         elif new_state == TaskStatus.VALIDATED:
@@ -359,18 +360,19 @@ class Task(db.Model):
         """ Gets all mapped tasks for supplied project grouped by user"""
 
         # Raw SQL is easier to understand that SQL alchemy here :)
-        sql = """select u.username, u.mapping_level, count(distinct(t.id)), json_agg(distinct(t.id)),
-                            max(th.action_date) last_seen, u.date_registered, u.last_validation_date
-                      from tasks t,
-                           task_history th,
-                           users u
-                     where t.project_id = th.project_id
-                       and t.id = th.task_id
-                       and t.mapped_by = u.id
-                       and t.project_id = {0}
-                       and t.task_status = 2
-                       and th.action_text = 'MAPPED'
-                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date""".format(project_id)
+        sql = """
+        select u.username, u.mapping_level, count(distinct(t.id)), json_agg(distinct(t.id)),
+            max(th.action_date) last_seen, u.date_registered, u.last_validation_date
+        from tasks t,
+            task_history th,
+            users u
+        where t.project_id = th.project_id
+        and t.id = th.task_id
+        and t.mapped_by = u.id
+        and t.project_id = {0}
+        and t.task_status = 2
+        and th.action_text = 'MAPPED'
+        group by u.username, u.mapping_level, u.date_registered, u.last_validation_date""".format(project_id)
 
         results = db.engine.execute(sql)
         if results.rowcount == 0:
@@ -426,8 +428,8 @@ class Task(db.Model):
         per_task_instructions = self.get_per_task_instructions(preferred_locale)
 
         # If we don't have instructions in preferred locale try again for default locale
-        task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(
-            self.projects.default_locale)
+        task_dto.per_task_instructions = per_task_instructions if per_task_instructions \
+            else self.get_per_task_instructions(self.projects.default_locale)
 
         return task_dto
 
@@ -447,7 +449,7 @@ class Task(db.Model):
         # If there's no dynamic URL (e.g. url containing '{x}, {y} and {z}' pattern)
         # - ALWAYS return instructions unaltered
 
-        if not all(item in instructions for item in ['{x}','{y}','{z}']):
+        if not all(item in instructions for item in ['{x}', '{y}', '{z}']):
             return instructions
 
         # If there is a dyamic URL only return instructions if task is splittable, since we have the X, Y, Z

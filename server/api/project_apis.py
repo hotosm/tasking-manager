@@ -1,4 +1,5 @@
-import geojson, io
+import geojson
+import io
 from flask import send_file
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
@@ -312,6 +313,7 @@ class HasUserTaskOnProject(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+
 class HasUserTaskOnProjectDetails(Resource):
 
     @tm.pm_only(False)
@@ -355,7 +357,9 @@ class HasUserTaskOnProjectDetails(Resource):
         """
         try:
             preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id, tm.authenticated_user_id, preferred_locale)
+            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id,
+                                                                              tm.authenticated_user_id,
+                                                                              preferred_locale)
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404

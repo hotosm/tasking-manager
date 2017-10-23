@@ -1,7 +1,12 @@
 from flask import current_app
 
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks, StopValidationDTO
+from server.models.dtos.validator_dto import (
+    LockForValidationDTO,
+    UnlockAfterValidationDTO,
+    MappedTasks,
+    StopValidationDTO,
+)
 from server.models.postgis.statuses import ValidatingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound, UserLicenseError, timestamp
@@ -38,7 +43,8 @@ class ValidatorService:
                 raise ValidatatorServiceError(f'Task {task_id} is not MAPPED, BADIMAGERY or VALIDATED')
 
             if not ValidatorService._user_can_validate_task(validation_dto.user_id, task.mapped_by):
-                raise ValidatatorServiceError(f'Tasks cannot be validated by the same user who marked task as mapped or badimagery')
+                raise ValidatatorServiceError(
+                    f'Tasks cannot be validated by the same user who marked task as mapped or badimagery')
 
             tasks_to_lock.append(task)
 
@@ -65,7 +71,8 @@ class ValidatorService:
     @staticmethod
     def _user_can_validate_task(user_id: int, mapped_by: int) -> bool:
         """
-        check whether a user is able to validate a task.  Users cannot validate their own tasks unless they are a PM (admin counts as project manager too)
+        check whether a user is able to validate a task.  Users cannot validate their own tasks unless they are a PM
+        (admin counts as project manager too)
         :param user_id: id of user attempting to validate
         :param mapped_by: id of user who mapped the task
         :return: Boolean
@@ -152,7 +159,8 @@ class ValidatorService:
     @staticmethod
     def get_tasks_locked_by_user(project_id: int, unlock_tasks, user_id: int):
         """
-        Returns tasks specified by project id and unlock_tasks list if found and locked for validation by user, otherwise raises ValidatatorServiceError, NotFound
+        Returns tasks specified by project id and unlock_tasks list if found and locked for validation by user,
+        otherwise raises ValidatatorServiceError, NotFound
         :param project_id:
         :param unlock_tasks: List of tasks to be unlocked
         :param user_id:

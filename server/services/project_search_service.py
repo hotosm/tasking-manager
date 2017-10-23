@@ -16,8 +16,7 @@ search_cache = TTLCache(maxsize=128, ttl=300)
 
 # max area allowed for passed in bbox, calculation shown to help future maintenace
 # client resolution (mpp)* arbitrary large map size on a large screen in pixels * 50% buffer, all squared
-MAX_AREA = math.pow(1250*4275*1.5,2)
-
+MAX_AREA = math.pow(1250*4275*1.5, 2)
 
 
 class ProjectSearchServiceError(Exception):
@@ -55,7 +54,6 @@ class ProjectSearchService:
                 "projectId": project.id,
                 "priority": ProjectPriority(project.priority).name
             }
-            centroid = project.centroid
             feature = geojson.Feature(geometry=geojson.loads(project.centroid), properties=properties)
             features.append(feature)
         feature_collection = geojson.FeatureCollection(features)
@@ -102,7 +100,7 @@ class ProjectSearchService:
                                  Project.tasks_validated,
                                  Project.total_tasks).join(ProjectInfo) \
             .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(
-            ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
+            ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private.is_(True))
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != 'ALL':
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)

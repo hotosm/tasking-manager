@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer
 
 from flask import current_app
 
-from server.services.messaging.template_service import get_template, get_profile_url
+from server.services.messaging.template_service import get_template
 
 
 class SMTPService:
