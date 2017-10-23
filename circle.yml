@@ -57,3 +57,8 @@ jobs:
           command: |
             chmod +x /app/devops/ci/circleci_deploy.sh
             /app/devops/ci/circleci_deploy.sh
+      - flake8:
+          name: Flake8
+          command: |
+            flake8 server
+
