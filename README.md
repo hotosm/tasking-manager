@@ -97,7 +97,7 @@ python manage.py db upgrade
 If you plan to only work on the API you don't need to build the client and can run as follows:
 
 * Run the server:
-    * ``` python manage.py runserver -d ```
+    * ``` python manage.py runserver -d -r```
 * Point your browser to:
     * [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
 
@@ -109,7 +109,7 @@ If you want to see the client you will need to follow all the instruction in **C
     * ```gulp build```
 * You can now run the server as above from the root dir:
     * ```cd ..```
-    * ``` python manage.py runserver -d ```
+    * ``` python manage.py runserver -d -r```
 * Point your browser to:
     * [http://localhost:5000](http://localhost:5000)
 
