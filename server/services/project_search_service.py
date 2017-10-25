@@ -19,7 +19,6 @@ search_cache = TTLCache(maxsize=128, ttl=300)
 MAX_AREA = math.pow(1250*4275*1.5,2)
 
 
-
 class ProjectSearchServiceError(Exception):
     """ Custom Exception to notify callers an error occurred when handling mapping """
 
@@ -81,6 +80,7 @@ class ProjectSearchService:
                 (project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
             list_dto.percent_validated = round(
                 ((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
+            list_dto.active_mappers = Project.get_active_mappers(project.id)
 
             dto.results.append(list_dto)
 

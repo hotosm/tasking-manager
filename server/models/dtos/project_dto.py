@@ -131,6 +131,7 @@ class ListSearchResultDTO(Model):
     campaign_tag = StringType(serialized_name='campaignTag')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
+    active_mappers = IntType(serialized_name='activeMappers')
 
 
 class ProjectSearchResultsDTO(Model):
