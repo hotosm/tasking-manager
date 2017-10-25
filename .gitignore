@@ -26,7 +26,3 @@ venv_aws/
 
 # Mac
 .DS_Store
-/.vs/tasking-manager/v15/.suo
-/.vs/VSWorkspaceState.json
-/.vs/tasks.vs.json
-/.vs/slnx.sqlite
