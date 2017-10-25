@@ -347,6 +347,7 @@ class Project(db.Model):
         base_dto.license_id = self.license_id
         base_dto.last_updated = self.last_updated
         base_dto.author = User().get_by_id(self.author_id).username
+        base_dto.active_mappers = Project.get_active_mappers(self.id)
 
         if self.private:
             # If project is private it should have a list of allowed users
