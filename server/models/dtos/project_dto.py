@@ -133,6 +133,7 @@ class ListSearchResultDTO(Model):
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
     status = StringType(serialized_name='status')
+    active_mappers = IntType(serialized_name='activeMappers')
 
 
 class ProjectSearchResultsDTO(Model):

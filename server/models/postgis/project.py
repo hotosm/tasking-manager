@@ -308,6 +308,18 @@ class Project(db.Model):
         aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
         return geojson.loads(aoi_geojson)
 
+    @staticmethod
+    def get_active_mappers(project_id) -> int:
+
+        active_mappers_query = f'''SELECT COUNT(1) 
+                                    FROM tasks 
+                                   WHERE task_status IN (1, 3)
+                                     AND project_id = {project_id}'''
+
+        result = db.engine.execute(active_mappers_query)
+        for mappers in result:
+            return mappers[0]  # We know there will be only one row in result so return immediately
+
     def _get_project_and_base_dto(self):
         """ Populates a project DTO with properties common to all roles """
         base_dto = ProjectDTO()
