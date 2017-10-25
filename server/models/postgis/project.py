@@ -1,5 +1,6 @@
 import json
 from typing import Optional
+from cachetools import TTLCache, cached
 
 import geojson
 from flask import current_app
@@ -25,6 +26,9 @@ project_allowed_users = db.Table(
     db.Column('project_id', db.Integer, db.ForeignKey('projects.id')),
     db.Column('user_id', db.BigInteger, db.ForeignKey('users.id'))
 )
+
+# cache mapper counts for 30 seconds
+active_mappers_cache = TTLCache(maxsize=1024, ttl=30)
 
 
 class Project(db.Model):
@@ -255,7 +259,6 @@ class Project(db.Model):
 
         return locked_tasks
 
-
     @staticmethod
     def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
         """ Get projects for admin """
@@ -309,7 +312,9 @@ class Project(db.Model):
         return geojson.loads(aoi_geojson)
 
     @staticmethod
+    @cached(active_mappers_cache)
     def get_active_mappers(project_id) -> int:
+        """ Get count of Locked tasks as a proxy for users who are currently active on the project """
 
         active_mappers_query = f'''SELECT COUNT(1) 
                                     FROM tasks 
