@@ -209,7 +209,7 @@
         function formatUserNamesToLink(text){
             var regex = /@\[([^\]]+)\]/gi;
             // Find usernames with a regular expression. They all start with '[@' and end with ']'
-            var usernames = text.match(regex);
+            var usernames = text && text.match(regex);
             if (usernames) {
                 for (var i = 0; i < usernames.length; i++) {
                     // Strip off the first two characters: '@['

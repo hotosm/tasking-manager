@@ -405,9 +405,6 @@ class Task(db.Model):
         """ Get dto with any task instructions """
         task_history = []
         for action in self.task_history:
-            if action.action_text is None:
-                continue  # Don't return any history without action text
-
             history = TaskHistoryDTO()
             history.action = action.action
             history.action_text = action.action_text
