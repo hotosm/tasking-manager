@@ -316,14 +316,11 @@ class Project(db.Model):
     def get_active_mappers(project_id) -> int:
         """ Get count of Locked tasks as a proxy for users who are currently active on the project """
 
-        active_mappers_query = f'''SELECT COUNT(1) 
-                                    FROM tasks 
-                                   WHERE task_status IN (1, 3)
-                                     AND project_id = {project_id}'''
-
-        result = db.engine.execute(active_mappers_query)
-        for mappers in result:
-            return mappers[0]  # We know there will be only one row in result so return immediately
+        return Task.query \
+            .filter(Task.task_status.in_((TaskStatus.LOCKED_FOR_MAPPING.value,
+                                         TaskStatus.LOCKED_FOR_VALIDATION.value))) \
+            .filter(Task.project_id == project_id) \
+            .count()
 
     def _get_project_and_base_dto(self):
         """ Populates a project DTO with properties common to all roles """
