@@ -135,7 +135,7 @@
                                             <a href="/project/{{ project.projectId }}" class="project-result__card"
                                                  ng-repeat="project in contributeCtrl.results track by $index">
                                                 <section class="panel project-result__content">
-                                                    <span>{{ project.priority }} </span>
+                                                    <span>{{ project.priority }}</span>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
                                                     <p markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')"></p>
