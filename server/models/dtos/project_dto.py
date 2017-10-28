@@ -100,6 +100,7 @@ class ProjectSearchDTO(Model):
     campaign_tag = StringType()
     page = IntType(required=True)
     text_search = StringType()
+    is_project_manager = BooleanType(required=True, default=False)
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
@@ -131,6 +132,7 @@ class ListSearchResultDTO(Model):
     campaign_tag = StringType(serialized_name='campaignTag')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
+    status = StringType(serialized_name='status')
 
 
 class ProjectSearchResultsDTO(Model):

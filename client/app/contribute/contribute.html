@@ -132,10 +132,11 @@
                                 <div ng-show="contributeCtrl.resultsView === 'grid' && contributeCtrl.results.length > 0">
                                     <div class="search-results-container">
                                         <div class="project-result__cards">
-                                            <a href="/project/{{ project.projectId }}" class="project-result__card"
+                                            <a href="/project/{{ project.projectId }}" class="project-result__card {{ project.status | lowercase }}"
                                                  ng-repeat="project in contributeCtrl.results track by $index">
                                                 <section class="panel project-result__content">
                                                     <span>{{ project.priority }}</span>
+                                                    <span class="pull-right" ng-if="project.status != 'PUBLISHED'">{{ project.status }}</span>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
                                                     <p markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')"></p>
