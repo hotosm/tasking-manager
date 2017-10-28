@@ -2,11 +2,11 @@ Hi [USERNAME],<br />
 <br />
 Welcome to the HOT Tasking Manager, we hope you will enjoy being part of the community that is helping map the world.<br />
 <br />
-If you would like to be alerted to project updates and feedback on your mapping, please add your email address to your profile by clicking on the link below.
+If you would like to be alerted to project updates and feedback on your mapping, please add your email address to your profile by clicking on the link below.<br />
 <br />
 <a href="[PROFILE_LINK]">Update your profile here</a><br />
 <br />
-Thank you very much!
+Thank you very much!<br />
 <br />
 On behalf of the Humanitarian OpenStreetMap Team volunteer and staff community we want to welcome you to humanitarian mapping and the wider OpenStreetMap community.<br />
 <br />
