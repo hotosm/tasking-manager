@@ -163,6 +163,9 @@
                                                         <dd>{{ 'Validated' | translate }}</dd>
                                                     <!--<uib-progressbar
                                                             value="project.percentValidated"></uib-progressbar>-->
+
+                                                        <dd ng-show="project.activeMappers > 0" title="{{ 'Active Mappers' | translate }}"><span class="fa fa-user"></span> {{ project.activeMappers }}</dd>
+                                                    </dl>
                                                </section>
                                             </a>
                                         </div>

@@ -89,6 +89,7 @@ class ProjectDTO(Model):
     priority_areas = BaseType(serialized_name='priorityAreas')
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
+    active_mappers = IntType(serialized_name='activeMappers')
 
 
 class ProjectSearchDTO(Model):
@@ -133,6 +134,7 @@ class ListSearchResultDTO(Model):
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
     status = StringType(serialized_name='status')
+    active_mappers = IntType(serialized_name='activeMappers')
 
 
 class ProjectSearchResultsDTO(Model):
