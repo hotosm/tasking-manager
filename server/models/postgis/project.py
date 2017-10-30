@@ -1,5 +1,6 @@
 import json
 from typing import Optional
+from cachetools import TTLCache, cached
 
 import geojson
 from flask import current_app
@@ -25,6 +26,9 @@ project_allowed_users = db.Table(
     db.Column('project_id', db.Integer, db.ForeignKey('projects.id')),
     db.Column('user_id', db.BigInteger, db.ForeignKey('users.id'))
 )
+
+# cache mapper counts for 30 seconds
+active_mappers_cache = TTLCache(maxsize=1024, ttl=30)
 
 
 class Project(db.Model):
@@ -255,7 +259,6 @@ class Project(db.Model):
 
         return locked_tasks
 
-
     @staticmethod
     def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
         """ Get projects for admin """
@@ -308,6 +311,16 @@ class Project(db.Model):
         aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
         return geojson.loads(aoi_geojson)
 
+    @staticmethod
+    @cached(active_mappers_cache)
+    def get_active_mappers(project_id) -> int:
+        """ Get count of Locked tasks as a proxy for users who are currently active on the project """
+
+        return Task.query \
+            .filter(Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value) \
+            .filter(Task.project_id == project_id) \
+            .count()
+
     def _get_project_and_base_dto(self):
         """ Populates a project DTO with properties common to all roles """
         base_dto = ProjectDTO()
@@ -330,6 +343,7 @@ class Project(db.Model):
         base_dto.license_id = self.license_id
         base_dto.last_updated = self.last_updated
         base_dto.author = User().get_by_id(self.author_id).username
+        base_dto.active_mappers = Project.get_active_mappers(self.id)
 
         if self.private:
             # If project is private it should have a list of allowed users

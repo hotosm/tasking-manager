@@ -7,6 +7,14 @@ from server import create_app
 from server.services.users.authentication_service import AuthenticationService
 from server.services.users.user_service import UserService
 
+import os
+import warnings
+
+# Check that environmental variables are set
+for key in ['TM_DB','TM_SECRET','TM_CONSUMER_KEY','TM_CONSUMER_SECRET','TM_ENV']:
+    if not os.getenv(key):
+        warnings.warn("%s environmental variable not set." % (key,))
+
 # Initialise the flask app object
 application = create_app()
 manager = Manager(application)

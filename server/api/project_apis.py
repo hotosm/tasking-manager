@@ -6,6 +6,7 @@ from distutils.util import strtobool
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
 from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
+from server.services.users.user_service import UserService
 from server.services.users.authentication_service import token_auth, tm
 
 
@@ -247,6 +248,9 @@ class ProjectSearchAPI(Resource):
             search_dto.campaign_tag = request.args.get('campaignTag')
             search_dto.page = int(request.args.get('page')) if request.args.get('page') else 1
             search_dto.text_search = request.args.get('textSearch')
+            if tm.authenticated_user_id and \
+                    UserService.is_user_a_project_manager(tm.authenticated_user_id):
+                search_dto.is_project_manager = True
 
             mapping_types_str = request.args.get('mappingTypes')
             if mapping_types_str:

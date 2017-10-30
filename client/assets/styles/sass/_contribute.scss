@@ -104,6 +104,11 @@
       padding: 0;
       list-style-type: none;
     }
+
+    &.draft,
+    &.archived {
+      background: url(../../img/closed_back.gif) transparent;
+    }
   }
 
   &__content {
@@ -124,7 +129,7 @@
     dt, dd {
       margin-bottom: 0;
     }
-    dd { margin-right: 3em; }
+    dd { margin-right: 2em; }
   }
 }
 
@@ -195,6 +200,11 @@
       width: 20%;
     }
   }
+  .active-mappers{
+    margin-left: 4em;
+    font-weight: bold;
+  }
+
   .ng-isolate-scope {
     overflow-y: visible;
     max-height: 100%;
