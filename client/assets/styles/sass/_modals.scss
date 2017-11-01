@@ -1,0 +1,211 @@
+/* ==========================================================================
+   Modals
+   ========================================================================== */
+
+/**
+ * This element can be of any width and height
+ * http://css-tricks.com/centering-in-the-unknown/
+ */
+
+.modal {
+  text-align: center;
+  background: radial-gradient(ellipse at center, tint($lightest-background-grey, 96%) 0%, rgba(tint($lightest-background-grey, 96%), 0.88) 100%);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9996;
+  overflow-y: auto;
+
+  // The ghost, nudged to maintain perfect centering
+  // Only medium-up queries
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    width: 1px;
+    margin-right: -6px; // Adjusts for spacing
+  }
+}
+
+/**
+  * The element to be centered, can also be of any width and height
+  */
+
+.modal__inner {
+  @extend .row;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin: ($global-spacing * 2) 0;
+  text-align: left;
+  max-width: 48rem;
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+
+/* Modal size modifiers
+   ========================================================================== */
+
+/* Small */
+
+.modal--small .modal__inner {
+  max-width: 32rem;
+}
+
+/* Medium
+   Default
+*/
+
+.modal--medium .modal__inner {
+  max-width: 48rem;
+}
+
+/* Large */
+
+.modal--large .modal__inner {
+  max-width: 64rem;
+}
+
+/* XLarge */
+
+.modal--xlarge .modal__inner {
+  max-width: 80rem;
+}
+
+
+/* Modal animation
+   ========================================================================== */
+
+.modal-enter {
+  transform: translate3d(0, 0, 0);
+  transition: opacity 0.32s ease 0s, visibility 0.32s linear 0s;
+  opacity: 0;
+  visibility: hidden;
+
+  &.modal-enter-active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.modal-leave {
+  transition: opacity 0.32s ease 0s, visibility 0.32s linear 0s;
+  opacity: 1;
+  visibility: visible;
+
+  &.modal-leave-active {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+
+/* Modal structure
+   ========================================================================== */
+
+.modal {
+  &__header,
+  &__footer {
+    position: relative;
+    text-align: center;
+
+    &:after {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 0);
+      content: '';
+      height: 1px;
+      width: 4rem;
+      background: $base-alpha-color;
+    }
+  }
+
+  &__header {
+    padding-bottom: $global-spacing * 1.5;
+    margin-bottom: ($global-spacing * 2);
+    *:last-child {
+      margin-bottom: 0;
+    }
+
+    &:after {
+      top: calc(100% - 1px);
+    }
+
+    @include media(medium-up) {
+      margin-bottom: ($global-spacing * 3);
+    }
+  }
+
+  &__subtitle {
+    text-transform: uppercase;
+    font-weight: $base-font-regular;
+    color: rgba($base-font-color, 0.48);
+    font-size: 0.875rem;
+    line-height: 1.25;
+    margin: 0;
+    width: 100%;
+  }
+
+  &__body {
+    margin-bottom: ($global-spacing * 2);
+    > *:last-child {
+      margin-bottom: 0;
+    }
+    @include media(medium-up) {
+      margin-bottom: ($global-spacing * 3);
+    }
+  }
+
+  &__footer {
+    padding-top: $global-spacing * 2;
+
+    .button {
+      margin: 0 ($global-spacing / 4);
+    }
+
+    &:after {
+      top: 0;
+    }
+  }
+}
+
+
+/* Modal buttons
+   ========================================================================== */
+
+.modal__button-dismiss {
+  position: absolute;
+  top: $global-spacing / 4;
+  right: $global-spacing / 4;
+  z-index: 10;
+
+  &:hover {
+    opacity: .8;
+  }
+
+  &:before {
+    width: 12px;
+    height: 12px;
+    background-size: 12px 12px;
+    content: " ";
+    background-image: url('../../icons/xmark.svg');
+    display: inline-block;
+    margin-right: .3em;
+  }
+
+  @include media(medium-up) {
+    top: $global-spacing;
+    right: $global-spacing;
+  }
+
+  @include media(large-up) {
+    top: $global-spacing * 2;
+    right: $global-spacing * 2;
+  }
+}

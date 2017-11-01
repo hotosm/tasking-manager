@@ -199,7 +199,7 @@ class ValidatorService:
                                          ~Task.task_status.in_([TaskStatus.READY.value,
                                                                 TaskStatus.BADIMAGERY.value])).all()
         for task in mapped_tasks:
-            if TaskStatus(task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
+            if TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
                 # Only lock tasks that are not already locked to avoid double lock issue.
                 task.lock_task_for_validating(user_id)
             task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
@@ -218,7 +218,10 @@ class ValidatorService:
 
         for task in tasks_to_validate:
             task.mapped_by = user_id  # Ensure we set mapped by value
-            task.lock_task_for_validating(user_id)
+            if TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
+                # Only lock tasks that are not already locked to avoid double lock issue
+                task.lock_task_for_validating(user_id)
+
             task.unlock_task(user_id, new_state=TaskStatus.VALIDATED)
 
         # Set counters to fully mapped and validated

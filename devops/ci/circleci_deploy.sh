@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -xev # halt script on error
 
-DEMO_BRANCH="develop"
-STAGE_BRANCH="stage"
+# demo and stage branch are set via environment variables in CircleCI
+# DEMO_BRANCH="testing branch"
+# STAGE_BRANCH="develop"
 PROD_BRANCH="master"
 
 DEMO_ENV="taskingmanager-demo"
@@ -20,13 +21,15 @@ echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 # fi
 
 # Set Version Number
-VERSION=v.0.0.$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
+VERSION=v.0.0.$CIRCLE_BUILD_NUM-$(echo $CIRCLE_BRANCH | tr -cd '[[:alnum:]]._-')
 
 if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
   then
     # Install AWS requirements
     pip install -r requirements.aws.txt
     printf '1\nn\n' | eb init taskingmanager --region us-east-1
+  else
+    echo "$CIRCLE_BRANCH does not match"
 fi
 
 # Deploy to Demo Env

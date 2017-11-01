@@ -1,0 +1,369 @@
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+
+/* Prose
+   ========================================================================== */
+
+.prose {
+  font-size: $base-font-size;                           // 16px
+  line-height: $base-line-height;                       // 24px
+
+  > * {
+    margin-bottom: $base-font-size * $base-line-height; // same as line-height
+  }
+}
+
+.prose--responsive {
+  $prose-resp-font-size: 1.25rem;                       // 20px
+  $prose-resp-line-height: 1.6;                         // 32px
+
+  @include media(medium-up) {
+    font-size: $prose-resp-font-size;
+    line-height: $prose-resp-line-height;
+
+    > * {
+      margin-bottom: $prose-resp-font-size * $prose-resp-line-height; // same as line-height
+    }
+  }
+}
+
+
+/* Common elements
+   ========================================================================== */
+
+
+p, ul, ol, dl, pre, blockquote {
+  margin: 0 0 $global-spacing 0;
+}
+
+p {
+  max-width: 800px;
+}
+
+.metadata {
+  font-style: italic;
+  color: $grey;
+}
+
+
+/* Lead
+   ========================================================================== */
+
+.lead {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  opacity: 0.64;
+}
+
+/* Prose specific */
+
+.prose--responsive {
+  > .lead {
+    @include media(medium-up) {
+      font-size: 1.5rem;
+      line-height: 1.6666667;
+    }
+  }
+}
+
+/* Lists
+   ========================================================================== */
+
+ol ol, ol ul, ul ol, ul ul {
+  margin-bottom: 0;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+dt {
+  float: left;
+  margin-right: 1em;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  clear: left;
+  font-weight: 400;
+  margin-bottom: .5em;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+dd {
+  float: left;
+  font-size: 0.875rem;
+  margin: 0;
+  margin-bottom: .5em;
+  line-height: 18px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.definition-list--options {
+  dt {
+    margin-bottom: 2.5em;
+    width: 15%;
+  }
+  dd {
+    margin-bottom: 2.5em;
+    width: 80%;
+  }
+}
+
+.dl-horizontal {
+  @extend .clearfix;
+  dt, dd {
+    float: left;
+  }
+  dt {
+    width: 32%;
+    clear: left;
+    padding-top: $global-spacing / 8;
+    padding-bottom: $global-spacing / 8;
+    padding-right: $global-spacing / 2;
+  }
+  dd {
+    width: 68%;
+    padding-left: $global-spacing / 2;
+  }
+  dd + dd {
+    margin-left: 32%;
+  }
+}
+
+.num--large {
+  font-size: 1.22em;
+  color: $link-color;
+  clear: none;
+  margin-right: .2em;
+  font-weight: 100;
+}
+
+.label {
+  margin-right: .3em;
+  font-weight: 400;
+}
+
+.input--description {
+  font-style: italic;
+  color: $lightgrey;
+  font-size: .86em;
+  line-height: 1.5em;
+  margin: .2em 0;
+  display: block;
+}
+
+/* Prose specific */
+
+.prose--responsive {
+  > dl dt {
+    @include media(medium-up) {
+      padding-top: $global-spacing / 4;
+      padding-bottom: $global-spacing / 4;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+  }
+}
+
+
+/* Blockquote
+   ========================================================================== */
+
+blockquote {
+  box-shadow: inset 1px 0 0 0 $base-alpha-color;
+  padding: 0em 0em 0em 1.75em;
+  *:last-child {
+    margin-bottom: 0;
+  }
+  footer {
+    color: rgba($base-font-color, 0.64);
+    margin-top: -0.5rem;
+    &:before {
+      content: '— ';
+    }
+  }
+}
+
+
+/* Dividers
+   ========================================================================== */
+
+hr, .hr {
+  border: 0;
+  height: 1px;
+  background: $base-alpha-color;
+  width: 80%;
+  max-width: 16rem;
+  margin: ($global-spacing * 2) auto;
+}
+
+/* Prose specific */
+
+.prose {
+  > hr,
+  >.hr {
+    margin: ($global-spacing * 3) auto;
+  }
+}
+
+.prose--responsive {
+  > hr,
+  > .hr {
+    @include media(medium-up) {
+      margin: ($global-spacing * 4) auto;
+    }
+  }
+}
+
+
+/* Emphasis
+   ========================================================================== */
+
+b, strong {
+  font-weight: $base-font-bold;
+}
+
+small, .small {
+  font-size: 75%;
+  font-weight: normal;
+}
+
+mark, .mark {
+  padding: 0 0.25rem;
+  background: rgba($primary-color, 0.16);
+  border-radius: $base-border-radius;
+}
+
+
+/* Abbreviation
+   ========================================================================== */
+
+abbr[title] {
+  cursor: help;
+  border-bottom: 1px dashed $base-alpha-color;
+  text-decoration: none;
+  text-transform: initial;
+}
+
+
+/* Headings
+   ========================================================================== */
+
+.heading, h1, h2, h3, h4, h5, h6 {
+  font-family: $base-font-family;
+  font-weight: $base-font-bold;
+  margin-top: 0;
+  margin-bottom: $global-spacing;
+}
+
+h1, h2, h3 {
+  color: $darkest-grey;
+}
+
+h4, h5, h6 {
+  color: $medium-grey;
+}
+
+.heading--xlarge {
+  @include heading(1.75rem, xlarge-up);   // 28, 32, 36, 40
+}
+
+.heading--large {
+  @include heading(1.5rem, xlarge-up);    // 24, 28, 32, 36
+}
+
+.heading--medium {
+  @include heading(1.25rem, xlarge-up);   // 20, 24, 28, 32
+}
+
+.heading--small,
+.heading--xsmall,
+.heading--xxsmall {
+  @include heading(1rem, xlarge-up);      // 16, 20, 24, 28
+}
+
+.heading-alt {
+  text-transform: uppercase;
+  font-weight: $base-font-regular;
+  color: rgba($base-font-color, 0.48);
+}
+
+h1 {
+  @include heading(2.0rem);
+  @include media(medium-up) {
+    @include heading(2.429rem);   // 34
+  }
+}
+
+h2 {
+  @include heading(1.714rem);
+  @include media(medium-up) {
+    @include heading(2.0rem);    // 28
+  }
+}
+
+h3 {
+  @include heading(1.571rem);
+  @include media(medium-up) {
+    @include heading(1.571rem);   // 22
+  }
+}
+
+h4 {
+  @include heading(1.286rem);
+  @include media(medium-up) {
+    @include heading(1.429rem);      // 20
+  }
+}
+
+h5 {
+  @include heading(1rem);
+  @include media(medium-up) {
+    @include heading(1.286rem);      // 18
+  }
+}
+
+h6 {
+  @include heading(1rem);      // 14
+}
+
+.withDescription {
+  margin-bottom: 0;
+}
+
+/* Prose specific */
+
+.prose--responsive {
+  > h1 { @include heading(1.75rem, xlarge-up); }            // 28, 32, 36, 40
+  > h2 { @include heading(1.5rem, xlarge-up); }             // 24, 28, 32, 36
+  > h3 { @include heading(1.25rem, xlarge-up); }            // 20, 24, 28, 32
+  > h4,
+  > h5,
+  > h6 { @include heading(1rem, xlarge-up); }               // 16, 20, 24, 28
+
+
+  @include media(medium-up) {
+    > h1:not(:first-child),
+    > h2:not(:first-child),
+    > h3:not(:first-child),
+    > h4:not(:first-child),
+    > h5:not(:first-child),
+    > h6:not(:first-child) {
+      margin-top: $global-spacing * 4;
+    }
+  }
+}
+
+.description--block {
+  margin-top: -.5em;
+  margin-bottom: 2em;
+}

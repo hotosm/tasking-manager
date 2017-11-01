@@ -41,6 +41,10 @@
         //map legend
         vm.showVectorLegend = false;
         vm.showClusterLegend = true;
+
+        // Character limit
+        vm.characterLimitShortDescription = 250;
+
         var CLUSTER_THRESHOLD_RESOLUTION = 4891.96981025128;
 
         // Watch the languageService for change in language and search again when needed
@@ -86,7 +90,7 @@
                 vm.mappingTypes.push("WATERWAYS");
             }
             if (vm.searchLanduse) {
-                vm.mappingTypes.push("LANDUSE");
+                vm.mappingTypes.push("LAND_USE");
             }
             if (vm.searchOther) {
                 vm.mappingTypes.push("OTHER");
@@ -217,7 +221,7 @@
                 if (mappingTypesArray[i] == 'WATERWAYS') {
                     vm.searchWaterways = true;
                 }
-                if (mappingTypesArray[i] === 'LANDUSE') {
+                if (mappingTypesArray[i] === 'LAND_USE') {
                     vm.searchLanduse = true;
                 }
                 if (mappingTypesArray[i] === 'OTHER')

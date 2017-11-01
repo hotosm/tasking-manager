@@ -16,6 +16,7 @@ var paths = {
     html: ['./**/*.html', '!node_modules/**/*.html'],
     styles: ['assets/styles/css/*.css'],
     images: ['assets/img/**/*'],
+    icons: ['assets/icons/**/*'],
     locale: ['locale/*.json']
 };
 
@@ -98,6 +99,12 @@ gulp.task('copy_images_to_dist', function () {
         .pipe(gulp.dest('../server/web/static/dist/assets/img'));
 });
 
+gulp.task('copy_icons_to_dist', function () {
+    /* Copy the icons in the icons folder to a dist folder */
+    return gulp.src(paths.icons)
+        .pipe(gulp.dest('../server/web/static/dist/assets/icons'));
+});
+
 gulp.task('copy_translations_to_dist', function () {
     /* Copy the translations in the locale folder to a dist folder */
     return gulp.src(paths.locale)
@@ -124,6 +131,7 @@ gulp.task('build', function (callback) {
         'create-release-config',
         'compile-sass',
         'copy_images_to_dist',
+        'copy_icons_to_dist',
         'copy_translations_to_dist',
         'minify-css',
         'uglify',
@@ -142,4 +150,3 @@ gulp.task('run', function (callback) {
     )
     ;
 });
-

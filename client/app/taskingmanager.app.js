@@ -90,6 +90,14 @@
                     templateUrl: 'app/learn/learn.html'
                 })
 
+                .when('/what-is-new', {
+                    templateUrl: 'app/about/what-is-new.html'
+                })
+
+                .when('/faq', {
+                    templateUrl: 'app/about/faq.html'
+                })
+
                 .when('/contribute', {
                     templateUrl: 'app/contribute/contribute.html',
                     controller: 'contributeController',

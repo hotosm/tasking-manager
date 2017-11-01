@@ -63,6 +63,11 @@ class GridService:
             if not isinstance(feature.geometry, MultiPolygon):
                 feature.geometry = MultiPolygon([feature.geometry])
             # put the geometry back to geojson
+
+            if feature.geometry.has_z:
+                # Strip Z dimension, as can't persist geometry otherewise.  Most likely exists in KML data
+                feature.geometry = shapely.ops.transform(GridService._to_2d, feature.geometry)
+
             feature.geometry = shapely.geometry.mapping(feature.geometry)
 
             # set default properties

@@ -5,27 +5,32 @@
                 <h1 class="section__title">
                     {{ 'About the OSM Tasking Manager' | translate }}
                 </h1>
+                <p>
+                    {{ "The OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OpenStreetMap Team's collaborative mapping process. The purpose of the tool is to divide up a mapping project into smaller tasks that can be completed rapidly with many people working on the same overall area. It shows which areas need to be mapped and which areas need the mapping validated." | translate }}
+                </p>
+                <p>
+                    {{ 'This approach allows the distribution of tasks to many individual mappers in the context of emergency or other humanitarian mapping scenario. It also allows monitoring of the overall project progress and helps improve the consistency of the mapping (e.g., elements to cover, specific tags to use, etc.).' | translate }}
+                </p>
             </div>
         </header>
         <div class="section-container">
-            <div class="section__body">
+            <div class="section__body section__body--secondary">
                 <div class="inner">
+                    <h2>{{ 'Contact Information' | translate }}</h2>
                     <p>
-                        {{ "The OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OpenStreetMap Team's collaborative mapping process. The purpose of the tool is to divide up a mapping project into smaller tasks that can be completed rapidly with many people working on the same overall area. It shows which areas need to be mapped and which areas need the mapping validated." | translate }}
+                        {{ 'For help with mapping or mapping related questions, please email: ' | translate }}
+                        <a href="mailto:mapper-support@hotosm.org" target="_top">mapper-support@hotosm.org</a>
                     </p>
                     <p>
-                        {{ 'This approach allows the distribution of tasks to many individual mappers in the context of emergency or other humanitarian mapping scenario. It also allows monitoring of the overall project progress and helps improve the consistency of the mapping (e.g., elements to cover, specific tags to use, etc.).' | translate }}
+                        {{ 'General questions or comments about Humanitarian OpenStreetMap Team, please email: ' | translate }}
+                        <a href="mailto:info@hotosm.org" target="_top">info@hotosm.org</a>
                     </p>
                 </div>
-            </div>
-        </div>
-        <div class="section-container">
-            <div class="section__body">
                 <div class="inner">
                     <h2>{{ 'Sponsorship and Funding' | translate }}</h2>
                     <p>
                         {{ 'The OSM Tasking Manager was designed and built for the' | translate }}
-                        <a href="https://hotosm.org" target="_blank">Humanitarian OpenStreetMap Team.</a>
+                        <a href="https://hotosm.org" target="_blank" rel="noopener">Humanitarian OpenStreetMap Team.</a>
                     </p>
                     <p>
                         {{ 'With the invaluable support of:' | translate }}
@@ -33,14 +38,20 @@
                             <div class="sponsor__card"
                                  ng-repeat="sponsor in aboutCtrl.sponsors">
                                 <section class="panel sponsor__content">
-                                    <h3>{{ sponsor.name }}</h3>
-                                    <div ng-show="sponsor.logo" class="sponsor-logo">
+                                    <div ng-show="sponsor.logo" class="supporters-logo">
                                         <span class="helper"></span>
-                                        <a href="{{ sponsor.url }}" target="_blank">
+                                        <a href="{{ sponsor.url }}" target="_blank" rel="noopener">
                                             <img src="{{ sponsor.logo }}"
                                                  alt="{{ sponsor.name }} + logo">
                                         </a>
                                     </div>
+                                    <span>{{ sponsor.name }}</span>
+                                </section>
+                            </div>
+                            <div class="sponsor__card sponsor__card--become">
+                                <section class="panel sponsor__content">
+                                    <p>{{ 'Want to become a sponsor? Contact us to learn how.' | translate }}</p>
+                                    <a href="mailto:info@hotosm.org" target="_top">Contact Us</a>
                                 </section>
                             </div>
                         </div>
@@ -56,7 +67,7 @@
                         {{ 'The OSM Tasking Manager is Open Source software. Please feel free to report issues and contribute.' | translate }}
                     </p>
                     <p>
-                        <a href="https://github.com/hotosm/tasking-manager" target="_blank">{{ 'The application code is available on GitHub.' | translate }}</a>
+                        <a href="https://github.com/hotosm/tasking-manager" target="_blank" rel="noopener">{{ 'The application code is available on GitHub.' | translate }}</a>
                     </p>
                 </div>
             </div>

@@ -62,7 +62,7 @@
         <div class="page__headline">
             <h1 class="page__title">
                 <a href="/" title="{{ 'Visit homepage' | translate }}">
-                    <img src="./assets/img/hot-logo.svg" alt="HOT logo" height="34">
+                    <img src="./assets/img/hot-tm-logo.svg" alt="HOT logo" height="37">
                 </a>
             </h1>
         </div>
@@ -73,8 +73,8 @@
             <div class="menu-wrapper" ng-class="showMenu ? 'menu-wrapper menu-wrapper--open' : 'menu-wrapper'" ng-cloak>
                 <ul class="global-menu" id="global-menu">
                     <li>
-                        <a href="/about" title="{{ 'Visit about' | translate }}" class="global-menu-item">
-                            <span>{{ 'About' | translate }}</span>
+                        <a href="/contribute" title="{{ 'Start mapping' | translate }}" class="global-menu-item">
+                            <span>{{ 'Contribute' | translate }}</span>
                         </a>
                     </li>
                     <li>
@@ -83,14 +83,22 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/contribute" title="{{ 'Visit contribute' | translate }}" class="global-menu-item">
-                            <span>{{ 'Contribute' | translate }}</span>
+                        <a href="/about" title="{{ 'Visit about' | translate }}" class="global-menu-item">
+                            <span>{{ 'About' | translate }}</span>
                         </a>
                     </li>
                     <li>
-                        <language-switch></language-switch>
+                        <a href="/what-is-new" title="{{ 'New features in the Tasking Manager' | translate }}" class="global-menu-item">
+                            <span>{{ 'What is New?' | translate }}</span>
+                        </a>
                     </li>
-                    <li>
+                </ul>
+                <ul class="global-menu menu-secondary-wrapper">
+                    <li class="global-menu-item">
+                        <language-switch class="language-dropown-wrapper"></language-switch>
+                    </li>
+                    <li class="global-menu-divider"></li>
+                    <li class="global-menu-item">
                         <account-nav></account-nav>
                     </li>
                 </ul>
@@ -114,12 +122,10 @@
 </div>
 <!--/ mobile message -->
 
-<footer class="page__footer">
-    <div class="left">
-        <a href="/about">{{ 'Contact us via the About page.' | translate }}</a>
-    </div>
-    <div class="right">
-        <a href="https://github.com/hotosm/tasking-manager" target="_blank">{{ 'Fork the Tasking Manager Code on GitHub' | translate }}</a> {{ 'and help improve it.' | translate }}
+<footer class="page__footer section">
+    <div class='inner'>
+        <a class='left' href="/about">{{ 'Contact us via the About page.' | translate }}</a>
+        <span class='right'><a href="https://github.com/hotosm/tasking-manager" target="_blank">{{ 'Fork the Tasking Manager Code on GitHub' | translate }}</a> {{ 'and help improve it.' | translate }}</span>
     </div>
 </footer>
 
