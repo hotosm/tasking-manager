@@ -13,7 +13,7 @@
         {
           "id": "Population density WMS",
           "name": "Population density",
-          "url": "http://sedac.ciesin.columbia.edu/geoserver/wms",
+          "url": "https://sedac.ciesin.columbia.edu/geoserver/wms",
           "layerName": "gpw-v3:gpw-v3-population-density-future-estimates_2005",
           "type": "WMS",
           "attribution": "test"
@@ -42,7 +42,7 @@
         {
           "id": "Population density WMS",
           "name": "Population density",
-          "url": "http://sedac.ciesin.columbia.edu/geoserver/wms",
+          "url": "https://sedac.ciesin.columbia.edu/geoserver/wms",
           "layerName": "gpw-v3:gpw-v3-population-density-future-estimates_2005",
           "type": "WMS",
           "attribution": "Source: SEDAC gpw-v3-population-density-future-estimates_2005"
