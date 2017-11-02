@@ -27,7 +27,15 @@ When creating a task through the issue tracker, please include the following whe
 #### Development issues should include:
   * Unknowns tasks or dependencies that need investigation.
   * Use checklists (via - [ ]) to keep track of sub-items wherever possible.
+  
+#### Issue Classification
 
+During issue reviews, we try to mark the difficulty, priority, and category
+for each issue. If you are just getting started with coding and the project,
+we encourage you to find one that is marked `Easy Difficulty` to investigate
+a manageable feature while gaining familiarity with part of the code base. If
+you are new to contributing but have experience in some aspect of app design,
+look for categories that correspond to your skills, such as `UI` or `SysAdmin`.
 
 ## 2. How we structure pull request and issue reviews?
 
