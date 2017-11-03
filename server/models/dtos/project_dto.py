@@ -111,7 +111,7 @@ class ProjectSearchDTO(Model):
                 hashable_mapping_types = hashable_mapping_types + mapping_type
 
         return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, self.organisation_tag,
-                     self.campaign_tag, self.page, self.text_search))
+                     self.campaign_tag, self.page, self.text_search, self.is_project_manager))
 
 
 class ProjectSearchBBoxDTO(Model):
