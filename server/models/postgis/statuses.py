@@ -57,6 +57,7 @@ class ValidatingNotAllowed(Enum):
     USER_NOT_VALIDATOR = 100
     USER_NOT_ACCEPTED_LICENSE = 101
     USER_NOT_ON_ALLOWED_LIST = 102
+    PROJECT_NOT_PUBLISHED = 103
 
 
 class UserRole(Enum):
