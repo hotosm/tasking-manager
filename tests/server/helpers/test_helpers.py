@@ -24,6 +24,18 @@ def get_canned_osm_user_details():
         raise FileNotFoundError('osm_user_details.xml not found')
 
 
+def get_canned_osm_user_details_changed_name():
+    """ Helper method to find test file, dependent on where tests are being run from """
+
+    location = os.path.join(os.path.dirname(__file__), 'test_files', 'osm_user_details_changed_name.xml')
+
+    try:
+        open(location, 'r')
+        return ET.parse(location)
+    except FileNotFoundError:
+        raise FileNotFoundError('osm_user_details_changed_name.xml not found')
+
+
 def get_canned_json(name_of_file):
     """ Read canned Grid request from file """
 

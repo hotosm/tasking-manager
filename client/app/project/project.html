@@ -3,6 +3,7 @@
         <div class="inner">
             <div>
                 <mark>{{ projectCtrl.projectData.projectPriority }}</mark>
+                <span class="active-mappers">{{ projectCtrl.projectData.activeMappers}} - Active Mappers</span>
             </div>
             <div class="header--withShare">
                 <div class="section__header--left">
@@ -407,6 +408,9 @@
                                                 </span>
                                             </div>
                                         </div>
+                                        <div>
+                                            <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
+                                        </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -631,7 +635,7 @@
                             <!-- task viewing and mapping UI's -->
                             <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked' || projectCtrl.validatingStep === 'multi-locked'">
                                 <!-- task viewing UI -->
-                                <h2>{{ 'Validation' | translate }}</h2>
+                                <h3>{{ 'Validation' | translate }}</h3>
                                 <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                     <!-- task information -->
 
@@ -736,6 +740,9 @@
                                                     </button>
                                                 </span>
                                             </div>
+                                        </div>
+                                        <div>
+                                            <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
                                         </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
