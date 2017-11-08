@@ -1,17 +1,17 @@
 # Contributing to the Tasking Manager
 
 Table of contents:
-    0. Welcome
-    1. How can I contribute?
-    2. How we structure pull request and issue reviews?
-    3. Coding, Commenting, and Committing
-    4. Code of conduct
+    1. Welcome
+    2. How can I contribute?
+    3. How we structure pull request and issue reviews?
+    4. Coding, Commenting, and Committing
+    5. Code of conduct
 
-## 0. Welcome
+## 1. Welcome
 
 Thank you very much for considering contributing to this project. Humanitarian OpenStreetMap Team (HOT) is a volunteer driven non-profit and we really rely on the community for our success. We welcome and encourage contributors of all skill levels to be a part of our development community and we are committed to making sure your participation in our community is enjoyable and rewarding. If you have never contributed to an open source project before, we are the perfect place to start and will make sure you are supported every step of the way. If you have **any** questions, please ask!
 
-## 1. How can I contribute?
+## 2. How can I contribute?
 
 There are many ways to contribute to a project, below are some examples:
 
@@ -44,7 +44,7 @@ a manageable feature while gaining familiarity with part of the code base. If
 you are new to contributing but have experience in some aspect of app design,
 look for categories that correspond to your skills, such as `UI` or `SysAdmin`.
 
-## 2. How we structure pull request and issue reviews
+## 3. How we structure pull request and issue reviews
 
 ### Code and Project Leads
 Project and code leads are experienced volunteer developers and the main points
@@ -61,7 +61,7 @@ Project contributors are community members that want to be identified
 as project maintainers. They are there to help review issues, steer new
 contributors to the right issues, or write code that addresses an issue.
 
-## 3. Coding, commenting, and committing
+## 4. Coding, commenting, and committing
 
 ### Coding style
 
@@ -113,7 +113,7 @@ of the commit message can be left out.
 If you have forked this project on GitHub then the best way to submit your patches is to
 push your changes back to your GitHub repository and then send a "pull request" via GitHub to the main repository.
 
-## 4. Code of Conduct
+## 5. Code of Conduct
 
 All of HOT's projects fall under the general [HOT Community Code of Conduct](https://www.hotosm.org/hot_code_of_conduct), which is in part based on the well known [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct.md).
 
