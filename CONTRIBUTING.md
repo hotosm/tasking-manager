@@ -1,11 +1,11 @@
 # Contributing to the Tasking Manager
 
 Table of contents:
-    1. Welcome
-    2. How can I contribute?
-    3. How we structure pull request and issue reviews?
-    4. Coding, Commenting, and Committing
-    5. Code of conduct
+1. Welcome
+2. How can I contribute?
+3. How we structure pull request and issue reviews?
+4. Coding, Commenting, and Committing
+5. Code of conduct
 
 ## 1. Welcome
 
