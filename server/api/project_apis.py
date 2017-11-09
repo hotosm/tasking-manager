@@ -253,6 +253,8 @@ class ProjectSearchAPI(Resource):
             search_dto.campaign_tag = request.args.get('campaignTag')
             search_dto.page = int(request.args.get('page')) if request.args.get('page') else 1
             search_dto.text_search = request.args.get('textSearch')
+
+            # See https://github.com/hotosm/tasking-manager/pull/922 for more info
             try:
                 verify_token(request.environ.get('HTTP_AUTHORIZATION').split(None, 1)[1])
                 if UserService.is_user_a_project_manager(tm.authenticated_user_id):
