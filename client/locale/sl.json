@@ -283,6 +283,7 @@
 	"Required": "Zahtevano",
 	"Reset": "Ponastavi",
 	"Return to inbox": "Nazaj v nabiralnik",
+	"Return": "Return",
 	"Roads": "Ceste",
 	"Role": "Vloga",
 	"Save changes": "Shrani spremembe",
@@ -439,5 +440,6 @@
 	"You need to add at least one allowed user to a private project.": "You need to add at least one allowed user to a private project.",
 	"Your profile": "Vaš profil",
 	"Your project has been updated successfully.": "Your project has been updated successfully.",
-	"Your project was created successfully.": "Your project was created successfully."
+	"Your project was created successfully.": "Your project was created successfully.",
+	"Back to Previous": "Back to Previous"
 }
