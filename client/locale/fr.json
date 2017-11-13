@@ -13,7 +13,7 @@
 	"Admin": "Admin",
 	"Administrator": "Administrateur",
 	"Advanced": "Avancé",
-	"Advanced mapper": "Mappeur chevronné",
+	"Advanced mapper": "Contributeur expérimenté",
 	"Advanced options": "Options avancées",
 	"Advanced task information and editing options": "Informations sur les tâches avancées et options d'édition",
 	"A few of the humanitarian efforts you can support through mapping.": "Quelques actions humanitaires que vous pouvez soutenir grace à la cartographie.",
@@ -283,6 +283,7 @@
 	"Required": "Requis(e)",
 	"Reset": "Réinitialiser",
 	"Return to inbox": "Retour à la boîte de réception",
+	"Return": "Return",
 	"Roads": "Routes",
 	"Role": "Rôle",
 	"Save changes": "Sauvegarder les changements",
@@ -439,5 +440,6 @@
 	"You need to add at least one allowed user to a private project.": "Vous devez ajouter au moins un utilisateur autorisé pour un projet privé.",
 	"Your profile": "Votre profil",
 	"Your project has been updated successfully.": "Votre projet a été mise à jour avec succès.",
-	"Your project was created successfully.": "Votre projet a été créé avec succès."
+	"Your project was created successfully.": "Votre projet a été créé avec succès.",
+	"Back to Previous": "Back to Previous"
 }

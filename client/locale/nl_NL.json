@@ -283,6 +283,7 @@
 	"Required": "Vereist",
 	"Reset": "Herstellen",
 	"Return to inbox": "terug naar Inbox",
+	"Return": "Return",
 	"Roads": "Wegen",
 	"Role": "Rol",
 	"Save changes": "Wijzigingen opslaan",
@@ -439,5 +440,6 @@
 	"You need to add at least one allowed user to a private project.": "U dient tenminste één toegelaten gebruiker toe te voegen aan een besloten project.",
 	"Your profile": "Uw profiel",
 	"Your project has been updated successfully.": "Het project werd met succes bijgewerkt.",
-	"Your project was created successfully.": "Uw project werd met succes gemaakt."
+	"Your project was created successfully.": "Uw project werd met succes gemaakt.",
+	"Back to Previous": "Back to Previous"
 }
