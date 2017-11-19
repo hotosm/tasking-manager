@@ -14,7 +14,7 @@
         vm.redirectURL = '';
 
         activate();
-        
+
         function activate(){
             vm.redirectURL = $location.search().redirect_to;
         }
@@ -25,7 +25,7 @@
         vm.login = function(){
             authService.login(vm.redirectURL);
         };
-        
+
         vm.returnToPreviousPage = function(){
             $location.path(vm.redirectURL);
         };

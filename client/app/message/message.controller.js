@@ -12,7 +12,7 @@
     function messageController($routeParams, messageService) {
         var vm = this;
         vm.message = {};
-       
+
         activate();
 
         function activate() {

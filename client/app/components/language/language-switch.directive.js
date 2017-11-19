@@ -4,7 +4,7 @@
 
     /**
      * @fileoverview This file provides a language switch directive.
-     * 
+     *
      * It creates language-switch directive
      * Example:
      *
@@ -15,7 +15,7 @@
         .module('taskingManager')
         .controller('languageSwitchController', ['$scope','$document','$element', '$translate','languageService','settingsService', languageSwitchController])
         .directive('languageSwitch', languageSwitchDirective);
-    
+
     function languageSwitchDirective() {
 
         var directive = {
@@ -39,13 +39,13 @@
         activate();
 
         function activate() {
-            
+
             // Get available languages
             var resultsPromise = settingsService.getSettings();
             resultsPromise.then(function (data) {
                 vm.availableLanguages = data.supportedLanguages;
             });
-            
+
              // Catch clicks and check if it was outside of the menu element. If so, close the dropdown menu.
             $document.bind('click', function(event){
                 var isClickedElementChildOfPopup = $element
@@ -58,7 +58,7 @@
                 $scope.$apply();
             });
         }
-        
+
         /**
          * Toggle the menu
          */
@@ -71,7 +71,7 @@
 
         /**
          * Switch language
-         * @param key
+         * @param language
          */
         vm.switchLanguage = function(language){
             $translate.use(language.code);

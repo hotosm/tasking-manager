@@ -27,13 +27,13 @@
 
         /**
          * Create an OpenLayers OSM map
-         * with additional layers. 
+         * with additional layers.
          * Supported additional layers:
          *    - XYZ
          *    - WMS
          *    - Bing
          * @param targetElement
-         * @param disableScroll - optional - defaults to false
+         * @param disableScrollZoom - optional - defaults to false
          */
         function createOSMMap(targetElement, disableScrollZoom){
             var scaleLineControl = new ol.control.ScaleLine();
@@ -177,8 +177,7 @@
             });
             map.addLayer(wmsLayer);
         }
-        
-        
+
         /**
          * Add bing WMS layer
          * @param name
@@ -208,7 +207,7 @@
             });
             map.addLayer(bingLayer);
         }
-        
+
         /**
          * Adds a geocoder control to the map
          * It is using an OpenLayers plugin control

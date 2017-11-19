@@ -161,7 +161,7 @@
          */
         function initModifyInteraction_() {
             var modifyFeatures = features;
-            // If a select interaction is defined, use the selected features for modification, otherwise use the 
+            // If a select interaction is defined, use the selected features for modification, otherwise use the
             // vector's source's features
             if (selectInteraction){
                 modifyFeatures = selectInteraction.getFeatures();

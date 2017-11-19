@@ -34,11 +34,11 @@
         // User details
         vm.contactDetailsForm = {};
         vm.editDetails = false;
-        
+
         // mapper levels
         vm.mapperLevelIntermediate = 0;
         vm.mapperLevelAdvanced = 0;
-        
+
         activate();
 
         function activate() {
@@ -177,7 +177,7 @@
 
         /**
          * View project for user and bounding box in Overpass Turbo
-         * @param bboxArray
+         * @param aoi
          */
         vm.viewOverpassTurbo = function (aoi) {
             var feature = geospatialService.getFeatureFromGeoJSON(aoi);

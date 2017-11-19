@@ -226,7 +226,7 @@
          * Will return a READY task if available,
          * otherwise will return an INVALIDATED task if available,
          * otherwise will return null.
-         * @param feature - array of ol.Feature objects from which to find a random task
+         * @param features - array of ol.Feature objects from which to find a random task
          * @returns ol.Feature - randomly selected mappable ol.Feature object
          */
         function getRandomMappableTaskFeature(features) {
@@ -257,7 +257,7 @@
          * returns a randomly selected validatable task feature from the passed in vector features.
          * Will return a MAPPED task if available,
          * otherwise will return null.
-         * @param feature - array of ol.Feature objects from which to find a random task
+         * @param features - array of ol.Feature objects from which to find a random task
          * @returns ol.Feature - randomly selected mappable ol.Feature object
          */
         function getRandomTaskFeatureForValidation(features) {
@@ -282,7 +282,7 @@
         /**
          * Returns an array of task features that meet passed in status criteria
          * @param features - array of ol.Feature objects
-         * @param taskStatus - required task status
+         * @param status - required task status
          */
         function getTasksByStatus(features, status) {
             candidates = [];

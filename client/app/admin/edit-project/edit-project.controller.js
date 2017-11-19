@@ -22,10 +22,10 @@
         vm.drawRectangleInteraction = null;
         vm.drawCircleInteraction = null;
         vm.selectInteraction = null;
-    
+
         vm.editPriority = false;
         vm.deletePriority = false;
-        
+
         vm.numberOfPriorityAreas = 0;
 
         // Locale
@@ -55,10 +55,10 @@
         vm.perTaskInstructionsLanguage = 'en';
 
         vm.descriptionHTML = '';
-        
+
         // Delete
         vm.showDeleteConfirmationModal = false;
-        
+
         // Private project/add users
         vm.addUserEnabled = false;
 
@@ -76,7 +76,7 @@
 
         // Form
         vm.form = {};
-        
+
         activate();
 
         function activate() {
@@ -103,7 +103,7 @@
                     $location.path('/');
                 });
             }
-            
+
             var id = $routeParams.id;
 
             // Initialise the map and add interactions
@@ -134,7 +134,7 @@
 
             vm.updateProjectFail = false;
             vm.updateProjectSuccess = false;
-            
+
             // Only check required fields when publishing
             if (vm.project.projectStatus === 'PUBLISHED') {
                 var requiredFieldsMissing = checkRequiredFields();
@@ -198,7 +198,7 @@
         vm.changeLanguageDescription = function(language){
             vm.descriptionLanguage = language;
         };
-        
+
         /**
          * Change the language of name field
          * @param language
@@ -319,7 +319,7 @@
                 $location.path('/');
             }
         };
-        
+
         /**
          * Delete a project
          */
@@ -350,7 +350,6 @@
 
         /**
          * Invalidate all tasks on a project
-         * @param comment
          */
         vm.invalidateAllTasks = function(){
             vm.invalidateInProgress = true;
@@ -380,7 +379,6 @@
 
         /**
          * Validate all tasks on a project
-         * @param comment
          */
         vm.validateAllTasks = function(){
             vm.validateInProgress = true;
@@ -409,8 +407,6 @@
 
         /**
          * Send a message to all users on this project
-         * @param subject
-         * @param message
          */
         vm.sendMessage = function(){
             vm.sendMessageInProgress = true;
@@ -535,7 +531,6 @@
 
         /**
          * Priority areas: set interactions to active/inactive
-         * @param boolean
          * @private
          */
         function setInteractionsInactive_(){
