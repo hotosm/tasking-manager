@@ -68,7 +68,7 @@
                 return $q.reject("error");
             })
         }
-        
+
          /**
          * Get the user's OSM details
          * @param username
@@ -165,7 +165,7 @@
             if (username){
                 searchParams += '&username=' + username;
             }
-            
+
             // Returns a promise
             return $http({
                 method: 'GET',

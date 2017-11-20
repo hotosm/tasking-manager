@@ -47,7 +47,7 @@
 
         /**
          * Returns the account details for a logged in user
-         * @returns 
+         * @returns
          */
         function getAccount() {
             return account;

@@ -9,7 +9,7 @@
         .service('statsService', ['$http', '$q','configService', statsService]);
 
     function statsService($http, $q, configService) {
-        
+
         var service = {
             getProjectContributions: getProjectContributions,
             getProjectActivity: getProjectActivity,

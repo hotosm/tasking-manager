@@ -9,9 +9,9 @@
         .service('languageService', [languageService]);
 
     function languageService() {
-        
+
         var languageCode = 'en'; // default to English
-        
+
         var service = {
             setLanguageCode: setLanguageCode,
             getLanguageCode: getLanguageCode
@@ -21,7 +21,7 @@
 
         /**
          * Set language code
-         * @param languageCode
+         * @param code
          */
         function setLanguageCode(code){
             languageCode = code;

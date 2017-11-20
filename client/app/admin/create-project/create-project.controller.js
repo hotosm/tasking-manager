@@ -14,13 +14,13 @@
         var vm = this;
         vm.map = null;
 
-        // Wizard 
+        // Wizard
         vm.currentStep = '';
         vm.projectName = '';
         vm.projectNameForm = {};
         vm.taskType = 'square-grid';
 
-        // AOI 
+        // AOI
         vm.AOI = null;
         vm.isDrawnAOI = false;
         vm.isImportedAOI = false;
@@ -187,7 +187,7 @@
 
         /**
          * Decides if a step should be shown as completed in the progress bar
-         * @param step
+         * @param wizardStep
          * @returns {boolean}
          */
         vm.showWizardStep = function (wizardStep) {
@@ -498,7 +498,6 @@
         /**
          * Set split tools to active/inactive
          * @param boolean
-         * @param private
          */
         function setSplitToolsActive_(boolean) {
             if (vm.drawAndSelectPolygon) {
