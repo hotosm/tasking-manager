@@ -168,10 +168,10 @@
   overflow-y: scroll;
   background-color: #fff;
   border: 1px solid darken($lightest-background-grey, 5%);
-  -moz-box-shadow:    0px 1px 2px 1px darken($lightest-background-grey, 5%);
-  -webkit-box-shadow: 0px 1px 2px 1px darken($lightest-background-grey, 5%);
-  box-shadow:         0px 1px 2px 1px darken($lightest-background-grey, 5%);
-  right: 0em;
+  -moz-box-shadow:    0 1px 2px 1px darken($lightest-background-grey, 5%);
+  -webkit-box-shadow: 0 1px 2px 1px darken($lightest-background-grey, 5%);
+  box-shadow:         0 1px 2px 1px darken($lightest-background-grey, 5%);
+  right: 0;
   top: 3.5em;
 }
 
@@ -193,9 +193,9 @@
 
 .drop__menu--iconified {
   &:last-of-type {
-    margin-bottom: 0em;
+    margin-bottom: 0;
     border-bottom: none;
-    padding-bottom: 0em;
+    padding-bottom: 0;
   }
 }
 

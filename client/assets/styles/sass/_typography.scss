@@ -87,9 +87,7 @@ dt {
   float: left;
   margin-right: 1em;
   font-size: 0.875rem;
-  line-height: 1.25rem;
   clear: left;
-  font-weight: 400;
   margin-bottom: .5em;
   font-weight: 600;
   line-height: 18px;
@@ -180,7 +178,7 @@ dd {
 
 blockquote {
   box-shadow: inset 1px 0 0 0 $base-alpha-color;
-  padding: 0em 0em 0em 1.75em;
+  padding: 0 0 0 1.75em;
   *:last-child {
     margin-bottom: 0;
   }

@@ -117,7 +117,6 @@ a:active {
    background-color: $orange;
    padding: .3em 2.5em;
    color: #fff;
-   border: none;
    text-transform: uppercase;
    display: inline-block;
    font-weight: 600;
@@ -164,7 +163,7 @@ a:active {
  }
 
  .button--sm, .button--small {
-  padding: 0em 1.8em;
+  padding: 0 1.8em;
   font-size: .86em;
  }
 
