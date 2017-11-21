@@ -13,12 +13,12 @@ services:
     depends_on:
       - postgresql
     expose:
-      - "8000"
+      - "5000"
     ports:
-      - "8000:8000"
+      - "5000:5000"
     links:
       - postgresql
-    command: python manage.py runserver
+    command: python manage.py runserver -h 0.0.0.0
   migration:
     extends:
       service: base
