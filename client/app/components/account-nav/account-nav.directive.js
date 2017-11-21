@@ -132,7 +132,7 @@
             $location.path('admin/users');
             vm.showDropdown = false;
         };
-        
+
         /**
          * Go to the messages page
          */

@@ -18,6 +18,7 @@
             getOSMMap: getOSMMap,
             addXYZLayer: addXYZLayer,
             addTiledWMSLayer: addTiledWMSLayer,
+            addBingLayer: addBingLayer,
             addGeocoder: addGeocoder,
             addOverviewMap: addOverviewMap
         };
@@ -26,12 +27,13 @@
 
         /**
          * Create an OpenLayers OSM map
-         * with additional layers. 
+         * with additional layers.
          * Supported additional layers:
          *    - XYZ
          *    - WMS
+         *    - Bing
          * @param targetElement
-         * @param disableScroll - optional - defaults to false
+         * @param disableScrollZoom - optional - defaults to false
          */
         function createOSMMap(targetElement, disableScrollZoom){
             var scaleLineControl = new ol.control.ScaleLine();
@@ -43,7 +45,7 @@
                 layers: [
                     new ol.layer.Tile({
                         source: new ol.source.OSM({
-                            url: "http://{a-c}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+                            url: "//{a-c}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
                             attributions: "<a href='http://www.openstreetmap.org/copyright/' target='_blank'>© OpenStreetMap</a> contributors"
                         }),
                         title: 'OpenStreetMap',
@@ -78,6 +80,9 @@
                     }
                     if (additionalLayers[i].type === 'WMS'){
                         addTiledWMSLayer(additionalLayers[i].name, additionalLayers[i].url, additionalLayers[i].layerName, additionalLayers[i].attribution)
+                    }
+                    if (additionalLayers[i].type === 'bing'){
+                        addBingLayer(additionalLayers[i].name, additionalLayers[i].key, additionalLayers[i].imagerySet, additionalLayers[i].attribution)
                     }
                 }
             }
@@ -147,6 +152,7 @@
          * @param name
          * @param url
          * @param layer
+         * @param attribution
          * @param visible
          */
         function addTiledWMSLayer(name, url, layer, attribution, visible){
@@ -171,7 +177,37 @@
             });
             map.addLayer(wmsLayer);
         }
-        
+
+        /**
+         * Add bing WMS layer
+         * @param name
+         * @param key
+         * @param imagerySet
+         * @param attribution
+         * @param visible
+         */
+        function addBingLayer(name, key, imagerySet, attribution, visible){
+            var visibility = false;
+            if (visible){
+                visibility = true;
+            }
+            var source = new ol.source.BingMaps({
+              key: key,
+              imagerySet: imagerySet,
+            })
+            if (attribution){
+                source.setAttributions(attribution);
+            }
+            var bingLayer = new ol.layer.Tile({
+                preload: Infinity,
+                visible: visibility,
+                title: name,
+                type: 'base',
+                source: source
+            });
+            map.addLayer(bingLayer);
+        }
+
         /**
          * Adds a geocoder control to the map
          * It is using an OpenLayers plugin control

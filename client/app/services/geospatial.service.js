@@ -35,6 +35,7 @@
         /**
          * Get OL features from GeoJSON
          * @param {string} geojson
+         * @param dataProjection
          * @returns {Array.<ol.Feature>}
          */
         function getFeaturesFromGeoJSON(geojson, dataProjection) {
@@ -122,6 +123,7 @@
         /**
          * Get GeoJSON object from OL Features
          * @param features
+         * @param dataProjection
          * @returns {object} geojson
          */
         function getGeoJSONObjectFromFeatures(features, dataProjection) {

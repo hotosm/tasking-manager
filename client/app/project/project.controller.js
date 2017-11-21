@@ -102,9 +102,6 @@
 
             updateMappedTaskPerUser(vm.id);
 
-            // Add interactions for drawing a polygon for validation
-            addInteractions();
-
             // Check the user's role and initialise project after the async call has finished
             var session = authService.getSession();
             if (session && session.username && session.username != "") {
@@ -283,7 +280,8 @@
             vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
             // Select interaction
             vm.selectInteraction = new ol.interaction.Select({
-                style: styleService.getSelectedTaskStyle
+                style: styleService.getSelectedTaskStyle,
+                layers: [vm.taskVectorLayer]
             });
             vm.map.addInteraction(vm.selectInteraction);
             vm.selectInteraction.on('select', function (event) {
@@ -365,6 +363,8 @@
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+                // Add OpenLayers interactions
+                addInteractions();
 
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
@@ -991,7 +991,6 @@
         /**
          * Call api to stop validating currently locked tasks.  Will pass the comment to api.  Will update view and map after unlock.
          * @param comment
-         * @param status
          */
         vm.stopMultiTaskValidation = function (comment) {
             var projectId = vm.projectData.projectId;
@@ -1331,7 +1330,6 @@
         /**
          * Refresh the map and selected task on error
          * @param projectId
-         * @param taskId
          * @param error
          */
         function onLockError(projectId, error) {
@@ -1409,7 +1407,7 @@
 
         /**
          * Higlights the set of tasks on the map
-         * @param array of task ids
+         * @param doneTaskIds - array of task ids
          */
         vm.highlightTasks = function (doneTaskIds) {
             //highlight features
@@ -1419,7 +1417,7 @@
 
         /**
          * Locks the set of tasks for validation
-         * @param array of task ids
+         * @param doneTaskIds - array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
             vm.selectInteraction.getFeatures().clear();
@@ -1499,7 +1497,7 @@
 
         /**
          * Search for a user
-         * @param searchValue
+         * @param search
          */
         vm.searchUser = function (search) {
             // Search for a user by calling the API

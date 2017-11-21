@@ -9,7 +9,7 @@
         .service('licenseService', ['$http', '$q', 'configService', 'authService', licenseService]);
 
     function licenseService($http, $q, configService, authService) {
-        
+
         var service = {
             getLicense: getLicense,
             createLicense: createLicense,

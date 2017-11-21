@@ -106,7 +106,6 @@
 
         /**
          * OpenLayers style function.  Creates style for features on the highlight layer.
-         * @param feature - feature to be styled
          * @returns {ol.style.Style}
          */
         function getHighlightedTaskStyle() {
@@ -123,7 +122,6 @@
 
         /**
          * OpenLayers style function.  Creates styles for features on the tasks locked by current user layer.
-         * @param feature - feature to be styled
          * @returns {ol.style.Style}
          */
         function getLockedByCurrentUserTaskStyle() {

@@ -46,6 +46,11 @@ class ProjectService:
         return project.as_dto_for_mapping(locale)
 
     @staticmethod
+    def get_project_aoi(project_id):
+        project = ProjectService.get_project_by_id(project_id)
+        return project.get_aoi_geometry_as_geojson()
+
+    @staticmethod
     def get_task_for_logged_in_user(project_id: int, user_id: int):
         """ if the user is working on a task in the project return it """
         project = ProjectService.get_project_by_id(project_id)

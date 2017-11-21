@@ -283,6 +283,7 @@
 	"Required": "Disyaratkan",
 	"Reset": "Setel ulang",
 	"Return to inbox": "Kembali ke inbox",
+	"Return": "Return",
 	"Roads": "Jalan",
 	"Role": "Peran",
 	"Save changes": "Simpan perubahan",
@@ -439,5 +440,6 @@
 	"You need to add at least one allowed user to a private project.": "Anda perlu menambah setidaknya satu pengguna yang diizinkan ke proyek pribadi.",
 	"Your profile": "Profil Anda",
 	"Your project has been updated successfully.": "Proyek Anda berhasil diperbarui.",
-	"Your project was created successfully.": "Proyek Anda berhasil dibuat."
+	"Your project was created successfully.": "Proyek Anda berhasil dibuat.",
+	"Back to Previous": "Back to Previous"
 }
