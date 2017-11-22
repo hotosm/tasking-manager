@@ -128,7 +128,7 @@ class TestProject(unittest.TestCase):
 
         # Act
         original_id = copy.copy(self.test_project.id)
-        cloned_project = Project.clone(original_id, 5175337)
+        cloned_project = Project.clone(original_id, self.test_user.id)
 
         self.assertTrue(cloned_project)
         self.assertEqual(cloned_project.project_info[0].name, 'Thinkwhere Test')
