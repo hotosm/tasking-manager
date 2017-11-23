@@ -2,11 +2,16 @@
     <section class="section section--asided">
         <header class="section__header">
             <div class="inner">
-                <h1 class="section__title">
+                <div class="heading-dashboard">
+                    <h1 class="section__title">
                     {{ 'Activity and Stats' | translate }}
-                </h1>
-                <a ng-href="/project/{{ projectDashboardCtrl.projectId }}"
-                   class="heading-alt">#{{ projectDashboardCtrl.projectId }} - {{ projectDashboardCtrl.project.name }}
+                    </h1>
+                    <a
+                        class="heading-alt">#{{ projectDashboardCtrl.projectId }} - {{ projectDashboardCtrl.project.name }}
+                    </a>
+                </div>
+                <a class="button button--outline pull-right" ng-href="/project/{{ projectDashboardCtrl.projectId }}">
+                     {{ 'Return to project' | translate }}
                 </a>
             </div>
         </header>
