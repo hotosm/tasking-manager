@@ -3,9 +3,9 @@
 Table of contents:
 1. Welcome
 2. How can I contribute?
-3. How we structure pull request and issue reviews?
+3. How we structure pull requests and issue reviews
 4. Coding, Commenting, and Committing
-5. Code of conduct
+5. Code of Conduct
 
 ## 1. Welcome
 
@@ -17,7 +17,7 @@ There are many ways to contribute to a project, below are some examples:
 
 1. Report bugs, offer ideas, and/or request features by creating “Issues” in the project repository.
 2. Fork the code and play with it, whether you later choose to make a pull request or not.
-3. Create pull requests of changes that you think are needed. From typos and wording changes, to significant new features or major design flaws, you will find lots of opportunities to contribute improvements. Read more about coding and committing below.
+3. Create pull requests for changes that you think are needed. From typos and wording changes, to significant new features or major design flaws, you will find lots of opportunities to contribute improvements. Read more about coding and committing below.
 
 #### Issue or bug reports should include:
 
@@ -32,7 +32,8 @@ When creating an issue through the GitHub issue tracker, please include the foll
   * The user need being addressed
 
 #### Development issues should include:
-  * Unknowns tasks or dependencies that need investigation
+  * Specific code that needs improvement or dependancies to be investigated
+  * Rational for recommendations
   * Use checklists (via - [ ]) to keep track of sub-items wherever possible
 
 #### Issue Classification
@@ -44,7 +45,7 @@ a manageable feature while gaining familiarity with part of the code base. If
 you are new to contributing but have experience in some aspect of app design,
 look for categories that correspond to your skills, such as `UI` or `SysAdmin`.
 
-## 3. How we structure pull request and issue reviews
+## 3. How we structure pull requests and issue reviews
 
 ### Code and Project Leads
 Project and code leads are experienced volunteer developers and the main points
@@ -79,14 +80,14 @@ people depending on how they have their editor configured.
 
 Sometimes it's not apparent from the code itself what it does, or,
 more importantly, **why** it does that. Good comments help your fellow
-developers to read the code and satisfy themselves that it's doing the
+developers to read the code and satisfy themselves that it is doing the
 right thing.
 
 When developing, you should:
 
-* Comment your code - don't go overboard, but explain the bits which
+* Comment your code - do not go overboard, but explain the bits which
 might be difficult to understand what the code does, why it does it
-and why it should be the way it is.
+and why it should be the way it is or where it might be improved in the future.
 * Check existing comments to ensure that they are not misleading.
 
 ### Committing
@@ -122,4 +123,4 @@ The short version is:
 * Be respectful of differing viewpoints and experiences
 * Gracefully accept constructive criticism
 * Focus on what is best for the community and the project
-* Show empathy towards other community members
+* Show empathy toward other community members
