@@ -222,7 +222,7 @@ class Task(db.Model):
     @staticmethod
     def get_all_tasks(project_id: int):
         """ Get all tasks for a given project """
-        return Task.query.filter(Task.project_id == project_id)
+        return Task.query.filter(Task.project_id == project_id).all()
 
     @staticmethod
     def auto_unlock_tasks(project_id: int):

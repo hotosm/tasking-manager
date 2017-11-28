@@ -167,7 +167,7 @@ class MappingService:
         else:
             tasks = Task.get_all_tasks(project_id)
 
-        if not tasks or tasks.count() == 0:
+        if not tasks or len(tasks) == 0:
             raise NotFound()
 
         for task in tasks:
@@ -198,7 +198,7 @@ class MappingService:
         else:
             tasks = Task.get_all_tasks(project_id)
 
-        if not tasks or tasks.count() == 0:
+        if not tasks or len(tasks) == 0:
             raise NotFound()
 
         fake_id = -1  # We use fake-ids to ensure XML will not be validated by OSM
