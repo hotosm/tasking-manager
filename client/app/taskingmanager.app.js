@@ -64,7 +64,9 @@
             $routeProvider
 
                 .when('/', {
-                    templateUrl: 'app/home/home.html'
+                    templateUrl: 'app/home/home.html',
+                    controller: 'homeController',
+                    controllerAs: 'homeCtrl'
                 })
 
                 .when('/admin/create-project', {
