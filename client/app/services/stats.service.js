@@ -13,7 +13,8 @@
         var service = {
             getProjectContributions: getProjectContributions,
             getProjectActivity: getProjectActivity,
-            getProjectStats: getProjectStats
+            getProjectStats: getProjectStats,
+            getHomePageStats: getHomePageStats
         };
 
         return service;
@@ -76,6 +77,26 @@
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/stats/project/' + projectId
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get homepage stats
+         * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
+         */
+        function getHomePageStats(){
+            console.log('In service');
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/stats/home-page'
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
