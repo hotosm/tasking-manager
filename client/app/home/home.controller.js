@@ -12,8 +12,8 @@
     function homeController(statsService) {
         var vm = this;
         vm.mappersOnline = 0;
-        vm.tasksMapped = 1123123;
-        vm.totalMappers = 62123;
+        vm.tasksMapped = 0;
+        vm.totalMappers = 0;
 
         activate();
 
@@ -27,9 +27,12 @@
             var resultsPromise = statsService.getHomePageStats();
             resultsPromise.then(function (data) {
                 vm.stats = data;
-                vm.mappersOnline = vm.stats.mappersOnline;
+                console.log(vm.stats);
+                vm.mappersOnline = data.mappersOnline;
+                vm.tasksMapped = data.tasksMapped;
+                vm.totalMappers = data.totalMappers;
             }, function (data) {
-                // TODO
+                // Swallow error counters will show 0 but not catastrophic
             });
         }
     }
