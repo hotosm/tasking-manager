@@ -138,6 +138,7 @@ class HomePageStatsAPI(Resource):
         """
         try:
             stats = StatsService.get_homepage_stats()
+            return stats.to_primitive(), 200
         except Exception as e:
             error_msg = f'Unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

@@ -1,3 +1,5 @@
+from cachetools import TTLCache, cached
+
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
     ProjectActivityDTO, HomePageStatsDTO
@@ -7,6 +9,9 @@ from server.models.postgis.task import TaskHistory, User, Task
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
+
+
+homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
 
 class StatsService:
@@ -164,6 +169,7 @@ class StatsService:
         return contrib_dto
 
     @staticmethod
+    @cached(homepage_stats_cache)
     def get_homepage_stats() -> HomePageStatsDTO:
         """ Get overall TM stats to give community a feel for progress that's being made """
         dto = HomePageStatsDTO()
