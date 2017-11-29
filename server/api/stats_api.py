@@ -136,4 +136,9 @@ class HomePageStatsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        return {"mappersOnline": 100}, 200
+        try:
+            stats = StatsService.get_homepage_stats()
+        except Exception as e:
+            error_msg = f'Unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

@@ -1,10 +1,9 @@
 from server import db
-from server.models.dtos.project_dto import ProjectSummary
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
-    ProjectActivityDTO
+    ProjectActivityDTO, HomePageStatsDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
-from server.models.postgis.task import TaskHistory, User
+from server.models.postgis.task import TaskHistory, User, Task
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
@@ -163,3 +162,15 @@ class StatsService:
             contrib_dto.user_contributions.append(user_contrib)
 
         return contrib_dto
+
+    @staticmethod
+    def get_homepage_stats() -> HomePageStatsDTO:
+        """ Get overall TM stats to give community a feel for progress that's being made """
+        dto = HomePageStatsDTO()
+
+        dto.mappers_online = Task.query.distinct(Task.locked_by).count()
+        dto.total_mappers = User.query.count()
+        dto.tasks_mapped = Task.query.\
+            filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
+
+        return dto
