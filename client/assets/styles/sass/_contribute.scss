@@ -55,9 +55,9 @@
     margin-bottom: 1rem;
     margin-top: 1em;
     background-color: #fff;
-    -moz-box-shadow:    0px 2px 3px 1px darken($lightest-background-grey, 8%);
-    -webkit-box-shadow: 0px 2px 3px 1px darken($lightest-background-grey, 8%);
-    box-shadow:         0px 2px 3px 1px darken($lightest-background-grey, 8%);
+    -moz-box-shadow:    0 2px 3px 1px darken($lightest-background-grey, 8%);
+    -webkit-box-shadow: 0 2px 3px 1px darken($lightest-background-grey, 8%);
+    box-shadow:         0 2px 3px 1px darken($lightest-background-grey, 8%);
     transition: all 0.3s ease 0s;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
@@ -87,15 +87,15 @@
 
     &:active {
       border: 1.5px solid darken($lightest-background-grey, 40%);
-      -moz-box-shadow:    0px 5px 5px 1px darken($lightest-background-grey, 18%);
-      -webkit-box-shadow: 0px 5px 5px 1px darken($lightest-background-grey, 18%);
-      box-shadow:         0px 5px 5px 1px darken($lightest-background-grey, 18%);
+      -moz-box-shadow:    0 5px 5px 1px darken($lightest-background-grey, 18%);
+      -webkit-box-shadow: 0 5px 5px 1px darken($lightest-background-grey, 18%);
+      box-shadow:         0 5px 5px 1px darken($lightest-background-grey, 18%);
     }
 
     &:hover {
-      -moz-box-shadow:    0px 5px 5px 1px darken($lightest-background-grey, 11%);
-      -webkit-box-shadow: 0px 5px 5px 1px darken($lightest-background-grey, 11%);
-      box-shadow:         0px 5px 5px 1px darken($lightest-background-grey, 11%);
+      -moz-box-shadow:    0 5px 5px 1px darken($lightest-background-grey, 11%);
+      -webkit-box-shadow: 0 5px 5px 1px darken($lightest-background-grey, 11%);
+      box-shadow:         0 5px 5px 1px darken($lightest-background-grey, 11%);
       margin-top: .5em;
       margin-bottom: 1.5em;
     }

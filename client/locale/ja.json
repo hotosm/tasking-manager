@@ -283,6 +283,7 @@
 	"Required": "必須",
 	"Reset": "リセット",
 	"Return to inbox": "受信箱を表示",
+	"Return": "Return",
 	"Roads": "道路",
 	"Role": "ロール",
 	"Save changes": "変更を保存",
@@ -439,5 +440,6 @@
 	"You need to add at least one allowed user to a private project.": "プライベートプロジェクトには、少なくとも1人のユーザを追加する必要があります。",
 	"Your profile": "あなたのプロフィール",
 	"Your project has been updated successfully.": "プロジェクトの更新が完了しました。",
-	"Your project was created successfully.": "プロジェクトが正常に作成されました。"
+	"Your project was created successfully.": "プロジェクトが正常に作成されました。",
+	"Back to Previous": "Back to Previous"
 }

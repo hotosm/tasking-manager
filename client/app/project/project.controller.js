@@ -991,7 +991,6 @@
         /**
          * Call api to stop validating currently locked tasks.  Will pass the comment to api.  Will update view and map after unlock.
          * @param comment
-         * @param status
          */
         vm.stopMultiTaskValidation = function (comment) {
             var projectId = vm.projectData.projectId;
@@ -1331,7 +1330,6 @@
         /**
          * Refresh the map and selected task on error
          * @param projectId
-         * @param taskId
          * @param error
          */
         function onLockError(projectId, error) {
@@ -1409,7 +1407,7 @@
 
         /**
          * Higlights the set of tasks on the map
-         * @param array of task ids
+         * @param doneTaskIds - array of task ids
          */
         vm.highlightTasks = function (doneTaskIds) {
             //highlight features
@@ -1419,7 +1417,7 @@
 
         /**
          * Locks the set of tasks for validation
-         * @param array of task ids
+         * @param doneTaskIds - array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
             vm.selectInteraction.getFeatures().clear();
@@ -1499,7 +1497,7 @@
 
         /**
          * Search for a user
-         * @param searchValue
+         * @param search
          */
         vm.searchUser = function (search) {
             // Search for a user by calling the API

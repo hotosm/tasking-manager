@@ -129,7 +129,7 @@
 	"Go to the homepage": "Перейти на головну сторінку",
 	"Go to the instructions tab": "Перейти на вкладку з інструкціями",
 	"Go to the mapping tab": "Перейти до вкладки для мапінгу",
-	"Grid view": "Сітка",
+	"Grid view": "Плитками",
 	"High": "Високий",
 	"History": "Історія",
 	"HOT Tasking Manager": "Менеджер Завдань HOT",
@@ -283,6 +283,7 @@
 	"Required": "Потребує",
 	"Reset": "Скинути",
 	"Return to inbox": "Повернутись до Вхідних",
+	"Return": "Return",
 	"Roads": "Дороги",
 	"Role": "Роль",
 	"Save changes": "Зберегти зміни",
@@ -439,5 +440,6 @@
 	"You need to add at least one allowed user to a private project.": "Вам потрібно додати, що найменше, одного користувача до приватного проекту.",
 	"Your profile": "Ваш профіль",
 	"Your project has been updated successfully.": "Ваш проект оновлено.",
-	"Your project was created successfully.": "Ваш поект створено."
+	"Your project was created successfully.": "Ваш поект створено.",
+	"Back to Previous": "Back to Previous"
 }

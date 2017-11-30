@@ -29,11 +29,17 @@ class TestStatsService(unittest.TestCase):
         if self.skip_tests:
             return
 
+        if os.getenv('TM_SMTP_HOST') is None:
+            return  # If SMTP not setup there's no value attempting the integration tests
+
         self.assertTrue(SMTPService.send_verification_email('hot-test@mailinator.com', 'mrtest'))
 
     def test_send_alert(self):
         if self.skip_tests:
             return
+
+        if os.getenv('TM_SMTP_HOST') is None:
+            return  # If SMTP not setup there's no value attempting the integration tests
 
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
                                                      'Iain Hunter'))

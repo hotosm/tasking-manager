@@ -283,6 +283,7 @@
 	"Required": "Required",
 	"Reset": "Reset",
 	"Return to inbox": "Return to inbox",
+	"Return": "Return",
 	"Roads": "Veier",
 	"Role": "Rolle",
 	"Save changes": "Save changes",
@@ -439,5 +440,6 @@
 	"You need to add at least one allowed user to a private project.": "You need to add at least one allowed user to a private project.",
 	"Your profile": "Din profil",
 	"Your project has been updated successfully.": "Your project has been updated successfully.",
-	"Your project was created successfully.": "Your project was created successfully."
+	"Your project was created successfully.": "Your project was created successfully.",
+	"Back to Previous": "Back to Previous"
 }
