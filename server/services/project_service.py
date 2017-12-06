@@ -87,6 +87,9 @@ class ProjectService:
     @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):
         """ Check if the user is allowed to map the on the project in scope """
+        if UserService.is_user_blocked(user_id):
+            return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
         project = ProjectService.get_project_by_id(project_id)
 
         if ProjectStatus(project.status) != ProjectStatus.PUBLISHED:
@@ -132,6 +135,9 @@ class ProjectService:
     @staticmethod
     def is_user_permitted_to_validate(project_id, user_id):
         """ Check if the user is allowed to validate on the project in scope """
+        if UserService.is_user_blocked(user_id):
+            return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
         project = ProjectService.get_project_by_id(project_id)
 
         if project.enforce_validator_role and not UserService.is_user_validator(user_id):

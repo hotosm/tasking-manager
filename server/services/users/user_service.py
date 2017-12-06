@@ -136,6 +136,16 @@ class UserService:
         return False
 
     @staticmethod
+    def is_user_blocked(user_id: int) -> bool:
+        """ Determines if a user is blocked """
+        user = UserService.get_user_by_id(user_id)
+
+        if UserRole(user.role) == UserRole.READ_ONLY:
+            return True
+
+        return False
+
+    @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
         """ Add project to mapped projects if it doesn't exist, otherwise return """
         User.upsert_mapped_projects(user_id, project_id)
