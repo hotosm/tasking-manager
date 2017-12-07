@@ -61,6 +61,7 @@ class ValidatingNotAllowed(Enum):
 
 class UserRole(Enum):
     """ Describes the role a user can be assigned, app doesn't support multiple roles """
+    READ_ONLY = -1
     MAPPER = 0
     ADMIN = 1
     PROJECT_MANAGER = 2
