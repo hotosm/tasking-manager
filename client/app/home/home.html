@@ -8,11 +8,30 @@
            href="/contribute"><span>{{ 'Start Mapping' | translate }}</span></a>
     </div>
 </header>
-<section class="section__body section__body--secondary">
-    <div class="home-page-stats">
-        <h2>Mappers Online <br> {{ homeCtrl.mappersOnline }} </h2>
-        <h2>Tasks Mapped<br> {{ homeCtrl.tasksMapped }}</h2>
-        <h2>Total Mappers<br> {{ homeCtrl.totalMappers }}</h2>
+<section class="section__body--secondary--dark">
+    <div class="homepage-stats-container row--centered">
+        <div class="inner">
+            <ul class="homepage-stats__cards">
+                <li id="homepage-stats-1" class="homepage-stats__card">
+                    <div class="stats-card__amount">
+                        <strong>{{ homeCtrl.mappersOnline }}</strong>
+                    </div>
+                    <div class="stats-card__title">Mappers Online</div>
+                </li>
+                <li id="homepage-stats-2" class="homepage-stats__card">
+                    <div class="stats-card__amount">
+                        <strong>{{ homeCtrl.tasksMapped }}</strong>
+                    </div>
+                    <div class="stats-card__title">Tasks Mapped</div>
+                </li>
+                <li id="homepage-stats-3" class="homepage-stats__card">
+                    <div class="stats-card__amount">
+                        <strong>{{ homeCtrl.totalMappers }}</strong>
+                    </div>
+                    <div class="stats-card__title">Total Mappers</div>
+                </li>
+            </ul>
+        </div>
     </div>
 </section>
 <section class="section__body section__body--secondary">
