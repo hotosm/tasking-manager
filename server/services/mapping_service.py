@@ -138,7 +138,7 @@ class MappingService:
 
     @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
-        """ 
+        """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.  You can use the following URL to test locally:
         http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v1/project/111/tasks_as_gpx%3Ftasks=2
         """
@@ -164,11 +164,12 @@ class MappingService:
         if task_ids_str is not None:
             task_ids = map(int, task_ids_str.split(','))
             tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or tasks.count() == 0:
+                raise NotFound()
         else:
             tasks = Task.get_all_tasks(project_id)
-
-        if not tasks or len(tasks) == 0:
-            raise NotFound()
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
 
         for task in tasks:
             task_geom = shape.to_shape(task.geometry)
@@ -195,11 +196,12 @@ class MappingService:
         if task_ids_str:
             task_ids = map(int, task_ids_str.split(','))
             tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or tasks.count() == 0:
+                raise NotFound()
         else:
             tasks = Task.get_all_tasks(project_id)
-
-        if not tasks or len(tasks) == 0:
-            raise NotFound()
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
 
         fake_id = -1  # We use fake-ids to ensure XML will not be validated by OSM
         for task in tasks:
