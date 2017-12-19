@@ -208,6 +208,11 @@
                                                     ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
                                                     ng-click="profileCtrl.setRole('ADMIN')">{{ 'Administrator' | translate }}
                                             </button>
+                                            <button class="button button--achromic"
+                                                    ng-class="profileCtrl.userDetails.role === 'READ_ONLY'? 'button--active' : ''"
+                                                    ng-hide="profileCtrl.currentlyLoggedInUser.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
+                                                    ng-click="profileCtrl.setRole('READ_ONLY')">{{ 'Block user' | translate }}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

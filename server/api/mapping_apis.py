@@ -346,8 +346,7 @@ class TasksAsGPX(Resource):
             - in: query
               name: tasks
               type: string
-              required: true
-              description: List of tasks required
+              description: List of tasks; leave blank for all
               default: 1,2
             - in: query
               name: as_file
@@ -368,8 +367,6 @@ class TasksAsGPX(Resource):
             current_app.logger.debug('GPX Called')
             tasks = request.args.get('tasks')
             as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
-            if tasks is None:
-                return {"Error": 'No tasks supplied in querystring'}, 400
 
             xml = MappingService.generate_gpx(project_id, tasks)
 
@@ -379,9 +376,9 @@ class TasksAsGPX(Resource):
 
             return Response(xml, mimetype='text/xml', status=200)
         except NotFound:
-            return {"Error": "No mapped tasks"}, 404
+            return {"Error": "Not found; please check the project and task numbers."}, 404
         except Exception as e:
-            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            error_msg = f'Task as GPX API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -406,8 +403,7 @@ class TasksAsOSM(Resource):
             - in: query
               name: tasks
               type: string
-              required: true
-              description: List of tasks required
+              description: List of tasks; leave blank to retrieve all
               default: 1,2
         responses:
             200:
@@ -419,12 +415,17 @@ class TasksAsOSM(Resource):
             500:
                 description: Internal Server Error
         """
-        tasks = request.args.get('tasks')
-        if tasks is None:
-            return {"Error": 'No tasks supplied in querystring'}, 400
+        try:
+            tasks = request.args.get('tasks') if request.args.get('tasks') else None
 
-        xml = MappingService.generate_osm_xml(project_id, tasks)
-        return Response(xml, mimetype='text/xml', status=200)
+            xml = MappingService.generate_osm_xml(project_id, tasks)
+            return Response(xml, mimetype='text/xml', status=200)
+        except NotFound:
+            return {"Error": "Not found; please check the project and task numbers."}, 404
+        except Exception as e:
+            error_msg = f'Task as OSM API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
 
 
 class UndoMappingAPI(Resource):
