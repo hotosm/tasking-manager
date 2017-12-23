@@ -405,6 +405,11 @@ class TasksAsOSM(Resource):
               type: string
               description: List of tasks; leave blank to retrieve all
               default: 1,2
+            - in: query
+              name: as_file
+              type: boolean
+              description: Set to true if file download preferred
+              default: False
         responses:
             200:
                 description: OSM XML
@@ -417,8 +422,14 @@ class TasksAsOSM(Resource):
         """
         try:
             tasks = request.args.get('tasks') if request.args.get('tasks') else None
+            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
 
             xml = MappingService.generate_osm_xml(project_id, tasks)
+
+            if as_file:
+                return send_file(io.BytesIO(xml), mimetype='text.xml', as_attachment=True,
+                                 attachment_filename=f'HOT-project-{project_id}.osm')
+
             return Response(xml, mimetype='text/xml', status=200)
         except NotFound:
             return {"Error": "Not found; please check the project and task numbers."}, 404
