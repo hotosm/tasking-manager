@@ -49,7 +49,7 @@ class ValidatorService:
             if error_reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError('User must accept license to map this task')
             else:
-                raise ValidatatorServiceError(f'Mapping not allowed because: {error_reason.name}')
+                raise ValidatatorServiceError(f'Validation not allowed because: {error_reason.name}')
 
         # Lock all tasks for validation
         dtos = []
