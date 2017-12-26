@@ -32,6 +32,11 @@ class ProjectAPI(Resource):
               required: true
               type: integer
               default: 1
+            - in: query
+              name: as_file
+              type: boolean
+              description: Set to true if file download is preferred
+              default: False
         responses:
             200:
                 description: Project found
@@ -43,9 +48,17 @@ class ProjectAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
+
             project_dto = ProjectService.get_project_dto_for_mapper(project_id,
                                                                     request.environ.get('HTTP_ACCEPT_LANGUAGE'))
-            return project_dto.to_primitive(), 200
+            project_dto = project_dto.to_primitive()
+
+            if as_file:
+                return send_file(io.BytesIO(geojson.dumps(project_dto).encode('utf-8')), mimetype='application/json',
+                                 as_attachment=True, attachment_filename=f'project_{str(project_id)}.json')
+
+            return project_dto, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except ProjectServiceError as e:
