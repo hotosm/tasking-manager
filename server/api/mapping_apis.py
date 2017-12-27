@@ -7,6 +7,7 @@ from schematics.exceptions import DataError
 
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
+from server.services.project_service import ProjectService, ProjectServiceError
 from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.users.user_service import UserService
 
@@ -326,6 +327,59 @@ class UnlockTaskForMappingAPI(Resource):
             UserService.check_and_update_mapper_level(tm.authenticated_user_id)
 
 
+class TasksAsJson(Resource):
+
+    def get(self, project_id):
+        """
+        Get tasks as JSON
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - in: query
+              name: as_file
+              type: boolean
+              description: Set to true if file download preferred
+              default: True
+        responses:
+            200:
+                description: Project found
+            403:
+                description: Forbidden
+            404:
+                description: Project not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else True
+
+            tasks = ProjectService.get_project_tasks(int(project_id))
+
+            if as_file:
+                tasks = str(tasks).encode('utf-8')
+                return send_file(io.BytesIO(tasks), mimetype='application/json', as_attachment=True,
+                                 attachment_filename=f'{str(project_id)}-tasks.geoJSON')
+
+            return tasks, 200
+        except NotFound:
+            return {"Error": "Project or Task Not Found"}, 404
+        except ProjectServiceError as e:
+            return {"Error": str(e)}, 403
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(e)
+            return {"Error": error_msg}, 500
+
+
 class TasksAsGPX(Resource):
 
     def get(self, project_id):
@@ -405,6 +459,11 @@ class TasksAsOSM(Resource):
               type: string
               description: List of tasks; leave blank to retrieve all
               default: 1,2
+            - in: query
+              name: as_file
+              type: boolean
+              description: Set to true if file download preferred
+              default: False
         responses:
             200:
                 description: OSM XML
@@ -417,8 +476,14 @@ class TasksAsOSM(Resource):
         """
         try:
             tasks = request.args.get('tasks') if request.args.get('tasks') else None
+            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
 
             xml = MappingService.generate_osm_xml(project_id, tasks)
+
+            if as_file:
+                return send_file(io.BytesIO(xml), mimetype='text.xml', as_attachment=True,
+                                 attachment_filename=f'HOT-project-{project_id}.osm')
+
             return Response(xml, mimetype='text/xml', status=200)
         except NotFound:
             return {"Error": "Not found; please check the project and task numbers."}, 404

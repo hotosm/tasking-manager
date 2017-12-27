@@ -46,6 +46,11 @@ class ProjectService:
         return project.as_dto_for_mapping(locale)
 
     @staticmethod
+    def get_project_tasks(project_id):
+        project = ProjectService.get_project_by_id(project_id)
+        return project.all_tasks_as_geojson()
+
+    @staticmethod
     def get_project_aoi(project_id):
         project = ProjectService.get_project_by_id(project_id)
         return project.get_aoi_geometry_as_geojson()
@@ -139,6 +144,9 @@ class ProjectService:
             return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         project = ProjectService.get_project_by_id(project_id)
+
+        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(user_id):
+            return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 
         if project.enforce_validator_role and not UserService.is_user_validator(user_id):
             return False, ValidatingNotAllowed.USER_NOT_VALIDATOR

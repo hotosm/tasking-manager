@@ -377,6 +377,12 @@ class Project(db.Model):
 
         return project_dto
 
+    def all_tasks_as_geojson(self):
+        """ Creates a geojson of all areas """
+        project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+
+        return project_tasks
+
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """
         project, project_dto = self._get_project_and_base_dto()
