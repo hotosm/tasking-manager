@@ -27,7 +27,7 @@
         return service;
 
         /**
-         * Login to OSM account 
+         * Login to OSM account
          */
         function login(redirectURL){
             // Force a logout first by clearing the local storage. This prevents getting stuck in a loop with an
@@ -45,7 +45,7 @@
             }
             $window.location.href = configService.tmAPI + '/auth/login?redirect_to=' + urlBeforeLoggingIn;
         }
-        
+
         /**
          * Log the user out by resetting the local storage ('cookies')
          */

@@ -65,12 +65,17 @@
                                     <p>{{ profileCtrl.osmUserDetails.changesetCount}} {{ 'Total OSM changesets' | translate }}</p>
                                 </div>
                                 <p>
-                                    <a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}" target="_blank">
+                                    <a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}" target="_blank" rel="noopener">
                                         {{ 'OSM profile' | translate }}
                                     </a>
                                    </p>
                                 <p>
-                                    <a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}/history" target="_blank">
+                                    <a href="http://www.missingmaps.org/users/#/{{ profileCtrl.username }}/history" target="_blank" rel="noopener">
+                                        {{ 'Missing Maps Badges' | translate }}
+                                    </a>
+                                    </p>
+                                <p>
+                                    <a href="http://www.openstreetmap.org/user/{{ profileCtrl.username }}/history" target="_blank" rel="noopener">
                                         {{ 'OSM edit history' | translate }}
                                     </a>
                                 </p>
@@ -105,7 +110,7 @@
                                                ng-show="profileCtrl.userDetails.facebookId || profileCtrl.editDetails">Facebook:</label>
                                         <a ng-hide="profileCtrl.editDetails"
                                            href="http://www.facebook.com/{{ profileCtrl.userDetails.facebookId }}"
-                                           target="_blank">
+                                           target="_blank" rel="noopener">
                                             {{ profileCtrl.userDetails.facebookId }}
                                         </a>
                                         <input ng-show="profileCtrl.editDetails" type="text" size="30"
@@ -118,7 +123,7 @@
                                                ng-show="profileCtrl.userDetails.twitterId || profileCtrl.editDetails">Twitter:</label>
                                         <a ng-hide="profileCtrl.editDetails"
                                            href="http://www.twitter.com/{{ profileCtrl.userDetails.twitterId }}"
-                                           target="_blank">
+                                           target="_blank" rel="noopener">
                                             {{ profileCtrl.userDetails.twitterId }}
                                         </a>
                                         <input ng-show="profileCtrl.editDetails" type="text" size="30"
@@ -131,7 +136,7 @@
                                                ng-show="profileCtrl.userDetails.linkedinId || profileCtrl.editDetails">LinkedIn:</label>
                                         <a ng-hide="profileCtrl.editDetails"
                                            href="http://www.linkedin.com/in/{{ profileCtrl.userDetails.linkedinId }}"
-                                           target="_blank">
+                                           target="_blank" rel="noopener">
                                             {{ profileCtrl.userDetails.linkedinId }}
                                         </a>
                                         <input ng-show="profileCtrl.editDetails" type="text" size="30"
@@ -202,6 +207,11 @@
                                                     ng-class="profileCtrl.userDetails.role === 'ADMIN'? 'button--active' : ''"
                                                     ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
                                                     ng-click="profileCtrl.setRole('ADMIN')">{{ 'Administrator' | translate }}
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-class="profileCtrl.userDetails.role === 'READ_ONLY'? 'button--active' : ''"
+                                                    ng-hide="profileCtrl.currentlyLoggedInUser.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
+                                                    ng-click="profileCtrl.setRole('READ_ONLY')">{{ 'Block user' | translate }}
                                             </button>
                                         </div>
                                     </div>

@@ -89,6 +89,7 @@ class ProjectDTO(Model):
     priority_areas = BaseType(serialized_name='priorityAreas')
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
+    active_mappers = IntType(serialized_name='activeMappers')
 
 
 class ProjectSearchDTO(Model):
@@ -100,6 +101,7 @@ class ProjectSearchDTO(Model):
     campaign_tag = StringType()
     page = IntType(required=True)
     text_search = StringType()
+    is_project_manager = BooleanType(required=True, default=False)
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
@@ -109,7 +111,7 @@ class ProjectSearchDTO(Model):
                 hashable_mapping_types = hashable_mapping_types + mapping_type
 
         return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, self.organisation_tag,
-                     self.campaign_tag, self.page, self.text_search))
+                     self.campaign_tag, self.page, self.text_search, self.is_project_manager))
 
 
 class ProjectSearchBBoxDTO(Model):
@@ -131,6 +133,8 @@ class ListSearchResultDTO(Model):
     campaign_tag = StringType(serialized_name='campaignTag')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
+    status = StringType(serialized_name='status')
+    active_mappers = IntType(serialized_name='activeMappers')
 
 
 class ProjectSearchResultsDTO(Model):

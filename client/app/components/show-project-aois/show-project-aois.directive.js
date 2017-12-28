@@ -40,9 +40,9 @@
         vm.otherProjectMaxResolution = 1250
         vm.currentResolution = 0;
         vm.errorLoadingExistingProjects = false;
-        
+
         activate();
-        
+
         function activate(){
             vm.map = mapService.getOSMMap();
         }
@@ -57,7 +57,7 @@
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             vm.currentResolution = vm.map.getView().getResolution();
         });
-        
+
         /**
          * Add a layer that shows the AOIs of other projects
          */

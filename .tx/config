@@ -13,6 +13,7 @@ trans.hu = client/locale/hu.json
 trans.id = client/locale/id.json
 trans.it = client/locale/it.json
 trans.ja = client/locale/ja.json
+trans.mg = client/locale/mg.json
 trans.nb = client/locale/nb.json
 trans.nl_NL = client/locale/nl_NL.json
 trans.pt_BR = client/locale/pt_BR.json

@@ -9,7 +9,7 @@
         .service('tagService', ['$http', '$q','configService', tagService]);
 
     function tagService($http, $q, configService) {
-        
+
         var service = {
             getOrganisationTags: getOrganisationTags,
             getCampaignTags: getCampaignTags

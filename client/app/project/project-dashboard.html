@@ -2,11 +2,16 @@
     <section class="section section--asided">
         <header class="section__header">
             <div class="inner">
-                <h1 class="section__title">
+                <div class="heading-dashboard">
+                    <h1 class="section__title">
                     {{ 'Activity and Stats' | translate }}
-                </h1>
-                <a ng-href="/project/{{ projectDashboardCtrl.projectId }}"
-                   class="heading-alt">#{{ projectDashboardCtrl.projectId }} - {{ projectDashboardCtrl.project.name }}
+                    </h1>
+                    <a
+                        class="heading-alt">#{{ projectDashboardCtrl.projectId }} - {{ projectDashboardCtrl.project.name }}
+                    </a>
+                </div>
+                <a class="button button--outline pull-right" ng-href="/project/{{ projectDashboardCtrl.projectId }}">
+                     {{ 'Return to project' | translate }}
                 </a>
             </div>
         </header>
@@ -119,8 +124,8 @@
                                 <tr ng-repeat="comment in projectDashboardCtrl.projectComments | orderBy: '-commentDate'">
                                     <td>{{ comment.comment }}</td>
                                     <td><span am-time-ago="comment.commentDate | amUtc | amLocal"></span></td>
-                                    <td><a href="/user/{{ comment.userName }}" target="_blank">{{ comment.userName }}</a></td>
-                                    <td><a href="/project/{{ projectDashboardCtrl.projectId }}?task={{ comment.taskId}}" target="_blank">Task {{ comment.taskId }}</a></td>
+                                    <td><a href="/user/{{ comment.userName }}" target="_blank" rel="noopener">{{ comment.userName }}</a></td>
+                                    <td><a href="/project/{{ projectDashboardCtrl.projectId }}?task={{ comment.taskId}}" target="_blank" rel="noopener">Task {{ comment.taskId }}</a></td>
                                 </tr>
                             </tbody>
                         </table>

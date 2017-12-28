@@ -80,7 +80,6 @@
             }
         })
 
-
         /**
          * Get chat messages
          */
@@ -110,7 +109,7 @@
 
         /**
          * Search for a user
-         * @param searchValue
+         * @param search
          */
         vm.searchUser = function (search) {
             // Search for a user by calling the API
@@ -153,7 +152,7 @@
                 }
                 // set the location.hash to the id of the element to scroll to
                 $timeout(function () {
-                    // TODO: find out if it is possible remove location hash 
+                    // TODO: find out if it is possible remove location hash
                     $anchorScroll(['bottom']);
                 }, 1000);
                 vm.message = '';

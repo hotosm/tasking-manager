@@ -3,8 +3,8 @@
     'use strict';
 
     /**
-     * @fileoverview This file provides a fileread directive. It uses a FileReader to read the file and 
-     * updates the scope. You can't automatically bind changes from <input type="file"> to the controller. 
+     * @fileoverview This file provides a fileread directive. It uses a FileReader to read the file and
+     * updates the scope. You can't automatically bind changes from <input type="file"> to the controller.
      * By using the directive, you can access the file value.
      *
      * Example usage:

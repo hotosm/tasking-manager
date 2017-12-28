@@ -13,7 +13,7 @@
         var vm = this;
         vm.userName = '';
         vm.sessionToken = '';
-        
+
         activate();
 
         function activate() {

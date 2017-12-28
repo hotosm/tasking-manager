@@ -66,14 +66,14 @@
       display: inline-block;
       margin-top: .4em;
 
-      @include media(medium-up) {
+      @include media(large-up) {
         &:before {
           font-size: 1.5rem;
         }
       }
     }
 
-    @include media(medium-up) {
+    @include media(large-up) {
       display: none;
     }
   }
@@ -92,13 +92,9 @@
     top: 3.5em;
     border: 1px solid lighten($lightgrey, 10%);
     z-index: 30;
-
-    .global-menu-item--pipe {
-      border-right: 0;
-    }
   }
 
-  @include media(medium-up) {
+  @include media(large-up) {
     padding: 0;
     display: block;
     position: inherit;
@@ -111,7 +107,7 @@
   margin: 0;
   padding: 0;
   float: left;
-  @include media(medium-up) {
+  @include media(large-up) {
     li {
       display: inline-block;
       margin: 0 ($global-spacing / 2) 0 0;
@@ -124,8 +120,10 @@
 }
 
 .menu-secondary-wrapper {
-  float: right;
   list-style: none;
+  @include media(large-up) {
+    float: right;
+  }
 }
 
 .global-menu-item {
@@ -150,12 +148,12 @@
   }
 }
 
-.global-menu-item--pipe {
-  margin-right: 1.2em;
-  padding-right: 1.5em;
-  border-right: 1px solid darken($lightest-background-grey, 5%);
-  &:hover {
-    border-bottom: 2px solid #fff;
+@include media(large-up) {
+  .global-menu-divider {
+    border-right: 1px solid darken($lightest-background-grey, 5%);
+    &:after {
+      content: '\00a0';
+    }
   }
 }
 
@@ -170,10 +168,10 @@
   overflow-y: scroll;
   background-color: #fff;
   border: 1px solid darken($lightest-background-grey, 5%);
-  -moz-box-shadow:    0px 1px 2px 1px darken($lightest-background-grey, 5%);
-  -webkit-box-shadow: 0px 1px 2px 1px darken($lightest-background-grey, 5%);
-  box-shadow:         0px 1px 2px 1px darken($lightest-background-grey, 5%);
-  right: 0em;
+  -moz-box-shadow:    0 1px 2px 1px darken($lightest-background-grey, 5%);
+  -webkit-box-shadow: 0 1px 2px 1px darken($lightest-background-grey, 5%);
+  box-shadow:         0 1px 2px 1px darken($lightest-background-grey, 5%);
+  right: 0;
   top: 3.5em;
 }
 
@@ -195,9 +193,9 @@
 
 .drop__menu--iconified {
   &:last-of-type {
-    margin-bottom: 0em;
+    margin-bottom: 0;
     border-bottom: none;
-    padding-bottom: 0em;
+    padding-bottom: 0;
   }
 }
 
@@ -521,10 +519,13 @@
 .tab--item {
   list-style: none;
   display: inline-block;
-  padding: .5em .8em;
   margin-right: .5em;
-  &:hover {
-    color: $link-color;
+  a {
+    padding: .5em .8em;
+    display: block;
+    &:hover {
+      color: $link-color;
+    }
   }
 }
 

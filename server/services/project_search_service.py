@@ -6,6 +6,7 @@ from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResult
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
 from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform, ST_Area
+from server.services.users.user_service import UserService
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -17,7 +18,6 @@ search_cache = TTLCache(maxsize=128, ttl=300)
 # max area allowed for passed in bbox, calculation shown to help future maintenace
 # client resolution (mpp)* arbitrary large map size on a large screen in pixels * 50% buffer, all squared
 MAX_AREA = math.pow(1250*4275*1.5,2)
-
 
 
 class ProjectSearchServiceError(Exception):
@@ -81,6 +81,8 @@ class ProjectSearchService:
                 (project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
             list_dto.percent_validated = round(
                 ((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
+            list_dto.status = ProjectStatus(project.status).name
+            list_dto.active_mappers = Project.get_active_mappers(project.id)
 
             dto.results.append(list_dto)
 
@@ -100,9 +102,13 @@ class ProjectSearchService:
                                  Project.tasks_bad_imagery,
                                  Project.tasks_mapped,
                                  Project.tasks_validated,
+                                 Project.status,
                                  Project.total_tasks).join(ProjectInfo) \
-            .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(
-            ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
+            .filter(ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])) \
+            .filter(Project.private != True)
+
+        if not search_dto.is_project_manager:
+            query = query.filter(Project.status == ProjectStatus.PUBLISHED.value)
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != 'ALL':
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)

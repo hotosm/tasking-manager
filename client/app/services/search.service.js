@@ -9,7 +9,7 @@
         .service('searchService', ['$http', '$q','configService','languageService', 'authService', searchService]);
 
     function searchService($http, $q, configService, languageService, authService) {
-        
+
         var service = {
             searchProjects: searchProjects,
             getProjectsWithinBBOX: getProjectsWithinBBOX
@@ -19,7 +19,7 @@
 
         /**
          * Search projects
-         * @param mapperLevel
+         * @param searchParams
          * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
          */
         function searchProjects(searchParams){

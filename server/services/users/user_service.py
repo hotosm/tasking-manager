@@ -40,6 +40,14 @@ class UserService:
         return user
 
     @staticmethod
+    def update_username(user_id: int, osm_username: str) -> User:
+        user = UserService.get_user_by_id(user_id)
+        if user.username != osm_username:
+            user.update_username(osm_username)
+
+        return user
+
+    @staticmethod
     def register_user(osm_id, username, changeset_count):
         """
         Creates user in DB 
@@ -123,6 +131,16 @@ class UserService:
         user = UserService.get_user_by_id(user_id)
 
         if UserRole(user.role) in [UserRole.VALIDATOR, UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+            return True
+
+        return False
+
+    @staticmethod
+    def is_user_blocked(user_id: int) -> bool:
+        """ Determines if a user is blocked """
+        user = UserService.get_user_by_id(user_id)
+
+        if UserRole(user.role) == UserRole.READ_ONLY:
             return True
 
         return False
@@ -228,3 +246,20 @@ class UserService:
 
         user.save()
         return user
+
+    @staticmethod
+    def refresh_mapper_level() -> int:
+        """ Helper function to run thru all users in the DB and update their mapper level """
+        users = User.get_all_users_not_pagainated()
+        users_updated = 1
+        total_users = len(users)
+
+        for user in users:
+            UserService.check_and_update_mapper_level(user.id)
+
+            if users_updated % 50 == 0:
+                print(f'{users_updated} users updated of {total_users}')
+
+            users_updated += 1
+
+        return users_updated

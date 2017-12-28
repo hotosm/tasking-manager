@@ -3,6 +3,7 @@
         <div class="inner">
             <div>
                 <mark>{{ projectCtrl.projectData.projectPriority }}</mark>
+                <span class="active-mappers">{{ projectCtrl.projectData.activeMappers}} - Active Mappers</span>
             </div>
             <div class="header--withShare">
                 <div class="section__header--left">
@@ -107,25 +108,33 @@
                         title="{{ 'Go to the instructions tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
-                        {{ 'Instructions' | translate }}
+                        <a href="#">
+                            {{ 'Instructions' | translate }}
+                        </a>
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'mapping'"
                         title="{{ 'Go to the mapping tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
-                        {{ 'Map' | translate }}
+                        <a href="#">
+                            {{ 'Map' | translate }}
+                        </a>
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'validation'"
                         title="{{ 'Go to the validation tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
-                        {{ 'Validate' | translate }}
+                        <a href="#">
+                            {{ 'Validate' | translate }}
+                        </a>
                     </li>
                     <li ng-click="projectCtrl.currentTab = 'chat'"
                         title="{{ 'Go to the chat tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
-                        {{ 'Questions and Comments' | translate }}
+                        <a href="#">
+                            {{ 'Questions and Comments' | translate }}
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -399,6 +408,9 @@
                                                 </span>
                                             </div>
                                         </div>
+                                        <div>
+                                            <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
+                                        </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -535,7 +547,7 @@
                                             <dd>
                                                 <button ng-click="projectCtrl.selectRandomTaskValidate()"
                                                         class="button">
-                                                    {{ 'Generate a Random Task' | translate }}
+                                                    {{ 'Validate a Random Task' | translate }}
                                                 </button>
                                             </dd>
 
@@ -623,7 +635,7 @@
                             <!-- task viewing and mapping UI's -->
                             <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked' || projectCtrl.validatingStep === 'multi-locked'">
                                 <!-- task viewing UI -->
-                                <h2>{{ 'Validation' | translate }}</h2>
+                                <h3>{{ 'Validation' | translate }}</h3>
                                 <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                     <!-- task information -->
 
@@ -729,6 +741,9 @@
                                                 </span>
                                             </div>
                                         </div>
+                                        <div>
+                                            <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
+                                        </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -777,7 +792,7 @@
                                             <li>
                                                 <button class="button button--achromic button--outline--secondary"
                                                         ng-click="projectCtrl.stopValidating(projectCtrl.comment)">
-                                                    {{ 'Stop Mapping' | translate }}
+                                                    {{ 'Stop Validating' | translate }}
                                                 </button>
                                             </li>
                                         </ul>
@@ -869,7 +884,7 @@
                                             <li>
                                                 <button class="button button--achromic button--outline--secondary"
                                                         ng-click="projectCtrl.stopMultiTaskValidation(projectCtrl.comment)">
-                                                    {{ 'Stop Mapping' | translate }}
+                                                    {{ 'Stop Validating' | translate }}
                                                 </button>
                                             </li>
                                         </ul>

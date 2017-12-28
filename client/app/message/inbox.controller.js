@@ -14,7 +14,7 @@
         vm.messages = [];
         vm.showDeleteMessageModal = false;
         vm.errorRetrievingMessages = false;
-       
+
         activate();
 
         function activate() {
@@ -40,7 +40,6 @@
 
         /**
          * Delete a message
-         * @param messageId
          */
         vm.deleteMessage = function(){
             vm.deleteMessageFail = false;
