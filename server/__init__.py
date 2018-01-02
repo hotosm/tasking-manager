@@ -57,6 +57,15 @@ def create_app(env=None):
     return app
 
 
+def init_counters(app):
+    """ Initialise homepage counters so that users don't see 0 users on first load of application"""
+    from server.services.stats_service import StatsService
+
+    app.logger.debug('Initialising Homepage Counters')
+    with app.app_context():
+        StatsService.get_homepage_stats()
+
+
 def initialise_logger(app):
     """
     Read environment config then initialise a 2MB rotating log.  Prod Log Level can be reduced to help diagnose Prod

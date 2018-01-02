@@ -3,7 +3,7 @@ import base64
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 
-from server import create_app
+from server import create_app, init_counters
 from server.services.users.authentication_service import AuthenticationService
 from server.services.users.user_service import UserService
 
@@ -17,7 +17,9 @@ for key in ['TM_DB','TM_SECRET','TM_CONSUMER_KEY','TM_CONSUMER_SECRET','TM_ENV']
 
 # Initialise the flask app object
 application = create_app()
+init_counters(application)
 manager = Manager(application)
+
 
 # Enable db migrations to be run via the command line
 manager.add_command('db', MigrateCommand)

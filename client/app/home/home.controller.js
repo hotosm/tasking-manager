@@ -18,11 +18,12 @@
         activate();
 
         function activate() {
-            console.log('iain');
             getHomePageStats();
         }
 
-
+        /**
+         * Gets mapping stats for display on homepage
+         */
         function getHomePageStats() {
             var resultsPromise = statsService.getHomePageStats();
             resultsPromise.then(function (data) {
