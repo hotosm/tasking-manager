@@ -8,4 +8,7 @@
   background: #d34143;
   color: white;
   text-align: center;
+  @include media(large-up) {
+  	display: none;
+  }
 }
