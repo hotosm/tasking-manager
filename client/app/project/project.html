@@ -17,6 +17,15 @@
                            class="button button--secondary">{{ 'Edit project' | translate }}
                         </a>
                     </div>
+                    <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'">
+                        <p>
+                            {{ 'Download:' | translate }} {{ 'AoI as' | translate }}
+                            <a href="/api/v1/project/{{ projectCtrl.id }}/aoi?as_file=true" target="_blank">.geojson</a>, {{ 'Tasks as' | translate }}
+                            <a href="/api/v1/project/{{ projectCtrl.id }}/tasks?as_file=true" target="_blank">.geojson</a>,
+                            <a href="/api/v1/project/{{ projectCtrl.id }}/tasks-as-osm-xml?as_file=true" target="_blank">.osm</a>,
+                            <a href="/api/v1/project/{{ projectCtrl.id }}/tasks_as_gpx?as_file=true" target="_blank">.gpx</a>
+                        </p>
+                    </div>
                 </div>
                 <div class="component--share">
                     <a class="button button--outline" href=""

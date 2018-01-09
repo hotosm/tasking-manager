@@ -19,6 +19,7 @@ class EnvironmentConfig:
         'access_token_url': 'https://www.openstreetmap.org/oauth/access_token',
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
     }
+    SEND_FILE_MAX_AGE_DEFAULT = 0
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_POOL_SIZE = 10
