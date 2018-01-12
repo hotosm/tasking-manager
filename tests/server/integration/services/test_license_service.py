@@ -9,7 +9,7 @@ class TestLicenseService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('SHIPPABLE', 'false')
+        env = os.getenv('CI', 'false')
 
         # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
         if env == 'true':
