@@ -18,7 +18,7 @@ class TestMappingService(unittest.TestCase):
     def setUpClass(cls):
         env = os.getenv('CI', 'false')
 
-        # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
+        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
         if env == 'true':
             cls.skip_tests = True
 
