@@ -250,6 +250,10 @@ class ProjectSearchAPI(Resource):
               description: text to search
               type: string
               default: serbia
+            - in: query
+              name: projectStatuses
+              description: Authenticated PMs can search for archived or draft statuses
+              type: string
         responses:
             200:
                 description: Projects found
@@ -278,6 +282,9 @@ class ProjectSearchAPI(Resource):
             mapping_types_str = request.args.get('mappingTypes')
             if mapping_types_str:
                 search_dto.mapping_types = map(str, mapping_types_str.split(','))  # Extract list from string
+            project_statuses_str = request.args.get('projectStatuses')
+            if project_statuses_str:
+                search_dto.project_statuses = map(str, project_statuses_str.split(','))
             search_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')

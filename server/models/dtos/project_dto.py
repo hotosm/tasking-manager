@@ -9,6 +9,9 @@ from server.models.postgis.statuses import ProjectStatus, ProjectPriority, Mappi
 
 def is_known_project_status(value):
     """ Validates that Project Status is known value """
+    if type(value) == list:
+        return  # Don't validate the entire list, just the individual values
+
     try:
         ProjectStatus[value.upper()]
     except KeyError:
@@ -97,6 +100,7 @@ class ProjectSearchDTO(Model):
     preferred_locale = StringType(required=True, default='en')
     mapper_level = StringType(validators=[is_known_mapping_level])
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
+    project_statuses = ListType(StringType, validators=[is_known_project_status])
     organisation_tag = StringType()
     campaign_tag = StringType()
     page = IntType(required=True)
@@ -109,9 +113,13 @@ class ProjectSearchDTO(Model):
         if self.mapping_types:
             for mapping_type in self.mapping_types:
                 hashable_mapping_types = hashable_mapping_types + mapping_type
+        hashable_project_statuses = ''
+        if self.project_statuses:
+            for project_status in self.project_statuses:
+                hashable_project_statuses = hashable_project_statuses + project_status
 
-        return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, self.organisation_tag,
-                     self.campaign_tag, self.page, self.text_search, self.is_project_manager))
+        return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, hashable_project_statuses,
+                     self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager))
 
 
 class ProjectSearchBBoxDTO(Model):
