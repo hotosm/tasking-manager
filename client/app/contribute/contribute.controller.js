@@ -25,6 +25,8 @@
 
         // Search parameters
         vm.mapperLevel = 'ALL'; // default to ALL
+        vm.searchDraft = false;
+        vm.searchArchived = false;
         vm.searchRoads = false;
         vm.searchBuildings = false;
         vm.searchWaterways = false;
@@ -79,7 +81,14 @@
          * @param page
          */
         function searchProjects(page) {
+            vm.projectStatuses = [];
             vm.mappingTypes = [];
+            if (vm.searchDraft) {
+                vm.projectStatuses.push("DRAFT");
+            }
+            if (vm.searchArchived) {
+                vm.projectStatuses.push("ARCHIVED");
+            }
             if (vm.searchRoads) {
                 vm.mappingTypes.push("ROADS");
             }
@@ -101,6 +110,15 @@
             // Only add parameters if set
             if (vm.mapperLevel) {
                 searchParams.mapperLevel = vm.mapperLevel;
+            }
+            if (vm.projectStatuses.length > 0) {
+                searchParams.projectStatuses = '';
+                for (var i = 0; i < vm.projectStatuses.length; i++) {
+                    searchParams.projectStatuses += vm.projectStatuses[i];
+                    if (i < vm.projectStatuses.length - 1) {
+                        searchParams.projectStatuses += ',';
+                    }
+                }
             }
             if (vm.mappingTypes.length > 0) {
                 searchParams.mappingTypes = '';
@@ -182,6 +200,7 @@
             $location.search('difficulty', searchParams.mapperLevel);
             $location.search('organisation', searchParams.organisationTag);
             $location.search('campaign', searchParams.campaignTag);
+            $location.search('statuses', searchParams.projectStatuses);
             $location.search('types', searchParams.mappingTypes);
             $location.search('page', searchParams.page);
             $location.search('text', searchParams.textSearch);
@@ -195,6 +214,10 @@
             vm.searchCampaign = $location.search().campaign;
             vm.currentPage = $location.search().page;
             vm.searchText = $location.search().text;
+            var projectStatuses = $location.search().statuses;
+            if (projectStatuses) {
+                populateProjectStatuses(projectStatuses);
+            }
             var mappingTypes = $location.search().types;
             if (mappingTypes) {
                 populateMappingTypes(mappingTypes);
@@ -202,6 +225,21 @@
             // Only update the mapperLevel when it is set
             if ($location.search().difficulty) {
                 vm.mapperLevel = $location.search().difficulty;
+            }
+        }
+        /**
+         * Extract the project statuses from a string
+         * @param projectStatuses
+         */
+        function populateProjectStatuses(projectStatuses) {
+            var projectStatusesArray = projectStatuses.split(',');
+            for (var i = 0; i < projectStatusesArray.length; i++) {
+                if (projectStatusesArray[i] === 'DRAFT') {
+                    vm.searchDraft = true;
+                }
+                if (projectStatusesArray[i] === 'ARCHIVED') {
+                    vm.searchArchived = true;
+                }
             }
         }
 

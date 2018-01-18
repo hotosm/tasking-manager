@@ -109,6 +109,13 @@ class ProjectSearchService:
 
         if not search_dto.is_project_manager:
             query = query.filter(Project.status == ProjectStatus.PUBLISHED.value)
+        else:
+            project_status_array = [ProjectStatus.PUBLISHED.value]
+            if search_dto.project_statuses:
+                for project_status in search_dto.project_statuses:
+                    project_status_array.append(ProjectStatus[project_status].value)
+
+            query = query.filter(Project.status.in_(project_status_array))
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != 'ALL':
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)
