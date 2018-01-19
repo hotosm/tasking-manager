@@ -183,6 +183,14 @@
                     controller: 'validateEmailController',
                     controllerAs: 'validateEmailCtrl',
                     reloadOnSearch: false
+                })
+
+                .when('/404', {
+                    templateUrl: 'app/404/404.html'
+                })
+
+                .otherwise({
+                    redirectTo: '/404'
                 });
 
             // Enable HTML5Mode which means URLS don't have ugly hashbangs in them
