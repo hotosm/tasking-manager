@@ -42,7 +42,7 @@ class EnvironmentConfig:
 class ProdConfig(EnvironmentConfig):
     APP_BASE_URL = 'https://tasks.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=https://tasks.hotosm.org/api/docs'
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
@@ -50,7 +50,7 @@ class ProdConfig(EnvironmentConfig):
 class StageConfig(EnvironmentConfig):
     APP_BASE_URL = 'https://tasks-stage.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=https://tasks-stage.hotosm.org/api/docs'
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
@@ -58,7 +58,7 @@ class StageConfig(EnvironmentConfig):
 class DemoConfig(EnvironmentConfig):
     APP_BASE_URL = 'https://tasks-demo.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=https://tasks-demo.hotosm.org/api/docs'
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
@@ -67,20 +67,22 @@ class StagingConfig(EnvironmentConfig):
     # Currently being used by Thinkwhere
     APP_BASE_URL = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/docs'
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
 
 class DevConfig(EnvironmentConfig):
     APP_BASE_URL = 'http://127.0.0.1:5000'
-    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?url=http://127.0.0.1:5000/api/docs'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = 'logs'
     LOG_LEVEL = logging.DEBUG
 
 
 class DevIPv6Config(EnvironmentConfig):
     APP_BASE_URL = 'http://[::1]:5000'
-    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?url=http://[::1]:5000/api/docs'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = 'logs'
     LOG_LEVEL = logging.DEBUG
