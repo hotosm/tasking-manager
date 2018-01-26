@@ -17,7 +17,10 @@ for key in ['TM_DB','TM_SECRET','TM_CONSUMER_KEY','TM_CONSUMER_SECRET','TM_ENV']
 
 # Initialise the flask app object
 application = create_app()
-init_counters(application)
+try:
+    init_counters(application)
+except Exception:
+    warnings.warn('Homepage counters not initialized.')
 manager = Manager(application)
 
 
