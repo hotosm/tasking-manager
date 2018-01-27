@@ -78,8 +78,8 @@ class MessageService:
             user = UserService.get_user_by_id(contributor[0])
             SMTPService.send_email_alert(user.email_address, user.username)
             msg_count += 1
-            if msg_count == 13:
-                time.sleep(1.5)  # Sleep for 1.5 seconds, after every 13 messages so we don't hit AWS rate limits
+            if msg_count == 5:
+                time.sleep(0.5)  # Sleep for 0.5 seconds to avoid hitting AWS rate limits every 5 messages
                 msg_count = 0
 
     @staticmethod
