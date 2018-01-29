@@ -46,8 +46,6 @@ def verify_token(token):
             current_app.logger.debug(f'User {user_id} is not a PM {request.base_url}')
             return False
 
-    # TODO - move this to flask global object
-
     g.authenticated_user_id = user_id  # Set the user ID into global scope
     return True  # All tests passed token is good for the requested resource
 
