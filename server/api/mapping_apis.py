@@ -8,7 +8,7 @@ from schematics.exceptions import DataError
 from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
 from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
 from server.services.project_service import ProjectService, ProjectServiceError
-from server.services.users.authentication_service import token_auth, tm, verify_token
+from server.services.users.authentication_service import token_auth, tm, verify_token, who_made_request
 from server.services.users.user_service import UserService
 
 
@@ -63,7 +63,7 @@ class MappingTaskAPI(Resource):
             if token:
                 verify_token(token[6:])
 
-            user_id = tm.authenticated_user_id
+            user_id = who_made_request()
 
             task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale, user_id)
             return task.to_primitive(), 200
@@ -130,7 +130,7 @@ class LockTaskForMappingAPI(Resource):
         """
         try:
             lock_task_dto = LockTaskDTO()
-            lock_task_dto.user_id = tm.authenticated_user_id
+            lock_task_dto.user_id = who_made_request()
             lock_task_dto.project_id = project_id
             lock_task_dto.task_id = task_id
             lock_task_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
@@ -217,7 +217,7 @@ class StopMappingAPI(Resource):
         """
         try:
             stop_task = StopMappingTaskDTO(request.get_json())
-            stop_task.user_id = tm.authenticated_user_id
+            stop_task.user_id = who_made_request()
             stop_task.task_id = task_id
             stop_task.project_id = project_id
             stop_task.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
@@ -303,7 +303,7 @@ class UnlockTaskForMappingAPI(Resource):
         """
         try:
             mapped_task = MappedTaskDTO(request.get_json())
-            mapped_task.user_id = tm.authenticated_user_id
+            mapped_task.user_id = who_made_request()
             mapped_task.task_id = task_id
             mapped_task.project_id = project_id
             mapped_task.validate()
@@ -324,7 +324,7 @@ class UnlockTaskForMappingAPI(Resource):
             return {"Error": error_msg}, 500
         finally:
             # Refresh mapper level after mapping
-            UserService.check_and_update_mapper_level(tm.authenticated_user_id)
+            UserService.check_and_update_mapper_level(who_made_request())
 
 
 class TasksAsJson(Resource):
@@ -542,7 +542,7 @@ class UndoMappingAPI(Resource):
         """
         try:
             preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            task = MappingService.undo_mapping(project_id, task_id, tm.authenticated_user_id, preferred_locale)
+            task = MappingService.undo_mapping(project_id, task_id, who_made_request(), preferred_locale)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404

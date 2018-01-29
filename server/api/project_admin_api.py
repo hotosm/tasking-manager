@@ -4,7 +4,7 @@ from schematics.exceptions import DataError
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData, \
     ProjectAdminServiceError, NotFound
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, who_made_request
 from server.services.validator_service import ValidatorService
 
 
@@ -76,7 +76,7 @@ class ProjectAdminAPI(Resource):
         """
         try:
             draft_project_dto = DraftProjectDTO(request.get_json())
-            draft_project_dto.user_id = tm.authenticated_user_id
+            draft_project_dto.user_id = who_made_request()
             draft_project_dto.validate()
         except DataError as e:
             current_app.logger.error(f'error validating request: {str(e)}')
@@ -384,7 +384,7 @@ class ProjectInvalidateAll(Resource):
                 description: Internal Server Error
         """
         try:
-            ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id)
+            ValidatorService.invalidate_all_tasks(project_id, who_made_request())
             return {"Success": "All tasks invalidated"}, 200
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
@@ -426,7 +426,7 @@ class ProjectValidateAll(Resource):
                 description: Internal Server Error
         """
         try:
-            ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
+            ValidatorService.validate_all_tasks(project_id, who_made_request())
             return {"Success": "All tasks validated"}, 200
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
@@ -470,7 +470,7 @@ class ProjectsForAdminAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            admin_projects = ProjectAdminService.get_projects_for_admin(tm.authenticated_user_id,
+            admin_projects = ProjectAdminService.get_projects_for_admin(who_made_request(),
                                                                         request.environ.get('HTTP_ACCEPT_LANGUAGE'))
             return admin_projects.to_primitive(), 200
         except NotFound:

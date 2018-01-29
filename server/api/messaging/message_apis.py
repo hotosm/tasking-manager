@@ -3,7 +3,7 @@ from schematics.exceptions import DataError
 
 from server.models.dtos.message_dto import MessageDTO
 from server.services.messaging.message_service import MessageService, NotFound, MessageServiceError
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, who_made_request
 
 
 class ProjectsMessageAll(Resource):
@@ -55,7 +55,7 @@ class ProjectsMessageAll(Resource):
         """
         try:
             message_dto = MessageDTO(request.get_json())
-            message_dto.from_user_id = tm.authenticated_user_id
+            message_dto.from_user_id = who_made_request()
             message_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -96,7 +96,7 @@ class HasNewMessages(Resource):
                 description: Internal Server Error
         """
         try:
-            unread_messages = MessageService.has_user_new_messages(tm.authenticated_user_id)
+            unread_messages = MessageService.has_user_new_messages(who_made_request())
             return unread_messages, 200
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
@@ -132,7 +132,7 @@ class GetAllMessages(Resource):
                 description: Internal Server Error
         """
         try:
-            user_messages = MessageService.get_all_messages(tm.authenticated_user_id)
+            user_messages = MessageService.get_all_messages(who_made_request())
             return user_messages.to_primitive(), 200
         except NotFound:
             return {"Error": "No messages found"}, 404
@@ -178,7 +178,7 @@ class MessagesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_message = MessageService.get_message_as_dto(message_id, tm.authenticated_user_id)
+            user_message = MessageService.get_message_as_dto(message_id, who_made_request())
             return user_message.to_primitive(), 200
         except MessageServiceError as e:
             return {"Error": str(e)}, 403
@@ -223,7 +223,7 @@ class MessagesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            MessageService.delete_message(message_id, tm.authenticated_user_id)
+            MessageService.delete_message(message_id, who_made_request())
             return {"Success": "Message deleted"}, 200
         except MessageServiceError as e:
             return {"Error": str(e)}, 403
@@ -261,7 +261,7 @@ class ResendEmailValidationAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            MessageService.resend_email_validation(tm.authenticated_user_id)
+            MessageService.resend_email_validation(who_made_request())
             return {"Success": "Verification email resent"}, 200
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'

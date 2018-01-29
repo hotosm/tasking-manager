@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from server.models.dtos.user_dto import UserSearchQuery, UserDTO
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, who_made_request
 from server.services.users.user_service import UserService, UserServiceError, NotFound
 
 
@@ -39,7 +39,7 @@ class UserAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_dto = UserService.get_user_dto_by_username(username, tm.authenticated_user_id)
+            user_dto = UserService.get_user_dto_by_username(username, who_made_request())
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404
@@ -106,7 +106,7 @@ class UserUpdateAPI(Resource):
             return str(e), 400
 
         try:
-            verification_sent = UserService.update_user_details(tm.authenticated_user_id, user_dto)
+            verification_sent = UserService.update_user_details(who_made_request(), user_dto)
             return verification_sent, 200
         except NotFound:
             return {"Error": "User not found"}, 404
@@ -332,7 +332,7 @@ class UserSetRole(Resource):
                 description: Internal Server Error
         """
         try:
-            UserService.add_role_to_user(tm.authenticated_user_id, username, role)
+            UserService.add_role_to_user(who_made_request(), username, role)
             return {"Success": "Role Added"}, 200
         except UserServiceError:
             return {"Error": "Not allowed"}, 403
@@ -434,7 +434,7 @@ class UserAcceptLicense(Resource):
                 description: Internal Server Error
         """
         try:
-            UserService.accept_license_terms(tm.authenticated_user_id, license_id)
+            UserService.accept_license_terms(who_made_request(), license_id)
             return {"Success": "Terms Accepted"}, 200
         except NotFound:
             return {"Error": "User or mapping not found"}, 404

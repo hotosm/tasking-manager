@@ -4,7 +4,7 @@ from schematics.exceptions import DataError
 from server.models.dtos.message_dto import ChatMessageDTO
 from server.models.postgis.utils import NotFound
 from server.services.messaging.chat_service import ChatService
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, who_made_request
 
 
 class ProjectChatAPI(Resource):
@@ -51,7 +51,7 @@ class ProjectChatAPI(Resource):
         """
         try:
             chat_dto = ChatMessageDTO(request.get_json())
-            chat_dto.user_id = tm.authenticated_user_id
+            chat_dto.user_id = who_made_request()
             chat_dto.project_id = project_id
             chat_dto.validate()
         except DataError as e:

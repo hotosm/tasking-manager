@@ -1,7 +1,7 @@
 import base64
 import urllib.parse
 
-from flask import current_app, request
+from flask import current_app, request, g
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
@@ -13,10 +13,19 @@ token_auth = HTTPTokenAuth(scheme='Token')
 tm = TMAPIDecorators()
 
 
+def is_pm_only_resource() -> bool:
+    """ Was the request made to an API resource that is for PMs only"""
+    return g.is_pm_only_resource
+
+
+def who_made_request() -> int:
+    """ Returns the user_id of the user making the request in scope, after it's been authenticated """
+    return g.authenticated_user_id
+
+
 @token_auth.verify_token
 def verify_token(token):
     """ Verify the supplied token and check user role is correct for the requested resource"""
-
     if not token:
         current_app.logger.debug(f'Token not supplied {request.base_url}')
         return False
@@ -32,12 +41,14 @@ def verify_token(token):
         current_app.logger.debug(f'Token not valid {request.base_url}')
         return False
 
-    if tm.is_pm_only_resource:
+    if is_pm_only_resource():
         if not UserService.is_user_a_project_manager(user_id):
             current_app.logger.debug(f'User {user_id} is not a PM {request.base_url}')
             return False
 
-    tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
+    # TODO - move this to flask global object
+
+    g.authenticated_user_id = user_id  # Set the user ID into global scope
     return True  # All tests passed token is good for the requested resource
 
 

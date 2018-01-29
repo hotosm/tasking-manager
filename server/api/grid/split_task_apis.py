@@ -4,7 +4,7 @@ from schematics.exceptions import DataError
 from server.models.dtos.grid_dto import SplitTaskDTO
 from server.models.postgis.utils import NotFound
 from server.services.grid.split_service import SplitService, SplitServiceError
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, who_made_request
 
 
 class SplitTaskAPI(Resource):
@@ -59,7 +59,7 @@ class SplitTaskAPI(Resource):
         """
         try:
             split_task_dto = SplitTaskDTO()
-            split_task_dto.user_id = tm.authenticated_user_id
+            split_task_dto.user_id = who_made_request()
             split_task_dto.project_id = project_id
             split_task_dto.task_id = task_id
             split_task_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')

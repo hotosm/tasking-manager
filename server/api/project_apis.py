@@ -7,7 +7,7 @@ from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDT
 from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 from server.services.users.user_service import UserService
-from server.services.users.authentication_service import token_auth, tm, verify_token
+from server.services.users.authentication_service import token_auth, tm, verify_token, who_made_request
 
 
 class ProjectAPI(Resource):
@@ -185,7 +185,7 @@ class ProjectSearchBBoxAPI(Resource):
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             createdByMe = strtobool(request.args.get('createdByMe')) if request.args.get('createdByMe') else False
             if createdByMe:
-                search_dto.project_author = tm.authenticated_user_id
+                search_dto.project_author = who_made_request()
             search_dto.validate()
         except Exception as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
@@ -274,7 +274,7 @@ class ProjectSearchAPI(Resource):
             # See https://github.com/hotosm/tasking-manager/pull/922 for more info
             try:
                 verify_token(request.environ.get('HTTP_AUTHORIZATION').split(None, 1)[1])
-                if UserService.is_user_a_project_manager(tm.authenticated_user_id):
+                if UserService.is_user_a_project_manager(who_made_request()):
                     search_dto.is_project_manager = True
             except:
                 pass
@@ -337,7 +337,7 @@ class HasUserTaskOnProject(Resource):
                 description: Internal Server Error
         """
         try:
-            locked_tasks = ProjectService.get_task_for_logged_in_user(project_id, tm.authenticated_user_id)
+            locked_tasks = ProjectService.get_task_for_logged_in_user(project_id, who_made_request())
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
@@ -389,7 +389,7 @@ class HasUserTaskOnProjectDetails(Resource):
         """
         try:
             preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id, tm.authenticated_user_id, preferred_locale)
+            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id, who_made_request(), preferred_locale)
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404

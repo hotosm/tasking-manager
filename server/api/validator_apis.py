@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, StopValidationDTO
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, who_made_request
 from server.services.validator_service import ValidatorService, NotFound, ValidatatorServiceError, UserLicenseError
 
 
@@ -68,7 +68,7 @@ class LockTasksForValidationAPI(Resource):
         try:
             validator_dto = LockForValidationDTO(request.get_json())
             validator_dto.project_id = project_id
-            validator_dto.user_id = tm.authenticated_user_id
+            validator_dto.user_id = who_made_request()
             validator_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             validator_dto.validate()
         except DataError as e:
@@ -149,7 +149,7 @@ class StopValidatingAPI(Resource):
         try:
             validated_dto = StopValidationDTO(request.get_json())
             validated_dto.project_id = project_id
-            validated_dto.user_id = tm.authenticated_user_id
+            validated_dto.user_id = who_made_request()
             validated_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             validated_dto.validate()
         except DataError as e:
@@ -228,7 +228,7 @@ class UnlockTasksAfterValidationAPI(Resource):
         try:
             validated_dto = UnlockAfterValidationDTO(request.get_json())
             validated_dto.project_id = project_id
-            validated_dto.user_id = tm.authenticated_user_id
+            validated_dto.user_id = who_made_request()
             validated_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             validated_dto.validate()
         except DataError as e:
