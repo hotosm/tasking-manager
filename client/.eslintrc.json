@@ -2,20 +2,24 @@
   "env": {
     "browser": true
   },
-  "globals":{
+  "globals": {
+    "ol": true,
+    "require": true
   },
-  "extends": "angular",
+  "extends": [
+    "eslint:recommended",
+    "angular"
+  ],
   "rules": {
-    "linebreak-style": [
-      "error",
-      "windows"
-    ],
     "semi": [
       "error",
       "always"
     ],
-    "no-console": "off",
-    "no-debugger": "warn",
-    "angular/di": [ "error", "$inject" ]
+    "no-console": "error",
+    "no-debugger": "error",
+    "angular/di": [
+      "error",
+      "$inject"
+    ]
   }
 }
