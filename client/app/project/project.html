@@ -950,8 +950,8 @@
                                         </div>
                                         <div class="metadata">
                                             <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                         </div>
                                     </div>
                                 </div>

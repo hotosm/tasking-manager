@@ -8,6 +8,7 @@ shippable/
 
 # Ignore generated config
 client/app/taskingmanager.config.js
+client/package-lock.json
 
 # Ignore dist folder as this contains the minimized build for deploy
 server/web/static/dist

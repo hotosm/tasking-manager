@@ -97,7 +97,7 @@ class ProjectService:
 
         project = ProjectService.get_project_by_id(project_id)
 
-        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED:
+        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(user_id):
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
         tasks = project.get_locked_tasks_for_user(user_id)
