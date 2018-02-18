@@ -306,6 +306,10 @@ class Project(db.Model):
 
         return summary
 
+    def get_project_title(self, preferred_locale):
+        project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
+        return project_info.name
+
     def get_aoi_geometry_as_geojson(self):
         """ Helper which returns the AOI geometry as a geojson object """
         aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
