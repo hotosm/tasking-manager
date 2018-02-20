@@ -92,7 +92,7 @@ class MessageService:
             return  # Nobody @'d so return
 
         link = MessageService.get_task_link(project_id, task_id)
-        project_title = ProjectServices.get_project_title(project_id)
+        project_title = ProjectService.get_project_title(project_id)
         for username in usernames:
 
             try:
