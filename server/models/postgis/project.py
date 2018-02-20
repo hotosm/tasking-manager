@@ -10,6 +10,7 @@ from sqlalchemy.orm.session import make_transient
 
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
+from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
@@ -382,6 +383,15 @@ class Project(db.Model):
         project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
 
         return project_tasks
+
+    @staticmethod
+    def get_all_organisations_tag():
+        organisation = db.session.query(Project.organisation_tag)
+        organisation = organisation.filter(Project.organisation_tag.isnot(None)).distinct()
+        organisation = organisation.order_by(Project.organisation_tag)
+        tags_dto = TagsDTO()
+        tags_dto.tags = [r for r, in organisation]
+        return tags_dto
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

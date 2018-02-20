@@ -1,7 +1,6 @@
 from server import db
 from server.models.dtos.tags_dto import TagsDTO
 
-
 class Tags(db.Model):
     """ Describes an individual mapping Task """
     __tablename__ = "tags"
