@@ -387,10 +387,12 @@ class Project(db.Model):
     @staticmethod
     def get_all_organisations_tag():
         organisation = db.session.query(Project.organisation_tag)
-        organisation = organisation.filter(Project.organisation_tag.isnot(None)).distinct()
+        organisation = organisation.filter(Project.organisation_tag.isnot(None))
+        organisation = organisation.filter(Project.organisation_tag.isnot(""))
+        organisation = organisation.distinct()
         organisation = organisation.order_by(Project.organisation_tag)
         tags_dto = TagsDTO()
-        tags_dto.tags = [r for r, in organisation]
+        tags_dto.tags = [r for r in organisation]
         return tags_dto
 
     def as_dto_for_admin(self, project_id):
