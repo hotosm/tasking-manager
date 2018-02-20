@@ -170,3 +170,9 @@ class ProjectService:
         """ Gets the project summary DTO """
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_summary(preferred_locale)
+
+    @staticmethod
+    def get_project_title(project_id: int, preferred_locale: str = 'en') -> str:
+        """ Gets the project title DTO """
+        project = ProjectService.get_project_by_id(project_id)
+        return project.get_project_title(preferred_locale)
