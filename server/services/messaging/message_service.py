@@ -57,7 +57,7 @@ class MessageService:
         validation_message = Message()
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = f'Your mapping on {task_link} has just been validated'
+        validation_message.subject = f'Your mapping in Project {project_id} on {task_link} has just been validated'
         validation_message.message = text_template
         validation_message.add_message()
 
@@ -92,7 +92,7 @@ class MessageService:
             return  # Nobody @'d so return
 
         link = MessageService.get_task_link(project_id, task_id)
-        project_title = ProjectServices.get_project_title(project_id)
+        project_title = ProjectService.get_project_title(project_id)
         for username in usernames:
 
             try:
