@@ -388,8 +388,7 @@ class Project(db.Model):
     def get_all_organisations_tag():
         organisation = db.session.query(Project.organisation_tag)
         organisation = organisation.filter(Project.organisation_tag.isnot(None))
-        organisation = organisation.filter(Project.organisation_tag.isnot(""))
-        organisation = organisation.distinct()
+        organisation = organisation.filter(Project.organisation_tag != '').distinct()
         organisation = organisation.order_by(Project.organisation_tag)
         tags_dto = TagsDTO()
         tags_dto.tags = [r for r in organisation]
