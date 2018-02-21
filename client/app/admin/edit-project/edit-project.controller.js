@@ -430,8 +430,10 @@
          * Get organisation tags
          * @returns {Array|*}
          */
-        vm.getOrganisationTags = function(){
-            return vm.organisationTags;
+        vm.getOrganisationTags = function(query){
+            return vm.organisationTags.filter(function (item) {
+                return (item && item.indexOf(query) > -1);
+            });
         };
 
         /**
@@ -439,8 +441,10 @@
           * @returns {Array|*}
           * @returns {Array|*}
          */
-        vm.getCampaignTags = function(){
-            return vm.campaignTags;
+        vm.getCampaignTags = function(query){
+            return vm.campaignTags.filter(function (item) {
+                return (item && item.indexOf(query) > -1);
+            });
         };
 
         /**
