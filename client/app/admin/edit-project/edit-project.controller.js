@@ -341,6 +341,36 @@
         };
 
         /**
+         * Set the map confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showMapConfirmation = function(showModal){
+            vm.showMapConfirmationModal = showModal;
+        };
+
+        /**
+         * Map all tasks on a project
+         */
+        vm.mapAllTasks = function(){
+            vm.mapInProgress = true;
+            vm.mapTasksFail = false;
+            vm.mapTasksSuccess = false;
+            var resultsPromise = projectService.mapAllTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks mapped successfully
+                vm.mapTasksFail = false;
+                vm.mapTasksSuccess = true;
+                vm.mapInProgress = false;
+            }, function(){
+                // Tasks not mapped successfully
+                vm.mapTasksFail = true;
+                vm.mapTasksSuccess = false;
+                vm.mapInProgress = false;
+            })
+        };
+
+
+        /**
          * Set the invalidate confirmation modal to visible/invisible
          * @param showModal
          */
