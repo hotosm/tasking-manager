@@ -391,7 +391,7 @@ class Project(db.Model):
         organisation = organisation.filter(Project.organisation_tag != '').distinct()
         organisation = organisation.order_by(Project.organisation_tag)
         tags_dto = TagsDTO()
-        tags_dto.tags = [r for r in organisation]
+        tags_dto.tags = [r[0] for r in organisation]
         return tags_dto
 
     def as_dto_for_admin(self, project_id):
