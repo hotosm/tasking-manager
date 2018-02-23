@@ -432,7 +432,7 @@
          */
         vm.getOrganisationTags = function(query){
             return vm.organisationTags.filter(function (item) {
-                return (item && item.indexOf(query) > -1);
+                return (item && item.toLowerCase().indexOf(query.toLowerCase()) > -1);
             });
         };
 
@@ -443,7 +443,7 @@
          */
         vm.getCampaignTags = function(query){
             return vm.campaignTags.filter(function (item) {
-                return (item && item.indexOf(query) > -1);
+                return (item && item.toLowerCase().indexOf(query.toLowerCase()) > -1);
             });
         };
 
