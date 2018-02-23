@@ -22,8 +22,8 @@
             getlocalStorageUserPreferencesName: getlocalStorageUserPreferencesName,
             getFavouriteEditor: getFavouriteEditor,
             setFavouriteEditor: setFavouriteEditor,
-            setLanguage: setLanguage,
-            getLanguage: getLanguage
+            getLanguage: getLanguage,
+            setLanguage: setLanguage
         };
 
         return service;
@@ -65,6 +65,14 @@
             localStorage.setItem(localStorageUserPreferencesName, JSON.stringify(userPreferences));
         }
 
+         /**
+         * Get the user's preferred language
+         * @returns {string}
+         */
+        function getLanguage() {
+            return userPreferences.language;
+        }
+
         /**
          * Set the user's preferred language
          * @param language
@@ -72,14 +80,6 @@
         function setLanguage(language){
             userPreferences.language = language;
             localStorage.setItem(localStorageUserPreferencesName, JSON.stringify(userPreferences));
-        }
-
-        /**
-         * Get the user's preferred language
-         * @returns {string}
-         */
-        function getLanguage() {
-            return userPreferences.language;
         }
     }
 })();
