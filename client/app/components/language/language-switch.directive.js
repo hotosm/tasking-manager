@@ -13,7 +13,7 @@
 
     angular
         .module('taskingManager')
-        .controller('languageSwitchController', ['$scope','$document','$element', '$translate','languageService','settingsService', languageSwitchController])
+        .controller('languageSwitchController', ['$scope','$document','$element', '$translate','languageService','settingsService', 'userPreferencesService', languageSwitchController])
         .directive('languageSwitch', languageSwitchDirective);
 
     function languageSwitchDirective() {
@@ -29,7 +29,7 @@
         return directive;
     }
 
-    function languageSwitchController($scope, $document, $element, $translate, languageService, settingsService) {
+    function languageSwitchController($scope, $document, $element, $translate, languageService, settingsService, userPreferencesService) {
 
         var vm = this;
         vm.showDropdown = false;
@@ -44,6 +44,11 @@
             var resultsPromise = settingsService.getSettings();
             resultsPromise.then(function (data) {
                 vm.availableLanguages = data.supportedLanguages;
+                var savedLanguage = userPreferencesService.getLanguage();
+                if (savedLanguage){
+                    vm.selectedLanguage = savedLanguage.language;
+                    vm.switchLanguage(savedLanguage);
+                }
             });
 
              // Catch clicks and check if it was outside of the menu element. If so, close the dropdown menu.
@@ -77,6 +82,7 @@
             $translate.use(language.code);
             vm.selectedLanguage = language.language;
             languageService.setLanguageCode(language.code);
+            userPreferencesService.setLanguage(language);
         }
     }
 })();
