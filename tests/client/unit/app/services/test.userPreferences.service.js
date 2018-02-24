@@ -15,7 +15,7 @@ describe('userPreferencesService.service', function () {
         expect(userPreferencesService).toBeDefined()
     });
 
-    it('should return ideditor', function () {
+    it('should return josm', function () {
 
         //arrange
         localStorage.removeItem(userPreferencesService.getlocalStorageUserPreferencesName());
@@ -27,6 +27,28 @@ describe('userPreferencesService.service', function () {
 
         //assert
         expect(editor).toEqual('josm');
+    });
+
+    afterEach(function(){
+        localStorage.removeItem(userPreferencesService.getlocalStorageUserPreferencesName());
+    });
+
+    it('should return English', function () {
+
+        //arrange
+        localStorage.removeItem(userPreferencesService.getlocalStorageUserPreferencesName());
+        userPreferencesService.initialise();
+        var language = {
+            language: "English",
+            code: "en"
+        }
+        userPreferencesService.setLanguage(language);
+
+        //act
+        var language = userPreferencesService.getLanguage();
+
+        //assert
+        expect(language.language).toEqual('English');
     });
 
     afterEach(function(){
