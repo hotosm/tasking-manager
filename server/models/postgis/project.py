@@ -385,13 +385,20 @@ class Project(db.Model):
         return project_tasks
 
     @staticmethod
-    def get_all_organisations_tag():
-        organisation = db.session.query(Project.organisation_tag)
-        organisation = organisation.filter(Project.organisation_tag.isnot(None))
-        organisation = organisation.filter(Project.organisation_tag != '').distinct()
-        organisation = organisation.order_by(Project.organisation_tag)
+    def get_all_organisations_tag(preferred_locale='en'):
+        query = db.session.query(Project.id,
+                                 Project.organisation_tag,
+                                 Project.private,
+                                 Project.status)\
+            .join(ProjectInfo)\
+            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
+            .filter(Project.private != True)\
+            .filter(Project.organisation_tag.isnot(None))\
+            .filter(Project.organisation_tag != '')
+        query = query.distinct()
+        query = query.order_by(Project.organisation_tag)
         tags_dto = TagsDTO()
-        tags_dto.tags = [r[0] for r in organisation]
+        tags_dto.tags = [r[1] for r in query]
         return tags_dto
 
     def as_dto_for_admin(self, project_id):
