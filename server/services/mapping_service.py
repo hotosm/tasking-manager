@@ -239,6 +239,7 @@ class MappingService:
         """ Marks all tasks on a project as mapped """
         tasks_to_map = Task.query.filter(Task.project_id == project_id,
                                          Task.task_status not in [TaskStatus.BADIMAGERY.value,
+                                                                  TaskStatus.MAPPED.value,
                                                                   TaskStatus.VALIDATED.value]).all()
 
         for task in tasks_to_map:
