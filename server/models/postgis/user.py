@@ -13,6 +13,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.BigInteger, primary_key=True, index=True)
+    email_notification = db.Column(db.Boolean, default=True, nullable=False)
     username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0, nullable=False)
     mapping_level = db.Column(db.Integer, default=1, nullable=False)
@@ -59,6 +60,7 @@ class User(db.Model):
         self.twitter_id = user_dto.twitter_id.lower() if user_dto.twitter_id else None
         self.facebook_id = user_dto.facebook_id.lower() if user_dto.facebook_id else None
         self.linkedin_id = user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
+        self.email_notification = user_dto.email_notification
         db.session.commit()
 
     def set_email_verified_status(self, is_verified: bool):
@@ -208,6 +210,7 @@ class User(db.Model):
         user_dto.twitter_id = self.twitter_id
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
+        user_dto.email_notification = self.email_notification
 
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile

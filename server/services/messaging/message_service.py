@@ -46,10 +46,13 @@ class MessageService:
         if validated_by == mapped_by:
             return  # No need to send a thankyou to yourself
 
+        user = UserService.get_user_by_id(mapped_by)
+        if user.email_notification == False:
+            return # No need to send validation message
+
         text_template = get_template('validation_message_en.txt')
         task_link = MessageService.get_task_link(project_id, task_id)
 
-        user = UserService.get_user_by_id(mapped_by)
         text_template = text_template.replace('[USERNAME]', user.username)
         text_template = text_template.replace('[TASK_LINK]', task_link)
 
@@ -99,6 +102,9 @@ class MessageService:
                 current_app.logger.error(f'Username {username} not found')
                 continue  # If we can't find the user, keep going no need to fail
 
+            if user is not None and user.email_notification == False:
+                return  # No need to send comment notification message
+
             message = Message()
             message.from_user_id = comment_from
             message.to_user_id = user.id
@@ -126,6 +132,8 @@ class MessageService:
                 current_app.logger.error(f'Username {username} not found')
                 continue  # If we can't find the user, keep going no need to fail
 
+            if user is not None and user.email_notification == False:
+                return  # No need to send message after chat
             message = Message()
             message.from_user_id = chat_from
             message.to_user_id = user.id
