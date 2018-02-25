@@ -102,9 +102,6 @@ class MessageService:
                 current_app.logger.error(f'Username {username} not found')
                 continue  # If we can't find the user, keep going no need to fail
 
-            if user is not None and user.email_notification == False:
-                return  # No need to send comment notification message
-
             message = Message()
             message.from_user_id = comment_from
             message.to_user_id = user.id
@@ -132,8 +129,6 @@ class MessageService:
                 current_app.logger.error(f'Username {username} not found')
                 continue  # If we can't find the user, keep going no need to fail
 
-            if user is not None and user.email_notification == False:
-                return  # No need to send message after chat
             message = Message()
             message.from_user_id = chat_from
             message.to_user_id = user.id
