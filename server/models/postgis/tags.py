@@ -53,3 +53,12 @@ class Tags(db.Model):
         dto = TagsDTO()
         dto.tags = [r for r, in result]
         return dto
+
+    def delete(self):
+        """ Delete the user in scope from DB """
+        db.session.delete(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_by_organisation_tag(organisation_tag):
+        return Tags.query.filter_by(organisations = organisation_tag).one_or_none()
