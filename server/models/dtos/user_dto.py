@@ -29,7 +29,7 @@ def is_known_role(value):
 
 class UserDTO(Model):
     """ DTO for User """
-    email_notification = BooleanType(default=True)
+    validation_message = BooleanType(default=True)
     username = StringType()
     role = StringType()
     mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])

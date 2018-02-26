@@ -47,7 +47,7 @@ class MessageService:
             return  # No need to send a thankyou to yourself
 
         user = UserService.get_user_by_id(mapped_by)
-        if user.email_notification == False:
+        if user.validation_message == False:
             return # No need to send validation message
 
         text_template = get_template('validation_message_en.txt')
