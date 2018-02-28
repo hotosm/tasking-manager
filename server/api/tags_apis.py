@@ -1,7 +1,7 @@
 from flask_restful import Resource, current_app, request
 from server.services.tags_service import TagsService, TagsServiceError
 from server.models.postgis.utils import NotFound
-from server.services.users.authentication_service import token_auth
+from server.services.users.authentication_service import token_auth, tm
 
 
 class OrganisationTagsAPI(Resource):
@@ -28,6 +28,7 @@ class OrganisationTagsAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
     @token_auth.login_required
     def post(self):
         """

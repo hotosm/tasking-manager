@@ -22,7 +22,7 @@ class TagsService:
         return Tags.get_all_campaigns()
 
     @staticmethod
-    def delete_organisation_tags(organisation_tag):
+    def delete_organisation_tags(organisation_tag : str):
         """ Delete organisation tag"""
         organisation_tags = Project.get_all_organisations_tag().tags
 

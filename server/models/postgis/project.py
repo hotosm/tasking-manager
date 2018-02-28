@@ -386,6 +386,7 @@ class Project(db.Model):
 
     @staticmethod
     def get_all_organisations_tag(preferred_locale='en'):
+        """Get the organisation tags for all projects"""
         query = db.session.query(Project.id,
                                  Project.organisation_tag,
                                  Project.private,
