@@ -19,6 +19,7 @@ class TaskAction(Enum):
     LOCKED_FOR_VALIDATION = 2
     STATE_CHANGE = 3
     COMMENT = 4
+    UNLOCKED = 5
 
 
 class TaskHistory(db.Model):
@@ -57,6 +58,9 @@ class TaskHistory(db.Model):
     def set_state_change_action(self, new_state):
         self.action = TaskAction.STATE_CHANGE.name
         self.action_text = new_state.name
+
+    def set_unlock_action(self):
+        self.action = TaskAction.UNLOCKED.name
 
     def delete(self):
         """ Deletes the current model from the DB """
@@ -272,6 +276,8 @@ class Task(db.Model):
             history.set_comment_action(comment)
         elif action == TaskAction.STATE_CHANGE:
             history.set_state_change_action(new_state)
+        elif action == TaskAction.UNLOCKED:
+            history.set_unlock_action()
 
         self.task_history.append(history)
 
@@ -290,17 +296,19 @@ class Task(db.Model):
     def clear_task_lock(self):
         """
         Unlocks task in scope in the database.  Clears the lock as though it never happened.
-        No history of the unlock is recorded.
         :return:
         """
-        # Set locked_by to null and status to last status on task
-        self.locked_by = None
+        # Set status to last status on task
         self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
-        self.update()
 
         # clear the lock action for the task in the task history
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
         last_action.delete()
+
+        # Add UNLOCKED action in the task history and set locked_by to null
+        self.set_task_history(action=TaskAction.UNLOCKED, user_id=self.locked_by)
+        self.locked_by = None
+        self.update()
 
     def unlock_task(self, user_id, new_state=None, comment=None, undo=False):
         """ Unlock task and ensure duration task locked is saved in History """
