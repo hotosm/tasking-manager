@@ -175,12 +175,18 @@ class MappingService:
             task_geom = shape.to_shape(task.geometry)
             for poly in task_geom:
                 trkseg = ET.SubElement(trk, 'trkseg')
-                for point in poly.exterior.coords:
+                # If there is a lot of point, make the text less dense
+                lessText = (len(poly.exterior.coords) > 20)
+
+                for index, point in enumerate(poly.exterior.coords):
                     ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
 
                     # Append wpt elements to end of doc
                     wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
-                    ET.SubElement(wpt, 'name').text = 'Do not edit outside of this colored area!'
+
+                    # If not less text or less text but now is a multiple of 6
+                    if (not lessText or index % 6 == 0):
+                        ET.SubElement(wpt, 'name').text = 'Do not edit outside of this colored area!'
                     root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding='utf8')
