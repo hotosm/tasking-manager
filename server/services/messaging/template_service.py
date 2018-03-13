@@ -11,8 +11,8 @@ def get_template(template_name: str) -> str:
     """
     try:
         template_location = os.path.join(os.path.dirname(__file__), 'templates/{0}'.format(template_name))
-        template = open(template_location, mode='r', encoding='utf-8')
-        return template.read()
+        with open(template_location, mode='r', encoding='utf-8') as template:
+            return template.read()
     except FileNotFoundError:
         current_app.logger.error('Unable open file {0}'.format(template_location))
         raise ValueError('Unable open file {0}'.format(template_location))
