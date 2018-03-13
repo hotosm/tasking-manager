@@ -44,6 +44,17 @@ class TestStatsService(unittest.TestCase):
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
                                                      'Iain Hunter'))
 
+    def test_send_alert_message_limits(self):
+        if self.skip_tests:
+            return
+
+        if os.getenv('TM_SMTP_HOST') is None:
+            return  # If SMTP not setup there's no value attempting the integration tests
+
+        for x in range(0, 50):
+            self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
+                                                         'Iain Hunter'))
+
     def test_alert_not_sent_if_email_not_supplied(self):
         self.assertFalse(SMTPService.send_email_alert('', 'Iain Hunter'))
 
