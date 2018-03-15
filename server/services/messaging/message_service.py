@@ -91,7 +91,7 @@ class MessageService:
         if len(usernames) == 0:
             return  # Nobody @'d so return
 
-        link = MessageService.get_task_link(project_id, task_id)
+        task_link = MessageService.get_task_link(project_id, task_id)
         project_title = ProjectService.get_project_title(project_id)
         for username in usernames:
 
@@ -104,7 +104,7 @@ class MessageService:
             message = Message()
             message.from_user_id = comment_from
             message.to_user_id = user.id
-            message.subject = f'You were mentioned in a comment in Project {project_id}, on Task {task_id}'
+            message.subject = f'You were mentioned in a comment in Project {project_id}, on Task {task_link}'
             message.message = comment
             message.add_message()
             SMTPService.send_email_alert(user.email_address, user.username)
