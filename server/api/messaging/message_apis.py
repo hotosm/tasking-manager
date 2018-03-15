@@ -65,7 +65,7 @@ class ProjectsMessageAll(Resource):
             MessageService.send_message_to_all_contributors(project_id, message_dto)
             return {"Success": "Messages sent"}, 200
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f'Send message all - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
