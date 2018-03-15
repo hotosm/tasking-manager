@@ -433,6 +433,7 @@
         /**
          * Updates a project
          * @param id
+         * @param projectData
          * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
          */
         function updateProject(id, projectData) {
@@ -480,7 +481,6 @@
         /**
          * Invalidate all tasks on the project
          * @param projectId
-         * @param comment
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
         function invalidateAllTasks(projectId) {
@@ -503,7 +503,6 @@
         /**
          * Validate all tasks on the project
          * @param projectId
-         * @param comment
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
         function validateAllTasks(projectId) {
@@ -655,7 +654,7 @@
 
         }
 
- /**
+        /**
          * Get a project summary JSON
          * @param id - project id
          * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}

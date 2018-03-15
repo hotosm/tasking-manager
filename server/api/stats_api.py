@@ -118,3 +118,28 @@ class StatsProjectAPI(Resource):
             error_msg = f'Project Summary GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class HomePageStatsAPI(Resource):
+
+    def get(self):
+        """
+        Get HomePage Stats
+        ---
+        tags:
+          - stats
+        produces:
+          - application/json
+        responses:
+            200:
+                description: Project stats
+            500:
+                description: Internal Server Error
+        """
+        try:
+            stats = StatsService.get_homepage_stats()
+            return stats.to_primitive(), 200
+        except Exception as e:
+            error_msg = f'Unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

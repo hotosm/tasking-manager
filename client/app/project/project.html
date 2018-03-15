@@ -3,6 +3,7 @@
         <div class="inner">
             <div>
                 <mark>{{ projectCtrl.projectData.projectPriority }}</mark>
+                <span class="active-mappers">{{ projectCtrl.projectData.activeMappers}} - Active Mappers</span>
             </div>
             <div class="header--withShare">
                 <div class="section__header--left">
@@ -15,6 +16,15 @@
                         <a ng-href="/admin/edit-project/{{ projectCtrl.id }}"
                            class="button button--secondary">{{ 'Edit project' | translate }}
                         </a>
+                    </div>
+                    <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'">
+                        <p>
+                            {{ 'Download:' | translate }} {{ 'AoI as' | translate }}
+                            <a href="/api/v1/project/{{ projectCtrl.id }}/aoi?as_file=true" target="_blank">.geojson</a>, {{ 'Tasks as' | translate }}
+                            <a href="/api/v1/project/{{ projectCtrl.id }}/tasks?as_file=true" target="_blank">.geojson</a>,
+                            <a href="/api/v1/project/{{ projectCtrl.id }}/tasks-as-osm-xml?as_file=true" target="_blank">.osm</a>,
+                            <a href="/api/v1/project/{{ projectCtrl.id }}/tasks_as_gpx?as_file=true" target="_blank">.gpx</a>
+                        </p>
                     </div>
                 </div>
                 <div class="component--share">
@@ -407,6 +417,9 @@
                                                 </span>
                                             </div>
                                         </div>
+                                        <div>
+                                            <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
+                                        </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -631,7 +644,7 @@
                             <!-- task viewing and mapping UI's -->
                             <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked' || projectCtrl.validatingStep === 'multi-locked'">
                                 <!-- task viewing UI -->
-                                <h2>{{ 'Validation' | translate }}</h2>
+                                <h3>{{ 'Validation' | translate }}</h3>
                                 <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                     <!-- task information -->
 
@@ -736,6 +749,9 @@
                                                     </button>
                                                 </span>
                                             </div>
+                                        </div>
+                                        <div>
+                                            <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
                                         </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
@@ -934,8 +950,8 @@
                                         </div>
                                         <div class="metadata">
                                             <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                         </div>
                                     </div>
                                 </div>

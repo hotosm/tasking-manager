@@ -14,13 +14,13 @@
         var vm = this;
         vm.map = null;
 
-        // Wizard 
+        // Wizard
         vm.currentStep = '';
         vm.projectName = '';
         vm.projectNameForm = {};
         vm.taskType = 'square-grid';
 
-        // AOI 
+        // AOI
         vm.AOI = null;
         vm.isDrawnAOI = false;
         vm.isImportedAOI = false;
@@ -187,7 +187,7 @@
 
         /**
          * Decides if a step should be shown as completed in the progress bar
-         * @param step
+         * @param wizardStep
          * @returns {boolean}
          */
         vm.showWizardStep = function (wizardStep) {
@@ -331,15 +331,15 @@
                 fileReader.onloadend = function (e) {
                     var data = e.target.result;
                     var uploadedFeatures = null;
-                    if (file.name.substr(-4) === 'json') {
+                    if (file.name.substr(-4).toLowerCase() === 'json') {
                         uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(data);
                         setUploadedFeatures(uploadedFeatures);
                     }
-                    else if (file.name.substr(-3) === 'kml') {
+                    else if (file.name.substr(-3).toLowerCase() === 'kml') {
                         uploadedFeatures = geospatialService.getFeaturesFromKML(data);
                         setUploadedFeatures(uploadedFeatures);
                     }
-                    else if (file.name.substr(-3) === 'zip') {
+                    else if (file.name.substr(-3).toLowerCase() === 'zip') {
                         // Use the Shapefile.js library to read the zipped Shapefile (with GeoJSON as output)
                         shp(data).then(function (geojson) {
                             var uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(geojson);
@@ -347,13 +347,13 @@
                         });
                     }
                 };
-                if (file.name.substr(-4) === 'json') {
+                if (file.name.substr(-4).toLowerCase() === 'json') {
                     fileReader.readAsText(file);
                 }
-                else if (file.name.substr(-3) === 'kml') {
+                else if (file.name.substr(-3).toLowerCase() === 'kml') {
                     fileReader.readAsText(file);
                 }
-                else if (file.name.substr(-3) === 'zip') {
+                else if (file.name.substr(-3).toLowerCase() === 'zip') {
                     fileReader.readAsArrayBuffer(file);
                 }
                 else {
@@ -498,7 +498,6 @@
         /**
          * Set split tools to active/inactive
          * @param boolean
-         * @param private
          */
         function setSplitToolsActive_(boolean) {
             if (vm.drawAndSelectPolygon) {

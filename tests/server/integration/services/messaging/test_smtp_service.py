@@ -11,9 +11,9 @@ class TestStatsService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('SHIPPABLE', 'false')
+        env = os.getenv('CI', 'false')
 
-        # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
+        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
         if env == 'true':
             cls.skip_tests = True
 
@@ -29,11 +29,17 @@ class TestStatsService(unittest.TestCase):
         if self.skip_tests:
             return
 
+        if os.getenv('TM_SMTP_HOST') is None:
+            return  # If SMTP not setup there's no value attempting the integration tests
+
         self.assertTrue(SMTPService.send_verification_email('hot-test@mailinator.com', 'mrtest'))
 
     def test_send_alert(self):
         if self.skip_tests:
             return
+
+        if os.getenv('TM_SMTP_HOST') is None:
+            return  # If SMTP not setup there's no value attempting the integration tests
 
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
                                                      'Iain Hunter'))

@@ -4,7 +4,9 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
+from server import db
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
+from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound, UserLicenseError
@@ -136,7 +138,7 @@ class MappingService:
 
     @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
-        """ 
+        """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.  You can use the following URL to test locally:
         http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v1/project/111/tasks_as_gpx%3Ftasks=2
         """
@@ -159,8 +161,16 @@ class MappingService:
         ET.SubElement(trk, 'name').text = f'Task for project {project_id}. Do not edit outside of this box!'
 
         # Construct trkseg elements
-        task_ids = map(int, task_ids_str.split(','))
-        tasks = Task.get_tasks(project_id, task_ids)
+        if task_ids_str is not None:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or tasks.count() == 0:
+                raise NotFound()
+        else:
+            tasks = Task.get_all_tasks(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
+
         for task in tasks:
             task_geom = shape.to_shape(task.geometry)
             for poly in task_geom:
@@ -183,8 +193,15 @@ class MappingService:
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
         root = ET.Element('osm', attrib=dict(version='0.6', upload='never', creator='HOT Tasking Manager'))
 
-        task_ids = map(int, task_ids_str.split(','))
-        tasks = Task.get_tasks(project_id, task_ids)
+        if task_ids_str:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or tasks.count() == 0:
+                raise NotFound()
+        else:
+            tasks = Task.get_all_tasks(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
 
         fake_id = -1  # We use fake-ids to ensure XML will not be validated by OSM
         for task in tasks:

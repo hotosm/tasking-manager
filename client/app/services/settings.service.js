@@ -9,7 +9,7 @@
         .service('settingsService', ['$http', '$q', 'configService', settingsService]);
 
     function settingsService($http, $q, configService) {
-        
+
         var service = {
             getSettings: getSettings
         };

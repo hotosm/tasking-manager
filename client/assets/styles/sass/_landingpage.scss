@@ -8,6 +8,9 @@
   }
   p {
     margin-bottom: 3em;
+    a {
+      color: #fff!important;
+    }
   }
   .inner {
     padding-top: 5rem;
@@ -21,6 +24,7 @@
 .get-involved-section {
   border-bottom: 10px solid $base-alpha-color;
 }
+
 /* ==========================================================================
    Field stories
    ========================================================================== */
@@ -67,5 +71,69 @@
   display: none;
   @include media(xlarge-up) {
     display: block;
+  }
+}
+
+/* ==========================================================================
+   Stats
+   ========================================================================== */
+
+.homepage-stats-container {
+  text-align: center;
+  color: white;
+  .inner {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+.homepage-stats {
+  &__cards {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: top;
+    align-items: center;
+    padding-left: 3%;
+  }
+
+  &__card {
+    margin-right: 3.5%;
+    width: 100%;
+    align-self: flex-start;
+    &:last-of-type {
+      margin-right: 0;
+    }
+    @include media(medium-up) {
+      width: 31%;
+    }
+  }
+}
+
+#homepage-stats-2 {
+  display: none;
+  @include media(medium-up) {
+    display: block;
+  }
+}
+
+#homepage-stats-3 {
+  display: none;
+  @include media(xlarge-up) {
+    display: block;
+  }
+}
+
+.stats-card {
+  &__amount {
+    font-size: 2em;
+    letter-spacing: -1px;
+  }
+  &__title {
+    letter-spacing: 1px;
+    opacity: .7;
+    line-height: 18px;
   }
 }

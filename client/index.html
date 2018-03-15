@@ -8,22 +8,22 @@
     <base href="/">
 
     <!-- for Google -->
-    <meta name="description" content="OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping.">
+    <meta name="description" content="HOT Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping.">
     <meta name="keywords" content="OpenStreetMap, Tasking Manager, OSM">
     <meta name="author" content="Humanitarian OpenStreetMap Team">
     <meta name="application-name" content="OSM Tasking Manager" />
 
 	<!-- for Facebook -->
-	<meta property="og:title" content="OSM Tasking Manager" />
-	<meta property="og:site_name" content="OSM Tasking Manager" />
+	<meta property="og:title" content="HOT Tasking Manager" />
+	<meta property="og:site_name" content="HOT Tasking Manager" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="tasks.hotosm.org" />
-	<meta property="og:description" content="OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping." />
+	<meta property="og:description" content="HOT Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping." />
 
     <!-- for Twitter -->
 	<meta name="twitter:card" content="summary" />
-	<meta name="twitter:title" content="OSM Tasking Manager" />
-	<meta name="twitter:description" content="OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping." />
+	<meta name="twitter:title" content="HOT Tasking Manager" />
+	<meta name="twitter:description" content="HOT Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping." />
 
     <link href="./assets/img/hot-favicon.ico" rel="icon">
 
@@ -114,18 +114,18 @@
 
 <!-- mobile message -->
 <div class="mob-disclaimer" ng-show="!hideMobileMessage">
-    <p>
-        <i class="hot-ds-icon-xmark pull-right pointer" ng-click="hideMobileMessage = true"></i>
+    <p class="centered">
+        <i class="modal__button-dismiss pull-right pointer" ng-click="hideMobileMessage = true"></i>
         {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
     </p>
-    <a href="https://mapswipe.org" class="button button--achromic">{{ 'Go to MapSwipe' | translate }}</a>
+    <a href="https://mapswipe.org" class="button button--outline--white">{{ 'Go to MapSwipe' | translate }}</a>
 </div>
 <!--/ mobile message -->
 
 <footer class="page__footer section">
     <div class='inner'>
-        <a class='left' href="/about">{{ 'Contact us via the About page.' | translate }}</a>
-        <span class='right'><a href="https://github.com/hotosm/tasking-manager" target="_blank">{{ 'Fork the Tasking Manager Code on GitHub' | translate }}</a> {{ 'and help improve it.' | translate }}</span>
+        <span>Made by the <a href="https://www.hotosm.org/">HOTOSM</a> Community. <a href="/about">{{ 'Get in touch' | translate }}</a>.</span>
+        <span class="right">{{ 'Give feedback on' | translate }} <a href="https://github.com/hotosm/tasking-manager" target="_blank" rel="noopener">{{ 'GitHub' | translate }}</a>. {{ 'Learn more about' | translate }} <a href="https://www.openstreetmap.org/about">OpenStreetMap</a>.</span>
     </div>
 </footer>
 
@@ -217,6 +217,7 @@
 <script src="app/taskingmanager.config.js"></script>
 <script src="app/taskingmanager.app.js"></script>
 
+<script src="app/home/home.controller.js"></script>
 <script src="app/admin/create-project/create-project.controller.js"></script>
 <script src="app/admin/edit-project/edit-project.controller.js"></script>
 <script src="app/contribute/contribute.controller.js"></script>
@@ -263,6 +264,23 @@
 <script src="app/components/show-project-aois/show-project-aois.directive.js"></script>
 <script src="app/components/project-chat/project-chat.directive.js"></script>
 <!-- /build -->
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["setDomains", ["*.tasks.hotosm.org"]]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//piwik.hotosm.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 7]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//piwik.hotosm.org/piwik.php?idsite=7" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
 
 </body>
 </html>

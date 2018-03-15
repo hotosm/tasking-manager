@@ -49,6 +49,24 @@
                                   <form class="form">
                                       <fieldset class="form__fieldset">
                                           <div class="search-options-container">
+                                              <div class="form__group search-option" ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
+                                                  <div>
+                                                      <label class="form__option form__option--custom-checkbox">
+                                                          <input type="checkbox" name="form-custom-checkbox"
+                                                                 ng-click="contributeCtrl.search()"
+                                                                 ng-model="contributeCtrl.searchDraft"/>
+                                                          <span class="form__option__text">{{ 'Include draft projects' | translate }}</span>
+                                                          <span class="form__option__ui"></span>
+                                                      </label>
+                                                      <label class="form__option form__option--custom-checkbox">
+                                                          <input type="checkbox" name="form-custom-checkbox"
+                                                                 ng-click="contributeCtrl.search()"
+                                                                 ng-model="contributeCtrl.searchArchived"/>
+                                                          <span class="form__option__text">{{ 'Include archived projects' | translate }}</span>
+                                                          <span class="form__option__ui"></span>
+                                                      </label>
+                                                  </div>
+                                              </div>
                                               <div class="form__group search-option form__group--section--sm">
                                                   <label class="form__label">{{ 'Mapping difficulty' | translate }}</label>
                                                   <select class="form__control form__control--medium"
@@ -132,10 +150,11 @@
                                 <div ng-show="contributeCtrl.resultsView === 'grid' && contributeCtrl.results.length > 0">
                                     <div class="search-results-container">
                                         <div class="project-result__cards">
-                                            <a href="/project/{{ project.projectId }}" class="project-result__card"
+                                            <a href="/project/{{ project.projectId }}" class="project-result__card {{ project.status | lowercase }}"
                                                  ng-repeat="project in contributeCtrl.results track by $index">
                                                 <section class="panel project-result__content">
                                                     <span>{{ project.priority }}</span>
+                                                    <span class="pull-right" ng-if="project.status != 'PUBLISHED'">{{ project.status }}</span>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
                                                     <p markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')"></p>
@@ -162,6 +181,9 @@
                                                         <dd>{{ 'Validated' | translate }}</dd>
                                                     <!--<uib-progressbar
                                                             value="project.percentValidated"></uib-progressbar>-->
+
+                                                        <dd ng-show="project.activeMappers > 0" title="{{ 'Active Mappers' | translate }}"><span class="fa fa-user"></span> {{ project.activeMappers }}</dd>
+                                                    </dl>
                                                </section>
                                             </a>
                                         </div>

@@ -57,6 +57,15 @@ def create_app(env=None):
     return app
 
 
+def init_counters(app):
+    """ Initialise homepage counters so that users don't see 0 users on first load of application"""
+    from server.services.stats_service import StatsService
+
+    app.logger.debug('Initialising Homepage Counters')
+    with app.app_context():
+        StatsService.get_homepage_stats()
+
+
 def initialise_logger(app):
     """
     Read environment config then initialise a 2MB rotating log.  Prod Log Level can be reduced to help diagnose Prod
@@ -90,15 +99,16 @@ def init_flask_restful_routes(app):
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
-        TasksAsGPX, TasksAsOSM, UndoMappingAPI
+        TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
     from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
         ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
         ProjectValidateAll, ProjectsForAdminAPI
-    from server.api.project_apis import ProjectAPI, ProjectSearchAPI, HasUserTaskOnProject, HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
+    from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
+        HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
-    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI
+    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.users.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
         UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
@@ -130,11 +140,13 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
+    api.add_resource(ProjectAOIAPI,                 '/api/v1/project/<int:project_id>/aoi')
     api.add_resource(ProjectChatAPI,                '/api/v1/project/<int:project_id>/chat')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
     api.add_resource(HasUserTaskOnProjectDetails,   '/api/v1/project/<int:project_id>/has-user-locked-tasks/details')
     api.add_resource(MappedTasksByUser,             '/api/v1/project/<int:project_id>/mapped-tasks-by-user')
     api.add_resource(ProjectSummaryAPI,             '/api/v1/project/<int:project_id>/summary')
+    api.add_resource(TasksAsJson,                   '/api/v1/project/<int:project_id>/tasks')
     api.add_resource(TasksAsGPX,                    '/api/v1/project/<int:project_id>/tasks_as_gpx')
     api.add_resource(TasksAsOSM,                    '/api/v1/project/<int:project_id>/tasks-as-osm-xml')
     api.add_resource(LockTaskForMappingAPI,         '/api/v1/project/<int:project_id>/task/<int:task_id>/lock-for-mapping')
@@ -148,6 +160,7 @@ def init_flask_restful_routes(app):
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
+    api.add_resource(HomePageStatsAPI,              '/api/v1/stats/home-page')
     api.add_resource(CampaignsTagsAPI,              '/api/v1/tags/campaigns')
     api.add_resource(OrganisationTagsAPI,           '/api/v1/tags/organisations')
     api.add_resource(UserSearchAllAPI,              '/api/v1/user/search-all')

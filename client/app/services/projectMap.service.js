@@ -42,6 +42,7 @@
         /**
          * Initialises the service by adding the vector layers
          * @param mapForProjects - OL map
+         * @param clusterThresholdResolution
          */
         function initialise(mapForProjects, clusterThresholdResolution) {
             clusterThresholdResolution_ = clusterThresholdResolution ? clusterThresholdResolution: null;
@@ -124,7 +125,6 @@
             });
             if (clusterThresholdResolution_) vectorLayer.setMaxResolution(clusterThresholdResolution_);
             map.addLayer(vectorLayer);
-
         }
 
         /**
@@ -286,6 +286,7 @@
         /**
          * Display feature info
          * @param pixel
+         * @param coordinate
          */
         function displayFeatureInfo(pixel, coordinate) {
             var feature = map.forEachFeatureAtPixel(pixel, function (feature) {

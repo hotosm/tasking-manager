@@ -55,9 +55,9 @@
     margin-bottom: 1rem;
     margin-top: 1em;
     background-color: #fff;
-    -moz-box-shadow:    0px 2px 3px 1px darken($lightest-background-grey, 8%);
-    -webkit-box-shadow: 0px 2px 3px 1px darken($lightest-background-grey, 8%);
-    box-shadow:         0px 2px 3px 1px darken($lightest-background-grey, 8%);
+    -moz-box-shadow:    0 2px 3px 1px darken($lightest-background-grey, 8%);
+    -webkit-box-shadow: 0 2px 3px 1px darken($lightest-background-grey, 8%);
+    box-shadow:         0 2px 3px 1px darken($lightest-background-grey, 8%);
     transition: all 0.3s ease 0s;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
@@ -74,6 +74,7 @@
     .ng-isolate-scope {
       max-height: 180px;
       margin-bottom: 1em;
+      overflow: hidden;
     }
 
     @include media(large-up) {
@@ -86,15 +87,15 @@
 
     &:active {
       border: 1.5px solid darken($lightest-background-grey, 40%);
-      -moz-box-shadow:    0px 5px 5px 1px darken($lightest-background-grey, 18%);
-      -webkit-box-shadow: 0px 5px 5px 1px darken($lightest-background-grey, 18%);
-      box-shadow:         0px 5px 5px 1px darken($lightest-background-grey, 18%);
+      -moz-box-shadow:    0 5px 5px 1px darken($lightest-background-grey, 18%);
+      -webkit-box-shadow: 0 5px 5px 1px darken($lightest-background-grey, 18%);
+      box-shadow:         0 5px 5px 1px darken($lightest-background-grey, 18%);
     }
 
     &:hover {
-      -moz-box-shadow:    0px 5px 5px 1px darken($lightest-background-grey, 11%);
-      -webkit-box-shadow: 0px 5px 5px 1px darken($lightest-background-grey, 11%);
-      box-shadow:         0px 5px 5px 1px darken($lightest-background-grey, 11%);
+      -moz-box-shadow:    0 5px 5px 1px darken($lightest-background-grey, 11%);
+      -webkit-box-shadow: 0 5px 5px 1px darken($lightest-background-grey, 11%);
+      box-shadow:         0 5px 5px 1px darken($lightest-background-grey, 11%);
       margin-top: .5em;
       margin-bottom: 1.5em;
     }
@@ -102,6 +103,11 @@
     ul {
       padding: 0;
       list-style-type: none;
+    }
+
+    &.draft,
+    &.archived {
+      background: url(../../img/closed_back.gif) transparent;
     }
   }
 
@@ -111,10 +117,6 @@
 
     @include media(medium-up) {
       padding: 2.5rem 2.5rem 3rem;
-    }
-
-    dt {
-      padding-top: .2em;
     }
   }
 
@@ -127,7 +129,7 @@
     dt, dd {
       margin-bottom: 0;
     }
-    dd { margin-right: 3em; }
+    dd { margin-right: 2em; }
   }
 }
 
@@ -198,6 +200,11 @@
       width: 20%;
     }
   }
+  .active-mappers{
+    margin-left: 4em;
+    font-weight: bold;
+  }
+
   .ng-isolate-scope {
     overflow-y: visible;
     max-height: 100%;
@@ -213,3 +220,4 @@
     }
   }
 }
+
