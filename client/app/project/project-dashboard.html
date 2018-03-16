@@ -29,7 +29,7 @@
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                         <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Task locked for validation by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        <span ng-show="item.action === 'UNLOCKED'">{{ 'Task checked out for 2 hours by' | translate }} <a
+                                        <span ng-show="item.action === 'AUTO_UNLOCKED'">{{ 'Task automatically unlocked by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                         <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Task marked as bad imagery by' | translate }} <a
                                                 href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>

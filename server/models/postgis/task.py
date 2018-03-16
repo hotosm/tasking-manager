@@ -19,7 +19,7 @@ class TaskAction(Enum):
     LOCKED_FOR_VALIDATION = 2
     STATE_CHANGE = 3
     COMMENT = 4
-    UNLOCKED = 5
+    AUTO_UNLOCKED = 5
 
 
 class TaskHistory(db.Model):
@@ -60,7 +60,7 @@ class TaskHistory(db.Model):
         self.action_text = new_state.name
 
     def set_unlock_action(self):
-        self.action = TaskAction.UNLOCKED.name
+        self.action = TaskAction.AUTO_UNLOCKED.name
 
     def delete(self):
         """ Deletes the current model from the DB """
@@ -305,7 +305,7 @@ class Task(db.Model):
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
         last_action.delete()
 
-        # Add UNLOCKED action in the task history and set locked_by to null
+        # Add AUTO_UNLOCKED action in the task history and set locked_by to null
         self.set_task_history(action=TaskAction.UNLOCKED, user_id=self.locked_by)
         self.locked_by = None
         self.update()
