@@ -280,6 +280,7 @@ class Task(db.Model):
             history.set_unlock_action()
 
         self.task_history.append(history)
+        return history
 
     def lock_task_for_mapping(self, user_id: int):
         self.set_task_history(TaskAction.LOCKED_FOR_MAPPING, user_id)
@@ -303,10 +304,12 @@ class Task(db.Model):
 
         # clear the lock action for the task in the task history
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
+        duration_task_locked = datetime.datetime.now() - last_action.action_date
         last_action.delete()
 
         # Add AUTO_UNLOCKED action in the task history and set locked_by to null
-        self.set_task_history(action=TaskAction.UNLOCKED, user_id=self.locked_by)
+        auto_unlocked = self.set_task_history(action=TaskAction.UNLOCKED, user_id=self.locked_by)
+        auto_unlocked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
         self.locked_by = None
         self.update()
 
