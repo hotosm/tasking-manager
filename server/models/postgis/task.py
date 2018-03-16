@@ -307,12 +307,11 @@ class Task(db.Model):
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
         next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if last_action.action == 'LOCKED_FOR_MAPPING' \
             else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
-        duration_task_locked = datetime.datetime.now() - last_action.action_date
         last_action.delete()
 
         # Add AUTO_UNLOCKED action in the task history and set locked_by to null
         auto_unlocked = self.set_task_history(action=next_action, user_id=self.locked_by)
-        auto_unlocked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
+        auto_unlocked.action_text = (datetime.datetime.min + datetime.timedelta(hours=2)).time().isoformat()
         self.locked_by = None
         self.update()
 
