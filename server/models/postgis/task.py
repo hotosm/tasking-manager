@@ -19,7 +19,8 @@ class TaskAction(Enum):
     LOCKED_FOR_VALIDATION = 2
     STATE_CHANGE = 3
     COMMENT = 4
-    AUTO_UNLOCKED = 5
+    AUTO_UNLOCKED_FOR_MAPPING = 5
+    AUTO_UNLOCKED_FOR_VALIDATION = 6
 
 
 class TaskHistory(db.Model):
@@ -59,8 +60,8 @@ class TaskHistory(db.Model):
         self.action = TaskAction.STATE_CHANGE.name
         self.action_text = new_state.name
 
-    def set_unlock_action(self):
-        self.action = TaskAction.AUTO_UNLOCKED.name
+    def set_auto_unlock_action(self, task_action: TaskAction):
+        self.action = task_action.name
 
     def delete(self):
         """ Deletes the current model from the DB """
@@ -276,8 +277,8 @@ class Task(db.Model):
             history.set_comment_action(comment)
         elif action == TaskAction.STATE_CHANGE:
             history.set_state_change_action(new_state)
-        elif action == TaskAction.UNLOCKED:
-            history.set_unlock_action()
+        elif action in [TaskAction.AUTO_UNLOCKED_FOR_MAPPING, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION]:
+            history.set_auto_unlock_action(action)
 
         self.task_history.append(history)
         return history
@@ -304,11 +305,13 @@ class Task(db.Model):
 
         # clear the lock action for the task in the task history
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
+        next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if last_action.action == 'LOCKED_FOR_MAPPING' \
+            else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
         duration_task_locked = datetime.datetime.now() - last_action.action_date
         last_action.delete()
 
         # Add AUTO_UNLOCKED action in the task history and set locked_by to null
-        auto_unlocked = self.set_task_history(action=TaskAction.UNLOCKED, user_id=self.locked_by)
+        auto_unlocked = self.set_task_history(action=next_action, user_id=self.locked_by)
         auto_unlocked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
         self.locked_by = None
         self.update()

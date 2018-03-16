@@ -934,7 +934,9 @@
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                             <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Locked for validation by' | translate }} <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED'">{{ 'Automatically unlocked by' | translate }} <a
+                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Automatically unlocked for mapping by' | translate }} <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Automatically unlocked for validation by' | translate }} <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                             <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Marked as bad imagery by' | translate }} <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
