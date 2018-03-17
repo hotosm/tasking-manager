@@ -82,6 +82,13 @@ class UserService:
         return requested_user.as_dto(logged_in_user.username)
 
     @staticmethod
+    def get_user_dto_by_id(requested_user: int) -> UserDTO:
+        """Gets user DTO for supplied user id """
+        requested_user = UserService.get_user_by_id(requested_user)
+
+        return requested_user.as_dto(requested_user.username)
+
+    @staticmethod
     def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
         """ Update user with info supplied by user, if they add or change their email address a verification mail 
             will be sent """
