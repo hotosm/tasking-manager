@@ -5,6 +5,7 @@ from cachetools import TTLCache, cached
 from typing import List
 from flask import current_app
 
+from server import create_app
 from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message, NotFound
 from server.services.messaging.smtp_service import SMTPService
@@ -65,23 +66,28 @@ class MessageService:
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
-        """ Sends supplied message to all contributors on specified project """
-        contributors = Message.get_all_contributors(project_id)
+        """  Sends supplied message to all contributors on specified project.  Message all contributors can take
+             over a minute to run, so this method is expected to be called on its own thread """
 
-        project_link = MessageService.get_project_link(project_id)
+        app = create_app()  # Because message-all run on background thread it needs it's own app context
 
-        message_dto.message = f'{project_link}<br/><br/>' + message_dto.message  # Append project link to end of message
+        with app.app_context():
+            contributors = Message.get_all_contributors(project_id)
 
-        msg_count = 0
-        for contributor in contributors:
-            message = Message.from_dto(contributor[0], message_dto)
-            message.save()
-            user = UserService.get_user_by_id(contributor[0])
-            SMTPService.send_email_alert(user.email_address, user.username)
-            msg_count += 1
-            if msg_count == 5:
-                time.sleep(0.5)  # Sleep for 0.5 seconds to avoid hitting AWS rate limits every 5 messages
-                msg_count = 0
+            project_link = MessageService.get_project_link(project_id)
+
+            message_dto.message = f'{project_link}<br/><br/>' + message_dto.message  # Append project link to end of message
+
+            msg_count = 0
+            for contributor in contributors:
+                message = Message.from_dto(contributor[0], message_dto)
+                message.save()
+                user = UserService.get_user_by_id(contributor[0])
+                SMTPService.send_email_alert(user.email_address, user.username)
+                msg_count += 1
+                if msg_count == 10:
+                    time.sleep(0.5)  # Sleep for 0.5 seconds to avoid hitting AWS rate limits every 10 messages
+                    msg_count = 0
 
     @staticmethod
     def send_message_after_comment(comment_from: int, comment: str, task_id: int, project_id: int):
