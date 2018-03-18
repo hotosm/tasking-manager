@@ -38,6 +38,7 @@
         vm.taskUnLockErrorMessage = '';
         vm.taskSplitError = false;
         vm.taskSplitCode == null;
+        vm.wasAutoUnlocked = false;
 
         //authorization
         vm.isAuthorized = false;
@@ -190,6 +191,7 @@
             vm.taskSplitError = false;
             vm.taskSplitCode == null;
             vm.taskUndoError = false;
+            vm.wasAutoUnlocked = false;
         }
 
         /**
@@ -560,6 +562,12 @@
                     vm.lockedByCurrentUserVectorLayer.getSource().clear();
                 }
                 vm.lockedTasksForCurrentUser = [];
+                refreshProject(vm.id);
+                if (vm.mappingStep === 'locked' || vm.validatingStep === 'locked') {
+                    vm.mappingStep = 'viewing';
+                    vm.validatingStep = 'viewing';
+                    vm.wasAutoUnlocked = true;
+                }
             });
         }
 

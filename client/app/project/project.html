@@ -322,6 +322,11 @@
                                                 <p>{{ 'The task could not be locked for mapping.' | translate }} {{ projectCtrl.taskLockErrorMessage }}</p>
                                             </div>
                                         </div>
+                                        <div ng-show="projectCtrl.wasAutoUnlocked">
+                                            <div class="error" role="alert">
+                                                <p>{{ 'The task expired and was automatically unlocked.' | translate }}</p>
+                                            </div>
+                                        </div>
                                         <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
                                             <div class="alert" role="alert">
                                                 <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
@@ -659,6 +664,11 @@
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
                                             <p>{{ 'The task could not be locked for validation.' | translate }} {{ projectCtrl.taskLockErrorMessage }}</p>
+                                        </div>
+                                    </div>
+                                    <div ng-show="projectCtrl.wasAutoUnlocked">
+                                        <div class="error" role="alert">
+                                            <p>{{ 'The task expired and was automatically unlocked.' | translate }}</p>
                                         </div>
                                     </div>
                                     <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
