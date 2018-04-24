@@ -180,7 +180,7 @@ class MappingService:
 
                     # Append wpt elements to end of doc
                     wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
-                    ET.SubElement(wpt, 'name').text = 'Do not edit outside of this box!'
+                    ET.SubElement(wpt, 'name').text = 'Do not edit outside of this colored area!'
                     root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding='utf8')
