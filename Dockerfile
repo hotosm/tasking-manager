@@ -1,21 +1,24 @@
 FROM python:3.6
 
 # Install dependencies for shapely
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y libgeos-c1 libgeos-dev
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && apt-get install -y libgeos-c1 libgeos-dev \
+ && rm -rf /var/lib/apt/lists/*
 
 # Uncomment and set with valid connection string for use locally
 #ENV TM_DB=postgresql://user:pass@host/db
 
-# Add and install Python modules
-ADD requirements.txt /src/requirements.txt
-RUN cd /src; pip install -r requirements.txt
+WORKDIR /src
 
-ADD . /src
+# Add and install Python modules
+ADD requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+ADD . .
 
 # Expose
 EXPOSE 8000
 
 # Gunicorn configured for single-core machine, if more cores available increase workers using formula ((cores x 2) + 1))
-CMD cd /src; gunicorn -b 0.0.0.0:8000 -w 3 --timeout 179 manage:application
+CMD gunicorn -b 0.0.0.0:8000 -w 3 --timeout 179 manage:application
