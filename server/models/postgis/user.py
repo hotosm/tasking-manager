@@ -71,7 +71,7 @@ class User(db.Model):
         """ Search and filter all users """
 
         # Base query that applies to all searches
-        base = db.session.query(User.username, User.mapping_level, User.role)
+        base = db.session.query(User.id, User.username, User.mapping_level, User.role)
 
         # Add filter to query as required
         if query.mapping_level:
@@ -86,6 +86,7 @@ class User(db.Model):
         dto = UserSearchDTO()
         for result in results.items:
             listed_user = ListedUser()
+            listed_user.id = result.id
             listed_user.mapping_level = MappingLevel(result.mapping_level).name
             listed_user.username = result.username
             listed_user.role = UserRole(result.role).name
@@ -200,6 +201,7 @@ class User(db.Model):
     def as_dto(self, logged_in_username: str) -> UserDTO:
         """ Create DTO object from user in scope """
         user_dto = UserDTO()
+        user_dto.id = self.id
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
