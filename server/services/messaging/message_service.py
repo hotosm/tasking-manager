@@ -48,10 +48,13 @@ class MessageService:
         if validated_by == mapped_by:
             return  # No need to send a thankyou to yourself
 
+        user = UserService.get_user_by_id(mapped_by)
+        if user.validation_message == False:
+            return # No need to send validation message
+
         text_template = get_template('validation_message_en.txt')
         task_link = MessageService.get_task_link(project_id, task_id)
 
-        user = UserService.get_user_by_id(mapped_by)
         text_template = text_template.replace('[USERNAME]', user.username)
         text_template = text_template.replace('[TASK_LINK]', task_link)
 
