@@ -43,28 +43,6 @@ class MessageService:
         return welcome_message.id
 
     @staticmethod
-    def send_message_after_validation(validated_by: int, mapped_by: int, task_id: int, project_id: int):
-        """ Sends mapper a thank you, after their task has been marked as valid """
-        if validated_by == mapped_by:
-            return  # No need to send a thankyou to yourself
-
-        text_template = get_template('validation_message_en.txt')
-        task_link = MessageService.get_task_link(project_id, task_id)
-
-        user = UserService.get_user_by_id(mapped_by)
-        text_template = text_template.replace('[USERNAME]', user.username)
-        text_template = text_template.replace('[TASK_LINK]', task_link)
-
-        validation_message = Message()
-        validation_message.from_user_id = validated_by
-        validation_message.to_user_id = mapped_by
-        validation_message.subject = f'Your mapping in Project {project_id} on {task_link} has just been validated'
-        validation_message.message = text_template
-        validation_message.add_message()
-
-        SMTPService.send_email_alert(user.email_address, user.username)
-
-    @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
         """  Sends supplied message to all contributors on specified project.  Message all contributors can take
              over a minute to run, so this method is expected to be called on its own thread """
