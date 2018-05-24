@@ -158,7 +158,7 @@ class MappingService:
         # Create trk element
         trk = ET.Element('trk')
         root.append(trk)
-        ET.SubElement(trk, 'name').text = f'Task for project {project_id}. Do not edit outside of this area!'
+        ET.SubElement(trk, 'name').text = f'Task for project {project_id}. Do not edit outside of this box!'
 
         # Construct trkseg elements
         if task_ids_str is not None:
@@ -180,6 +180,7 @@ class MappingService:
 
                     # Append wpt elements to end of doc
                     wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+                    ET.SubElement(wpt, 'name').text = 'Do not edit outside of this colored area!'
                     root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding='utf8')

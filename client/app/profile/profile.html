@@ -79,11 +79,6 @@
                                         {{ 'OSM edit history' | translate }}
                                     </a>
                                 </p>
-                                <p>
-                                    <a href="http://yosmhm.neis-one.org/?{{ profileCtrl.username }}" target="_blank" rel="noopener">
-                                        {{ 'OSM heat map' | translate }}
-                                    </a>
-                                </p>
                             </div>
                         </div>
                         <div class="roles pull-right">
@@ -149,14 +144,6 @@
                                                placeholder="LinkedIn ID (personal)"
                                                title="{{ 'Your ID is the part after https://www.linkedin.com/in/....' | translate}}"
                                                ng-model="profileCtrl.userDetails.linkedinId"/>
-                                    </li>
-                                    <li>
-                                        <label class="form__option form__option--custom-checkbox" ng-show="profileCtrl.editDetails">
-                                              <input ng-show="profileCtrl.editDetails" type="checkbox" name="form-custom-checkbox"
-                                                    ng-model="profileCtrl.userDetails.validation_message"/>
-                                              <span class="form__option__text">{{ 'Receive automated validation messages' | translate }}</span>
-                                              <span class="form__option__ui"></span>
-                                        </label>
                                     </li>
                                 </ul>
                                 <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">

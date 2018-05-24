@@ -48,13 +48,10 @@ class MessageService:
         if validated_by == mapped_by:
             return  # No need to send a thankyou to yourself
 
-        user = UserService.get_user_by_id(mapped_by)
-        if user.validation_message == False:
-            return # No need to send validation message
-
         text_template = get_template('validation_message_en.txt')
         task_link = MessageService.get_task_link(project_id, task_id)
 
+        user = UserService.get_user_by_id(mapped_by)
         text_template = text_template.replace('[USERNAME]', user.username)
         text_template = text_template.replace('[TASK_LINK]', task_link)
 
@@ -100,7 +97,7 @@ class MessageService:
         if len(usernames) == 0:
             return  # Nobody @'d so return
 
-        task_link = MessageService.get_task_link(project_id, task_id)
+        link = MessageService.get_task_link(project_id, task_id)
         project_title = ProjectService.get_project_title(project_id)
         for username in usernames:
 
@@ -113,7 +110,7 @@ class MessageService:
             message = Message()
             message.from_user_id = comment_from
             message.to_user_id = user.id
-            message.subject = f'You were mentioned in a comment in Project {project_id} on {task_link}'
+            message.subject = f'You were mentioned in a comment in Project {project_id}, on Task {task_id}'
             message.message = comment
             message.add_message()
             SMTPService.send_email_alert(user.email_address, user.username)
