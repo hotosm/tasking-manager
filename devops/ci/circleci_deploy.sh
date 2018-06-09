@@ -4,11 +4,13 @@ set -xev # halt script on error
 # demo and stage branch are set via environment variables in CircleCI
 # DEMO_BRANCH="testing branch"
 # STAGE_BRANCH="develop"
+# TEACHOSM_BRANCH="teachosm"
 PROD_BRANCH="master"
 
 DEMO_ENV="taskingmanager-demo"
 STAGE_ENV="taskingmanager-stage"
 PROD_ENV="taskingmanager-prod"
+TEACHOSM_ENV="taskingmanager-teachosm"
 
 echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 
@@ -23,7 +25,7 @@ echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 # Set Version Number
 VERSION=v.0.0.$CIRCLE_BUILD_NUM-$(echo $CIRCLE_BRANCH | tr -cd '[[:alnum:]]._-')
 
-if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
+if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH|$TEACHOSM_BRANCH)$ ]];
   then
     # Install AWS requirements
     pip install -r requirements.aws.txt
@@ -38,6 +40,15 @@ if [ $CIRCLE_BRANCH == $DEMO_BRANCH ]
     # Deploy develop builds to Staging environment
     eb use $DEMO_ENV
     echo Deploying $VERSION to $DEMO_ENV
+    eb deploy -l $VERSION
+fi
+
+# Deploy to TeachOSM Env
+if [ $CIRCLE_BRANCH == $TEACHOSM_BRANCH ]
+  then
+    # Deploy develop builds to Staging environment
+    eb use $TEACHOSM_ENV
+    echo Deploying $VERSION to $TEACHOSM_ENV
     eb deploy -l $VERSION
 fi
 

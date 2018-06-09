@@ -4,7 +4,7 @@ import os
 
 class EnvironmentConfig:
     """ Base class for config that is shared between environments """
-    DEFAULT_CHANGESET_COMMENT = '#hotosm-project'
+    DEFAULT_CHANGESET_COMMENT = '#teachosm-project'
     # This is the address we'll use as the sender on all auto generated emails
     EMAIL_FROM_ADDRESS = 'noreply@hotosmmail.org'
     LOG_LEVEL = logging.ERROR
@@ -40,7 +40,7 @@ class EnvironmentConfig:
 
 
 class ProdConfig(EnvironmentConfig):
-    APP_BASE_URL = 'https://tasks.hotosm.org'
+    APP_BASE_URL = 'http://tasks-teachosm.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
