@@ -141,7 +141,8 @@
                     emailAddress: vm.userDetails.emailAddress,
                     facebookId: vm.userDetails.facebookId,
                     linkedinId: vm.userDetails.linkedinId,
-                    twitterId: vm.userDetails.twitterId
+                    twitterId: vm.userDetails.twitterId,
+                    validation_message : vm.userDetails.validation_message
                 };
                 var resultsPromise = userService.setContactDetails(contactDetails);
                 resultsPromise.then(function (data) {

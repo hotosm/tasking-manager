@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /app
     docker:
-      - image: python:3.6
+      - image: python:3.6-jessie
     steps:
       - checkout
       - setup_remote_docker
@@ -13,7 +13,7 @@ jobs:
               # Install latest LTS node
               apt-get update
               curl -sL https://deb.nodesource.com/setup_6.x | bash -
-              apt-get install -y nodejs libgeos-c1 libgeos-dev # Required for shapely
+              apt-get install -y nodejs libgeos-dev # Required for shapely
               node --version
       - restore_cache:
           keys:
@@ -55,5 +55,7 @@ jobs:
       - deploy:
           name: Deploy application
           command: |
+            pip install newrelic
+            newrelic-admin generate-config $NEW_RELIC_LICENSE /app/newrelic.ini
             chmod +x /app/devops/ci/circleci_deploy.sh
             /app/devops/ci/circleci_deploy.sh

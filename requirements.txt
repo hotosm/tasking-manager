@@ -42,3 +42,4 @@ transifex-client==0.12.4
 urllib3==1.21.1
 webencodings==0.5.1
 Werkzeug==0.12.2
+newrelic==3.2.0.91
