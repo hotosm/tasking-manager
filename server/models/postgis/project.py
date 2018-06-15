@@ -297,8 +297,8 @@ class Project(db.Model):
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = int((self.tasks_mapped / (self.total_tasks - self.tasks_bad_imagery)) * 100)
-        summary.percent_validated = int(((self.tasks_validated + self.tasks_bad_imagery) / self.total_tasks) * 100)
+        summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
+        summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
 
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
