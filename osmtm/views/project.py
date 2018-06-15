@@ -674,7 +674,7 @@ def passes_project_id_challenge(challenge_id, project_id):
     try:
         challenge_id_int = int(challenge_id)
         project_id_int = int(project_id)
-    except:
+    except Exception:
         return False
     if not challenge_id_int == project_id_int:
         return False

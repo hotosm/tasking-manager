@@ -33,7 +33,7 @@ requires = [
     'alembic==0.6.4',
     'transifex-client',
     'pyramid-exclog==0.7',
-    'httpretty',
+    'httpretty==0.9.4',
     'pygments',
     'APScheduler==3.0.3',
     'python-oembed == 0.2.1',

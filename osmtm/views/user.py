@@ -163,7 +163,7 @@ def check_user_name(user):
             user.username = display_name
             DBSession.add(user)
             DBSession.flush()
-    except:
+    except Exception:
         # don't lock application if no response can be received from OSM API
         pass
 
@@ -189,7 +189,7 @@ def get_addl_user_info(user_id):
         changesets_el = xmldoc.getElementsByTagName('changesets')[0]
         changeset_count = changesets_el.getAttribute('count')
 
-    except:
+    except Exception:
         # don't lock application if no reponse can be received from OSM API
         creation_date = 'null'
         changeset_count = 'null'
