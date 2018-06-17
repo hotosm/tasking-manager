@@ -145,7 +145,7 @@ class MappingService:
         if timestamp is None:
             timestamp = datetime.datetime.utcnow()
 
-        root = ET.Element('gpx', attrib=dict(xmlns='http://topografix.com/GPX/1/1', version='1.1',
+        root = ET.Element('gpx', attrib=dict(xmlns='http://www.topografix.com/GPX/1/1', version='1.1',
                                              creator='HOT Tasking Manager'))
 
         # Create GPX Metadata element
