@@ -78,9 +78,9 @@ class ProjectSearchService:
             list_dto.organisation_tag = project.organisation_tag
             list_dto.campaign_tag = project.campaign_tag
             list_dto.percent_mapped = round(
-                (project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
+                ((project.tasks_mapped + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
             list_dto.percent_validated = round(
-                ((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
+                (project.tasks_validated / project.total_tasks) * 100, 0)
             list_dto.status = ProjectStatus(project.status).name
             list_dto.active_mappers = Project.get_active_mappers(project.id)
 
