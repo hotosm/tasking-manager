@@ -174,7 +174,7 @@ class StatsService:
         """ Get overall TM stats to give community a feel for progress that's being made """
         dto = HomePageStatsDTO()
 
-        dto.mappers_online = Task.query.distinct(Task.locked_by).count()
+        dto.mappers_online = Task.query.filter(Task.locked_by != None).distinct(Task.locked_by).count()
         dto.total_mappers = User.query.count()
         dto.tasks_mapped = Task.query.\
             filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
