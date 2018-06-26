@@ -324,6 +324,7 @@ class Project(db.Model):
             .filter(Task.task_status.in_((TaskStatus.LOCKED_FOR_MAPPING.value,
                     TaskStatus.LOCKED_FOR_VALIDATION.value))) \
             .filter(Task.project_id == project_id) \
+            .distinct(Task.locked_by) \
             .count()
 
     def _get_project_and_base_dto(self):
