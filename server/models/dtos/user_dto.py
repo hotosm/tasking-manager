@@ -1,6 +1,7 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, EmailType
+from schematics.types import StringType, IntType, EmailType, LongType, BooleanType
+
 from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import MappingLevel, UserRole
@@ -29,6 +30,8 @@ def is_known_role(value):
 
 class UserDTO(Model):
     """ DTO for User """
+    validation_message = BooleanType(default=True)
+    id = LongType()
     username = StringType()
     role = StringType()
     mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])
@@ -81,6 +84,7 @@ class UserSearchQuery(Model):
 
 class ListedUser(Model):
     """ Describes a user within the User List """
+    id = LongType()
     username = StringType()
     role = StringType()
     mapping_level = StringType(serialized_name='mappingLevel')

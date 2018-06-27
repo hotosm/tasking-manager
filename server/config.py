@@ -44,7 +44,7 @@ class ProdConfig(EnvironmentConfig):
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
-    LOG_LEVEL = logging.DEBUG
+    LOG_LEVEL = logging.ERROR
 
 
 class StageConfig(EnvironmentConfig):

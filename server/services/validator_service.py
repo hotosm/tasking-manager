@@ -217,7 +217,7 @@ class ValidatorService:
                                               Task.task_status != TaskStatus.BADIMAGERY.value).all()
 
         for task in tasks_to_validate:
-            task.mapped_by = user_id  # Ensure we set mapped by value
+            task.mapped_by = task.mapped_by or user_id  # Ensure we set mapped by value
             if TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
                 # Only lock tasks that are not already locked to avoid double lock issue
                 task.lock_task_for_validating(user_id)
@@ -227,5 +227,5 @@ class ValidatorService:
         # Set counters to fully mapped and validated
         project = ProjectService.get_project_by_id(project_id)
         project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
-        project.tasks_validated = (project.total_tasks - project.tasks_bad_imagery)
+        project.tasks_validated = project.total_tasks
         project.save()

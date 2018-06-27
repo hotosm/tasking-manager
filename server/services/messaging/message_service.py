@@ -5,10 +5,12 @@ from cachetools import TTLCache, cached
 from typing import List
 from flask import current_app
 
+from server import create_app
 from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message, NotFound
 from server.services.messaging.smtp_service import SMTPService
 from server.services.messaging.template_service import get_template, get_profile_url
+from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService, User
 
 
@@ -46,17 +48,20 @@ class MessageService:
         if validated_by == mapped_by:
             return  # No need to send a thankyou to yourself
 
+        user = UserService.get_user_by_id(mapped_by)
+        if user.validation_message == False:
+            return # No need to send validation message
+
         text_template = get_template('validation_message_en.txt')
         task_link = MessageService.get_task_link(project_id, task_id)
 
-        user = UserService.get_user_by_id(mapped_by)
         text_template = text_template.replace('[USERNAME]', user.username)
         text_template = text_template.replace('[TASK_LINK]', task_link)
 
         validation_message = Message()
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = f'Your mapping on {task_link} has just been validated'
+        validation_message.subject = f'Your mapping in Project {project_id} on {task_link} has just been validated'
         validation_message.message = text_template
         validation_message.add_message()
 
@@ -64,23 +69,28 @@ class MessageService:
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
-        """ Sends supplied message to all contributors on specified project """
-        contributors = Message.get_all_contributors(project_id)
+        """  Sends supplied message to all contributors on specified project.  Message all contributors can take
+             over a minute to run, so this method is expected to be called on its own thread """
 
-        project_link = MessageService.get_project_link(project_id)
+        app = create_app()  # Because message-all run on background thread it needs it's own app context
 
-        message_dto.message = f'{project_link}<br/><br/>' + message_dto.message  # Append project link to end of message
+        with app.app_context():
+            contributors = Message.get_all_contributors(project_id)
 
-        msg_count = 0
-        for contributor in contributors:
-            message = Message.from_dto(contributor[0], message_dto)
-            message.save()
-            user = UserService.get_user_by_id(contributor[0])
-            SMTPService.send_email_alert(user.email_address, user.username)
-            msg_count += 1
-            if msg_count == 5:
-                time.sleep(0.5)  # Sleep for 0.5 seconds to avoid hitting AWS rate limits every 5 messages
-                msg_count = 0
+            project_link = MessageService.get_project_link(project_id)
+
+            message_dto.message = f'{project_link}<br/><br/>' + message_dto.message  # Append project link to end of message
+
+            msg_count = 0
+            for contributor in contributors:
+                message = Message.from_dto(contributor[0], message_dto)
+                message.save()
+                user = UserService.get_user_by_id(contributor[0])
+                SMTPService.send_email_alert(user.email_address, user.username)
+                msg_count += 1
+                if msg_count == 10:
+                    time.sleep(0.5)  # Sleep for 0.5 seconds to avoid hitting AWS rate limits every 10 messages
+                    msg_count = 0
 
     @staticmethod
     def send_message_after_comment(comment_from: int, comment: str, task_id: int, project_id: int):
@@ -90,7 +100,8 @@ class MessageService:
         if len(usernames) == 0:
             return  # Nobody @'d so return
 
-        link = MessageService.get_task_link(project_id, task_id)
+        task_link = MessageService.get_task_link(project_id, task_id)
+        project_title = ProjectService.get_project_title(project_id)
         for username in usernames:
 
             try:
@@ -102,7 +113,7 @@ class MessageService:
             message = Message()
             message.from_user_id = comment_from
             message.to_user_id = user.id
-            message.subject = f'You were mentioned in a comment on {link}'
+            message.subject = f'You were mentioned in a comment in Project {project_id} on {task_link}'
             message.message = comment
             message.add_message()
             SMTPService.send_email_alert(user.email_address, user.username)
