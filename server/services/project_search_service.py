@@ -107,15 +107,17 @@ class ProjectSearchService:
             .filter(ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])) \
             .filter(Project.private != True)
 
-        if not search_dto.is_project_manager:
-            query = query.filter(Project.status == ProjectStatus.PUBLISHED.value)
-        else:
-            project_status_array = [ProjectStatus.PUBLISHED.value]
-            if search_dto.project_statuses:
-                for project_status in search_dto.project_statuses:
-                    project_status_array.append(ProjectStatus[project_status].value)
+        project_status_array = [ProjectStatus.PUBLISHED.value]
 
-            query = query.filter(Project.status.in_(project_status_array))
+        if search_dto.project_statuses:
+            for project_status in search_dto.project_statuses:
+                project_status_array.append(ProjectStatus[project_status].value)
+
+        if not search_dto.is_project_manager:
+            project_status_array = list(filter(lambda x: x != ProjectStatus.DRAFT.value,
+                                               project_status_array))
+
+        query = query.filter(Project.status.in_(project_status_array))
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != 'ALL':
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)
