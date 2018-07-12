@@ -49,20 +49,21 @@
                                   <form class="form">
                                       <fieldset class="form__fieldset">
                                           <div class="search-options-container">
-                                              <div class="form__group search-option" ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
+                                              <div class="form__group search-option">
                                                   <div>
                                                       <label class="form__option form__option--custom-checkbox">
                                                           <input type="checkbox" name="form-custom-checkbox"
-                                                                 ng-click="contributeCtrl.search()"
-                                                                 ng-model="contributeCtrl.searchDraft"/>
-                                                          <span class="form__option__text">{{ 'Include draft projects' | translate }}</span>
-                                                          <span class="form__option__ui"></span>
-                                                      </label>
-                                                      <label class="form__option form__option--custom-checkbox">
-                                                          <input type="checkbox" name="form-custom-checkbox"
-                                                                 ng-click="contributeCtrl.search()"
+                                                                 ng-change="contributeCtrl.search()"
                                                                  ng-model="contributeCtrl.searchArchived"/>
                                                           <span class="form__option__text">{{ 'Include archived projects' | translate }}</span>
+                                                          <span class="form__option__ui"></span>
+                                                      </label>
+                                                      <label class="form__option form__option--custom-checkbox"
+                                                              ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
+                                                          <input type="checkbox" name="form-custom-checkbox"
+                                                                 ng-change="contributeCtrl.search()"
+                                                                 ng-model="contributeCtrl.searchDraft"/>
+                                                          <span class="form__option__text">{{ 'Include draft projects' | translate }}</span>
                                                           <span class="form__option__ui"></span>
                                                       </label>
                                                   </div>
@@ -103,35 +104,35 @@
                                                   <div>
                                                       <label class="form__option form__option--custom-checkbox">
                                                           <input type="checkbox" name="form-custom-checkbox"
-                                                                 ng-click="contributeCtrl.search()"
+                                                                 ng-change="contributeCtrl.search()"
                                                                  ng-model="contributeCtrl.searchRoads"/>
                                                           <span class="form__option__text">{{ 'Roads' | translate }}</span>
                                                           <span class="form__option__ui"></span>
                                                       </label>
                                                       <label class="form__option form__option--custom-checkbox">
                                                           <input type="checkbox" name="form-custom-checkbox"
-                                                                 ng-click="contributeCtrl.search()"
+                                                                 ng-change="contributeCtrl.search()"
                                                                  ng-model="contributeCtrl.searchBuildings"/>
                                                           <span class="form__option__text">{{ 'Buildings' | translate }}</span>
                                                           <span class="form__option__ui"></span>
                                                       </label>
                                                       <label class="form__option form__option--custom-checkbox">
                                                           <input type="checkbox" name="form-custom-checkbox"
-                                                                 ng-click="contributeCtrl.search()"
+                                                                 ng-change="contributeCtrl.search()"
                                                                  ng-model="contributeCtrl.searchWaterways"/>
                                                           <span class="form__option__text">{{ 'Waterways' | translate }}</span>
                                                           <span class="form__option__ui"></span>
                                                       </label>
                                                       <label class="form__option form__option--custom-checkbox">
                                                           <input type="checkbox" name="form-custom-checkbox"
-                                                                 ng-click="contributeCtrl.search()"
+                                                                 ng-change="contributeCtrl.search()"
                                                                  ng-model="contributeCtrl.searchLanduse"/>
                                                           <span class="form__option__text">{{ 'Land use' | translate }}</span>
                                                           <span class="form__option__ui"></span>
                                                       </label>
                                                       <label class="form__option form__option--custom-checkbox">
                                                           <input type="checkbox" name="form-custom-checkbox"
-                                                                 ng-click="contributeCtrl.search()"
+                                                                 ng-change="contributeCtrl.search()"
                                                                  ng-model="contributeCtrl.searchOther"/>
                                                           <span class="form__option__text">{{ 'Other' | translate }}</span>
                                                           <span class="form__option__ui"></span>
