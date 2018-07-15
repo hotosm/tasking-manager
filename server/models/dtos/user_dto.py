@@ -37,6 +37,7 @@ class UserDTO(Model):
     mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
+    tasks_invalidated = IntType(serialized_name='tasksInvalidated')
     email_address = EmailType(serialized_name='emailAddress', serialize_when_none=False)
     is_email_verified = EmailType(serialized_name='isEmailVerified', serialize_when_none=False)
     twitter_id = StringType(serialized_name='twitterId')
