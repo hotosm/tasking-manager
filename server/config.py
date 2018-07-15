@@ -32,10 +32,8 @@ class EnvironmentConfig:
     }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {
-        'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu, mg, ar, pl, pt',
-        'languages': 'English, Français, Español, Deutsch, Português (Brazil), 日本語, Lietuvos, 中文, Indonesia, Dansk,'
-                     ' Português (Brasil), Русский, Slovenščina, Italiano, Nederlands, Українська, தமிழ், සිංහල,'
-                     ' Česky, Bokmål, Magyar, Malagasy, Arabic, Polish, Português'
+        'codes': 'ar, cs, da, de, en, es, fr, hu, id, it, ja, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, zh_TW',
+        'languages': 'Arabic, Česky, Dansk, Deutsch, English, Español, Français, Magyar, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, 中文'
     }
 
 
