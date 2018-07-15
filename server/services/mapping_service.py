@@ -232,3 +232,23 @@ class MappingService:
                          f'Undo state from {current_state.name} to {undo_state.name}', True)
 
         return task.as_dto_with_instructions(preferred_locale)
+
+    @staticmethod
+    def map_all_tasks(project_id: int, user_id: int):
+        """ Marks all tasks on a project as mapped """
+        tasks_to_map = Task.query.filter(Task.project_id == project_id,
+                                         Task.task_status.notin_([TaskStatus.BADIMAGERY.value,
+                                                                  TaskStatus.MAPPED.value,
+                                                                  TaskStatus.VALIDATED.value])).all()
+
+        for task in tasks_to_map:
+            if TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
+                # Only lock tasks that are not already locked to avoid double lock issue
+                task.lock_task_for_mapping(user_id)
+
+            task.unlock_task(user_id, new_state=TaskStatus.MAPPED)
+
+        # Set counters to fully mapped
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
+        project.save()
