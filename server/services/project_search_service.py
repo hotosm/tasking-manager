@@ -141,8 +141,10 @@ class ProjectSearchService:
             or_search = search_dto.text_search.replace(' ', ' | ')
             query = query.filter(ProjectInfo.text_searchable.match(or_search, postgresql_regconfig='english'))
 
-        all_results = query.order_by(Project.priority, Project.id.desc()).all()
-        paginated_results = query.order_by(Project.priority, Project.id.desc()).paginate(search_dto.page, 14, True)
+        all_results = query.order_by(Project.priority, Project.id.desc()) \
+            .distinct(Project.priority, Project.id).all()
+        paginated_results = query.order_by(Project.priority, Project.id.desc()) \
+            .distinct(Project.priority, Project.id).paginate(search_dto.page, 14, True)
 
         return all_results, paginated_results
 
