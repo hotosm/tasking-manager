@@ -142,7 +142,7 @@
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
                         <a href="#">
-                            {{ 'Questions and Comments' | translate }}
+                            {{ 'Project Questions and Comments' | translate }}
                         </a>
                     </li>
                 </ul>
@@ -922,7 +922,7 @@
                         <div ng-init="showAdvanced=false"
                              ng-show="projectCtrl.selectedTaskData && (projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') ">
                             <div>
-                                <h5>{{ 'History' | translate }}</h5>
+                                <h5>{{ 'Task History' | translate }}</h5>
                                 <div class="history">
                                     <p ng-show="projectCtrl.selectedTaskData.taskHistory.length < 1">{{ 'Nothing has happened yet.' | translate }}</p>
                                     <div ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
