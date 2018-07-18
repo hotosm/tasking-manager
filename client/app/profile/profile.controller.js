@@ -15,6 +15,7 @@
         vm.username = '';
         vm.currentlyLoggedInUser = null;
         vm.userDetails = null;
+        vm.userStats = null;
         vm.osmUserDetails = null;
         vm.projects = [];
         vm.map = null;
@@ -52,6 +53,7 @@
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             getUserProjects();
             getLevelSettings();
+            getUserStats();
         }
 
         /**
@@ -205,5 +207,17 @@
                 vm.mapperLevelAdvanced = data.mapperLevelAdvanced;
             });
         }
+
+        /**
+         * Get stats about the user
+         */
+        function getUserStats() {
+            var resultsPromise = userService.getUserStats(vm.username);
+            resultsPromise.then(function (data) {
+                // On success, set the detailed stats for this user
+                vm.userStats = data;
+            });
+        }
+
     }
 })();

@@ -44,6 +44,11 @@ class UserDTO(Model):
     linkedin_id = StringType(serialized_name='linkedinId')
 
 
+class UserStatsDTO(Model):
+    """ DTO containing statistics about the user """
+    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
+
+
 class UserOSMDTO(Model):
     """ DTO containing OSM details for the user """
     account_created = StringType(required=True, serialized_name='accountCreated')
