@@ -144,8 +144,7 @@ class User(db.Model):
                         tasks t
                   where p.id in (select unnest(projects_mapped) from users where id = {0})
                     and p.id = t.project_id
-                    and (t.mapped_by = {0} or t.mapped_by is null)
-                    and (t.validated_by = {0} or t.validated_by is null)
+                    and (t.mapped_by = {0} or t.validated_by = {0})
                GROUP BY p.id, p.status, p.centroid, p.geometry'''.format(user_id)
 
         results = db.engine.execute(sql)
