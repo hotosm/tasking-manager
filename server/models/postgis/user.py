@@ -138,14 +138,13 @@ class User(db.Model):
     @staticmethod
     def get_mapped_projects(user_id: int, preferred_locale: str) -> UserMappedProjectsDTO:
         """ Get all projects a user has mapped on """
-        sql = '''select p.id, p.status, p.default_locale, count(t.mapped_by), count(t.validated_by), st_asgeojson(p.centroid),
-                        st_asgeojson(p.geometry)
+        sql = '''select p.id, p.status, p.default_locale, count(t.mapped_by), count(t.validated_by), st_asgeojson(p.centroid)
                    from projects p,
                         tasks t
                   where p.id in (select unnest(projects_mapped) from users where id = {0})
                     and p.id = t.project_id
                     and (t.mapped_by = {0} or t.validated_by = {0})
-               GROUP BY p.id, p.status, p.centroid, p.geometry'''.format(user_id)
+               GROUP BY p.id, p.status, p.centroid'''.format(user_id)
 
         results = db.engine.execute(sql)
 
@@ -160,7 +159,6 @@ class User(db.Model):
             mapped_project.tasks_mapped = row[3]
             mapped_project.tasks_validated = row[4]
             mapped_project.centroid = geojson.loads(row[5])
-            mapped_project.aoi = geojson.loads(row[6])
 
             project_info = ProjectInfo.get_dto_for_locale(row[0], preferred_locale, row[2])
             mapped_project.name = project_info.name
