@@ -209,6 +209,7 @@ class User(db.Model):
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
+        user_dto.tasks_invalidated = self.tasks_invalidated
         user_dto.twitter_id = self.twitter_id
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id

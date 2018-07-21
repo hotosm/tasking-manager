@@ -458,11 +458,15 @@
                                     </div>
                                 </div>
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Validation and Invalidation' | translate }}</label>
-                                    <p>{{ 'Use this if for some reason you need to validate or invalidate all tasks in this project in a single step.' | translate }}</p>
+                                    <label class="form__label">{{ 'Mapping, Validation and Invalidation' | translate }}</label>
+                                    <p>{{ 'Use this if for some reason you need to map, validate or invalidate all tasks in this project in a single step.' | translate }}</p>
                                     <div class="alert alert--warning" role="alert">
                                         <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'This cannot be undone.' | translate }}</p>
                                     </div>
+                                    <button class="button button--secondary" type="button"
+                                        ng-click="editProjectCtrl.showMapConfirmation(true)">
+                                        {{ 'Map all tasks' | translate }}
+                                    </button>
                                     <button class="button button--secondary" type="button"
                                         ng-click="editProjectCtrl.showInvalidateConfirmation(true)">
                                         {{ 'Invalidate all tasks' | translate }}
@@ -578,6 +582,53 @@
     </button>
 </section>
 <!-- delete project confirmation modal -->
+
+<!-- map tasks confirmation modal -->
+<section class="modal modal-tm" ng-show="editProjectCtrl.showMapConfirmationModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">{{ 'Task mapping' | translate }}</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div ng-hide="editProjectCtrl.mapTasksSuccess">
+                <p>
+                    {{ 'Are you sure you want to mark all tasks in this project as mapped? You cannot undo this.' | translate }}
+                </p>
+                <p>
+                    {{ 'This will mark all tasks (except bad imagery tasks) as mapped. Please use this only if you are sure of what you are doing.' | translate }}
+                </p>
+            </div>
+            <p ng-show="editProjectCtrl.mapTasksSuccess">
+                {{ 'The tasks were mapped successfully.' | translate }}
+            </p>
+            <p ng-show="editProjectCtrl.mapTasksFail" class="error">
+                {{ 'Mapping all the tasks failed for an unknown reason.' | translate }}
+            </p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="editProjectCtrl.mapTasksSuccess">
+                <button class="button button--achromic" type="button"
+                        ng-click="editProjectCtrl.showMapConfirmation(false)">{{ 'Cancel' | translate }}
+                </button>
+                <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.mapAllTasks()">{{ 'Map all tasks' | translate }}
+                </button>
+                <span ng-show="editProjectCtrl.mapInProgress">{{ 'Mapping...' | translate }}</span>
+            </div>
+            <div ng-show="editProjectCtrl.mapTasksSuccess">
+                 <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.showMapConfirmation(false)">{{ 'Close message' | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>
+    <button class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showMapConfirmation(false)">
+        {{ 'Dismiss' | translate }}
+    </button>
+</section>
+<!-- map tasks confirmation modal -->
 
 <!-- invalidate tasks confirmation modal -->
 <section class="modal modal-tm" ng-show="editProjectCtrl.showInvalidateConfirmationModal">

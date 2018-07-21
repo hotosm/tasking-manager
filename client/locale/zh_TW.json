@@ -1,9 +1,9 @@
 {
 	"About": "關於",
-	"About the OSM Tasking Manager": "關於 OSM任務分配管理系統",
+	"About the OSM Tasking Manager": "關於 OSM 任務分配管理系統",
 	"Accept and continue": "同意並繼續",
 	"Accept imagery license": "接受圖資授權",
-	"A comment entered when you save your mapping to the OSM database. When saving your work, please leave the default comment but add what you actually mapped, for example: Added buildings and a residential road.": "當你畫地圖存到 OSM 資料庫時，留言就會輸入。當正要儲存時，請留下預設留言，但加上實際畫了什麼的敘述，舉例來說：增加建築和住宅區道路。",
+	"A comment entered when you save your mapping to the OSM database. When saving your work, please leave the default comment but add what you actually mapped, for example: Added buildings and a residential road.": "當你畫地圖成果存到 OSM 資料庫時，留言就會輸入。當正要儲存時，請留下預設留言，但加上實際畫了什麼的敘述，舉例來說：增加建築和住宅區道路。",
 	"Actions": "行動",
 	"Active": "活躍",
 	"Activity and Stats": "活躍度和統計",
@@ -19,7 +19,7 @@
 	"A few of the humanitarian efforts you can support through mapping.": "一些可以透過畫地圖進行的人道救援行動。",
 	"All": "全部",
 	"Allowed users on private project": "允許使用者加入私人專案",
-	"A name for the default locale": "預計地點的名稱",
+	"A name for the default locale": "預設地點的名稱",
 	"and help improve it.": "而且幫忙改進。",
 	"and open it in JOSM to see the task boundaries.": "而開啟 JOSM 然後看到任務邊界。",
 	"and open it in JOSM to see the task boundary.": "而開啟 JOSM 然後看到任務邊界。",
@@ -29,7 +29,7 @@
 	"Anyone who can use a computer to draw lines and boxes or use a phone to swipe and tap, can meaningfully contribute to humanitarian mapping. If you have never mapped before and would like to help by digitizing imagery, tracing buildings and roads, we ask you to visit our Learn page, which will get you mapping in less than 30 minutes.": "任何用電腦繪制路線或是方框的人，或是用手機滑動或按的人，都可以在人道救援畫地圖時做出有意義的貢獻。如果你從來沒有畫過，然後希望能幫忙數化影像，描繪建築和道路，我們請你造訪學習頁面，讓你花上少於 30 分鐘就能開始畫地圖。",
 	"AOI geometry must be a valid MultiPolygon.": "AOI 形狀必須是有效的多重多邊形。",
 	"Arbitrary Tasks": "隨機任務",
-	"Archived": "存檔",
+	"Archived": "歸檔",
 	"are locked for validation by you.": "由你鎖定來覆核",
 	"are missing.": "不見了",
 	"Are you sure you want to delete this message?": "你確定要刪除這項訊息？",
@@ -283,7 +283,7 @@
 	"Required": "需要",
 	"Reset": "重新設定",
 	"Return to inbox": "回到收件匣",
-	"Return": "Return",
+	"Return": "回去",
 	"Roads": "道路",
 	"Role": "角色",
 	"Save changes": "儲存變動",
@@ -441,5 +441,5 @@
 	"Your profile": "你的個人檔案",
 	"Your project has been updated successfully.": "你的專案已經成功更新。",
 	"Your project was created successfully.": "你的專案已經成功建立",
-	"Back to Previous": "Back to Previous"
+	"Back to Previous": "回到前一個"
 }
