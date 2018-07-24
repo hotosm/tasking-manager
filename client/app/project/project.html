@@ -285,7 +285,11 @@
                             <!-- task viewing and mapping UI's -->
                             <div ng-show="projectCtrl.mappingStep === 'viewing' || projectCtrl.mappingStep === 'locked'">
                                 <!-- task viewing UI -->
-                                <h3>{{ 'Mapping' | translate }}</h3>
+                                <h3 style="display: inline-block;">{{ 'Mapping' | translate }}</h3>
+                                <div ng-show="projectCtrl.mappingStep === 'locked'" style="display: inline-block; float: right;">
+                                    <i class="fa fa-clock-o"></i>
+                                    <span>{{ projectCtrl.getLockTime() }} minutes left</span>
+                                </div>
                                 <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                     <!-- task information -->
 
@@ -644,7 +648,11 @@
                             <!-- task viewing and mapping UI's -->
                             <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked' || projectCtrl.validatingStep === 'multi-locked'">
                                 <!-- task viewing UI -->
-                                <h3>{{ 'Validation' | translate }}</h3>
+                                <h3 style="display: inline-block;">{{ 'Validation' | translate }}</h3>
+                                <div ng-show="projectCtrl.validatingStep === 'locked'" style="display: inline-block; float: right;">
+                                    <i class="fa fa-clock-o"></i>
+                                    <span>{{ projectCtrl.getLockTime() }} minutes left</span>
+                                </div>
                                 <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                     <!-- task information -->
 
