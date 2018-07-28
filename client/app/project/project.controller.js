@@ -8,7 +8,7 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', 'moment', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
 
     function projectController($timeout, $interval, $scope, $location, $routeParams, $window, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
         var vm = this;
