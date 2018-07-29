@@ -120,3 +120,24 @@ class TestMappingService(unittest.TestCase):
 
         # Assert
         self.assertEqual(osm_hash, 'eafd0760a0d372e2ab139e25a2d300f1')
+
+    def test_map_all_sets_counters_correctly(self):
+        if self.skip_tests:
+            return
+
+        # Act
+        MappingService.map_all_tasks(self.test_project.id, self.test_user.id)
+
+        # Assert
+        self.assertEqual(self.test_project.tasks_mapped, self.test_project.total_tasks)
+
+    def test_mapped_by_is_set_after_mapping_all(self):
+        if self.skip_tests:
+            return
+
+        # Act
+        MappingService.map_all_tasks(self.test_project.id, self.test_user.id)
+
+        # Assert
+        for task in self.test_project.tasks:
+            self.assertIsNotNone(task.mapped_by)

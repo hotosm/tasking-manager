@@ -9,18 +9,21 @@
         .module('taskingManager')
         .service('userPreferencesService', ['$window', userPreferencesService]);
 
-    function userPreferencesService($window) {
+    function userPreferencesService() {
 
-        var userPrefences = {
-            favouriteEditor: 'ideditor'
+        var userPreferences = {
+            favouriteEditor: 'ideditor',
+            language: ''
         };
-        var localStorageUserPreferncesName = 'hottm-user-preferences';
+        var localStorageUserPreferencesName = 'hottm-user-preferences';
 
         var service = {
             initialise: initialise,
             getlocalStorageUserPreferencesName: getlocalStorageUserPreferencesName,
             getFavouriteEditor: getFavouriteEditor,
-            setFavouriteEditor: setFavouriteEditor
+            setFavouriteEditor: setFavouriteEditor,
+            getLanguage: getLanguage,
+            setLanguage: setLanguage
         };
 
         return service;
@@ -29,11 +32,11 @@
          * Set up the service object by synchrinosing with local storage
          */
         function initialise() {
-            if (localStorage.getItem(localStorageUserPreferncesName)) {
-                userPrefences = JSON.parse(localStorage.getItem(localStorageUserPreferncesName));
+            if (localStorage.getItem(localStorageUserPreferencesName)) {
+                userPreferences = JSON.parse(localStorage.getItem(localStorageUserPreferencesName));
             }
             else {
-                localStorage.setItem(localStorageUserPreferncesName, JSON.stringify(userPrefences));
+                localStorage.setItem(localStorageUserPreferencesName, JSON.stringify(userPreferences));
             }
         }
 
@@ -42,7 +45,7 @@
          * @returns {string}
          */
         function getlocalStorageUserPreferencesName() {
-            return localStorageUserPreferncesName;
+            return localStorageUserPreferencesName;
         }
 
         /**
@@ -50,7 +53,7 @@
          * @returns {string}
          */
         function getFavouriteEditor() {
-            return userPrefences.favouriteEditor
+            return userPreferences.favouriteEditor
         }
 
         /**
@@ -58,8 +61,25 @@
          * @param editorName
          */
         function setFavouriteEditor(editorName) {
-            userPrefences.favouriteEditor = editorName;
-            localStorage.setItem(localStorageUserPreferncesName, JSON.stringify(userPrefences));
+            userPreferences.favouriteEditor = editorName;
+            localStorage.setItem(localStorageUserPreferencesName, JSON.stringify(userPreferences));
+        }
+
+         /**
+         * Get the user's preferred language
+         * @returns {string}
+         */
+        function getLanguage() {
+            return userPreferences.language;
+        }
+
+        /**
+         * Set the user's preferred language
+         * @param language
+         */
+        function setLanguage(language){
+            userPreferences.language = language;
+            localStorage.setItem(localStorageUserPreferencesName, JSON.stringify(userPreferences));
         }
     }
 })();

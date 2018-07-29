@@ -341,6 +341,36 @@
         };
 
         /**
+         * Set the map confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showMapConfirmation = function(showModal){
+            vm.showMapConfirmationModal = showModal;
+        };
+
+        /**
+         * Map all tasks on a project
+         */
+        vm.mapAllTasks = function(){
+            vm.mapInProgress = true;
+            vm.mapTasksFail = false;
+            vm.mapTasksSuccess = false;
+            var resultsPromise = projectService.mapAllTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks mapped successfully
+                vm.mapTasksFail = false;
+                vm.mapTasksSuccess = true;
+                vm.mapInProgress = false;
+            }, function(){
+                // Tasks not mapped successfully
+                vm.mapTasksFail = true;
+                vm.mapTasksSuccess = false;
+                vm.mapInProgress = false;
+            })
+        };
+
+
+        /**
          * Set the invalidate confirmation modal to visible/invisible
          * @param showModal
          */
@@ -430,8 +460,10 @@
          * Get organisation tags
          * @returns {Array|*}
          */
-        vm.getOrganisationTags = function(){
-            return vm.organisationTags;
+        vm.getOrganisationTags = function(query){
+            return vm.organisationTags.filter(function (item) {
+                return (item && item.toLowerCase().indexOf(query.toLowerCase()) > -1);
+            });
         };
 
         /**
@@ -439,8 +471,10 @@
           * @returns {Array|*}
           * @returns {Array|*}
          */
-        vm.getCampaignTags = function(){
-            return vm.campaignTags;
+        vm.getCampaignTags = function(query){
+            return vm.campaignTags.filter(function (item) {
+                return (item && item.toLowerCase().indexOf(query.toLowerCase()) > -1);
+            });
         };
 
         /**

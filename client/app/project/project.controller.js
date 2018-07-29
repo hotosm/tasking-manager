@@ -8,10 +8,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
-
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
         var vm = this;
         vm.id = 0;
         vm.projectData = null;
@@ -51,6 +50,7 @@
         //task data
         vm.selectedTaskData = null;
         vm.lockedTaskData = null;
+        vm.lockTime = {};
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
 
@@ -348,6 +348,23 @@
             });
         };
 
+        vm.getLockTime = function() {
+            var task = null;
+            if (vm.selectedTaskData) {
+                task = vm.selectedTaskData;
+            }
+            else if (vm.multiSelectedTasksData) {
+                task = vm.multiSelectedTasksData[0];
+            }
+            if (task != null && task.taskId in vm.lockTime) {
+                var lockTime = moment.utc(vm.lockTime[task.taskId]);
+                return lockTime.add(2, 'hours').diff(moment.utc(), 'minutes');
+            }
+            else {
+                return null;
+            }
+        };
+
         /**
          * Initilaise a project using it's id
          * @param id - id of the project to initialise
@@ -544,6 +561,16 @@
                 }
                 vm.lockedTasksForCurrentUser = [];
             });
+        }
+
+        function getLastLockedAction(task) {
+            var mostRecentAction = task.taskHistory[0];
+            task.taskHistory.forEach(function(action) {
+                if (action.actionDate > mostRecentAction.actionDate) {
+                    mostRecentAction = action;
+                }
+            });
+            return mostRecentAction;
         }
 
         /**
@@ -794,6 +821,7 @@
                 vm.mappingStep = 'locked';
                 vm.lockedTaskData = data;
                 vm.currentTab = 'mapping';
+                vm.lockTime[vm.selectedTaskData.taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
             }
             else {
                 vm.mappingStep = 'viewing';
@@ -804,6 +832,7 @@
                 vm.validatingStep = 'locked';
                 vm.lockedTaskData = data;
                 vm.currentTab = 'validation';
+                vm.lockTime[vm.selectedTaskData.taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
             }
             else {
                 vm.validatingStep = 'viewing';
@@ -1055,6 +1084,7 @@
                 vm.selectedTaskData = data;
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
+                vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
                 vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
             }, function (error) {
                 onLockError(projectId, error);
@@ -1093,7 +1123,7 @@
         };
 
         /**
-         * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
+         * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
             vm.lockingReason = 'VALIDATION';
@@ -1120,6 +1150,7 @@
                 vm.selectedTaskData = tasks[0];
                 vm.isSelectedValidatable = true;
                 vm.lockedTaskData = tasks[0];
+                vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
             }, function (error) {
                 onLockError(projectId, error);
             });
@@ -1454,7 +1485,9 @@
                 vm.multiSelectedTasksData = tasks;
                 vm.multiLockedTasks = tasks;
                 vm.isSelectedValidatable = true;
-
+                vm.multiLockedTasks.forEach(function(task) {
+                    vm.lockTime[task.taskId] = getLastLockedAction(task).actionDate;
+                })
             }, function (error) {
                 onLockError(vm.projectData.projectId, error)
             });

@@ -276,14 +276,14 @@
 	"Project name": "Projectnaam",
 	"Projects": "Projecten",
 	"Published": "Gepubliceerd",
-	"Ready": "Voltooid",
+	"Ready": "Leeg",
 	"Ready to get mapping?": "Klaar om te beginnen met in kaart brengen?",
 	"Remove privileges": "Rechten verwijderen",
 	"Required license": "Vereiste licentie",
 	"Required": "Vereist",
 	"Reset": "Herstellen",
 	"Return to inbox": "terug naar Inbox",
-	"Return": "Return",
+	"Return": "Terug",
 	"Roads": "Wegen",
 	"Role": "Rol",
 	"Save changes": "Wijzigingen opslaan",
@@ -441,5 +441,5 @@
 	"Your profile": "Uw profiel",
 	"Your project has been updated successfully.": "Het project werd met succes bijgewerkt.",
 	"Your project was created successfully.": "Uw project werd met succes gemaakt.",
-	"Back to Previous": "Back to Previous"
+	"Back to Previous": "Terug naar vorige"
 }

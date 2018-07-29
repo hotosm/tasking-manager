@@ -77,5 +77,5 @@ class TestValidationService(unittest.TestCase):
         ValidatorService.validate_all_tasks(self.test_project.id, self.test_user.id)
 
         for task in self.test_project.tasks:
-            self.assertEqual(task.mapped_by, self.test_user.id)
+            self.assertIsNotNone(task.mapped_by)
             self.assertEqual(task.validated_by, self.test_user.id)

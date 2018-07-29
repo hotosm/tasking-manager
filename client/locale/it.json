@@ -283,7 +283,7 @@
 	"Required": "Richiesto",
 	"Reset": "Reset",
 	"Return to inbox": "Ritorna a In arrivo",
-	"Return": "Return",
+	"Return": "Torna indietro",
 	"Roads": "Strade",
 	"Role": "Ruolo",
 	"Save changes": "Salva modifiche",
@@ -441,5 +441,5 @@
 	"Your profile": "Il tuo profilo",
 	"Your project has been updated successfully.": "Il tuo progetto è stato aggiornato con successo.",
 	"Your project was created successfully.": "Il tuo progetto è stato creato con successo.",
-	"Back to Previous": "Back to Previous"
+	"Back to Previous": "Torna al precedente"
 }

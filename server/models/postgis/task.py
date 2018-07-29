@@ -19,6 +19,8 @@ class TaskAction(Enum):
     LOCKED_FOR_VALIDATION = 2
     STATE_CHANGE = 3
     COMMENT = 4
+    AUTO_UNLOCKED_FOR_MAPPING = 5
+    AUTO_UNLOCKED_FOR_VALIDATION = 6
 
 
 class TaskHistory(db.Model):
@@ -57,6 +59,9 @@ class TaskHistory(db.Model):
     def set_state_change_action(self, new_state):
         self.action = TaskAction.STATE_CHANGE.name
         self.action_text = new_state.name
+
+    def set_auto_unlock_action(self, task_action: TaskAction):
+        self.action = task_action.name
 
     def delete(self):
         """ Deletes the current model from the DB """
@@ -227,6 +232,7 @@ class Task(db.Model):
     @staticmethod
     def auto_unlock_tasks(project_id: int):
         """Unlock all tasks locked more than 2 hours ago"""
+        lock_duration = (datetime.datetime.min + datetime.timedelta(hours=2)).time().isoformat()
         old_locks_query = '''SELECT t.id
             FROM tasks t, task_history th
             WHERE t.id = th.task_id
@@ -235,8 +241,8 @@ class Task(db.Model):
             AND th.action IN ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
             AND th.action_text IS NULL
             AND t.project_id = {0}
-            AND AGE(TIMESTAMP '{1}', th.action_date) > '2 hours'
-            '''.format(project_id, str(datetime.datetime.utcnow()))
+            AND AGE(TIMESTAMP '{1}', th.action_date) > '{2}'
+            '''.format(project_id, str(datetime.datetime.utcnow()), lock_duration)
 
         old_tasks = db.engine.execute(old_locks_query)
 
@@ -246,7 +252,7 @@ class Task(db.Model):
 
         for old_task in old_tasks:
             task = Task.get(old_task[0], project_id)
-            task.clear_task_lock()
+            task.clear_task_lock(lock_duration)
 
     def is_mappable(self):
         """ Determines if task in scope is in suitable state for mapping """
@@ -272,8 +278,11 @@ class Task(db.Model):
             history.set_comment_action(comment)
         elif action == TaskAction.STATE_CHANGE:
             history.set_state_change_action(new_state)
+        elif action in [TaskAction.AUTO_UNLOCKED_FOR_MAPPING, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION]:
+            history.set_auto_unlock_action(action)
 
         self.task_history.append(history)
+        return history
 
     def lock_task_for_mapping(self, user_id: int):
         self.set_task_history(TaskAction.LOCKED_FOR_MAPPING, user_id)
@@ -287,20 +296,25 @@ class Task(db.Model):
         self.locked_by = user_id
         self.update()
 
-    def clear_task_lock(self):
+    def clear_task_lock(self, lock_duration):
         """
         Unlocks task in scope in the database.  Clears the lock as though it never happened.
-        No history of the unlock is recorded.
         :return:
         """
-        # Set locked_by to null and status to last status on task
-        self.locked_by = None
+        # Set status to last status on task
         self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
-        self.update()
 
         # clear the lock action for the task in the task history
         last_action = TaskHistory.get_last_action(self.project_id, self.id)
+        next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if last_action.action == 'LOCKED_FOR_MAPPING' \
+            else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
         last_action.delete()
+
+        # Add AUTO_UNLOCKED action in the task history and set locked_by to null
+        auto_unlocked = self.set_task_history(action=next_action, user_id=self.locked_by)
+        auto_unlocked.action_text = lock_duration
+        self.locked_by = None
+        self.update()
 
     def unlock_task(self, user_id, new_state=None, comment=None, undo=False):
         """ Unlock task and ensure duration task locked is saved in History """
