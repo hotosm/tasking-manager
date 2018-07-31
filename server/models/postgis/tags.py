@@ -39,7 +39,7 @@ class Tags(db.Model):
     @staticmethod
     def get_all_organisations():
         """ Get all org tags in DB """
-        result = db.session.query(Tags.organisations).filter(Tags.organisations.isnot(None))
+        result = db.session.query(Tags.organisations).filter(Tags.organisations.isnot(None)).order_by(Tags.organisations)
 
         dto = TagsDTO()
         dto.tags = [r for r, in result]
@@ -48,7 +48,7 @@ class Tags(db.Model):
     @staticmethod
     def get_all_campaigns():
         """ Get all campaign tags in DB """
-        result = db.session.query(Tags.campaigns).filter(Tags.campaigns.isnot(None))
+        result = db.session.query(Tags.campaigns).filter(Tags.campaigns.isnot(None)).order_by(Tags.campaigns)
 
         dto = TagsDTO()
         dto.tags = [r for r, in result]
