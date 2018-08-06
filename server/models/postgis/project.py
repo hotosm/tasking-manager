@@ -407,6 +407,24 @@ class Project(db.Model):
         tags_dto.tags = [r[1] for r in query]
         return tags_dto
 
+    @staticmethod
+    def get_all_campaign_tag(preferred_locale='en'):
+        query = db.session.query(Project.id,
+                                 Project.campaign_tag,
+                                 Project.private,
+                                 Project.status)\
+            .join(ProjectInfo)\
+            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
+            .filter(Project.private != True)\
+            .filter(Project.campaign_tag.isnot(None))\
+            .filter(Project.campaign_tag != '')
+        query = query.distinct()
+        query = query.order_by(Project.campaign_tag)
+        tags_dto = TagsDTO()
+        tags_dto.tags = [r[1] for r in query]
+        return tags_dto
+
+
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """
         project, project_dto = self._get_project_and_base_dto()
