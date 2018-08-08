@@ -145,7 +145,10 @@
                               </div>
                             </div>
                           <div ng-hide="contributeCtrl.resultsView === 'map'">
-                                <div ng-hide="contributeCtrl.results.length > 0">
+                                <div ng-hide="contributeCtrl.loaded">
+                                    <p>{{ 'Loading' | translate }}</p>
+                                </div>
+                                <div ng-show="contributeCtrl.loaded && contributeCtrl.results.length === undefined">
                                     <p>{{ 'No projects found.' | translate }}</p>
                                 </div>
                                 <div ng-show="contributeCtrl.resultsView === 'grid' && contributeCtrl.results.length > 0">
