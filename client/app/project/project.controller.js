@@ -1258,22 +1258,22 @@
                         layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
                         data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
                     }
-                    var isEmptyTaskLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams);
-                    if (!isEmptyTaskLayerSuccess) {
-                        //warn that JSOM couldn't be started
-                        vm.editorStartError = 'josm-error';
-                    }
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
+                        .catch(function() {
+                            //warn that JSOM couldn't be started
+                            vm.editorStartError = 'josm-error';
+                        });
 
                     //load task square(s) into JOSM
                     var taskImportParams = {
                         url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
                         new_layer: false
                     }
-                    var isTaskImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams);
-                    if (!isTaskImportSuccess) {
-                        //warn that JSOM couldn't be started
-                        vm.editorStartError = 'josm-error';
-                    }
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
+                        .catch(function() {
+                            //warn that JSOM couldn't be started
+                            vm.editorStartError = 'josm-error';
+                        });
                 }
 
                 //load aerial photography if present
@@ -1289,11 +1289,11 @@
                         type: imageryUrl.toLowerCase().substring(0, 3),
                         url: encodeURIComponent(imageryUrl)
                     };
-                    var isImagerySuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
-                    if (!isImagerySuccess) {
-                        //warn that imagery couldn't be loaded
-                        vm.editorStartError = 'josm-imagery-error';
-                    }
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams)
+                        .catch(function() {
+                            //warn that imagery couldn't be loaded
+                            vm.editorStartError = 'josm-imagery-error';
+                        });
                 }
 
                 // load a new empty layer in josm for osm data, this step necessary to have a custom name for the layer
@@ -1304,11 +1304,11 @@
                     layer_name: 'OSM Data',
                     data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
                 }
-                var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
-                if (!isEmptyOSMLayerSuccess) {
-                    //warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                }
+                editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams)
+                    .catch(function() {
+                        //warn that JSOM couldn't be started
+                        vm.editorStartError = 'josm-error';
+                    });
 
                 var loadAndZoomParams = {
                     left: extentTransformed[0],
