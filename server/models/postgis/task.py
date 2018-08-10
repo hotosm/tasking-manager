@@ -1,6 +1,7 @@
 import bleach
 import datetime
 import geojson
+import json
 from enum import Enum
 from geoalchemy2 import Geometry
 from server import db
@@ -147,6 +148,7 @@ class Task(db.Model):
     x = db.Column(db.Integer)
     y = db.Column(db.Integer)
     zoom = db.Column(db.Integer)
+    extra_properties = db.Column(db.Unicode)
     # Tasks are not splittable if created from an arbitrary grid or were clipped to the edge of the AOI
     splittable = db.Column(db.Boolean, default=True)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
@@ -202,6 +204,10 @@ class Task(db.Model):
             task.splittable = task_feature.properties['splittable']
         except KeyError as e:
             raise InvalidData(f'Task: Expected property not found: {str(e)}')
+
+        if 'extra_properties' in task_feature.properties:
+            task.extra_properties = json.dumps(
+                task_feature.properties['extra_properties'])
 
         task.id = task_id
         task_geojson = geojson.dumps(task_geometry)
@@ -460,18 +466,20 @@ class Task(db.Model):
         if not instructions:
             return ''  # No instructions so return empty string
 
-        # If there's no dynamic URL (e.g. url containing '{x}, {y} and {z}' pattern)
-        # - ALWAYS return instructions unaltered
+        properties = {}
 
-        if not all(item in instructions for item in ['{x}','{y}','{z}']):
-            return instructions
+        if self.x:
+            properties['x'] = str(self.x)
+        if self.y:
+            properties['y'] = str(self.y)
+        if self.zoom:
+            properties['z'] = str(self.zoom)
+        if self.extra_properties:
+            properties.update(json.loads(self.extra_properties))
 
-        # If there is a dyamic URL only return instructions if task is splittable, since we have the X, Y, Z
-        if not self.splittable:
-            return 'No extra instructions available for this task'
-
-        instructions = instructions.replace('{x}', str(self.x))
-        instructions = instructions.replace('{y}', str(self.y))
-        instructions = instructions.replace('{z}', str(self.zoom))
-
+        try:
+            instructions = instructions.format(**properties)
+        except KeyError:
+            pass
         return instructions
+

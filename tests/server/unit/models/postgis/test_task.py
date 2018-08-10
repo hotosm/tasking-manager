@@ -77,34 +77,6 @@ class TestTask(unittest.TestCase):
         # Assert
         self.assertEqual(instructions, 'Test Url is http://test.com/1_2_3')
 
-    def test_per_task_instructions_warning_returned_on_clipped_grids(self):
-        # Arrange
-        test_task = Task()
-        test_task.x = 1
-        test_task.y = 2
-        test_task.zoom = 3
-        test_task.splittable = False
-
-        # Act
-        instructions = test_task.format_per_task_instructions('Test Url is http://test.com/{x}/{y}/{z}')
-
-        # Assert
-        self.assertEqual(instructions, 'No extra instructions available for this task')
-
-    def test_per_task_instructions_returns_instructions_when_no_dynamic_url_and_task_not_splittable(self):
-        # Arrange
-        test_task = Task()
-        test_task.x = 1
-        test_task.y = 2
-        test_task.zoom = 3
-        test_task.splittable = False
-
-        # Act
-        instructions = test_task.format_per_task_instructions('Use map box')
-
-        # Assert
-        self.assertEqual(instructions, 'Use map box')
-
     def test_per_task_instructions_returns_instructions_when_no_dynamic_url_and_task_splittable(self):
         # Arrange
         test_task = Task()
@@ -118,3 +90,14 @@ class TestTask(unittest.TestCase):
 
         # Assert
         self.assertEqual(instructions, 'Use map box')
+
+    def test_per_task_instructions_returns_instructions_with_extra_properties(self):
+        # Arrange
+        test_task = Task()
+        test_task.extra_properties = '{"foo": "bar"}'
+
+        # Act
+        instructions = test_task.format_per_task_instructions('Foo is replaced by {foo}')
+
+        # Assert
+        self.assertEqual(instructions, 'Foo is replaced by bar')
