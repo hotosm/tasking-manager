@@ -31,6 +31,7 @@ class TaskStatus(Enum):
     VALIDATED = 4
     INVALIDATED = 5
     BADIMAGERY = 6  # Task cannot be mapped because of clouds, fuzzy imagery
+    SPLIT = 7
 
 
 class MappingLevel(Enum):
