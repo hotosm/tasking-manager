@@ -961,7 +961,7 @@
                                             <span ng-bind-html="item.actionText" ng-show="item.action === 'COMMENT'"></span>
                                         </div>
                                         <div class="metadata">
-                                            <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                            <span am-time-ago="item.actionDate | amUtc | amLocal" title="{{ item.actionDate }}"></span>
                                             <span ng-show="item.action === 'LOCKED_FOR_MAPPING' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                             <span ng-show="item.action === 'LOCKED_FOR_VALIDATION' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                             <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING' && item.actionText"> after {{ item.actionText |  amDurationFormat : 'minute'}}</span>
