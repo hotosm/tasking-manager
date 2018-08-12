@@ -56,7 +56,8 @@
 
         //editor
         vm.editorStartError = '';
-        vm.selectedEditor = 'ideditor';
+        vm.selectedMappingEditor = 'ideditor';
+        vm.selectedValidatingEditor = 'josm';
 
         //interaction
         vm.selectInteraction = null;
@@ -93,7 +94,8 @@
             vm.currentTab = 'instructions';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
-            vm.selectedEditor = 'ideditor'; // default to iD editor
+            vm.selectedMappingEditor = 'ideditor'; // default to iD editor
+            vm.selectedValidatingEditor = 'josm';
             mapService.createOSMMap('map');
             mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
@@ -130,7 +132,7 @@
             }, 10000);
 
             // set up the preferred editor from user preferences
-            vm.selectedEditor = userPreferencesService.getFavouriteEditor();
+            vm.selectedMappingEditor = userPreferencesService.getFavouriteEditor();
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -165,7 +167,7 @@
         }
 
         vm.updatePreferedEditor = function () {
-            userPreferencesService.setFavouriteEditor(vm.selectedEditor);
+            userPreferencesService.setFavouriteEditor(vm.selectedMappingEditor);
         }
 
         /**

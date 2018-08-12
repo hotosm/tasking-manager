@@ -406,7 +406,7 @@
                                             <h6>Get started by choosing your editor of choice.</h6>
                                             <div class="form__input-group">
                                                 <select class="form__control form__control__medium"
-                                                        ng-model="projectCtrl.selectedEditor"
+                                                        ng-model="projectCtrl.selectedMappingEditor"
                                                         ng-change="projectCtrl.updatePreferedEditor()">
                                                     <option value="ideditor" selected="true">iD Editor</option>
                                                     <option value="josm">JOSM</option>
@@ -415,7 +415,7 @@
                                                 </select>
                                                 <span class="form__input-group-button">
                                                     <button class="button button--sm"
-                                                            ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                                            ng-click="projectCtrl.startEditor(projectCtrl.selectedMappingEditor)">
                                                         {{ 'Start Editor' | translate }}
                                                     </button>
                                                 </span>
@@ -743,16 +743,12 @@
                                             <h6>Get started by choosing your editor of choice.</h6>
                                             <div class="form__input-group">
                                                 <select class="form__control form__control__medium"
-                                                        ng-model="projectCtrl.selectedEditor"
-                                                        ng-change="projectCtrl.updatePreferedEditor()">
-                                                    <option value="ideditor" selected="true">iD Editor</option>
-                                                    <option value="josm">JOSM</option>
-                                                    <option value="potlatch2">Potlatch 2</option>
-                                                    <option value="fieldpapers">Field Papers</option>
+                                                        ng-model="projectCtrl.selectedValidatingEditor">
+                                                    <option value="josm" selected="true">JOSM</option>
                                                 </select>
                                                 <span class="form__input-group-button">
                                                     <button class="button button--sm"
-                                                            ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                                            ng-click="projectCtrl.startEditor(projectCtrl.selectedValidatingEditor)">
                                                             {{ 'Start Editor' | translate }}
                                                     </button>
                                                 </span>
@@ -837,16 +833,12 @@
                                             <h6>Get started by choosing your editor of choice.</h6>
                                             <div class="form__input-group">
                                                 <select class="form__control form__control__medium"
-                                                        ng-model="projectCtrl.selectedEditor"
-                                                        ng-change="projectCtrl.updatePreferedEditor()">
-                                                    <option value="ideditor" selected="true">iD Editor</option>
-                                                    <option value="josm">JOSM</option>
-                                                    <option value="potlatch2">Potlatch 2</option>
-                                                    <option value="fieldpapers">Field Papers</option>
+                                                        ng-model="projectCtrl.selectedValidatingEditor">
+                                                    <option value="josm" selected="true">JOSM</option>
                                                 </select>
                                                 <span class="form__input-group-button">
                                                     <button class="button button--sm"
-                                                            ng-click="projectCtrl.startEditor(projectCtrl.selectedEditor)">
+                                                            ng-click="projectCtrl.startEditor(projectCtrl.selectedValidatingEditor)">
                                                         {{ 'Start Editor' | translate }}
                                                     </button>
                                                 </span>
