@@ -92,7 +92,9 @@ class UserService:
         stats_dto = UserStatsDTO()
 
         actions = TaskHistory.query.filter(
-            TaskHistory.user_id == user.id, TaskHistory.action == 'LOCKED_FOR_MAPPING'
+            TaskHistory.user_id == user.id,
+            TaskHistory.action == 'LOCKED_FOR_MAPPING',
+            TaskHistory.action_text is not None
         ).all()
 
         total_time = datetime.datetime.min
