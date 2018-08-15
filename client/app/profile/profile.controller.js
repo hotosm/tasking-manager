@@ -51,9 +51,9 @@
             var hoverIdentify = true;
             var clickIdentify = true;
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
-            getUserProjects();
             getLevelSettings();
             getUserStats();
+            getUserProjects();
         }
 
         /**
