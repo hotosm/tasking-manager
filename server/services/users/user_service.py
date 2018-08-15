@@ -94,7 +94,7 @@ class UserService:
         actions = TaskHistory.query.filter(
             TaskHistory.user_id == user.id,
             TaskHistory.action == 'LOCKED_FOR_MAPPING',
-            TaskHistory.action_text is not None
+            TaskHistory.action_text != ''
         ).all()
 
         total_time = datetime.datetime.min
