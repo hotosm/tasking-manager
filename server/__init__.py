@@ -108,7 +108,7 @@ def init_flask_restful_routes(app):
     from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
         HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
-    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI
+    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.users.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
         UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
@@ -161,6 +161,7 @@ def init_flask_restful_routes(app):
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
+    api.add_resource(StatsUserAPI,                  '/api/v1/stats/user/<string:username>')
     api.add_resource(HomePageStatsAPI,              '/api/v1/stats/home-page')
     api.add_resource(CampaignsTagsAPI,              '/api/v1/tags/campaigns')
     api.add_resource(OrganisationTagsAPI,           '/api/v1/tags/organisations')
