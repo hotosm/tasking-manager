@@ -562,7 +562,6 @@
                     vm.lockedByCurrentUserVectorLayer.getSource().clear();
                 }
                 vm.lockedTasksForCurrentUser = [];
-                refreshProject(vm.id);
                 if (vm.mappingStep === 'locked' || vm.validatingStep === 'locked') {
                     vm.mappingStep = 'viewing';
                     vm.validatingStep = 'viewing';
