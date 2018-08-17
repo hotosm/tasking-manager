@@ -104,11 +104,11 @@ def init_flask_restful_routes(app):
         ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
-        ProjectValidateAll, ProjectsForAdminAPI
+        ProjectValidateAll, ProjectMapAll, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
         HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
-    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI
+    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.users.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
         UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
@@ -125,6 +125,7 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectCommentsAPI,            '/api/v1/admin/project/<int:project_id>/comments')
     api.add_resource(ProjectInvalidateAll,          '/api/v1/admin/project/<int:project_id>/invalidate-all')
     api.add_resource(ProjectValidateAll,            '/api/v1/admin/project/<int:project_id>/validate-all')
+    api.add_resource(ProjectMapAll,                 '/api/v1/admin/project/<int:project_id>/map-all')
     api.add_resource(ProjectsMessageAll,            '/api/v1/admin/project/<int:project_id>/message-all')
     api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
@@ -160,6 +161,7 @@ def init_flask_restful_routes(app):
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
+    api.add_resource(StatsUserAPI,                  '/api/v1/stats/user/<string:username>')
     api.add_resource(HomePageStatsAPI,              '/api/v1/stats/home-page')
     api.add_resource(CampaignsTagsAPI,              '/api/v1/tags/campaigns')
     api.add_resource(OrganisationTagsAPI,           '/api/v1/tags/organisations')

@@ -59,6 +59,12 @@
                                 <hr/>
                             </div>
                             <div>
+                                <h4>Stats</h4>
+                                <span>Time Spent Mapping (TM3 only)</span>
+                                <span class="pull-right">{{ profileCtrl.userStats.timeSpentMapping | amDurationFormat : 'second' }}</span>
+                                <hr/>
+                            </div>
+                            <div>
                                 <h4>OSM details</h4>
                                 <div ng-show="profileCtrl.osmUserDetails">
                                     <p>{{ 'Joined OSM' | translate }} <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
@@ -70,7 +76,7 @@
                                     </a>
                                    </p>
                                 <p>
-                                    <a href="http://www.missingmaps.org/users/#/{{ profileCtrl.username }}/history" target="_blank" rel="noopener">
+                                    <a href="http://www.missingmaps.org/users/#/{{ profileCtrl.username }}/badges" target="_blank" rel="noopener">
                                         {{ 'Missing Maps Badges' | translate }}
                                     </a>
                                     </p>
@@ -84,6 +90,7 @@
                                         {{ 'OSM heat map' | translate }}
                                     </a>
                                 </p>
+                                <hr/>
                             </div>
                         </div>
                         <div class="roles pull-right">

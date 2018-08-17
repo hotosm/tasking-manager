@@ -4,6 +4,7 @@ host = https://www.transifex.com
 [tasking-manager-3.master]
 source_file = client/locale/en.json
 source_lang = en
+trans.ar = client/locale/ar.json
 trans.bn = client/locale/bn.json
 trans.cs = client/locale/cs.json
 trans.de = client/locale/de.json
@@ -16,10 +17,11 @@ trans.ja = client/locale/ja.json
 trans.mg = client/locale/mg.json
 trans.nb = client/locale/nb.json
 trans.nl_NL = client/locale/nl_NL.json
+trans.pl = client/locale/pl.json
+trans.pt = client/locale/pt.json
 trans.pt_BR = client/locale/pt_BR.json
 trans.ru = client/locale/ru.json
 trans.sl = client/locale/sl.json
 trans.uk = client/locale/uk.json
 trans.zh_TW = client/locale/zh_TW.json
 type = KEYVALUEJSON
-
