@@ -99,6 +99,7 @@ class ProjectDTO(Model):
     license_id = IntType(serialized_name='licenseId')
     allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames', default=[])
     priority_areas = BaseType(serialized_name='priorityAreas')
+    created = DateTimeType()
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
     active_mappers = IntType(serialized_name='activeMappers')
