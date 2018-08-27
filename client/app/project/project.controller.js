@@ -8,10 +8,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
-
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
         var vm = this;
         vm.id = 0;
         vm.projectData = null;
@@ -39,6 +38,7 @@
         vm.taskUnLockErrorMessage = '';
         vm.taskSplitError = false;
         vm.taskSplitCode == null;
+        vm.wasAutoUnlocked = false;
 
         //authorization
         vm.isAuthorized = false;
@@ -51,6 +51,7 @@
         //task data
         vm.selectedTaskData = null;
         vm.lockedTaskData = null;
+        vm.lockTime = {};
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
 
@@ -190,6 +191,7 @@
             vm.taskSplitError = false;
             vm.taskSplitCode == null;
             vm.taskUndoError = false;
+            vm.wasAutoUnlocked = false;
         }
 
         /**
@@ -346,6 +348,23 @@
                 // TODO - show message
                 vm.taskUndoError = true;
             });
+        };
+
+        vm.getLockTime = function() {
+            var task = null;
+            if (vm.selectedTaskData) {
+                task = vm.selectedTaskData;
+            }
+            else if (vm.multiSelectedTasksData) {
+                task = vm.multiSelectedTasksData[0];
+            }
+            if (task != null && task.taskId in vm.lockTime) {
+                var lockTime = moment.utc(vm.lockTime[task.taskId]);
+                return lockTime.add(2, 'hours').diff(moment.utc(), 'minutes');
+            }
+            else {
+                return null;
+            }
         };
 
         /**
@@ -543,7 +562,22 @@
                     vm.lockedByCurrentUserVectorLayer.getSource().clear();
                 }
                 vm.lockedTasksForCurrentUser = [];
+                if (vm.mappingStep === 'locked' || vm.validatingStep === 'locked') {
+                    vm.mappingStep = 'viewing';
+                    vm.validatingStep = 'viewing';
+                    vm.wasAutoUnlocked = true;
+                }
             });
+        }
+
+        function getLastLockedAction(task) {
+            var mostRecentAction = task.taskHistory[0];
+            task.taskHistory.forEach(function(action) {
+                if (action.actionDate > mostRecentAction.actionDate) {
+                    mostRecentAction = action;
+                }
+            });
+            return mostRecentAction;
         }
 
         /**
@@ -794,6 +828,7 @@
                 vm.mappingStep = 'locked';
                 vm.lockedTaskData = data;
                 vm.currentTab = 'mapping';
+                vm.lockTime[vm.selectedTaskData.taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
             }
             else {
                 vm.mappingStep = 'viewing';
@@ -804,6 +839,7 @@
                 vm.validatingStep = 'locked';
                 vm.lockedTaskData = data;
                 vm.currentTab = 'validation';
+                vm.lockTime[vm.selectedTaskData.taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
             }
             else {
                 vm.validatingStep = 'viewing';
@@ -1055,6 +1091,7 @@
                 vm.selectedTaskData = data;
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
+                vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
                 vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
             }, function (error) {
                 onLockError(projectId, error);
@@ -1093,7 +1130,7 @@
         };
 
         /**
-         * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
+         * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
             vm.lockingReason = 'VALIDATION';
@@ -1120,6 +1157,7 @@
                 vm.selectedTaskData = tasks[0];
                 vm.isSelectedValidatable = true;
                 vm.lockedTaskData = tasks[0];
+                vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
             }, function (error) {
                 onLockError(projectId, error);
             });
@@ -1227,22 +1265,22 @@
                         layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
                         data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
                     }
-                    var isEmptyTaskLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams);
-                    if (!isEmptyTaskLayerSuccess) {
-                        //warn that JSOM couldn't be started
-                        vm.editorStartError = 'josm-error';
-                    }
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
+                        .catch(function() {
+                            //warn that JSOM couldn't be started
+                            vm.editorStartError = 'josm-error';
+                        });
 
                     //load task square(s) into JOSM
                     var taskImportParams = {
                         url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
                         new_layer: false
                     }
-                    var isTaskImportSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams);
-                    if (!isTaskImportSuccess) {
-                        //warn that JSOM couldn't be started
-                        vm.editorStartError = 'josm-error';
-                    }
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
+                        .catch(function() {
+                            //warn that JSOM couldn't be started
+                            vm.editorStartError = 'josm-error';
+                        });
                 }
 
                 //load aerial photography if present
@@ -1258,11 +1296,11 @@
                         type: imageryUrl.toLowerCase().substring(0, 3),
                         url: encodeURIComponent(imageryUrl)
                     };
-                    var isImagerySuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams);
-                    if (!isImagerySuccess) {
-                        //warn that imagery couldn't be loaded
-                        vm.editorStartError = 'josm-imagery-error';
-                    }
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams)
+                        .catch(function() {
+                            //warn that imagery couldn't be loaded
+                            vm.editorStartError = 'josm-imagery-error';
+                        });
                 }
 
                 // load a new empty layer in josm for osm data, this step necessary to have a custom name for the layer
@@ -1273,11 +1311,11 @@
                     layer_name: 'OSM Data',
                     data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
                 }
-                var isEmptyOSMLayerSuccess = editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams);
-                if (!isEmptyOSMLayerSuccess) {
-                    //warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                }
+                editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams)
+                    .catch(function() {
+                        //warn that JSOM couldn't be started
+                        vm.editorStartError = 'josm-error';
+                    });
 
                 var loadAndZoomParams = {
                     left: extentTransformed[0],
@@ -1454,7 +1492,9 @@
                 vm.multiSelectedTasksData = tasks;
                 vm.multiLockedTasks = tasks;
                 vm.isSelectedValidatable = true;
-
+                vm.multiLockedTasks.forEach(function(task) {
+                    vm.lockTime[task.taskId] = getLastLockedAction(task).actionDate;
+                })
             }, function (error) {
                 onLockError(vm.projectData.projectId, error)
             });
