@@ -155,7 +155,7 @@
          * @returns string - gpxUrl
          */
         function getGPXUrl(projectId, taskIds, as_file){
-            var gpxUrl = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds + '&as_file='+(as_file?true:false) + '&filename=.gpx';
+            var gpxUrl = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds + '&as_file='+(as_file?true:false) + '&filename=task.gpx';
             // If it is not a full path, then it must be relative and for the GPX callback to work it needs
             // a full URL so get the current host and append it
             // Check if it is a full URL
