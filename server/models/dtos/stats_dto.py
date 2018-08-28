@@ -59,4 +59,7 @@ class HomePageStatsDTO(Model):
     """ DTO for stats we want to display on the homepage """
     mappers_online = IntType(serialized_name='mappersOnline')
     tasks_mapped = IntType(serialized_name='tasksMapped')
+    tasks_validated = IntType(serialized_name='tasksValidated')
     total_mappers = IntType(serialized_name='totalMappers')
+    total_validators = IntType(serialized_name='totalValidators')
+    avg_completion_time = IntType(serialized_name='averageCompletionTime')
