@@ -1,7 +1,9 @@
 import geojson
 import unittest
 from server import create_app
-from server.models.postgis.task import InvalidGeoJson, InvalidData, Task, TaskAction
+from server.models.postgis.task import InvalidGeoJson, InvalidData, Task, TaskAction, TaskHistory
+from server.models.postgis.statuses import TaskStatus
+from unittest.mock import patch, MagicMock
 
 
 class TestTask(unittest.TestCase):
@@ -101,3 +103,26 @@ class TestTask(unittest.TestCase):
 
         # Assert
         self.assertEqual(instructions, 'Foo is replaced by bar')
+
+    @patch.object(TaskHistory, 'get_last_status')
+    @patch.object(TaskHistory, 'get_last_action')
+    @patch.object(Task, 'set_task_history')
+    @patch.object(Task, 'update')
+    def test_record_auto_unlock_adds_autounlocked_action(self, mock_update, mock_set_task_history,
+                                                         mock_get_last_action, mock_get_last_status):
+        mock_history = MagicMock()
+        mock_last_action = MagicMock()
+        mock_last_action.action = 'LOCKED_FOR_MAPPING'
+        mock_get_last_action.return_value = mock_last_action
+        mock_get_last_status.return_value = TaskStatus.READY
+        mock_set_task_history.return_value = mock_history
+
+        test_task = Task()
+        test_task.locked_by='testuser'
+        lock_duration = "02:00"
+        test_task.record_auto_unlock(lock_duration)
+
+        mock_set_task_history.assert_called_with(action=TaskAction.AUTO_UNLOCKED_FOR_MAPPING, user_id='testuser')
+        self.assertEqual(mock_history.action_text, lock_duration)
+        self.assertEqual(test_task.locked_by, None)
+        mock_last_action.delete.assert_called()
