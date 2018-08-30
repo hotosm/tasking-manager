@@ -1,0 +1,8 @@
+Hi [USERNAME],<br />
+<br />
+Unfortunately, the task you marked as "Completely Mapped" was just marked as invalid. [TASK_LINK].<br />
+<br />
+This is an automated message, the person who validated it hopefully shared some feedback with you.<br />
+<br />
+Thank you very much for mapping!
+<br />
