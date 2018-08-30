@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('projectChatController', ['$scope', '$anchorScroll', '$location', '$timeout', '$interval', 'messageService', 'userService', projectChatController])
+        .controller('projectChatController', ['$scope', '$anchorScroll', '$location', '$timeout', '$interval', 'messageService', 'userService', 'configService', projectChatController])
         .directive('projectChat', projectChatDirective);
 
     /**
@@ -34,14 +34,14 @@
         return directive;
     }
 
-    function projectChatController($scope, $anchorScroll, $location, $timeout, $interval, messageService, userService) {
+    function projectChatController($scope, $anchorScroll, $location, $timeout, $interval, messageService, userService, configService) {
 
         var vm = this;
         vm.projectId = 0;
         vm.author = '';
         vm.message = '';
         vm.messages = [];
-        vm.maxlengthComment = 250;
+        vm.maxlengthComment = configService.maxChatLength;
 
         vm.hasScrolled = false;
 
