@@ -124,7 +124,7 @@ class TestProjectAdminService(unittest.TestCase):
             ProjectAdminService._validate_imagery_licence(1)
 
     @patch.object(ProjectAdminService, '_get_project_by_id')
-    @patch.object(Task, 'query')
+    @patch('flask_sqlalchemy._QueryProperty.__get__')
     @patch.object(Task, 'set_task_history')
     def test_reset_all_tasks(self, mock_set_task_history, mock_query, mock_get_project):
         user_id = 123
@@ -134,7 +134,7 @@ class TestProjectAdminService(unittest.TestCase):
         test_project.tasks_validated = 2
         test_tasks = [MagicMock(spec=Task), MagicMock(spec=Task), MagicMock(spec=Task)]
 
-        mock_query.filter().all.return_value = test_tasks
+        mock_query.return_value.filter.return_value.all.return_value = test_tasks
         mock_get_project.return_value = test_project
 
         ProjectAdminService.reset_all_tasks(test_project.id, user_id)
