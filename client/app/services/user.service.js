@@ -146,11 +146,16 @@
          * Search a user
          * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
          */
-        function searchUser(username){
+        function searchUser(username, projectId){
+            var params = '';
+            if (typeof projectId === "number" && !isNaN(projectId)) {
+              params = '?projectId=' + projectId;
+            }
+
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/user/search/filter/' + username,
+                url: configService.tmAPI + '/user/search/filter/' + username + params,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }

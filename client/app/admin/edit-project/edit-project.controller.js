@@ -482,7 +482,7 @@
          * @param searchValue
          */
         vm.getUser = function(searchValue){
-            var resultsPromise = userService.searchUser(searchValue);
+            var resultsPromise = userService.searchUser(searchValue, vm.project.id);
             return resultsPromise.then(function (data) {
                 // On success
                 return data.usernames;
