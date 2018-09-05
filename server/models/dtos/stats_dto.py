@@ -55,11 +55,26 @@ class ProjectActivityDTO(Model):
     activity = ListType(ModelType(TaskHistoryDTO))
 
 
+class OrganizationStatsDTO(Model):
+    def __init__(self, tup):
+        super().__init__()
+        self.tag = tup[0]
+        self.projects_created = tup[1]
+
+    tag = StringType()
+    projects_created = IntType(serialized_name='projectsCreated')
+
+
 class HomePageStatsDTO(Model):
     """ DTO for stats we want to display on the homepage """
+    def __init__(self):
+        super().__init__()
+        self.organizations = []
+
     mappers_online = IntType(serialized_name='mappersOnline')
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
     total_mappers = IntType(serialized_name='totalMappers')
     total_validators = IntType(serialized_name='totalValidators')
     avg_completion_time = IntType(serialized_name='averageCompletionTime')
+    organizations = ListType(ModelType(OrganizationStatsDTO))

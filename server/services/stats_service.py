@@ -1,10 +1,11 @@
 from cachetools import TTLCache, cached
+from sqlalchemy import func
 import dateutil.parser
 import datetime
 
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
-    ProjectActivityDTO, HomePageStatsDTO
+    ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User, Task, TaskAction
@@ -203,5 +204,21 @@ class StatsService:
                                                    microseconds=duration.microsecond)
 
         dto.avg_completion_time = total_time_spent.timestamp() / task_count
+
+        org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
+            .group_by(Project.organisation_tag).all()
+
+        untagged_count = 0
+
+        for tup in org_proj_count:
+            org_stats = OrganizationStatsDTO(tup)
+            if org_stats.tag:
+                dto.organizations.append(org_stats)
+            else:
+                untagged_count += 1
+
+        if untagged_count:
+            untagged_proj = OrganizationStatsDTO(('Untagged', untagged_count))
+            dto.organizations.append(untagged_proj)
 
         return dto
