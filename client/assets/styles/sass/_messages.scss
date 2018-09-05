@@ -1,3 +1,11 @@
 .inbox-message {
   padding-top: 30px;
 }
+
+.inbox {
+  &__batch-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2em;
+  }
+}

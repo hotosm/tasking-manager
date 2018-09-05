@@ -12,6 +12,10 @@ class MessageDTO(Model):
     message = StringType(required=True, serialize_when_none=False)
     from_user_id = IntType(required=True, serialize_when_none=False)
     from_username = StringType(serialized_name='fromUsername', default="")
+    project_id = IntType(serialized_name='projectId')
+    project_title = StringType(serialized_name='projectTitle')
+    task_id = IntType(serialized_name='taskId')
+    message_type = StringType(serialized_name='messageType')
     sent_date = DateTimeType(serialized_name='sentDate')
     read = BooleanType()
 
@@ -23,6 +27,7 @@ class MessagesDTO(Model):
         super().__init__()
         self.user_messages = []
 
+    pagination = ModelType(Pagination)
     user_messages = ListType(ModelType(MessageDTO), serialized_name='userMessages')
 
 

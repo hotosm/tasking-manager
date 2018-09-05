@@ -4,6 +4,15 @@
      * @fileoverview This file provides a message service.
      */
 
+    // These match the MessageType constants on the server
+    angular.module('taskingManager').constant('MessageType', {
+      SYSTEM: 1,
+      BROADCAST: 2,
+      MENTION_NOTIFICATION: 3,
+      VALIDATION_NOTIFICATION: 4,
+      INVALIDATION_NOTIFICATION: 5,
+    });
+
     angular
         .module('taskingManager')
         .service('messageService', ['$http', '$q','configService', 'authService', messageService]);
@@ -18,6 +27,7 @@
             getProjectChatMessages: getProjectChatMessages,
             addProjectChatMessage: addProjectChatMessage,
             deleteMessage: deleteMessage,
+            deleteMultipleMessages: deleteMultipleMessages,
             resendEmailVerification: resendEmailVerification,
             formatShortCodes: formatShortCodes,
         };
@@ -74,11 +84,51 @@
          * Get all messages
          * @returns {*|!jQuery.jqXHR|!jQuery.deferred|!jQuery.Promise}
          */
-        function getAllMessages(){
+        function getAllMessages(page, pageSize, sortBy, sortDirection, fromFilter, projectFilter, taskFilter, messageTypeFilter){
+            var params = '?pageSize=' + (pageSize ? pageSize : '10');
+            if (page) {
+                params += '&page=' + page;
+            }
+
+            if (fromFilter) {
+                params += "&from=" + encodeURIComponent(fromFilter);
+            }
+
+            if (projectFilter) {
+                params += "&project=" + encodeURIComponent(projectFilter);
+            }
+
+            if (taskFilter) {
+                params += "&taskId=" + encodeURIComponent(taskFilter);
+            }
+
+            if (typeof messageTypeFilter === 'number') {
+                params += "&messageType=" + messageTypeFilter;
+            }
+
+            if (sortBy) {
+              switch(sortBy) {
+                case "sentDate":
+                case "sent_date":
+                  params += "&sortBy=date";
+                  break;
+                case "projectId":
+                  params += "&sortBy=project_id";
+                  break;
+                case "taskId":
+                  params += "&sortBy=task_id";
+                  break;
+              }
+            }
+
+            if (sortDirection) {
+              params += '&sortDirection=' + sortDirection;
+            }
+
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/messages/get-all-messages',
+                url: configService.tmAPI + '/messages/get-all-messages' + params,
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
@@ -123,6 +173,30 @@
             return $http({
                 method: 'DELETE',
                 url: configService.tmAPI + '/messages/' + messageId,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Delete all of the specified messages to the logged-in user
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function deleteMultipleMessages(messageIds) {
+            // Returns a promise
+            return $http({
+                method: 'DELETE',
+                url: configService.tmAPI + '/messages/delete-multiple',
+                data: {
+                    messageIds: messageIds,
+                },
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
