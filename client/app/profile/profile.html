@@ -59,6 +59,12 @@
                                 <hr/>
                             </div>
                             <div>
+                                <h4>Stats</h4>
+                                <span>Time Spent Mapping (TM3 only)</span>
+                                <span class="pull-right">{{ profileCtrl.userStats.timeSpentMapping | amDurationFormat : 'second' }}</span>
+                                <hr/>
+                            </div>
+                            <div>
                                 <h4>OSM details</h4>
                                 <div ng-show="profileCtrl.osmUserDetails">
                                     <p>{{ 'Joined OSM' | translate }} <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
@@ -70,7 +76,7 @@
                                     </a>
                                    </p>
                                 <p>
-                                    <a href="http://www.missingmaps.org/users/#/{{ profileCtrl.username }}/history" target="_blank" rel="noopener">
+                                    <a href="http://www.missingmaps.org/users/#/{{ profileCtrl.username }}/badges" target="_blank" rel="noopener">
                                         {{ 'Missing Maps Badges' | translate }}
                                     </a>
                                     </p>
@@ -79,6 +85,12 @@
                                         {{ 'OSM edit history' | translate }}
                                     </a>
                                 </p>
+                                <p>
+                                    <a href="http://yosmhm.neis-one.org/?{{ profileCtrl.username }}" target="_blank" rel="noopener">
+                                        {{ 'OSM heat map' | translate }}
+                                    </a>
+                                </p>
+                                <hr/>
                             </div>
                         </div>
                         <div class="roles pull-right">
@@ -145,6 +157,14 @@
                                                title="{{ 'Your ID is the part after https://www.linkedin.com/in/....' | translate}}"
                                                ng-model="profileCtrl.userDetails.linkedinId"/>
                                     </li>
+                                    <li>
+                                        <label class="form__option form__option--custom-checkbox" ng-show="profileCtrl.editDetails">
+                                              <input ng-show="profileCtrl.editDetails" type="checkbox" name="form-custom-checkbox"
+                                                    ng-model="profileCtrl.userDetails.validation_message"/>
+                                              <span class="form__option__text">{{ 'Receive automated validation messages' | translate }}</span>
+                                              <span class="form__option__ui"></span>
+                                        </label>
+                                    </li>
                                 </ul>
                                 <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
                                     <button class="button button--achromic" type="button"
@@ -207,6 +227,11 @@
                                                     ng-class="profileCtrl.userDetails.role === 'ADMIN'? 'button--active' : ''"
                                                     ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
                                                     ng-click="profileCtrl.setRole('ADMIN')">{{ 'Administrator' | translate }}
+                                            </button>
+                                            <button class="button button--achromic"
+                                                    ng-class="profileCtrl.userDetails.role === 'READ_ONLY'? 'button--active' : ''"
+                                                    ng-hide="profileCtrl.currentlyLoggedInUser.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
+                                                    ng-click="profileCtrl.setRole('READ_ONLY')">{{ 'Block user' | translate }}
                                             </button>
                                         </div>
                                     </div>

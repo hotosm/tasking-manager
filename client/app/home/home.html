@@ -8,6 +8,32 @@
            href="/contribute"><span>{{ 'Start Mapping' | translate }}</span></a>
     </div>
 </header>
+<section class="section__body--secondary--dark">
+    <div class="homepage-stats-container row--centered">
+        <div class="inner">
+            <ul class="homepage-stats__cards">
+                <li id="homepage-stats-1" class="homepage-stats__card">
+                    <div class="stats-card__amount">
+                        <strong>{{ homeCtrl.mappersOnline | number }}</strong>
+                    </div>
+                    <div class="stats-card__title">Mappers Online</div>
+                </li>
+                <li id="homepage-stats-2" class="homepage-stats__card">
+                    <div class="stats-card__amount">
+                        <strong>{{ homeCtrl.tasksMapped | number }}</strong>
+                    </div>
+                    <div class="stats-card__title">Tasks Mapped</div>
+                </li>
+                <li id="homepage-stats-3" class="homepage-stats__card">
+                    <div class="stats-card__amount">
+                        <strong>{{ homeCtrl.totalMappers | number }}</strong>
+                    </div>
+                    <div class="stats-card__title">Total Mappers</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
 <section class="section__body section__body--secondary">
     <div class="field-stories-container inner">
         <h2>{{ 'Causes You Can Help' | translate }}</h2>
@@ -15,12 +41,12 @@
             <li id="story-1" class="field-stories__card">
                 <h5>Red Cross - Ayeyarwady Delta</h5>
                 <blockquote>
-                    <p>"The Red Cross is mapping the Ayeyarwady Delta area in Myanmar as part of a multi-year mapping and data readiness activity to better understand where critical infrastructure and roads are to inform decision making during potential disasters. As recently as 2008 a cyclone killed at least 77,000 people with over 55,900 missing, and left about 2.5 million homeless."
-                    </p>
-                    <footer>
-                        <cite>Matt Gibb, Red Cross</cite>
-                    </footer>
-                    <p><a ng-href="/contribute?difficulty=ALL&text=Ayeyarwady">Find Ayeyarwady Delta Projects</a></p>
+                  <p>"The Red Cross is mapping the Ayeyarwady Delta area in Myanmar as part of a multi-year mapping and data readiness activity to better understand where critical infrastructure and roads are to inform decision making during potential disasters. As recently as 2008 a cyclone killed at least 77,000 people with over 55,900 missing, and left about 2.5 million homeless."
+                  </p>
+                  <footer>
+                    <cite>Matt Gibb, Red Cross</cite>
+                  </footer>
+                  <p><a ng-href="/contribute?difficulty=ALL&text=Ayeyarwady">Find Ayeyarwady Delta Projects</a></p>
                 </blockquote>
             </li>
             <li id="story-2" class="field-stories__card">

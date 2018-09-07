@@ -7,7 +7,7 @@ from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDT
 from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 from server.services.users.user_service import UserService
-from server.services.users.authentication_service import token_auth, tm
+from server.services.users.authentication_service import token_auth, tm, verify_token
 
 
 class ProjectAPI(Resource):
@@ -32,6 +32,11 @@ class ProjectAPI(Resource):
               required: true
               type: integer
               default: 1
+            - in: query
+              name: as_file
+              type: boolean
+              description: Set to true if file download is preferred
+              default: False
         responses:
             200:
                 description: Project found
@@ -43,9 +48,17 @@ class ProjectAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
+
             project_dto = ProjectService.get_project_dto_for_mapper(project_id,
                                                                     request.environ.get('HTTP_ACCEPT_LANGUAGE'))
-            return project_dto.to_primitive(), 200
+            project_dto = project_dto.to_primitive()
+
+            if as_file:
+                return send_file(io.BytesIO(geojson.dumps(project_dto).encode('utf-8')), mimetype='application/json',
+                                 as_attachment=True, attachment_filename=f'project_{str(project_id)}.json')
+
+            return project_dto, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except ProjectServiceError as e:
@@ -201,6 +214,11 @@ class ProjectSearchAPI(Resource):
             - application/json
         parameters:
             - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
               name: Accept-Language
               description: Language user is requesting
               type: string
@@ -232,6 +250,10 @@ class ProjectSearchAPI(Resource):
               description: text to search
               type: string
               default: serbia
+            - in: query
+              name: projectStatuses
+              description: Authenticated PMs can search for archived or draft statuses
+              type: string
         responses:
             200:
                 description: Projects found
@@ -248,13 +270,21 @@ class ProjectSearchAPI(Resource):
             search_dto.campaign_tag = request.args.get('campaignTag')
             search_dto.page = int(request.args.get('page')) if request.args.get('page') else 1
             search_dto.text_search = request.args.get('textSearch')
-            if tm.authenticated_user_id and \
-                    UserService.is_user_a_project_manager(tm.authenticated_user_id):
-                search_dto.is_project_manager = True
+
+            # See https://github.com/hotosm/tasking-manager/pull/922 for more info
+            try:
+                verify_token(request.environ.get('HTTP_AUTHORIZATION').split(None, 1)[1])
+                if UserService.is_user_a_project_manager(tm.authenticated_user_id):
+                    search_dto.is_project_manager = True
+            except:
+                pass
 
             mapping_types_str = request.args.get('mappingTypes')
             if mapping_types_str:
                 search_dto.mapping_types = map(str, mapping_types_str.split(','))  # Extract list from string
+            project_statuses_str = request.args.get('projectStatuses')
+            if project_statuses_str:
+                search_dto.project_statuses = map(str, project_statuses_str.split(','))
             search_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')

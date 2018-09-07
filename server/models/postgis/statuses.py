@@ -16,6 +16,12 @@ class ProjectPriority(Enum):
     LOW = 3
 
 
+class TaskCreationMode(Enum):
+    """ Enum to describe task creation mode """
+    GRID = 0
+    ARBITRARY = 1
+
+
 class TaskStatus(Enum):
     """ Enum describing available Task Statuses """
     READY = 0
@@ -57,10 +63,12 @@ class ValidatingNotAllowed(Enum):
     USER_NOT_VALIDATOR = 100
     USER_NOT_ACCEPTED_LICENSE = 101
     USER_NOT_ON_ALLOWED_LIST = 102
+    PROJECT_NOT_PUBLISHED = 103
 
 
 class UserRole(Enum):
     """ Describes the role a user can be assigned, app doesn't support multiple roles """
+    READ_ONLY = -1
     MAPPER = 0
     ADMIN = 1
     PROJECT_MANAGER = 2

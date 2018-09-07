@@ -31,10 +31,7 @@
                 method: 'GET',
                 url: configService.tmAPI + '/project/search',
                 params: searchParams,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    'Accept-Language': preferredLanguage
-                }
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available

@@ -4,7 +4,9 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
+from server import db
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
+from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound, UserLicenseError
@@ -136,14 +138,14 @@ class MappingService:
 
     @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
-        """ 
+        """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.  You can use the following URL to test locally:
         http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v1/project/111/tasks_as_gpx%3Ftasks=2
         """
         if timestamp is None:
             timestamp = datetime.datetime.utcnow()
 
-        root = ET.Element('gpx', attrib=dict(xmlns='http://topografix.com/GPX/1/1', version='1.1',
+        root = ET.Element('gpx', attrib=dict(xmlns='http://www.topografix.com/GPX/1/1', version='1.1',
                                              creator='HOT Tasking Manager'))
 
         # Create GPX Metadata element
@@ -156,11 +158,19 @@ class MappingService:
         # Create trk element
         trk = ET.Element('trk')
         root.append(trk)
-        ET.SubElement(trk, 'name').text = f'Task for project {project_id}. Do not edit outside of this box!'
+        ET.SubElement(trk, 'name').text = f'Task for project {project_id}. Do not edit outside of this area!'
 
         # Construct trkseg elements
-        task_ids = map(int, task_ids_str.split(','))
-        tasks = Task.get_tasks(project_id, task_ids)
+        if task_ids_str is not None:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or tasks.count() == 0:
+                raise NotFound()
+        else:
+            tasks = Task.get_all_tasks(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
+
         for task in tasks:
             task_geom = shape.to_shape(task.geometry)
             for poly in task_geom:
@@ -170,7 +180,6 @@ class MappingService:
 
                     # Append wpt elements to end of doc
                     wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
-                    ET.SubElement(wpt, 'name').text = 'Do not edit outside of this box!'
                     root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding='utf8')
@@ -183,8 +192,15 @@ class MappingService:
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
         root = ET.Element('osm', attrib=dict(version='0.6', upload='never', creator='HOT Tasking Manager'))
 
-        task_ids = map(int, task_ids_str.split(','))
-        tasks = Task.get_tasks(project_id, task_ids)
+        if task_ids_str:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or tasks.count() == 0:
+                raise NotFound()
+        else:
+            tasks = Task.get_all_tasks(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
 
         fake_id = -1  # We use fake-ids to ensure XML will not be validated by OSM
         for task in tasks:
@@ -216,3 +232,23 @@ class MappingService:
                          f'Undo state from {current_state.name} to {undo_state.name}', True)
 
         return task.as_dto_with_instructions(preferred_locale)
+
+    @staticmethod
+    def map_all_tasks(project_id: int, user_id: int):
+        """ Marks all tasks on a project as mapped """
+        tasks_to_map = Task.query.filter(Task.project_id == project_id,
+                                         Task.task_status.notin_([TaskStatus.BADIMAGERY.value,
+                                                                  TaskStatus.MAPPED.value,
+                                                                  TaskStatus.VALIDATED.value])).all()
+
+        for task in tasks_to_map:
+            if TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
+                # Only lock tasks that are not already locked to avoid double lock issue
+                task.lock_task_for_mapping(user_id)
+
+            task.unlock_task(user_id, new_state=TaskStatus.MAPPED)
+
+        # Set counters to fully mapped
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
+        project.save()

@@ -1,6 +1,7 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, EmailType
+from schematics.types import StringType, IntType, EmailType, LongType, BooleanType
+
 from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import MappingLevel, UserRole
@@ -29,16 +30,24 @@ def is_known_role(value):
 
 class UserDTO(Model):
     """ DTO for User """
+    validation_message = BooleanType(default=True)
+    id = LongType()
     username = StringType()
     role = StringType()
     mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
+    tasks_invalidated = IntType(serialized_name='tasksInvalidated')
     email_address = EmailType(serialized_name='emailAddress', serialize_when_none=False)
     is_email_verified = EmailType(serialized_name='isEmailVerified', serialize_when_none=False)
     twitter_id = StringType(serialized_name='twitterId')
     facebook_id = StringType(serialized_name='facebookId')
     linkedin_id = StringType(serialized_name='linkedinId')
+
+
+class UserStatsDTO(Model):
+    """ DTO containing statistics about the user """
+    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
 
 
 class UserOSMDTO(Model):
@@ -81,6 +90,7 @@ class UserSearchQuery(Model):
 
 class ListedUser(Model):
     """ Describes a user within the User List """
+    id = LongType()
     username = StringType()
     role = StringType()
     mapping_level = StringType(serialized_name='mappingLevel')

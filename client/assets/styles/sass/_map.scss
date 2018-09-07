@@ -38,6 +38,17 @@
   position: absolute;
   z-index: 1000;
 }
+.add-layer-control {
+  button {
+    width: 115px;
+  }
+}
+
+.add-layer-wrapper {
+  input {
+    width: 100%;
+  }
+}
 
 .add-layer-panel {
   top: 3rem;

@@ -15,6 +15,7 @@
         vm.username = '';
         vm.currentlyLoggedInUser = null;
         vm.userDetails = null;
+        vm.userStats = null;
         vm.osmUserDetails = null;
         vm.projects = [];
         vm.map = null;
@@ -50,8 +51,9 @@
             var hoverIdentify = true;
             var clickIdentify = true;
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
-            getUserProjects();
             getLevelSettings();
+            getUserStats();
+            getUserProjects();
         }
 
         /**
@@ -141,7 +143,8 @@
                     emailAddress: vm.userDetails.emailAddress,
                     facebookId: vm.userDetails.facebookId,
                     linkedinId: vm.userDetails.linkedinId,
-                    twitterId: vm.userDetails.twitterId
+                    twitterId: vm.userDetails.twitterId,
+                    validation_message : vm.userDetails.validation_message
                 };
                 var resultsPromise = userService.setContactDetails(contactDetails);
                 resultsPromise.then(function (data) {
@@ -204,5 +207,17 @@
                 vm.mapperLevelAdvanced = data.mapperLevelAdvanced;
             });
         }
+
+        /**
+         * Get stats about the user
+         */
+        function getUserStats() {
+            var resultsPromise = userService.getUserStats(vm.username);
+            resultsPromise.then(function (data) {
+                // On success, set the detailed stats for this user
+                vm.userStats = data;
+            });
+        }
+
     }
 })();

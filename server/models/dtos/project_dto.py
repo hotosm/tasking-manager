@@ -4,11 +4,14 @@ from schematics.types import StringType, BaseType, IntType, BooleanType, DateTim
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode
 
 
 def is_known_project_status(value):
     """ Validates that Project Status is known value """
+    if type(value) == list:
+        return  # Don't validate the entire list, just the individual values
+
     try:
         ProjectStatus[value.upper()]
     except KeyError:
@@ -37,6 +40,15 @@ def is_known_mapping_type(value):
         raise ValidationError(f'Unknown mappingType: {value} Valid values are {MappingTypes.ROADS.name}, '
                               f'{MappingTypes.BUILDINGS.name}, {MappingTypes.WATERWAYS.name}, '
                               f'{MappingTypes.LAND_USE.name}, {MappingTypes.OTHER.name}')
+
+
+def is_known_task_creation_mode(value):
+    """ Validates Task Creation Mode is known value """
+    try:
+        TaskCreationMode[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown taskCreationMode: {value} Valid values are {TaskCreationMode.GRID.name}, '
+                              f'{TaskCreationMode.ARBITRARY.name}')
 
 
 class DraftProjectDTO(Model):
@@ -87,9 +99,12 @@ class ProjectDTO(Model):
     license_id = IntType(serialized_name='licenseId')
     allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames', default=[])
     priority_areas = BaseType(serialized_name='priorityAreas')
+    created = DateTimeType()
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
     active_mappers = IntType(serialized_name='activeMappers')
+    task_creation_mode = StringType(required=True, serialized_name='taskCreationMode',
+                                    validators=[is_known_task_creation_mode], serialize_when_none=False)
 
 
 class ProjectSearchDTO(Model):
@@ -97,6 +112,7 @@ class ProjectSearchDTO(Model):
     preferred_locale = StringType(required=True, default='en')
     mapper_level = StringType(validators=[is_known_mapping_level])
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
+    project_statuses = ListType(StringType, validators=[is_known_project_status])
     organisation_tag = StringType()
     campaign_tag = StringType()
     page = IntType(required=True)
@@ -109,9 +125,13 @@ class ProjectSearchDTO(Model):
         if self.mapping_types:
             for mapping_type in self.mapping_types:
                 hashable_mapping_types = hashable_mapping_types + mapping_type
+        hashable_project_statuses = ''
+        if self.project_statuses:
+            for project_status in self.project_statuses:
+                hashable_project_statuses = hashable_project_statuses + project_status
 
-        return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, self.organisation_tag,
-                     self.campaign_tag, self.page, self.text_search, self.is_project_manager))
+        return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, hashable_project_statuses,
+                     self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager))
 
 
 class ProjectSearchBBoxDTO(Model):

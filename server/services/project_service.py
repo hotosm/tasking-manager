@@ -46,6 +46,11 @@ class ProjectService:
         return project.as_dto_for_mapping(locale)
 
     @staticmethod
+    def get_project_tasks(project_id):
+        project = ProjectService.get_project_by_id(project_id)
+        return project.all_tasks_as_geojson()
+
+    @staticmethod
     def get_project_aoi(project_id):
         project = ProjectService.get_project_by_id(project_id)
         return project.get_aoi_geometry_as_geojson()
@@ -87,9 +92,12 @@ class ProjectService:
     @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):
         """ Check if the user is allowed to map the on the project in scope """
+        if UserService.is_user_blocked(user_id):
+            return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
         project = ProjectService.get_project_by_id(project_id)
 
-        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED:
+        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(user_id):
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
         tasks = project.get_locked_tasks_for_user(user_id)
@@ -132,7 +140,13 @@ class ProjectService:
     @staticmethod
     def is_user_permitted_to_validate(project_id, user_id):
         """ Check if the user is allowed to validate on the project in scope """
+        if UserService.is_user_blocked(user_id):
+            return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
         project = ProjectService.get_project_by_id(project_id)
+
+        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(user_id):
+            return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 
         if project.enforce_validator_role and not UserService.is_user_validator(user_id):
             return False, ValidatingNotAllowed.USER_NOT_VALIDATOR
@@ -156,3 +170,9 @@ class ProjectService:
         """ Gets the project summary DTO """
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_summary(preferred_locale)
+
+    @staticmethod
+    def get_project_title(project_id: int, preferred_locale: str = 'en') -> str:
+        """ Gets the project title DTO """
+        project = ProjectService.get_project_by_id(project_id)
+        return project.get_project_title(preferred_locale)

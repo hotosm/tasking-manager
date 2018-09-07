@@ -12,7 +12,7 @@ from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
@@ -56,6 +56,7 @@ class Project(db.Model):
     license_id = db.Column(db.Integer, db.ForeignKey('licenses.id', name='fk_licenses'))
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     centroid = db.Column(Geometry('POINT', srid=4326))
+    task_creation_mode = db.Column(db.Integer, default=TaskCreationMode.GRID.value, nullable=False)
 
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
@@ -297,14 +298,18 @@ class Project(db.Model):
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = int((self.tasks_mapped / (self.total_tasks - self.tasks_bad_imagery)) * 100)
-        summary.percent_validated = int(((self.tasks_validated + self.tasks_bad_imagery) / self.total_tasks) * 100)
+        summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
+        summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
 
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
 
         return summary
+
+    def get_project_title(self, preferred_locale):
+        project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
+        return project_info.name
 
     def get_aoi_geometry_as_geojson(self):
         """ Helper which returns the AOI geometry as a geojson object """
@@ -317,8 +322,10 @@ class Project(db.Model):
         """ Get count of Locked tasks as a proxy for users who are currently active on the project """
 
         return Task.query \
-            .filter(Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value) \
+            .filter(Task.task_status.in_((TaskStatus.LOCKED_FOR_MAPPING.value,
+                    TaskStatus.LOCKED_FOR_VALIDATION.value))) \
             .filter(Task.project_id == project_id) \
+            .distinct(Task.locked_by) \
             .count()
 
     def _get_project_and_base_dto(self):
@@ -341,9 +348,11 @@ class Project(db.Model):
         base_dto.campaign_tag = self.campaign_tag
         base_dto.organisation_tag = self.organisation_tag
         base_dto.license_id = self.license_id
+        base_dto.created = self.created
         base_dto.last_updated = self.last_updated
         base_dto.author = User().get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
+        base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
 
         if self.private:
             # If project is private it should have a list of allowed users
@@ -376,6 +385,12 @@ class Project(db.Model):
         project_dto.project_info = ProjectInfo.get_dto_for_locale(self.id, locale, project.default_locale)
 
         return project_dto
+
+    def all_tasks_as_geojson(self):
+        """ Creates a geojson of all areas """
+        project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+
+        return project_tasks
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

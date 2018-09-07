@@ -15,9 +15,9 @@ class TestProject(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('SHIPPABLE', 'false')
+        env = os.getenv('CI', 'false')
 
-        # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
+        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
         if env == 'true':
             cls.skip_tests = True
 
@@ -128,7 +128,7 @@ class TestProject(unittest.TestCase):
 
         # Act
         original_id = copy.copy(self.test_project.id)
-        cloned_project = Project.clone(original_id, 5175337)
+        cloned_project = Project.clone(original_id, self.test_user.id)
 
         self.assertTrue(cloned_project)
         self.assertEqual(cloned_project.project_info[0].name, 'Thinkwhere Test')
