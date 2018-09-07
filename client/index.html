@@ -4,28 +4,28 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HOT Tasking Manager</title>
+    <title>OpenStreetMap US Tasking Manager</title>
     <base href="/">
 
     <!-- for Google -->
-    <meta name="description" content="HOT Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping.">
+    <meta name="description" content="OpenStreetMap US Tasking Manager is a tool for collaborative mapping.">
     <meta name="keywords" content="OpenStreetMap, Tasking Manager, OSM">
-    <meta name="author" content="Humanitarian OpenStreetMap Team">
+    <meta name="author" content="OpenStreetMap US">
     <meta name="application-name" content="OSM Tasking Manager" />
 
 	<!-- for Facebook -->
-	<meta property="og:title" content="HOT Tasking Manager" />
-	<meta property="og:site_name" content="HOT Tasking Manager" />
+	<meta property="og:title" content="OSM US Tasking Manager" />
+	<meta property="og:site_name" content="OSM US Tasking Manager" />
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="tasks.hotosm.org" />
-	<meta property="og:description" content="HOT Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping." />
+	<meta property="og:url" content="tasks.openstreetmap.us" />
+	<meta property="og:description" content="OpenStreetMap US Tasking Manager is a tool for collaborative mapping." />
 
     <!-- for Twitter -->
 	<meta name="twitter:card" content="summary" />
-	<meta name="twitter:title" content="HOT Tasking Manager" />
-	<meta name="twitter:description" content="HOT Tasking Manager is a mapping tool designed and built for the Humanitarian OSM Team collaborative mapping." />
+	<meta name="twitter:title" content="OSM US Tasking Manager" />
+	<meta name="twitter:description" content="OpenStreetMap US Tasking Manager is a tool for collaborative mapping." />
 
-    <link href="./assets/img/hot-favicon.ico" rel="icon">
+    <link href="./assets/img/favicon.ico" rel="icon">
 
     <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700" rel="stylesheet"/>
 
@@ -62,7 +62,7 @@
         <div class="page__headline">
             <h1 class="page__title">
                 <a href="/" title="{{ 'Visit homepage' | translate }}">
-                    <img src="./assets/img/hot-tm-logo.svg" alt="HOT logo" height="37">
+                    <img src="./assets/img/osmus.png" alt="OSM US logo" height="37">
                 </a>
             </h1>
         </div>
@@ -87,11 +87,13 @@
                             <span>{{ 'About' | translate }}</span>
                         </a>
                     </li>
+                    <!--
                     <li>
                         <a href="/what-is-new" title="{{ 'New features in the Tasking Manager' | translate }}" class="global-menu-item">
                             <span>{{ 'What is New?' | translate }}</span>
                         </a>
                     </li>
+                  -->
                 </ul>
                 <ul class="global-menu menu-secondary-wrapper">
                     <li class="global-menu-item">
@@ -116,9 +118,8 @@
 <div class="mob-disclaimer" ng-show="!hideMobileMessage">
     <p class="centered">
         <i class="modal__button-dismiss pull-right pointer" ng-click="hideMobileMessage = true"></i>
-        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
+        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device.' | translate }}
     </p>
-    <a href="https://mapswipe.org" class="button button--outline--white">{{ 'Go to MapSwipe' | translate }}</a>
 </div>
 <!--/ mobile message -->
 
@@ -266,6 +267,7 @@
 <!-- /build -->
 
 <!-- Piwik -->
+<!--
 <script type="text/javascript">
   var _paq = _paq || [];
   _paq.push(["setDomains", ["*.tasks.hotosm.org"]]);
@@ -280,6 +282,7 @@
   })();
 </script>
 <noscript><p><img src="//piwik.hotosm.org/piwik.php?idsite=7" style="border:0;" alt="" /></p></noscript>
+-->
 <!-- End Piwik Code -->
 
 </body>
