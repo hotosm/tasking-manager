@@ -53,7 +53,6 @@ class MessageService:
         if user.validation_message == False:
             return # No need to send validation message
 
-        text_template = get_template('validation_message_en.txt')
         text_template = get_template('invalidation_message_en.txt' if status == TaskStatus.INVALIDATED \
                                                                    else 'validation_message_en.txt')
         status_text = 'marked invalid' if status == TaskStatus.INVALIDATED else 'validated'
