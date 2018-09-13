@@ -46,7 +46,7 @@
         //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
-        vm.isSelectedSplittable = false;
+        vm.isSelectedSplittable = true;
 
         //task data
         vm.selectedTaskData = null;
@@ -175,7 +175,7 @@
         vm.resetStatusFlags = function () {
             vm.isSelectedMappable = false;
             vm.isSelectedValidatable = false;
-            vm.isSelectedSplittable = false;
+            vm.isSelectedSplittable = true;
         }
 
         /**
@@ -1092,7 +1092,7 @@
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
                 vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
-                vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
+                vm.isSelectedSplittable = true; //isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
             }, function (error) {
                 onLockError(projectId, error);
             });

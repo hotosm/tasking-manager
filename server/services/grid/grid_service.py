@@ -73,9 +73,9 @@ class GridService:
             # set default properties
             # and put any already existing properties in `extra_properties`
             feature.properties = {
-                'x': None,
-                'y': None,
-                'zoom': None,
+                #'x': None,
+                #'y': None,
+                #'zoom': None,
                 'splittable': False,
                 'extra_properties': feature.properties
             }
@@ -123,9 +123,9 @@ class GridService:
                 # shapely may return a POLYGON rather than a MULTIPOLYGON if there is just one intersection area
                 new_shape = MultiPolygon([new_shape])
             feature['geometry'] = mapping(new_shape)
-            feature['properties']['x'] = None
-            feature['properties']['y'] = None
-            feature['properties']['zoom'] = None
+            #feature['properties']['x'] = None
+            #feature['properties']['y'] = None
+            #feature['properties']['zoom'] = None
             feature['properties']['splittable'] = False
         return feature
 

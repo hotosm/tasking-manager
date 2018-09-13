@@ -1,5 +1,6 @@
 import geojson
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import mapping, Polygon, MultiPolygon
+from shapely.geometry import Polygon, Point, MultiPolygon, shape as shapely_shape
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -37,6 +38,15 @@ class SplitService:
                     new_square = SplitService._create_square(new_x, new_y, new_zoom)
                     feature = geojson.Feature()
                     feature.geometry = new_square
+
+                    feature_shape = shapely_shape(feature.geometry)
+                    if task and task.splittable == False:
+                        query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
+                            .filter(Task.id == task.id, Task.project_id == task.project_id)
+
+                        new_geojson = geojson.loads(query[0].geometry)
+                        feature.geometry = geojson.loads(geojson.dumps(mapping(shapely_shape(new_geojson).union(feature_shape))))
+
                     feature.properties = {
                         'x': new_x,
                         'y': new_y,
@@ -97,8 +107,11 @@ class SplitService:
             raise NotFound()
 
         # check it's splittable
-        if not original_task.splittable:
-            raise SplitServiceError('Task is not splittable')
+        # if not original_task.splittable:
+        #     extent = original_task.get_extent(split_task_dto.task_id, split_task_dto.project_id)
+        #     SplitService._create_non_square_split_tasks(extent)
+        #
+        #     raise SplitServiceError('Task is not splittable')
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
