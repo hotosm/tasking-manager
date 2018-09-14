@@ -19,7 +19,7 @@
         vm.lockedByCurrentUserVectorLayer = null;
         vm.map = null;
         vm.user = null;
-        vm.maxlengthComment = 500;
+        vm.maxlengthComment = configService.maxCommentLength;
         vm.taskUrl = '';
 
         // tab and view control
