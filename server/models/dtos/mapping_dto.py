@@ -67,3 +67,11 @@ class TaskDTO(Model):
 class TaskDTOs(Model):
     """ Describes an array of Task DTOs"""
     tasks = ListType(ModelType(TaskDTO))
+
+class TaskCommentDTO(Model):
+    """ Describes the model used to add a standalone comment to a task outside of mapping/validation """
+    user_id = IntType(required=True)
+    comment = StringType(required=True)
+    task_id = IntType(required=True)
+    project_id = IntType(required=True)
+    preferred_locale = StringType(default='en')

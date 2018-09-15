@@ -15,6 +15,7 @@
             unLockTaskMapping: unLockTaskMapping,
             stopMapping: stopMapping,
             lockTaskMapping: lockTaskMapping,
+            addTaskComment: addTaskComment,
             unLockTaskValidation: unLockTaskValidation,
             stopValidating: stopValidating,
             lockTasksValidation: lockTasksValidation,
@@ -131,6 +132,33 @@
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/lock-for-mapping',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback(error) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
+
+        /**
+         * Adds a comment to a task outside of a locked session
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @param comment - the comment text
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function addTaskComment(projectId, taskId, comment) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                data: {
+                    comment: comment,
+                },
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/comment',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
