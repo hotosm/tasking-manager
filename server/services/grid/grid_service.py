@@ -73,10 +73,7 @@ class GridService:
             # set default properties
             # and put any already existing properties in `extra_properties`
             feature.properties = {
-                #'x': None,
-                #'y': None,
-                #'zoom': None,
-                'splittable': False,
+                'isSquare': False,
                 'extra_properties': feature.properties
             }
 
@@ -111,8 +108,8 @@ class GridService:
     @staticmethod
     def _update_feature(clip_to_aoi: bool, feature: dict, new_shape) -> dict:
         """
-        Updates the feature with the new shape, and splittable property
-        :param clip_to_aoi: value for feature's splittable property
+        Updates the feature with the new shape, and isSquare property
+        :param clip_to_aoi: value for feature's is_square property
         :param feature: feature to be updated
         :param new_shape: new shape to use for feature
         :return:
@@ -123,10 +120,7 @@ class GridService:
                 # shapely may return a POLYGON rather than a MULTIPOLYGON if there is just one intersection area
                 new_shape = MultiPolygon([new_shape])
             feature['geometry'] = mapping(new_shape)
-            #feature['properties']['x'] = None
-            #feature['properties']['y'] = None
-            #feature['properties']['zoom'] = None
-            feature['properties']['splittable'] = False
+            feature['properties']['isSquare'] = False
         return feature
 
     @staticmethod

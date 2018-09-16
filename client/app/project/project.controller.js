@@ -1092,7 +1092,7 @@
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
                 vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
-                vm.isSelectedSplittable = true; //isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
+                vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
             }, function (error) {
                 onLockError(projectId, error);
             });
@@ -1164,12 +1164,12 @@
         };
 
         /**
-         * Is the the task splittable
+         * Is the the task splittable.  Older tasks don't have an x, y, zoom property needed for splitting
          */
         function isTaskSplittable(taskFeatures, taskId) {
             var feature = taskService.getTaskFeatureById(taskFeatures, taskId);
             var properties = feature.getProperties();
-            return feature.getProperties().taskSplittable;
+            return properties.taskX && properties.taskY && properties.taskZoom;
 
         }
 

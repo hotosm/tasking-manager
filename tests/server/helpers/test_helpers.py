@@ -76,6 +76,7 @@ def create_canned_project() -> Tuple[Project, User]:
     test_aoi_geojson = geojson.loads(json.dumps(get_canned_json('test_aoi.json')))
 
     task_feature = geojson.loads(json.dumps(get_canned_json('splittable_task.json')))
+    task_non_square_feature = geojson.loads(json.dumps(get_canned_json('non_square_task.json')))
 
     test_user = create_canned_user()
 
@@ -86,14 +87,20 @@ def create_canned_project() -> Tuple[Project, User]:
     test_project = Project()
     test_project.create_draft_project(test_project_dto)
     test_project.set_project_aoi(test_project_dto)
-    test_project.total_tasks = 1
+    test_project.total_tasks = 2
 
     # Setup test task
     test_task = Task.from_geojson_feature(1, task_feature)
     test_task.task_status = TaskStatus.MAPPED.value
     test_task.mapped_by = test_user.id
+    test_task.is_square = True
+
+    test_task2 = Task.from_geojson_feature(2, task_non_square_feature)
+    test_task2.task_status = TaskStatus.READY.value
+    test_task2.is_square = False
 
     test_project.tasks.append(test_task)
+    test_project.tasks.append(test_task2)
     test_project.create()
 
     return test_project, test_user

@@ -29,6 +29,13 @@ class SplitService:
         :return: list of {geojson.Feature}
         """
         try:
+            task_geojson = False
+
+            if task and not task.is_square:
+                query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
+                    .filter(Task.id == task.id, Task.project_id == task.project_id)
+
+                task_geojson = geojson.loads(query[0].geometry)
             split_geoms = []
             for i in range(0, 2):
                 for j in range(0, 2):
@@ -38,22 +45,26 @@ class SplitService:
                     new_square = SplitService._create_square(new_x, new_y, new_zoom)
                     feature = geojson.Feature()
                     feature.geometry = new_square
-
                     feature_shape = shapely_shape(feature.geometry)
-                    if task and task.splittable == False:
-                        query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
-                            .filter(Task.id == task.id, Task.project_id == task.project_id)
+                    if task and not task.is_square:
+                        intersection = shapely_shape(task_geojson).intersection(feature_shape)
+                        multipolygon = MultiPolygon([intersection])
+                        feature.geometry = geojson.loads(geojson.dumps(mapping(multipolygon)))
 
-                        new_geojson = geojson.loads(query[0].geometry)
-                        feature.geometry = geojson.loads(geojson.dumps(mapping(shapely_shape(new_geojson).union(feature_shape))))
+                    if task and not task.is_square:
+                        is_square = False
+                    else:
+                        is_square = True
 
                     feature.properties = {
                         'x': new_x,
                         'y': new_y,
                         'zoom': new_zoom,
-                        'splittable': True
+                        'isSquare': is_square
                     }
-                    split_geoms.append(feature)
+
+                    if (len(feature.geometry.coordinates) > 0):
+                        split_geoms.append(feature)
 
             return split_geoms
         except Exception as e:
@@ -97,7 +108,6 @@ class SplitService:
         Replaces a task square with 4 smaller tasks at the next OSM tile grid zoom level
         Validates that task is:
          - locked for mapping by current user
-         - splittable (splittable property is True)
         :param split_task_dto:
         :return: new tasks in a DTO
         """
@@ -105,13 +115,6 @@ class SplitService:
         original_task = Task.get(split_task_dto.task_id, split_task_dto.project_id)
         if original_task is None:
             raise NotFound()
-
-        # check it's splittable
-        # if not original_task.splittable:
-        #     extent = original_task.get_extent(split_task_dto.task_id, split_task_dto.project_id)
-        #     SplitService._create_non_square_split_tasks(extent)
-        #
-        #     raise SplitServiceError('Task is not splittable')
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:

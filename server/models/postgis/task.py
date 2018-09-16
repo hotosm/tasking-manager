@@ -149,8 +149,8 @@ class Task(db.Model):
     y = db.Column(db.Integer)
     zoom = db.Column(db.Integer)
     extra_properties = db.Column(db.Unicode)
-    # Tasks are not splittable if created from an arbitrary grid or were clipped to the edge of the AOI
-    splittable = db.Column(db.Boolean, default=True)
+    # Tasks need to be split differently if created from an arbitrary grid or were clipped to the edge of the AOI
+    is_square = db.Column(db.Boolean, default=True)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
     locked_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_locked'))
@@ -201,7 +201,7 @@ class Task(db.Model):
             task.x = task_feature.properties['x']
             task.y = task_feature.properties['y']
             task.zoom = task_feature.properties['zoom']
-            task.splittable = task_feature.properties['splittable']
+            task.is_square = task_feature.properties['isSquare']
         except KeyError as e:
             raise InvalidData(f'Task: Expected property not found: {str(e)}')
 
@@ -377,14 +377,15 @@ class Task(db.Model):
         :return: geojson.FeatureCollection
         """
         project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status,
                              Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
             task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskSplittable=task.splittable, taskStatus=TaskStatus(task.task_status).name)
+                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name)
+
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
             tasks_features.append(feature)
 
