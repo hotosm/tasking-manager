@@ -71,7 +71,8 @@ class StagingConfig(EnvironmentConfig):
 
 
 class DevConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://127.0.0.1:5000'
+   #APP_BASE_URL = 'http://127.0.0.1:5000'
+    APP_BASE_URL = 'https://osmcolorado.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = 'logs'
