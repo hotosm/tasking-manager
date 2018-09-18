@@ -128,7 +128,7 @@ python -m unittest discover tests/server
 
 On boot the Tasking Manager App will look for the following environment vars:
 
-* **TASKING_MANAGER_ENV** - Allows you to specify which config to load from ./server/config.py  Acceptable values:
+* **TM_ENV** - Allows you to specify which config to load from ./server/config.py  Acceptable values:
     * **Dev** - This is the default
     * **Staging** - Use this for your staging/test environment
     * **Prod** - Use this for your production environment
