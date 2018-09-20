@@ -4,7 +4,7 @@ from schematics.types import StringType, BaseType, IntType, BooleanType, DateTim
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode
 
 
 def is_known_project_status(value):
@@ -40,6 +40,15 @@ def is_known_mapping_type(value):
         raise ValidationError(f'Unknown mappingType: {value} Valid values are {MappingTypes.ROADS.name}, '
                               f'{MappingTypes.BUILDINGS.name}, {MappingTypes.WATERWAYS.name}, '
                               f'{MappingTypes.LAND_USE.name}, {MappingTypes.OTHER.name}')
+
+
+def is_known_task_creation_mode(value):
+    """ Validates Task Creation Mode is known value """
+    try:
+        TaskCreationMode[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown taskCreationMode: {value} Valid values are {TaskCreationMode.GRID.name}, '
+                              f'{TaskCreationMode.ARBITRARY.name}')
 
 
 class DraftProjectDTO(Model):
@@ -90,9 +99,12 @@ class ProjectDTO(Model):
     license_id = IntType(serialized_name='licenseId')
     allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames', default=[])
     priority_areas = BaseType(serialized_name='priorityAreas')
+    created = DateTimeType()
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
     active_mappers = IntType(serialized_name='activeMappers')
+    task_creation_mode = StringType(required=True, serialized_name='taskCreationMode',
+                                    validators=[is_known_task_creation_mode], serialize_when_none=False)
 
 
 class ProjectSearchDTO(Model):

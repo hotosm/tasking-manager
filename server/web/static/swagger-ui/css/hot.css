@@ -1,0 +1,9 @@
+.swagger-section #header {
+    background-color: white;
+}
+
+.swagger-section #explore,
+.swagger-section #explore:hover {
+
+    background-color: #d53f3f;
+}
