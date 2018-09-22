@@ -369,6 +369,34 @@
             })
         };
 
+        /**
+         * Set the reset bad imagery confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showResetBadImageryConfirmation = function(showModal){
+            vm.showResetBadImageryConfirmationModal = showModal;
+        };
+
+        /**
+         * Reset all bad imagery tasks on a project
+         */
+        vm.resetBadImageryTasks = function(){
+            vm.resetBadImageryInProgress = true;
+            vm.resetBadImageryFail = false;
+            vm.resetBadImagerySuccess = false;
+            var resultsPromise = projectService.resetBadImageryTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks mapped successfully
+                vm.resetBadImageryFail = false;
+                vm.resetBadImagerySuccess = true;
+                vm.resetBadImageryInProgress = false;
+            }, function(){
+                // Tasks not mapped successfully
+                vm.resetBadImageryFail = true;
+                vm.resetBadImagerySuccess = false;
+                vm.resetBadImageryInProgress = false;
+            })
+        };
 
         /**
          * Set the invalidate confirmation modal to visible/invisible
