@@ -76,5 +76,5 @@ class HomePageStatsDTO(Model):
     tasks_validated = IntType(serialized_name='tasksValidated')
     total_mappers = IntType(serialized_name='totalMappers')
     total_validators = IntType(serialized_name='totalValidators')
-    avg_completion_time = IntType(serialized_name='averageCompletionTime')
+    # avg_completion_time = IntType(serialized_name='averageCompletionTime')
     organizations = ListType(ModelType(OrganizationStatsDTO))
