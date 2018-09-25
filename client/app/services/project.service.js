@@ -47,6 +47,7 @@
             mapAllTasks: mapAllTasks,
             invalidateAllTasks: invalidateAllTasks,
             validateAllTasks: validateAllTasks,
+            resetAllTasks: resetAllTasks,
             getCommentsForProject: getCommentsForProject,
             userCanMapProject: userCanMapProject,
             userCanValidateProject: userCanValidateProject,
@@ -533,6 +534,28 @@
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/admin/project/' + projectId + '/validate-all',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Resets all tasks on the project
+         * @param projectId
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function resetAllTasks(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/reset-all',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

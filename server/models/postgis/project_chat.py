@@ -13,7 +13,7 @@ class ProjectChat(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     time_stamp = db.Column(db.DateTime, nullable=False, default=timestamp)
-    message = db.Column(db.String(250), nullable=False)
+    message = db.Column(db.String, nullable=False)
 
     # Relationships
     posted_by = db.relationship(User, foreign_keys=[user_id])
