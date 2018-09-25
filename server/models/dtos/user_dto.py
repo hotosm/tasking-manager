@@ -96,6 +96,13 @@ class ListedUser(Model):
     mapping_level = StringType(serialized_name='mappingLevel')
 
 
+class ProjectParticipantUser(Model):
+    """ Describes a user who has participated in a project """
+    username = StringType()
+    project_id = LongType(serialized_name='projectId')
+    is_participant = BooleanType(serialized_name='isParticipant')
+
+
 class UserSearchDTO(Model):
     """ Paginated list of TM users """
     def __init__(self):
@@ -111,6 +118,8 @@ class UserFilterDTO(Model):
     def __init__(self):
         super().__init__()
         self.usernames = []
+        self.users = []
 
     pagination = ModelType(Pagination)
     usernames = ListType(StringType)
+    users = ListType(ModelType(ProjectParticipantUser))
