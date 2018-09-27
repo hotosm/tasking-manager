@@ -620,12 +620,16 @@ class Task(db.Model):
         """
         if task_ids:
             project_tasks = \
-                db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
-                                Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
+                db.session.query(Task.id,
+                                 Task.x, Task.y, Task.zoom,
+                                 Task.splittable, Task.task_status,
+                                 Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
         else:
             project_tasks = \
-                db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
-                                Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
+                db.session.query(Task.id,
+                                 Task.x, Task.y, Task.zoom,
+                                 Task.splittable, Task.task_status,
+                                 Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:

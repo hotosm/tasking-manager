@@ -333,7 +333,14 @@ class MappingService:
                     task_poly=os.path.join(dir, poly),
                     task_xml=os.path.join(dir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0]))
                 )
-            osm_files.append(os.path.join(dir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0])))
+            osm_files.append(
+                os.path.join(
+                    dir,
+                    "task_{task_id}_{file_name}.osm".format(
+                        task_id=os.path.splitext(poly)[0],
+                        file_name=os.path.splitext(dto.file_name)[0])
+                    )
+                )
             subprocess.call(task_cmd, shell=True)
             os.remove(os.path.join(dir, poly))
 
