@@ -552,3 +552,61 @@ class UndoMappingAPI(Resource):
             error_msg = f'Task GET API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+
+
+class TasksAsProjectFile(Resource):
+
+    def get(self, project_id):
+        """
+        Get tasks as OSM XML extract of Project File
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/xml
+        parameters:
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - name: file_id
+              in: query
+              description: The ID of the file to extract
+              required: true
+              type: integer
+              default: 1
+            - in: query
+              name: tasks
+              type: string
+              description: List of tasks; leave blank to retrieve all
+              default: 1,2
+        responses:
+            200:
+                description: OSM XML
+            400:
+                description: Client Error
+            404:
+                description: No mapped tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            tasks = request.args.get('tasks') if request.args.get('tasks') else None
+            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
+            file_id = request.args.get('file_id') if request.args.get('file_id') else None
+
+            xml = MappingService.generate_project_file_osm_xml(project_id, file_id, tasks)
+
+            if as_file:
+                return send_file(io.BytesIO(xml), mimetype='text.xml', as_attachment=True,
+                                 attachment_filename=f'HOT-project-{project_id}.osm')
+
+            return Response(xml, mimetype='text/xml', status=200)
+        except NotFound:
+            return {"Error": "Not found; please check the project and task numbers."}, 404
+        except Exception as e:
+            error_msg = f'Task as OSM API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500

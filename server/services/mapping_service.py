@@ -1,4 +1,7 @@
 import datetime
+import os
+import subprocess
+import shutil
 import xml.etree.ElementTree as ET
 
 from flask import current_app
@@ -10,6 +13,7 @@ from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound, UserLicenseError
+from server.models.postgis.project_files import ProjectFiles
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
@@ -252,3 +256,64 @@ class MappingService:
         project = ProjectService.get_project_by_id(project_id)
         project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
         project.save()
+
+    @staticmethod
+    def generate_project_file_osm_xml(project_id: int, file_id: int, task_ids_str: str) -> str:
+        """ Generate xml response suitable for loading into JOSM.  A sample output file is in
+            /server/helpers/testfiles/osm-sample.xml """
+        # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
+        # root = ET.Element('osm', attrib=dict(version='0.6', upload='never', creator='HOT Tasking Manager'))
+
+        if task_ids_str:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks_as_geojson_feature_collection(project_id, task_ids)
+            if not tasks:
+                raise NotFound()
+        else:
+            tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
+
+        dto = ProjectFiles.get_file(project_id, file_id)
+        dir = os.path.join(dto.path, os.path.splitext(dto.file_name)[0])
+
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
+        tasks_file = os.path.join(dir, "{project_id}_tasks.geojson".format(project_id=str(project_id)))
+
+        with open(tasks_file, 'w') as t:
+            t.write(str(tasks))
+
+        # Convert the geojson features into separate .poly files 
+        # to use with osmosis
+        poly_cmd = './server/tools/ogr2poly.py {file} -p {dir}/ -f taskId'.format(file=tasks_file, dir=dir)
+        subprocess.call(poly_cmd, shell=True)
+        os.remove(tasks_file)
+
+        osm_files = []
+        for poly in os.listdir(dir):
+            """ Extract from osm file into a file for each poly file """
+            task_cmd = './server/tools/osmosis/bin/osmosis -q --rx file={xml} --bp completeWays=yes file={task_poly} --wx file={task_xml}'.format(
+                    xml=os.path.join(dto.path, dto.file_name),
+                    task_poly=os.path.join(dir, poly),
+                    task_xml=os.path.join(dir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0]))
+                )
+            osm_files.append(os.path.join(dir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0])))
+            subprocess.call(task_cmd, shell=True)
+            os.remove(os.path.join(dir, poly))
+
+        merge_cmd = ['./server/tools/osmosis/bin/osmosis']
+
+        for osm in osm_files:
+            merge_cmd.extend(['--rx', 'file={file}'.format(file=osm), '--s'])
+
+        for x in range(0, len(osm_files)-1):
+            merge_cmd.append('--m')
+
+        merge_cmd.extend(['--wx', 'file=-'])
+        merge_string = ' '.join(merge_cmd)
+        xml = subprocess.check_output(merge_string, shell=True)
+        shutil.rmtree(dir)
+
+        return xml

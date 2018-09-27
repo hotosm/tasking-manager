@@ -359,15 +359,21 @@ class Task(db.Model):
         self.update()
 
     @staticmethod
-    def get_tasks_as_geojson_feature_collection(project_id):
+    def get_tasks_as_geojson_feature_collection(project_id, task_ids=[]):
         """
         Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID
         :param project_id: Owning project ID
         :return: geojson.FeatureCollection
         """
-        project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
-                             Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
+
+        if task_ids:
+            project_tasks = \
+                db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
+                                Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
+        else:
+            project_tasks = \
+                db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
+                                Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:

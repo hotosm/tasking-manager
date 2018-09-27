@@ -27,3 +27,6 @@ venv_aws/
 
 # Mac
 .DS_Store
+
+# Project Files Dir
+/server/project_files/

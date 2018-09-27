@@ -346,6 +346,7 @@ class HasUserTaskOnProject(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+
 class HasUserTaskOnProjectDetails(Resource):
 
     @tm.pm_only(False)
