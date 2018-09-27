@@ -262,6 +262,8 @@ class MappingService:
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
         # root = ET.Element('osm', attrib=dict(version='0.6', upload='never', creator='HOT Tasking Manager'))
 
+        print(task_ids_str)
+
         if task_ids_str:
             task_ids = map(int, task_ids_str.split(','))
             tasks = Task.get_tasks_as_geojson_feature_collection(project_id, task_ids)

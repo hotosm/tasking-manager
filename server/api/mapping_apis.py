@@ -597,6 +597,8 @@ class TasksAsProjectFile(Resource):
             as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
             file_id = request.args.get('file_id') if request.args.get('file_id') else None
 
+            print(tasks)
+
             xml = MappingService.generate_project_file_osm_xml(project_id, file_id, tasks)
 
             if as_file:

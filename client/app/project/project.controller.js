@@ -1360,11 +1360,24 @@
                 if (vm.project_files.length > 0) {
                     var i;
                     for (i = 0; i < vm.project_files.length; i++) {
-                        console.log("FOR", vm.project_files[i])
-                        var taskImportParams = {
-                            url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i]),
-                            new_layer: true
+                        console.log(vm.project_files[i].file_name.replace(/\.[^/.]+$/,""))
+                        var emptyTaskLayerParams = {
+                            new_layer: true,
+                            mime_type: encodeURIComponent('application/x-osm+xml'),
+                            layer_name: encodeURIComponent(vm.project_files[i].file_name.replace(/\.[^/.]+$/,"")),
+                            data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
                         }
+                        editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
+                            .catch(function() {
+                                //warn that JSOM couldn't be started
+                                vm.editorStartError = 'josm-error';
+                            });
+                        var taskImportParams = {
+                            mime_type: encodeURIComponent('application/x-osm+xml'),
+                            url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i]),
+                            new_layer: false
+                        }
+                        console.log(taskImportParams)
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
                             .catch(function() {
                                 //warn that JSOM couldn't be started

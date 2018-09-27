@@ -194,7 +194,7 @@
          * @returns string - taskUrl
          */
         function getProjectFileOSMXMLUrl(projectId, taskId, file){
-            var taskUrl = configService.tmAPI + '/project/' + projectId + '/project-file?task=' + taskId + '&file_id=' + file.id;
+            var taskUrl = configService.tmAPI + '/project/' + projectId + '/project-file?tasks=' + taskId + '&file_id=' + file.id;
             // If it is not a full path, then it must be relative and for the GPX callback to work it needs
             // a full URL so get the current host and append it
             // Check if it is a full URL
