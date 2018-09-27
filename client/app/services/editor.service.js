@@ -23,6 +23,7 @@
             getOSMXMLUrl: getOSMXMLUrl,
             idPresetCategories: idPresetCategories,
             allIdPresets: allIdPresets,
+            getProjectFileOSMXMLUrl: getProjectFileOSMXMLUrl,
         };
 
         return service;
@@ -246,6 +247,25 @@
 
             presets.sort();
             return presets;
+        }
+
+        /**
+         * Format the OSM url for the project files
+         * @param projectId
+         * @param taskId
+         * @returns string - taskUrl
+         */
+        function getProjectFileOSMXMLUrl(projectId, taskId, file){
+            var taskUrl = configService.tmAPI + '/project/' + projectId + '/project-file?task=' + taskId + '&file_id=' + file.id;
+            // If it is not a full path, then it must be relative and for the GPX callback to work it needs
+            // a full URL so get the current host and append it
+            // Check if it is a full URL
+            var fullUrl = taskUrl.indexOf('http');
+            if (fullUrl == -1){
+                // Not a full URL - so add the absolute part
+                taskUrl = $location.protocol() + '://' + $location.host() + taskUrl;
+            }
+            return encodeURIComponent(taskUrl);
         }
     }
 })();

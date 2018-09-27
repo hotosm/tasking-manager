@@ -94,6 +94,9 @@
         // Augmented diff or attic query selection
         vm.selectedItem = null;
 
+        // Project Files
+        vm.project_files = []
+
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
 
@@ -159,6 +162,8 @@
 
             vm.selectedMappingEditor = userPreferencesService.getFavouriteEditor();
             vm.selectedValidationEditor = userPreferencesService.getFavouriteEditor();
+
+            getProjectFiles(vm.id)
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -260,6 +265,7 @@
             vm.multiLockedTasks = [];
             vm.lockedTasksForCurrentUser = [];
             vm.resetMappingIssues();
+            vm.project_files = [];
         };
 
         vm.updatePreferedEditor = function () {
@@ -1570,6 +1576,17 @@
         };
 
         /**
+         * Create Overpass API query
+         */
+        // vm.overpassQuery = function () {
+        //     var taskId = vm.selectedTaskData.taskId;
+        //     var features = vm.taskVectorLayer.getSource().getFeatures();
+        //     var selectedFeature = taskService.getTaskFeatureById(features, taskId);
+        //     var bbox = selectedFeature.getGeometry().getExtent();
+        //     var bboxTransformed = geospatialService.transformExtentToLatLonString(bbox);
+        // };
+
+        /**
          * Start the editor by getting the editor options and the URL to call
          * @param editor
          */
@@ -1669,7 +1686,6 @@
                     });
             }
 
-
             //load aerial photography if present
             var changesetSource = "Bing";
             var hasImagery = false;
@@ -1725,6 +1741,21 @@
                 //give it an empty param dict to avoid breaking things
                 editorService.sendJOSMCmd(customUrl, {});
             }
+                if (vm.project_files.length > 0) {
+                    var i;
+                    for (i = 0; i < vm.project_files.length; i++) {
+                        console.log("FOR", vm.project_files[i])
+                        var taskImportParams = {
+                            url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i]),
+                            new_layer: true
+                        }
+                        editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
+                            .catch(function() {
+                                //warn that JSOM couldn't be started
+                                vm.editorStartError = 'josm-error';
+                            });
+                    }
+                }
         }
 
         /**
@@ -1756,7 +1787,7 @@
             }
 
             return userList;
-        }
+        };
 
         /**
          * Inspects the task history of the currently selected task and, if
@@ -2155,6 +2186,18 @@
             }
             return result;
         };
+
+        /**
+         * Get all project files for a project
+         * @param project_id
+         */
+        function getProjectFiles(project_id) {
+            console.log(project_id)
+            var resultsPromise = projectService.getProjectFiles(project_id);
+            resultsPromise.then(function (data) {
+               vm.project_files = data.projectFiles
+            })
+        }
     }
 })
 ();
