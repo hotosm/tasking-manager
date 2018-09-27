@@ -30,3 +30,6 @@ venv_aws/
 
 # Project Files Dir
 /server/project_files/
+
+# VSCode
+.vscode
