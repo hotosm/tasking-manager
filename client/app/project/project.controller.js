@@ -2205,7 +2205,6 @@
          * @param project_id
          */
         function getProjectFiles(project_id) {
-            console.log(project_id)
             var resultsPromise = projectService.getProjectFiles(project_id);
             resultsPromise.then(function (data) {
                vm.project_files = data.projectFiles
