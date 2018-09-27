@@ -69,6 +69,8 @@
         vm.invalidateTasksSuccess = false;
         vm.validateTasksFail = false;
         vm.validateTasksSuccess = false;
+        vm.uploadFileFail = false;
+        vm.uploadFileSuccess = false;
 
         // Messages
         vm.messageSubject = '';
@@ -76,6 +78,9 @@
 
         // Form
         vm.form = {};
+
+        // File
+        vm.fileName = '';
 
         activate();
 
@@ -455,6 +460,25 @@
                 vm.sendMessageInProgress = false;
             })
         };
+
+        /**
+         * Set the show upload file modal to visible/invisible
+         */
+        vm.showUploadFile = function(showModal){
+            vm.showUploadFileModal = showModal;
+        };
+
+        /**
+         * Upload new file to upload to JOSM
+         */
+        vm.uploadFile = function (file){
+            vm.uploadFileFail = false;
+            
+            if (file) {
+                var resultsPromise = "tests"
+                console.log(resultsPromise)
+            }
+        }
 
         /**
          * Get organisation tags

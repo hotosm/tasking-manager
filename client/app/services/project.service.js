@@ -52,7 +52,9 @@
             userCanValidateProject: userCanValidateProject,
             getMyProjects: getMyProjects,
             trimTaskGrid: trimTaskGrid,
-            getProjectSummary: getProjectSummary
+            getProjectSummary: getProjectSummary,
+            uploadFile: uploadFile,
+            getProjectFiles: getProjectFiles
         };
 
         return service;
@@ -693,6 +695,51 @@
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8',
                     'Accept-Language': preferredLanguage
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Upload new file for a project
+         * @param projectId
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function uploadFile(projectId, file) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/project_files',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get my projects
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         */
+        function getProjectFiles(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/project-files',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
                 }
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

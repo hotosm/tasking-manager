@@ -62,6 +62,12 @@
                                         {{ 'Actions' | translate }}
                                     </a>
                                 </li>
+                                <li>
+                                    <a title="{{ 'Project Wide JOSM Settings' | translate }}" ng-click="editProjectCtrl.currentSection = 'josmsettings'"
+                                       class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'josmsettings' ? 'aside-menu-item--active' : ''">
+                                        {{ 'JOSM Settings (BETA)' | translate }}
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </aside>
@@ -450,7 +456,7 @@
                             </fieldset>
                         </div>
                             <!--/ settings -->
-                            <!-- settings -->
+                            <!-- actions -->
                         <div ng-show="editProjectCtrl.currentSection === 'actions'">
                             <fieldset class="form__fieldset">
                                 <div class="form__group form__group--section">
@@ -502,7 +508,41 @@
                                 </div>
                             </fieldset>
                         </div>
-                            <!--/ settings -->
+                            <!--/ actions -->
+                            <!-- josmsettings -->
+                        <div ng-show="editProjectCtrl.currentSection === 'josmsettings'">
+                            <fieldset class="form__fieldset">
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'OSM Files to Load' | translate }}</label>
+                                    <p>{{ 'Add OSM XML files to load into JOSM. Each file should encompass the entire project area. An extract of the data using the task\'s extent will be sent to JOSM for editing.' | translate }}</p>
+                                </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Upload New OSM File' | translate }}</label>
+                                    <p>{{ "When a task is opened, an extract of each of the uploaded files will be sent to JOSM as individual data layers." | translate }}</p>
+                                    <div>
+                                        <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.showUploadFile(true)">
+                                            {{ 'Upload OSM File' | translate }}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Overpass Query' | translate }}</label>
+                                    <p>{{ 'When a task is opened, a file obtained from the Overpass API using this query will be loaded into JOSM. ' | translate }}</p>
+                                    <textarea
+                                            class="form__control"
+                                            ng-model="info.overpassQuery" rows="4">
+                                    </textarea>
+                                    <div>
+                                        <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.showUploadFile(true)">
+                                            {{ 'Upload OSM File' | translate }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                            <!--/ josmsettings -->
                             <div ng-show="editProjectCtrl.currentSection !== 'actions'">
                                 <div class="button-group">
                                     <button class="button button--primary" type="button"
@@ -793,3 +833,52 @@
     </a>
 </section>
 <!-- message contributors modal -->
+
+<!-- upload file modal -->
+<section class="modal modal-tm" ng-show="editProjectCtrl.showUploadFileModal">
+        <div class="modal__inner">
+            <header class="modal__header">
+                <div class="modal__headline">
+                    <h3 class="modal__title">{{ 'Upload New OSM File' | translate }}</h3>
+                </div>
+            </header>
+            <div class="modal__body">
+                <div ng-hide="editProjectCtrl.validateTasksSuccess">
+                    <p>
+                        {{ 'This will upload an OSM File that will be used to send to JOSM. The OSM data sent to JOSM will be within the tasks\'s extent.' | translate }}
+                    </p>
+                    <form name="editProjectCtrl.form">
+                        <ul class="list-type--none form__standard">
+                            <li>
+                                <label class="form__label">{{ 'Change File Name: (Optional)' | translate }}</label>
+                                <input type="text" class="form__control" ng-model="editProjectCtrl.fileName"
+                                       name="fileName"
+                                       placeholder="{{ 'File Name' | translate }}" />
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+                <p ng-show="editProjectCtrl.uploadFileSuccess">
+                    {{ 'Uploaded ' | translate }} {{ editProjectCtrl.fileName }} {{' successfully.' | translate }}
+                </p>
+                <p ng-show="editProjectCtrl.uploadFileFail" class="error">
+                    {{ 'Failed to upload ' | translate }} {{ editProjectCtrl.fileName }} {{ ' for an unknown reason.' | translate }}
+                </p>
+            </div>
+            <footer class="modal__footer">
+                <div>
+                    <button class="button button--achromic" type="button"
+                        ngf-select="editProjectCtrl.uploadFile($file)">{{ 'Upload File' | translate }}
+                    </button>
+                    <button class="button button--secondary" type="button"
+                            ng-click="editProjectCtrl.showUploadFile(false)">{{ 'Cancel' | translate }}
+                    </button>
+                    <span ng-show="editProjectCtrl.sendMessageInProgress">{{ 'Sending...' | translate }}</span>
+                </div>
+            </footer>
+        </div>
+        <a class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showUploadFile(false)">
+            {{ 'Dismiss' | translate }}
+        </a>
+    </section>
+    <!-- upload file modal -->
