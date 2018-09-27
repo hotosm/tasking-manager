@@ -11,7 +11,7 @@ from geoalchemy2 import Geometry
 from server import db
 from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
-from server.models.dtos.task_annotation_dto import TaskAnnotationDTO 
+from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks, InvalidatedTask, InvalidatedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
 from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
@@ -612,15 +612,20 @@ class Task(db.Model):
         self.update()
 
     @staticmethod
-    def get_tasks_as_geojson_feature_collection(project_id):
+    def get_tasks_as_geojson_feature_collection(project_id, task_ids=[]):
         """
         Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID
         :param project_id: Owning project ID
         :return: geojson.FeatureCollection
         """
-        project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status,
-                             Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
+        if task_ids:
+            project_tasks = \
+                db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
+                                Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
+        else:
+            project_tasks = \
+                db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
+                                Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:
@@ -731,7 +736,7 @@ class Task(db.Model):
             self.projects.default_locale)
 
         annotations = self.get_per_task_annotations()
-        task_dto.task_annotations = annotations if annotations else  [] 
+        task_dto.task_annotations = annotations if annotations else  []
 
         return task_dto
 

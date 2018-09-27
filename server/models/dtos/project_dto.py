@@ -305,3 +305,20 @@ class ProjectUserStatsDTO(Model):
     time_spent_mapping = IntType(serialized_name='timeSpentMapping')
     time_spent_validating = IntType(serialized_name='timeSpentValidating')
     total_time_spent = IntType(serialized_name='totalTimeSpent')
+
+class ProjectFileDTO(Model):
+    """ Contains project file info """
+    id = IntType(required=True)
+    path = StringType(required=True, serialized_name='path')
+    file_name = StringType(required=True, default='')
+    project_id = IntType(required=True)
+
+
+class ProjectFilesDTO(Model):
+    """ DTO used to return all files in a project """
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty """
+        super().__init__()
+        self.project_files = []
+
+    project_files = ListType(ModelType(ProjectFileDTO), serialized_name='projectFiles')
