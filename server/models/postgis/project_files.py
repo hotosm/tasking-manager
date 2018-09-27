@@ -17,6 +17,10 @@ class ProjectFiles(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    @staticmethod
+    def get(project_id: int, file_id: int):
+        return ProjectFiles.query.filter(ProjectFiles.project_id == project_id, ProjectFiles.id == file_id).one_or_none()
+
     @classmethod
     def create_from_dto(cls, dto: ProjectFileDTO):
         """ Creates new ProjectFiles class """
@@ -60,7 +64,6 @@ class ProjectFiles(db.Model):
         dto.path = file.path
         dto.file_name = file.file_name
         dto.project_id = file.project_id
-        print(dto)
         return dto
 
     def delete(self):
