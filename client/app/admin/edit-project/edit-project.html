@@ -412,7 +412,7 @@
                                     <label class="form__label">{{ 'Allowed users on private project' | translate }}</label>
                                     <ul>
                                         <li ng-repeat="user in editProjectCtrl.project.allowedUsernames">
-                                            {{ user }} <i class="hot-ds-icon-sm-xmark" ng-click="editProjectCtrl.removeUser(user)"></i>
+                                            {{ user }} <i class="icon--xmark" ng-click="editProjectCtrl.removeUser(user)"></i>
                                         </li>
                                     </ul>
                                     <div class="form__input-group">
@@ -515,16 +515,17 @@
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'OSM Files to Load' | translate }}</label>
                                     <p>{{ 'Add OSM XML files to load into JOSM. Each file should encompass the entire project area. An extract of the data using the task\'s extent will be sent to JOSM for editing.' | translate }}</p>
-                                </div>
-                                <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Upload New OSM File' | translate }}</label>
-                                    <p>{{ "When a task is opened, an extract of each of the uploaded files will be sent to JOSM as individual data layers." | translate }}</p>
                                     <div>
                                         <button class="button button--secondary" type="button"
-                                            ng-click="editProjectCtrl.showUploadFile(true)">
+                                            ng-click="editProjectCtrl.removeFile(file)">
                                             {{ 'Upload OSM File' | translate }}
                                         </button>
                                     </div>
+                                    <ul class="form_group form_group--section">
+                                        <li ng-repeat="file in editProjectCtrl.projectFiles">
+                                            {{ file.file_name }} <i class="icon--xmark pointer" ng-click="editProjectCtrl.removeFile(file)"></i>
+                                        </li>
+                                    </ul>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Overpass Query' | translate }}</label>
@@ -836,49 +837,74 @@
 
 <!-- upload file modal -->
 <section class="modal modal-tm" ng-show="editProjectCtrl.showUploadFileModal">
-        <div class="modal__inner">
-            <header class="modal__header">
-                <div class="modal__headline">
-                    <h3 class="modal__title">{{ 'Upload New OSM File' | translate }}</h3>
-                </div>
-            </header>
-            <div class="modal__body">
-                <div ng-hide="editProjectCtrl.validateTasksSuccess">
-                    <p>
-                        {{ 'This will upload an OSM File that will be used to send to JOSM. The OSM data sent to JOSM will be within the tasks\'s extent.' | translate }}
-                    </p>
-                    <form name="editProjectCtrl.form">
-                        <ul class="list-type--none form__standard">
-                            <li>
-                                <label class="form__label">{{ 'Change File Name: (Optional)' | translate }}</label>
-                                <input type="text" class="form__control" ng-model="editProjectCtrl.fileName"
-                                       name="fileName"
-                                       placeholder="{{ 'File Name' | translate }}" />
-                            </li>
-                        </ul>
-                    </form>
-                </div>
-                <p ng-show="editProjectCtrl.uploadFileSuccess">
-                    {{ 'Uploaded ' | translate }} {{ editProjectCtrl.fileName }} {{' successfully.' | translate }}
-                </p>
-                <p ng-show="editProjectCtrl.uploadFileFail" class="error">
-                    {{ 'Failed to upload ' | translate }} {{ editProjectCtrl.fileName }} {{ ' for an unknown reason.' | translate }}
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h3 class="modal__title">{{ 'Upload New OSM File' | translate }}</h3>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div ng-hide="editProjectCtrl.validateTasksSuccess">
+                <p>
+                    {{ 'This will upload an OSM File that will be used to send to JOSM. The OSM data sent to JOSM will be within the tasks\'s extent.' | translate }}
                 </p>
             </div>
-            <footer class="modal__footer">
-                <div>
-                    <button class="button button--achromic" type="button"
-                        ngf-select="editProjectCtrl.uploadFile($file)">{{ 'Upload File' | translate }}
-                    </button>
-                    <button class="button button--secondary" type="button"
-                            ng-click="editProjectCtrl.showUploadFile(false)">{{ 'Cancel' | translate }}
-                    </button>
-                    <span ng-show="editProjectCtrl.sendMessageInProgress">{{ 'Sending...' | translate }}</span>
-                </div>
-            </footer>
+            <p ng-show="editProjectCtrl.uploadFileSuccess">
+                {{ 'Uploaded ' | translate }} {{ editProjectCtrl.fileName }} {{' successfully.' | translate }}
+            </p>
+            <p ng-show="editProjectCtrl.uploadFileFail" class="error">
+                {{ 'Failed to upload ' | translate }} {{ editProjectCtrl.fileName }} {{ ' for an unknown reason.' | translate }}
+            </p>
         </div>
-        <a class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showUploadFile(false)">
-            {{ 'Dismiss' | translate }}
-        </a>
-    </section>
-    <!-- upload file modal -->
+        <footer class="modal__footer">
+            <div>
+                <button class="button button--achromic" type="button"
+                    ngf-select="editProjectCtrl.uploadFile($file)">{{ 'Upload File' | translate }}
+                </button>
+                <button class="button button--secondary" type="button"
+                        ng-click="editProjectCtrl.showUploadFile(false)">{{ 'Cancel' | translate }}
+                </button>
+                <span ng-show="editProjectCtrl.uploadFileInProgress">{{ 'Uploading...' | translate }}</span>
+            </div>
+            <p ng-show="editProjectCtrl.uploadFileSuccess">
+                {{ 'Uploaded file successfully.' | translate }}
+            </p>
+            <p ng-show="editProjectCtrl.uploadFileFail" class="error">
+                {{ 'Failed to upload file for an unknown reason.' | translate }}
+            </p>
+        </footer>
+    </div>
+    <a class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showUploadFile(false)">
+        {{ 'Dismiss' | translate }}
+    </a>
+</section>
+<!-- upload file modal -->
+<!-- delete file modal -->
+<section class="modal modal-tm" ng-show="editProjectCtrl.showDeleteFileModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">{{ 'Delete File' | translate }}</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <p>{{ 'Are you sure you want to delete this file?' | translate }}</p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="inboxCtrl.validateTasksSuccess">
+                <button class="button button--achromic" type="button"
+                    ng-click="editProjectCtrl.showDeleteFile(false)">
+                    {{ 'Cancel' | translate }}
+                </button>
+                <button class="button button--base" type="button"
+                    ng-click="editProjectCtrl.deleteFile()">
+                    {{ 'Delete' | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>
+    <a class="modal__button-dismiss" title="{{ 'Dismiss' | translate }}" ng-click="editProjectCtrl.showDeleteFile(false)">
+        {{ 'Dismiss' | translate }}
+    </a>
+</section>
+<!-- delete file modal -->

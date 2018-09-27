@@ -71,6 +71,7 @@
         vm.validateTasksSuccess = false;
         vm.uploadFileFail = false;
         vm.uploadFileSuccess = false;
+        vm.uploadFileInProgress = false;
 
         // Messages
         vm.messageSubject = '';
@@ -81,6 +82,10 @@
 
         // File
         vm.fileName = '';
+
+        //Project Files
+        vm.projectFiles = [];
+        vm.currentFile = {};
 
         activate();
 
@@ -121,6 +126,8 @@
             getProjectMetadata(id);
 
             vm.currentSection = 'description';
+
+            getProjectFiles(id)
         }
 
         /**
@@ -473,11 +480,45 @@
          */
         vm.uploadFile = function (file){
             vm.uploadFileFail = false;
-            
+            vm.uploadFileInProgress = true;
             if (file) {
-                var resultsPromise = "tests"
-                console.log(resultsPromise)
+                var resultsPromise = projectService.uploadFile(vm.project.projectId, file)
+                resultsPromise.then(function(){
+                    vm.showUploadFileModal = false;
+                    vm.uploadFileFail = false;
+                    vm.uploadFileSuccess = true;
+                }, function(){
+                    // File not uploaded successfully
+                    vm.uploadFileFail = true;
+                    vm.uploadFileSuccess = false;
+                    vm.showUploadFileModal = false;
+                })
             }
+        }
+
+        /**
+         * Set the show delete file modal to visible/invisible
+         */
+        vm.showDeleteFile = function(showModal){
+            vm.showDeleteFileModal = showModal
+            if (showModal===false){
+                vm.currentFile = {};
+            }
+        }
+
+        /**
+         * Show delete file modal and set file to delete
+         */
+        vm.removeFile = function(file){
+            vm.currentFile = file;
+            vm.showDeleteFileModal = true;
+        }
+
+        /**
+         * Remove file from project
+         */
+        vm.deleteFile = function(){
+            console.log("DELETE: ", vm.currentFile)
         }
 
         /**
@@ -918,6 +959,17 @@
                 }
             }
             return projectName;
+        }
+
+        /**
+         * Get all project files for a project
+         * @param project_id
+         */
+        function getProjectFiles(project_id) {
+            var resultsPromise = projectService.getProjectFiles(project_id);
+            resultsPromise.then(function (data) {
+               vm.projectFiles = data.projectFiles
+            })
         }
     }
 })();

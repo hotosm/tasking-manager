@@ -225,7 +225,7 @@ class PMDashboardDTO(Model):
 
 class ProjectFileDTO(Model):
     """ Contains project file info """
-    id = IntType(required=True)
+    id = IntType(serialized_name='id')
     path = StringType(required=True, serialized_name='path')
     file_name = StringType(required=True, default='')
     project_id = IntType(required=True)
