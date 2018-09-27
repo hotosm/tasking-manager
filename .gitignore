@@ -48,3 +48,6 @@ ehthumbs.db
 Thumbs.db
 .elasticbeanstalk/
 venv_aws/
+
+# VSCode
+.vscode
