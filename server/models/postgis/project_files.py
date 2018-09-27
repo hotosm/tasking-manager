@@ -1,8 +1,5 @@
-import subprocess
-from flask import current_app
 from server import db
 from server.models.dtos.project_dto import ProjectFilesDTO, ProjectFileDTO
-from server.models.postgis.task import Task
 from server.models.postgis.utils import NotFound
 
 

@@ -7,9 +7,7 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
-from server import db
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
-from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound, UserLicenseError
@@ -285,7 +283,7 @@ class MappingService:
         with open(tasks_file, 'w') as t:
             t.write(str(tasks))
 
-        # Convert the geojson features into separate .poly files 
+        # Convert the geojson features into separate .poly files
         # to use with osmosis
         poly_cmd = './server/tools/ogr2poly.py {file} -p {dir}/ -f taskId'.format(file=tasks_file, dir=dir)
         subprocess.call(poly_cmd, shell=True)
@@ -299,7 +297,14 @@ class MappingService:
                     task_poly=os.path.join(dir, poly),
                     task_xml=os.path.join(dir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0]))
                 )
-            osm_files.append(os.path.join(dir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0])))
+            osm_files.append(
+                os.path.join(
+                    dir,
+                    "task_{task_id}_{file_name}.osm".format(
+                        task_id=os.path.splitext(poly)[0],
+                        file_name=os.path.splitext(dto.file_name)[0])
+                    )
+                )
             subprocess.call(task_cmd, shell=True)
             os.remove(os.path.join(dir, poly))
 

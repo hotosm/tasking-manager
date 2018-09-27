@@ -231,13 +231,3 @@ class ProjectAdminService:
         poly_cmd = './server/tools/ogr2poly.py {file} -p {dir}/ -f taskId'.format(file=tasks_file, dir=dir)
         subprocess.call(poly_cmd, shell=True)
         os.remove(tasks_file)
-
-        # for t in os.listdir(poly_dir):
-        #     task_cmd = './server/tools/osmosis/bin/osmosis -q --rx file={xml} --bp completeWays=yes file={task_poly} --wx file={task_xml}'.format(
-        #         xml=os.path.join(dto.path, dto.file_name),
-        #         task_poly=os.path.join(poly_dir,t),
-        #         task_xml=os.path.join(dir, "task_{task_id}.osm".format(task_id=os.path.splitext(t)[0]))
-        #     )
-        #     # print(task_cmd.split(' '))
-        #     subprocess.Popen(task_cmd.split(' '))
-            # os.remove(os.path.join(dir, t))

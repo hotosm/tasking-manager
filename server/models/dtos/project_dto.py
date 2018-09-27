@@ -228,7 +228,7 @@ class ProjectFileDTO(Model):
     id = IntType(required=True)
     path = StringType(required=True, serialized_name='path')
     file_name = StringType(required=True, default='')
-    project_id = IntType(required=True) 
+    project_id = IntType(required=True)
 
 
 class ProjectFilesDTO(Model):
