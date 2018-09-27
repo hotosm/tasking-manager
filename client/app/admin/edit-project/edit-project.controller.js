@@ -69,6 +69,9 @@
         vm.invalidateTasksSuccess = false;
         vm.validateTasksFail = false;
         vm.validateTasksSuccess = false;
+        vm.uploadFileFail = false;
+        vm.uploadFileSuccess = false;
+        vm.uploadFileInProgress = false;
 
         // Messages
         vm.messageSubject = '';
@@ -76,6 +79,13 @@
 
         // Form
         vm.form = {};
+
+        // File
+        vm.fileName = '';
+
+        //Project Files
+        vm.projectFiles = [];
+        vm.currentFile = {};
 
         activate();
 
@@ -116,6 +126,8 @@
             getProjectMetadata(id);
 
             vm.currentSection = 'description';
+
+            getProjectFiles(id)
         }
 
         /**
@@ -455,6 +467,64 @@
                 vm.sendMessageInProgress = false;
             })
         };
+
+        /**
+         * Set the show upload file modal to visible/invisible
+         */
+        vm.showUploadFile = function(showModal){
+            vm.showUploadFileModal = showModal;
+        };
+
+        /**
+         * Upload new file to upload to JOSM
+         */
+        vm.uploadFile = function (file){
+            vm.uploadFileFail = false;
+            vm.uploadFileInProgress = true;
+            if (file) {
+                var resultsPromise = projectService.uploadFile(vm.project.projectId, file)
+                resultsPromise.then(function(){
+                    vm.showUploadFileModal = false;
+                    vm.uploadFileFail = false;
+                    vm.uploadFileInProgress = false;
+                    getProjectFiles(vm.project.projectId)
+                }, function(){
+                    // File not uploaded successfully
+                    vm.uploadFileFail = true;
+                    vm.uploadFileSuccess = false;
+                    vm.showUploadFileModal = false;
+                })
+            }
+        }
+
+        /**
+         * Set the show delete file modal to visible/invisible
+         */
+        vm.showDeleteFile = function(showModal){
+            vm.showDeleteFileModal = showModal
+            if (showModal===false){
+                vm.currentFile = {};
+            }
+        }
+
+        /**
+         * Show delete file modal and set file to delete
+         */
+        vm.removeFile = function(file){
+            vm.currentFile = file;
+            vm.showDeleteFileModal = true;
+        }
+
+        /**
+         * Remove file from project
+         */
+        vm.deleteFile = function(){
+            var resultsPromise = projectService.deleteProjectFile(vm.project.projectId, vm.currentFile.id)
+            resultsPromise.then(function(){
+                vm.showDeleteFileModal = false;
+                getProjectFiles(vm.project.projectId)
+            })
+        }
 
         /**
          * Get organisation tags
@@ -894,6 +964,17 @@
                 }
             }
             return projectName;
+        }
+
+        /**
+         * Get all project files for a project
+         * @param project_id
+         */
+        function getProjectFiles(project_id) {
+            var resultsPromise = projectService.getProjectFiles(project_id);
+            resultsPromise.then(function (data) {
+               vm.projectFiles = data.projectFiles
+            })
         }
     }
 })();

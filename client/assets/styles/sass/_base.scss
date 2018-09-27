@@ -351,6 +351,16 @@ table {
   }
 }
 
+.icon--xmark {
+  width: 12px;
+  height: 12px;
+  background-size: 12px 12px;
+  content: " ";
+  background-image: url('../../icons/xmark.svg');
+  display: inline-block;
+  margin-right: .3em;
+}
+
 /*pagination*/
 .paging {
   text-align: center;

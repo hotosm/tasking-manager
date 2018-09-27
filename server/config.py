@@ -35,6 +35,7 @@ class EnvironmentConfig:
         'codes': 'ar, cs, da, de, en, es, fr, hu, id, it, ja, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, zh_TW',
         'languages': 'Arabic, Česky, Dansk, Deutsch, English, Español, Français, Magyar, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, 中文'
     }
+    PROJECT_FILES_DIR = './server/project_files'
 
 
 class ProdConfig(EnvironmentConfig):

@@ -44,6 +44,10 @@ Following must be available locally:
 
 * Python 3.6 - [Python 3.6 install here](https://www.python.org/downloads/)
 
+#### For the Project Files Feature
+
+* Osmosis - [Follow Instructions here](https://wiki.openstreetmap.org/wiki/Osmosis/Installation)
+
 ### Build the Server
 * Create a Python Virtual Environment, using Python 3.6:
     * ```python -m venv ./venv```

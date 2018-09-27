@@ -1,10 +1,13 @@
 import json
+import subprocess
+import os
 
 import geojson
 from flask import current_app
 
-from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
+from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO, ProjectFileDTO
 from server.models.postgis.project import Project, Task, ProjectStatus
+from server.models.postgis.project_files import ProjectFiles
 from server.models.postgis.statuses import TaskCreationMode
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
@@ -206,3 +209,31 @@ class ProjectAdminService:
     def get_projects_for_admin(admin_id: int, preferred_locale: str):
         """ Get all projects for provided admin """
         return Project.get_projects_for_admin(admin_id, preferred_locale)
+
+    @staticmethod
+    def create_project_file(dto: ProjectFileDTO):
+        """ Crate a new project file """
+        project_file = ProjectFiles.create_from_dto(dto)
+        project_file.create()
+
+    @staticmethod
+    def create_task_poly_files(dto: ProjectFileDTO):
+        """ Creates .poly file for each feature of task and extracts the data from a project file """
+        geojson = Task.get_tasks_as_geojson_feature_collection(dto.project_id)
+        dir = os.path.join(dto.path, os.path.splitext(dto.file_name)[0])
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        tasks_file = os.path.join(dir, "{project_id}_tasks.geojson".format(project_id=str(dto.project_id)))
+
+        with open(tasks_file, 'w') as t:
+            t.write(str(geojson))
+
+        poly_cmd = './server/tools/ogr2poly.py {file} -p {dir}/ -f taskId'.format(file=tasks_file, dir=dir)
+        subprocess.call(poly_cmd, shell=True)
+        os.remove(tasks_file)
+
+    @staticmethod
+    def delete_project_file(project_id: int, file_id: int):
+        """ Deletes the specified message """
+        project_file = ProjectFiles.get(project_id, file_id)
+        project_file.delete()

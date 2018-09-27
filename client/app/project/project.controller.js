@@ -77,6 +77,9 @@
         vm.showLicenseModal = false;
         vm.lockingReason = '';
 
+        // Project Files
+        vm.project_files = []
+
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
 
@@ -132,6 +135,7 @@
 
             // set up the preferred editor from user preferences
             vm.selectedEditor = userPreferencesService.getFavouriteEditor();
+            getProjectFiles(vm.id)
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -163,6 +167,7 @@
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
             vm.lockedTasksForCurrentUser = [];
+            vm.project_files = [];
         }
 
         vm.updatePreferedEditor = function () {
@@ -1222,6 +1227,17 @@
         };
 
         /**
+         * Create Overpass API query
+         */
+        // vm.overpassQuery = function () {
+        //     var taskId = vm.selectedTaskData.taskId;
+        //     var features = vm.taskVectorLayer.getSource().getFeatures();
+        //     var selectedFeature = taskService.getTaskFeatureById(features, taskId);
+        //     var bbox = selectedFeature.getGeometry().getExtent();
+        //     var bboxTransformed = geospatialService.transformExtentToLatLonString(bbox);
+        // };
+
+        /**
          * Start the editor by getting the editor options and the URL to call
          * @param editor
          */
@@ -1325,7 +1341,12 @@
                     changeset_comment: encodeURIComponent(changesetComment),
                     changeset_source: encodeURIComponent(changesetSource),
                     new_layer: false
-                };
+                };  
+
+                // if (overpassQuery){
+                // editorService.sendJOSMCmd
+                //     ('http://127.0.0.1:8111/import?url=https://lz4.overpass-api.de/api/interpreter/?data=[out:xml];%20way[highway](53.2987342,-6.3870259,53.4105416,-6.1148829);%20(._;%3E;);%20out%20meta;');
+                // }
 
                 if (taskCount == 1) {
                     //load OSM data and zoom to the bbox
@@ -1335,6 +1356,33 @@
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
                 }
 
+                               
+                if (vm.project_files.length > 0) {
+                    var i;
+                    for (i = 0; i < vm.project_files.length; i++) {
+                        var emptyTaskLayerParams = {
+                            new_layer: true,
+                            mime_type: encodeURIComponent('application/x-osm+xml'),
+                            layer_name: encodeURIComponent(vm.project_files[i].file_name.replace(/\.[^/.]+$/,"")),
+                            data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
+                        }
+                        editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
+                            .catch(function() {
+                                //warn that JSOM couldn't be started
+                                vm.editorStartError = 'josm-error';
+                            });
+                        var taskImportParams = {
+                            mime_type: encodeURIComponent('application/x-osm+xml'),
+                            url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i]),
+                            new_layer: false
+                        }
+                        editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
+                            .catch(function() {
+                                //warn that JSOM couldn't be started
+                                vm.editorStartError = 'josm-error';
+                            });
+                    }
+                }
             }
         };
 
@@ -1565,6 +1613,17 @@
             // especially when there are spaces in the username
             return '@[' + item.label + ']';
         };
+
+        /**
+         * Get all project files for a project
+         * @param project_id
+         */
+        function getProjectFiles(project_id) {
+            var resultsPromise = projectService.getProjectFiles(project_id);
+            resultsPromise.then(function (data) {
+               vm.project_files = data.projectFiles
+            })
+        }
     }
 })
 ();

@@ -1,0 +1,418 @@
+0.46
+Require Java 8 as a minimum.
+Leverage Java 7 Autocloseable functionality and remove Releasable interface.
+Apply minor code cleanups contributed by devfactory.com.
+Add tests for pgsimple tasks.
+Introduce docker-based build environment.
+Introduce Travis CI testing.
+Add support for reading protobuf from InputStream.  Useful when using Osmosis as a library.
+Upgrade to protobuf 3.
+Make compression optional in EntitySorter.
+
+0.45
+Add postgresSchema option to pgsnapshot tasks.
+Verify XML parser on startup to verify support for multi-char unicode characters.
+Upgrade to latest version of Netty.
+Various dependency version updates.
+Fix incorrect plexus classworlds version in Windows launch script.
+Upgrade to PostGIS 2.x library.
+Add tests for pgsimple database.
+
+0.44
+Improve default settings and performance of pgsnapshot load scripts.
+Fix remaining 64-bit id tracking problems.
+Increase maximum way node count from 16-bit to 32-bit int.
+Full null pointer exception in --merge-replication-files.
+Fix javadoc errors on JDK 1.8.
+Support spaces in installation path on Windows.
+Set User-Agent header on all HTTP requests.
+Support importing negative ids to apidb.
+Fix one-off error in current way/relation loading.
+Fix query for retrieving way nodes and relation members in pgsnapshot module.
+Prevent reading duplicate way nodes in pgsnapshot module.
+Fix deprecation warnings caused by upgrading to newer dependencies.
+Upgrade to protobuf 2.6.0.
+Fix replicate_osm_file.sh to return the correct exit status, not always -1.
+Add scripts to build a docker image for testing database tasks.
+Update build to download Gradle via https.
+Fix broken console logging in replication lag reader causing a crash.
+Update default replication URLs to match current planet server layout.
+Add IntelliJ IDE support.
+
+0.43.1
+Fix the version number displayed on startup to be up to date.
+Remove RELEASE suffix from version number of release builds.
+
+0.43
+Update command line help to point to the correct wiki location.
+Remove idTrackerType arguments to filtering tasks, only the Dynamic option is now available.
+Fix the --write-apidb task to use 64-bit ids.
+Upgrade to version 1.4 of the Gradle build tool.
+Enhance the build scripts to support publishing to Sonatype OSS Repository and Maven Central.
+Rename all projects to use an "osmosis-" prefix.
+Included a copy of the PBF OSM Binary project in the source tree, and eliminated the pre-compiled osmbin.jar.
+Remove pbfmarshall project due to the same functionality being provided by the osm-binary project.
+Removed the internal Ivy repository due to all dependencies now being available on Maven Central.
+Rename --read-empty short name --re to --rem to avoid clash with --report-entity.
+Rename --read-empty-change short name --rec to --remc for consistency with --read-empty.
+
+0.42
+Fix PostgreSQL timestamp bugs in apidb replication logic.
+Fix replication file merging boundary corrections.  Occurs when catching up after outages.
+Replication logic correctly honours the max timestamp parameter.
+Prevent replication file downloader from reading beyond maximum available replication interval.
+Prevent replication file downloader from stalling if interval is too long.
+Improve error reporting when an unknown global option is specified.
+Disable automatic state.txt creation for --read-replication-interval.
+Add --tag-transform plugin and task.
+Reduce number of file handles consumed by file-based sorting.
+Make the default id tracker Dynamic for --used-node and --used-way.
+Use Gradle for the automated build scripts instead of Ant/Ivy.
+Fix PostgreSQL ident authentication.
+Remove obsolete debian build scripts.
+Eliminate use of deprecated Spring SimpleJdbcTemplate.
+Improve handling of invalid geometries in --pgsql-xxx tasks.
+Default keepInvalidWays option on --pgsql-xxx tasks to true.
+Enable keepInvalidWays functionality for --pgsql-xxx replication.
+Fix pgsnapshot COPY load script to use ST_ prefix for all PostGIS functions.
+
+0.41
+All entities can now pass metadata through the pipeline.  XML tasks can add these as additional attributes on output.
+Added --convert-change-to-full-history task.
+Added "initialize" support to all tasks to allow pre-processing setup to occur.
+Added a number of unit tests to increase test coverage, and reduced use of duplicated support classes.
+Added support for the XML bounds element, but still support old bound element.
+Added configurable log message prefix to the output of --log-progress-* tasks.
+Added completion step timings for --log-progress-* tasks.
+Added continuous replication looping support to apidb replication functionality.
+Added --write-replication task.
+Enhanced  --replicate-apidb to send output through the pipeline to tasks like --write-replication instead of being an all-in-one task.
+Added --send-replication-sequence task which notifies listeners when new replication data has been written.
+Added --send-replication-data task which provides streaming replication data to listeners.
+Added --receive-replication task which consumes data sent by --serve-replication-data.
+Added --replication-to-change task which converts a replication pipeline stream to a normal change stream.
+Added keyValueListFile option to --node-key-value and --way-key-value tasks.
+Added JaCoCo code coverage tool to the build process.
+Updated ant scripts to use build, checkstyle, test and all targets across all projects.
+Update pgsnapshot and pgsimple tasks to no longer use PostGIS deprecated function names.
+Added --read-pbf-fast PBF reader which utilises multi-threading to improve performance.
+Enhanced XML tasks to handle missing lat/lon attributes on deleted entities.
+
+0.40.1
+Fix the classworlds version in the Windows launcher.
+
+0.40
+Fixed base64 encoding of user credentials sent by --upload-xml-change.
+Added support for merging Bound objects.
+Modified entity object creation to require use of CommonEntityData to simplify constructors.
+Added metatag facility to all entities to allow custom data to be passed through the pipeline.
+Added read timeout to replication retrieval code to prevent it blocking forever.
+Improved JPF loading code to avoid NullPointerException if encountering malformed plugins.
+Added ability to set input buffer size for all tasks using an input buffer.
+Relaxed Bound argument validation to allow points on all edges of the map to be included in bounding boxes.
+Modified PostGIS function calls to be PostGIS 2.0 compatible.
+Updated build scripts to support GIT.
+Do not emit bound entities when reading PBF files with no bbox information set.
+Add --compute-bounding-box and --set-bounding-box tasks for manipulating Bound entities.
+Added total object count display to --report-entity task.
+Updated all jar dependencies with exception of Xerces to latest versions.
+Modified project layouts to match Maven standard layout.
+Enhanced tests to dynamically generate test data instead of relying on ant-based data generation.
+Updated apidb tasks to support new rails3-based apidb schema (rename of id columns).
+Fixed name of --log-progress-change-0.6 task.  Was registered as --log-change-progress-0.6.
+Modified Ivy to symlink to jar files on supported platforms rather copy jars into projects.
+
+0.39
+Added the pgsimp tasks which are the old 0.36 version pgsql tasks supporting the old style separate tags tables.
+Added a new "cascadingRelations" flag to --bb and --bp which is less costly than "completeRelations" and makes sure that parent relations are emitted when a child relation of theirs is emitted even if that child happens to come after the parent in the stream. The list of relations on output may appear in a different order than on input.
+Fixed connection failure error handling in pgsql tasks to display the correct error message instead of a NullPointerException.
+Fixed serialisation logic to correctly identify and use the OsmUser.NONE singleton object.
+Fixed checkstyle errors in the PBF code.
+Renamed the PBF project to "pbf" instead of "binary".
+Improved performance in the DataPostbox class used for inter-thread messaging.
+Fixed PBF code to allow an empty file to be written.
+Updated PBF library dependency from version 1.0 to 1.1.
+Updated default PBF filename from dump.osmbin to dump.osm.pbf.
+Fixed PBF code to write a header block even if no bound entity exists.
+Added java code for PostgreSQL HStore support instead of only including a pre-compiled jar.
+Added a new "auto" option for the compressionMethod argument of XML tasks.
+Fixed the windows launch batch script to support installation to a different drive than the drive of the working directory.
+Fixed the UNIX launch shell script to support spaces in argument values.
+Enhanced --used-node to include nodes referenced by ways and relations, instead of just ways.
+Enhanced serialisation logic to support negative version numbers.  Note this increases the space used by serialisation slightly.
+Added a --used-way task.
+
+0.38
+Updated internal storage to use long instead of int identifiers to remove 2^31 node id limit.
+Updated apidb support to the latest schema 20100910084426.
+Fixed the --write-pbf short option --wb to point to the writer implementation instead of the reader.
+Added additional quoting to commands in the osmosis.bat launcher to fix issues with spaces in the installation path.
+Modified plugin loader code to support multiple osmosis-plugins.conf files to allow each plugin to provide its own.
+
+0.37
+Updated the pgsql schema (now version 6) to move all tags into hstore columns, add a ways.nodes column and CLUSTER the nodes and ways tables.  Significant performance increases.
+Fixed a bug in --bounding-box and --bounding-polygon preventing use of clipIncompleteEntities after a --tee task.
+Added --read-pbf and --write-pbf tasks supporting the new Google Protocol Buffer based binary data format.
+Added a new --flatten task for removing multiple versions of single entities from an entity stream.
+Fixed bugs in the --bounding-box and --bounding-polygon idTrackerType=Dynamic option.
+Enhanced the apidb replication read queries by adding temp table primary keys to fix performance regressions with PostgreSQL 8.4.
+
+0.36
+Removed 0.5 support.
+Added the --fast-write-pgsql task which uses PostgreSQL COPY commands to insert data.
+Added the CompactTempFile node location store type which allows efficient pgsql geometry building for small data sets.
+All write-pgsql tasks now default to the CompactTempFile node location type store instead of in memory.
+Fixed regression in tar builds to make the launch scripts executable again.
+Updated the pgsql schema (now version 5) to add a primary key to the relation_members table to allow more efficient updates.
+Updated apidb support to the latest schema 20100513171259.
+Updated pgsql dataset bounding box queries to force more efficient query plans by disabling inefficient join types.
+Added a new dynamic idTrackerType implementation selected by default to the area filtering tasks to simplify usage.
+Added the --read-replication-lag task which indicates how far behind the server a local replication is.
+
+0.35
+Registered --fast-read-xml as a task instead of requiring --fast-read-xml-0.6 to be specified.
+Fixed the completeRelations option on the --bounding-box and --bounding-polygon tasks to work as expected and documented.
+Updated the --fast-read-xml task to ignore changeset elements.
+Various enhancements to the Ivy processing including publishing of all artefacts.
+Fixed apidb tasks to correctly select the MySQL drivers instead of always using PostgreSQL drivers.
+Fixed the osmosis.bat launcher to handle spaces in the installation path.
+
+0.34
+Fixed the --sort and --sort-change tasks to use 0.6 task implementations instead of the older 0.5 implementations.
+Fixed the archive distributions to include the config/plexus.conf file, and include the launcher scripts in the tar version.
+Various cleanups of archive distributions to remove unnecessary files and minimise size.
+
+0.33
+Use Plexus Classworlds to simplify launcher scripts.
+Switch from org.apache.tools.bzip2 to commons-compress (this project is still alive).
+Updated the --apply-change task to detect full history diffs and abort.
+Enabled cascading deletes in the --truncate-apidb task to minimise foreign key violations on new schema updates.
+Updated all PostgreSQL database tasks to support IDENT authentication.
+Removed local postgis distribution since it is available on repo1.maven.org now.
+
+0.32
+Change to Public Domain licence.
+Re-factored all entity classes to use a CommonEntityData class to avoid duplication of code and simplify code re-use.
+Significant re-factoring of many apidb tasks to use Spring JDBC Template functionality.
+Added a --replicate-apidb task for extracting replication files based on PostgreSQL transaction ids.
+Fixed PostgreSQL apidb COPY files to include changeset id.
+Fixed the Windows launcher batch file to contain all libraries.
+Added a --read-replication-interval task.
+Updated XML writing tasks to ignore UTF-8 characters not supported by XML.
+Included new Xerces XML library to provide proper support for UTF-16 surrogate pairs.
+Added a --merge-replication-files task.
+Added a --way-key task.
+Added a --simplify-change task.
+Added pom.xml for maven artifacts
+
+0.31
+Added a --remove-tags task.
+Added JPF plugin support.
+Updated the build scripts to use Ivy dependency management.
+Added mutable entity support.
+Added writeable dataset support.
+Added apidb tasks that support both mysql and postgresql api databases.
+Added a new --append-change task for combining full history changesets.
+
+0.30
+Added 0.6 support.
+Enhanced the pgsql tasks and schema to support an optional "action" table.
+Enhanced the pgsql schema to introduce a stored procedure called during every changeset application.
+Enhanced the pgsql schema to include optional bbox and linestring columns on the way table.
+Added ability to specify slipping map zoom and coordinates as arguments to the bounding box filter.
+Added an "inMemoryBbox" to the pgsql writer task allowing it to calculate bounding boxes using a memory mapped file.
+Added an automatic VACUUM ANALYZE of the database for pgsql writer and truncation tasks.
+Added migration tasks --migrate and --migrate-change allowing 0.5 data to be converted to 0.6 format.
+Added forceUtf8 and profileSql options to all MySQL tasks.
+Added a --tag-sort task allowing tags within entities to be sorted alphabetically (0.6 only).
+Enhanced the buffer tasks to chunk objects passed (chunks are 1/4 of max buffer size) to minimise thread synchronisation (0.6 only).
+Dropped the default buffer size from 100 to 20 which provides slightly improved performance in most cases (0.6 only).
+Added the ability to generate full history changesets, as opposed to changesets with a single change per entity (0.6 only).
+Added a new allowIncorrectSchemaVersion option to most database tasks.
+Added new clipIncompleteEntities option to area filter tasks.  It defaults to false which changes existing behaviour.
+
+0.29
+Fixed the --write-pgsql-simple-dump task to properly escape '\' characters.
+Updated the pgsql simple tasks to use an SRID of 4326.
+Updated build script to include a tar file distribution preserving launch script execute permissions.
+Enhanced the Entity class to allow dates to be represented as strings to avoid parsing overhead.  Updated xml tasks to utilise this feature.
+Updated the pgsql simple tasks to use the new database schema which is more similar to the one used in the central MySQL
+Removed the old postgresql tasks.
+Removed "simple" from the names of the simple pgsql tasks.
+Added plugin support allowing new tasks in external jar files to be registered with osmosis.
+Added command line checks to ensure all task and option arguments are recognised, any misspelt arguments will now raise an error.
+Removed all static methods from the task registrar and task manager factory classes to avoid global data and simplify testing.
+Added the --node-key and --node-key-value tasks.
+
+0.28
+Added a maximum file download count feature to the change downloader to limit processing overhead when synchronising long time intervals.
+Fixed a major error in the TaskRegistrar from 0.27 where multiple tasks had the same name preventing osmosis from launching.
+
+0.27
+Added change downloader tasks providing the basis for automatic synchronisation of data sets.
+
+0.26
+Removed the bdb dataset implementation.
+Fixed an incorrect constant bug in the mysql tile calculator causing incorrect tile values to be generated.
+
+0.25
+Added a new osmosis-extract-mysql application for extracting regular changesets from mysql.
+Removed use of String.isEmpty to minimise Java5 incompatibility.
+Modified the default pipe connectivity functionality to use stack-based connectivity instead of queue-based connectivity.
+Added a populateCurrentTables option to the --write-mysql-change task to match the --write-mysql task.
+Added validation code to the merge tasks to verify that input data is sorted.
+Enhanced serialisation code to eliminate class identification information in the stream where single data types are being stored.
+Fixed a bug in the ListIdTracker class where unsorted ids were not being sorted correctly.
+Command line applications now returns status codes, 0 for success, non-zero for failure.
+Fixed the --read-api short name to be --ra instead of --wa.
+Updated store implementations to use buffered io providing significant performance improvements.
+Added a new osmosis-test-users-for-utf8 application for verifying the data integrity of the production user table.
+Added "bound" support to the pipeline.
+Added "-" alias for stdin/stdout to file reading/writing tasks for Cygwin & Windows
+Added a new dataset task --write-bdb for writing to a Berkeley DB implementation of a dataset.
+Added a new dataset task --read-bdb for reading from a Berkeley DB implementation of a dataset.
+Added a new dataset task --write-customdb for writing to a custom implementation of a dataset.
+Added a new dataset task --read-customdb for reading from a custom implementation of a dataset.
+Added a new dataset task --write-pgsql-simple for writing to a PostgreSQL implementation of a dataset.
+Added a new dataset task --write-pgsql-simple-dump for writing "COPY" load files for a PostgreSQL implementation of a dataset.
+Added a new dataset task --truncate-pgsql-simple for truncating all PostgreSQL dataset tables.
+Added a new dataset task --read-pgsql-simple for reading from a PostgreSQL implementation of a dataset.
+Added a new dataset task --dataset-bounding-box for extracting a bounding box from a dataset.
+Added a new dataset task --dataset-dump for dumping the entire contents of a dataset.
+Added new --used-node and --way-key-value tasks for filtering ways and their associated nodes with specific tags.
+
+0.24
+Fixed a bug in the XML node writing code where it would write a ',' character instead of '.' as the decimal separator in some locales.
+
+0.23
+Added support for a custom decoder when writing xml files to workaround the current production utf8 double encoding issue.
+Added short task names to shorten command line (eg. --write-xml becomes --wx).
+Fixed a node changeset bug where nodes created at the end of the interval were being excluded from the query.
+Added support for default task arguments requiring no name and added them for commonly used tasks requiring a single argument.
+
+0.22
+Updated mysql writing tasks to check if a timestamp is set and raise a meaningful error indicating where the error occurred.
+Modified mysql tasks to use the default character encoding for database connections to avoid suspected double encoding with the production database.
+Fixed the Entity serialisation to cater for null user ids and timestamps.
+Removed all 0.4 tasks.
+Added a new IdList id tracker implementation to be used internally by area filtering tasks to reduce memory usage on small'ish areas.  Old BitSet implementation is still selectable if large bounding boxes are required.
+Added automatic compression method detection for all xml file tasks to avoid need to use compressionMethod argument.
+
+0.21
+Introduced a custom serialisation mechanism to improve compressed temporary file performance by approximately 5 times.
+Added a new RandomAccessObjectStore class which can be used as the basis for smarter tasks requiring access to data multiple times.
+Added completeWays and completeRelations arguments to the area filtering tasks to provide more control over the filtering process.
+Added new --tee and --tee-change tasks for sending data to multiple output destinations.
+
+0.20
+Fixed the integrity reporter task so that it writes new lines after each record.
+Relaxed validation checks in the --apply-change task so that it can apply changes to planets already containing data without aborting.
+
+0.19
+Added a new --integrity-reporter task to detect referential integrity issues between entity types.
+Updated the default file names for report tasks.
+Added a new --log-progress task to provide progress information to the jdk log during processing.
+Added a new --log-change-progress task to provide change progress information to the jdk log during processing.
+Fixed a number of bugs in the area extraction tasks.
+Updated area extraction tasks to support negative identifiers used on files that are ready for upload.
+Fixed bug in the ChangeWriter where the node insert SQL commands were missing tile parameters.
+
+0.18
+Improved error messages when errors are returned from the api.
+Added support for new shorter date format excluding millisecond information.
+Updated mysql writing code to support the new 0.5 schema version and fixed bugs in node insertion sql.
+Added support for quiet and verbose command line options.
+Modified command line arguments to default to using 0.5 tasks.
+
+0.17
+Added schema version checking to all MySQL tasks.
+Updated xml reading tasks to provide line number information when parse errors occur.
+Modified xml writing tasks to include the osmosis version number in the generator attribute.
+Updated mysql tasks to support the new tile indexing and fixed precision lat/lon.
+
+0.16
+Fixed a major bug in UTF-8 handling when writing xml files.  All files were being written in the default character set.
+
+0.15
+Added full 0.5 support.
+Updated 0.4 code to the 005 schema.
+
+0.14
+Fixed a bug in the area filtering tasks where the original way was being passed to the destination instead of the modified way with only the available segments populated.
+Fixed a bug in the way comparison code where changes in the ordering of segments wouldn't be picked up.
+Fixed a bug in date parsing where the month was always being parsed a month in advance.
+Added the ability to load database login credentials from a properties file.
+Modified xml file writing to use 2 space indenting instead of 4.
+
+0.13
+Modified the --bounding-polygon task so it can read files containing blank lines.
+Added the ability to dump mysql "current" tables.
+Modified xml output to only write latitude and longitude to 7 decimal places.
+
+0.12
+Added a --read-api task for retrieving data from the central server.
+Added "user" support to the core data types, and all relevant tasks except database writing tasks.
+Added a --bounding-polygon task for filtering data by an area.
+Added a --report task which will produce user statistics for a data set.
+
+0.11
+Modified mysql snapshot task to read entire contents of table and process data in code in attempt to improve dump times.
+Added gzip and bzip2 support to xml tasks.
+Modified all database snapshot tasks to include entities with a timestamp equalling the snapshot time.
+Modified all database changeset tasks to not include the begin time and to include the end time.
+
+0.10
+Added JOSM-like date handling as a fallback if the standard xml date format isn't found.
+Added a custom date parser for the special case of GMT times which this tool always produces (approx 10x speedup over JOSM code and 100x speedup over standard JDK for GMT dates).
+
+0.9
+Fixed the name of the main class attribute in the jar manifest.
+Fixed a potential bug in the change application code where a validation step may have erroneously thrown errors.
+Added merge tasks to combine multiple entity or change files together.
+
+0.8
+Modified node and segment readers to avoid returning duplicate records where multiple records with identical timestamps exist.
+Moved main osmosis code into a "core" sub-package allowing new tools to be added.
+Fixed timeouts in mysql dumping of ways by using temporary files for query results.
+Refactored all temporary file handling to use common persistent iterator functionality.
+Fixed some classes not marked as Serializable.
+Updated change application to use less strict validation to handle "re-creates" of entities.
+Updated xml writing tasks to always write in UTC format.
+
+0.7
+Made a number of changes to the mysql dump task to improve performance and reduce the likelihood of timeouts.
+
+0.6
+Modified ChangeDeriver task to set the timestamp of deleted records to the current time.
+Fixed all uses of java.sql.Timestamp to be converted to java.util.Date explicitly instead of utilising inheritance.
+Fixed bug in change writer where timestamps weren't being written for segments.
+Added UserIdManager functionality which creates a system "Osmosis" user in the database to assign all changes to.
+
+0.5
+Modified command line date format to avoid use of spaces.
+
+0.4
+Modified mysql dump task to produce consistent snapshots.
+Added the ability to skip "current" tables when importing to mysql.
+Optimised mysql change reading queries.
+
+0.3
+Added mysql table truncator task.
+Updated segment xml processing code to handle timestamps.
+Made xml date processing during xml reading optional to improve performance.
+Added buffer tasks to allow pipeline processing to be split across multiple threads.
+Change reading and writing from a mysql database is now working, at least for simple test cases.
+
+0.2
+Added Main-Class feature to the jar manifest simplifying program launch.
+Added a shell launch script to simplify running on unix/linux.
+Added a readme with basic installation instructions.
+Added xml date parsing support.
+Fixed database dump code to read the "current" tables.
+Added a task for reading changes from a database.
+Added a task for writing changes to a database.
+Added a task for truncating database tables.
+Improved mysql import performance by disabling indexes and locking tables.
+
+0.1
+Initial version.

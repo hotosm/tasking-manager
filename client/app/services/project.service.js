@@ -52,7 +52,10 @@
             userCanValidateProject: userCanValidateProject,
             getMyProjects: getMyProjects,
             trimTaskGrid: trimTaskGrid,
-            getProjectSummary: getProjectSummary
+            getProjectSummary: getProjectSummary,
+            uploadFile: uploadFile,
+            getProjectFiles: getProjectFiles,
+            deleteProjectFile: deleteProjectFile
         };
 
         return service;
@@ -694,6 +697,81 @@
                     'Content-Type': 'application/json; charset=UTF-8',
                     'Accept-Language': preferredLanguage
                 }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Upload new file for a project
+         * @param id
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function uploadFile(id, file) {
+            var form_data = new FormData()
+            form_data.append('file', file);
+            // Returns a promise
+            return $http({
+                method: 'PUT',
+                url: configService.tmAPI + '/admin/project/' + id + '/project-files',
+                headers: {
+                    'Authorization': 'Token ' + btoa(authService.getSession().sessionToken),
+                    'Content-Type': undefined
+                },
+                data: form_data
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get all project files
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         * @param projectId - unique id for the project
+         */
+        function getProjectFiles(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/project-files',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Remove file from project
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         * @param projectId - unique id for the project
+         * @param fileId - unique id for the file
+         */
+        function deleteProjectFile(projectId, fileId) {
+            // Returns a promise
+            return $http({
+                method: 'DELETE',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/project-file?file_id=' + fileId,
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
