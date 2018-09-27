@@ -231,3 +231,9 @@ class ProjectAdminService:
         poly_cmd = './server/tools/ogr2poly.py {file} -p {dir}/ -f taskId'.format(file=tasks_file, dir=dir)
         subprocess.call(poly_cmd, shell=True)
         os.remove(tasks_file)
+
+    @staticmethod
+    def delete_project_file(project_id: int, file_id: int):
+        """ Deletes the specified message """
+        project_file = ProjectFiles.get(project_id, file_id)
+        project_file.delete()

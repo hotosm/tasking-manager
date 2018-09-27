@@ -91,6 +91,7 @@ class ProjectFilesAPI(Resource):
                     os.makedirs(path)
                 file_path = os.path.join(path, file_name)
                 file.save(file_path)
+
                 project_file_dto.path = path
                 project_file_dto.project_id = project_id
                 project_file_dto.file_name = file_name
@@ -116,7 +117,7 @@ class ProjectFileAPI(Resource):
 
     def get(self, project_id):
         """
-        Get all files for a project
+        Get one file for a project
         ---
         tags:
             - project-admin
@@ -137,7 +138,7 @@ class ProjectFileAPI(Resource):
               default: 1
         responses:
             200:
-                description: Files found
+                description: File found
             401:
                 description: Unauthorized - Invalid credentials
             500:
@@ -154,3 +155,61 @@ class ProjectFileAPI(Resource):
             error_msg = f'Files GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+    def delete(self, project_id):
+        """
+        Delete a file from a project
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - name: file_id
+              in: query
+              description: The unique file ID
+              required: true
+              type: integer
+              default: null
+        responses:
+            200:
+                description: File deleted
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            file_id = request.args.get('file_id') if request.args.get('file_id') else None
+
+            file = ProjectFiles.get(project_id, file_id)
+            path = file.path
+            file_name = file.file_name
+
+        except NotFound:
+            return {"Error": "File info not found"}, 404
+        except Exception as e:
+            error_msg = f'Project File DELETE - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+        try:
+            ProjectAdminService.delete_project_file(project_id, file_id)
+        except NotFound:
+            return {"Error": "Project File Not Found"}, 404
+        except Exception as e:
+            error_msg = f'Project File DELETE - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+        try:
+            os.remove(os.path.join(path, file_name))
+            return {"Success": "Project File Deleted"}, 200
+        except FileNotFoundError:
+            return {"Error": "File not found"}, 404

@@ -486,7 +486,8 @@
                 resultsPromise.then(function(){
                     vm.showUploadFileModal = false;
                     vm.uploadFileFail = false;
-                    vm.uploadFileSuccess = true;
+                    vm.uploadFileInProgress = false;
+                    getProjectFiles(vm.project.projectId)
                 }, function(){
                     // File not uploaded successfully
                     vm.uploadFileFail = true;
@@ -518,7 +519,11 @@
          * Remove file from project
          */
         vm.deleteFile = function(){
-            console.log("DELETE: ", vm.currentFile)
+            var resultsPromise = projectService.deleteProjectFile(vm.project.projectId, vm.currentFile.id)
+            resultsPromise.then(function(){
+                vm.showDeleteFileModal = false;
+                getProjectFiles(vm.project.projectId)
+            })
         }
 
         /**
