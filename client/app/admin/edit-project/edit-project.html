@@ -499,6 +499,17 @@
                                     </button>
                                 </div>
                                 <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Reset tasks' | translate }}</label>
+                                    <p>{{ 'Reset all tasks in the project to ready to map, preserving history.' | translate }}</p>
+                                    <div class="alert alert--warning" role="alert">
+                                        <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'This cannot be undone.' | translate }}</p>
+                                    </div>
+                                    <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.showResetConfirmation(true)">
+                                        {{ 'Reset tasks' | translate }}
+                                    </button>
+                                </div>
+                                <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Clone project' | translate }}</label>
                                     <p>{{ 'This will clone all descriptions, instructions, metadata etc. The Area of Interest, the tasks and the priority areas will not be cloned. You will have to redraw/import these. Your newly cloned project will be in draft status.' | translate }}</p>
                                     <button class="button button--secondary" type="button"
@@ -781,6 +792,53 @@
     </button>
 </section>
 <!-- validate tasks confirmation modal -->
+
+<!-- reset tasks confirmation modal -->
+<section class="modal modal-tm" ng-show="editProjectCtrl.showResetConfirmationModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">{{ 'Task reset' | translate }}</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div ng-hide="editProjectCtrl.resetTasksSuccess">
+                <p>
+                    {{ 'Are you sure you want to reset all tasks? You cannot undo this.' | translate }}
+                </p>
+                <p>
+                    {{ 'This will reset all tasks to ready to map (preserving existing history). Please use this only if you are sure of what you are doing.' | translate }}
+                </p>
+            </div>
+            <p ng-show="editProjectCtrl.resetTasksSuccess">
+                {{ 'The tasks were reset successfully.' | translate }}
+            </p>
+            <p ng-show="editProjectCtrl.resetTasksFail" class="error">
+                {{ 'Failed to reset all tasks for an unknown reason.' | translate }}
+            </p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="editProjectCtrl.resetTasksSuccess">
+                <button class="button button--achromic" type="button"
+                        ng-click="editProjectCtrl.showResetConfirmation(false)">{{ 'Cancel' | translate }}
+                </button>
+                <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.resetAllTasks()">{{ 'Reset all tasks' | translate }}
+                </button>
+                <span ng-show="editProjectCtrl.resetInProgress">{{ 'Resetting...' | translate }}</span>
+            </div>
+            <div ng-show="editProjectCtrl.resetTasksSuccess">
+                 <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.showResetConfirmation(false)">{{ 'Close message' | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>
+    <button class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showResetConfirmation(false)">
+        {{ 'Dismiss' | translate }}
+    </button>
+</section>
+<!-- reset tasks confirmation modal -->
 
 <!-- message contributors modal -->
 <section class="modal modal-tm" ng-show="editProjectCtrl.showMessageContributorsModal">
