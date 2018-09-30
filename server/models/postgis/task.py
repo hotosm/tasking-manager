@@ -369,6 +369,16 @@ class Task(db.Model):
         self.locked_by = None
         self.update()
 
+    def clone_task_history(self, actions):
+        for action in actions:
+            print(action.action_text,action.action_date,action.action)
+            history = TaskHistory(self.id, self.project_id, action.user_id)
+            history.action = action.action
+            history.action_text = action.action_text
+            history.action_date = action.action_date
+            self.task_history.append(history)
+        self.update()
+
     @staticmethod
     def get_tasks_as_geojson_feature_collection(project_id):
         """

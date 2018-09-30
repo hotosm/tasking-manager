@@ -6,9 +6,10 @@ from geoalchemy2 import shape
 from server.models.dtos.grid_dto import SplitTaskDTO
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.postgis.utils import ST_Transform
-from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.task import Task, TaskAction, TaskStatus
 from server.models.postgis.project import Project
 from server.models.postgis.utils import NotFound
+from server.models.postgis.statuses import TaskStatus
 
 
 class SplitServiceError(Exception):
@@ -121,8 +122,12 @@ class SplitService:
             i = i + 1
             new_task = Task.from_geojson_feature(i, new_task_geojson)
             new_task.project_id = split_task_dto.project_id
-            new_task.task_status = TaskStatus.READY.value
             new_task.create()
+            new_task.clone_task_history(original_task.task_history)
+            new_task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+            new_task.set_task_history(TaskAction.STATE_CHANGE, user_id=split_task_dto.user_id, new_state=TaskStatus.SPLIT)
+            new_task.unlock_task(split_task_dto.user_id, new_state=TaskStatus.READY)
+            new_task.update()
             new_tasks_dto.append(new_task.as_dto_with_instructions(split_task_dto.preferred_locale))
 
         # delete original task from the database
