@@ -227,7 +227,7 @@ class ProjectFileAPI(Resource):
     @token_auth.login_required
     def post(self, project_id):
         """
-        Update project file upload_policy
+        Update project file
         ---
         tags:
             - project-admin
@@ -271,7 +271,10 @@ class ProjectFileAPI(Resource):
 
             upload_policy = request.args.get('upload_policy') if request.args.get('upload_policy') else None
 
-            ProjectAdminService.update_upload_policy(project_id, file_id, upload_policy)
+            file = ProjectFiles.get_file(project_id, file_id)
+            file.upload_policy = upload_policy
+
+            ProjectAdminService.update_project_file(file)
             return {"Success": "Upload Policy Updated"}, 200
         except NotFound:
             return {"Error": "Project File Not Found"}, 404
