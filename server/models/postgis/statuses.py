@@ -75,7 +75,6 @@ class UserRole(Enum):
     PROJECT_MANAGER = 2
     VALIDATOR = 4
 
-
 class Editors(Enum):
     """ Enum describing the possible editors for projects """
     ID = 0
@@ -83,3 +82,9 @@ class Editors(Enum):
     POTLATCH_2 = 2
     FIELD_PAPERS = 3
     CUSTOM = 4
+
+class UploadPolicy(Enum):
+    """ Describes the upload policies for a project file """
+    BLOCK = 0
+    ALLOW = 1
+    DISCOURAGE = 2
