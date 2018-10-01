@@ -4,7 +4,7 @@ from schematics.types import StringType, BaseType, IntType, BooleanType, DateTim
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode, UploadPolicy
 
 
 def is_known_project_status(value):
@@ -49,6 +49,16 @@ def is_known_task_creation_mode(value):
     except KeyError:
         raise ValidationError(f'Unknown taskCreationMode: {value} Valid values are {TaskCreationMode.GRID.name}, '
                               f'{TaskCreationMode.ARBITRARY.name}')
+
+
+def is_known_upload_policy(value):
+    """ Validates Upload Policy is known value """
+    try:
+        UploadPolicy[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown uploadPolicy: {value} Valid values are {UploadPolicy.ALLOW.name},'
+                              f'{UploadPolicy.BLOCK.name},'
+                              f'{UploadPolicy.DISCOURAGE.name},')
 
 
 class DraftProjectDTO(Model):
@@ -229,6 +239,7 @@ class ProjectFileDTO(Model):
     path = StringType(required=True, serialized_name='path')
     file_name = StringType(required=True, default='')
     project_id = IntType(required=True)
+    upload_policy = StringType(required=True, validators=[is_known_upload_policy], serialized_name='uploadPolicy', serialize_when_none=False)
 
 
 class ProjectFilesDTO(Model):
