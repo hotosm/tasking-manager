@@ -82,3 +82,12 @@ class ProjectFiles(db.Model):
         file = ProjectFiles.query.filter(ProjectFiles.project_id == project_id, ProjectFiles.id == file_id).one_or_none()
         file.upload_policy = UploadPolicy[policy.upper()].value
         db.session.commit()
+
+    def update(self, dto: ProjectFileDTO):
+        """ Updates project file's info """
+        self.project_id = dto.project_id
+        self.id = dto.id
+        self.path = dto.path
+        self.file_name = dto.file_name
+        self.upload_policy = UploadPolicy[dto.upload_policy.upper()].value
+        db.session.commit()

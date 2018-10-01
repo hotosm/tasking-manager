@@ -239,6 +239,8 @@ class ProjectAdminService:
         project_file.delete()
 
     @staticmethod
-    def update_upload_policy(project_id: int, file_id: int, upload_policy: str):
-        """ Updates the specified project file's upload policy """
-        ProjectFiles.setFileUploadPolicy(project_id, file_id, upload_policy)
+    def update_project_file(dto: ProjectFileDTO):
+        """ Updates the specified project file """
+        project_file = ProjectFiles.get(dto.project_id, dto.id)
+        project_file.update(dto)
+        return project_file
