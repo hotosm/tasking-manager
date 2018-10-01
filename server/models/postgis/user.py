@@ -150,15 +150,36 @@ class User(db.Model):
     @staticmethod
     def get_mapped_projects(user_id: int, preferred_locale: str) -> UserMappedProjectsDTO:
         """ Get all projects a user has mapped on """
-        sql = '''select p.id, p.status, p.default_locale, count(t.mapped_by), count(t.validated_by), st_asgeojson(p.centroid),
+
+        # This query looks scary, but we're really just creating an outer join between the query that gets the
+        # counts of all mapped tasks and the query that gets counts of all validated tasks.  This is necessary to
+        # handle cases where users have only validated tasks on a project, or only mapped on a project.
+        sql = '''SELECT p.id,
+                        p.status,
+                        p.default_locale,
+                        c.mapped,
+                        c.validated,
+                        st_asgeojson(p.centroid),
                         st_asgeojson(p.geometry)
-                   from projects p,
-                        tasks t
-                  where p.id in (select unnest(projects_mapped) from users where id = {0})
-                    and p.id = t.project_id
-                    and (t.mapped_by = {0} or t.mapped_by is null)
-                    and (t.validated_by = {0} or t.validated_by is null)
-               GROUP BY p.id, p.status, p.centroid, p.geometry'''.format(user_id)
+                   FROM projects p,
+                        (SELECT coalesce(v.project_id, m.project_id) project_id,
+                                coalesce(v.validated, 0) validated,
+                                coalesce(m.mapped, 0) mapped
+                          FROM (SELECT t.project_id,
+                                       count (t.validated_by) validated
+                                  FROM tasks t
+                                 WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = {0})
+                                   AND t.validated_by = {0}
+                                 GROUP BY t.project_id, t.validated_by) v
+                         FULL OUTER JOIN
+                        (SELECT t.project_id,
+                                count(t.mapped_by) mapped
+                           FROM tasks t
+                          WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = {0})
+                            AND t.mapped_by = {0}
+                          GROUP BY t.project_id, t.mapped_by) m
+                         ON v.project_id = m.project_id) c
+                   WHERE p.id = c.project_id'''.format(user_id)
 
         results = db.engine.execute(sql)
 
