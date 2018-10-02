@@ -73,3 +73,10 @@ class UserRole(Enum):
     ADMIN = 1
     PROJECT_MANAGER = 2
     VALIDATOR = 4
+
+
+class UploadPolicy(Enum):
+    """ Describes the upload policies for a project file """
+    BLOCK = 0
+    ALLOW = 1
+    DISCOURAGE = 2

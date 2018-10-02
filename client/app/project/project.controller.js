@@ -167,7 +167,6 @@
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
             vm.lockedTasksForCurrentUser = [];
-            vm.project_files = [];
         }
 
         vm.updatePreferedEditor = function () {
@@ -1238,6 +1237,24 @@
         // };
 
         /**
+         * enumerate upload policies
+         * @param policyText
+         * @returns {string|*}
+         */
+        function enumerateUploadPolicy(policyText){
+            var policyValue = "true";
+            switch (policyText){
+                case "BLOCK":
+                    policyValue = "never";
+                    break;
+                case "DISCOURAGE":
+                    policyValue = "false";
+                    break;
+            }
+            return policyValue;
+        }
+
+        /**
          * Start the editor by getting the editor options and the URL to call
          * @param editor
          */
@@ -1361,9 +1378,9 @@
                     var i;
                     for (i = 0; i < vm.project_files.length; i++) {
                         var emptyTaskLayerParams = {
-                            new_layer: true,
+                            new_layer: true,                       upload_policy: enumerateUploadPolicy(vm.project_files[i].uploadPolicy),
                             mime_type: encodeURIComponent('application/x-osm+xml'),
-                            layer_name: encodeURIComponent(vm.project_files[i].file_name.replace(/\.[^/.]+$/,"")),
+                            layer_name: encodeURIComponent(vm.project_files[i].fileName.replace(/\.[^/.]+$/,"")),
                             data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
                         }
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
@@ -1372,9 +1389,8 @@
                                 vm.editorStartError = 'josm-error';
                             });
                         var taskImportParams = {
-                            mime_type: encodeURIComponent('application/x-osm+xml'),
-                            url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i]),
-                            new_layer: false
+                            new_layer: false,
+                            url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i])
                         }
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
                             .catch(function() {

@@ -8,6 +8,7 @@ from server.models.postgis.project_files import ProjectFiles
 from server.models.dtos.project_dto import ProjectFileDTO
 from server.services.project_admin_service import ProjectAdminService
 from server.models.postgis.utils import NotFound
+from server.models.postgis.statuses import UploadPolicy
 
 
 class ProjectFilesAPI(Resource):
@@ -68,6 +69,11 @@ class ProjectFilesAPI(Resource):
               required: true
               type: integer
               default: 1
+            - name: upload_policy
+              in: query
+              description: The upload policy
+              type: string
+              default: ALLOW
             - name: file
               in: formData
               description: The file to be saved
@@ -95,6 +101,9 @@ class ProjectFilesAPI(Resource):
                 project_file_dto.path = path
                 project_file_dto.project_id = project_id
                 project_file_dto.file_name = file_name
+                if request.args['upload_policy']:
+                    print(UploadPolicy[request.args['upload_policy']])
+                    project_file_dto.upload_policy = UploadPolicy[request.args['upload_policy'].upper()].name
                 project_file_dto.validate()
         except DataError as e:
             current_app.logger.error(f'error validating request: {str(e)}')
@@ -213,3 +222,60 @@ class ProjectFileAPI(Resource):
             return {"Success": "Project File Deleted"}, 200
         except FileNotFoundError:
             return {"Error": "File not found"}, 404
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Update project file
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - name: body
+              in: body
+              description: JSON Object to update project file
+              required: true
+            - name: file_id
+              in: query
+              description: The unique file id
+              type: integer
+              default: null
+              required: true
+        responses:
+            200:
+                description: File uploaded
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            file_id = request.args.get('file_id') if request.args.get('file_id') else None
+
+            dto = ProjectFileDTO(request.get_json())
+            dto.id = file_id
+            dto.project_id = project_id
+
+            ProjectAdminService.update_project_file(dto)
+            return {"Success": "Upload Policy Updated"}, 200
+        except NotFound:
+            return {"Error": "Project File Not Found"}, 404
+        except Exception as e:
+            error_msg = f'Project File POST - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

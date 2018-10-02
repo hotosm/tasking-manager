@@ -8,7 +8,7 @@ from flask import current_app
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO, ProjectFileDTO
 from server.models.postgis.project import Project, Task, ProjectStatus
 from server.models.postgis.project_files import ProjectFiles
-from server.models.postgis.statuses import TaskCreationMode
+from server.models.postgis.statuses import TaskCreationMode, UploadPolicy
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from server.services.grid.grid_service import GridService
@@ -234,6 +234,14 @@ class ProjectAdminService:
 
     @staticmethod
     def delete_project_file(project_id: int, file_id: int):
-        """ Deletes the specified message """
+        """ Deletes the specified project file """
         project_file = ProjectFiles.get(project_id, file_id)
         project_file.delete()
+
+    @staticmethod
+    def update_project_file(dto: ProjectFileDTO):
+        """ Updates the specified project file """
+        print(dto.id)
+        project_file = ProjectFiles.get(dto.project_id, dto.id)
+        project_file.update(dto)
+        return project_file
