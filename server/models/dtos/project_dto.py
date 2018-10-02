@@ -237,9 +237,9 @@ class ProjectFileDTO(Model):
     """ Contains project file info """
     id = IntType(serialized_name='id')
     path = StringType(required=True, serialized_name='path')
-    file_name = StringType(required=True, default='')
-    project_id = IntType(required=True)
-    upload_policy = StringType(required=True, validators=[is_known_upload_policy], serialized_name='uploadPolicy', serialize_when_none=False)
+    file_name = StringType(required=True, serialized_name="fileName")
+    project_id = IntType(required=True, serialized_name="projectId")
+    upload_policy = StringType(required=True, validators=[is_known_upload_policy], serialized_name='uploadPolicy')
 
 
 class ProjectFilesDTO(Model):

@@ -241,6 +241,7 @@ class ProjectAdminService:
     @staticmethod
     def update_project_file(dto: ProjectFileDTO):
         """ Updates the specified project file """
+        print(dto.id)
         project_file = ProjectFiles.get(dto.project_id, dto.id)
         project_file.update(dto)
         return project_file
