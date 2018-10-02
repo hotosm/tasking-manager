@@ -1,0 +1,12 @@
+<ul class="dropdown-menu scrollable-menu user-suggestions-menu" style="display:block">
+    <li mentio-menu-item="item" ng-repeat="item in items track by $index">
+        <div ng-show="$index === 0 && item.isParticipant">
+          <h6>{{ 'Participants' | translate }}</h6>
+        </div>
+        <div ng-show="!item.isParticipant && items[$index - 1].isParticipant">
+          <hr />
+          <h6>{{ 'Other Users' | translate }}</h6>
+        </div>
+        <a class="text-primary" ng-bind-html="item.username | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></a>
+    </li>
+</ul>

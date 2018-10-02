@@ -31,7 +31,7 @@ pyflakes==1.5.0
 python-dateutil==2.6.0
 python-editor==1.0.3
 pytz==2017.2
-PyYAML==3.12
+PyYAML==3.13
 requests==2.13.0
 requests-oauthlib==0.8.0
 schematics==2.0.0a1

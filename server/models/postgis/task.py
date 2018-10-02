@@ -302,6 +302,17 @@ class Task(db.Model):
         self.locked_by = user_id
         self.update()
 
+    def reset_task(self, user_id: int):
+        if TaskStatus(self.task_status) in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
+            self.clear_task_lock()
+
+        self.set_task_history(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
+        self.mapped_by = None
+        self.validated_by = None
+        self.locked_by = None
+        self.task_status = TaskStatus.READY.value
+        self.update()
+
     def clear_task_lock(self, lock_duration):
         """
         Unlocks task in scope in the database.  Clears the lock as though it never happened.
