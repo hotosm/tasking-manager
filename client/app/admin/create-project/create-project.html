@@ -45,15 +45,13 @@
                                     </button>
                                 </dd>
                             </dl>
-                            <div>
-                                <span class="error" style="float:left;margin-top:10px" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
-                                    {{ 'No Area of Interest has been drawn.' | translate }}
-                                </span>
-                                <span class="error" style="float:left;margin-top:10px"
-                                        ng-show="true">
-                                    {{ 'The Area of Interest contains self intersections.' | translate }}
-                                </span>
-                            </div>
+                            <span class="error" style="float:left;margin-top:10px" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
+                                {{ 'No Area of Interest has been drawn.' | translate }}
+                            </span>
+                            <span class="error" style="float:left;margin-top:10px"
+                                    ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
+                                {{ 'The Area of Interest contains self intersections.' | translate }}
+                            </span>
                         </div>
                         <div class="form__group form__group--section--sm">
                             <dl>
