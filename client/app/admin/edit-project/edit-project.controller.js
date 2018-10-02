@@ -124,6 +124,8 @@
         vm.uploadFileFail = false;
         vm.uploadFileSuccess = false;
         vm.uploadFileInProgress = false;
+        vm.updateFileSuccess = false;
+        vm.updateFileFail = false;
 
         // Messages
         vm.messageSubject = '';
@@ -144,7 +146,8 @@
 
         //Project Files
         vm.projectFiles = [];
-        vm.currentFile = {};
+        vm.projectFile = {};
+        vm.uploadPolicy = "ALLOW";
 
         activate();
 
@@ -678,12 +681,14 @@
                     vm.showUploadFileModal = false;
                     vm.uploadFileFail = false;
                     vm.uploadFileInProgress = false;
-                    getProjectFiles(vm.project.projectId)
+                    vm.uploadFileSuccess = true;
+                    getProjectFiles(vm.project.projectId);
                 }, function(){
                     // File not uploaded successfully
                     vm.uploadFileFail = true;
                     vm.uploadFileSuccess = false;
                     vm.showUploadFileModal = false;
+                    vm.uploadFileInProgress = false;
                 })
             }
         }
@@ -694,7 +699,7 @@
         vm.showDeleteFile = function(showModal){
             vm.showDeleteFileModal = showModal
             if (showModal===false){
-                vm.currentFile = {};
+                vm.projectFile = {};
             }
         }
 
@@ -702,7 +707,7 @@
          * Show delete file modal and set file to delete
          */
         vm.removeFile = function(file){
-            vm.currentFile = file;
+            vm.projectFile = file;
             vm.showDeleteFileModal = true;
         }
 
@@ -710,10 +715,27 @@
          * Remove file from project
          */
         vm.deleteFile = function(){
-            var resultsPromise = projectService.deleteProjectFile(vm.project.projectId, vm.currentFile.id)
+            var resultsPromise = projectService.deleteProjectFile(vm.project.projectId, vm.projectFile.id)
             resultsPromise.then(function(){
                 vm.showDeleteFileModal = false;
                 getProjectFiles(vm.project.projectId)
+            })
+        }
+
+        /**
+         * Updates a project file's upload policy
+         */
+        vm.updateProjectFile = function(file){
+            vm.updateFileFail = false;
+            vm.updateFileSuccess = false;
+            vm.projectFile = {};
+            vm.projectFile.path = file.path;
+            vm.projectFile.file_name = file.fileName;
+            vm.projectFile.upload_policy = file.uploadPolicy;
+            var resultsPromise = projectService.updateProjectFile(vm.project.projectId, file.id, vm.projectFile);
+            resultsPromise.then(function(){
+                vm.updateFileSuccess = true;
+                setTimeout(function(){ vm.updateFileSuccess = false; }, 2000);
             })
         }
 
