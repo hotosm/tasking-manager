@@ -246,11 +246,9 @@ class ProjectFileAPI(Resource):
               required: true
               type: integer
               default: 1
-            - name: upload_policy
-              in: query
-              description: The upload policy
-              type: string
-              default: ALLOW
+            - name: body
+              in: body
+              description: JSON Object to update project file
               required: true
             - name: file_id
               in: query
@@ -269,12 +267,11 @@ class ProjectFileAPI(Resource):
         try:
             file_id = request.args.get('file_id') if request.args.get('file_id') else None
 
-            upload_policy = request.args.get('upload_policy') if request.args.get('upload_policy') else None
+            dto = ProjectFileDTO(request.get_json())
+            dto.id = file_id
+            dto.project_id = project_id
 
-            file = ProjectFiles.get_file(project_id, file_id)
-            file.upload_policy = upload_policy
-
-            ProjectAdminService.update_project_file(file)
+            ProjectAdminService.update_project_file(dto)
             return {"Success": "Upload Policy Updated"}, 200
         except NotFound:
             return {"Error": "Project File Not Found"}, 404
