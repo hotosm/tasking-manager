@@ -24,7 +24,8 @@
                       mentio-typed-text="typedTerm"
                       mentio-search="projectChatCtrl.searchUser(term)"
                       mentio-select="projectChatCtrl.formatUserTag(item)"
-                      mentio-items="projectChatCtrl.usernames | filter:label:typedTerm"
+                      mentio-items="projectChatCtrl.suggestedUsers"
+                      mentio-template-url="/app/project/user-suggestions-menu.html"
                       ng-model="projectChatCtrl.message"></textarea>
             <p>{{ projectChatCtrl.maxlengthComment - projectChatCtrl.message.length }}
                 {{ 'characters remaining' | translate }}

@@ -187,6 +187,10 @@ class UserSearchFilterAPI(Resource):
               name: page
               description: Page of results user requested
               type: integer
+            - in: query
+              name: projectId
+              description: Optional, promote project participants to head of results
+              type: integer
         responses:
             200:
                 description: Users found
@@ -197,7 +201,8 @@ class UserSearchFilterAPI(Resource):
         """
         try:
             page = int(request.args.get('page')) if request.args.get('page') else 1
-            users_dto = UserService.filter_users(username, page)
+            project_id = request.args.get('projectId', None, int)
+            users_dto = UserService.filter_users(username, project_id, page)
             return users_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404

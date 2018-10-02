@@ -252,3 +252,17 @@ class MappingService:
         project = ProjectService.get_project_by_id(project_id)
         project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
         project.save()
+
+    @staticmethod
+    def reset_all_badimagery(project_id: int, user_id: int):
+        """ Marks all bad imagery tasks ready for mapping """
+        badimagery_tasks = Task.query.filter(Task.task_status == TaskStatus.BADIMAGERY.value).all()
+
+        for task in badimagery_tasks:
+            task.lock_task_for_mapping(user_id)
+            task.unlock_task(user_id, new_state=TaskStatus.READY)
+
+        # Reset bad imagery counter
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_bad_imagery = 0
+        project.save()
