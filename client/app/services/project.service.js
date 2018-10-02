@@ -55,7 +55,8 @@
             getProjectSummary: getProjectSummary,
             uploadFile: uploadFile,
             getProjectFiles: getProjectFiles,
-            deleteProjectFile: deleteProjectFile
+            deleteProjectFile: deleteProjectFile,
+            updateProjectFile: updateProjectFile
         };
 
         return service;
@@ -711,6 +712,7 @@
         /**
          * Upload new file for a project
          * @param id
+         * @param file
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
         function uploadFile(id, file) {
@@ -772,6 +774,32 @@
                 method: 'DELETE',
                 url: configService.tmAPI + '/admin/project/' + projectId + '/project-file?file_id=' + fileId,
                 headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Update project file
+         * @param projectId - unique id for the project
+         * @param fileId - unique id for the file
+         * @param fileData
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function updateProjectFile(projectId, fileId, fileData) {
+            console.log(fileData)
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/project-file?file_id=' + fileId,
+                headers: authService.getAuthenticatedHeader(),
+                data: fileData
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
