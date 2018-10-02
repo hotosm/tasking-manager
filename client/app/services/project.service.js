@@ -571,11 +571,11 @@
             });
         }
 
-        /**
-         * enumerate mapper levels
-         * @param levelText
-         * @returns {string|*}
-         */
+            /**
+             * enumerate mapper levels
+             * @param levelText
+             * @returns {string|*}
+             */
         function enumerateMapperLevel(levelText) {
             var levelEnum = -1;
             switch (levelText) {
