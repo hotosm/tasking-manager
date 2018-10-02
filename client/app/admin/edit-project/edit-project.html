@@ -57,7 +57,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a title="{{ 'Edit settings' | translate }}" ng-click="editProjectCtrl.currentSection = 'actions'"
+                                    <a title="{{ 'Project wide actions' | translate }}" ng-click="editProjectCtrl.currentSection = 'actions'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'actions' ? 'aside-menu-item--active' : ''">
                                         {{ 'Actions' | translate }}
                                     </a>
@@ -394,7 +394,7 @@
                                     <label class="form__option">
                                         <input ng-model="editProjectCtrl.project.private" type="checkbox" ng-click="editProjectCtrl.onPrivateChange()"/>{{ 'Private' | translate }}
                                     </label>
-                                    <p>{{ 'Private means that only the given list of users below can access this project. In order for the users name to be available to add to the Allowed Users list - they first must visit the URL for this installation of OSM Tasking Manager and Authorize access to their OpenStreetMap account. After they have done this, their username will be available for the Project Manager to add.' | translate }}
+                                    <p>{{ 'Private means that only the given list of users below can access this project. Before a user name can be added to the Allowed Users list the user must first login to this installation of OSM Tasking Manager.' | translate }}
                                     </p>
                                 </div>
                                 <div class="form__group form__group--section">
@@ -686,14 +686,28 @@
                 <p>
                     {{ 'This will send a Tasking Manager message to every contributor of the current project. Please use this feature carefully.' | translate }}
                 </p>
-                <ul class="list-type--none form__standard">
-                    <li>
-                        <input type="text" class="form__control" ng-model="editProjectCtrl.messageSubject" placeholder="{{ 'Subject' | translate }}*" />
-                    </li>
-                    <li>
-                        <textarea class="form__control" rows="4" ng-model="editProjectCtrl.messageContent" placeholder="{{ 'Message' | translate }}*"></textarea>
-                    </li>
-                </ul>
+                <form name="editProjectCtrl.form">
+                    <ul class="list-type--none form__standard">
+                        <li>
+                            <input type="text" class="form__control" ng-model="editProjectCtrl.messageSubject"
+                                   name="subject" required
+                                   placeholder="{{ 'Subject' | translate }}*" />
+                        </li>
+                        <li ng-show="form.$submitted || form.subject.$touched">
+                            <span class="error" ng-show="form.subject.$error.required">*{{ 'Required' | translate}}</span>
+                        </li>
+                        <li>
+                            <textarea class="form__control" rows="4" ng-model="editProjectCtrl.messageContent"
+                                      name="messageContent"
+                                      required
+                                      placeholder="{{ 'Message' | translate }}*">
+                            </textarea>
+                        </li>
+                        <li ng-show="form.$submitted || form.messageContent.$touched">
+                            <span class="error" ng-show="form.messageContent.$error.required">*{{ 'Required' | translate}}</span>
+                        </li>
+                    </ul>
+                </form>
                 <p>
                     {{ 'This message is not translated to the selected language of the user, so you may want to include your own translations.' | translate }}
                 </p>
@@ -706,19 +720,15 @@
             </p>
         </div>
         <footer class="modal__footer">
-            <div ng-hide="editProjectCtrl.sendMessageSuccess">
+            <div>
                 <button class="button" type="button"
+                        ng-disabled="editProjectCtrl.form.$invalid"
                         ng-click="editProjectCtrl.sendMessage()">{{ 'Message all contributors' | translate }}
                 </button>
                 <button class="button button--secondary" type="button"
                         ng-click="editProjectCtrl.showMessageContributors(false)">{{ 'Cancel' | translate }}
                 </button>
                 <span ng-show="editProjectCtrl.sendMessageInProgress">{{ 'Sending...' | translate }}</span>
-            </div>
-            <div ng-show="editProjectCtrl.sendMessageSuccess">
-                 <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.showMessageContributors(false)">{{ 'Close message' | translate }}
-                </button>
             </div>
         </footer>
     </div>

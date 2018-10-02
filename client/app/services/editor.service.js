@@ -20,7 +20,7 @@
         };
 
         return service;
-        
+
         /**
          * Launch the Field Papers editor
          * @param centroid
@@ -104,8 +104,8 @@
 
         /**
          * Sends a synchronous remote control command to JOSM and returns a boolean to indicate success
-         * @param URL of the JOSM remote control endpoint
-         * @param Object containing key, value pairs to be used as URL parameters
+         * @param endpoint of the JOSM remote control endpoint
+         * @param params containing key, value pairs to be used as URL parameters
          * @returns {boolean} Did JOSM Repond successfully
          */
         function sendJOSMCmd(endpoint, params) {
@@ -165,7 +165,6 @@
          * Format the GPX url for the project ID and taskIds
          * @param projectId
          * @param taskIds (comma separated)
-         * @param as_file {true|false}
          * @returns string - gpxUrl
          */
         function getOSMXMLUrl(projectId, taskIds){

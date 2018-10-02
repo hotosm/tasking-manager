@@ -9,7 +9,7 @@
         .service('messageService', ['$http', '$q','configService', 'authService', messageService]);
 
     function messageService($http, $q, configService, authService) {
-        
+
         var service = {
             messageAll: messageAll,
             hasNewMessages: hasNewMessages,
@@ -180,6 +180,7 @@
         /**
          * Add project chat message
          * @param message
+         * @param projectId
          * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
          */
         function addProjectChatMessage(message, projectId){

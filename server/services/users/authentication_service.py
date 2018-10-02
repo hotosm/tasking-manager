@@ -71,6 +71,7 @@ class AuthenticationService:
 
         try:
             UserService.get_user_by_id(osm_id)
+            UserService.update_username(osm_id, username)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.find('changesets')

@@ -31,33 +31,33 @@ class EnvironmentConfig:
     }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {
-        'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu',
+        'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu, mg',
         'languages': 'English, Français, Español, Deutsch, Português, 日本語, Lietuvos, 中文, Indonesia, Dansk,'
                      ' Português (Brasil), Русский, Slovenščina, Italiano, Nederlands, Українська, தமிழ், සිංහල,'
-                     ' Česky, Bokmål, Magyar'
+                     ' Česky, Bokmål, Magyar, Malagasy'
     }
 
 
 class ProdConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tm3.hotosm.org'
+    APP_BASE_URL = 'https://tasks.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tm3.hotosm.org/api/docs'
+                   'url=https://tasks.hotosm.org/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
 
 class StageConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tasks-stage.hotosm.org'
+    APP_BASE_URL = 'https://tasks-stage.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasks-stage.hotosm.org/api/docs'
+                   'url=https://tasks-stage.hotosm.org/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
 
 class DemoConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tasks-demo.hotosm.org'
+    APP_BASE_URL = 'https://tasks-demo.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasks-demo.hotosm.org/api/docs'
+                   'url=https://tasks-demo.hotosm.org/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 

@@ -3,7 +3,7 @@
     'use strict';
 
     /**
-     * @fileoverview This file provides a add layer directive. 
+     * @fileoverview This file provides a add layer directive.
      * Users can provide a URL and choose a type of layer/source which will then get added to the map
      * It depends on the mapService which provides the functionality to actually add the layer to the map
      */
@@ -39,13 +39,12 @@
         vm.layerURL = '';
         vm.layerName = '';
         vm.isVisible = false;
-        
+
          /**
          * Add layer
-         * Supported types: 
+         * Supported types:
          *  - XYZ
          *  - WMS (tiled)
-         * @param url
          */
         vm.addLayer = function(){
             if (vm.layerURL) {

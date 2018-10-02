@@ -132,19 +132,22 @@
                                 <div ng-show="contributeCtrl.resultsView === 'grid' && contributeCtrl.results.length > 0">
                                     <div class="search-results-container">
                                         <div class="project-result__cards">
-                                            <a href="/project/{{ project.projectId }}" class="project-result__card"
+                                            <a href="/project/{{ project.projectId }}" class="project-result__card {{ project.status | lowercase }}"
                                                  ng-repeat="project in contributeCtrl.results track by $index">
                                                 <section class="panel project-result__content">
                                                     <span>{{ project.priority }}</span>
+                                                    <span class="pull-right" ng-if="project.status != 'PUBLISHED'">{{ project.status }}</span>
                                                     <h4>#{{ project.projectId }} {{ project.name }}</h4>
                                                     <p markdown-to-html="(project.shortDescription | limitTo: contributeCtrl.characterLimitShortDescription) +
                                                         (project.shortDescription.length > contributeCtrl.characterLimitShortDescription ? '...' : '')"></p>
                                                     <dl>
-                                                        <dt ng-show="!project.organisationTag">{{ 'Organization' | translate }}:</dt>
-                                                        <dd>N/A</dd>
+                                                        <dt>{{ 'Organization' | translate }}:</dt>
+                                                        <dd ng-show="!project.organisationTag">{{ 'N/A' | translate }}</dd>
+                                                        <dd ng-show="project.organisationTag">{{ project.organisationTag }}</dd>
 
-                                                        <dt ng-show="project.organisationTag">{{ 'Organization' | translate }}:</dt>
-                                                        <dd>{{ project.organisationTag }}</dd>
+                                                        <dt>{{ 'Campaign' | translate }}:</dt>
+                                                        <dd ng-show="!project.campaignTag">{{ 'N/A' | translate }}</dd>
+                                                        <dd ng-show="project.campaignTag">{{ project.campaignTag }}</dd>
 
                                                         <dt>{{ 'Level' | translate }}:</dt>
                                                         <dd>{{ project.mapperLevel }}</dd>
@@ -160,6 +163,9 @@
                                                         <dd>{{ 'Validated' | translate }}</dd>
                                                     <!--<uib-progressbar
                                                             value="project.percentValidated"></uib-progressbar>-->
+
+                                                        <dd ng-show="project.activeMappers > 0" title="{{ 'Active Mappers' | translate }}"><span class="fa fa-user"></span> {{ project.activeMappers }}</dd>
+                                                    </dl>
                                                </section>
                                             </a>
                                         </div>

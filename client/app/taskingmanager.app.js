@@ -18,7 +18,7 @@
             // Get session storage on application load
             var nameOfLocalStorage = authService.getLocalStorageSessionName();
             var sessionStorage = JSON.parse(localStorage.getItem(nameOfLocalStorage));
-            
+
             // TODO: call API (doesn't exist at the moment) to check if session token is valid
             if (sessionStorage) {
                 authService.setSession(sessionStorage.sessionToken || '', sessionStorage.username || '');
@@ -90,8 +90,12 @@
                     templateUrl: 'app/learn/learn.html'
                 })
 
-                .when('/whatisnew', {
-                    templateUrl: 'app/about/whatisnew.html'
+                .when('/what-is-new', {
+                    templateUrl: 'app/about/what-is-new.html'
+                })
+
+                .when('/faq', {
+                    templateUrl: 'app/about/faq.html'
                 })
 
                 .when('/contribute', {
