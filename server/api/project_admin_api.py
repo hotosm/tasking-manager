@@ -434,6 +434,47 @@ class ProjectValidateAll(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+class ProjectResetAll(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Reset all tasks on project back to ready, preserving history.
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: All tasks reset
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            ProjectAdminService.reset_all_tasks(project_id, tm.authenticated_user_id)
+            return {"Success": "All tasks reset"}, 200
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
 
 class ProjectMapAll(Resource):
 
@@ -471,6 +512,48 @@ class ProjectMapAll(Resource):
         try:
             MappingService.map_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks mapped"}, 200
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class ProjectResetBadImagery(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Mark all bad imagery tasks ready for mapping
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: All bad imagery tasks marked ready for mapping
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            MappingService.reset_all_badimagery(project_id, tm.authenticated_user_id)
+            return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
         except Exception as e:
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)

@@ -104,7 +104,7 @@ def init_flask_restful_routes(app):
         ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
-        ProjectValidateAll, ProjectMapAll, ProjectsForAdminAPI
+        ProjectValidateAll, ProjectMapAll, ProjectResetAll, ProjectResetBadImagery, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
         HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
@@ -126,6 +126,8 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectInvalidateAll,          '/api/v1/admin/project/<int:project_id>/invalidate-all')
     api.add_resource(ProjectValidateAll,            '/api/v1/admin/project/<int:project_id>/validate-all')
     api.add_resource(ProjectMapAll,                 '/api/v1/admin/project/<int:project_id>/map-all')
+    api.add_resource(ProjectResetBadImagery,        '/api/v1/admin/project/<int:project_id>/reset-all-badimagery')
+    api.add_resource(ProjectResetAll,               '/api/v1/admin/project/<int:project_id>/reset-all')
     api.add_resource(ProjectsMessageAll,            '/api/v1/admin/project/<int:project_id>/message-all')
     api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
