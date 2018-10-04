@@ -126,7 +126,9 @@ class SplitService:
             new_task.task_history.extend(original_task.copy_task_history())
             if new_task.task_history:
                 new_task.clear_task_lock() # since we just copied the lock
-            new_task.set_task_history(TaskAction.COMMENT, split_task_dto.user_id, "Task split")
+            new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.SPLIT)
+            new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.READY)
+            new_task.task_status = TaskStatus.READY.value
             new_task.update()
             new_tasks_dto.append(new_task.as_dto_with_instructions(split_task_dto.preferred_locale))
 

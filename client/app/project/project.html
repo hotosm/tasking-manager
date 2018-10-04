@@ -966,6 +966,8 @@
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                             <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready by' | translate }} <a
                                                     href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
+                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'SPLIT'">{{ 'Split by' | translate }} <a
+                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
                                         </div>
                                         <div>
                                             <span ng-bind-html="item.actionText" ng-show="item.action === 'COMMENT'"></span>
