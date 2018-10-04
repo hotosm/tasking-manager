@@ -18,6 +18,7 @@ There are many ways to contribute to a project, below are some examples:
 1. Report bugs, offer ideas, and/or request features by creating “Issues” in the project repository.
 2. Fork the code and play with it, whether you later choose to make a pull request or not.
 3. Create pull requests for changes that you think are needed. From typos and wording changes, to significant new features or major design flaws, you will find lots of opportunities to contribute improvements. Read more about coding and committing below.
+4. Review or submit language translations in the [Transifex TM3 project](https://transifex.com/hotosm/tasking-manager-3). These are later synchronized with the GitHub repository by code and project leads.
 
 #### Issue or bug reports should include:
 
