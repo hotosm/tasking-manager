@@ -224,6 +224,17 @@ class UserService:
         return user
 
     @staticmethod
+    def set_user_is_expert(user_id: int, is_expert: bool) -> User:
+        """
+        Enabled or disables expert mode for the user
+        :raises: UserServiceError
+        """
+        user = UserService.get_user_by_id(user_id)
+        user.set_is_expert(is_expert)
+
+        return user
+
+    @staticmethod
     def accept_license_terms(user_id: int, license_id: int):
         """ Saves the fact user has accepted license terms """
         user = UserService.get_user_by_id(user_id)

@@ -24,6 +24,7 @@
         // Errors - for displaying messages when API calls were not successful
         vm.errorSetRole = false;
         vm.errorSetLevel = false;
+        vm.errorSetExpertMode = false;
         vm.errorSetContactDetails = false;
         vm.errorVerificationEmailSent = false;
 
@@ -112,6 +113,19 @@
                getUser();
             }, function(){
                 vm.errorSetLevel = true;
+            });
+        };
+
+        /**
+         * Set the user's expert mode
+         * @param isExpert
+         */
+        vm.setExpertMode = function(isExpert){
+            vm.errorSetExpertMode = false;
+            userService.setExpertMode(isExpert).then(function(data) {
+                getUser();
+            }, function(){
+                vm.errorSetExpertMode = true;
             });
         };
 
