@@ -15,6 +15,32 @@ class TestTask(unittest.TestCase):
     def tearDown(self):
         self.ctx.pop()
 
+    @patch.object(Task, 'update')
+    @patch.object(Task, 'set_task_history')
+    def test_reset_task_sets_to_ready_status(self, mock_set_task_history, mock_update):
+        user_id = 123
+
+        test_task = Task()
+        test_task.task_status = TaskStatus.MAPPED
+        test_task.reset_task(user_id)
+
+        mock_set_task_history.assert_called_with(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
+        mock_update.assert_called()
+        self.assertEqual(test_task.task_status, TaskStatus.READY.value)
+
+    @patch.object(Task, 'update')
+    @patch.object(Task, 'clear_task_lock')
+    @patch.object(Task, 'set_task_history')
+    def test_reset_task_clears_any_existing_locks(self, mock_set_task_history, mock_clear_task_lock, mock_update):
+        user_id = 123
+
+        test_task = Task()
+        test_task.task_status = TaskStatus.LOCKED_FOR_MAPPING
+        test_task.reset_task(user_id)
+
+        mock_clear_task_lock.assert_called()
+        self.assertEqual(test_task.task_status, TaskStatus.READY.value)
+
     def test_cant_add_task_if_feature_geometry_is_invalid(self):
         # Arrange
         invalid_feature = geojson.loads('{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],' \
