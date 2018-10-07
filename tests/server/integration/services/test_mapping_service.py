@@ -114,9 +114,6 @@ class TestMappingService(unittest.TestCase):
         # Convert XML into a hash that should be identical every time
         osm_xml_str = osm_xml.decode('utf-8')
         osm_hash = hashlib.md5(osm_xml_str.encode('utf-8')).hexdigest()
-        f = open('/home/enelson/test.xml', 'w')
-        f.write(osm_xml_str)
-        f.close()
 
         # Assert
         self.assertEqual(osm_hash, 'eafd0760a0d372e2ab139e25a2d300f1')
