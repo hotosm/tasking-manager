@@ -10,39 +10,40 @@
         .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
     function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService) {
-
         var vm = this;
+        
+        function init (){
+            vm.results = [];
+            vm.vectorSource = null;
 
-        vm.results = [];
-        vm.vectorSource = null;
+            // Default to grid view
+            vm.resultsView = 'grid';
 
-        // Default to grid view
-        vm.resultsView = 'grid';
+            // Tags
+            vm.organisations = [];
+            vm.campaigns = [];
 
-        // Tags
-        vm.organisations = [];
-        vm.campaigns = [];
+            // Search parameters
+            vm.mapperLevel = 'ALL'; // default to ALL
+            vm.searchDraft = false;
+            vm.searchArchived = false;
+            vm.searchRoads = false;
+            vm.searchBuildings = false;
+            vm.searchWaterways = false;
+            vm.searchLanduse = false;
+            vm.searchOther = false;
+            vm.searchOrganisation = '';
+            vm.searchCampaign = '';
+            vm.searchText = '';
 
-        // Search parameters
-        vm.mapperLevel = 'ALL'; // default to ALL
-        vm.searchDraft = false;
-        vm.searchArchived = false;
-        vm.searchRoads = false;
-        vm.searchBuildings = false;
-        vm.searchWaterways = false;
-        vm.searchLanduse = false;
-        vm.searchOther = false;
-        vm.searchOrganisation = '';
-        vm.searchCampaign = '';
-        vm.searchText = '';
+            // Paging
+            vm.currentPage = 1;
+            vm.pagination = null;
 
-        // Paging
-        vm.currentPage = 1;
-        vm.pagination = null;
-
-        //map legend
-        vm.showVectorLegend = false;
-        vm.showClusterLegend = true;
+            //map legend
+            vm.showVectorLegend = false;
+            vm.showClusterLegend = true;
+        }
 
         // Character limit
         vm.characterLimitShortDescription = 250;
@@ -266,5 +267,8 @@
                     vm.searchOther = true;
             }
         }
+
+        $scope.$on('clearContributeSearch', function () {init()})
+        init();
     }
 })();

@@ -73,7 +73,7 @@
             <div class="menu-wrapper" ng-class="showMenu ? 'menu-wrapper menu-wrapper--open' : 'menu-wrapper'" ng-cloak>
                 <ul class="global-menu" id="global-menu">
                     <li>
-                        <a href="/contribute" title="{{ 'Start mapping' | translate }}" class="global-menu-item">
+                        <a href="/contribute" ng-click="$broadcast('clearContributeSearch')" title="{{ 'Start mapping' | translate }}" class="global-menu-item">
                             <span>{{ 'Contribute' | translate }}</span>
                         </a>
                     </li>
