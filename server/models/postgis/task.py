@@ -158,8 +158,15 @@ class TaskHistory(db.Model):
             return TaskStatus[result[0][0]]
 
     @staticmethod
-    def get_last_action_with_status(project_id: int, task_id: int, allowed_task_actions: list):
+    def get_last_action(project_id: int, task_id: int):
         """Gets the most recent task history record for the task"""
+        return TaskHistory.query.filter(TaskHistory.project_id == project_id,
+                                        TaskHistory.task_id == task_id) \
+            .order_by(TaskHistory.action_date.desc()).first()
+
+    @staticmethod
+    def get_last_action_of_type(project_id: int, task_id: int, allowed_task_actions: list):
+        """Gets the most recent task history record having provided TaskAction"""
         return TaskHistory.query.filter(TaskHistory.project_id == project_id,
                                         TaskHistory.task_id == task_id,
                                         TaskHistory.action.in_(allowed_task_actions)) \
@@ -168,14 +175,14 @@ class TaskHistory(db.Model):
     @staticmethod
     def get_last_locked_action(project_id: int, task_id: int):
         """Gets the most recent task history record with locked action for the task"""
-        return TaskHistory.get_last_action_with_status(
+        return TaskHistory.get_last_action_of_type(
             project_id, task_id,
             [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name])
 
     @staticmethod
     def get_last_locked_or_auto_unlocked_action(project_id: int, task_id: int):
         """Gets the most recent task history record with locked or auto unlocked action for the task"""
-        return TaskHistory.get_last_action_with_status(
+        return TaskHistory.get_last_action_of_type(
             project_id, task_id,
             [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name,
              TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name])
