@@ -58,7 +58,7 @@ class TestMappingService(unittest.TestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode('utf-8')).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, '97c4274c013964091974916ffee07846')
+        self.assertEqual(gpx_hash, 'b91f7361cc1d6d9433cf393609103272')
 
     @patch.object(Task, 'get_all_tasks')
     def test_gpx_xml_file_generated_correctly_all_tasks(self, mock_task):
@@ -78,7 +78,7 @@ class TestMappingService(unittest.TestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode('utf-8')).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, '97c4274c013964091974916ffee07846')
+        self.assertEqual(gpx_hash, 'b91f7361cc1d6d9433cf393609103272')
 
     @patch.object(Task, 'get_tasks')
     def test_osm_xml_file_generated_correctly(self, mock_task):
