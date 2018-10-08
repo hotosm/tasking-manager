@@ -37,6 +37,7 @@ jobs:
       - run:
           name: Run tests
           command: |
+            set -e
             # JS Unit Tests
             cd /app/tests/client
             ../../client/node_modules/.bin/karma start ./karma.conf.js \
