@@ -428,3 +428,12 @@ table {
   display: block;
   margin-top: .5em;
 }
+
+
+/* Markdown-to-html (Showdown) common stylings
+   ========================================================================== */
+p[markdown-to-html] {
+    code {
+        color: $red;
+    }
+}
