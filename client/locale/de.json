@@ -144,7 +144,7 @@
 	"In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.": "Um alle Möglichkeiten des Tasking Managers nutzen zu können, benutzen Sie bitte einen PC oder Laptop statt eines Mobilgeräts. Wenn Sie auf einem Mobilgerät an einem Projekt mitwirken möchten, benutzen Sie  bitte MapSwipe.",
 	"Instructions for the default locale": "Anweisungen für das Standardgebietsschema",
 	"Instructions": "Anweisungen",
-	"Intermediate": "Fortgeschrittener",
+	"Intermediate": "Fortgeschritten",
 	"Intermediate mapper": "Fortgeschrittener Bearbeiter",
 	"In this area": "In diesem Gebiet",
 	"Invalidate all tasks": "Alle Aufgaben als fehlerhaft markieren",
@@ -283,7 +283,7 @@
 	"Required": "Erforderlich",
 	"Reset": "Zurücksetzen",
 	"Return to inbox": "Zurück zum Postfach",
-	"Return": "Return",
+	"Return": "Zurückkehren",
 	"Roads": "Straßen",
 	"Role": "Rolle",
 	"Save changes": "Änderungen speichern",
@@ -441,5 +441,5 @@
 	"Your profile": "Ihr Profil",
 	"Your project has been updated successfully.": "Ihr Projekt wurde aktualisiert. ",
 	"Your project was created successfully.": "Ihr Projekt wurde erstellt. ",
-	"Back to Previous": "Back to Previous"
+	"Back to Previous": "Zu vorherigem zurück"
 }
