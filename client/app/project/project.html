@@ -946,44 +946,41 @@
                                 <h5>{{ 'History' | translate }}</h5>
                                 <div class="history">
                                     <p ng-show="projectCtrl.selectedTaskData.taskHistory.length < 1">{{ 'Nothing has happened yet.' | translate }}</p>
-                                    <div ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
-                                         ng-class-odd="'odd'" ng-class-even="'even'">
-                                        <div>
-                                            <span ng-show="item.action === 'COMMENT'">{{ 'Comment left by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Locked for mapping by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Locked for validation by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Automatically unlocked for mapping by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Automatically unlocked for validation by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Marked as bad imagery by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Mapped by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Validated by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Invalidated by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        </div>
-                                        <div>
-                                            <span ng-bind-html="item.actionText" ng-show="item.action === 'COMMENT'"></span>
-                                        </div>
-                                        <div class="metadata">
-                                            <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING' && item.actionText"> after {{ item.actionText |  amDurationFormat : 'minute'}}</span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION' && item.actionText"> after {{ item.actionText |  amDurationFormat : 'minute'}}</span>
-                                        </div>
-                                    </div>
+                                    <table ng-show="projectCtrl.selectedTaskData.taskHistory.length >= 1" class="table table-task-history">
+                                        <tbody ng-repeat="item in (orderedData = (projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate')) track by $index">
+                                          <tr ng-show="item.actionBy !== orderedData[$index - 1].actionBy"
+                                              class="new-user-row">
+                                              <td colspan="2">
+                                                  <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a>
+                                              </td>
+                                          </tr>
+                                          <tr class="action-row {{ item.action | lowercase }} {{ projectCtrl.highlightHistory && projectCtrl.highlightHistory === item.historyId ? 'highlighted' : '' }}">
+                                              <td class="action">
+                                                  <span class="status-marker-comment" ng-show="item.action === 'COMMENT'">{{ 'Commented' | translate }}</span>
+                                                  <span class="status-marker-locked-for-mapping" ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Locked for mapping' | translate }}</span>
+                                                  <span class="status-marker-locked-for-validation" ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Locked for validation' | translate }}</span>
+                                                  <span class="status-marker-auto-unlocked-for-mapping" ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Automatically unlocked for mapping' | translate }}</span>
+                                                  <span class="status-marker-auto-unlocked-for-validation" ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Automatically unlocked for validation' | translate }}</span>
+                                                  <span class="status-marker-badimagery" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Marked as bad imagery' | translate }}</span>
+                                                  <span class="status-marker-mapped" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Mapped' | translate }}</span>
+                                                  <span class="status-marker-validated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Validated' | translate }}</span>
+                                                  <span class="status-marker-invalidated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Invalidated' | translate }}</span>
+                                                  <span class="status-marker-split" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'SPLIT'">{{ 'Split' | translate }}</span>
+                                                  <span class="status-marker-ready" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready' | translate }}</span>
+                                              </td>
+                                              <td>
+                                                  <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                              </td>
+                                          </tr>
+                                          <tr ng-show="item.action === 'COMMENT'">
+                                            <td colspan="2" class="comment-text">
+                                              <span markdown-to-html="item.actionText"></span>
+                                            </td>
+                                          </tr>
+                                      </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <hr/>
                             <div>
                                 <h5 ng-click="showAdvanced=!showAdvanced" class="pointer"
                                     title="{{ 'Show advanced options' | translate }}">
