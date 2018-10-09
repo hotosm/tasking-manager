@@ -464,31 +464,38 @@
                                             <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                                 {{ 'characters remaining' | translate }}</p>
                                         </div>
-                                        <ul class="list-type--none buttons--sidebyside">
-                                                <!-- <div ng-show="projectCtrl.isSelectedSplittable"> -->
-                                                        <button class="button button--secondary" ng-click="projectCtrl.splitTask()">
+                                        <ul class="list-type--none">
+                                            <li>
+                                                <div ng-show="projectCtrl.isSelectedSplittable">
+                                                    <button class="button button--secondary" ng-click="projectCtrl.splitTask()">
                                                             {{ '➗ Split Task' | translate }}
-                                                        </button>
-                                                    <!-- </div> -->
-                                                    <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
-                                                        <div class="error" role="alert">
-                                                            <p>{{ 'Task is not splittable' | translate }}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
-                                                        <div class="error" role="alert">
-                                                            <p>{{ 'Task could not be split' | translate }}</p>
-                                                        </div>
-                                                    </div>
-                                                <li>
-                                                    <button class="button button--secondary"
-                                                            ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
-                                                        {{ 'Mark as Bad Imagery' | translate }}
                                                     </button>
-                                                </li>
-                                              
-                                                <li>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
+                                                    <div class="error" role="alert">
+                                                        <p>{{ 'Task is not splittable' | translate }}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
+                                                    <div class="error" role="alert">
+                                                        <p>{{ 'Task could not be split' | translate }}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
                                             </ul>
+                                            <ul class="list-type--none">
+                                            <li>
+                                                <button class="button button--secondary"
+                                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
+                                                    {{ '❌ Mark as Bad Imagery' | translate }}
+                                                </button>
+                                            </li>
+                                              
+                                        </ul>
                                         <div>
                                             <h6 style="width:84%">Can't finish but need to stop mapping? Or have you completely mapped the area? Leave a comment and select one of the options below that matches your editing status.</h6>
                                             <textarea class="form__control space-bottom--none" type="text" mentio
@@ -514,7 +521,7 @@
                                             </li>
                                                     
                                             <li>
-                                                <button class="button button--secondary"
+                                                <button class="button"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')"
                                                         style="width:132%">
                                                     {{ '💯 Mark as Completely Mapped' | translate }}
