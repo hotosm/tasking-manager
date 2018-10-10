@@ -451,18 +451,6 @@
                                     <div class="form__group form__group--section">
                                         <div>
                                             <h6 style="width:84%">Task too big to complete quickly? Or is the satellite imagery not good? Choose split task or mark as bad imagery.</h6>
-                                            <textarea class="form__control space-bottom--none" type="text" mentio
-                                                        rows="4"
-                                                        maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                        placeholder="{{ 'Leave a comment' | translate }}"
-                                                        mentio-typed-text="typedTerm"
-                                                        mentio-search="projectCtrl.searchUser(term)"
-                                                        mentio-select="projectCtrl.formatUserTag(item)"
-                                                        mentio-items="projectCtrl.suggestedUsers"
-                                                        mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                        ng-model="projectCtrl.comment"></textarea>
-                                            <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                                {{ 'characters remaining' | translate }}</p>
                                         </div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
