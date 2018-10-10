@@ -1,0 +1,25 @@
+{
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "ol": true,
+    "require": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "angular"
+  ],
+  "rules": {
+    "semi": [
+      "error",
+      "always"
+    ],
+    "no-console": "error",
+    "no-debugger": "error",
+    "angular/di": [
+      "error",
+      "$inject"
+    ]
+  }
+}

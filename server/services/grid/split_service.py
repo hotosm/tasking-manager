@@ -6,7 +6,7 @@ from geoalchemy2 import shape
 from server.models.dtos.grid_dto import SplitTaskDTO
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.postgis.utils import ST_Transform
-from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.task import Task, TaskStatus, TaskAction
 from server.models.postgis.project import Project
 from server.models.postgis.utils import NotFound
 
@@ -123,6 +123,13 @@ class SplitService:
             new_task.project_id = split_task_dto.project_id
             new_task.task_status = TaskStatus.READY.value
             new_task.create()
+            new_task.task_history.extend(original_task.copy_task_history())
+            if new_task.task_history:
+                new_task.clear_task_lock() # since we just copied the lock
+            new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.SPLIT)
+            new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.READY)
+            new_task.task_status = TaskStatus.READY.value
+            new_task.update()
             new_tasks_dto.append(new_task.as_dto_with_instructions(split_task_dto.preferred_locale))
 
         # delete original task from the database

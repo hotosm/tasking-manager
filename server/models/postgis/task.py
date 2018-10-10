@@ -3,6 +3,7 @@ import datetime
 import geojson
 import json
 from enum import Enum
+from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
 from server import db
 from typing import List
@@ -364,7 +365,7 @@ class Task(db.Model):
 
     def reset_task(self, user_id: int):
         if TaskStatus(self.task_status) in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
-            self.clear_task_lock()
+            self.record_auto_unlock()
 
         self.set_task_history(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
         self.mapped_by = None
@@ -373,22 +374,31 @@ class Task(db.Model):
         self.task_status = TaskStatus.READY.value
         self.update()
 
-    def clear_task_lock(self, lock_duration):
+    def clear_task_lock(self):
         """
         Unlocks task in scope in the database.  Clears the lock as though it never happened.
+        No history of the unlock is recorded.
         :return:
         """
         # clear the lock action for the task in the task history
         last_action = TaskHistory.get_last_locked_action(self.project_id, self.id)
-        next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if last_action.action == 'LOCKED_FOR_MAPPING' \
-            else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
         last_action.delete()
 
-        # Add AUTO_UNLOCKED action in the task history
-        auto_unlocked = self.set_task_history(action=next_action, user_id=self.locked_by)
-        auto_unlocked.action_text = lock_duration
-
+        # Set locked_by to null and status to last status on task
         self.clear_lock()
+
+    def record_auto_unlock(self, lock_duration):
+        locked_user = self.locked_by
+        last_action = TaskHistory.get_last_locked_action(self.project_id, self.id)
+        next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if last_action.action == 'LOCKED_FOR_MAPPING' \
+            else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
+
+        self.clear_task_lock()
+
+        # Add AUTO_UNLOCKED action in the task history
+        auto_unlocked = self.set_task_history(action=next_action, user_id=locked_user)
+        auto_unlocked.action_text = lock_duration
+        self.update()
 
     def unlock_task(self, user_id, new_state=None, comment=None, undo=False):
         """ Unlock task and ensure duration task locked is saved in History """
@@ -554,3 +564,16 @@ class Task(db.Model):
         except KeyError:
             pass
         return instructions
+
+    def copy_task_history(self) -> list:
+        copies = []
+        for entry in self.task_history:
+            db.session.expunge(entry)
+            make_transient(entry)
+            entry.id = None
+            entry.id = None
+            entry.task_id = None
+            db.session.add(entry)
+            copies.append(entry)
+
+        return copies

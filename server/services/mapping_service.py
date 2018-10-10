@@ -5,10 +5,10 @@ from flask import current_app
 from geoalchemy2 import shape
 
 from server import db
-from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO, TaskCommentDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
-from server.models.postgis.task import Task, TaskStatus, TaskHistory
+from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound, UserLicenseError
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
@@ -137,6 +137,21 @@ class MappingService:
         return task
 
     @staticmethod
+    def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
+        """ Adds the comment to the task history """
+        task = Task.get(task_comment.task_id, task_comment.project_id)
+        if task is None:
+            raise MappingServiceError(f'Task {task_id} not found')
+
+        task.set_task_history(TaskAction.COMMENT, task_comment.user_id, task_comment.comment)
+
+        # Parse comment to see if any users have been @'d
+        MessageService.send_message_after_comment(task_comment.user_id, task_comment.comment, task.id,
+                                                  task_comment.project_id)
+        task.update()
+        return task.as_dto_with_instructions(task_comment.preferred_locale)
+
+    @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
         """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.  You can use the following URL to test locally:
@@ -164,7 +179,7 @@ class MappingService:
         if task_ids_str is not None:
             task_ids = map(int, task_ids_str.split(','))
             tasks = Task.get_tasks(project_id, task_ids)
-            if not tasks or tasks.count() == 0:
+            if not tasks or len(tasks) == 0:
                 raise NotFound()
         else:
             tasks = Task.get_all_tasks(project_id)
@@ -195,7 +210,7 @@ class MappingService:
         if task_ids_str:
             task_ids = map(int, task_ids_str.split(','))
             tasks = Task.get_tasks(project_id, task_ids)
-            if not tasks or tasks.count() == 0:
+            if not tasks or len(tasks) == 0:
                 raise NotFound()
         else:
             tasks = Task.get_all_tasks(project_id)
