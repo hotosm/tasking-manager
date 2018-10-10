@@ -398,6 +398,24 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="form__group--section">
+                                            <div ng-include="'/app/project/comment-box.html'"></div>
+                                            <ul class="list-type--none buttons--sidebyside">
+                                                <li>
+                                                    <button class="button"
+                                                            ng-click="projectCtrl.addStandaloneComment()">
+                                                        {{ 'Add Comment' | translate }}
+                                                     </button>
+                                                </li>
+                                            </ul>
+                                            <div ng-show="projectCtrl.taskCommentError">
+                                                <div>
+                                                    <div class="error" role="alert">
+                                                        <p>{{ 'There was a problem commenting on the task.' | translate }} {{ projectCtrl.taskCommentErrorMessage }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- task locked UI -->
@@ -449,21 +467,8 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <div>
-                                            <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                            <textarea class="form__control space-bottom--none" type="text" mentio
-                                                      rows="4"
-                                                      maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                      placeholder="{{ 'Leave a comment' | translate }}"
-                                                      mentio-typed-text="typedTerm"
-                                                      mentio-search="projectCtrl.searchUser(term)"
-                                                      mentio-select="projectCtrl.formatUserTag(item)"
-                                                      mentio-items="projectCtrl.suggestedUsers"
-                                                      mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                      ng-model="projectCtrl.comment"></textarea>
-                                            <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                                {{ 'characters remaining' | translate }}</p>
-                                        </div>
+                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -742,6 +747,24 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form__group--section">
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
+                                        <ul class="list-type--none buttons--sidebyside">
+                                            <li>
+                                                <button class="button"
+                                                        ng-click="projectCtrl.addStandaloneComment()">
+                                                    {{ 'Add Comment' | translate }}
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        <div ng-show="projectCtrl.taskCommentError">
+                                            <div>
+                                                <div class="error" role="alert">
+                                                    <p>{{ 'There was a problem commenting on the task.' | translate }} {{ projectCtrl.taskCommentErrorMessage }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- task locked UI -->
                                 <div ng-show="projectCtrl.validatingStep === 'locked'"><!-- task mapping UI -->
@@ -793,18 +816,7 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                         <textarea class="form__control space-bottom--none" type="text" mentio
-                                                   rows="4"
-                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                   placeholder="{{ 'Leave a comment' | translate }}"
-                                                   mentio-typed-text="typedTerm"
-                                                   mentio-search="projectCtrl.searchUser(term)"
-                                                   mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.suggestedUsers"
-                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                   ng-model="projectCtrl.comment"></textarea>
-                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                            {{ 'characters remaining' | translate }}</p>
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -885,19 +897,7 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                         <textarea class="form__control space-bottom--none" type="text" mentio
-                                                   rows="4"
-                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                   placeholder="{{ 'Leave a comment' | translate }}"
-                                                   mentio-typed-text="typedTerm"
-                                                   mentio-search="projectCtrl.searchUser(term)"
-                                                   mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.suggestedUsers"
-                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                   ng-model="projectCtrl.comment"></textarea>
-                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                            {{ 'characters remaining' | translate }}</p>
-
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"

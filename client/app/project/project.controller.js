@@ -38,6 +38,8 @@
         vm.taskUnLockErrorMessage = '';
         vm.taskSplitError = false;
         vm.taskSplitCode == null;
+        vm.taskCommentError = false;
+        vm.taskCommentErrorMessage = '';
         vm.wasAutoUnlocked = false;
 
         //authorization
@@ -191,6 +193,8 @@
             vm.taskSplitError = false;
             vm.taskSplitCode == null;
             vm.taskUndoError = false;
+            vm.taskCommentError = false;
+            vm.taskCommentErrorMessage = '';
             vm.wasAutoUnlocked = false;
         }
 
@@ -266,6 +270,23 @@
                 vm.selectInteraction.setActive(false);
                 vm.drawPolygonInteraction.setActive(true);
             }
+        };
+
+        /**
+         * Add stand-alone comment, adding it to task history.
+         */
+        vm.addStandaloneComment = function() {
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var commentPromise = taskService.addTaskComment(projectId, taskId, vm.comment);
+            commentPromise.then(function (data) {
+                vm.comment = '';
+                vm.resetErrors();
+                setUpSelectedTask(data);
+            }, function (error) {
+                vm.taskCommentError = true;
+                vm.taskCommentErrorMessage = error.data.Error;
+            });
         };
 
         /**
