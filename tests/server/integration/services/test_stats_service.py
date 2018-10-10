@@ -18,32 +18,33 @@ class TestStatsService(unittest.TestCase):
         if env == 'true':
             cls.skip_tests = True
 
-        cls.app = create_app()
-        cls.ctx = cls.app.app_context()
-        cls.ctx.push()
-
-    @classmethod
-    def tearDownClass(cls):
-        if cls.skip_tests:
+    def setUp(self):
+        if self.skip_tests:
             return
 
-        cls.ctx.pop()
+        self.app = create_app()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+
+        self.test_project, self.test_user = create_canned_project()
+
+    def tearDown(self):
+        if self.skip_tests:
+            return
+
+        self.test_project.delete()
+        self.test_user.delete()
+        self.ctx.pop()
 
     def test_homepage_stats_returns_results(self):
         if self.skip_tests:
             return
 
-        # Arrange
-        test_project, test_user = create_canned_project()
-
         # Act
         stats = StatsService.get_homepage_stats()
 
         # Assert
-        self.assertGreater(stats.mappers_online, 0)
+        self.assertGreaterEqual(stats.mappers_online, 0)
         self.assertGreater(stats.tasks_mapped, 0)
         self.assertGreater(stats.total_mappers, 0)
 
-        # Tidy up
-        test_project.delete()
-        test_user.delete()

@@ -9,6 +9,7 @@ trans.bn = client/locale/bn.json
 trans.cs = client/locale/cs.json
 trans.de = client/locale/de.json
 trans.es = client/locale/es.json
+trans.fi = client/locale/fi.json
 trans.fa_IR = client/locale/fa_IR.json
 trans.fr = client/locale/fr.json
 trans.hu = client/locale/hu.json
