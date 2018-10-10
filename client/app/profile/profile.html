@@ -266,7 +266,9 @@
                                 <h4>{{ 'Expert Mode' | translate }}</h4>
                                 <p>{{ 'Expert mode makes advanced and experimental features available. Most users should leave this off.' | translate }}</p>
                                 <label class="form__option">
-                                    <input type="checkbox" ng-model="profileCtrl.userDetails.isExpert" ng-change="profileCtrl.setExpertMode(profileCtrl.userDetails.isExpert)"/>{{ 'Expert Mode' | translate }}
+                                    <i ng-show="profileCtrl.savingExpertMode" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
+                                    <input ng-show="!profileCtrl.savingExpertMode" type="checkbox" ng-model="profileCtrl.userDetails.isExpert" ng-change="profileCtrl.setExpertMode(profileCtrl.userDetails.isExpert)"/>
+                                    {{ 'Expert Mode' | translate }}
                                 </label>
                                 <p ng-show="profileCtrl.errorSetExpertMode" class="error">{{ 'An error occurred when altering expert mode setting.' | translate }}</p>
                             </div>
