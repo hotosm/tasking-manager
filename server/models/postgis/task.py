@@ -119,6 +119,33 @@ class TaskHistory(db.Model):
         dupe.delete()
 
     @staticmethod
+    def update_expired_and_locked_actions(project_id: int, task_id: int, expiry_date: datetime, action_text: str):
+        """
+        Sets auto unlock state to all not finished actions, that are older then the expiry date.
+        Action is considered as a not finished, when it is in locked state and doesn't have action text
+        :param project_id: Project ID in scope
+        :param task_id: Task in scope
+        :param expiry_date: Action created before this date is treated as expired
+        :param action_text: Text which will be set for all changed actions
+        :return:
+        """
+        all_expired = TaskHistory.query.filter(
+            TaskHistory.task_id == task_id,
+            TaskHistory.project_id == project_id,
+            TaskHistory.action_text.is_(None),
+            TaskHistory.action.in_([TaskAction.LOCKED_FOR_VALIDATION.name, TaskAction.LOCKED_FOR_MAPPING.name]),
+            TaskHistory.action_date <= expiry_date).all()
+
+        for task_history in all_expired:
+            unlock_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if task_history.action == 'LOCKED_FOR_MAPPING' \
+                else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
+
+            task_history.set_auto_unlock_action(unlock_action)
+            task_history.action_text = action_text
+
+        db.session.commit()
+
+    @staticmethod
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
         """ Gets all comments for the supplied project_id"""
 
@@ -168,6 +195,29 @@ class TaskHistory(db.Model):
         return TaskHistory.query.filter(TaskHistory.project_id == project_id,
                                         TaskHistory.task_id == task_id) \
             .order_by(TaskHistory.action_date.desc()).first()
+
+    @staticmethod
+    def get_last_action_of_type(project_id: int, task_id: int, allowed_task_actions: list):
+        """Gets the most recent task history record having provided TaskAction"""
+        return TaskHistory.query.filter(TaskHistory.project_id == project_id,
+                                        TaskHistory.task_id == task_id,
+                                        TaskHistory.action.in_(allowed_task_actions)) \
+            .order_by(TaskHistory.action_date.desc()).first()
+
+    @staticmethod
+    def get_last_locked_action(project_id: int, task_id: int):
+        """Gets the most recent task history record with locked action for the task"""
+        return TaskHistory.get_last_action_of_type(
+            project_id, task_id,
+            [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name])
+
+    @staticmethod
+    def get_last_locked_or_auto_unlocked_action(project_id: int, task_id: int):
+        """Gets the most recent task history record with locked or auto unlocked action for the task"""
+        return TaskHistory.get_last_action_of_type(
+            project_id, task_id,
+            [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name,
+             TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name])
 
 
 class Task(db.Model):
@@ -272,7 +322,9 @@ class Task(db.Model):
     @staticmethod
     def auto_unlock_tasks(project_id: int):
         """Unlock all tasks locked more than 2 hours ago"""
-        lock_duration = (datetime.datetime.min + datetime.timedelta(hours=2)).time().isoformat()
+        expiry_delta = datetime.timedelta(hours=2)
+        lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
+        expiry_date = datetime.datetime.utcnow() - expiry_delta
         old_locks_query = '''SELECT t.id
             FROM tasks t, task_history th
             WHERE t.id = th.task_id
@@ -281,8 +333,8 @@ class Task(db.Model):
             AND th.action IN ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
             AND th.action_text IS NULL
             AND t.project_id = {0}
-            AND AGE(TIMESTAMP '{1}', th.action_date) > '{2}'
-            '''.format(project_id, str(datetime.datetime.utcnow()), lock_duration)
+            AND th.action_date <= '{1}'
+            '''.format(project_id, str(expiry_date))
 
         old_tasks = db.engine.execute(old_locks_query)
 
@@ -292,7 +344,15 @@ class Task(db.Model):
 
         for old_task in old_tasks:
             task = Task.get(old_task[0], project_id)
-            task.record_auto_unlock(lock_duration)
+            task.auto_unlock_expired_tasks(expiry_date, lock_duration)
+
+    def auto_unlock_expired_tasks(self, expiry_date, lock_duration):
+        """Unlock all tasks locked before expiry date. Clears task lock if needed"""
+        TaskHistory.update_expired_and_locked_actions(self.project_id, self.id, expiry_date, lock_duration)
+
+        last_action = TaskHistory.get_last_locked_or_auto_unlocked_action(self.project_id, self.id)
+        if last_action.action in ['AUTO_UNLOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_VALIDATION']:
+            self.clear_lock()
 
     def is_mappable(self):
         """ Determines if task in scope is in suitable state for mapping """
@@ -338,7 +398,7 @@ class Task(db.Model):
 
     def reset_task(self, user_id: int):
         if TaskStatus(self.task_status) in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
-            self.clear_task_lock()
+            self.record_auto_unlock()
 
         self.set_task_history(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
         self.mapped_by = None
@@ -353,18 +413,16 @@ class Task(db.Model):
         No history of the unlock is recorded.
         :return:
         """
-        # Set locked_by to null and status to last status on task
-        self.locked_by = None
-        self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
-        self.update()
-
         # clear the lock action for the task in the task history
-        last_action = TaskHistory.get_last_action(self.project_id, self.id)
+        last_action = TaskHistory.get_last_locked_action(self.project_id, self.id)
         last_action.delete()
+
+        # Set locked_by to null and status to last status on task
+        self.clear_lock()
 
     def record_auto_unlock(self, lock_duration):
         locked_user = self.locked_by
-        last_action = TaskHistory.get_last_action(self.project_id, self.id)
+        last_action = TaskHistory.get_last_locked_action(self.project_id, self.id)
         next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if last_action.action == 'LOCKED_FOR_MAPPING' \
             else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
 
@@ -406,7 +464,10 @@ class Task(db.Model):
 
         # Using a slightly evil side effect of Actions and Statuses having the same name here :)
         TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status), user_id)
+        self.clear_lock()
 
+    def clear_lock(self):
+        """ Resets to last status and removes current lock from a task """
         self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
         self.locked_by = None
         self.update()
