@@ -969,7 +969,7 @@
                                                   <span class="status-marker-ready" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready' | translate }}</span>
                                               </td>
                                               <td>
-                                                  <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                                  <span am-time-ago="item.actionDate | amUtc | amLocal" title="{{ item.actionDate }}"></span>
                                                   <span ng-show="item.action === 'LOCKED_FOR_MAPPING' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                                   <span ng-show="item.action === 'LOCKED_FOR_VALIDATION' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
                                                   <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING' && item.actionText"> after {{ item.actionText |  amDurationFormat : 'minute'}}</span>

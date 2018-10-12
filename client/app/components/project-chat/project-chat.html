@@ -4,7 +4,7 @@
             <p class="space-bottom--none">
                 <strong>
                     <a href="./user/{{ message.username }}" target="_blank"/>{{ message.username }}</a>
-                </strong> <span class="metadata" am-time-ago="message.timestamp | amUtc | amLocal"></span></p>
+                </strong> <span class="metadata" am-time-ago="message.timestamp | amUtc | amLocal" title="{{ message.timestamp }}"></span></p>
             <p markdown-to-html="message.message"></p>
         </div>
         <div ng-show="projectChatCtrl.messages.length < 1">
