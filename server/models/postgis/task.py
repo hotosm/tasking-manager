@@ -3,6 +3,7 @@ import datetime
 import geojson
 import json
 from enum import Enum
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
 from server import db
@@ -71,21 +72,51 @@ class TaskHistory(db.Model):
         db.session.commit()
 
     @staticmethod
-    def update_task_locked_with_duration(task_id, project_id, lock_action):
+    def update_task_locked_with_duration(task_id: int, project_id: int, lock_action: TaskStatus, user_id: int):
         """
         Calculates the duration a task was locked for and sets it on the history record
         :param task_id: Task in scope
         :param project_id: Project ID in scope
         :param lock_action: The lock action, either Mapping or Validation
+        :param user_id: Logged in user updating the task
         :return:
         """
-        last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=lock_action.name,
-                                                  action_text=None).one()
+        try:
+            last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=lock_action.name,
+                                                      action_text=None, user_id=user_id).one()
+        except NoResultFound:
+            # We suspect there's some kind or race condition that is occasionally deleting history records
+            # prior to user unlocking task. Most likely stemming from auto-unlock feature. However, given that
+            # we're trying to update a row that doesn't exist, it's better to return without doing anything
+            # rather than showing the user an error that they can't fix
+            return
+        except MultipleResultsFound:
+            # Again race conditions may mean we have multiple rows within the Task History.  Here we attempt to
+            # remove the oldest duplicate rows, and update the newest on the basis that this was the last action
+            # the user was attempting to make.
+            TaskHistory.remove_duplicate_task_history_rows(task_id, project_id, lock_action, user_id)
+
+            # Now duplicate is removed, we recursively call ourself to update the duration on the remaining row
+            TaskHistory.update_task_locked_with_duration(task_id, project_id, lock_action, user_id)
+            return
 
         duration_task_locked = datetime.datetime.utcnow() - last_locked.action_date
         # Cast duration to isoformat for later transmission via api
         last_locked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
         db.session.commit()
+
+    @staticmethod
+    def remove_duplicate_task_history_rows(task_id: int, project_id: int, lock_action: TaskStatus, user_id: int):
+        """ Method used in rare cases where we have duplicate task history records for a given action by a user
+            This method will remove the oldest duplicate record, on the basis that the newest record was the
+            last action the user was attempting to perform
+        """
+        dupe = TaskHistory.query.filter(TaskHistory.project_id == project_id,
+                                        TaskHistory.task_id == task_id,
+                                        TaskHistory.action == lock_action.name,
+                                        TaskHistory.user_id == user_id).order_by(TaskHistory.id.asc()).first()
+
+        dupe.delete()
 
     @staticmethod
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
@@ -224,6 +255,8 @@ class Task(db.Model):
         :param project_id: project ID in scope
         :return: Task if found otherwise None
         """
+        # LIKELY PROBLEM AREA
+
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
 
     @staticmethod
@@ -360,7 +393,7 @@ class Task(db.Model):
 
         if not undo:
             # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-            TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
+            TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status), user_id)
 
         self.task_status = new_state.value
         self.locked_by = None
@@ -372,7 +405,7 @@ class Task(db.Model):
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
         # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-        TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status))
+        TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status), user_id)
 
         self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
         self.locked_by = None
