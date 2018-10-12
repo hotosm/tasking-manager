@@ -104,7 +104,7 @@ class TaskHistory(db.Model):
         # Cast duration to isoformat for later transmission via api
         last_locked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
         db.session.commit()
-    
+
     @staticmethod
     def remove_duplicate_task_history_rows(task_id: int, project_id: int, lock_action: TaskStatus, user_id: int):
         """ Method used in rare cases where we have duplicate task history records for a given action by a user
@@ -602,7 +602,6 @@ class Task(db.Model):
         for entry in self.task_history:
             db.session.expunge(entry)
             make_transient(entry)
-            entry.id = None
             entry.id = None
             entry.task_id = None
             db.session.add(entry)
