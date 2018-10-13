@@ -129,7 +129,7 @@
             autoRefresh = $interval(function () {
                 refreshProject(vm.id);
                 updateMappedTaskPerUser(vm.id);
-                //TODO do a selected task refesh too
+                //TODO do a selected task refresh too
             }, 10000);
 
             // set up the preferred editor from user preferences
@@ -566,7 +566,7 @@
         }
 
         /**
-         * Updates the map and contoller data for tasks locked by current user
+         * Updates the map and controller data for tasks locked by current user
          * @param projectId
          */
         function updateLockedTasksForCurrentUser(projectId) {
@@ -1465,7 +1465,7 @@
         };
 
         /**
-         * Higlights the set of tasks on the map
+         * Highlights the set of tasks on the map
          * @param doneTaskIds - array of task ids
          */
         vm.highlightTasks = function (doneTaskIds) {
