@@ -3,9 +3,9 @@
         <h1 class="section__title">
             {{ 'Map a Task for People in Need' | translate }}
         </h1>
-        <p class='centered'>{{ 'Join coordinated humanitarian mapping projects by taking a task and mapping a part of the world in '}} <a href="https://www.openstreetmap.org">OpenStreetMap</a>{{', the free and editable map of the world. Communities, organizations and governments worldwide have access to these maps to address local development challenges and aid disaster response. You can join thousands of others to map '}}<a href="https://www.openstreetmap.org">OpenStreetMap </a>{{'and support these communities in need.' | translate }}</p>
-        <a class="button button--outline--white" role="button"
-           href="/contribute"><span>{{ 'Start Mapping' | translate }}</span></a>
+        <p class='centered'>{{ 'Join coordinated humanitarian mapping projects by taking a task and mapping a part of the world in '}} <a href="https://www.openstreetmap.org">OpenStreetMap</a>{{', the free and editable map of the world. Communities, organizations and governments worldwide have access to these maps to address local development challenges and aid disaster response. You can join thousands of others to map '}}<a
+                href="https://www.openstreetmap.org">{{'OpenStreetMap'|translate}} </a>{{'and support these communities in need.' | translate }}</p>
+        <a class="button button--outline--white" role="button" href="/contribute"><span>{{ 'Start Mapping' | translate }}</span></a>
     </div>
 </header>
 <section class="section__body--secondary--dark">
@@ -19,7 +19,7 @@
                             <strong>{{ homeCtrl.mappersOnline | number }}</strong>
                         </div>
                     </div>
-                    <div class="stats-card__title">Mappers Online</div>
+                    <div class="stats-card__title">{{'Mappers Online'|translate}}</div>
                 </li>
                 <li id="homepage-stats-2" class="homepage-stats__card">
                     <div class="stats-card__container">
@@ -28,7 +28,7 @@
                             <strong>{{ homeCtrl.tasksMapped | number }}</strong>
                         </div>
                     </div>
-                    <div class="stats-card__title">Tasks Mapped</div>
+                    <div class="stats-card__title">{{'Tasks Mapped'|translate}}</div>
                 </li>
                 <li id="homepage-stats-3" class="homepage-stats__card">
                     <div class="stats-card__container">
@@ -37,7 +37,7 @@
                             <strong>{{ homeCtrl.totalMappers | number }}</strong>
                         </div>
                     </div>
-                    <div class="stats-card__title">Total Mappers</div>
+                    <div class="stats-card__title">{{'Total Mappers'|translate}}</div>
                 </li>
             </ul>
         </div>
@@ -48,52 +48,53 @@
         <h2>{{ 'Causes You Can Help' | translate }}</h2>
         <ul class="field-stories__cards">
             <li id="story-1" class="field-stories__card">
-                <h5>Red Cross - Ayeyarwady Delta</h5>
+                <h5>{{'Red Cross - Ayeyarwady Delta'| translate }}</h5>
                 <blockquote>
-                  <p>"The Red Cross is mapping the Ayeyarwady Delta area in Myanmar as part of a multi-year mapping and data readiness activity to better understand where critical infrastructure and roads are to inform decision making during potential disasters. As recently as 2008 a cyclone killed at least 77,000 people with over 55,900 missing, and left about 2.5 million homeless."
-                  </p>
-                  <footer>
-                    <cite>Matt Gibb, Red Cross</cite>
-                  </footer>
-                  <p><a ng-href="/contribute?difficulty=ALL&text=Ayeyarwady">Find Ayeyarwady Delta Projects</a></p>
+                    <p>{{'"The Red Cross is mapping the Ayeyarwady Delta area in Myanmar as part of a multi-year mapping and data readiness activity to better understand where critical infrastructure and roads are to inform decision making during potential disasters. As recently as 2008 a cyclone killed at least 77,000 people with over 55,900 missing, and left about 2.5 million homeless."'| translate }}
+                    </p>
+                    <footer>
+                        <cite>{{'Matt Gibb, Red Cross'| translate }}</cite>
+                    </footer>
+                    <p><a ng-href="/contribute?difficulty=ALL&text=Ayeyarwady">{{'Find Ayeyarwady Delta Projects'| translate }}</a></p>
                 </blockquote>
             </li>
             <li id="story-2" class="field-stories__card">
-                <h5>Tanzania Development Trust</h5>
+                <h5>{{'Tanzania Development Trust'| translate }}</h5>
                 <blockquote>
-                    <p>"Tanzania has a high incidence of extreme poverty, early marriage and Gender Based Violence. NGOs on the ground need better road and residential area data to facilitate their outreach work. Community mappers from a HOT microgrant, together with YouthMappers from the Institute of Rural Development Planning will map employment opportunities as part of a project to reduce youth vulnerability starting on 26th August. This base map will assist with this field mapping."
+                    <p>{{''"Tanzania has a high incidence of extreme poverty, early marriage and Gender Based Violence. NGOs on the ground need better road and residential area data to facilitate their outreach work. Community mappers from a HOT microgrant, together with YouthMappers from the Institute of Rural Development Planning will map employment opportunities as part of a project to reduce youth vulnerability starting on 26th August. This base map will assist with this field mapping."'| translate }}
                     </p>
                     <footer>
-                        <cite>Janet Chapman, Tanzania Development Trust</cite>
+                        <cite>{{'Janet Chapman, Tanzania Development Trust'| translate }}</cite>
                     </footer>
-                    <p><a ng-href="/contribute?difficulty=ALL&organisation=Tanzania%20Development%20Trust">Find Tanzania Development Trust Projects</a></p>
+                    <p><a ng-href="/contribute?difficulty=ALL&organisation=Tanzania%20Development%20Trust">{{'Find Tanzania Development Trust Projects'| translate }}</a></p>
                 </blockquote>
             </li>
             <li id="story-3" class="field-stories__card">
-                <h5>Ongoing Disaster Mapping</h5>
+                <h5>{{'Ongoing Disaster Mapping'| translate }}</h5>
                 <blockquote>
-                    <p>"With our disaster mapping program, what we are trying to provide is a common operating picture for the first responders, aid organizations, governments and the affected people to make informed decisions. When all parties are working with the same information, the better situated the community is for quick and effective recovery."
+                    <p>{{''"With our disaster mapping program, what we are trying to provide is a common operating picture for the first responders, aid organizations, governments and the affected people to make informed decisions. When all parties are working with the same information, the better situated the community is for quick and effective recovery."'| translate }}
                     </p>
                     <footer>
-                        <cite>Russell Deffner, Humanitarian OpenStreetMap Team</cite>
+                        <cite>{{'Russell Deffner, Humanitarian OpenStreetMap Team'| translate }}</cite>
                     </footer>
-                    <p><a ng-href="/contribute?difficulty=ALL&text=disaster">Find New Disaster Mapping Projects</a></p>
+                    <p><a ng-href="/contribute?difficulty=ALL&text=disaster">{{'Find New Disaster Mapping Projects'| translate }}</a></p>
                 </blockquote>
             </li>
         </ul>
     </div>
 </section>
 <section class='block--action section__body'>
-  <div class="inner section--centered--sm">
-      <img class="content--left" alt="mapping on phones and computers" src="./assets/img/icon-mapping.png" />
-      <div class="content--right">
-          <h3>{{ 'Ready to get mapping?' | translate }}</h3>
-          <p>{{ 'Even if you are a new mapper, anyone who can use a computer to draw lines and boxes or use a phone to swipe and tap can meaningfully contribute to humanitarian mapping through' | translate }} <a href="https://www.openstreetmap.org">OpenStreetMap</a>. {{ 'If you have never mapped before and would like to help, visit our Learn page to get started mapping in less than 30 minutes.' | translate }}</p>
-          <p>{{ 'Seasoned mapper? Pick up one of our many projects and start contributing.' | translate }}</p>
-          <div class="button-group">
-              <a href="/learn" class="button button--primary" role="button"><span>{{ 'Learn to Map' | translate }}</span></a>
-              <a href="/contribute" class="button button--primary" role="button"><span>{{ 'Start Mapping' | translate }}</span></a>
-          </div>
-      </div>
-  </div>
+    <div class="inner section--centered--sm">
+        <img class="content--left" alt="mapping on phones and computers" src="./assets/img/icon-mapping.png" />
+        <div class="content--right">
+            <h3>{{ 'Ready to get mapping?' | translate }}</h3>
+            <p>{{ 'Even if you are a new mapper, anyone who can use a computer to draw lines and boxes or use a phone to swipe and tap can meaningfully contribute to humanitarian mapping through' | translate }} <a href="https://www.openstreetmap.org">OpenStreetMap</a>.
+                {{ 'If you have never mapped before and would like to help, visit our Learn page to get started mapping in less than 30 minutes.' | translate }}</p>
+            <p>{{ 'Seasoned mapper? Pick up one of our many projects and start contributing.' | translate }}</p>
+            <div class="button-group">
+                <a href="/learn" class="button button--primary" role="button"><span>{{ 'Learn to Map' | translate }}</span></a>
+                <a href="/contribute" class="button button--primary" role="button"><span>{{ 'Start Mapping' | translate }}</span></a>
+            </div>
+        </div>
+    </div>
 </section>
