@@ -1,7 +1,7 @@
 import unittest
 from schematics.exceptions import DataError
 from server.models.dtos.project_dto import ProjectDTO
-
+from server.models.dtos.mapping_dto import is_valid_mapped_status
 
 class TestProjectDTO(unittest.TestCase):
 
