@@ -33,7 +33,7 @@ When creating an issue through the GitHub issue tracker, please include the foll
   * The user need being addressed
 
 #### Development issues should include:
-  * Specific code that needs improvement or dependancies to be investigated
+  * Specific code that needs improvement or dependencies to be investigated
   * Rational for recommendations
   * Use checklists (via - [ ]) to keep track of sub-items wherever possible
 

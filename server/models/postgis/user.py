@@ -24,6 +24,7 @@ class User(db.Model):
     projects_mapped = db.Column(db.ARRAY(db.Integer))
     email_address = db.Column(db.String)
     is_email_verified = db.Column(db.Boolean, default=False)
+    is_expert = db.Column(db.Boolean, default=False)
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
@@ -67,6 +68,11 @@ class User(db.Model):
     def set_email_verified_status(self, is_verified: bool):
         """ Updates email verfied flag on successfully verified emails"""
         self.is_email_verified = is_verified
+        db.session.commit()
+
+    def set_is_expert(self, is_expert: bool):
+        """ Enables or disables expert mode on the user"""
+        self.is_expert = is_expert
         db.session.commit()
 
     @staticmethod
@@ -219,6 +225,7 @@ class User(db.Model):
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.is_expert = self.is_expert or False
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
         user_dto.tasks_invalidated = self.tasks_invalidated

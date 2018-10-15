@@ -1,4 +1,4 @@
-<div>
+﻿<div>
     <section class="section__header page__project">
         <div class="inner">
             <div>
@@ -398,24 +398,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="form__group--section">
-                                            <div ng-include="'/app/project/comment-box.html'"></div>
-                                            <ul class="list-type--none buttons--sidebyside">
-                                                <li>
-                                                    <button class="button"
-                                                            ng-click="projectCtrl.addStandaloneComment()">
-                                                        {{ 'Add Comment' | translate }}
-                                                     </button>
-                                                </li>
-                                            </ul>
-                                            <div ng-show="projectCtrl.taskCommentError">
-                                                <div>
-                                                    <div class="error" role="alert">
-                                                        <p>{{ 'There was a problem commenting on the task.' | translate }} {{ projectCtrl.taskCommentErrorMessage }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                                 <!-- task locked UI -->
@@ -469,12 +451,14 @@
                                     <div class="form__group form__group--section">
                                         <div>
                                             <h6 style="width:84%">Task too big to complete quickly? Or is the satellite imagery not good? Choose split task or mark as bad imagery.</h6>
+                                            
                                         </div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <div ng-show="projectCtrl.isSelectedSplittable">
                                                     <button style="padding:16px" class="button button--secondary" ng-click="projectCtrl.splitTask()">
-                                                            {{ '➗ Split Task' | translate }}
+                                                        <i class="icon-split"></i>
+                                                        {{ ' Split Task' | translate }}
                                                     </button>
                                                 </div>
                                             </li>
@@ -493,13 +477,14 @@
                                                 </div>
                                             </li>
                                             <li>
-                                                    <button style="padding:16px" class="button button--secondary"
-                                                            ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
-                                                        {{ '❌ Mark as Bad Imagery' | translate }}
-                                                    </button>
-                                                </li>
-                                            </ul>
+                                                <button style="padding:16px" class="button button--secondary"
+                                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
+                                                        <i class="icon-danger"></i>
+                                                        {{ ' Mark as Bad Imagery' | translate }}
+                                                </button>
+                                            </li>
                                             
+                                            </ul>
                                         <div>
                                             <h6 style="width:84%">Can't finish but need to stop mapping? Or have you completely mapped the area? Leave a comment and select one of the options below that matches your editing status.</h6>
                                             <textarea class="form__control space-bottom--none" type="text" mentio
@@ -514,15 +499,14 @@
                                                       ng-model="projectCtrl.comment"></textarea>
                                             <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                                 {{ 'characters remaining' | translate }}</p>
-                                        </div
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                        <div ng-include="'/app/project/comment-box.html'"></div>
+                                        </div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button button--secondary"
                                                         ng-click="projectCtrl.stopMapping(projectCtrl.comment)"
                                                         style="width:205%">
-                                                    {{ '✋ Stop Mapping' | translate }}
+                                                        <i class="icon-stop-map"></i>
+                                                        {{ ' Stop Mapping' | translate }}
                                                 </button>
                                             </li>
                                                     
@@ -530,7 +514,8 @@
                                                 <button class="button"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')"
                                                         style="width:132%">
-                                                    {{ '💯 Mark as Completely Mapped' | translate }}
+                                                        <i class="icon-sm-tick"></i>
+                                                        {{ ' Mark as Completely Mapped' | translate }}
                                                 </button>
                                             </li>
                                            
@@ -778,24 +763,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form__group--section">
-                                        <div ng-include="'/app/project/comment-box.html'"></div>
-                                        <ul class="list-type--none buttons--sidebyside">
-                                            <li>
-                                                <button class="button"
-                                                        ng-click="projectCtrl.addStandaloneComment()">
-                                                    {{ 'Add Comment' | translate }}
-                                                </button>
-                                            </li>
-                                        </ul>
-                                        <div ng-show="projectCtrl.taskCommentError">
-                                            <div>
-                                                <div class="error" role="alert">
-                                                    <p>{{ 'There was a problem commenting on the task.' | translate }} {{ projectCtrl.taskCommentErrorMessage }}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 <!-- task locked UI -->
                                 <div ng-show="projectCtrl.validatingStep === 'locked'"><!-- task mapping UI -->
@@ -847,7 +814,18 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                        <div ng-include="'/app/project/comment-box.html'"></div>
+                                         <textarea class="form__control space-bottom--none" type="text" mentio
+                                                   rows="4"
+                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
+                                                   placeholder="{{ 'Leave a comment' | translate }}"
+                                                   mentio-typed-text="typedTerm"
+                                                   mentio-search="projectCtrl.searchUser(term)"
+                                                   mentio-select="projectCtrl.formatUserTag(item)"
+                                                   mentio-items="projectCtrl.suggestedUsers"
+                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
+                                                   ng-model="projectCtrl.comment"></textarea>
+                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
+                                            {{ 'characters remaining' | translate }}</p>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -928,7 +906,19 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                        <div ng-include="'/app/project/comment-box.html'"></div>
+                                         <textarea class="form__control space-bottom--none" type="text" mentio
+                                                   rows="4"
+                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
+                                                   placeholder="{{ 'Leave a comment' | translate }}"
+                                                   mentio-typed-text="typedTerm"
+                                                   mentio-search="projectCtrl.searchUser(term)"
+                                                   mentio-select="projectCtrl.formatUserTag(item)"
+                                                   mentio-items="projectCtrl.suggestedUsers"
+                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
+                                                   ng-model="projectCtrl.comment"></textarea>
+                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
+                                            {{ 'characters remaining' | translate }}</p>
+
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
