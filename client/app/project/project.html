@@ -1,4 +1,4 @@
-<div>
+﻿<div>
     <section class="section__header page__project">
         <div class="inner">
             <div>
@@ -473,26 +473,30 @@
                                             <li>
                                                 <button class="button"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')">
-                                                    {{ 'Mark as Completely Mapped' | translate }}
+                                                    <i class="icon-sm-tick"></i>
+                                                    {{ ' Mark as Completely Mapped' | translate }}
                                                 </button>
                                             </li>
                                             <li>
                                                 <button class="button button--secondary"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
-                                                    {{ 'Mark as Bad Imagery' | translate }}
+                                                        <i class="icon-danger"></i>
+                                                        {{ ' Mark as Bad Imagery' | translate }}
                                                 </button>
                                             </li>
                                             <li>
                                                 <button class="button button--achromic button--outline--secondary"
                                                         ng-click="projectCtrl.stopMapping(projectCtrl.comment)">
-                                                    {{ 'Stop Mapping' | translate }}
+                                                    <i class="icon-stop-map"></i>
+                                                    {{ ' Stop Mapping' | translate }}
                                                 </button>
                                             </li>
                                             <li>
                                         </ul>
                                         <div ng-show="projectCtrl.isSelectedSplittable">
                                             <button class="button" ng-click="projectCtrl.splitTask()">
-                                                {{ 'Split Task' | translate }}
+                                                <i class="icon-split"></i>
+                                                {{ ' Split Task' | translate }}
                                             </button>
                                         </div>
                                         <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
