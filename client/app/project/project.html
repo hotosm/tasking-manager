@@ -1,4 +1,4 @@
-<div>
+﻿<div>
     <section class="section__header page__project">
         <div class="inner">
             <div>
@@ -285,7 +285,11 @@
                             <!-- task viewing and mapping UI's -->
                             <div ng-show="projectCtrl.mappingStep === 'viewing' || projectCtrl.mappingStep === 'locked'">
                                 <!-- task viewing UI -->
-                                <h3>{{ 'Mapping' | translate }}</h3>
+                                <h3 style="display: inline-block;">{{ 'Mapping' | translate }}</h3>
+                                <div ng-show="projectCtrl.mappingStep === 'locked'" style="display: inline-block; float: right;">
+                                    <i class="fa fa-clock-o"></i>
+                                    <span>{{ projectCtrl.getLockTime() }} {{ 'minutes left' | translate }}</span>
+                                </div>
                                 <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                     <!-- task information -->
 
@@ -316,6 +320,11 @@
                                         <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                             <div class="error" role="alert">
                                                 <p>{{ 'The task could not be locked for mapping.' | translate }} {{ projectCtrl.taskLockErrorMessage }}</p>
+                                            </div>
+                                        </div>
+                                        <div ng-show="projectCtrl.wasAutoUnlocked">
+                                            <div class="error" role="alert">
+                                                <p>{{ 'The task expired and was automatically unlocked.' | translate }}</p>
                                             </div>
                                         </div>
                                         <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
@@ -389,6 +398,24 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="form__group--section">
+                                            <div ng-include="'/app/project/comment-box.html'"></div>
+                                            <ul class="list-type--none buttons--sidebyside">
+                                                <li>
+                                                    <button class="button"
+                                                            ng-click="projectCtrl.addStandaloneComment()">
+                                                        {{ 'Add Comment' | translate }}
+                                                     </button>
+                                                </li>
+                                            </ul>
+                                            <div ng-show="projectCtrl.taskCommentError">
+                                                <div>
+                                                    <div class="error" role="alert">
+                                                        <p>{{ 'There was a problem commenting on the task.' | translate }} {{ projectCtrl.taskCommentErrorMessage }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- task locked UI -->
@@ -440,44 +467,36 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <div>
-                                            <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                            <textarea class="form__control space-bottom--none" type="text" mentio
-                                                      rows="4"
-                                                      maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                      placeholder="{{ 'Leave a comment' | translate }}"
-                                                      mentio-typed-text="typedTerm"
-                                                      mentio-search="projectCtrl.searchUser(term)"
-                                                      mentio-select="projectCtrl.formatUserTag(item)"
-                                                      mentio-items="projectCtrl.usernames | filter:label:typedTerm"
-                                                      ng-model="projectCtrl.comment"></textarea>
-                                            <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                                {{ 'characters remaining' | translate }}</p>
-                                        </div>
+                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')">
-                                                    {{ 'Mark as Completely Mapped' | translate }}
+                                                    <i class="icon-sm-tick"></i>
+                                                    {{ ' Mark as Completely Mapped' | translate }}
                                                 </button>
                                             </li>
                                             <li>
                                                 <button class="button button--secondary"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
-                                                    {{ 'Mark as Bad Imagery' | translate }}
+                                                        <i class="icon-danger"></i>
+                                                        {{ ' Mark as Bad Imagery' | translate }}
                                                 </button>
                                             </li>
                                             <li>
                                                 <button class="button button--achromic button--outline--secondary"
                                                         ng-click="projectCtrl.stopMapping(projectCtrl.comment)">
-                                                    {{ 'Stop Mapping' | translate }}
+                                                    <i class="icon-stop-map"></i>
+                                                    {{ ' Stop Mapping' | translate }}
                                                 </button>
                                             </li>
                                             <li>
                                         </ul>
                                         <div ng-show="projectCtrl.isSelectedSplittable">
                                             <button class="button" ng-click="projectCtrl.splitTask()">
-                                                {{ 'Split Task' | translate }}
+                                                <i class="icon-split"></i>
+                                                {{ ' Split Task' | translate }}
                                             </button>
                                         </div>
                                         <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
@@ -644,13 +663,22 @@
                             <!-- task viewing and mapping UI's -->
                             <div ng-show="projectCtrl.validatingStep === 'viewing' || projectCtrl.validatingStep === 'locked' || projectCtrl.validatingStep === 'multi-locked'">
                                 <!-- task viewing UI -->
-                                <h3>{{ 'Validation' | translate }}</h3>
+                                <h3 style="display: inline-block;">{{ 'Validation' | translate }}</h3>
+                                <div ng-show="projectCtrl.validatingStep === 'locked'" style="display: inline-block; float: right;">
+                                    <i class="fa fa-clock-o"></i>
+                                    <span>{{ projectCtrl.getLockTime() }} {{ 'minutes left' | translate }}</span>
+                                </div>
                                 <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                     <!-- task information -->
 
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
                                         <div class="alert alert--danger" role="alert">
                                             <p>{{ 'The task could not be locked for validation.' | translate }} {{ projectCtrl.taskLockErrorMessage }}</p>
+                                        </div>
+                                    </div>
+                                    <div ng-show="projectCtrl.wasAutoUnlocked">
+                                        <div class="error" role="alert">
+                                            <p>{{ 'The task expired and was automatically unlocked.' | translate }}</p>
                                         </div>
                                     </div>
                                     <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
@@ -723,6 +751,24 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form__group--section">
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
+                                        <ul class="list-type--none buttons--sidebyside">
+                                            <li>
+                                                <button class="button"
+                                                        ng-click="projectCtrl.addStandaloneComment()">
+                                                    {{ 'Add Comment' | translate }}
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        <div ng-show="projectCtrl.taskCommentError">
+                                            <div>
+                                                <div class="error" role="alert">
+                                                    <p>{{ 'There was a problem commenting on the task.' | translate }} {{ projectCtrl.taskCommentErrorMessage }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- task locked UI -->
                                 <div ng-show="projectCtrl.validatingStep === 'locked'"><!-- task mapping UI -->
@@ -774,17 +820,7 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                         <textarea class="form__control space-bottom--none" type="text" mentio
-                                                   rows="4"
-                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                   placeholder="{{ 'Leave a comment' | translate }}"
-                                                   mentio-typed-text="typedTerm"
-                                                   mentio-search="projectCtrl.searchUser(term)"
-                                                   mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.usernames | filter:label:typedTerm"
-                                                   ng-model="projectCtrl.comment"></textarea>
-                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                            {{ 'characters remaining' | translate }}</p>
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -865,18 +901,7 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                         <textarea class="form__control space-bottom--none" type="text" mentio
-                                                   rows="4"
-                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                   placeholder="{{ 'Leave a comment' | translate }}"
-                                                   mentio-typed-text="typedTerm"
-                                                   mentio-search="projectCtrl.searchUser(term)"
-                                                   mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.usernames | filter:label:typedTerm"
-                                                   ng-model="projectCtrl.comment"></textarea>
-                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                            {{ 'characters remaining' | translate }}</p>
-
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -925,38 +950,45 @@
                                 <h5>{{ 'History' | translate }}</h5>
                                 <div class="history">
                                     <p ng-show="projectCtrl.selectedTaskData.taskHistory.length < 1">{{ 'Nothing has happened yet.' | translate }}</p>
-                                    <div ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
-                                         ng-class-odd="'odd'" ng-class-even="'even'">
-                                        <div>
-                                            <span ng-show="item.action === 'COMMENT'">{{ 'Comment left by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Locked for mapping by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Locked for validation by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Marked as bad imagery by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Mapped by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Validated by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Invalidated by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        </div>
-                                        <div>
-                                            <span ng-bind-html="item.actionText" ng-show="item.action === 'COMMENT'"></span>
-                                        </div>
-                                        <div class="metadata">
-                                            <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                        </div>
-                                    </div>
+                                    <table ng-show="projectCtrl.selectedTaskData.taskHistory.length >= 1" class="table table-task-history">
+                                        <tbody ng-repeat="item in (orderedData = (projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate')) track by $index">
+                                          <tr ng-show="item.actionBy !== orderedData[$index - 1].actionBy"
+                                              class="new-user-row">
+                                              <td colspan="2">
+                                                  <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a>
+                                              </td>
+                                          </tr>
+                                          <tr class="action-row {{ item.action | lowercase }} {{ projectCtrl.highlightHistory && projectCtrl.highlightHistory === item.historyId ? 'highlighted' : '' }}">
+                                              <td class="action">
+                                                  <span class="status-marker-comment" ng-show="item.action === 'COMMENT'">{{ 'Commented' | translate }}</span>
+                                                  <span class="status-marker-locked-for-mapping" ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Locked for mapping' | translate }}</span>
+                                                  <span class="status-marker-locked-for-validation" ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Locked for validation' | translate }}</span>
+                                                  <span class="status-marker-auto-unlocked-for-mapping" ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Automatically unlocked for mapping' | translate }}</span>
+                                                  <span class="status-marker-auto-unlocked-for-validation" ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Automatically unlocked for validation' | translate }}</span>
+                                                  <span class="status-marker-badimagery" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Marked as bad imagery' | translate }}</span>
+                                                  <span class="status-marker-mapped" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Mapped' | translate }}</span>
+                                                  <span class="status-marker-validated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Validated' | translate }}</span>
+                                                  <span class="status-marker-invalidated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Invalidated' | translate }}</span>
+                                                  <span class="status-marker-split" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'SPLIT'">{{ 'Split' | translate }}</span>
+                                                  <span class="status-marker-ready" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready' | translate }}</span>
+                                              </td>
+                                              <td>
+                                                  <span am-time-ago="item.actionDate | amUtc | amLocal" title="{{ item.actionDate }}"></span>
+                                                  <span ng-show="item.action === 'LOCKED_FOR_MAPPING' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                                  <span ng-show="item.action === 'LOCKED_FOR_VALIDATION' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
+                                                  <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING' && item.actionText"> after {{ item.actionText |  amDurationFormat : 'minute'}}</span>
+                                                  <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION' && item.actionText"> after {{ item.actionText |  amDurationFormat : 'minute'}}</span>
+                                              </td>
+                                          </tr>
+                                          <tr ng-show="item.action === 'COMMENT'">
+                                            <td colspan="2" class="comment-text">
+                                              <span markdown-to-html="item.actionText"></span>
+                                            </td>
+                                          </tr>
+                                      </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <hr/>
                             <div>
                                 <h5 ng-click="showAdvanced=!showAdvanced" class="pointer"
                                     title="{{ 'Show advanced options' | translate }}">

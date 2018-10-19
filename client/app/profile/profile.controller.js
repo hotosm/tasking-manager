@@ -15,14 +15,17 @@
         vm.username = '';
         vm.currentlyLoggedInUser = null;
         vm.userDetails = null;
+        vm.userStats = null;
         vm.osmUserDetails = null;
         vm.projects = [];
         vm.map = null;
         vm.highlightSource = null;
+        vm.savingExpertMode = false;
 
         // Errors - for displaying messages when API calls were not successful
         vm.errorSetRole = false;
         vm.errorSetLevel = false;
+        vm.errorSetExpertMode = false;
         vm.errorSetContactDetails = false;
         vm.errorVerificationEmailSent = false;
 
@@ -50,8 +53,9 @@
             var hoverIdentify = true;
             var clickIdentify = true;
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
-            getUserProjects();
             getLevelSettings();
+            getUserStats();
+            getUserProjects();
         }
 
         /**
@@ -114,6 +118,22 @@
         };
 
         /**
+         * Set the user's expert mode
+         * @param isExpert
+         */
+        vm.setExpertMode = function(isExpert){
+            vm.errorSetExpertMode = false;
+            vm.savingExpertMode = true;
+            userService.setExpertMode(isExpert).then(function(data) {
+                getUser();
+                vm.savingExpertMode = false;
+            }, function(){
+                vm.errorSetExpertMode = true;
+                vm.savingExpertMode = false;
+            });
+        };
+
+        /**
          * Get the user's details from the account service
          */
         function getUser() {
@@ -141,7 +161,8 @@
                     emailAddress: vm.userDetails.emailAddress,
                     facebookId: vm.userDetails.facebookId,
                     linkedinId: vm.userDetails.linkedinId,
-                    twitterId: vm.userDetails.twitterId
+                    twitterId: vm.userDetails.twitterId,
+                    validation_message : vm.userDetails.validation_message
                 };
                 var resultsPromise = userService.setContactDetails(contactDetails);
                 resultsPromise.then(function (data) {
@@ -204,5 +225,17 @@
                 vm.mapperLevelAdvanced = data.mapperLevelAdvanced;
             });
         }
+
+        /**
+         * Get stats about the user
+         */
+        function getUserStats() {
+            var resultsPromise = userService.getUserStats(vm.username);
+            resultsPromise.then(function (data) {
+                // On success, set the detailed stats for this user
+                vm.userStats = data;
+            });
+        }
+
     }
 })();

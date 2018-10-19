@@ -28,14 +28,13 @@ class EnvironmentConfig:
     SMTP_SETTINGS = {
         'host': os.getenv('TM_SMTP_HOST', None),
         'smtp_user': os.getenv('TM_SMTP_USER', None),
+        'smtp_port': os.getenv('TM_SMTP_PORT', 25), # GMail SMTP is over port 587 and will fail on the default port
         'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
     }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {
-        'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu, mg',
-        'languages': 'English, Français, Español, Deutsch, Português, 日本語, Lietuvos, 中文, Indonesia, Dansk,'
-                     ' Português (Brasil), Русский, Slovenščina, Italiano, Nederlands, Українська, தமிழ், සිංහල,'
-                     ' Česky, Bokmål, Magyar, Malagasy'
+        'codes': 'ar, cs, da, de, en, es, fa_IR, fi, fr, hu, gl, id, it, ja, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, vi, zh_TW',
+        'languages': 'Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文'
     }
 
 

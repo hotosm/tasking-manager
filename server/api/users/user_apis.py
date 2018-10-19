@@ -230,6 +230,10 @@ class UserSearchFilterAPI(Resource):
               name: page
               description: Page of results user requested
               type: integer
+            - in: query
+              name: projectId
+              description: Optional, promote project participants to head of results
+              type: integer
         responses:
             200:
                 description: Users found
@@ -240,7 +244,8 @@ class UserSearchFilterAPI(Resource):
         """
         try:
             page = int(request.args.get('page')) if request.args.get('page') else 1
-            users_dto = UserService.filter_users(username, page)
+            project_id = request.args.get('projectId', None, int)
+            users_dto = UserService.filter_users(username, project_id, page)
             return users_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404
@@ -438,6 +443,53 @@ class UserSetLevel(Resource):
             return {"Error": "User or mapping not found"}, 404
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+class UserSetExpertMode(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self, is_expert):
+        """
+        Allows user to enable or disable expert mode
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: is_expert
+              in: path
+              description: 'true' to enable expert mode, 'false' to disable
+              required: true
+              type: string
+        responses:
+            200:
+                description: Mode set
+            400:
+                description: Bad Request - Client Error
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            UserService.set_user_is_expert(tm.authenticated_user_id, is_expert == 'true')
+            return {"Success": "Expert mode updated"}, 200
+        except UserServiceError:
+            return {"Error": "Not allowed"}, 400
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f'UserSetExpert POST - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 

@@ -1,7 +1,12 @@
 from cachetools import TTLCache, cached
 from flask import current_app
+from functools import reduce
+import dateutil.parser
+import datetime
 
-from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO
+from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
+    UserStatsDTO
+from server.models.postgis.task import TaskHistory
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
@@ -89,6 +94,29 @@ class UserService:
         return requested_user.as_dto(requested_user.username)
 
     @staticmethod
+    def get_detailed_stats(username: str):
+        user = UserService.get_user_by_username(username)
+        stats_dto = UserStatsDTO()
+
+        actions = TaskHistory.query.filter(
+            TaskHistory.user_id == user.id,
+            TaskHistory.action == 'LOCKED_FOR_MAPPING',
+            TaskHistory.action_text != ''
+        ).all()
+
+        total_time = datetime.datetime.min
+        for action in actions:
+            duration = dateutil.parser.parse(action.action_text)
+            total_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)
+
+        stats_dto.time_spent_mapping = total_time.time().isoformat()
+
+        return stats_dto
+
+    @staticmethod
     def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
         """ Update user with info supplied by user, if they add or change their email address a verification mail 
             will be sent """
@@ -112,9 +140,9 @@ class UserService:
 
     @staticmethod
     @cached(user_filter_cache)
-    def filter_users(username: str, page: int) -> UserFilterDTO:
+    def filter_users(username: str, project_id: int, page: int) -> UserFilterDTO:
         """ Gets paginated list of users, filtered by username, for autocomplete """
-        return User.filter_users(username, page)
+        return User.filter_users(username, project_id, page)
 
     @staticmethod
     def is_user_a_project_manager(user_id: int) -> bool:
@@ -199,6 +227,17 @@ class UserService:
 
         user = UserService.get_user_by_username(username)
         user.set_mapping_level(requested_level)
+
+        return user
+
+    @staticmethod
+    def set_user_is_expert(user_id: int, is_expert: bool) -> User:
+        """
+        Enabled or disables expert mode for the user
+        :raises: UserServiceError
+        """
+        user = UserService.get_user_by_id(user_id)
+        user.set_is_expert(is_expert)
 
         return user
 

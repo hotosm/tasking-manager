@@ -1,7 +1,8 @@
 import geojson
 from server import db
+from sqlalchemy import desc
 from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
-    UserSearchQuery, UserSearchDTO, ListedUser
+    UserSearchQuery, UserSearchDTO, ProjectParticipantUser, ListedUser
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
@@ -13,6 +14,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.BigInteger, primary_key=True, index=True)
+    validation_message = db.Column(db.Boolean, default=True, nullable=False)
     username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0, nullable=False)
     mapping_level = db.Column(db.Integer, default=1, nullable=False)
@@ -22,6 +24,7 @@ class User(db.Model):
     projects_mapped = db.Column(db.ARRAY(db.Integer))
     email_address = db.Column(db.String)
     is_email_verified = db.Column(db.Boolean, default=False)
+    is_expert = db.Column(db.Boolean, default=False)
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
@@ -59,11 +62,17 @@ class User(db.Model):
         self.twitter_id = user_dto.twitter_id.lower() if user_dto.twitter_id else None
         self.facebook_id = user_dto.facebook_id.lower() if user_dto.facebook_id else None
         self.linkedin_id = user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
+        self.validation_message = user_dto.validation_message
         db.session.commit()
 
     def set_email_verified_status(self, is_verified: bool):
         """ Updates email verfied flag on successfully verified emails"""
         self.is_email_verified = is_verified
+        db.session.commit()
+
+    def set_is_expert(self, is_expert: bool):
+        """ Enables or disables expert mode on the user"""
+        self.is_expert = is_expert
         db.session.commit()
 
     @staticmethod
@@ -103,17 +112,28 @@ class User(db.Model):
 
 
     @staticmethod
-    def filter_users(user_filter: str, page: int) -> UserFilterDTO:
-        """ Finds users that matches first characters, for auto-complete """
-        results = db.session.query(User.username).filter(User.username.ilike(user_filter.lower() + '%')) \
-            .order_by(User.username).paginate(page, 20, True)
+    def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
+        """ Finds users that matches first characters, for auto-complete.
 
+        Users who have participated (mapped or validated) in the project, if given, will be
+        returned ahead of those who have not.
+        """
+        # Note that the projects_mapped column includes both mapped and validated projects.
+        results = db.session.query(User.username, User.projects_mapped.any(project_id).label("participant")) \
+            .filter(User.username.ilike(user_filter.lower() + '%')) \
+            .order_by(desc("participant").nullslast(), User.username).paginate(page, 20, True)
         if results.total == 0:
             raise NotFound()
 
         dto = UserFilterDTO()
         for result in results.items:
             dto.usernames.append(result.username)
+            if project_id is not None:
+                participant = ProjectParticipantUser()
+                participant.username = result.username
+                participant.project_id = project_id
+                participant.is_participant = bool(result.participant)
+                dto.users.append(participant)
 
         dto.pagination = Pagination(results)
         return dto
@@ -205,11 +225,14 @@ class User(db.Model):
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.is_expert = self.is_expert or False
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
+        user_dto.tasks_invalidated = self.tasks_invalidated
         user_dto.twitter_id = self.twitter_id
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
+        user_dto.validation_message = self.validation_message
 
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
