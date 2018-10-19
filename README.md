@@ -42,10 +42,10 @@ The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests, that
 ### Dependencies
 Following must be available locally:
 
-* Python 3.6 - [Python 3.6 install here](https://www.python.org/downloads/)
+* Python 3.7 - [Python 3.7 install here](https://www.python.org/downloads/)
 
 ### Build the Server
-* Create a Python Virtual Environment, using Python 3.6:
+* Create a Python Virtual Environment, using Python 3.7:
     * ```python -m venv ./venv```
 * Activate your virtual environment and install dependencies:
     * Linux/Mac:
