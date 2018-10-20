@@ -111,7 +111,7 @@ def init_flask_restful_routes(app):
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.users.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
-        UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
         MappedTasksByUser
     from server.api.grid.grid_apis import IntersectingTilesAPI
@@ -172,6 +172,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UserSearchFilterAPI,           '/api/v1/user/search/filter/<string:username>')
     api.add_resource(UserAPI,                       '/api/v1/user/<string:username>')
     api.add_resource(UserUpdateAPI,                 '/api/v1/user/update-details')
+    api.add_resource(UserSetExpertMode,             '/api/v1/user/set-expert-mode/<string:is_expert>')
     api.add_resource(UserMappedProjects,            '/api/v1/user/<string:username>/mapped-projects')
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')

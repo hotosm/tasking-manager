@@ -10,6 +10,7 @@ from sqlalchemy.orm.session import make_transient
 
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
+from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode
@@ -241,7 +242,7 @@ class Project(db.Model):
             return False
 
     def get_locked_tasks_for_user(self, user_id: int):
-        """ Gets tasks on project owned by specifed user id"""
+        """ Gets tasks on project owned by specified user id"""
         tasks = self.tasks.filter_by(locked_by=user_id)
 
         locked_tasks = []
@@ -251,7 +252,7 @@ class Project(db.Model):
         return locked_tasks
 
     def get_locked_tasks_details_for_user(self, user_id: int):
-        """ Gets tasks on project owned by specifed user id"""
+        """ Gets tasks on project owned by specified user id"""
         tasks = self.tasks.filter_by(locked_by=user_id)
 
         locked_tasks = []
@@ -391,6 +392,41 @@ class Project(db.Model):
         project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
 
         return project_tasks
+
+    @staticmethod
+    def get_all_organisations_tag(preferred_locale='en'):
+        query = db.session.query(Project.id,
+                                 Project.organisation_tag,
+                                 Project.private,
+                                 Project.status)\
+            .join(ProjectInfo)\
+            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
+            .filter(Project.private != True)\
+            .filter(Project.organisation_tag.isnot(None))\
+            .filter(Project.organisation_tag != '')
+        query = query.distinct(Project.organisation_tag)
+        query = query.order_by(Project.organisation_tag)
+        tags_dto = TagsDTO()
+        tags_dto.tags = [r[1] for r in query]
+        return tags_dto
+
+    @staticmethod
+    def get_all_campaign_tag(preferred_locale='en'):
+        query = db.session.query(Project.id,
+                                 Project.campaign_tag,
+                                 Project.private,
+                                 Project.status)\
+            .join(ProjectInfo)\
+            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
+            .filter(Project.private != True)\
+            .filter(Project.campaign_tag.isnot(None))\
+            .filter(Project.campaign_tag != '')
+        query = query.distinct(Project.campaign_tag)
+        query = query.order_by(Project.campaign_tag)
+        tags_dto = TagsDTO()
+        tags_dto.tags = [r[1] for r in query]
+        return tags_dto
+
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

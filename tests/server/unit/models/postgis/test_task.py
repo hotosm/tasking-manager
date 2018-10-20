@@ -29,16 +29,16 @@ class TestTask(unittest.TestCase):
         self.assertEqual(test_task.task_status, TaskStatus.READY.value)
 
     @patch.object(Task, 'update')
-    @patch.object(Task, 'clear_task_lock')
+    @patch.object(Task, 'record_auto_unlock')
     @patch.object(Task, 'set_task_history')
-    def test_reset_task_clears_any_existing_locks(self, mock_set_task_history, mock_clear_task_lock, mock_update):
+    def test_reset_task_clears_any_existing_locks(self, mock_set_task_history, mock_record_auto_unlock, mock_update):
         user_id = 123
 
         test_task = Task()
         test_task.task_status = TaskStatus.LOCKED_FOR_MAPPING
         test_task.reset_task(user_id)
 
-        mock_clear_task_lock.assert_called()
+        mock_record_auto_unlock.assert_called()
         self.assertEqual(test_task.task_status, TaskStatus.READY.value)
 
     def test_cant_add_task_if_feature_geometry_is_invalid(self):
@@ -131,7 +131,7 @@ class TestTask(unittest.TestCase):
         self.assertEqual(instructions, 'Foo is replaced by bar')
 
     @patch.object(TaskHistory, 'get_last_status')
-    @patch.object(TaskHistory, 'get_last_action')
+    @patch.object(TaskHistory, 'get_last_locked_action')
     @patch.object(Task, 'set_task_history')
     @patch.object(Task, 'update')
     def test_record_auto_unlock_adds_autounlocked_action(self, mock_update, mock_set_task_history,

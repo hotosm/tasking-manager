@@ -108,7 +108,7 @@
         }
 
         /**
-         * Move the wizard to appropiate step for type of tasks selected
+         * Move the wizard to appropriate step for type of tasks selected
          */
         vm.setWizardStepAfterTaskTypeSelection = function () {
             if (vm.taskType === 'square-grid') {
@@ -258,7 +258,7 @@
         };
 
         /**
-         * Create arbitary tasks
+         * Create arbitrary tasks
          */
         vm.createArbitaryTasks = function () {
             if (vm.isImportedAOI) {

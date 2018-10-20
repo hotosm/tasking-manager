@@ -1,10 +1,11 @@
 # HOT tasking-manager
 
 ## Intro
-The app is split into a Client (AngularJS) and Server (Python) structure.  Each can be developed independently of each other.  See below for instructions on how to set up your deve environment.
+The app is split into a Client (AngularJS) and Server (Python) structure.  Each can be developed independently of each other.  See below for instructions on how to set up your dev environment.
 
 [See our FAQ if you hit any problems getting setup](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ)
 
+**Looking to get involved in development?** Check out the [Working Group meeting details](https://github.com/hotosm/tasking-manager/wiki/TM-Working-Group-Meeting-Details), review the [Roadmap](https://github.com/hotosm/tasking-manager/projects/1), and review our [Contributor guidelines](https://github.com/hotosm/tasking-manager/blob/develop/CONTRIBUTING.md).
 
 ## Client Development
 ### Global Dependencies
@@ -23,7 +24,7 @@ npm install
 ```
 
 ### Running Locally
-If you plan to do client development you can run the app using gulp, without having to worry too much about the server. If you want to point the client at a non-local API (e.g. a staging environment), you'll have to change the environment config for development in client/taskingmanager.config.json.
+If you plan to do client development you can run the app using gulp, without having to worry too much about the server. If you want to point the client at a non-local API (e.g. a staging environment), you'll have to change the environment config for development in `client/taskingmanager.config.json`.
 
 ```
 cd client   [if not already in client]
@@ -56,7 +57,7 @@ Following must be available locally:
         * ```.\devops\win\install.bat```
 
 ### Environment vars:
-As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
+As the project is open source, we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
 
 * **TM_DB** - This is for the PostGIS connection string.  If you can't access an existing DB refer to DevOps page to [set up a local DB in Docker](https://github.com/hotosm/tasking-manager/wiki/Dev-Ops#creating-a-local-postgis-database-with-docker)
 * **TM_SECRET** - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
@@ -67,8 +68,8 @@ As the project is open source we have to keep secrets out of the repo.  You will
 * **TM_SMTP_USER** - The user for the SMTP server that is used to send email alerts
 * **TM_SMTP_PASSWORD** - The password for the SMTP server that is used to send email alerts
 
-* Linux/Mac
-    * (It is strongly recommended to set these within your .bash_profile so they are available to all processes )
+* Linux/Mac:
+    * (It is strongly recommended to set these within your .bash_profile so they are available to all processes)
     * ```export TM_DB=postgresql://USER:PASSWORD@HOST/DATABASE```
     * ```export TM_SECRET=secret-key-here```
     * ```export TM_CONSUMER_KEY=oauth-consumer-key-goes-here```
@@ -88,7 +89,7 @@ As the project is open source we have to keep secrets out of the repo.  You will
     * ```setx TM_SMTP_PASSWORD "smtp-server-password-here"```
 
 ### Creating the DB
-We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to create the database from the migrations directory.  If you can't access an existing DB refer to DevOps page to [set up a local DB in Docker](https://github.com/hotosm/tasking-manager/wiki/Dev-Ops#creating-a-local-postgis-database-with-docker) Create the database as follows:
+We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to create the database from the migrations directory.  If you can't access an existing DB refer to DevOps page to [set up a local DB in Docker](https://github.com/hotosm/tasking-manager/wiki/Dev-Ops#creating-a-local-postgis-database-with-docker) create the database as follows:
 
 ```
 python manage.py db upgrade
@@ -123,7 +124,9 @@ The project includes a suite of Unit and Integration tests that you should run a
 python -m unittest discover tests/server
 ```
 
+
 ## Dev Ops
+If you encounter any issues while setting up a dev environment, please visit our [FAQ ❓ page](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ) to find possible solutions.
 
 ### Server Config
 
@@ -131,10 +134,11 @@ python -m unittest discover tests/server
 
 On boot the Tasking Manager App will look for the following environment vars:
 
-* **TM_ENV** - Allows you to specify which config to load from ./server/config.py  Acceptable values:
-    * **Dev** - This is the default
-    * **Staging** - Use this for your staging/test environment
-    * **Prod** - Use this for your production environment
+* **TM_ENV** - Allows you to specify which config to load from `./server/config.py`.  
+    * Acceptable values:
+      * **Dev** - This is the default
+      * **Staging** - Use this for your staging/test environment
+      * **Prod** - Use this for your production environment
 
 ## Localisation
 Please see the [Localisation Wiki](https://github.com/hotosm/tasking-manager/wiki/Localisation) for more details.

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HOT Tasking Manager</title>
+    <title>{{ title | translate }} - HOT Tasking Manager</title>
     <base href="/">
 
     <!-- for Google -->
@@ -177,6 +177,10 @@
 <script src="node_modules/ng-showdown/dist/ng-showdown.js"></script>
 <!-- /build -->
 
+<!-- build:js https://cdn.jsdelivr.net/npm/@mapbox/geo-viewport@0.4.0/geo-viewport.js -->
+<script src="node_modules/@mapbox/geo-viewport/geo-viewport.js"></script>
+<!-- /build -->
+
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js-->
 <script src="node_modules/moment/moment.js"></script>
 <!-- /build -->
@@ -265,22 +269,11 @@
 <script src="app/components/project-chat/project-chat.directive.js"></script>
 <!-- /build -->
 
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(["setDomains", ["*.tasks.hotosm.org"]]);
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//piwik.hotosm.org/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', 7]);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<noscript><p><img src="//piwik.hotosm.org/piwik.php?idsite=7" style="border:0;" alt="" /></p></noscript>
-<!-- End Piwik Code -->
+<!-- Matomo -->
+<div id="optout-form"></div>
+<script type="application/javascript">var site_id="9"</script>
+<script type="application/javascript" src="https://cdn.hotosm.org/tracking-v2.js"></script>
+ <!-- End Matomo Code -->
 
 </body>
 </html>

@@ -33,7 +33,7 @@ When creating an issue through the GitHub issue tracker, please include the foll
   * The user need being addressed
 
 #### Development issues should include:
-  * Specific code that needs improvement or dependancies to be investigated
+  * Specific code that needs improvement or dependencies to be investigated
   * Rational for recommendations
   * Use checklists (via - [ ]) to keep track of sub-items wherever possible
 
@@ -49,13 +49,15 @@ look for categories that correspond to your skills, such as `UI` or `SysAdmin`.
 ## 3. How we structure pull requests and issue reviews
 
 ### Code and Project Leads
-Project and code leads are experienced volunteer developers and the main points
+Project and code leads are experienced HOT volunteer and staff developers and the main points
 of contact for the project. They are also the final reviewers of issues and pull requests. Code leads
 will review pull requests and provide feedback. The purpose of this role is to help contributors,
 provide consistency and ensure code quality.
 
-* Current code leads: Pierre Giraud (pgiraud) and Ethan Nelson (ethan-nelson)
-* Current project lead: Blake Girardot (bgirardot)
+* Current code leads: Ethan Nelson (ethan-nelson)
+* Current project lead: Nate Smith (smit1678)
+
+Issues and [roadmap development](https://github.com/hotosm/tasking-manager/projects/1) is overseen and discussed by the Tasking Manager Working Group. See [Working Group wiki page](https://github.com/hotosm/tasking-manager/wiki/TM-Working-Group-Meeting-Details) for details.
 
 ### Project Contributors
 

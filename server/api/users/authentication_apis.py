@@ -37,7 +37,7 @@ class LoginAPI(Resource):
         """
         redirect_query = ''
         redirect_to = request.args.get('redirect_to')
-        if redirect_to:
+        if redirect_to and 'login' not in redirect_to:
             redirect_query = f'?redirect_to={parse.quote(redirect_to)}'
 
         base_url = current_app.config['APP_BASE_URL']

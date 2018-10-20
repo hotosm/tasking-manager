@@ -24,6 +24,7 @@ class User(db.Model):
     projects_mapped = db.Column(db.ARRAY(db.Integer))
     email_address = db.Column(db.String)
     is_email_verified = db.Column(db.Boolean, default=False)
+    is_expert = db.Column(db.Boolean, default=False)
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
@@ -67,6 +68,11 @@ class User(db.Model):
     def set_email_verified_status(self, is_verified: bool):
         """ Updates email verfied flag on successfully verified emails"""
         self.is_email_verified = is_verified
+        db.session.commit()
+
+    def set_is_expert(self, is_expert: bool):
+        """ Enables or disables expert mode on the user"""
+        self.is_expert = is_expert
         db.session.commit()
 
     @staticmethod
@@ -150,15 +156,35 @@ class User(db.Model):
     @staticmethod
     def get_mapped_projects(user_id: int, preferred_locale: str) -> UserMappedProjectsDTO:
         """ Get all projects a user has mapped on """
-        sql = '''select p.id, p.status, p.default_locale, count(t.mapped_by), count(t.validated_by), st_asgeojson(p.centroid),
-                        st_asgeojson(p.geometry)
-                   from projects p,
-                        tasks t
-                  where p.id in (select unnest(projects_mapped) from users where id = {0})
-                    and p.id = t.project_id
-                    and (t.mapped_by = {0} or t.mapped_by is null)
-                    and (t.validated_by = {0} or t.validated_by is null)
-               GROUP BY p.id, p.status, p.centroid, p.geometry'''.format(user_id)
+
+        # This query looks scary, but we're really just creating an outer join between the query that gets the
+        # counts of all mapped tasks and the query that gets counts of all validated tasks.  This is necessary to
+        # handle cases where users have only validated tasks on a project, or only mapped on a project.
+        sql = '''SELECT p.id,
+                        p.status,
+                        p.default_locale,
+                        c.mapped,
+                        c.validated,
+                        st_asgeojson(p.centroid)
+                   FROM projects p,
+                        (SELECT coalesce(v.project_id, m.project_id) project_id,
+                                coalesce(v.validated, 0) validated,
+                                coalesce(m.mapped, 0) mapped
+                          FROM (SELECT t.project_id,
+                                       count (t.validated_by) validated
+                                  FROM tasks t
+                                 WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = {0})
+                                   AND t.validated_by = {0}
+                                 GROUP BY t.project_id, t.validated_by) v
+                         FULL OUTER JOIN
+                        (SELECT t.project_id,
+                                count(t.mapped_by) mapped
+                           FROM tasks t
+                          WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = {0})
+                            AND t.mapped_by = {0}
+                          GROUP BY t.project_id, t.mapped_by) m
+                         ON v.project_id = m.project_id) c
+                   WHERE p.id = c.project_id ORDER BY p.id DESC'''.format(user_id)
 
         results = db.engine.execute(sql)
 
@@ -173,7 +199,6 @@ class User(db.Model):
             mapped_project.tasks_mapped = row[3]
             mapped_project.tasks_validated = row[4]
             mapped_project.centroid = geojson.loads(row[5])
-            mapped_project.aoi = geojson.loads(row[6])
 
             project_info = ProjectInfo.get_dto_for_locale(row[0], preferred_locale, row[2])
             mapped_project.name = project_info.name
@@ -219,6 +244,7 @@ class User(db.Model):
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.is_expert = self.is_expert or False
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
         user_dto.tasks_invalidated = self.tasks_invalidated

@@ -6,15 +6,18 @@ import datetime
 
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
     UserStatsDTO
+from server.models.dtos.message_dto import MessageDTO
+from server.models.postgis.message import Message
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
-
+from server.services.messaging.template_service import get_template
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 user_all_cache = TTLCache(maxsize=1024, ttl=600)
+message_cache = TTLCache(maxsize=512, ttl=30)
 
 
 class UserServiceError(Exception):
@@ -204,6 +207,9 @@ class UserService:
         if admin_role == UserRole.PROJECT_MANAGER and requested_role == UserRole.ADMIN:
             raise UserServiceError(f'You must be an Admin to assign Admin role')
 
+        if admin_role == UserRole.PROJECT_MANAGER and requested_role == UserRole.PROJECT_MANAGER:
+            raise UserServiceError(f'You must be an Admin to assign Project Manager role')
+
         user = UserService.get_user_by_username(username)
         user.set_user_role(requested_role)
 
@@ -220,6 +226,17 @@ class UserService:
 
         user = UserService.get_user_by_username(username)
         user.set_mapping_level(requested_level)
+
+        return user
+
+    @staticmethod
+    def set_user_is_expert(user_id: int, is_expert: bool) -> User:
+        """
+        Enabled or disables expert mode for the user
+        :raises: UserServiceError
+        """
+        user = UserService.get_user_by_id(user_id)
+        user.set_is_expert(is_expert)
 
         return user
 
@@ -248,32 +265,46 @@ class UserService:
 
     @staticmethod
     def check_and_update_mapper_level(user_id: int):
-        """ Check users mapping level and update if they have crossed threshold """
+        """ Check users mapping level, updates and notifies if they have crossed threshold """
         user = UserService.get_user_by_id(user_id)
         user_level = MappingLevel(user.mapping_level)
-
         if user_level == MappingLevel.ADVANCED:
             return  # User has achieved highest level, so no need to do further checking
 
         intermediate_level = current_app.config['MAPPER_LEVEL_INTERMEDIATE']
         advanced_level = current_app.config['MAPPER_LEVEL_ADVANCED']
-
+        
         try:
             osm_details = OSMService.get_osm_details_for_user(user_id)
+            if (osm_details.changeset_count > advanced_level and
+                user.mapping_level !=  MappingLevel.ADVANCED.value):
+                user.mapping_level = MappingLevel.ADVANCED.value
+                UserService.notify_level_upgrade(user_id, user.username, 'ADVANCED')
+            elif (intermediate_level < osm_details.changeset_count < advanced_level and
+                user.mapping_level != MappingLevel.INTERMEDIATE.value):
+                user.mapping_level = MappingLevel.INTERMEDIATE.value
+                UserService.notify_level_upgrade(user_id, user.username, 'INTERMEDIATE')
+        
         except OSMServiceError:
             # Swallow exception as we don't want to blow up the server for this
             current_app.logger.error('Error attempting to update mapper level')
             return
-
-        if osm_details.changeset_count > advanced_level:
-            user.mapping_level = MappingLevel.ADVANCED.value
-        elif intermediate_level < osm_details.changeset_count < advanced_level:
-            user.mapping_level = MappingLevel.INTERMEDIATE.value
-        else:
-            return
-
+        
         user.save()
         return user
+
+    def notify_level_upgrade(user_id: int, username: str, level: str):
+        text_template = get_template('level_upgrade_message_en.txt')
+        
+        if username is not None: 
+            text_template = text_template.replace('[USERNAME]', username)
+
+        text_template = text_template.replace('[LEVEL]', level)
+        level_upgrade_message = Message()
+        level_upgrade_message.to_user_id = user_id
+        level_upgrade_message.subject = 'Mapper Level Upgrade '
+        level_upgrade_message.message = text_template
+        level_upgrade_message.save()
 
     @staticmethod
     def refresh_mapper_level() -> int:

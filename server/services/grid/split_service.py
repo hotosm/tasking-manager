@@ -21,7 +21,7 @@ class SplitServiceError(Exception):
 
 class SplitService:
     @staticmethod
-    def _create_split_tasks(x, y, zoom) -> list:
+    def _create_split_tasks(x, y, zoom, task=None) -> list:
         """
         function for splitting a task square geometry into 4 smaller squares
         :param geom_to_split: {geojson.Feature} the geojson feature to b split
@@ -109,7 +109,8 @@ class SplitService:
 
         # create new geometries from the task geometry
         try:
-            new_tasks_geojson = SplitService._create_split_tasks(original_task.x, original_task.y, original_task.zoom)
+            new_tasks_geojson = SplitService._create_split_tasks(original_task.x, original_task.y, original_task.zoom,
+                                                                 original_task)
         except Exception as e:
             raise SplitServiceError(f'Error splitting task{str(e)}')
 

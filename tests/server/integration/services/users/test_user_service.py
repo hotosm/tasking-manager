@@ -6,6 +6,7 @@ from unittest.mock import patch
 from server import create_app
 from server.services.users.user_service import UserService, MappingLevel, User, OSMService, UserOSMDTO
 from tests.server.helpers.test_helpers import create_canned_project
+from server.models.postgis.message import Message
 
 
 class TestAuthenticationService(unittest.TestCase):
@@ -71,21 +72,24 @@ class TestAuthenticationService(unittest.TestCase):
         # Assert
         self.assertEqual(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)
 
+    @patch.object(Message, 'save')
     @patch.object(User, 'save')
     @patch.object(OSMService, 'get_osm_details_for_user')
     @patch.object(UserService, 'get_user_by_id')
-    def test_mapper_level_updates_correctly(self, mock_user, mock_osm, mock_save):
+    def test_mapper_level_updates_correctly(self, mock_user, mock_osm, mock_save, mock_message):
         # Arrange
         test_user = User()
+        test_user.username = 'Test User'
         test_user.mapping_level = MappingLevel.BEGINNER.value
         mock_user.return_value = test_user
+        
 
         test_osm = UserOSMDTO()
         test_osm.changeset_count = 350
         mock_osm.return_value = test_osm
 
         # Act
-        UserService.check_and_update_mapper_level(123)
+        UserService.check_and_update_mapper_level(12)
 
         #Assert
         self.assertTrue(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)

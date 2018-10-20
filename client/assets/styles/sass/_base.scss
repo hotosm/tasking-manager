@@ -247,6 +247,42 @@ a:active {
   padding-left: 0;
 }
 
+.icon-sm-tick {
+  background-image: url("../../icons/tick.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+}
+
+.icon-split {
+  background-image: url("../../icons/split.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+}
+
+.icon-danger {
+  background-image: url("../../icons/sign-danger.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+}
+
+.icon-stop-map {
+  background-image: url("../../icons/stop-map.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em; 
+}
+
 /* Forms
    ========================================================================== */
 
