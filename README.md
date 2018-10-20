@@ -11,7 +11,6 @@
 4 [Dev Ops](#DevOps)
 
 5 [Localisation](#Localisation)
-
 ## <a name="Intro">Intro</a>
 The app is split into a Client (AngularJS) and Server (Python) structure.  Each can be developed independently of each other.  See below for instructions on how to set up your deve environment.
 
