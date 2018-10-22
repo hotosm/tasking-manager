@@ -982,7 +982,7 @@
                                           </tr>
                                           <tr ng-show="item.action === 'COMMENT'">
                                             <td colspan="2" class="comment-text">
-                                              <span markdown-to-html="item.actionText"></span>
+                                              <span markdown-to-html="item.actionText" ng-click="projectCtrl.onShortCodeClick($event)"></span>
                                             </td>
                                           </tr>
                                       </tbody>
@@ -1144,4 +1144,34 @@
         {{ 'Dismiss' | translate }}
     </button>
 </section>
-<!-- accept license modal -->
+
+<!-- JOSM editor failed modal -->
+<section class="modal modal-tm" ng-show="projectCtrl.editorStartError === 'josm-error'">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h3 class="modal__title">{{ 'Contact with JOSM Failed' | translate }}</h3>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div>
+                <p>
+                    {{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}
+                </p>
+            </div>
+        </div>
+        <footer class="modal__footer">
+            <div>
+                <button class="button" type="button"
+                        ng-click="projectCtrl.editorStartError = ''">{{ 'Dismiss' | translate }}
+                </button>
+                <button class="button button--secondary" type="button"
+                        ng-click="projectCtrl.resetSelectedEditor()">{{ "Stop using JOSM" | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>
+    <a class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="projectCtrl.editorStartError = ''">
+        {{ 'Dismiss' | translate }}
+    </a>
+</section>
