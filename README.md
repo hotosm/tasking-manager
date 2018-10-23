@@ -123,9 +123,9 @@ The project includes a suite of Unit and Integration tests that you should run a
 python -m unittest discover tests/server
 ```
 
-If you encounter any issues while setting up a dev environment, please visit our [FAQ page] ❓(https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ) to find possible solutions/
 
 ## Dev Ops
+If you encounter any issues while setting up a dev environment, please visit our [FAQ ❓ page](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ) to find possible solutions.
 
 ### Server Config
 
