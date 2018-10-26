@@ -247,8 +247,22 @@ a:active {
   padding-left: 0;
 }
 
-svg:hover path { 
+#split-task-btn:hover #split-task
+{ 
   fill: $warm-grey;
+}
+#bad-imagery-btn:hover #bad-imagery
+{ 
+  fill: $warm-grey;
+}
+#stop-mapping-btn:hover #stop-mapping
+{ 
+  fill: $warm-grey;
+}
+
+#complete-mapping-btn:hover #complete-mapping
+{ 
+  fill: $orange;
 }
 
 .icon-sm-tick {
