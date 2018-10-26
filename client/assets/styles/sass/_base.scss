@@ -247,6 +247,10 @@ a:active {
   padding-left: 0;
 }
 
+svg:hover path { 
+  fill: $warm-grey;
+}
+
 .icon-sm-tick {
   background-image: url("../../icons/tick.svg");
   background-size: 12px 12px;
@@ -254,7 +258,13 @@ a:active {
   width: 12px;
   height: 12px;
   margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$link-color;
+  }
 }
+
+
 
 .icon-split {
   background-image: url("../../icons/split.svg");
@@ -263,6 +273,10 @@ a:active {
   width: 12px;
   height: 12px;
   margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
 }
 
 .icon-danger {
@@ -272,6 +286,10 @@ a:active {
   width: 12px;
   height: 12px;
   margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
 }
 
 .icon-stop-map {
@@ -280,7 +298,11 @@ a:active {
   display: inline-block;
   width: 12px;
   height: 12px;
-  margin-right: .2em; 
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
 }
 
 /* Forms
