@@ -22,7 +22,7 @@ try:
 except Exception:
     warnings.warn('Homepage counters not initialized.')
 manager = Manager(application)
-
+#  
 
 # Enable db migrations to be run via the command line
 manager.add_command('db', MigrateCommand)
