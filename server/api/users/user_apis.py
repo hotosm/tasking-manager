@@ -466,7 +466,7 @@ class UserSetExpertMode(Resource):
               default: Token sessionTokenHere==
             - name: is_expert
               in: path
-              description: 'true' to enable expert mode, 'false' to disable
+              description: true to enable expert mode, false to disable
               required: true
               type: string
         responses:
