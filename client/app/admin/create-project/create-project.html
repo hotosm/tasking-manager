@@ -46,10 +46,10 @@
                                 </dd>
                             </dl>
                             <div>
-                                <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
+                                <span class="error" style="float:left;margin-top:10px" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
                                     {{ 'No Area of Interest has been drawn.' | translate }}
                                 </span>
-                                <span class="error"
+                                <span class="error" style="float:left;margin-top:10px"
                                       ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
                                     {{ 'The Area of Interest contains self intersections.' | translate }}
                                 </span>

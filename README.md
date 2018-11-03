@@ -58,11 +58,12 @@ Following must be available locally:
 ### Environment vars:
 As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
 
-* **TM_DB** - This is the for the PostGIS connection string.  If you can't access an existing DB refer to DevOps page to [set up a local DB in Docker](https://github.com/hotosm/tasking-manager/wiki/Dev-Ops#creating-a-local-postgis-database-with-docker)
+* **TM_DB** - This is for the PostGIS connection string.  If you can't access an existing DB refer to DevOps page to [set up a local DB in Docker](https://github.com/hotosm/tasking-manager/wiki/Dev-Ops#creating-a-local-postgis-database-with-docker)
 * **TM_SECRET** - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
 * **TM_CONSUMER_KEY** - This is the OAUTH Consumer Key used for authenticating the Tasking Manager App in OSM
 * **TM_CONSUMER_SECRET** - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
 * **TM_SMTP_HOST** - The hostname for the SMTP server that is used to send email alerts
+* **TM_SMTP_PORT** - The port number for the SMTP server that is used to send email alerts
 * **TM_SMTP_USER** - The user for the SMTP server that is used to send email alerts
 * **TM_SMTP_PASSWORD** - The password for the SMTP server that is used to send email alerts
 
@@ -73,6 +74,7 @@ As the project is open source we have to keep secrets out of the repo.  You will
     * ```export TM_CONSUMER_KEY=oauth-consumer-key-goes-here```
     * ```export TM_CONSUMER_SECRET=oauth-consumer-secret-key-goes-here```
     * ```export TM_SMTP_HOST=smtp-server-host-here```
+    * ```export TM_SMTP_PORT=smtp-server-port-here```
     * ```export TM_SMTP_USER=smtp-server-user-here```
     * ```export TM_SMTP_PASSWORD=smtp-server-password-here```
 * Windows:
@@ -81,6 +83,7 @@ As the project is open source we have to keep secrets out of the repo.  You will
     * ```setx TM_CONSUMER_KEY "oauth-consumer-key-goes-here"```
     * ```setx TM_CONSUMER_SECRET "oauth-consumer-secret-key-goes-here"```
     * ```setx TM_SMTP_HOST "smtp-server-host-here"```
+    * ```setx TM_SMTP_PORT "smtp-server-port-here"```
     * ```setx TM_SMTP_USER "smtp-server-user-here"```
     * ```setx TM_SMTP_PASSWORD "smtp-server-password-here"```
 

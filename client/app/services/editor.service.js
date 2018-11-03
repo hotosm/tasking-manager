@@ -47,7 +47,7 @@
         }
 
         /**
-         * Lauch the iD editor
+         * Launch the iD editor
          * @param centroid
          * @param changesetComment
          * @param imageryUrl

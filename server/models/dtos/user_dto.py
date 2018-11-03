@@ -40,6 +40,7 @@ class UserDTO(Model):
     tasks_invalidated = IntType(serialized_name='tasksInvalidated')
     email_address = EmailType(serialized_name='emailAddress', serialize_when_none=False)
     is_email_verified = EmailType(serialized_name='isEmailVerified', serialize_when_none=False)
+    is_expert = BooleanType(serialized_name='isExpert', serialize_when_none=False)
     twitter_id = StringType(serialized_name='twitterId')
     facebook_id = StringType(serialized_name='facebookId')
     linkedin_id = StringType(serialized_name='linkedinId')

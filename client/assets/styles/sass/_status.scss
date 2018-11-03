@@ -1,0 +1,72 @@
+/* Status Colors */
+$status-color-ready: rgba(223, 223, 223, 0.1);               // very light grey, 0.1 opacity
+$status-color-invalidated: rgba(233, 11, 67, 0.4);           // red, 0.4 opacity
+$status-color-mapped: rgba(255, 198, 12, 0.4);               // orange, 0.4 opacity
+$status-color-validated: rgba(0, 128, 0, 0.4);               // green, 0.4 opacity
+$status-color-locked-for-mapping: rgba(18, 89, 240, 0.4);    // blue, 0.4 opacity
+$status-color-locked-for-validation: rgba(18, 89, 240, 0.4); // blue, 0.4 opacity
+$status-color-badimagery: rgba(0, 0, 0, 0.4);                // black, 0.4 opacity
+
+$status-marker-border-color: rgba(84, 84, 84, 0.7);          // medium grey, 0.7 opacity
+
+@mixin status-marker($color) {
+  &:before {
+    content: ' ';
+    display: inline-block;
+    background-color: $color;
+    margin-right: 0.75em;
+    width: 1em;
+    height: 1em;
+    box-shadow: 0px 0px 0px 0.5px $status-marker-border-color;
+  }
+}
+
+@mixin status-marker-icon($fa-hex-value) {
+  &:before {
+    font-family: FontAwesome;
+    content: $fa-hex-value;
+    display: inline-block;
+    margin-right: 0.75em;
+    width: 1em;
+  }
+}
+
+.status-marker-ready {
+  @include status-marker($status-color-ready);
+}
+
+.status-marker-invalidated {
+  @include status-marker($status-color-invalidated);
+}
+
+.status-marker-mapped {
+  @include status-marker($status-color-mapped);
+}
+
+.status-marker-validated {
+  @include status-marker($status-color-validated);
+}
+
+.status-marker-locked-for-mapping {
+  @include status-marker($status-color-locked-for-mapping);
+}
+
+.status-marker-locked-for-validation {
+  @include status-marker($status-color-locked-for-validation);
+}
+
+.status-marker-badimagery {
+  @include status-marker($status-color-badimagery);
+}
+
+.status-marker-comment {
+  @include status-marker-icon('\f0e5');
+}
+
+.status-marker-auto-unlocked-for-mapping, .status-marker-auto-unlocked-for-validation {
+  @include status-marker-icon('\f017');
+}
+
+.status-marker-split {
+  @include status-marker-icon('\f009');
+}
