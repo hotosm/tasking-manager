@@ -1345,7 +1345,10 @@
                     top: extentTransformed[3],
                     changeset_comment: encodeURIComponent(changesetComment),
                     changeset_source: encodeURIComponent(changesetSource),
-                    new_layer: false
+                    new_layer: false,
+                    // Data required for TM JOSM plugin to download task data
+                    task_id: vm.getSelectTaskIds(),
+                    project_id: vm.id,
                 };
 
                 if (taskCount == 1) {

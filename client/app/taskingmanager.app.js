@@ -1,5 +1,86 @@
 'use strict';
 
+var geoprocessingScript = function(e) {
+    if( 'function' === typeof importScripts) {
+        // TODO Can we do this on init, or package it as part of gulp?
+        self.importScripts('https://cdnjs.cloudflare.com/ajax/libs/Turf.js/5.1.6/turf.js');
+
+        if (e.data[0] === 'findExtent') {
+            var taskGeometries = e.data[1];
+            var extent = turf.bbox(taskGeometries);
+            var bboxPolygon = turf.bboxPolygon(extent);
+            self.postMessage({
+                type: 'findExtent',
+                extent: bboxPolygon,
+            });
+        } else if (e.data[0] === 'clipTaskDataAndFilter') {
+            var taskGridGeoJSON = e.data[1];
+            var taskGeometries = e.data[2];
+            var numTaskGrids = taskGridGeoJSON.features.length;
+            var idx = 0;
+            var filteredGrid = taskGridGeoJSON.features.filter(function (taskGridFeature) {
+                try {
+                    var clippedFeatures = [];
+                    var bbox = turf.bbox(taskGridFeature);
+                    idx++;
+                    taskGeometries.features.forEach(function (taskGeometry) {
+                        if (taskGeometry.geometry && taskGeometry.geometry.type === 'Point') {
+                            var inside = turf.inside(taskGeometry, taskGridFeature);
+                            if (inside) {
+                                clippedFeatures.push(taskGeometry)
+                            }
+                        } else {
+                            // Sometimes we get invalid polygon data (lines that have type polygon).
+                            // Try to detect those simple types and check each geometry point individually
+                            if (taskGeometry.geometry.type === 'Polygon' && taskGeometry.geometry.coordinates.length < 4) {
+                                var isInside = taskGeometry.geometry.coordinates.some(function (coords) {
+                                    return coords.some(function (coord) {
+                                                                                return turf.inside(turf.point(coord), taskGridFeature);
+                                    })
+                                });
+                                if (isInside) {
+                                    clippedFeatures.push(taskGeometry);
+                                }
+                            } else {
+                                var clip = turf.bboxClip(taskGeometry, bbox);
+                                if (clip.geometry.coordinates.length > 0) {
+                                    clippedFeatures.push(clip);
+                                }
+                            }
+                        }
+
+                    });
+
+                    self.postMessage({
+                        type: 'progress',
+                        progress: idx / numTaskGrids
+                    });
+
+                    if (clippedFeatures.length > 0) {
+                        var taskObject = {
+                            type: "FeatureCollection",
+                            features: clippedFeatures
+                        };
+                        taskGridFeature.properties.taskGeometry = JSON.stringify(taskObject);
+                        return true
+                    }
+                    return false;
+                } catch (err) {
+                    self.postMessage({
+                        type: 'error',
+                        error: err.toString()
+                    });
+                }
+            });
+
+            self.postMessage({
+                type: 'clipTaskDataAndFilter',
+                taskGeometry: filteredGrid
+            });
+        }
+    }
+};
+
 (function () {
 
     angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', '720kb.socialshare', 'pascalprecht.translate', 'taskingmanager.config'])
@@ -10,6 +91,36 @@
         .factory('configService', ['EnvironmentConfig', function (EnvironmentConfig) {
             var config = EnvironmentConfig;
             return config;
+        }])
+
+        .factory("geoprocessingWorker",['$q',function($q) {
+            var workerScript = 'if( \'undefined\' === typeof window){onmessage=' + geoprocessingScript.toString() + '}';
+            var blob = new Blob([workerScript], {type: 'application/javascript'});
+            var worker = new Worker(URL.createObjectURL(blob));
+            var defer = $q.defer();
+
+            worker.addEventListener('message', function(e) {
+                if(e.data.type === 'progress') {
+                    defer.notify(e.data)
+                } else if (e.data.type === 'error') {
+                    defer.reject(e.data.error);
+                } else {
+                    defer.resolve(e.data);
+                }
+            }, false);
+
+            return {
+                findExtent: function(taskGeometries) {
+                    defer = $q.defer();
+                    worker.postMessage(['findExtent', taskGeometries]); // Send data to our worker.
+                    return defer.promise;
+                },
+                clipTaskDataAndFilter: function(taskGrid, taskGeometries) {
+                    defer = $q.defer();
+                    worker.postMessage(['clipTaskDataAndFilter', taskGrid, taskGeometries]); // Send data to our worker.
+                    return defer.promise;
+                }
+            };
         }])
 
         // Check if user is logged in by checking available cookies

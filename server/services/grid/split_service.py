@@ -1,5 +1,6 @@
 import geojson
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import mapping
+from shapely.geometry import Polygon, Point, MultiPolygon, shape as shapely_shape
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -21,28 +22,89 @@ class SplitServiceError(Exception):
 
 class SplitService:
     @staticmethod
-    def _create_split_tasks(x, y, zoom) -> list:
+    def _create_split_tasks(x, y, zoom, task=None, task_geometry=None) -> list:
         """
         function for splitting a task square geometry into 4 smaller squares
         :param geom_to_split: {geojson.Feature} the geojson feature to b split
         :return: list of {geojson.Feature}
         """
         try:
+            task_geojson = False
+            if task_geometry:
+                task_geometry_geojson = geojson.loads(task_geometry)
+            if task and not task.is_square:
+                query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
+                    .filter(Task.id == task.id, Task.project_id == task.project_id)
+
+                task_geojson = geojson.loads(query[0].geometry)
+
             split_geoms = []
             for i in range(0, 2):
                 for j in range(0, 2):
+                    task_geometry_features = []
                     new_x = x * 2 + i
                     new_y = y * 2 + j
                     new_zoom = zoom + 1
                     new_square = SplitService._create_square(new_x, new_y, new_zoom)
                     feature = geojson.Feature()
                     feature.geometry = new_square
-                    feature.properties = {
-                        'x': new_x,
-                        'y': new_y,
-                        'zoom': new_zoom,
-                        'splittable': True
-                    }
+                    feature_shape = shapely_shape(feature.geometry)
+                    if task and not task.is_square:
+                        intersection = shapely_shape(task_geojson).intersection(feature_shape)
+                        multipolygon = MultiPolygon([intersection])
+                        feature.geometry = geojson.loads(geojson.dumps(mapping(multipolygon)))
+                    if task_geometry and task_geometry_geojson.features:
+                        for k in range(0, len(task_geometry_geojson.features)):
+                            does_intersect = False
+                            try:
+                                does_intersect = shapely_shape(task_geometry_geojson.features[k].geometry).intersects(feature_shape)
+                            except ValueError:
+                                # Some of the task geometry provided is invalid.  The most common issue seems
+                                # to be lines with only two points that have a geometry type of Polygon.
+                                # In these cases, loop over the coordinates of the geometry and check if
+                                # each coordinate is within the task boundary
+                                try:
+                                    for taskfeature in task_geometry_geojson.features[k].geometry.coordinates:
+                                        for coords in taskfeature:
+                                            if Point(coords).within(feature_shape):
+                                                does_intersect = True;
+                                                break
+                                        if does_intersect:
+                                            break
+                                except Exception as e:
+                                    # If checking geometry fails, split the task anyway and let the
+                                    # mappers determine if there is actionable content
+                                    does_intersect = True
+
+                            if does_intersect:
+                                task_geometry_features.append(task_geometry_geojson.features[k])
+
+                    if len(task_geometry_features) > 0:
+                        feature.properties = {
+                            'x': new_x,
+                            'y': new_y,
+                            'zoom': new_zoom,
+                            'isSquare': task.is_square,
+                            'taskGeometry': geojson.dumps({
+                                'type': "FeatureCollection",
+                                'features': task_geometry_features
+                            })
+                        }
+                        split_geoms.append(feature)
+                    elif task_geometry == None:
+                        if task and task.is_square == False:
+                            is_square = False
+                        else:
+                            is_square = True
+                        feature.properties = {
+                            'x': new_x,
+                            'y': new_y,
+                            'zoom': new_zoom,
+                            'isSquare': is_square
+                        }
+                        if len(feature.geometry.coordinates) > 0:
+                            split_geoms.append(feature)
+
                     split_geoms.append(feature)
 
             return split_geoms
@@ -109,7 +171,9 @@ class SplitService:
 
         # create new geometries from the task geometry
         try:
-            new_tasks_geojson = SplitService._create_split_tasks(original_task.x, original_task.y, original_task.zoom)
+            new_tasks_geojson = SplitService._create_split_tasks(original_task.x, original_task.y, original_task.zoom,
+                                                                 original_task, original_task.task_geometry)
+
         except Exception as e:
             raise SplitServiceError(f'Error splitting task{str(e)}')
 

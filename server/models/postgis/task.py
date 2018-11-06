@@ -244,6 +244,9 @@ class Task(db.Model):
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
     mapper = db.relationship(User, foreign_keys=[mapped_by])
 
+    task_geometry = db.Column(db.String)
+
+
     def create(self):
         """ Creates and saves the current model to the DB """
         db.session.add(self)
@@ -284,6 +287,9 @@ class Task(db.Model):
             task.y = task_feature.properties['y']
             task.zoom = task_feature.properties['zoom']
             task.splittable = task_feature.properties['splittable']
+            if 'taskGeometry' in task_feature.properties:
+                task.task_geometry = task_feature.properties['taskGeometry']
+
         except KeyError as e:
             raise InvalidData(f'Task: Expected property not found: {str(e)}')
 
@@ -558,6 +564,7 @@ class Task(db.Model):
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
+        task_dto.has_task_geometry = self.task_geometry is not None
 
         per_task_instructions = self.get_per_task_instructions(preferred_locale)
 

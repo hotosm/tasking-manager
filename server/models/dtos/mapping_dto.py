@@ -36,6 +36,14 @@ class MappedTaskDTO(Model):
     preferred_locale = StringType(default='en')
 
 
+class TaskGeometryDTO(Model):
+    user_id = IntType(required=True)
+    task_id = IntType(required=True)
+    project_id = IntType(required=True)
+    task_geometry = StringType(required=True)
+    preferred_locale = StringType(default='en')
+
+
 class StopMappingTaskDTO(Model):
     """ Describes the model used to stop mapping and reset the status of one task """
     user_id = IntType(required=True)
@@ -57,6 +65,7 @@ class TaskDTO(Model):
     """ Describes a Task DTO """
     task_id = IntType(serialized_name='taskId')
     project_id = IntType(serialized_name='projectId')
+    has_task_geometry = BooleanType(serialized_name='hasTaskGeometry')
     task_status = StringType(serialized_name='taskStatus')
     lock_holder = StringType(serialized_name='lockHolder', serialize_when_none=False)
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
