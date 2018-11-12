@@ -257,10 +257,7 @@ class MappingService:
 
     @staticmethod
     def generate_project_file_osm_xml(project_id: int, file_id: int, task_ids_str: str) -> str:
-        """ Generate xml response suitable for loading into JOSM.  A sample output file is in
-            /server/helpers/testfiles/osm-sample.xml """
-        # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
-        # root = ET.Element('osm', attrib=dict(version='0.6', upload='never', creator='HOT Tasking Manager'))
+        """ Generate xml response suitable for loading into JOSM created from an extract of the specified project file """
 
         print(task_ids_str)
 
