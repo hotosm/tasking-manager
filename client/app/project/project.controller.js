@@ -1723,6 +1723,12 @@
                         vm.editorStartError = 'josm-imagery-error';
                     });
             }
+                // this is a future feature to be able to use an overpass query in lieu of the osm data
+
+                // if (overpassQuery){
+                // editorService.sendJOSMCmd
+                //     ('http://127.0.0.1:8111/import?url=https://lz4.overpass-api.de/api/interpreter/?data=[out:xml];%20way[highway](53.2987342,-6.3870259,53.4105416,-6.1148829);%20(._;%3E;);%20out%20meta;');
+                // }
 
             // load a new empty layer in josm for osm data, this step necessary to have a custom name for the layer
             // use empty, uri encoded osmxml for the data param
@@ -1759,6 +1765,8 @@
                 //give it an empty param dict to avoid breaking things
                 editorService.sendJOSMCmd(customUrl, {});
             }
+
+                // if there are project files, send the josm command with the api url to extract data
                 if (vm.project_files.length > 0) {
                     var i;
                     for (i = 0; i < vm.project_files.length; i++) {
