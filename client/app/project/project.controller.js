@@ -1317,6 +1317,7 @@
                 }
 
                 //load aerial photography if present
+                // TODO: make changeset source part of project info
                 var changesetSource = "Bing";
                 var hasImagery = false;
                 if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
@@ -1360,6 +1361,8 @@
                     new_layer: false
                 };  
 
+                // this is a future feature to be able to use an overpass query in lieu of the osm data
+                
                 // if (overpassQuery){
                 // editorService.sendJOSMCmd
                 //     ('http://127.0.0.1:8111/import?url=https://lz4.overpass-api.de/api/interpreter/?data=[out:xml];%20way[highway](53.2987342,-6.3870259,53.4105416,-6.1148829);%20(._;%3E;);%20out%20meta;');
@@ -1373,7 +1376,8 @@
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
                 }
 
-                               
+                
+                // if there are project files, send the josm command with the api url to extract data
                 if (vm.project_files.length > 0) {
                     var i;
                     for (i = 0; i < vm.project_files.length; i++) {
