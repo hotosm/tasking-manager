@@ -1017,6 +1017,9 @@
                                               </td>
                                               <td>
                                                   <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                                  <span ng-if="projectCtrl.user.isExpert">
+                                                    <a ng-show="projectCtrl.isAtticDateLive(item)" class="diff-control {{projectCtrl.selectedItem.actionDate === item.actionDate ? 'selected' : ''}}" ng-click="projectCtrl.selectItemForDiff(item)" title="{{ 'Choose two entries for diff or same once twice for attic data' | translate }}"></a>
+                                                 </span>
                                               </td>
                                           </tr>
                                           <tr ng-show="item.action === 'COMMENT'">
