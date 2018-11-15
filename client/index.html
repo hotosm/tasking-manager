@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ title | translate }} - HOT Tasking Manager</title>
+    <title>HOT Tasking Manager</title>
     <base href="/">
 
     <!-- for Google -->
@@ -124,7 +124,7 @@
 
 <footer class="page__footer section">
     <div class='inner'>
-        <span>{{ 'Made by the' | translate }} <a href="https://www.hotosm.org/">HOTOSM</a> {{ 'Community' | translate }}. <a href="/about">{{ 'Get in touch' | translate }}</a>.</span>
+        <span>Made by the <a href="https://www.hotosm.org/">HOTOSM</a> Community. <a href="/about">{{ 'Get in touch' | translate }}</a>.</span>
         <span class="right">{{ 'Give feedback on' | translate }} <a href="https://github.com/hotosm/tasking-manager" target="_blank" rel="noopener">{{ 'GitHub' | translate }}</a>. {{ 'Learn more about' | translate }} <a href="https://www.openstreetmap.org/about">OpenStreetMap</a>.</span>
     </div>
 </footer>
@@ -177,10 +177,6 @@
 <script src="node_modules/ng-showdown/dist/ng-showdown.js"></script>
 <!-- /build -->
 
-<!-- build:js https://cdn.jsdelivr.net/npm/@mapbox/geo-viewport@0.4.0/geo-viewport.js -->
-<script src="node_modules/@mapbox/geo-viewport/geo-viewport.js"></script>
-<!-- /build -->
-
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js-->
 <script src="node_modules/moment/moment.js"></script>
 <!-- /build -->
@@ -219,10 +215,6 @@
 
 <!-- build:js https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.js -->
 <script src="node_modules/ng-table/bundles/ng-table.js"></script>
-<!-- /build -->
-
-<!-- build:js https://cdn.jsdelivr.net/npm/osmtogeojson@2.2.12/osmtogeojson.js -->
-<script src="node_modules/osmtogeojson/osmtogeojson.js"></script>
 <!-- /build -->
 
 <!-- build:js app/taskingmanager.min.js -->
@@ -277,11 +269,22 @@
 <script src="app/components/project-chat/project-chat.directive.js"></script>
 <!-- /build -->
 
-<!-- Matomo -->
-<div id="optout-form"></div>
-<script type="application/javascript">var site_id="9"</script>
-<script type="application/javascript" src="https://cdn.hotosm.org/tracking-v2.js"></script>
- <!-- End Matomo Code -->
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["setDomains", ["*.tasks.hotosm.org"]]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//piwik.hotosm.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 7]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//piwik.hotosm.org/piwik.php?idsite=7" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
 
 </body>
 </html>
