@@ -354,11 +354,7 @@ class UserInvalidatedTasks(Resource):
             sort_column = {
                 'updatedDate': 'updated_date',
                 'projectId': 'project_id'
-            }
-            if request.args.get('sortBy','updatedDate') in sort_column:
-                sort_column = sort_column[request.args.get('SortBy','updatedDate')]
-            else:
-                sort_column = sort_column['updatedDate']
+            }[request.args.get('sortBy', 'updatedDate')]
 
             # closed needs to be set to True, False, or None
             closed = None
@@ -366,12 +362,6 @@ class UserInvalidatedTasks(Resource):
                 closed = True
             elif request.args.get('closed') == 'false':
                 closed = False
-
-            # sort direction should only be desc or asc
-            if request.args.get('sortDirection') in ['asc','desc']:
-                sort_direction = request.args.get('sortDirection')
-            else:
-                sort_direction = 'desc'
 
             invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
                 request.args.get('asValidator') == 'true',
@@ -382,7 +372,7 @@ class UserInvalidatedTasks(Resource):
                 request.args.get('page', None, type=int),
                 request.args.get('pageSize', None, type=int),
                 sort_column,
-                sort_direction
+                request.args.get('sortDirection')
             )
             return invalidated_tasks.to_primitive(), 200
         except NotFound:
