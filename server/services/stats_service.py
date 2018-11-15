@@ -125,6 +125,8 @@ class StatsService:
         activity_dto = ProjectActivityDTO()
         for item in results.items:
             history = TaskHistoryDTO()
+            history.history_id = item.id
+            history.task_id = item.task_id
             history.action = item.action
             history.action_text = item.action_text
             history.action_date = item.action_date
