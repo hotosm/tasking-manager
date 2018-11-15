@@ -381,7 +381,7 @@
             }
             if (task != null && task.taskId in vm.lockTime) {
                 var lockTime = moment.utc(vm.lockTime[task.taskId]);
-                return lockTime.add(2, 'hours').diff(moment.utc(), 'minutes');
+                return lockTime.add(task.autoUnlockSeconds, 'seconds').diff(moment.utc(), 'minutes');
             }
             else {
                 return null;
