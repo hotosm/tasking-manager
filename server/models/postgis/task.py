@@ -9,7 +9,7 @@ from geoalchemy2 import Geometry
 from server import db
 from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
-from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
+from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks, InvalidatedTask, InvalidatedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
@@ -24,6 +24,79 @@ class TaskAction(Enum):
     COMMENT = 4
     AUTO_UNLOCKED_FOR_MAPPING = 5
     AUTO_UNLOCKED_FOR_VALIDATION = 6
+
+
+class TaskInvalidationHistory(db.Model):
+    """ Describes the most recent history of task invalidation and subsequent validation """
+    __tablename__ = "task_invalidation_history"
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
+    task_id = db.Column(db.Integer, nullable=False)
+    is_closed = db.Column(db.Boolean, default=False)
+    mapper_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_mappers'))
+    mapped_date = db.Column(db.DateTime)
+    invalidator_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_invalidators'))
+    invalidated_date = db.Column(db.DateTime)
+    invalidation_history_id = db.Column(db.Integer, db.ForeignKey('task_history.id', name='fk_invalidation_history'))
+    validator_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_validators'))
+    validated_date = db.Column(db.DateTime)
+    updated_date = db.Column(db.DateTime, default=timestamp)
+
+    __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
+                      db.Index('idx_task_validation_history_composite', 'task_id', 'project_id'),
+                      db.Index('idx_task_validation_mapper_status_composite', 'invalidator_id', 'is_closed'),
+                      db.Index('idx_task_validation_mapper_status_composite', 'mapper_id', 'is_closed'),
+                      {})
+
+    def __init__(self, project_id, task_id):
+        self.project_id = project_id
+        self.task_id = task_id
+        self.is_closed = False
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_open_for_task(project_id, task_id):
+        return TaskInvalidationHistory.query.filter_by(task_id=task_id, project_id=project_id, is_closed=False).one_or_none()
+
+    @staticmethod
+    def close_all_for_task(project_id, task_id):
+        TaskInvalidationHistory.query.filter_by(task_id=task_id, project_id=project_id, is_closed=False) \
+                               .update({"is_closed": True})
+
+    @staticmethod
+    def record_invalidation(project_id, task_id, invalidator_id, history):
+        # Invalidation always kicks off a new entry for a task, so close any existing ones.
+        TaskInvalidationHistory.close_all_for_task(project_id, task_id)
+
+        last_mapped = TaskHistory.get_last_mapped_action(project_id, task_id)
+        entry = TaskInvalidationHistory(project_id, task_id)
+        entry.invalidation_history_id = history.id
+        entry.mapper_id = last_mapped.user_id
+        entry.mapped_date = last_mapped.action_date
+        entry.invalidator_id = invalidator_id
+        entry.invalidated_date = history.action_date
+        entry.updated_date = timestamp()
+        db.session.add(entry)
+
+    @staticmethod
+    def record_validation(project_id, task_id, validator_id, history):
+        entry = TaskInvalidationHistory.get_open_for_task(project_id, task_id)
+
+        # If no open invalidation to update, then nothing to do
+        if entry is None:
+            return
+
+        last_mapped = TaskHistory.get_last_mapped_action(project_id, task_id)
+        entry.mapper_id = last_mapped.user_id
+        entry.mapped_date = last_mapped.action_date
+        entry.validator_id = validator_id
+        entry.validated_date = history.action_date
+        entry.is_closed = True
+        entry.updated_date = timestamp()
 
 
 class TaskHistory(db.Model):
@@ -218,7 +291,14 @@ class TaskHistory(db.Model):
             project_id, task_id,
             [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name,
              TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name])
-
+    def get_last_mapped_action(project_id: int, task_id: int):
+        """Gets the most recent mapped action, if any, in the task history"""
+        return db.session.query(TaskHistory) \
+            .filter(TaskHistory.project_id == project_id,
+                    TaskHistory.task_id == task_id,
+                    TaskHistory.action == TaskAction.STATE_CHANGE.name,
+                    TaskHistory.action_text == TaskStatus.MAPPED.name) \
+            .order_by(TaskHistory.action_date.desc()).first()
 
 class Task(db.Model):
     """ Describes an individual mapping Task """
@@ -438,14 +518,16 @@ class Task(db.Model):
         if comment:
             self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
 
-        self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
+        history = self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
 
         if new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY] and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
             # Don't set mapped if state being set back to mapped after validation
             self.mapped_by = user_id
         elif new_state == TaskStatus.VALIDATED:
+            TaskInvalidationHistory.record_validation(self.project_id, self.id, user_id, history)
             self.validated_by = user_id
         elif new_state == TaskStatus.INVALIDATED:
+            TaskInvalidationHistory.record_invalidation(self.project_id, self.id, user_id, history)
             self.mapped_by = None
             self.validated_by = None
 
@@ -545,6 +627,7 @@ class Task(db.Model):
         task_history = []
         for action in self.task_history:
             history = TaskHistoryDTO()
+            history.history_id = action.id
             history.action = action.action
             history.action_text = action.action_text
             history.action_date = action.action_date
