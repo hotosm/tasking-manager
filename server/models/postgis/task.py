@@ -12,6 +12,7 @@ from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks, InvalidatedTask, InvalidatedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
+from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, parse_duration, NotFound
@@ -103,6 +104,37 @@ class TaskInvalidationHistory(db.Model):
         entry.updated_date = timestamp()
 
 
+class TaskMappingIssue(db.Model):
+    """ Describes an issue (along with an occurrence count) with a task mapping that contributed to invalidation of the task """
+    __tablename__ = "task_mapping_issues"
+    id = db.Column(db.Integer, primary_key=True)
+    task_history_id = db.Column(db.Integer, db.ForeignKey('task_history.id'), nullable=False, index=True)
+    issue = db.Column(db.String, nullable=False)
+    mapping_issue_category_id = db.Column(db.Integer, db.ForeignKey('mapping_issue_categories.id', name='fk_issue_category'), nullable=False)
+    count = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, issue, count, mapping_issue_category_id, task_history_id=None):
+        self.task_history_id = task_history_id
+        self.issue = issue
+        self.count = count
+        self.mapping_issue_category_id = mapping_issue_category_id
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
+    def as_dto(self):
+        issue_dto = TaskMappingIssueDTO()
+        issue_dto.category_id = self.mapping_issue_category_id
+        issue_dto.name = self.issue
+        issue_dto.count = self.count
+        return issue_dto
+
+    def __repr__(self):
+        return "{0}: {1}".format(self.issue, self.count)
+
+
 class TaskHistory(db.Model):
     """ Describes the history associated with a task """
     __tablename__ = "task_history"
@@ -117,6 +149,7 @@ class TaskHistory(db.Model):
     invalidation_history = db.relationship(TaskInvalidationHistory, lazy='dynamic', cascade='all')
 
     actioned_by = db.relationship(User)
+    task_mapping_issues = db.relationship(TaskMappingIssue, cascade="all")
 
     __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
                       db.Index('idx_task_history_composite', 'task_id', 'project_id'), {})
@@ -454,7 +487,7 @@ class Task(db.Model):
 
         return True
 
-    def set_task_history(self, action, user_id, comment=None, new_state=None):
+    def set_task_history(self, action, user_id, comment=None, new_state=None, mapping_issues=None):
         """
         Sets the task history for the action that the user has just performed
         :param task: Task in scope
@@ -462,6 +495,7 @@ class Task(db.Model):
         :param action: Action the user has performed
         :param comment: Comment user has added
         :param new_state: New state of the task
+        :param mapping_issues: Identified issues leading to invalidation
         """
         history = TaskHistory(self.id, self.project_id, user_id)
 
@@ -473,6 +507,9 @@ class Task(db.Model):
             history.set_state_change_action(new_state)
         elif action in [TaskAction.AUTO_UNLOCKED_FOR_MAPPING, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION]:
             history.set_auto_unlock_action(action)
+
+        if mapping_issues is not None:
+            history.task_mapping_issues = mapping_issues
 
         self.task_history.append(history)
         return history
@@ -526,12 +563,13 @@ class Task(db.Model):
         auto_unlocked.action_text = lock_duration
         self.update()
 
-    def unlock_task(self, user_id, new_state=None, comment=None, undo=False):
+    def unlock_task(self, user_id, new_state=None, comment=None, undo=False, issues=None):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
-            self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
+            self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id, mapping_issues=issues)
 
-        history = self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
+        history = self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state,
+                                        user_id=user_id, mapping_issues=issues)
 
         if new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY] and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
             # Don't set mapped if state being set back to mapped after validation
@@ -667,6 +705,8 @@ class Task(db.Model):
             history.action_text = action.action_text
             history.action_date = action.action_date
             history.action_by = action.actioned_by.username if action.actioned_by else None
+            if action.task_mapping_issues:
+                history.issues = [issue.as_dto() for issue in action.task_mapping_issues]
 
             task_history.append(history)
 

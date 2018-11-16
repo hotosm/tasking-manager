@@ -8,11 +8,12 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'mappingIssueService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, mappingIssueService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
         var vm = this;
         vm.id = 0;
+        vm.selectedIssueCategory = null;
         vm.loaded = false;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -56,6 +57,9 @@
         vm.lockTime = {};
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
+        vm.mappingIssueCategories = [];
+        vm.availableMappingIssueCategories = [];
+        vm.mappingIssues = [];
 
         //editor
         vm.editorStartError = '';
@@ -108,6 +112,12 @@
             mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
             vm.loaded = false;
+
+            mappingIssueService.getMappingIssueCategories().then(function(data) {
+              vm.mappingIssueCategories = data.categories;
+              vm.availableMappingIssueCategories = vm.remainingMappingIssueCategories();
+            });
+
             vm.id = $routeParams.id;
             vm.highlightHistory = $routeParams.history ? parseInt($routeParams.history, 10) : null;
 
@@ -167,6 +177,76 @@
         }
 
         /**
+         * Returns array of mapping issue categories for which no issues have
+         * been noted as of yet
+         */
+        vm.remainingMappingIssueCategories = function() {
+            return vm.mappingIssueCategories.filter(function(category) {
+                return !vm.isMappingIssueCategoryInUse(category);
+            });
+        };
+
+        /**
+         * Returns true if mapping issues have already been noted in the given
+         * issue category
+         */
+        vm.isMappingIssueCategoryInUse = function(category) {
+            return !!vm.mappingIssues.find(function(issue) {
+                return issue.mappingIssueCategoryId === category.categoryId;
+            });
+        };
+
+        /**
+         * Add the currently selected mapping issue to the list of noted issues
+         * with an initial count of 1 issue
+         */
+        vm.addMappingIssue = function() {
+            if (!vm.selectedIssueCategory) {
+                return;
+            }
+
+            vm.mappingIssues.push({
+                mappingIssueCategoryId: vm.selectedIssueCategory.categoryId,
+                issue: vm.selectedIssueCategory.name,
+                count: 1,
+            });
+
+            vm.availableMappingIssueCategories = vm.remainingMappingIssueCategories();
+            vm.selectedIssueCategory = null;
+        };
+
+        /**
+         * Removes the given issue from the array of current mapping issues
+         */
+        vm.removeMappingIssue = function(issueToRemove) {
+            vm.mappingIssues = vm.mappingIssues.filter(function(issue) {
+                return issue.mappingIssueCategoryId !== issueToRemove.mappingIssueCategoryId;
+            });
+
+            // Now that we've freed up an additional issue category, update the
+            // available categories
+            vm.availableMappingIssueCategories = vm.remainingMappingIssueCategories();
+        };
+
+        /**
+         * Determines if any mapping issues are currently set
+         */
+        vm.hasMappingIssues = function () {
+            return !!vm.mappingIssues.find(function(issue) {
+                return issue.count > 0;
+            });
+        };
+
+        /**
+         * Reset mapping issue properties
+         */
+        vm.resetMappingIssues = function() {
+            vm.mappingIssues = [];
+            vm.selectedIssueCategory = null;
+            vm.availableMappingIssueCategories = vm.remainingMappingIssueCategories();
+        };
+
+        /**
          * convenience method to reset task data controller properties
          */
         vm.resetTaskData = function () {
@@ -175,6 +255,7 @@
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
             vm.lockedTasksForCurrentUser = [];
+            vm.resetMappingIssues();
         };
 
         vm.updatePreferedEditor = function () {
@@ -880,6 +961,7 @@
                 vm.lockedTaskData = null;
                 vm.multiSelectedTasksData = [];
                 vm.multiLockedTasks = [];
+                vm.resetMappingIssues();
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.clearCurrentSelection();
@@ -909,6 +991,7 @@
                 vm.lockedTaskData = null;
                 vm.multiSelectedTasksData = [];
                 vm.multiLockedTasks = [];
+                vm.resetMappingIssues();
                 setUpSelectedTask(data);
                 // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
                 // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
@@ -1128,7 +1211,8 @@
             var tasks = [{
                 comment: comment,
                 status: status,
-                taskId: taskId
+                taskId: taskId,
+                validationIssues: vm.mappingIssues,
             }];
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
