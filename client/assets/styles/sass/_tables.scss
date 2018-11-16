@@ -39,6 +39,22 @@
     word-break: break-word;
   }
 
+  td.issue-summary {
+    color: $darker-red;
+
+    .issue-summary__heading {
+      margin-bottom: 1em;
+    }
+
+    .issue-summary__marker {
+      font-size: 18px;
+    }
+
+    &--fixed {
+      color: inherit;
+    }
+  }
+
   th:first-child,
   td:first-child {
     padding-left: 1rem;
