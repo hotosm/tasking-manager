@@ -5,6 +5,7 @@ The app is split into a Client (AngularJS) and Server (Python) structure.  Each 
 
 [See our FAQ if you hit any problems getting setup](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ)
 
+**Looking to get involved in development?** Check out the [Working Group meeting details](https://github.com/hotosm/tasking-manager/wiki/TM-Working-Group-Meeting-Details), review the [Roadmap](https://github.com/hotosm/tasking-manager/projects/1), and review our Contributor guidelines](https://github.com/hotosm/tasking-manager/blob/develop/CONTRIBUTING.md).
 
 ## Client Development
 ### Global Dependencies
