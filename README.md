@@ -136,6 +136,8 @@ python -m unittest discover tests/server
 ```
 
 ## <a name="DevOps">Dev Ops</a>
+If you encounter any issues while setting up a dev environment, please visit our [FAQ ❓ page](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ) to find possible solutions.
+
 
 ### Server Config
 
