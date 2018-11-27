@@ -1135,9 +1135,7 @@
                         </svg>
                         {{ 'Locked by you' | translate }}
                     </div>
-                </div>
-                <div ng-show="projectCtrl.hasPriorityArea" class="ol-control legend-control priority-areas">
-                    <div>
+                    <div ng-show="projectCtrl.hasPriorityArea">
                         <svg height="15" width="15">
                             <rect width="15" height="15" stroke="rgba(255, 0, 0, 1)" stroke-width="3"
                                   fill="rgba(255, 0, 0, 0.3)"/>
