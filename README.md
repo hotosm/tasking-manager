@@ -1,12 +1,25 @@
 # HOT tasking-manager
 
-## Intro
+## Table of contents
+
+1 [Intro](#Intro)
+
+2 [Client Development](#ClientDevelopment)
+
+3 [Server Development](#ServerDevelopment)
+
+4 [Dev Ops](#DevOps)
+
+5 [Localisation](#Localisation)
+
+## <a name="Intro">Intro</a>
 The app is split into a Client (AngularJS) and Server (Python) structure.  Each can be developed independently of each other.  See below for instructions on how to set up your dev environment.
 
 [See our FAQ if you hit any problems getting setup](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ)
 
+**Looking to get involved in development?** Check out the [Working Group meeting details](https://github.com/hotosm/tasking-manager/wiki/TM-Working-Group-Meeting-Details), review the [Roadmap](https://github.com/hotosm/tasking-manager/projects/1), and review our Contributor guidelines](https://github.com/hotosm/tasking-manager/blob/develop/CONTRIBUTING.md).
 
-## Client Development
+## <a name="ClientDevelopment">Client Development</a>
 ### Global Dependencies
 Following must be available locally:
 
@@ -38,7 +51,7 @@ The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests, that
  karma start ..\tests\client\karma.conf.js
 ```
 
-## Server Development
+## <a name="ServerDevelopment">Server Development</a>
 ### Dependencies
 Following must be available locally:
 
@@ -123,7 +136,9 @@ The project includes a suite of Unit and Integration tests that you should run a
 python -m unittest discover tests/server
 ```
 
-## Dev Ops
+## <a name="DevOps">Dev Ops</a>
+If you encounter any issues while setting up a dev environment, please visit our [FAQ ❓ page](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ) to find possible solutions.
+
 
 ### Server Config
 
@@ -137,5 +152,5 @@ On boot the Tasking Manager App will look for the following environment vars:
       * **Staging** - Use this for your staging/test environment
       * **Prod** - Use this for your production environment
 
-## Localisation
+## <a name="Localisation">Localisation</a>
 Please see the [Localisation Wiki](https://github.com/hotosm/tasking-manager/wiki/Localisation) for more details.
