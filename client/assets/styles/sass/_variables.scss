@@ -3,6 +3,9 @@ $xxlarge-range: (1600px);
 /* Colors
    ========================================================================== */
 
+$kaart-green: #228B22;
+$kaart-blue: #4169E1;
+
 $orange: #FB6624;
 $darker-red: #D73F3F;
 $red: #FE0303;
@@ -24,7 +27,7 @@ $danger-color: #ea4f54;                                 // Mandy
 $success-color: $secondary-color;                       //
 $warning-color: #f6d55f;                                // Energy Yellow                        //
 
-$link-color: $orange;
+$link-color: $kaart-green;
 $base-alpha-color: rgba($medium-grey, 0.12);
 
 
