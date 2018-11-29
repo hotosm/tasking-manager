@@ -11,6 +11,7 @@
 
     function homeController(statsService) {
         var vm = this;
+        vm.hasLoaded = false;
         vm.mappersOnline = 0;
         vm.tasksMapped = 0;
         vm.totalMappers = 0;
@@ -29,11 +30,12 @@
             resultsPromise.then(function (data) {
                 vm.stats = data;
                 console.log(vm.stats);
+                vm.hasLoaded = true;
                 vm.mappersOnline = data.mappersOnline;
                 vm.tasksMapped = data.tasksMapped;
                 vm.totalMappers = data.totalMappers;
             }, function (data) {
-                // Swallow error counters will show 0 but not catastrophic
+                // Swallow error counters will show loading animation but not catastrophic
             });
         }
     }

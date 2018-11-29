@@ -45,8 +45,10 @@
             updateProject: updateProject,
             deleteProject: deleteProject,
             mapAllTasks: mapAllTasks,
+            resetBadImageryTasks: resetBadImageryTasks,
             invalidateAllTasks: invalidateAllTasks,
             validateAllTasks: validateAllTasks,
+            resetAllTasks: resetAllTasks,
             getCommentsForProject: getCommentsForProject,
             userCanMapProject: userCanMapProject,
             userCanValidateProject: userCanValidateProject,
@@ -506,6 +508,28 @@
         }
 
         /**
+         * Mark all bad imagery tasks ready for mapping
+         * @param projectId
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function resetBadImageryTasks(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/reset-all-badimagery',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
          * Invalidate all tasks on the project
          * @param projectId
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
@@ -537,6 +561,28 @@
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/admin/project/' + projectId + '/validate-all',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Resets all tasks on the project
+         * @param projectId
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function resetAllTasks(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/reset-all',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

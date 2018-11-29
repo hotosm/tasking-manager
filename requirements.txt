@@ -5,7 +5,7 @@ cachetools==2.0.0
 click==6.7
 coverage==4.3.4
 flake8==3.3.0
-Flask==0.12.2
+Flask==0.12.4
 Flask-Cors==3.0.2
 Flask-HTTPAuth==3.2.3
 Flask-Migrate==2.0.4
@@ -31,7 +31,7 @@ pyflakes==1.5.0
 python-dateutil==2.6.0
 python-editor==1.0.3
 pytz==2017.2
-PyYAML==3.12
+PyYAML==3.13
 requests==2.13.0
 requests-oauthlib==0.8.0
 schematics==2.0.0a1

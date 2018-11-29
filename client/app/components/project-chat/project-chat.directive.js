@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('projectChatController', ['$scope', '$anchorScroll', '$location', '$timeout', '$interval', 'messageService', 'userService', projectChatController])
+        .controller('projectChatController', ['$scope', '$anchorScroll', '$location', '$timeout', '$interval', 'messageService', 'userService', 'configService', projectChatController])
         .directive('projectChat', projectChatDirective);
 
     /**
@@ -34,14 +34,15 @@
         return directive;
     }
 
-    function projectChatController($scope, $anchorScroll, $location, $timeout, $interval, messageService, userService) {
+    function projectChatController($scope, $anchorScroll, $location, $timeout, $interval, messageService, userService, configService) {
 
         var vm = this;
         vm.projectId = 0;
         vm.author = '';
         vm.message = '';
         vm.messages = [];
-        vm.maxlengthComment = 250;
+        vm.maxlengthComment = configService.maxChatLength;
+        vm.suggestedUsers = [];
 
         vm.hasScrolled = false;
 
@@ -112,17 +113,18 @@
          * @param search
          */
         vm.searchUser = function (search) {
+            // If the search is empty, do nothing.
+            if (!search || search.length === 0) {
+              vm.suggestedUsers = [];
+              return $q.resolve(vm.suggestedUsers);
+            }
+
             // Search for a user by calling the API
-            var resultsPromise = userService.searchUser(search);
+            var resultsPromise = userService.searchUser(search, parseInt(vm.projectId, 10));
             return resultsPromise.then(function (data) {
                 // On success
-                vm.usernames = [];
-                if (data.usernames) {
-                    for (var i = 0; i < data.usernames.length; i++) {
-                        vm.usernames.push({'label': data.usernames[i]});
-                    }
-                }
-                return data.usernames;
+                vm.suggestedUsers = data.users;
+                return vm.suggestedUsers;
             }, function () {
                 // On error
             });
@@ -135,7 +137,7 @@
         vm.formatUserTag = function (item) {
             // Format the user tag by wrapping into brackets so it is easier to detect that it is a username
             // especially when there are spaces in the username
-            return '@[' + item.label + ']';
+            return '@[' + item.username + ']';
         };
 
         /**

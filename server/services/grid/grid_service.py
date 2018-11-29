@@ -20,7 +20,7 @@ class GridService:
     @staticmethod
     def trim_grid_to_aoi(grid_dto: GridDTO) -> geojson.FeatureCollection:
         """
-        Removes grid squares not intersecting with the aoi.  Optionally leaves partialy intersecting task squares
+        Removes grid squares not intersecting with the aoi.  Optionally leaves partially intersecting task squares
         complete or clips them exactly to the AOI outline
         :param grid_dto: the dto containing
         :return: geojson.FeatureCollection trimmed task grid
@@ -65,7 +65,7 @@ class GridService:
             # put the geometry back to geojson
 
             if feature.geometry.has_z:
-                # Strip Z dimension, as can't persist geometry otherewise.  Most likely exists in KML data
+                # Strip Z dimension, as can't persist geometry otherwise.  Most likely exists in KML data
                 feature.geometry = shapely.ops.transform(GridService._to_2d, feature.geometry)
 
             feature.geometry = shapely.geometry.mapping(feature.geometry)
