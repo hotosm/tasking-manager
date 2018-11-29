@@ -159,7 +159,7 @@ class ProjectFileAPI(Resource):
             file = ProjectFiles.get_file(project_id, file_id)
             return file.to_primitive(), 200
         except NotFound:
-            return {"Error": "No chat messages found for project"}, 404
+            return {"Error": "No project files found for project"}, 404
         except Exception as e:
             error_msg = f'Files GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
