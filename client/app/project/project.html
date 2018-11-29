@@ -414,7 +414,7 @@
                                                         ng-model="projectCtrl.selectedEditor"
                                                         ng-change="projectCtrl.updatePreferedEditor()">
                                                     <option value="ideditor" selected="true">iD Editor</option>
-                                                    <option value="josm">JOSM</option>
+                                                    <option ng-selected="projectCtrl.project_files.length" value="josm">JOSM</option>
                                                     <option value="potlatch2">Potlatch 2</option>
                                                     <option value="fieldpapers">Field Papers</option>
                                                 </select>
@@ -428,6 +428,15 @@
                                         </div>
                                         <div>
                                             <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
+                                        </div>
+                                        <div ng-show="projectCtrl.project_files.length">
+                                            <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit' | translate }}</h6>
+                                            <h6>{{ 'The following files will be loaded into JOSM as separate layers:' | translate }}</h6>
+                                            <ul>
+                                                <li ng-repeat="file in projectCtrl.project_files">
+                                                    {{file.fileName}}
+                                                </li>
+                                            </ul>
                                         </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
@@ -771,6 +780,22 @@
                                         <div>
                                             <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
                                         </div>
+                                        <div ng-show="projectCtrl.project_files.length">
+                                                <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit.' | translate }}</h6>
+                                                <div ng-show="projectCtrl.selectedEditor === 'josm'">
+                                                <h6>{{ 'The following files can be loaded into JOSM as separate layers within the task boundary:' | translate }}</h6>
+                                                <ul>
+                                                    <li ng-repeat="file in projectCtrl.project_files">
+                                                        {{file.fileName}}
+                                                        <span class="form__input-group-button">
+                                                            <button class="button button--sm" ng-click="projectCtrl.loadProjectFile(file)">
+                                                                {{ 'Load into JOSM' | translate}}
+                                                            </button>
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                                </div>
+                                            </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -862,6 +887,22 @@
                                                 </span>
                                             </div>
                                         </div>
+                                        <div ng-show="projectCtrl.project_files.length">
+                                                <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit.' | translate }}</h6>
+                                                <div ng-show="projectCtrl.selectedEditor === 'josm'">
+                                                <h6>{{ 'The following files can be loaded into JOSM as separate layers within the tasks\' boundaries:' | translate }}</h6>
+                                                <ul>
+                                                    <li ng-repeat="file in projectCtrl.project_files">
+                                                        {{file.fileName}}
+                                                        <span class="form__input-group-button">
+                                                            <button class="button button--sm" ng-click="projectCtrl.loadProjectFile(file)">
+                                                                {{ 'Load into JOSM' | translate}}
+                                                            </button>
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                                </div>
+                                            </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"

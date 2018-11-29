@@ -1378,11 +1378,12 @@
 
                 
                 // if there are project files, send the josm command with the api url to extract data
-                if (vm.project_files.length > 0) {
+                if (vm.currentTab === 'mapping' && vm.project_files.length > 0) {
                     var i;
                     for (i = 0; i < vm.project_files.length; i++) {
                         var emptyTaskLayerParams = {
-                            new_layer: true,                       upload_policy: enumerateUploadPolicy(vm.project_files[i].uploadPolicy),
+                            new_layer: true,                       
+                            upload_policy: enumerateUploadPolicy(vm.project_files[i].uploadPolicy),
                             mime_type: encodeURIComponent('application/x-osm+xml'),
                             layer_name: encodeURIComponent(vm.project_files[i].fileName.replace(/\.[^/.]+$/,"")),
                             data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
@@ -1400,10 +1401,28 @@
                             .catch(function() {
                                 //warn that JSOM couldn't be started
                                 vm.editorStartError = 'josm-error';
-                            });
+                            });  
                     }
                 }
             }
+        };
+
+        /**
+         * Load a project file into JOSM for validation purposes
+         * @param file
+         */
+        vm.loadProjectFile = function (file) {
+            var taskImportParams = {
+                new_layer: true,
+                upload_policy: enumerateUploadPolicy(file.uploadPolicy),
+                layer_name: encodeURIComponent(file.fileName.replace(/\.[^/.]+$/,"")),
+                url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), file)
+            }
+            editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
+                .catch(function() {
+                    //warn that JSOM couldn't be started
+                    vm.editorStartError = 'josm-error';
+                });  
         };
 
         /**

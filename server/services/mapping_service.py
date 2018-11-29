@@ -307,6 +307,7 @@ class MappingService:
             subprocess.call(task_cmd, shell=True)
             os.remove(os.path.join(dir, poly))
 
+        # Merge the extracted files back together. Used if more than one task is sent in request.
         merge_cmd = ['./server/tools/osmosis/bin/osmosis']
 
         for osm in osm_files:
