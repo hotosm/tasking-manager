@@ -10,12 +10,14 @@ from geoalchemy2 import Geometry
 from server import db
 from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
+from server.models.dtos.task_annotation_dto import TaskAnnotationDTO 
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks, InvalidatedTask, InvalidatedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
 from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, parse_duration, NotFound
+from server.models.postgis.task_annotation import TaskAnnotation
 
 
 class TaskAction(Enum):
@@ -363,6 +365,7 @@ class Task(db.Model):
 
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
+    task_annotations = db.relationship(TaskAnnotation, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
     mapper = db.relationship(User, foreign_keys=[mapped_by])
 
@@ -724,7 +727,14 @@ class Task(db.Model):
         task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(
             self.projects.default_locale)
 
+        annotations = self.get_per_task_annotations()
+        task_dto.task_annotations = annotations if annotations else  [] 
+
         return task_dto
+
+    def get_per_task_annotations(self):
+        result = [ta.get_dto() for ta in self.task_annotations]
+        return result
 
     def get_per_task_instructions(self, search_locale: str) -> str:
         """ Gets any per task instructions attached to the project """
