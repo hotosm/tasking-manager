@@ -6,6 +6,7 @@ from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, Proje
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task
+from server.models.postgis.task_annotation import TaskAnnotation
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
 
