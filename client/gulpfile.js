@@ -11,8 +11,8 @@ var gulp = require('gulp'),
     remoteSrc = require('gulp-remote-src'),
     rename = require('gulp-rename'),
     runSequence = require('run-sequence'),
-    sass = require('gulp-sass');
-uglify = require('gulp-uglify');
+    sass = require('gulp-sass'),
+    uglify = require('gulp-uglify');
 
 // paths object holds references to location of all assets
 var paths = {
@@ -76,7 +76,7 @@ gulp.task('uglify', function () {
         .pipe(concat('taskingmanager.min.js'))
         .pipe(gulp.dest('../server/web/static/dist/app'))
         .pipe(uglify())
-        .pipe(gulp.dest('../server/web/static/dist/app'))
+        .pipe(gulp.dest('../server/web/static/dist/app'));
 });
 
 gulp.task('processhtml', function () {
@@ -125,14 +125,14 @@ gulp.task('create-dev-config', function () {
     /** Creates a config file for Angular with the relevant environment variables for development */
     return gulp.src('taskingmanager.config.json')
         .pipe(config('taskingmanager.config', {environment: 'development'}))
-        .pipe(gulp.dest('app'))
+        .pipe(gulp.dest('app'));
 });
 
 gulp.task('create-release-config', function () {
     /** Creates a config file for Angular with the relevant environment variables for release */
     return gulp.src('taskingmanager.config.json')
         .pipe(config('taskingmanager.config', {environment: 'release'}))
-        .pipe(gulp.dest('app'))
+        .pipe(gulp.dest('app'));
 });
 
 gulp.task('create-presets-config', function () {
