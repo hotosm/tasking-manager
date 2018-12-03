@@ -759,15 +759,16 @@
          * Upload new file for a project
          * @param id
          * @param file
+         * @param uploadPolicy
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
-        function uploadFile(id, file) {
+        function uploadFile(id, file, uploadPolicy) {
             var form_data = new FormData()
             form_data.append('file', file);
             // Returns a promise
             return $http({
                 method: 'PUT',
-                url: configService.tmAPI + '/admin/project/' + id + '/project-files',
+                url: configService.tmAPI + '/admin/project/' + id + '/project-files?upload_policy=' + uploadPolicy,
                 headers: {
                     'Authorization': 'Token ' + btoa(authService.getSession().sessionToken),
                     'Content-Type': undefined
