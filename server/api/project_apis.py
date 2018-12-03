@@ -440,3 +440,23 @@ class ProjectSummaryAPI(Resource):
             error_msg = f'Project Summary GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class TaskAnnotationsAPI(Resource):
+    def get(self, project_id: int):
+        """
+        Get all task annotations for a project
+        """
+        pass
+
+    def post(self, project_id: int):
+        """
+        Store new task annotations for tasks of a project
+        """
+        pass
+
+    def put(self, project_id: int, task_id: int):
+        """
+        Update a single task's annotations
+        """
+        pass
