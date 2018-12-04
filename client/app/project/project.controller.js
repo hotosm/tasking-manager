@@ -1782,11 +1782,11 @@
                                 //warn that JSOM couldn't be started
                                 vm.editorStartError = 'josm-error';
                             });
-                        var taskImportParams = {
+                        var projectFileParams = {
                             new_layer: false,
                             url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i])
                         }
-                        editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
+                        editorService.sendJOSMCmd('http://127.0.0.1:8111/import', projectFileParams)
                             .catch(function() {
                                 //warn that JSOM couldn't be started
                                 vm.editorStartError = 'josm-error';
@@ -1957,13 +1957,24 @@
          * @param file
          */
         vm.loadProjectFile = function (file) {
-            var taskImportParams = {
+            var emptyTaskLayerParams = {
                 new_layer: true,
                 upload_policy: enumerateUploadPolicy(file.uploadPolicy),
                 layer_name: encodeURIComponent(file.fileName.replace(/\.[^/.]+$/,"")),
+                mime_type: encodeURIComponent('application/x-osm+xml'),
+                data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
+            }
+            editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
+                .catch(function() {
+                    //warn that JSOM couldn't be started
+                    vm.editorStartError = 'josm-error';
+                });
+
+            var projectFileParams = {
+                new_layer: false,
                 url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), file)
             }
-            editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
+            editorService.sendJOSMCmd('http://127.0.0.1:8111/import', projectFileParams)
                 .catch(function() {
                     //warn that JSOM couldn't be started
                     vm.editorStartError = 'josm-error';
