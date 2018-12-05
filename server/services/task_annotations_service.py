@@ -12,7 +12,7 @@ class TaskAnnotationsService:
         """ Takes a json of tasks and create annotations in the db """
 
         task_id = annotation['taskId']
-        source = annotation['annotation_source'] if 'annotation_source' in annotation.keys() else None
+        source = annotation['annotationSource'] if 'annotationSource' in annotation.keys() else None
         task_annotation = TaskAnnotation(task_id, project_id, annotation_type, source, annotation['properties'])
 
         # check if the task has this annotation_type
@@ -26,7 +26,3 @@ class TaskAnnotationsService:
             # add this annotation
             task_annotation.create()
 
-    @staticmethod
-    def get_task_annotations(project_id: int):
-        """ Get all the task annotations """
-        pass
