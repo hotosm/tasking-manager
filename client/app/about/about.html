@@ -40,12 +40,14 @@
                     <p>
                         {{ 'With the invaluable support of:' | translate }}
                         <div class="sponsor__cards">
-                            <div class="sponsor__card" ng-repeat="sponsor in aboutCtrl.sponsors">
+                            <div class="sponsor__card"
+                                 ng-repeat="sponsor in aboutCtrl.sponsors">
                                 <section class="panel sponsor__content">
                                     <div ng-show="sponsor.logo" class="supporters-logo">
                                         <span class="helper"></span>
                                         <a href="{{ sponsor.url }}" target="_blank" rel="noopener">
-                                            <img src="{{ sponsor.logo }}" alt="{{ sponsor.name }} + logo">
+                                            <img src="{{ sponsor.logo }}"
+                                                 alt="{{ sponsor.name }} + logo">
                                         </a>
                                     </div>
                                     <span>{{ sponsor.name }}</span>
