@@ -4,10 +4,13 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from distutils.util import strtobool
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
+from server.models.postgis.task import Task
+from server.models.postgis.task_annotation import TaskAnnotation
 from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 from server.services.users.user_service import UserService
 from server.services.users.authentication_service import token_auth, tm, verify_token
+from server.services.task_annotations_service import TaskAnnotationsService
 
 
 class ProjectAPI(Resource):
@@ -443,17 +446,36 @@ class ProjectSummaryAPI(Resource):
 
 
 class TaskAnnotationsAPI(Resource):
-    def get(self, project_id: int):
-        """
-        Get all task annotations for a project
-        """
+    def get(self, project_id: int, annotation_type: str):
+        """ Get all task annotations for a project"""
+
+        print('projectid', project_id)
         pass
 
-    def post(self, project_id: int):
+    def post(self, project_id: int, annotation_type: str):
         """
         Store new task annotations for tasks of a project
         """
-        pass
+        try:
+            annotations = request.get_json()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+
+        try:
+            project = ProjectService.get_project_by_id(project_id)
+        except NotFound as e:
+            current_app.logger.error(f'Error validating project: {str(e)}')
+
+        task_ids = [t['taskId'] for t in annotations['tasks']]
+
+        # check if task ids are valid
+        tasks = Task.get_tasks(project_id, task_ids)
+        tasks_ids_db = [t.id for t in tasks]
+        if (len(task_ids) != len(tasks_ids_db)):
+            return {"error": 'Invalid task id'}, 500
+
+        for annotation in annotations['tasks']:
+            TaskAnnotationsService.add_or_update_annotation(annotation, project_id, annotation_type)
 
     def put(self, project_id: int, task_id: int):
         """
