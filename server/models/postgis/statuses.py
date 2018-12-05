@@ -74,7 +74,3 @@ class UserRole(Enum):
     ADMIN = 1
     PROJECT_MANAGER = 2
     VALIDATOR = 4
-
-class TaskAnnotationType(Enum):
-    """ Describes possible annotation types for a task """
-    ML = 1
