@@ -1,6 +1,6 @@
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, timestamp, NotFound
 from server import db
-
+from server.models.dtos.project_dto import TaskAnnotationDTO, ProjectTaskAnnotationsDTO
 
 class TaskAnnotation(db.Model):
     """ Describes Task annotaions like derived ML attributes """
@@ -43,3 +43,20 @@ class TaskAnnotation(db.Model):
         """ Get annotations for a task with supplied type """
         return TaskAnnotation.query.filter_by(
             project_id=project_id, task_id=task_id, annotation_type=annotation_type).one_or_none()
+
+    def get_task_annotations_by_project_id_type(project_id, annotation_type):
+        """ Get annotatiols for a project with the supplied type """
+        project_task_annotations = TaskAnnotation.query.filter_by(project_id=project_id, annotation_type=annotation_type).all()
+
+        project_task_annotations_dto = ProjectTaskAnnotationsDTO()
+        project_task_annotations_dto.annotation_type = annotation_type
+        project_task_annotations_dto.project_id = project_id
+        for row in project_task_annotations:
+            task_annotation_dto = TaskAnnotationDTO()
+            task_annotation_dto.task_id = row.task_id
+            task_annotation_dto.properties = row.properties
+            task_annotation_dto.annotation_type = row.annotation_type
+            task_annotation_dto.annotation_source = row.annotation_source
+            project_task_annotations_dto.tasks.append(task_annotation_dto)
+
+        return project_task_annotations_dto

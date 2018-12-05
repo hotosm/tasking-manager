@@ -449,8 +449,17 @@ class TaskAnnotationsAPI(Resource):
     def get(self, project_id: int, annotation_type: str):
         """ Get all task annotations for a project"""
 
-        print('projectid', project_id)
-        pass
+        try:
+            project = ProjectService.get_project_by_id(project_id)
+        except NotFound as e:
+            current_app.logger.error(f'Error validating project: {str(e)}')
+            return {"Error": "Project not found"}, 404
+
+        try:
+            annotations = TaskAnnotation.get_task_annotations_by_project_id_type(project_id, annotation_type)
+            return annotations.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Annotation type not found"}, 404
 
     def post(self, project_id: int, annotation_type: str):
         """
