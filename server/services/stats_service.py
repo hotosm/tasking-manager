@@ -185,26 +185,6 @@ class StatsService:
             .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
 
-        # lock_times = db.session.query(TaskHistory.action_text)\
-        #     .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value)))\
-        #     .filter(TaskHistory.action.in_(("LOCKED_FOR_MAPPING", "LOCKED_FOR_VALIDATION")))\
-        #     .filter(Task.id == TaskHistory.task_id)\
-        #     .all()
-
-        # task_count = Task.query.filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value)))\
-        #     .count()
-
-        # total_time_spent = datetime.datetime.fromtimestamp(0)
-
-        # for t in lock_times:
-        #     duration = dateutil.parser.parse(t[0])
-        #     total_time_spent += datetime.timedelta(hours=duration.hour,
-        #                                            minutes=duration.minute,
-        #                                            seconds=duration.second,
-        #                                            microseconds=duration.microsecond)
-
-        # dto.avg_completion_time = total_time_spent.timestamp() / task_count
-
         org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
             .group_by(Project.organisation_tag).all()
 
