@@ -447,8 +447,32 @@ class ProjectSummaryAPI(Resource):
 
 class TaskAnnotationsAPI(Resource):
     def get(self, project_id: int, annotation_type: str):
-        """ Get all task annotations for a project"""
-
+        """
+        Get all task annotations for a project
+        ---
+        tags:
+          - project-admin
+        produces:
+          - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The ID of the project
+              required: true
+              type: integer
+            - name: annotation_type
+              in: path
+              description: The type of annotation to fetch
+              required: true
+              type: string
+        responses:
+            200:
+                description: Project Annotations
+            404:
+                description: Project or annotations not found
+            500:
+                description: Internal Server Error
+        """
         try:
             project = ProjectService.get_project_by_id(project_id)
         except NotFound as e:
@@ -464,6 +488,56 @@ class TaskAnnotationsAPI(Resource):
     def post(self, project_id: int, annotation_type: str):
         """
         Store new task annotations for tasks of a project
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Content-Type
+              description: Content type for post body
+              required: true
+              type: string
+              default: application/json
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                projectId:
+                    type: integer
+                    required: true
+                annotationType:
+                    type: string
+                    required: true
+                tasks:
+                    type: array
+                    required: true
+                    items:
+                        schema:
+                            taskId:
+                                type: integer
+                                required: true
+                            annotationSource:
+                                type: string
+                            properties:
+                                description: JSON object with properties
+        responses:
+            200:
+                description: Project updated
+            400:
+                description: Client Error - Invalid Request
+            404:
+                description: Project or task not found
+            500:
+                description: Internal Server Error
         """
         try:
             annotations = request.get_json()
