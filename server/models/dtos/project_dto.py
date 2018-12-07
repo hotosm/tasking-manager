@@ -258,5 +258,4 @@ class ProjectTaskAnnotationsDTO(Model):
         self.tasks = []
 
     project_id = IntType(required=True, serialized_name='projectId')
-    annotation_type = StringType(required=True, serialized_name='annotationType')
     tasks = ListType(ModelType(TaskAnnotationDTO), required=True, serialized_name='tasks')
