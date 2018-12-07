@@ -1013,6 +1013,7 @@
 
                         <div ng-init="showAdvanced=false"
                                 ng-show="projectCtrl.selectedTaskData && (projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') ">
+                            
                             <div>
                                 <h5>{{ 'History' | translate }}</h5>
                                 <div class="history">
@@ -1082,6 +1083,26 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div ng-show="projectCtrl.selectedTaskData.taskAnnotation">
+                                    <h5>{{ 'ML prediction details' | translate }}</h5>
+                                    <div  class="history">
+                                        <table border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><span class="ng-binding">OSM building area (m^2) :</span></td>
+                                                        <td align="right"><strong class="ng-binding">{{ projectCtrl.selectedTaskData.taskAnnotation[0].properties.building_area_osm }}</strong></td> </tr>
+                                                    <tr>
+                                                        <td><span class="ng-binding">ML predicted building area :</span></td>
+                                                        <td align="right"><strong class="ng-binding">{{ projectCtrl.selectedTaskData.taskAnnotation[0].properties.building_area_ml_pred }}</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="ng-binding">Estimated missing building area :</span></td>
+                                                        <td align="right"><strong class="ng-binding">{{ projectCtrl.selectedTaskData.taskAnnotation[0].properties.building_area_diff }}</strong></td>
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <h5 ng-click="showAdvanced=!showAdvanced" class="pointer"
@@ -1133,6 +1154,7 @@
                                         </li>
                                     </ul>
                                 </div>
+                               
                             </div>
                         </div>
                     </div>
@@ -1145,7 +1167,14 @@
                             </a>
                         </div>
                     </div>
-                    <div class="ol-control legend-control">
+                    <div ng-show="projectCtrl.projectData.annotations">
+                        <div class="ml-project-button">
+                            <button class="button" ng-click="projectCtrl.addAnnotationsToMap()" >
+                                {{ 'ML Layer' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="ol-control legend-control" id="legend-control-tm">
                         <h6>{{ 'Legend' | translate }}</h6>
                         <div>
                             <svg height="15" width="15">
@@ -1202,6 +1231,37 @@
                                     fill="rgba(255, 0, 0, 0.3)"/>
                             </svg>
                             {{ 'Priority area' | translate }}
+                        </div>
+                    </div>
+                    <div class="ol-control legend-control" id="legend-control-ml" style="visibility:hidden">
+                        <h6>{{ 'ML Legend' | translate }}</h6>
+                        <div>
+                            <svg height="15" width="15">
+                                <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                    fill="rgba(178, 0, 0, 0.6)"/>
+                            </svg>
+                            {{ 'High difficulty' | translate }}
+                        </div>
+                        <div>
+                            <svg height="15" width="15">
+                                <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                    fill="rgba(255, 50, 50, 0.6)"/>
+                            </svg>
+                            {{ 'Med. difficulty' | translate }}
+                        </div>
+                        <div>
+                            <svg height="15" width="15">
+                                <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                    fill="rgba(255, 178, 178, 0.6)"/>
+                            </svg>
+                            {{ 'Low difficulty' | translate }}
+                        </div>
+                        <div>
+                            <svg height="15" width="15">
+                                <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                    fill="rgba(250, 250, 250, 0.7)"/>
+                            </svg>
+                            {{ 'ML estimate' | translate }} < {{ 'OSM' | translate }}
                         </div>
                     </div>
                 </div>
