@@ -27,10 +27,13 @@
             "type":"MultiPolygon"
          },
          "properties":{
+            "isSquare": false,
+            "x": null,
+            "y": null,
+            "zoom": null,
             "extra_properties":{
                "foo":"bar"
-            },
-            "isSquare":false
+            }
          },
          "type":"Feature"
       }

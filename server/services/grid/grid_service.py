@@ -73,6 +73,9 @@ class GridService:
             # set default properties
             # and put any already existing properties in `extra_properties`
             feature.properties = {
+                'x': None,
+                'y': None,
+                'zoom': None,
                 'isSquare': False,
                 'extra_properties': feature.properties
             }
