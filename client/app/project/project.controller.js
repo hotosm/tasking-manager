@@ -450,6 +450,7 @@
                 // Add OpenLayers interactions
                 addInteractions();
 
+                addAnnotationsToMap(id);
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
                     var source = new ol.source.Vector();
@@ -797,6 +798,17 @@
                     vm.hasPriorityArea = true;
                 }
             }
+        }
+
+        function addAnnotationsToMap(id, annotationType) {
+            annotationType = annotationType || 'ml';
+            var resultsPromise = projectService.getTaskAnnotations(id, annotationType);
+            resultsPromise.then(function (data) {
+                vm.projectData.annotations = data;
+                console.log(vm.projectData.annotations);
+            }, function () {
+                // handle error
+            })
         }
 
         /**
