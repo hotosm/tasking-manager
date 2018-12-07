@@ -6,7 +6,7 @@ set -xev # halt script on error
 # STAGE_BRANCH="develop"
 PROD_BRANCH="master"
 
-DEMO_ENV="taskingmanager-demo"
+DEMO_ENV="taskingmanager-test"
 STAGE_ENV="taskingmanager-stage"
 PROD_ENV="taskingmanager-prod"
 

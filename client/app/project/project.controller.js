@@ -1,3 +1,4 @@
+/* eslint-disable angular/di */
 (function () {
 
     'use strict';
@@ -315,7 +316,7 @@
             // Select interaction
             vm.selectInteraction = new ol.interaction.Select({
                 style: styleService.getSelectedTaskStyle,
-                layers: [vm.taskVectorLayer]
+                layers: [vm.taskVectorLayer, vm.taskAnnotationLayer]
             });
             vm.map.addInteraction(vm.selectInteraction);
             vm.selectInteraction.on('select', function (event) {
@@ -447,9 +448,9 @@
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+                loadAnnotations(id);
                 // Add OpenLayers interactions
                 addInteractions();
-
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
                     var source = new ol.source.Vector();
@@ -512,6 +513,7 @@
                 vm.errorGetProject = false;
                 vm.projectData = data;
                 addProjectTasksToMap(vm.projectData.tasks, false);
+                loadAnnotations(id);
                 //TODO: move the selected task refresh to a separate function so it can be called separately
                 if (vm.selectedTaskData) {
                     var selectedFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), vm.selectedTaskData.taskId);
@@ -798,6 +800,74 @@
                 }
             }
         }
+        function loadAnnotations(id, annotationType) {
+            annotationType = annotationType || 'ml';
+            var resultsPromise = projectService.getTaskAnnotations(id, annotationType);
+            resultsPromise.then(function (data) {
+                if (data) {
+                    vm.projectData.annotations = data;
+                    // add annotations to the task geojson
+                    var annotationsLookup = _.keyBy(data.tasks, 'taskId');
+                    _.forEach(vm.projectData.tasks.features, function(task) {
+                        if (annotationsLookup.hasOwnProperty(task.properties.taskId)) {
+                            var annotations = annotationsLookup[task.properties.taskId].properties;
+                            _.merge(task.properties, annotations);
+                        }
+                    });
+                } else {
+                    vm.projectData.annotations = false;
+                }
+            }, function () {
+                vm.errorGetProject = true;
+            });
+        }
+
+        vm.addAnnotationsToMap = function addAnnotationsToMap() {
+            var source;
+            vm.clearCurrentSelection();
+            if (!vm.taskAnnotationLayer) {
+                // create and add the layer
+
+                // set scale
+                var domain = vm.projectData.annotations.tasks.map(function (task) {
+                    return task.properties.building_area_diff;
+                });
+                domain.sort();
+                styleService.setD3Scale([domain[0], domain[domain.length - 1]]);
+                // add a new layer
+                source = new ol.source.Vector();
+                vm.taskAnnotationLayer = new ol.layer.Vector({
+                    source: source,
+                    name: 'taskAnnotations',
+                    style: styleService.getTaskAnnotationStyle,
+                    opacity: 0.7
+                });
+                var taskFeatures = geospatialService.getFeaturesFromGeoJSON(vm.projectData.tasks);
+                source.addFeatures(taskFeatures);
+                enableLayer();
+            } else if (vm.taskAnnotationLayer.getVisible()) {
+
+                // disable the layer
+                vm.map.removeLayer(vm.taskAnnotationLayer);
+                vm.taskAnnotationLayer.setVisible(false);
+                vm.map.addLayer(vm.taskVectorLayer);
+                document.getElementById('legend-control-tm').style.visibility = 'visible';
+                document.getElementById('legend-control-ml').style.visibility = 'hidden';
+            } else {
+
+                // add the layer
+                vm.taskAnnotationLayer.setVisible(true);
+                enableLayer();
+            }
+
+            function enableLayer() {
+                vm.map.addLayer(vm.taskAnnotationLayer);
+                vm.map.removeLayer(vm.taskVectorLayer);
+                document.getElementById('legend-control-tm').style.visibility = 'hidden';
+                document.getElementById('legend-control-ml').style.visibility = 'visible';
+                addInteractions();
+            }
+        };
 
         /**
          * Gets a task from the server and sets up the task returned as the currently selected task
