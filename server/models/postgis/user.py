@@ -159,8 +159,7 @@ class User(db.Model):
                         p.default_locale,
                         c.mapped,
                         c.validated,
-                        st_asgeojson(p.centroid),
-                        st_asgeojson(p.geometry)
+                        st_asgeojson(p.centroid)
                    FROM projects p,
                         (SELECT coalesce(v.project_id, m.project_id) project_id,
                                 coalesce(v.validated, 0) validated,
@@ -194,7 +193,6 @@ class User(db.Model):
             mapped_project.tasks_mapped = row[3]
             mapped_project.tasks_validated = row[4]
             mapped_project.centroid = geojson.loads(row[5])
-            mapped_project.aoi = geojson.loads(row[6])
 
             project_info = ProjectInfo.get_dto_for_locale(row[0], preferred_locale, row[2])
             mapped_project.name = project_info.name
