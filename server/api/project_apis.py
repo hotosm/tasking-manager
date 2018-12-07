@@ -463,7 +463,7 @@ class TaskAnnotationsAPI(Resource):
             - name: annotation_type
               in: path
               description: The type of annotation to fetch
-              required: true
+              required: false
               type: string
         responses:
             200:
