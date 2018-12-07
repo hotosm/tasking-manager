@@ -446,7 +446,7 @@ class ProjectSummaryAPI(Resource):
 
 
 class TaskAnnotationsAPI(Resource):
-    def get(self, project_id: int, annotation_type: str):
+    def get(self, project_id: int, annotation_type: str = None):
         """
         Get all task annotations for a project
         ---
@@ -480,10 +480,13 @@ class TaskAnnotationsAPI(Resource):
             return {"Error": "Project not found"}, 404
 
         try:
-            annotations = TaskAnnotation.get_task_annotations_by_project_id_type(project_id, annotation_type)
+            if annotation_type:
+                annotations = TaskAnnotation.get_task_annotations_by_project_id_type(project_id, annotation_type)
+            else:
+                annotations = TaskAnnotation.get_task_annotations_by_project_id(project_id)
             return annotations.to_primitive(), 200
         except NotFound:
-            return {"Error": "Annotation type not found"}, 404
+            return {"Error": "Annotations not found"}, 404
 
     def post(self, project_id: int, annotation_type: str):
         """

@@ -162,7 +162,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
     api.add_resource(StopValidatingAPI,             '/api/v1/project/<int:project_id>/stop-validating')
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
-    api.add_resource(TaskAnnotationsAPI, '/api/v1/project/<int:project_id>/task-annotations/<string:annotation_type>', methods=['GET', 'POST'])
+    api.add_resource(TaskAnnotationsAPI, '/api/v1/project/<int:project_id>/task-annotations/<string:annotation_type>', '/api/v1/project/<int:project_id>/task-annotations', methods=['GET', 'POST'])
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
     api.add_resource(StatsUserAPI,                  '/api/v1/stats/user/<string:username>')
