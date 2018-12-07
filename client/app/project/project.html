@@ -1044,7 +1044,14 @@
                             </a>
                         </div>
                     </div>
-                    <div class="ol-control legend-control">
+                    <div ng-show="projectCtrl.projectData.annotations">
+                        <div class="ml-project-button">
+                            <button class="button" ng-click="projectCtrl.addAnnotationsToMap()" >
+                                {{ 'ML Layer' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="ol-control legend-control" id="legend-control-tm">
                         <h6>{{ 'Legend' | translate }}</h6>
                         <div>
                             <svg height="15" width="15">
@@ -1104,7 +1111,38 @@
                         </div>
                     </div>
                 </div>
-            </div>    
+                <div class="ol-control legend-control" id="legend-control-ml" style="visibility:hidden">
+                    <h6>{{ 'ML Legend' | translate }}</h6>
+                    <div>
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(178, 0, 0, 0.6)"/>
+                        </svg>
+                         {{ 'High difficulty' | translate }}
+                    </div>
+                    <div>
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(255, 50, 50, 0.6)"/>
+                        </svg>
+                        {{ 'Med. difficulty' | translate }}
+                    </div>
+                    <div>
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(255, 178, 178, 0.6)"/>
+                        </svg>
+                        {{ 'Low difficulty' | translate }}
+                    </div>
+                    <div>
+                        <svg height="15" width="15">
+                            <rect width="15" height="15" stroke="rgba(84, 84, 84, 0.7)" stroke-width="1"
+                                  fill="rgba(250, 250, 250, 0.7)"/>
+                        </svg>
+                        {{ 'ML estimate' | translate }} < {{ 'OSM' | translate }}
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </div>
