@@ -3,6 +3,7 @@ import datetime
 import geojson
 import json
 from enum import Enum
+from flask import current_app
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
@@ -13,7 +14,7 @@ from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, NotFound
+from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, parse_duration, NotFound
 
 
 class TaskAction(Enum):
@@ -320,9 +321,13 @@ class Task(db.Model):
         return Task.query.filter(Task.project_id == project_id).all()
 
     @staticmethod
+    def auto_unlock_delta():
+      return parse_duration(current_app.config['TASK_AUTOUNLOCK_AFTER'])
+
+    @staticmethod
     def auto_unlock_tasks(project_id: int):
-        """Unlock all tasks locked more than 2 hours ago"""
-        expiry_delta = datetime.timedelta(hours=2)
+        """Unlock all tasks locked for longer than the auto-unlock delta"""
+        expiry_delta = Task.auto_unlock_delta()
         lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
         expiry_date = datetime.datetime.utcnow() - expiry_delta
         old_locks_query = '''SELECT t.id
@@ -339,7 +344,7 @@ class Task(db.Model):
         old_tasks = db.engine.execute(old_locks_query)
 
         if old_tasks.rowcount == 0:
-            # no tasks older than 2 hours found, return without further processing
+            # no tasks older than the delta found, return without further processing
             return
 
         for old_task in old_tasks:
@@ -559,6 +564,7 @@ class Task(db.Model):
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
+        task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
 
         per_task_instructions = self.get_per_task_instructions(preferred_locale)
 
