@@ -178,7 +178,7 @@ class User(db.Model):
                             AND t.mapped_by = {0}
                           GROUP BY t.project_id, t.mapped_by) m
                          ON v.project_id = m.project_id) c
-                   WHERE p.id = c.project_id'''.format(user_id)
+                   WHERE p.id = c.project_id ORDER BY p.id DESC'''.format(user_id)
 
         results = db.engine.execute(sql)
 
