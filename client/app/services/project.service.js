@@ -55,7 +55,8 @@
             userCanValidateProject: userCanValidateProject,
             getMyProjects: getMyProjects,
             trimTaskGrid: trimTaskGrid,
-            getProjectSummary: getProjectSummary
+            getProjectSummary: getProjectSummary,
+            getTaskAnnotations: getTaskAnnotations
         };
 
         return service;
@@ -267,7 +268,7 @@
             // check everything is a polygon of multiPolygon
             var allPolygonTypes = features.every(function (feature) {
                 var type = feature.getGeometry().getType();
-                return type === 'MultiPolygon' || type === 'Polygon'
+                return type === 'MultiPolygon' || type === 'Polygon';
             });
             if (!allPolygonTypes) {
                 validationResult.valid = false;
@@ -291,7 +292,7 @@
                     featuresToCheck.push(features[featureCount]);
                 }
                 var hasSelfIntersections = featuresToCheck.every(function (feature) {
-                    return checkFeatureSelfIntersections_(feature)
+                    return checkFeatureSelfIntersections_(feature);
                 });
 
                 if (hasSelfIntersections) {
@@ -478,7 +479,7 @@
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject("error");
-            })
+            });
         }
 
         /**
@@ -501,7 +502,7 @@
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject("error");
-            })
+            });
         }
 
         /**
@@ -567,7 +568,7 @@
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject("error");
-            })
+            });
         }
 
         /**
@@ -776,6 +777,30 @@
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get task annotations for a project
+         * @param {*} id
+         * @param {*} annotationType
+         * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function getTaskAnnotations(id, annotationType) {
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + id + '/task-annotations/' + annotationType,
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                return response.data;
+            }, function errorCallback(error) {
+                if (error.status === 404) {
+                    return $q.resolve(false);
+                } else {
+                    return $q.reject("error");
+                }
             });
         }
     }
