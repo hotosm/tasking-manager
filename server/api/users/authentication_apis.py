@@ -1,11 +1,11 @@
+import base64
 from urllib import parse
 
 from flask import session, current_app, redirect, request
 from flask_restful import Resource
 
 from server import osm
-from server.services.users.authentication_service import AuthenticationService, AuthServiceError
-
+from server.services.users.authentication_service import AuthenticationService, AuthServiceError, token_auth, tm
 
 @osm.tokengetter
 def get_oauth_token():
@@ -118,3 +118,38 @@ class AuthEmailAPI(Resource):
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class TokenGenerationAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self):
+        """
+        Return a user authorization token
+        ---
+        tags:
+          - authentication
+        produces:
+          - application/json
+        parameters:
+          - in: header
+            name: Authorization
+            description: Base64 encoded session token
+            required: true
+            type: string
+            default: Token sessionTokenHere==
+        responses:
+          500:
+            description: A problem occurred when generating a token
+        """
+        try:
+            user_id = tm.authenticated_user_id
+
+            token = AuthenticationService.generate_session_token_for_user(user_id)
+            b64_token = base64.b64encode(token.encode())
+
+            return {'authorizationToken': b64_token.decode('utf-8')}
+        except Exception as e:
+            error_msg = f'Auth GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
