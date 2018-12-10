@@ -43,6 +43,15 @@
         // The get style functions could check the cache for the style and if found return it, otherwise
         // create a new one and add to cache
         // var styleCache = {};
+        var d3Scale = null;
+
+        function setD3Scale(domain) {
+            if (!d3Scale) {
+                d3Scale = d3.scaleQuantile().domain(domain).range(d3.schemeRdYlGn[5]);
+            }
+
+            return d3Scale;
+        }
 
         var service = {
             getTaskStyle: getTaskStyle,
@@ -50,7 +59,9 @@
             getHighlightedTaskStyle: getHighlightedTaskStyle,
             getStyleWithColour: getStyleWithColour,
             getHighlightedProjectStyle: getHighlightedProjectStyle,
-            getLockedByCurrentUserTaskStyle: getLockedByCurrentUserTaskStyle
+            getLockedByCurrentUserTaskStyle: getLockedByCurrentUserTaskStyle,
+            setD3Scale: setD3Scale,
+            getTaskAnnotationStyle: getTaskAnnotationStyle
         };
 
         return service;
@@ -220,6 +231,37 @@
                 })
             });
             return highlightStyle;
+        }
+
+        /**
+         * OpenLayers style function.  Creates a Style for tasks based on ML annotations.
+         * @param feature - feature to be styled
+         * @returns {ol.style.Style}
+         */
+        function getTaskAnnotationStyle(feature) {
+            var STROKE_COLOUR = [84, 84, 84, 0.7]; //grey, 0.7 opacity
+            var STROKE_WIDTH = 1;
+            
+            // Get the feature's properties that control styling
+            // TODO - store the diff in the db. So we can avoid this.
+            // var building_area_osm = feature.get('building_area_osm');
+            // var building_area_ml_pred = feature.get('building_area_ml_pred');
+            // var taskId = feature.get('taskId');
+            // var absolute_dif = (building_area_ml_pred - building_area_osm);
+            // var percentage_dif = (building_area_ml_pred - building_area_osm)/building_area_osm;
+
+            // Pick the color from the scale.
+            var fillColor = d3Scale(feature.get('building_area_osm'));
+
+             return new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: fillColor
+                }),
+                stroke: new ol.style.Stroke({
+                    color: STROKE_COLOUR,
+                    width: STROKE_WIDTH
+                })
+            });
         }
     }
 })();
