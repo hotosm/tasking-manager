@@ -1,3 +1,4 @@
+/* eslint-disable angular/di */
 (function () {
 
     'use strict';
@@ -447,10 +448,9 @@
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+                loadAnnotations(id);
                 // Add OpenLayers interactions
                 addInteractions();
-
-                addAnnotationsToMap(id);
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
                     var source = new ol.source.Vector();
@@ -799,17 +799,39 @@
                 }
             }
         }
-
-        function addAnnotationsToMap(id, annotationType) {
+        function loadAnnotations(id, annotationType) {
             annotationType = annotationType || 'ml';
             var resultsPromise = projectService.getTaskAnnotations(id, annotationType);
             resultsPromise.then(function (data) {
                 vm.projectData.annotations = data;
-                console.log(vm.projectData.annotations);
             }, function () {
                 // handle error
-            })
+            });
         }
+
+        vm.addAnnotationsToMap = function addAnnotationsToMap(annotations) {
+            var source;
+            if (!vm.taskAnnotationLayer) {
+                // set scale
+                var domain = annotations.tasks.map(function (task) {
+                    return task.properties.building_area_osm;
+                });
+                domain.sort();
+                styleService.setD3Scale([domain[0], domain[domain.length - 1]]);
+                // add a new layer
+                source = new ol.source.Vector();
+                vm.taskAnnotationLayer = new ol.layer.Vector({
+                    source: source,
+                    name: 'taskAnnotations',
+                    style: styleService.getTaskAnnotationStyle
+                });
+            }
+
+            vm.map.removeLayer(vm.taskVectorLayer);
+            vm.map.addLayer(vm.taskAnnotationLayer);
+            var taskFeatures = geospatialService.getFeaturesFromGeoJSON(vm.projectData.tasks);
+            source.addFeatures(taskFeatures);
+        };
 
         /**
          * Gets a task from the server and sets up the task returned as the currently selected task
