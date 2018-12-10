@@ -20,6 +20,7 @@
             stopValidating: stopValidating,
             lockTasksValidation: lockTasksValidation,
             getRandomMappableTaskFeature: getRandomMappableTaskFeature,
+            getHighPriorityMappableTaskFeature: getHighPriorityMappableTaskFeature,
             getRandomTaskFeatureForValidation: getRandomTaskFeatureForValidation,
             getTasksByStatus: getTasksByStatus,
             getTaskFeatureById: getTaskFeatureById,
@@ -280,6 +281,31 @@
 
             // if all else fails, return null
             return null;
+        }
+
+        function getHighPriorityMappableTaskFeature(features) {
+            //first check that we have a non empty array to work with
+            if (features && (features instanceof Array) && features.length > 0) {
+
+                var candidates = [];
+
+                var candidates = getTasksByStatus(features, 'READY');
+
+                // TODO Highest priority is to return invalidated tasks that were
+                // done by the current mapper
+                if (candidates.length > 0) {
+                    var maxPriority = candidates.map(function(candidate) {
+                        return candidate.getProperties().taskPriority;
+                    }).reduce(function(priority, maxPriority) {
+                        return priority > maxPriority ? priority : maxPriority
+                    }, 0);
+                    candidates = candidates.filter(function(candidate) {
+                        return candidate.getProperties().taskPriority === maxPriority;
+                    });
+                    return candidates[Math.floor((Math.random() * (candidates.length - 1)))];
+                }
+
+            }
         }
 
         /**

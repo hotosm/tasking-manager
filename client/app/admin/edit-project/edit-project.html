@@ -39,6 +39,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a title="{{ 'Edit task priorities' | translate }}" ng-click="editProjectCtrl.currentSection = 'taskpriorities'"
+                                       class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'taskpriorities' ? 'aside-menu-item--active' : ''">
+                                        {{ 'Task priorities' | translate }}
+                                    </a>
+                                </li>
+                                <li>
                                     <a title="{{ 'Edit imagery' | translate }}" ng-click="editProjectCtrl.currentSection = 'imagery'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'imagery' ? 'aside-menu-item--active' : ''">
                                         {{ 'Imagery' | translate }}
@@ -376,6 +382,29 @@
                             <div id="map" class="map-container"></div>
                         </div>
                         <!--/ priority area section -->
+                        <!-- Task priority section -->
+                        <div ng-show="editProjectCtrl.currentSection === 'taskpriorities'">
+                            <div>
+                                <p>{{ 'Select the priority datasets that should determine task priority' | translate }}</p>
+                            </div>
+                            <table class="table table--zebra">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>{{ 'Name' | translate }}</th>
+                                    <th>{{ 'Weight' }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="priority in editProjectCtrl.priorities">
+                                        <td><input ng-model="priority.selected" ng-click="editProjectCtrl.updatePriorities(priority.priorityId, priority.weight)" type="checkbox"/></td>
+                                        <td><strong>{{ priority.name }}</strong></td>
+                                        <td><input ng-model="priority.weight" ng-change="editProjectCtrl.updatePriorities(priority.priorityId, priority.weight)" type="number" value="1" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--/ Task priority section -->
                         <!-- permissions -->
                         <div ng-show="editProjectCtrl.currentSection === 'permissions'">
                             <fieldset class="form__fieldset">

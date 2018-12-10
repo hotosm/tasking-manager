@@ -103,6 +103,7 @@ class ProjectDTO(Model):
     last_updated = DateTimeType(serialized_name='lastUpdated')
     author = StringType()
     active_mappers = IntType(serialized_name='activeMappers')
+    selected_priorities = ListType(ListType(IntType), serialized_name='selectedPriorities')
     task_creation_mode = StringType(required=True, serialized_name='taskCreationMode',
                                     validators=[is_known_task_creation_mode], serialize_when_none=False)
 

@@ -135,6 +135,15 @@
         };
 
         /**
+         * Navigate to the priorities page
+         */
+        vm.goToManagePriorities = function () {
+            $route.reload();
+            $location.path('admin/manage-priorities');
+            vm.showDropdown = false;
+        };
+
+        /**
          * Hide new message notification
          */
         vm.hideNotification = function(){

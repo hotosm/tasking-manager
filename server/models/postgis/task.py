@@ -316,6 +316,7 @@ class Task(db.Model):
     is_square = db.Column(db.Boolean, default=True)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
+    priority = db.Column(db.Integer, default=0)
     locked_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_locked'))
     mapped_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_mapper'))
     validated_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_validator'))
@@ -567,15 +568,15 @@ class Task(db.Model):
         :return: geojson.FeatureCollection
         """
         project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status,
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status, Task.priority,
                              Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
             task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name)
-
+                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name,
+                                   taskPriority=task.priority)
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
             tasks_features.append(feature)
 
@@ -646,6 +647,7 @@ class Task(db.Model):
         task_dto.project_id = self.project_id
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
+        task_dto.priority = self.priority
         task_dto.task_history = task_history
         task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
 
@@ -686,6 +688,64 @@ class Task(db.Model):
         except KeyError:
             pass
         return instructions
+
+    @staticmethod
+    def set_task_priorities(project_id: int, selected_priorities, task_id: int = None):
+        """ Calculates task priorities from selected priority datasets """
+        priority_ids = list(map(lambda x: x[0], selected_priorities))
+
+        cases = ""
+        cases_priority = ""
+        for priority in selected_priorities:
+            cases += 'WHEN id = {0} THEN {1} \n'.format(priority[0], priority[1])
+            cases_priority += 'WHEN priorities.id = {0} THEN {1} \n'.format(priority[0], priority[1])
+
+        tasks_id = ""
+        if task_id:
+            tasks_id = ' AND tasks.id=' + str(task_id)
+
+        ## Some helpful resources https://stackoverflow.com/q/17972020
+        ## Run raw SQL since it is easier to understand in this case
+        sql = """
+            BEGIN;
+            WITH calculated_weights AS (
+                WITH d AS (
+                    WITH a AS (
+                            SELECT id, (st_dump(geometry)).geom AS geom,
+                                CASE {2} ELSE 0 END AS weight
+                            FROM priorities
+                            WHERE id IN {1}
+                        ), b AS (
+                            SELECT id, (st_dump(geometry)).geom AS geom,
+                                CASE {2} ELSE 0 END AS weight
+                            FROM priorities
+                            WHERE id IN {1}
+                        ), c AS (
+                            SELECT * FROM tasks
+                            WHERE project_id = {0}
+                        )
+                        SELECT c.id AS task_id, max(a.weight + b.weight) AS weight
+                        FROM a, b, c
+                        WHERE ST_Intersects(a.geom, c.geometry)
+                        AND a.id != b.id
+                        AND ST_Intersects(a.geom, b.geom)
+                        AND ST_Intersects(b.geom, c.geometry)
+                        GROUP BY task_id, a.id
+                )
+            
+                SELECT tasks.id, MAX(GREATEST(d.weight,
+                                    (CASE {4} ELSE 0 END))) AS weight FROM d
+                FULL JOIN tasks ON d.task_id = tasks.id
+                JOIN priorities ON ST_Intersects(tasks.geometry, ST_MakeValid(priorities.geometry))
+                WHERE tasks.project_id = {0}{3}
+                GROUP BY tasks.id, d.weight
+            ) UPDATE tasks SET priority = calculated_weights.weight FROM calculated_weights
+                WHERE project_id = {0}{3} AND tasks.id = calculated_weights.id;
+            COMMIT;
+        """.format(project_id, '(' + ','.join((str(n) for n in priority_ids)) + ')', cases, tasks_id, cases_priority)
+        result = db.engine.execute(sql)
+
+        return result.rowcount
 
     def copy_task_history(self) -> list:
         copies = []

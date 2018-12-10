@@ -60,6 +60,11 @@
                         {{ 'Create new Project' | translate }}
                     </a>
                 </li>
+                <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="{{ 'Manage Priorities' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToManagePriorities()">
+                        {{ 'Manage Priorities' | translate }}
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

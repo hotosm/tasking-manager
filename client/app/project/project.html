@@ -265,6 +265,53 @@
                                                             class="button pull-center">
                                                         {{ 'Select a random task' | translate }}
                                                     </button>
+                                                    <p></p>
+                                                    <button ng-click="projectCtrl.selectHighPriorityTaskMap()"
+                                                            class="button pull-center">
+                                                        {{ 'Select a high priority task' | translate }}
+                                                    </button>
+                                                </dd>
+                                                <dd>
+
+                                                </dd>
+
+
+
+                                                <dt>{{ 'Option 4:' | translate }}</dt>
+                                                <dd>{{ 'Select by priority below' | translate }}</dd>
+                                                <dd style="max-height: 350px; overflow-y: scroll">
+                                                    <table class="table table-mapping_priority table--zebra">
+                                                        <thead>
+                                                            <tr>
+                                                                <th ng-click="projectCtrl.sortBy('id')"><a
+                                                                        class="table__sort table__sort--none"
+                                                                        title="{{ 'Sort column' | translate }}"><span>{{ 'Task ID' | translate }}</span></a>
+                                                                </th>
+                                                                <th ng-click="projectCtrl.sortBy('priority')"><a
+                                                                        class="table__sort table__sort--none"
+                                                                        title="{{ 'Sort column' | translate }}"><span>{{ 'Priority' | translate }}</span></a>
+                                                                </th>
+                                                                <th><span>{{ 'Lock' | translate }}</span></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr ng-repeat="readyTasks in projectCtrl.readyTasksByPriority | orderBy:projectCtrl.propertyName:projectCtrl.reverse">
+                                                                <td>
+                                                                    {{ readyTasks.id }}
+                                                                </td>
+                                                                <td>{{ readyTasks.priority }}</td>
+
+                                                                <td>
+                                                                    <a class="normallink"
+                                                                            ng-click="projectCtrl.selectTaskById(readyTasks.id)"
+                                                                            ng-mouseover="projectCtrl.highlightTasks([readyTasks.id], true)"
+                                                                            ng-mouseleave="projectCtrl.highlightVectorLayer.getSource().clear()">
+                                                                        {{ 'Start' | translate }}
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
                                                 </dd>
                                             </dl>
                                             <div ng-show="projectCtrl.taskErrorMapping === 'none-available'">
@@ -371,6 +418,13 @@
                                         <!-- task action buttons -->
                                         <div class="form__group form__group--section">
                                             <div>
+                                                <button ng-show="projectCtrl.user && projectCtrl.isLockedByNeighbor && (projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN')"
+                                                        class="button button--large"
+                                                        ng-click="projectCtrl.unlockSelectedTask()">
+                                                    {{ 'Unlock Task' | translate }}
+                                                </button>
+                                            </div>
+                                            <div>
                                                 <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
                                                         class="button button--large"
                                                         ng-click="projectCtrl.lockSelectedTaskMapping()">
@@ -388,6 +442,11 @@
                                                             ng-click="projectCtrl.selectRandomTaskMap()"
                                                             class="button button--achromic">
                                                         {{ 'Select another task' | translate }}
+                                                    </button>
+                                                    <button ng-hide="projectCtrl.taskErrorMapping === 'none-available' || !projectCtrl.userCanMap"
+                                                            ng-click="projectCtrl.selectHighPriorityTaskMap()"
+                                                            class="button button--achromic">
+                                                        {{ 'Select another high priority task' | translate }}
                                                     </button>
                                                     <button ng-show="projectCtrl.selectedTaskData.isUndoable"
                                                             class="button button--achromic"
@@ -1017,6 +1076,8 @@
                                         <dd>#{{ projectCtrl.selectedTaskData.taskId }}</dd>
                                         <dt>{{ 'Status' | translate }}</dt>
                                         <dd>{{ projectCtrl.selectedTaskData.taskStatus }}</dd>
+                                        <dt>{{ 'Priority' | translate }}</dt>
+                                        <dd>{{ projectCtrl.selectedTaskData.priority }}</dd>
                                         <dt>{{ 'Locked by' | translate }}</dt>
                                         <dd>{{ projectCtrl.selectedTaskData.lockHolder }}</dd>
                                     </dl>

@@ -87,6 +87,9 @@ class Project(db.Model):
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
 
+    # Priorities
+    selected_priorities = db.Column(ARRAY(db.Integer))
+
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
         Creates a draft project
@@ -204,6 +207,14 @@ class Project(db.Model):
 
     def update(self, project_dto: ProjectDTO):
         """ Updates project from DTO """
+        # Check if priorities have changed
+        if not self.selected_priorities:
+            self.selected_priorities = []
+        if not project_dto.selected_priorities:
+            project_dto.selected_priorities = []
+        priorities_updated = set([tuple(lst) for lst in self.selected_priorities]) !=\
+                             set([tuple(lst) for lst in project_dto.selected_priorities])
+
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
         self.default_locale = project_dto.default_locale
@@ -218,6 +229,7 @@ class Project(db.Model):
         self.josm_preset = project_dto.josm_preset
         self.last_updated = timestamp()
         self.license_id = project_dto.license_id
+        self.selected_priorities = project_dto.selected_priorities
 
         if project_dto.organisation_tag:
             org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
@@ -259,6 +271,10 @@ class Project(db.Model):
             for priority_area in project_dto.priority_areas:
                 pa = PriorityArea.from_dict(priority_area)
                 self.priority_areas.append(pa)
+
+        ## Calculating priorities can be resource intensive, so only do it if priorities have changed
+        if priorities_updated:
+            updated_record_count = Task.set_task_priorities(project_dto.project_id, project_dto.selected_priorities);
 
         db.session.commit()
 
@@ -478,6 +494,7 @@ class Project(db.Model):
         base_dto.last_updated = self.last_updated
         base_dto.author = User().get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
+        base_dto.selected_priorities = self.selected_priorities
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
 
         if self.private:

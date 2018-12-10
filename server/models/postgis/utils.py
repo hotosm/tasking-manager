@@ -36,6 +36,21 @@ class ST_SetSRID(GenericFunction):
     type = Geometry
 
 
+class ST_AsText(GenericFunction):
+    """ Exposes PostGIS ST_AsText function """
+    name = 'ST_AsText'
+    type = Geometry
+
+class ST_Collect(GenericFunction):
+    """ Exposes PostGIS ST_Collect function """
+    name = 'ST_Collect'
+    type = Geometry
+
+class ST_CollectionHomogenize(GenericFunction):
+    """ Exposes PostGIS ST_CollectionHomogenize function """
+    name = 'ST_CollectionHomogenize'
+    type = Geometry
+
 class ST_GeomFromGeoJSON(GenericFunction):
     """ Exposes PostGIS ST_GeomFromGeoJSON function """
     name = 'ST_GeomFromGeoJSON'
@@ -81,6 +96,11 @@ class ST_Intersects(GenericFunction):
 class ST_MakeEnvelope(GenericFunction):
     """ Exposes PostGIS ST_MakeEnvelope function """
     name = 'ST_MakeEnvelope'
+    type = Geometry
+
+class ST_MakeValid(GenericFunction):
+    """ Exposes PostGIS ST_MakeValid function """
+    name = 'ST_MakeValid'
     type = Geometry
 
 

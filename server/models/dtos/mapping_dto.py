@@ -63,6 +63,7 @@ class TaskDTO(Model):
     lock_holder = StringType(serialized_name='lockHolder', serialize_when_none=False)
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
     per_task_instructions = StringType(serialized_name='perTaskInstructions', serialize_when_none=False)
+    priority = IntType(serialized_name='priority')
     is_undoable = BooleanType(serialized_name='isUndoable', default=False)
     auto_unlock_seconds = IntType(serialized_name='autoUnlockSeconds')
 

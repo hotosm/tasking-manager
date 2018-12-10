@@ -498,6 +498,26 @@ table {
   margin-top: .5em;
 }
 
+/* Progress bars
+   ========================================================================== */
+progress {
+  width: 100%;
+  height: 18px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+progress[value]::-webkit-progress-bar {
+  background-color: #a63e3e;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+progress[value] {
+  background-color: #a63e3e;
+  /* For IE10 */
+  color: #a63e3e;
+}
 
 /* Markdown-to-html (Showdown) common stylings
    ========================================================================== */

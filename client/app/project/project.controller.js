@@ -65,6 +65,7 @@
         vm.selectInteraction = null;
 
         vm.mappedTasksPerUser = [];
+        vm.readyTasksByPriority = [];
         vm.lockedTasksForCurrentUser = [];
 
         //bound from the html
@@ -72,7 +73,7 @@
         vm.suggestedUsers = [];
 
         //table sorting control
-        vm.propertyName = 'username';
+        vm.propertyName = 'priority';
         vm.reverse = true;
 
         // License
@@ -245,6 +246,29 @@
             }
         };
 
+        vm.selectHighPriorityTaskMap = function() {
+            var feature = taskService.getHighPriorityMappableTaskFeature(vm.taskVectorLayer.getSource().getFeatures());
+
+            if (feature) {
+                selectFeature(feature);
+                var padding = getPaddingSize();
+                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+            }
+            else {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.taskErrorMapping = 'none-available';
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+            }
+        };
+
         vm.selectRandomTaskValidate = function () {
             var feature = taskService.getRandomTaskFeatureForValidation(vm.taskVectorLayer.getSource().getFeatures());
 
@@ -265,6 +289,30 @@
                 vm.taskErrorValidation = 'none-available';
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
+            }
+        };
+
+        vm.selectRandomTaskPublish = function () {
+            var feature = taskService.getRandomTaskFeatureForPublishing(vm.taskVectorLayer.getSource().getFeatures());
+
+            if (feature) {
+                selectFeature(feature);
+                var padding = getPaddingSize();
+                vm.map.getView().fit(feature.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+            }
+            else {
+                //TODO - The following reset lines are repeated in several places in this file.
+                //Refactoring to a single function call was considered, however it was decided that the ability to
+                //call the resets individually was desirable and would help readability.
+                //The downside is that any change will have to be replicated in several places.
+                //A fundamental refactor of this controller should be considered at some stage.
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                vm.taskErrorPublishing = 'none-available';
+                vm.mappingStep = 'selecting';
+                vm.validatingStep = 'selecting';
+                vm.publishingStep = 'selecting';
             }
         };
 
@@ -447,6 +495,16 @@
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+                
+                vm.readyTasksByPriority = vm.projectData.tasks.features.filter(function(task) {
+                    return task.properties.taskStatus === 'READY';
+                }).map(function(task) {
+                    return {
+                        priority: task.properties.taskPriority,
+                        id: task.properties.taskId
+                    };
+                });
+
                 // Add OpenLayers interactions
                 addInteractions();
 
@@ -530,6 +588,15 @@
                         }
                     );
                 }
+
+                vm.readyTasksByPriority = vm.projectData.tasks.features.filter(function(task) {
+                    return task.properties.taskStatus === 'READY';
+                }).map(function(task) {
+                    return {
+                        priority: task.properties.taskPriority,
+                        id: task.properties.taskId
+                    };
+                });
 
             }, function () {
                 // project not returned successfully
