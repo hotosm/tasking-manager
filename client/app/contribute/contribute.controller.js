@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', '$location', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
+        .controller('contributeController', ['$scope', '$location', '$anchorScroll', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController($scope, $location, mapService, searchService, projectMapService, tagService, languageService) {
+    function contributeController($scope, $location, $anchorScroll, mapService, searchService, projectMapService, tagService, languageService) {
 
         var vm = this;
 
@@ -149,11 +149,17 @@
                 vm.pagination = data.pagination;
                 projectMapService.replaceFeatures(data.mapResults)
                 setURLParams(searchParams);
+                if (searchParams.page) {
+                    scrollToTop();
+                }
             }, function () {
                 // On error
                 setURLParams(searchParams);
                 vm.results = {};
                 projectMapService.showProjectsOnMap(vm.results);
+                if (searchParams.page) {
+                    scrollToTop();
+                }
             });
         }
 
@@ -163,6 +169,15 @@
         vm.search = function (page) {
             searchProjects(page);
         };
+
+
+        /**
+         * Scroll to top of page
+         */
+        function scrollToTop() {
+            $location.hash('top');
+            $anchorScroll();
+        }
 
         /**
          * Set organisation tags
