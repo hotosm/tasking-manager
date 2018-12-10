@@ -1,5 +1,5 @@
 import geojson
-from shapely.geometry import mapping
+from shapely.geometry import mapping, Polygon, MultiPolygon
 from shapely.geometry import Polygon, Point, MultiPolygon, shape as shapely_shape
 from server import db
 from flask import current_app
@@ -37,7 +37,6 @@ class SplitService:
                     .filter(Task.id == task.id, Task.project_id == task.project_id)
 
                 task_geojson = geojson.loads(query[0].geometry)
-
             split_geoms = []
             for i in range(0, 2):
                 for j in range(0, 2):
@@ -102,11 +101,8 @@ class SplitService:
                             'zoom': new_zoom,
                             'isSquare': is_square
                         }
-                        if len(feature.geometry.coordinates) > 0:
+                        if (len(feature.geometry.coordinates) > 0):
                             split_geoms.append(feature)
-
-                    split_geoms.append(feature)
-
             return split_geoms
         except Exception as e:
             raise SplitServiceError(f'unhandled error splitting tile: {str(e)}')
@@ -149,7 +145,6 @@ class SplitService:
         Replaces a task square with 4 smaller tasks at the next OSM tile grid zoom level
         Validates that task is:
          - locked for mapping by current user
-         - splittable (splittable property is True)
         :param split_task_dto:
         :return: new tasks in a DTO
         """
@@ -157,10 +152,6 @@ class SplitService:
         original_task = Task.get(split_task_dto.task_id, split_task_dto.project_id)
         if original_task is None:
             raise NotFound()
-
-        # check it's splittable
-        if not original_task.splittable:
-            raise SplitServiceError('Task is not splittable')
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
