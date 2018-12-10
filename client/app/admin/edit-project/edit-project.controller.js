@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService','priorityService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
+    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, priorityService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
 
         var vm = this;
         vm.currentSection = '';
@@ -81,6 +81,10 @@
 
         // Form
         vm.form = {};
+
+        // Task Priorities
+        vm.priorities = [];
+        vm.project.selectedPriorities = [];
 
         activate();
 
@@ -576,6 +580,27 @@
             });
         };
 
+        vm.updatePriorities = function(priorityId, weight) {
+            vm.priorities.some(function(priority) {
+               if (priority.priorityId === priorityId){
+                   // Remove weight if unset
+                    if (!priority.selected) {
+                        priority.weight = null;
+                    // Set default weight of 1
+                    } else if (!priority.weight) {
+                        priority.weight = 1;
+                    }
+
+                    return true;
+               }
+            });
+            vm.project.selectedPriorities = vm.priorities.filter(function(priority) {
+                return priority.selected;
+            }).map(function(priority) {
+                return [priority.priorityId, priority.weight || 1];
+            }) || [];
+        };
+
         /**
          * Adds the user to the allowed user list
          * @param user
@@ -763,6 +788,7 @@
                 vm.source.clear(); // clear the priority areas
                 vm.project = data;
                 getLicenses();
+                getPriorityList();
                 // only 'non-empty' locales are included so add empty locales to ease editing
                 // TODO: move to separate service?
                 for (var i = 0; i < vm.locales.length; i++){
@@ -820,6 +846,30 @@
                     }
                 }
             }, function(){
+                // On error
+            });
+        }
+
+        /**
+         * Get Priorities
+         */
+        function getPriorityList() {
+            var resultsPromise = priorityService.getPriorityList();
+            resultsPromise.then(function (data) {
+                // On success
+                if (vm.project.selectedPriorities) {
+                    for (var i = 0; i < data.priorities.length; i++) {
+                        vm.project.selectedPriorities.some(function (selectedPriority) {
+                            if (selectedPriority[0] === data.priorities[i].priorityId) {
+                                data.priorities[i].selected = true;
+                                data.priorities[i].weight = selectedPriority[1];
+                                return true;
+                            }
+                        })
+                    }
+                }
+                vm.priorities = data.priorities;
+            }, function () {
                 // On error
             });
         }

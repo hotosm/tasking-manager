@@ -159,6 +159,24 @@ hr {
   vertical-align: middle;
   background-color: $medium-grey;
   border-radius: 10px;
+  animation: pulse 5s infinite;
+  animation-timing-function: ease-in-out;
+  box-shadow: 0 0 20px 0px #d67b7b;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: $medium-grey;
+    box-shadow: 0 0 20px 0px lighten($medium-grey, 20);
+  }
+  50% {
+    background-color: $darker-red;
+    box-shadow: 0 0 10px 0px darken($darker-red, 20);
+  }
+  100% {
+    background-color: $medium-grey;
+    box-shadow: 0 0 20px 0px lighten($medium-grey, 20);
+  }
 }
 
 .form__control__inline {

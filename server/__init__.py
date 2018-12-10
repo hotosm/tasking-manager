@@ -100,6 +100,7 @@ def init_flask_restful_routes(app):
     from server.api.license_apis import LicenseAPI, LicenceListAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
         CommentOnTaskAPI, TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
+    from server.api.priority_apis import PriorityUploadApi, PriorityListAPI
     from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
         ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
@@ -161,6 +162,9 @@ def init_flask_restful_routes(app):
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
     api.add_resource(StopValidatingAPI,             '/api/v1/project/<int:project_id>/stop-validating')
+    api.add_resource(PriorityUploadApi,             '/api/v1/priority', endpoint="create_priority", methods=['POST'])
+    api.add_resource(PriorityUploadApi,             '/api/v1/priority/<int:priority_id>', methods=['GET', 'PUT', 'DELETE'])
+    api.add_resource(PriorityListAPI,               '/api/v1/priority/list')
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')

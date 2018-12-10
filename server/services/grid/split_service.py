@@ -8,6 +8,7 @@ from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.postgis.utils import ST_Transform
 from server.models.postgis.task import Task, TaskStatus, TaskAction
 from server.models.postgis.project import Project
+from server.models.postgis.priority import Priority
 from server.models.postgis.utils import NotFound
 
 
@@ -113,6 +114,12 @@ class SplitService:
         except Exception as e:
             raise SplitServiceError(f'Error splitting task{str(e)}')
 
+        # GET project priority ids
+        project = Project.get(split_task_dto.project_id)
+        selected_priorities = project.selected_priorities
+        # Check if all project priorities still exist
+        all_priorities_exist = Priority.check_available(selected_priorities)
+
         # create new tasks from the new geojson
         i = Task.get_max_task_id_for_project(split_task_dto.project_id)
         new_tasks_dto = []
@@ -122,7 +129,14 @@ class SplitService:
             new_task = Task.from_geojson_feature(i, new_task_geojson)
             new_task.project_id = split_task_dto.project_id
             new_task.task_status = TaskStatus.READY.value
+            if not all_priorities_exist:
+                    # If priority datasets have been deleted, then just use original priority
+                new_task.priority = original_task.priority
             new_task.create()
+
+            if all_priorities_exist and len(selected_priorities) > 0:
+                Task.set_task_priorities(new_task.project_id, selected_priorities, i)
+
             new_task.task_history.extend(original_task.copy_task_history())
             if new_task.task_history:
                 new_task.clear_task_lock() # since we just copied the lock
