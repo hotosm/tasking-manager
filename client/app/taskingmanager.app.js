@@ -82,6 +82,13 @@
                     controllerAs: 'editProjectCtrl'
                 })
 
+                .when('/admin/manage-priorities', {
+                    templateUrl: 'app/admin/manage-priorities/manage-priorities.html',
+                    controller: 'managePrioritiesController',
+                    controllerAs: 'managePrioritiesCtrl'
+                })
+
+
                 .when('/about', {
                     templateUrl: 'app/about/about.html',
                     controller: 'aboutController',

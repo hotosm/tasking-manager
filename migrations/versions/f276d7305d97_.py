@@ -8,6 +8,7 @@ Create Date: 2018-04-18 06:03:58.025882
 from alembic import op
 import sqlalchemy as sa
 import geoalchemy2
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
@@ -30,8 +31,6 @@ def upgrade():
     )
 
     op.create_foreign_key('fk_users_uploader', 'priorities', 'users', ['uploaded_by'], ['id'])
-
-    op.create_index('idx_priorities_geometry', 'priorities', ['geometry'], unique=False)
 
     op.add_column('projects', sa.Column('selected_priorities', postgresql.ARRAY(sa.Integer()), nullable=True))
 
