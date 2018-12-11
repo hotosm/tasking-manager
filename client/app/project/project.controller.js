@@ -1355,9 +1355,9 @@
                 };
 
                 if (taskCount == 1) {
-                    // load tasking manager data then OSM data and zoom to the bbox
-                    editorService.sendJOSMCmd('http://127.0.0.1:8111/load_tm_data', taskParams);
+                    //load OSM data and zoom to the bbox
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/load_tm_data', taskParams);
                 } else {
                     //probably too much OSM data to download, just zoom to the bbox
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
