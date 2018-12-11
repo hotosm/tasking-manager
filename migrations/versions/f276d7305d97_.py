@@ -23,7 +23,7 @@ def upgrade():
     op.create_table('priorities',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
-    sa.Column('geometry', geoalchemy2.types.Geometry(geometry_type='GEOMETRYCOLLECTION', srid=4326), nullable=True),
+    sa.Column('geometry', geoalchemy2.types.Geometry(srid=4326), nullable=True),
     sa.Column('filesize', sa.Integer(), nullable=True),
     sa.Column('uploaded_by', sa.BigInteger(), nullable=True),
     sa.Column('uploaded_on', sa.DateTime(), nullable=False, server_default=sa.func.current_timestamp()),
