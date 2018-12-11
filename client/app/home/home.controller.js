@@ -61,11 +61,12 @@
         });
         setOptOutText(optOut);
 
-        function hide() {
+        var optOutClose = document.getElementById("optout-close");
+        optOutClose.addEventListener("click", function() {
             // saves local storage
             localStorage.setItem("optout-closed", 1);
             vm.closed = !vm.closed;
             console.log(vm.closed);
-        }
+        })
     }
 })();
