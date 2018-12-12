@@ -242,7 +242,7 @@
                                         <div ng-hide="projectCtrl.user"
                                              class="alert"
                                              role="alert">
-                                            <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                            <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                         </div>
                                         <div ng-show="projectCtrl.user && projectCtrl.userCanMap === false"
                                              class="error"
@@ -329,7 +329,7 @@
                                         </div>
                                         <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
                                             <div class="alert" role="alert">
-                                                <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                                <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                             </div>
                                         </div>
                                         <div ng-hide="projectCtrl.taskLockError">
@@ -344,7 +344,7 @@
                                             <div>
                                                 <div ng-hide="projectCtrl.user">
                                                     <div class="alert" role="alert">
-                                                        <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                                        <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                                     </div>
                                                 </div>
                                                 <div ng-show="projectCtrl.user && projectCtrl.taskLockError"
@@ -408,7 +408,7 @@
                                             <p markdown-to-html="projectCtrl.selectedTaskData.perTaskInstructions"></p>
                                         </div>
                                         <div>
-                                            <h6>Get started by choosing your editor of choice.</h6>
+                                            <h6>{{ 'Get started by choosing your editor of choice.' | translate }}</h6>
                                             <div class="form__input-group">
                                                 <select class="form__control form__control__medium"
                                                         ng-model="projectCtrl.selectedEditor"
@@ -839,7 +839,7 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
                                          <textarea class="form__control space-bottom--none" type="text" mentio
                                                    rows="4"
                                                    maxlength="{{ projectCtrl.maxlengthComment }}"
@@ -931,7 +931,7 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
                                          <textarea class="form__control space-bottom--none" type="text" mentio
                                                    rows="4"
                                                    maxlength="{{ projectCtrl.maxlengthComment }}"

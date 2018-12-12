@@ -284,7 +284,7 @@
     position: relative;
     color: inherit;
     padding: {
-      top: ($global-spacing * 8);
+      top: ($global-spacing * 6);
       right: 0;
       bottom: ($global-spacing * 0.5);
       left: 0;
@@ -319,14 +319,14 @@
 
     @include media(medium-up) {
       padding: {
-        top: ($global-spacing * 8);
+        top: ($global-spacing * 6);
         bottom: ($global-spacing * 1);
       }
     }
 
     @include media(large-up) {
       padding: {
-        top: ($global-spacing * 10);
+        top: ($global-spacing * 7);
         bottom: ($global-spacing * 3);
       }
     }
