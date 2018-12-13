@@ -18,6 +18,7 @@ class PriorityService:
         :returns ID of new draft project
         """
         priority = Priority()
+        priority.project_id = priority_dto.project_id
         priority.name = priority_dto.name
         priority.filesize = priority_dto.filesize
         priority.uploaded_by = priority_dto.uploaded_by
@@ -33,9 +34,9 @@ class PriorityService:
         priority.delete()
 
     @staticmethod
-    def get_all_priorities() -> PriorityListDTO:
+    def get_all_priorities(projectId: int) -> PriorityListDTO:
         """ Get all licenses in DB """
-        return Priority.get_all()
+        return Priority.get_all(projectId)
 
     @staticmethod
     def _get_priority_by_id(priority_id: int) -> Priority:

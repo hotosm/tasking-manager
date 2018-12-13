@@ -384,6 +384,21 @@
                         <!--/ priority area section -->
                         <!-- Task priority section -->
                         <div ng-show="editProjectCtrl.currentSection === 'taskpriorities'">
+                            <div class="inner">
+                                <button ngf-select="editProjectCtrl.uploadPriorityFiles($files)" multiple class="button button--achromic pull-right">
+                                    {{ 'Upload Priorities' | translate }}
+                                </button>
+                                <div ng-show="progress >= 0">
+                                     <h3>Uploading Files</h3>
+                                     <ul>
+                                        <li ng-repeat="f in files">
+                                            {{f.name}}
+                                        </li>
+                                     </ul>
+                                    <progress ng-hide="uploadComplete" value="{{progress / 100}}"><div ng-bind="progress + '%'"></div></progress>
+                                    <div ng-show="uploadComplete">Upload Complete</div>
+                                </div>
+                            </div>
                             <div>
                                 <p>{{ 'Select the priority datasets that should determine task priority' | translate }}</p>
                             </div>
@@ -393,6 +408,7 @@
                                     <th></th>
                                     <th>{{ 'Name' | translate }}</th>
                                     <th>{{ 'Weight' }}</th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -400,6 +416,12 @@
                                         <td><input ng-model="priority.selected" ng-click="editProjectCtrl.updatePriorities(priority.priorityId, priority.weight)" type="checkbox"/></td>
                                         <td><strong>{{ priority.name }}</strong></td>
                                         <td><input ng-model="priority.weight" ng-change="editProjectCtrl.updatePriorities(priority.priorityId, priority.weight)" type="number" value="1" /></td>
+                                        <td>
+                                            <button class="button button--secondary" type="button"
+                                                    ng-click="editProjectCtrl.deletePriorityFile(priority.priorityId)">
+                                                {{ 'Delete' | translate }}
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

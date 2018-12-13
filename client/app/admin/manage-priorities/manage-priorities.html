@@ -5,27 +5,11 @@
                 <h1 class="section__title section__header--left">
                     {{ 'Manage Priorities' | translate }}
                 </h1>
-
-                <button ngf-select="uploadFiles($files)" multiple  class="button button--achromic pull-right"
-                     ngf-select="managePrioritiesCtrl.import($file)">{{ 'Upload Priorities' | translate }}
-                </button>
             </div>
         </header>
         <div class="section-container">
             <div class="section__body section__body--secondary">
                 <div class="inner">
-                    <div ng-show="progress >= 0">
-                         <h3>Uploading Files</h3>
-                         <ul>
-                            <li ng-repeat="f in files">
-                                {{f.name}}
-                            </li>
-                         </ul>
-                        <progress ng-hide="uploadComplete" value="{{progress / 100}}"><div ng-bind="progress + '%'"></div></progress>
-                        <div ng-show="uploadComplete">Upload Complete</div>
-                    </div>
-
-
                     <table class="table table--zebra">
                         <thead>
                         <tr>
