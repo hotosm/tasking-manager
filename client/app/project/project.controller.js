@@ -758,18 +758,26 @@
             annotationType = annotationType || 'ml';
             var resultsPromise = projectService.getTaskAnnotations(id, annotationType);
             resultsPromise.then(function (data) {
+                // add annotations to the task geojson
                 vm.projectData.annotations = data;
+                var annotationsLookup = _.keyBy(data.tasks, 'taskId');
+                _.forEach(vm.projectData.tasks.features, function(task) {
+                    if (annotationsLookup.hasOwnProperty(task.properties.taskId)) {
+                        var annotations = annotationsLookup[task.properties.taskId].properties;
+                        _.merge(task.properties, annotations);
+                    }
+                });
             }, function () {
-                // handle error
+                vm.errorGetProject = true;
             });
         }
 
-        vm.addAnnotationsToMap = function addAnnotationsToMap(annotations) {
+        vm.addAnnotationsToMap = function addAnnotationsToMap() {
             var source;
             if (!vm.taskAnnotationLayer) {
                 // set scale
-                var domain = annotations.tasks.map(function (task) {
-                    return task.properties.building_area_osm;
+                var domain = vm.projectData.annotations.tasks.map(function (task) {
+                    return task.properties.building_area_diff;
                 });
                 domain.sort();
                 styleService.setD3Scale([domain[0], domain[domain.length - 1]]);

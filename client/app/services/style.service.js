@@ -47,7 +47,7 @@
 
         function setD3Scale(domain) {
             if (!d3Scale) {
-                d3Scale = d3.scaleQuantile().domain(domain).range(d3.schemeRdYlGn[5]);
+                d3Scale = d3.scaleQuantile().domain(domain).range(d3.schemeReds[5]);
             }
 
             return d3Scale;
@@ -241,17 +241,9 @@
         function getTaskAnnotationStyle(feature) {
             var STROKE_COLOUR = [84, 84, 84, 0.7]; //grey, 0.7 opacity
             var STROKE_WIDTH = 1;
-            
-            // Get the feature's properties that control styling
-            // TODO - store the diff in the db. So we can avoid this.
-            // var building_area_osm = feature.get('building_area_osm');
-            // var building_area_ml_pred = feature.get('building_area_ml_pred');
-            // var taskId = feature.get('taskId');
-            // var absolute_dif = (building_area_ml_pred - building_area_osm);
-            // var percentage_dif = (building_area_ml_pred - building_area_osm)/building_area_osm;
 
             // Pick the color from the scale.
-            var fillColor = d3Scale(feature.get('building_area_osm'));
+            var fillColor = d3Scale(feature.get('building_area_diff'));
 
              return new ol.style.Style({
                 fill: new ol.style.Fill({
