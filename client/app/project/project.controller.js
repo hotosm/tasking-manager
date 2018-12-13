@@ -820,6 +820,8 @@
         vm.addAnnotationsToMap = function addAnnotationsToMap() {
             var source;
             if (!vm.taskAnnotationLayer) {
+                // create and add the layer
+
                 // set scale
                 var domain = vm.projectData.annotations.tasks.map(function (task) {
                     return task.properties.building_area_diff;
@@ -831,14 +833,26 @@
                 vm.taskAnnotationLayer = new ol.layer.Vector({
                     source: source,
                     name: 'taskAnnotations',
-                    style: styleService.getTaskAnnotationStyle
+                    style: styleService.getTaskAnnotationStyle,
+                    opacity: 0.7
                 });
-            }
+                vm.map.removeLayer(vm.taskVectorLayer);
+                vm.map.addLayer(vm.taskAnnotationLayer);
+                var taskFeatures = geospatialService.getFeaturesFromGeoJSON(vm.projectData.tasks);
+                source.addFeatures(taskFeatures);
+            } else if (vm.taskAnnotationLayer.getVisible()) {
 
-            vm.map.removeLayer(vm.taskVectorLayer);
-            vm.map.addLayer(vm.taskAnnotationLayer);
-            var taskFeatures = geospatialService.getFeaturesFromGeoJSON(vm.projectData.tasks);
-            source.addFeatures(taskFeatures);
+                // disable the layer
+                vm.map.removeLayer(vm.taskAnnotationLayer);
+                vm.taskAnnotationLayer.setVisible(false);
+                vm.map.addLayer(vm.taskVectorLayer);
+            } else {
+
+                // add the layer
+                vm.taskAnnotationLayer.setVisible(true);
+                vm.map.addLayer(vm.taskAnnotationLayer);
+                vm.map.removeLayer(vm.taskVectorLayer);
+            }
         };
 
         /**
