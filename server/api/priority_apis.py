@@ -48,6 +48,7 @@ class PriorityUploadApi(Resource):
                 if key.startswith('file'):
                     priority = PriorityDTO()
                     priority.name = f.filename
+                    priority.project_id = request.form.get('project_id')
 
                     # TODO: Check if CSV or GEOJSON and handle CSV
                     json_data = json.load(request.files[key])
@@ -143,7 +144,8 @@ class PriorityListAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            priorities_dto = PriorityService.get_all_priorities()
+            project_id = request.args.get('project_id')
+            priorities_dto = PriorityService.get_all_priorities(project_id)
             return priorities_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Priorities Not Found"}, 404

@@ -15,6 +15,7 @@ class Priority(db.Model):
     __tablename__ = "priorities"
 
     id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.BigInteger, db.ForeignKey('projects.id', name='fk_priority_project'))
     name = db.Column(db.String, nullable=False)
     geometry = db.Column(Geometry('GEOMETRY', srid=4326))
     uploaded_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_uploader'))
@@ -46,9 +47,12 @@ class Priority(db.Model):
         return Priority.query.get(priority_id)
 
     @staticmethod
-    def get_all() -> PriorityListDTO:
+    def get_all(project_id: int) -> PriorityListDTO:
         """ Gets all priorities currently stored """
-        results = Priority.query.all()
+        if project_id:
+            results = Priority.query.filter(Priority.project_id == project_id).all()
+        else:
+            results = Priority.query.all()
 
         if len(results) == 0:
             raise NotFound()
@@ -57,6 +61,7 @@ class Priority(db.Model):
         for result in results:
             priority = PriorityDTO()
             priority.priority_id = result.id
+            priority.project_id = result.project_id
             priority.name = result.name
             priority.filesize = result.filesize
             priority.uploaded_by = result.uploader.username if result.uploader else None

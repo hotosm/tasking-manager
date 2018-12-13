@@ -5,9 +5,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('managePrioritiesController', ['$scope', 'Upload', '$timeout', '$location', 'authService', 'priorityService', managePrioritiesController]);
+        .controller('managePrioritiesController', ['$scope', '$timeout', '$location', 'authService', 'priorityService', managePrioritiesController]);
 
-    function managePrioritiesController($scope, Upload, $timeout, $location, authService, priorityService) {
+    function managePrioritiesController($scope, $timeout, $location, authService, priorityService) {
         var vm = this;
 
         vm.priorities = [];
@@ -27,38 +27,6 @@
                 // On error
             });
         }
-
-        /**
-         * Uploads priority files
-         * @param files
-         */
-        $scope.uploadFiles = function (files) {
-            $scope.files = files;
-            $scope.uploadComplete = false;
-            if (files && files.length) {
-                Upload.upload({
-                    url: '/api/v1/priority',
-                    data: {
-                        files: files
-                    },
-                    headers: authService.getAuthenticatedHeader()
-                }).then(function (response) {
-                    $timeout(function () {
-                        $scope.result = response.data;
-                        $scope.uploadComplete = true;
-                        $scope.progress = 0;
-                        fetchPriorities();
-                    });
-                }, function (response) {
-                    if (response.status > 0) {
-                        $scope.errorMsg = response.status + ': ' + response.data;
-                    }
-                }, function (evt) {
-                    $scope.progress =
-                        Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-                });
-            }
-        };
 
         vm.delete = function(priorityId) {
             var resultsPromise = priorityService.deletePriority(priorityId);

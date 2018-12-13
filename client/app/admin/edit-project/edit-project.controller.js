@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService','priorityService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'Upload', 'mapService','drawService', 'projectService','priorityService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, priorityService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
+    function editProjectController($scope, $location, $routeParams, $timeout, Upload, mapService, drawService, projectService, priorityService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
 
         var vm = this;
         vm.currentSection = '';
@@ -580,6 +580,51 @@
             });
         };
 
+        /**
+         * Uploads priority files
+         * @param files
+         */
+        vm.uploadPriorityFiles = function (files) {
+            $scope.files = files;
+            $scope.uploadComplete = false;
+            if (files && files.length) {
+                Upload.upload({
+                    url: '/api/v1/priority',
+                    data: {
+                        project_id: vm.project.projectId,
+                        files: files
+                    },
+                    headers: authService.getAuthenticatedHeader()
+                }).then(function (response) {
+                    $timeout(function () {
+                        $scope.result = response.data;
+                        $scope.uploadComplete = true;
+                        $scope.progress = 0;
+                        getPriorityList();
+                    });
+                }, function (response) {
+                    if (response.status > 0) {
+                        $scope.errorMsg = response.status + ': ' + response.data;
+                    }
+                }, function (evt) {
+                    $scope.progress =
+                        Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                });
+            }
+        };
+
+        vm.deletePriorityFile = function(priorityId) {
+            var resultsPromise = priorityService.deletePriority(priorityId);
+            resultsPromise.then(function () {
+                // On success
+                vm.priorities = vm.priorities.filter(function(priority) {
+                    return priority.priorityId !== priorityId;
+                });
+            }, function () {
+                // On error
+            });
+        };
+
         vm.updatePriorities = function(priorityId, weight) {
             vm.priorities.some(function(priority) {
                if (priority.priorityId === priorityId){
@@ -854,7 +899,7 @@
          * Get Priorities
          */
         function getPriorityList() {
-            var resultsPromise = priorityService.getPriorityList();
+            var resultsPromise = priorityService.getPriorityList(vm.project.projectId);
             resultsPromise.then(function (data) {
                 // On success
                 if (vm.project.selectedPriorities) {

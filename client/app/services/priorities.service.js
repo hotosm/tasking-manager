@@ -66,11 +66,15 @@
          * Get all priorities
          * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
          */
-        function getPriorityList(){
+        function getPriorityList(projectId){
             // Returns a promise
+            var url = configService.tmAPI + '/priority/list';
+            if (projectId) {
+                url += '?project_id=' + projectId;
+            }
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/priority/list',
+                url: url,
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously

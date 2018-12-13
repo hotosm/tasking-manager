@@ -7,6 +7,7 @@ from geoalchemy2.types import Geography
 class PriorityDTO(Model):
     """ DTO used to define a priority dataset """
     priority_id = IntType(serialized_name='priorityId')
+    project_id = IntType(serialized_name='projectId')
     name = StringType(required=True)
     filesize = IntType()
     uploaded_by = IntType(serialized_name='uploadedBy')
