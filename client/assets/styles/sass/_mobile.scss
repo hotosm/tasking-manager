@@ -8,7 +8,10 @@
   background: #d34143;
   color: white;
   text-align: center;
-  @include media(large-up) {
-  	display: none;
+  .button--outline--white:hover {
+    color: #d34143;
+  }
+  .modal__button-dismiss {
+    top: 1rem;
   }
 }
