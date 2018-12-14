@@ -568,14 +568,14 @@ class Task(db.Model):
         :return: geojson.FeatureCollection
         """
         project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status, Task.priority,
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status, Task.priority,
                              Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
             task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name,
+                                   taskSplittable=task.splittable, taskStatus=TaskStatus(task.task_status).name,
                                    taskPriority=task.priority)
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
             tasks_features.append(feature)
