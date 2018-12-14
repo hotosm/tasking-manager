@@ -30,7 +30,7 @@
       "type": "MultiPolygon"
     },
     "properties": {
-      "splittable": true,
+      "isSquare": true,
       "x": 2020,
       "y": 2798,
       "zoom": 12
@@ -68,7 +68,7 @@
       "type": "MultiPolygon"
     },
     "properties": {
-      "splittable": true,
+      "isSquare": true,
       "x": 2020,
       "y": 2799,
       "zoom": 12
@@ -106,7 +106,7 @@
       "type": "MultiPolygon"
     },
     "properties": {
-      "splittable": true,
+      "isSquare": true,
       "x": 2021,
       "y": 2798,
       "zoom": 12
@@ -144,7 +144,7 @@
       "type": "MultiPolygon"
     },
     "properties": {
-      "splittable": true,
+      "isSquare": true,
       "x": 2021,
       "y": 2799,
       "zoom": 12
