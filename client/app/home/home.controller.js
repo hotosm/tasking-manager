@@ -15,7 +15,6 @@
         vm.mappersOnline = 0;
         vm.tasksMapped = 0;
         vm.totalMappers = 0;
-        vm.closed = false;
 
         activate();
 
@@ -39,34 +38,5 @@
                 // Swallow error counters will show loading animation but not catastrophic
             });
         }
-
-        // Add opt out form
-        function setOptOutText(element) {
-        _paq.push([function() {
-            element.checked = !this.isUserOptedOut();
-            document.querySelector('label[for=optout] strong').innerText = this.isUserOptedOut()
-                ? 'You are currently opted out. Click here to opt in.'
-                : 'You are currently opted in. Click here to opt out.';
-            }]);
-        }
-
-        var optOut = document.getElementById("optout");
-        optOut.addEventListener("click", function() {
-            if (this.checked) {
-                _paq.push(['forgetUserOptOut']);
-            } else {
-                _paq.push(['optUserOut']);
-            }
-            setOptOutText(optOut);
-        });
-        setOptOutText(optOut);
-
-        var optOutClose = document.getElementById("optout-close");
-        optOutClose.addEventListener("click", function() {
-            // saves local storage
-            localStorage.setItem("optout-closed", 1);
-            vm.closed = !vm.closed;
-            console.log(vm.closed);
-        })
     }
 })();
