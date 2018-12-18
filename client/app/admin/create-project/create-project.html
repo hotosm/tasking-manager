@@ -37,7 +37,7 @@
                     <form class="form">
                         <div class="form__group form__group--section--sm">
                             <dl>
-                                <dt>Option 1:</dt>
+                                <dt>{{ 'Option 1:' | translate }}</dt>
                                 <dd>
                                     <p>{{ 'Draw the Area of Interest on the map.' | translate }}</p>
                                     <button class="button button--achromic" type="button"
@@ -61,7 +61,7 @@
                                 <dt>Option 2:</dt>
 
                                 <dd>
-                                    <p>{{ 'Import a GeoJSON, KML, or zipped SHP file.' | translate }}</p>
+                                    <p>{{ 'Import a GeoJSON, KML, OSM or zipped SHP file.' | translate }}</p>
                                     <button class="button button--achromic"
                                          ngf-select="createProjectCtrl.import($file)">{{ 'Import' | translate }}
                                     </button>
@@ -85,7 +85,6 @@
                                     <strong>{{ 'Error' | translate }}:</strong> {{ 'The AOI contains self intersections' | translate }}
                                 </p>
                             </div>
-
                         </div>
 
                         <div class="form__group form__group--section--sm">
