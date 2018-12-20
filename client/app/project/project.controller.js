@@ -48,7 +48,7 @@
         //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
-        vm.isSelectedSplittable = false;
+        vm.isSelectedSplittable = true;
 
         //task data
         vm.selectedTaskData = null;
@@ -177,7 +177,7 @@
         vm.resetStatusFlags = function () {
             vm.isSelectedMappable = false;
             vm.isSelectedValidatable = false;
-            vm.isSelectedSplittable = false;
+            vm.isSelectedSplittable = true;
         }
 
         /**
@@ -381,7 +381,7 @@
             }
             if (task != null && task.taskId in vm.lockTime) {
                 var lockTime = moment.utc(vm.lockTime[task.taskId]);
-                return lockTime.add(2, 'hours').diff(moment.utc(), 'minutes');
+                return lockTime.add(task.autoUnlockSeconds, 'seconds').diff(moment.utc(), 'minutes');
             }
             else {
                 return null;
@@ -1185,12 +1185,12 @@
         };
 
         /**
-         * Is the the task splittable
+         * Is the the task splittable.  Older tasks don't have an x, y, zoom property needed for splitting
          */
         function isTaskSplittable(taskFeatures, taskId) {
             var feature = taskService.getTaskFeatureById(taskFeatures, taskId);
             var properties = feature.getProperties();
-            return feature.getProperties().taskSplittable;
+            return properties.taskX && properties.taskY && properties.taskZoom;
 
         }
 
