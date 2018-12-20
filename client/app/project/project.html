@@ -1053,6 +1053,16 @@
                             </a>
                         </div>
                     </div>
+                    <div ng-show="projectCtrl.projectData.annotations">
+                        <div class="ml-project-button">
+                            <button class="button" ng-click="projectCtrl.addAnnotationsToMap()" >
+                                {{ 'ML Layer' | translate }}
+                            </button>
+                            <!-- <button class="button" ng-click="projectCtrl.displayTaskingManagerLayer()" >
+                                {{ 'TM Layer' | translate }}
+                            </button> -->
+                        </div>
+                    </div>
                     <div class="ol-control legend-control">
                         <h6>{{ 'Legend' | translate }}</h6>
                         <div>

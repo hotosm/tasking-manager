@@ -803,15 +803,19 @@
             annotationType = annotationType || 'ml';
             var resultsPromise = projectService.getTaskAnnotations(id, annotationType);
             resultsPromise.then(function (data) {
-                // add annotations to the task geojson
-                vm.projectData.annotations = data;
-                var annotationsLookup = _.keyBy(data.tasks, 'taskId');
-                _.forEach(vm.projectData.tasks.features, function(task) {
-                    if (annotationsLookup.hasOwnProperty(task.properties.taskId)) {
-                        var annotations = annotationsLookup[task.properties.taskId].properties;
-                        _.merge(task.properties, annotations);
-                    }
-                });
+                if (data) {
+                    vm.projectData.annotations = data;
+                    // add annotations to the task geojson
+                    var annotationsLookup = _.keyBy(data.tasks, 'taskId');
+                    _.forEach(vm.projectData.tasks.features, function(task) {
+                        if (annotationsLookup.hasOwnProperty(task.properties.taskId)) {
+                            var annotations = annotationsLookup[task.properties.taskId].properties;
+                            _.merge(task.properties, annotations);
+                        }
+                    });
+                } else {
+                    vm.projectData.annotations = false;
+                }
             }, function () {
                 vm.errorGetProject = true;
             });
