@@ -1084,9 +1084,9 @@
                         </a>
                     </div>
                 </div>
-                <div>
+                <div ng-show="projectCtrl.projectData.annotations">
                     <div class="ml-project-button">
-                        <button class="button" ng-click="projectCtrl.addAnnotationsToMap(projectCtrl.projectData.annotations)" >
+                        <button class="button" ng-click="projectCtrl.addAnnotationsToMap()" >
                             {{ 'ML Layer' | translate }}
                         </button>
                         <!-- <button class="button" ng-click="projectCtrl.displayTaskingManagerLayer()" >

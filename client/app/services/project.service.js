@@ -767,8 +767,12 @@
                 }
             }).then(function successCallback(response) {
                 return response.data;
-            }, function errorCallback() {
-                return $q.reject("error");
+            }, function errorCallback(error) {
+                if (error.status === 404) {
+                    return $q.resolve(false);
+                } else {
+                    return $q.reject("error");
+                }
             });
         }
     }
