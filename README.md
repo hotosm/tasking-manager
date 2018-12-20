@@ -17,7 +17,7 @@ The app is split into a Client (AngularJS) and Server (Python) structure.  Each 
 
 [See our FAQ if you hit any problems getting setup](https://github.com/hotosm/tasking-manager/wiki/Dev-Environment-FAQ)
 
-**Looking to get involved in development?** Check out the [Working Group meeting details](https://github.com/hotosm/tasking-manager/wiki/TM-Working-Group-Meeting-Details), review the [Roadmap](https://github.com/hotosm/tasking-manager/projects/1), and review our Contributor guidelines](https://github.com/hotosm/tasking-manager/blob/develop/CONTRIBUTING.md).
+**Looking to get involved in development?** Check out the [Working Group meeting details](https://github.com/hotosm/tasking-manager/wiki/TM-Working-Group-Meeting-Details), review the [Roadmap](https://github.com/hotosm/tasking-manager/projects/1), and review our [Contributor guidelines](https://github.com/hotosm/tasking-manager/blob/develop/CONTRIBUTING.md).
 
 ## <a name="ClientDevelopment">Client Development</a>
 ### Global Dependencies
@@ -36,7 +36,7 @@ npm install
 ```
 
 ### Running Locally
-If you plan to do client development you can run the app using gulp, without having to worry too much about the server. If you want to point the client at a non-local API (e.g. a staging environment), you'll have to change the environment config for development in `client/taskingmanager.config.json.
+If you plan to do client development you can run the app using gulp, without having to worry too much about the server. If you want to point the client at a non-local API (e.g. a staging environment), you'll have to change the environment config for development in `client/taskingmanager.config.json`.
 
 ```
 cd client   [if not already in client]
