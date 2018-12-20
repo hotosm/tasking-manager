@@ -508,7 +508,11 @@ class TaskAnnotationsAPI(Resource):
               description: The unique project ID
               required: true
               type: integer
-              default: 1
+            - name: annotation_type
+              in: path
+              description: Annotation type
+              required: true
+              type: string
             - in: body
               name: body
               required: true
