@@ -565,7 +565,12 @@ class TaskAnnotationsAPI(Resource):
             return {"error": 'Invalid task id'}, 500
 
         for annotation in annotations['tasks']:
-            TaskAnnotationsService.add_or_update_annotation(annotation, project_id, annotation_type)
+            try:
+                TaskAnnotationsService.add_or_update_annotation(annotation, project_id, annotation_type)
+                return project_id, 200
+            except DataError as e:
+                current_app.logger.error(f'Error creating annotations: {str(e)}')
+                return {"Error": "Error creating annotations"}, 500
 
     def put(self, project_id: int, task_id: int):
         """

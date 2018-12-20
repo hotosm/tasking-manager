@@ -25,4 +25,3 @@ class TaskAnnotationsService:
         else:
             # add this annotation
             task_annotation.create()
-
