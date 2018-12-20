@@ -1,8 +1,27 @@
 -- SQL queries for migrating data from TM2 table structure to TM3 table structure
--- Assumes:
---   TM2 tables are in schema "hotold" 
---   TM3 tables are in schema "hotnew"
---  scripts must be run by a db role which has access to update tables and sequences in both schemas.
+-- This script copies from "hotold" to "hotnew". Continue reading to learn how to prepare for this.
+--
+-- We assume the original operational TM2 db is named "tasking-manager" and the user is "hottm".
+-- Also, we assume you have created the TM3 database by following the README or migration guide,
+--   meaning you will have a database named "hotnew" already. Make sure you have run the alembic
+--   database upgrades to load the schema of "hotnew". As a refresher, this is done in the base
+--   TM3 directory via:   venv/bin/python manage.py db upgrade
+-- If you run into errors, make sure your environmental variable is set for TM_DB.
+--
+-- Now to the migration...
+-- To be extra cautious, we first backup the old TM2 database and load it into a temporary
+--   "hotold" database that is used for the migration:
+--
+--  pg_dump -U hottm -W tasking-manager > oldtm.sql
+--
+-- Next we load this into our temporary "hotold" database:
+--
+--  psql -U hottm -d hotold -f oldtm.sql
+--
+-- Now, you are able to run this script to copy and transform the data from the temporary "hotold"
+--   to the new "hotnew" database.
+--
+-- You should now be done with the migration.
 
 -- USERS Initial Load
 -- make sure new tables emptied of any test data first
@@ -10,10 +29,19 @@ truncate hotnew.users cascade;
 -- truncate hotnew.areas_of_interest cascade;
 
 -- Populate users with ids and default stats - sets users to beginner mapper level
+--   previous roles were 8: experienced mapper, 4: experienced validator, 2: project manager, 1: admin, 0: mapper
+--   new roles are 4: experienced validator, 2: project manager, 1: admin, 0: mapper, -1: read only
 insert into hotnew.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated,
                           is_email_verified, date_registered, last_validation_date)
 (select id,username,
-	case when role is null then 0 else role end,
+	case
+          when role is null then 0
+          when role = 8 then 0
+          when role = 4 then 4
+          when role = 2 then 2
+          when role = 1 then 1
+          else 0
+        end,
 	1,0,0,0, FALSE, current_timestamp, current_timestamp
 	 from hotold.users);
 	 
@@ -69,12 +97,12 @@ select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
 -- TM2 or 'grid' when it was not None
 Update hotnew.projects
    set task_creation_mode = 1
-  from hotold.projects as p
+  from hotold.project as p
  where p.id = hotnew.projects.id and p.zoom is NULL;
 
 Update hotnew.projects
    set task_creation_mode = 0
-  from hotold.projects as p
+  from hotold.project as p
  where p.id = hotnew.projects.id and p.zoom is not NULL;
 
 -- Project info & translations
