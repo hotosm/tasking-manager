@@ -381,7 +381,39 @@
             }
             if (task != null && task.taskId in vm.lockTime) {
                 var lockTime = moment.utc(vm.lockTime[task.taskId]);
-                return lockTime.add(task.autoUnlockSeconds, 'seconds').diff(moment.utc(), 'minutes');
+                var diffTime = lockTime.add(task.autoUnlockSeconds, 'seconds').diff(moment.utc(), 'minutes');
+                var eventDuration = diffTime
+                var eventDurationString = ''
+                var eventMDuration = moment.duration(eventDuration, 'minutes');
+                var days = eventMDuration.days()
+                var hours = eventMDuration.hours()
+                var minutes = eventMDuration.minutes()
+                eventDurationString = ""
+                if (days > 0)
+                {
+                    if (days === 1){
+                        eventDurationString += " " + days + ' day'  
+                    } else {
+                        eventDurationString += " " + days + ' days'
+                    }
+                } 
+                if (hours > 0)
+                {
+                    if (hours === 1){
+                        eventDurationString += " " + hours + ' hour'  
+                    } else {
+                        eventDurationString += " " + hours + ' hours'
+                    }
+                } 
+                if (minutes > 0)
+                {
+                    if (minutes === 1){
+                        eventDurationString += " " + minutes + ' minute'  
+                    } else {
+                        eventDurationString += " " + minutes + ' minutes'
+                    }
+                }
+                return eventDurationString
             }
             else {
                 return null;
