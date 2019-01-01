@@ -100,6 +100,7 @@ class ProjectDTO(Model):
     mapper_level = StringType(required=True, serialized_name='mapperLevel', validators=[is_known_mapping_level])
     enforce_mapper_level = BooleanType(required=True, default=False, serialized_name='enforceMapperLevel')
     enforce_validator_role = BooleanType(required=True, default=False, serialized_name='enforceValidatorRole')
+    allow_non_beginners = BooleanType(required=True, default=False, serialized_name='allowNonBeginners')
     private = BooleanType(required=True)
     entities_to_map = StringType(serialized_name='entitiesToMap')
     changeset_comment = StringType(serialized_name='changesetComment')

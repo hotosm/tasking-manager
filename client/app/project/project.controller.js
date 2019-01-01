@@ -410,23 +410,23 @@
                 if (days > 0)
                 {
                     if (days === 1){
-                        eventDurationString += " " + days + ' day'  
+                        eventDurationString += " " + days + ' day'
                     } else {
                         eventDurationString += " " + days + ' days'
                     }
-                } 
+                }
                 if (hours > 0)
                 {
                     if (hours === 1){
-                        eventDurationString += " " + hours + ' hour'  
+                        eventDurationString += " " + hours + ' hour'
                     } else {
                         eventDurationString += " " + hours + ' hours'
                     }
-                } 
+                }
                 if (minutes > 0)
                 {
                     if (minutes === 1){
-                        eventDurationString += " " + minutes + ' minute'  
+                        eventDurationString += " " + minutes + ' minute'
                     } else {
                         eventDurationString += " " + minutes + ' minutes'
                     }
@@ -454,7 +454,7 @@
                 vm.validationEditors = createEditorList(vm.projectData.validationEditors);
                 vm.selectedValidationEditor = vm.validationEditors[0].value;
                 vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
-                vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
+                vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.user.mappingLevel, vm.projectData.enforceValidatorRole, vm.projectData.allowNonBeginners);
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
