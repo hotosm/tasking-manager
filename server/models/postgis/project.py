@@ -56,6 +56,7 @@ class Project(db.Model):
     mapper_level = db.Column(db.Integer, default=1, nullable=False, index=True)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
+    allow_non_beginners = db.Column(db.Boolean, default=False)
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
     entities_to_map = db.Column(db.String)
     changeset_comment = db.Column(db.String)
@@ -226,6 +227,7 @@ class Project(db.Model):
         self.default_locale = project_dto.default_locale
         self.enforce_mapper_level = project_dto.enforce_mapper_level
         self.enforce_validator_role = project_dto.enforce_validator_role
+        self.allow_non_beginners = project_dto.allow_non_beginners
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
         self.entities_to_map = project_dto.entities_to_map
@@ -492,6 +494,7 @@ class Project(db.Model):
         base_dto.area_of_interest = self.get_aoi_geometry_as_geojson()
         base_dto.enforce_mapper_level = self.enforce_mapper_level
         base_dto.enforce_validator_role = self.enforce_validator_role
+        base_dto.allow_non_beginners = self.allow_non_beginners
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
         base_dto.entities_to_map = self.entities_to_map

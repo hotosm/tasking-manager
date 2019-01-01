@@ -183,6 +183,9 @@ class ProjectAdminAPI(Resource):
                       enforceValidatorRole:
                           type: boolean
                           default: false
+                      allowNonBeginners:
+                          type: boolean
+                          default: false
                       private:
                           type: boolean
                           default: false
