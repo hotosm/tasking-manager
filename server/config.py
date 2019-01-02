@@ -4,7 +4,7 @@ import os
 
 class EnvironmentConfig:
     """ Base class for config that is shared between environments """
-    DEFAULT_CHANGESET_COMMENT = '#osmco-project'
+    DEFAULT_CHANGESET_COMMENT = '#Kaart'
     # This is the address we'll use as the sender on all auto generated emails
     EMAIL_FROM_ADDRESS = 'osm@kaartgroup.com'
     LOG_LEVEL = logging.ERROR
@@ -47,7 +47,7 @@ class ProdConfig(EnvironmentConfig):
 
 
 class StageConfig(EnvironmentConfig):
-    APP_BASE_URL = 'https://tasks.osmcolorado.com'
+    APP_BASE_URL = 'https://tasks-stage.kaart.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
