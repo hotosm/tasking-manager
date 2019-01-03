@@ -101,6 +101,10 @@
   }
 
   &__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
     margin-right: 3.5%;
     width: 100%;
     align-self: flex-start;
@@ -116,25 +120,44 @@
 #homepage-stats-2 {
   display: none;
   @include media(medium-up) {
-    display: block;
+    display: flex;
   }
 }
 
 #homepage-stats-3 {
   display: none;
   @include media(xlarge-up) {
-    display: block;
+    display: flex;
   }
 }
 
 .stats-card {
+  &__container {
+    height: 50px;
+  }
+
   &__amount {
     font-size: 2em;
     letter-spacing: -1px;
   }
+
   &__title {
     letter-spacing: 1px;
     opacity: .7;
     line-height: 18px;
+  }
+
+  &__loading {
+    width: 20px;
+    height: 20px;
+    border: 2px solid $medium-grey;
+    border-bottom: 2px solid $lightgrey;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   }
 }

@@ -1,4 +1,4 @@
-<div>
+﻿<div>
     <section class="section__header page__project">
         <div class="inner">
             <div>
@@ -414,7 +414,7 @@
                                                         ng-model="projectCtrl.selectedEditor"
                                                         ng-change="projectCtrl.updatePreferedEditor()">
                                                     <option value="ideditor" selected="true">iD Editor</option>
-                                                    <option value="josm">JOSM</option>
+                                                    <option ng-selected="projectCtrl.project_files.length" value="josm">JOSM</option>
                                                     <option value="potlatch2">Potlatch 2</option>
                                                     <option value="fieldpapers">Field Papers</option>
                                                 </select>
@@ -428,6 +428,15 @@
                                         </div>
                                         <div>
                                             <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
+                                        </div>
+                                        <div ng-show="projectCtrl.project_files.length">
+                                            <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit' | translate }}</h6>
+                                            <h6>{{ 'The following files will be loaded into JOSM as separate layers:' | translate }}</h6>
+                                            <ul>
+                                                <li ng-repeat="file in projectCtrl.project_files">
+                                                    {{file.fileName}}
+                                                </li>
+                                            </ul>
                                         </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
@@ -450,7 +459,58 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <div>
-                                            <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                            <h6 style="width:84%">Task too big to complete quickly? Or is the satellite imagery not good? Choose split task or mark as bad imagery.</h6>
+                                            
+                                        </div>
+                                        <ul class="list-type--none buttons--sidebyside">
+                                            <li>
+                                                <div ng-show="projectCtrl.isSelectedSplittable">
+                                                    <button id="split-task-btn" style="padding:16px" class="button button--secondary" ng-click="projectCtrl.splitTask()">
+                                                        <!-- from collecticons.io-->
+                                                        <?xml version="1.0" encoding="utf-8"?>
+                                                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                                                        <path id="split-task" fill="#ffffff" d="M416,288v64h-79.6c-1.5-0.2-4.2-1.4-5.4-2.2L237.3,256l93.8-93.8c1.2-0.9,3.9-2,5.4-2.2H416v64l96-96l-96-96v64h-80
+                                                            c-17.2,0-37.8,8.5-49.9,20.7L210.7,192H0v128h210.7l75.3,75.3c12.2,12.2,32.7,20.7,49.9,20.7h80v64l96-96L416,288z"/>
+                                                        </svg>
+                                                        <!-- <i class="icon-split"></i> -->
+                                                        {{ ' Split Task' | translate }}
+                                                    </button>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
+                                                    <div class="error" role="alert">
+                                                        <p>{{ 'Task is not splittable' | translate }}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
+                                                    <div class="error" role="alert">
+                                                        <p>{{ 'Task could not be split' | translate }}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <button id="bad-imagery-btn" style="padding:16px" class="button button--secondary"
+                                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
+                                                        <!-- <i class="icon-danger"></i> -->
+                                                        <!-- from collecticons.io-->
+                                                        <?xml version="1.0" encoding="utf-8"?>
+                                                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                                                        <path id="bad-imagery" fill="#ffffff" d="M480.2,392.4L287.8,55.6c-17.5-30.6-46-30.6-63.5,0L31.8,392.4C14.3,423,28.8,448,64,448h384
+                                                            C483.2,448,497.7,423,480.2,392.4z M256,416c-22.1,0-40-17.9-40-40c0-22.1,17.9-40,40-40s40,17.9,40,40C296,398.1,278.1,416,256,416
+                                                            z M288,320h-64V160h64V320z"/>
+                                                        </svg>
+                                                        {{ ' Mark as Bad Imagery' | translate }}
+                                                </button>
+                                            </li>
+                                            
+                                            </ul>
+                                        <div>
+                                            <h6 style="width:84%">Can't finish but need to stop mapping? Or have you completely mapped the area? Leave a comment and select one of the options below that matches your editing status.</h6>
                                             <textarea class="form__control space-bottom--none" type="text" mentio
                                                       rows="4"
                                                       maxlength="{{ projectCtrl.maxlengthComment }}"
@@ -458,47 +518,44 @@
                                                       mentio-typed-text="typedTerm"
                                                       mentio-search="projectCtrl.searchUser(term)"
                                                       mentio-select="projectCtrl.formatUserTag(item)"
-                                                      mentio-items="projectCtrl.usernames | filter:label:typedTerm"
+                                                      mentio-items="projectCtrl.suggestedUsers"
+                                                      mentio-template-url="/app/project/user-suggestions-menu.html"
                                                       ng-model="projectCtrl.comment"></textarea>
                                             <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                                 {{ 'characters remaining' | translate }}</p>
                                         </div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
-                                                <button class="button"
-                                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')">
-                                                    {{ 'Mark as Completely Mapped' | translate }}
+                                                <button id="stop-mapping-btn" class="button button--secondary"
+                                                        ng-click="projectCtrl.stopMapping(projectCtrl.comment)"
+                                                        style="width:208%">
+                                                        <!-- from collecticons.io-->
+                                                        <?xml version="1.0" encoding="utf-8"?>
+                                                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                                                        <path id="stop-mapping" fill="#ffffff"  d="m160,352l192,0l0,-192l-192,0l0,192zm96,-352c-141.4,0 -256,114.6 -256,256s114.6,256 256,256s256,-114.6 256,-256s-114.6,-256 -256,-256zm135.8,391.8c-36.3,36.2 -84.5,56.2 -135.8,56.2s-99.5,-20 -135.8,-56.2c-36.2,-36.3 -56.2,-84.5 -56.2,-135.8s20,-99.5 56.2,-135.8c36.3,-36.2 84.5,-56.2 135.8,-56.2s99.5,20 135.8,56.2c36.2,36.3 56.2,84.5 56.2,135.8s-20,99.5 -56.2,135.8z"/>
+                                                        </svg>
+                                                        {{ ' Stop Mapping' | translate }}
                                                 </button>
                                             </li>
+                                                    
                                             <li>
-                                                <button class="button button--secondary"
-                                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
-                                                    {{ 'Mark as Bad Imagery' | translate }}
+                                                <button id="complete-mapping-btn" class="button"
+                                                        ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')"
+                                                        style="width:132%">
+                                                        <!-- from collecticons.io-->
+                                                        <?xml version="1.0" encoding="utf-8"?>
+                                                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                                                        <polygon id="complete-mapping" fill="#ffffff"  points="197.43961906433105,462.2024230957031 19.373008728027344,284.13482666015625 62.93051719665527,240.57638549804688 192.86768913269043,370.5115966796875 448.51847648620605,58.048545837402344 496.1955394744873,97.0572280883789 " id="svg_2" fill="#ffffff" fill-opacity="1" stroke="#ffffff" stroke-opacity="1" stroke-width="11"/>
+                                                        </svg>
+                                                        <!-- <i class="icon-sm-tick"></i> -->
+                                                        {{ ' Mark as Completely Mapped' | translate }}
                                                 </button>
                                             </li>
-                                            <li>
-                                                <button class="button button--achromic button--outline--secondary"
-                                                        ng-click="projectCtrl.stopMapping(projectCtrl.comment)">
-                                                    {{ 'Stop Mapping' | translate }}
-                                                </button>
-                                            </li>
-                                            <li>
+                                           
                                         </ul>
-                                        <div ng-show="projectCtrl.isSelectedSplittable">
-                                            <button class="button" ng-click="projectCtrl.splitTask()">
-                                                {{ 'Split Task' | translate }}
-                                            </button>
-                                        </div>
-                                        <div ng-show="projectCtrl.taskSplitError && projectCtrl.taskSplitCode == 403 ">
-                                            <div class="error" role="alert">
-                                                <p>{{ 'Task is not splittable' | translate }}</p>
-                                            </div>
-                                        </div>
-                                        <div ng-show="projectCtrl.taskSplitError && !projectCtrl.taskSplitCode">
-                                            <div class="error" role="alert">
-                                                <p>{{ 'Task could not be split' | translate }}</p>
-                                            </div>
-                                        </div>
+                                       
                                         <div ng-show="projectCtrl.taskUnLockError">
                                             <div>
                                                 <div class="error" role="alert">
@@ -771,6 +828,22 @@
                                         <div>
                                             <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
                                         </div>
+                                        <div ng-show="projectCtrl.project_files.length">
+                                                <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit.' | translate }}</h6>
+                                                <div ng-show="projectCtrl.selectedEditor === 'josm'">
+                                                <h6>{{ 'The following files can be loaded into JOSM as separate layers within the task boundary:' | translate }}</h6>
+                                                <ul>
+                                                    <li ng-repeat="file in projectCtrl.project_files">
+                                                        {{file.fileName}}
+                                                        <span class="form__input-group-button">
+                                                            <button class="button button--sm" ng-click="projectCtrl.loadProjectFile(file)">
+                                                                {{ 'Load into JOSM' | translate}}
+                                                            </button>
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                                </div>
+                                            </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -799,7 +872,8 @@
                                                    mentio-typed-text="typedTerm"
                                                    mentio-search="projectCtrl.searchUser(term)"
                                                    mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.usernames | filter:label:typedTerm"
+                                                   mentio-items="projectCtrl.suggestedUsers"
+                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
                                                    ng-model="projectCtrl.comment"></textarea>
                                         <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                             {{ 'characters remaining' | translate }}</p>
@@ -862,6 +936,22 @@
                                                 </span>
                                             </div>
                                         </div>
+                                        <div ng-show="projectCtrl.project_files.length">
+                                                <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit.' | translate }}</h6>
+                                                <div ng-show="projectCtrl.selectedEditor === 'josm'">
+                                                <h6>{{ 'The following files can be loaded into JOSM as separate layers within the tasks\' boundaries:' | translate }}</h6>
+                                                <ul>
+                                                    <li ng-repeat="file in projectCtrl.project_files">
+                                                        {{file.fileName}}
+                                                        <span class="form__input-group-button">
+                                                            <button class="button button--sm" ng-click="projectCtrl.loadProjectFile(file)">
+                                                                {{ 'Load into JOSM' | translate}}
+                                                            </button>
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                                </div>
+                                            </div>
                                         <div ng-show="projectCtrl.editorStartError === 'josm-error'">
                                             <div class="alert alert--danger" role="alert">
                                                 <button class="alert__button-dismiss" title="{{ 'Dismiss alert' | translate }}"
@@ -890,7 +980,8 @@
                                                    mentio-typed-text="typedTerm"
                                                    mentio-search="projectCtrl.searchUser(term)"
                                                    mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.usernames | filter:label:typedTerm"
+                                                   mentio-items="projectCtrl.suggestedUsers"
+                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
                                                    ng-model="projectCtrl.comment"></textarea>
                                         <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
                                             {{ 'characters remaining' | translate }}</p>
@@ -943,44 +1034,41 @@
                                 <h5>{{ 'History' | translate }}</h5>
                                 <div class="history">
                                     <p ng-show="projectCtrl.selectedTaskData.taskHistory.length < 1">{{ 'Nothing has happened yet.' | translate }}</p>
-                                    <div ng-repeat="item in projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate' track by $index"
-                                         ng-class-odd="'odd'" ng-class-even="'even'">
-                                        <div>
-                                            <span ng-show="item.action === 'COMMENT'">{{ 'Comment left by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Locked for mapping by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Locked for validation by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Automatically unlocked for mapping by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Automatically unlocked for validation by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Marked as bad imagery by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Mapped by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Validated by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Invalidated by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                            <span ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready by' | translate }} <a
-                                                    href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a></span>
-                                        </div>
-                                        <div>
-                                            <span ng-bind-html="item.actionText" ng-show="item.action === 'COMMENT'"></span>
-                                        </div>
-                                        <div class="metadata">
-                                            <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_MAPPING' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                            <span ng-show="item.action === 'LOCKED_FOR_VALIDATION' && item.actionText"> for {{ item.actionText |  amDurationFormat : 'minute'}} </span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING' && item.actionText"> after {{ item.actionText |  amDurationFormat : 'minute'}}</span>
-                                            <span ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION' && item.actionText"> after {{ item.actionText |  amDurationFormat : 'minute'}}</span>
-                                        </div>
-                                    </div>
+                                    <table ng-show="projectCtrl.selectedTaskData.taskHistory.length >= 1" class="table table-task-history">
+                                        <tbody ng-repeat="item in (orderedData = (projectCtrl.selectedTaskData.taskHistory | orderBy: '-actionDate')) track by $index">
+                                          <tr ng-show="item.actionBy !== orderedData[$index - 1].actionBy"
+                                              class="new-user-row">
+                                              <td colspan="2">
+                                                  <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a>
+                                              </td>
+                                          </tr>
+                                          <tr class="action-row {{ item.action | lowercase }} {{ projectCtrl.highlightHistory && projectCtrl.highlightHistory === item.historyId ? 'highlighted' : '' }}">
+                                              <td class="action">
+                                                  <span class="status-marker-comment" ng-show="item.action === 'COMMENT'">{{ 'Commented' | translate }}</span>
+                                                  <span class="status-marker-locked-for-mapping" ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Locked for mapping' | translate }}</span>
+                                                  <span class="status-marker-locked-for-validation" ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Locked for validation' | translate }}</span>
+                                                  <span class="status-marker-auto-unlocked-for-mapping" ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Automatically unlocked for mapping' | translate }}</span>
+                                                  <span class="status-marker-auto-unlocked-for-validation" ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Automatically unlocked for validation' | translate }}</span>
+                                                  <span class="status-marker-badimagery" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Marked as bad imagery' | translate }}</span>
+                                                  <span class="status-marker-mapped" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Mapped' | translate }}</span>
+                                                  <span class="status-marker-validated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Validated' | translate }}</span>
+                                                  <span class="status-marker-invalidated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Invalidated' | translate }}</span>
+                                                  <span class="status-marker-split" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'SPLIT'">{{ 'Split' | translate }}</span>
+                                                  <span class="status-marker-ready" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready' | translate }}</span>
+                                              </td>
+                                              <td>
+                                                  <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                              </td>
+                                          </tr>
+                                          <tr ng-show="item.action === 'COMMENT'">
+                                            <td colspan="2" class="comment-text">
+                                              <span markdown-to-html="item.actionText"></span>
+                                            </td>
+                                          </tr>
+                                      </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <hr/>
                             <div>
                                 <h5 ng-click="showAdvanced=!showAdvanced" class="pointer"
                                     title="{{ 'Show advanced options' | translate }}">

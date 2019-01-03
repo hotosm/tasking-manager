@@ -7,9 +7,11 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
-from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
+from server import db
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO, TaskCommentDTO
+from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
-from server.models.postgis.task import Task, TaskStatus, TaskHistory
+from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound, UserLicenseError
 from server.models.postgis.project_files import ProjectFiles
 from server.services.messaging.message_service import MessageService
@@ -137,6 +139,21 @@ class MappingService:
         if task.locked_by != user_id:
             raise MappingServiceError('Attempting to unlock a task owned by another user')
         return task
+
+    @staticmethod
+    def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
+        """ Adds the comment to the task history """
+        task = Task.get(task_comment.task_id, task_comment.project_id)
+        if task is None:
+            raise MappingServiceError(f'Task {task_id} not found')
+
+        task.set_task_history(TaskAction.COMMENT, task_comment.user_id, task_comment.comment)
+
+        # Parse comment to see if any users have been @'d
+        MessageService.send_message_after_comment(task_comment.user_id, task_comment.comment, task.id,
+                                                  task_comment.project_id)
+        task.update()
+        return task.as_dto_with_instructions(task_comment.preferred_locale)
 
     @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
@@ -307,6 +324,7 @@ class MappingService:
             subprocess.call(task_cmd, shell=True)
             os.remove(os.path.join(dir, poly))
 
+        # Merge the extracted files back together. Used if more than one task is sent in request.
         merge_cmd = ['./server/tools/osmosis/bin/osmosis']
 
         for osm in osm_files:
@@ -321,3 +339,15 @@ class MappingService:
         shutil.rmtree(dir)
 
         return xml
+    def reset_all_badimagery(project_id: int, user_id: int):
+        """ Marks all bad imagery tasks ready for mapping """
+        badimagery_tasks = Task.query.filter(Task.task_status == TaskStatus.BADIMAGERY.value).all()
+
+        for task in badimagery_tasks:
+            task.lock_task_for_mapping(user_id)
+            task.unlock_task(user_id, new_state=TaskStatus.READY)
+
+        # Reset bad imagery counter
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_bad_imagery = 0
+        project.save()

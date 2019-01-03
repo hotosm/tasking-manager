@@ -163,7 +163,7 @@
 	"Last activity": "Poslední aktivita",
 	"Last updated": "Poslední aktualizace",
 	"Layer name": "Jméno vrstvy",
-	"Learn": "Naučit",
+	"Learn": "Naučit se",
 	"Leave a comment": "Přidat poznámku",
 	"Legend": "Legenda",
 	"Level": "Úroveň",
@@ -283,7 +283,7 @@
 	"Required": "Vyžadováno",
 	"Reset": "Reset",
 	"Return to inbox": "Zpět do přijatých zpráv",
-	"Return": "Return",
+	"Return": "Vrátit",
 	"Roads": "Cesty",
 	"Role": "Role",
 	"Save changes": "Uložit změny",
@@ -441,5 +441,5 @@
 	"Your profile": "Váš profil",
 	"Your project has been updated successfully.": "Váš projekt byl úspěšně upraven.",
 	"Your project was created successfully.": "Váš projekt byl úspěšně vytvořen.",
-	"Back to Previous": "Back to Previous"
+	"Back to Previous": "Zpět na předchozí"
 }

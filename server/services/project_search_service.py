@@ -15,7 +15,7 @@ import math
 
 search_cache = TTLCache(maxsize=128, ttl=300)
 
-# max area allowed for passed in bbox, calculation shown to help future maintenace
+# max area allowed for passed in bbox, calculation shown to help future maintenance
 # client resolution (mpp)* arbitrary large map size on a large screen in pixels * 50% buffer, all squared
 MAX_AREA = math.pow(1250*4275*1.5,2)
 

@@ -247,6 +247,78 @@ a:active {
   padding-left: 0;
 }
 
+#split-task-btn:hover #split-task
+{ 
+  fill: $warm-grey;
+}
+#bad-imagery-btn:hover #bad-imagery
+{ 
+  fill: $warm-grey;
+}
+#stop-mapping-btn:hover #stop-mapping
+{ 
+  fill: $warm-grey;
+}
+
+#complete-mapping-btn:hover #complete-mapping
+{ 
+  fill: $orange;
+}
+
+.icon-sm-tick {
+  background-image: url("../../icons/tick.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$link-color;
+  }
+}
+
+
+
+.icon-split {
+  background-image: url("../../icons/split.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
+}
+
+.icon-danger {
+  background-image: url("../../icons/sign-danger.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
+}
+
+.icon-stop-map {
+  background-image: url("../../icons/stop-map.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
+}
+
 /* Forms
    ========================================================================== */
 
@@ -437,4 +509,13 @@ table {
 .object--primary {
   display: block;
   margin-top: .5em;
+}
+
+
+/* Markdown-to-html (Showdown) common stylings
+   ========================================================================== */
+p[markdown-to-html] {
+    code {
+        color: $red;
+    }
 }

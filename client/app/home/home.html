@@ -13,20 +13,29 @@
         <div class="inner">
             <ul class="homepage-stats__cards">
                 <li id="homepage-stats-1" class="homepage-stats__card">
-                    <div class="stats-card__amount">
-                        <strong>{{ homeCtrl.mappersOnline | number }}</strong>
+                    <div class="stats-card__container">
+                        <div class="stats-card__loading" ng-if="!homeCtrl.hasLoaded"></div>
+                        <div class="stats-card__amount" ng-if="homeCtrl.hasLoaded">
+                            <strong>{{ homeCtrl.mappersOnline | number }}</strong>
+                        </div>
                     </div>
                     <div class="stats-card__title">Mappers Online</div>
                 </li>
                 <li id="homepage-stats-2" class="homepage-stats__card">
-                    <div class="stats-card__amount">
-                        <strong>{{ homeCtrl.tasksMapped | number }}</strong>
+                    <div class="stats-card__container">
+                        <div class="stats-card__loading" ng-if="!homeCtrl.hasLoaded"></div>
+                        <div class="stats-card__amount" ng-if="homeCtrl.hasLoaded">
+                            <strong>{{ homeCtrl.tasksMapped | number }}</strong>
+                        </div>
                     </div>
                     <div class="stats-card__title">Tasks Mapped</div>
                 </li>
                 <li id="homepage-stats-3" class="homepage-stats__card">
-                    <div class="stats-card__amount">
-                        <strong>{{ homeCtrl.totalMappers | number }}</strong>
+                    <div class="stats-card__container">
+                        <div class="stats-card__loading" ng-if="!homeCtrl.hasLoaded"></div>
+                        <div class="stats-card__amount" ng-if="homeCtrl.hasLoaded">
+                            <strong>{{ homeCtrl.totalMappers | number }}</strong>
+                        </div>
                     </div>
                     <div class="stats-card__title">Total Mappers</div>
                 </li>

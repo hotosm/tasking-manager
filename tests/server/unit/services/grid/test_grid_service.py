@@ -25,7 +25,7 @@ class TestGridService(unittest.TestCase):
         result = GridService.merge_to_multi_polygon(aoi_geojson, True)
 
         # assert
-        self.assertEquals(str(expected), str(result))
+        self.assertEqual(str(expected), str(result))
 
     def test_feature_collection_to_multi_polygon_nodissolve(self):
         # arrange
@@ -38,7 +38,7 @@ class TestGridService(unittest.TestCase):
         result = GridService.merge_to_multi_polygon(aoi_geojson, False)
 
         # assert
-        self.assertEquals(str(expected), str(result))
+        self.assertEqual(str(expected), str(result))
 
     def test_trim_grid_to_aoi_clip(self):
         # arrange
@@ -52,7 +52,7 @@ class TestGridService(unittest.TestCase):
         result = GridService.trim_grid_to_aoi(grid_dto)
 
         # assert
-        self.assertEquals(str(expected), str(result))
+        self.assertEqual(str(expected), str(result))
 
     def test_trim_grid_to_aoi_noclip(self):
         # arrange
@@ -67,7 +67,7 @@ class TestGridService(unittest.TestCase):
         result = GridService.trim_grid_to_aoi(grid_dto)
 
         # assert
-        self.assertEquals(str(expected), str(result))
+        self.assertEqual(str(expected), str(result))
 
     def test_tasks_from_aoi_features(self):
         # arrange
@@ -78,7 +78,7 @@ class TestGridService(unittest.TestCase):
         # act
         result = GridService.tasks_from_aoi_features(grid_dto.area_of_interest)
         # assert
-        self.assertEquals(str(expected), str(result))
+        self.assertEqual(str(expected), str(result))
 
     def test_feature_collection_multi_polygon_with_zcoord_nodissolve(self):
         # arrange
@@ -91,7 +91,7 @@ class TestGridService(unittest.TestCase):
         result = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=False)
 
         # assert
-        self.assertEquals(str(expected), str(result))
+        self.assertEqual(str(expected), str(result))
 
     def test_feature_collection_multi_polygon_with_zcoord_dissolve(self):
         # arrange
@@ -104,7 +104,7 @@ class TestGridService(unittest.TestCase):
         result = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
 
         # assert
-        self.assertEquals(str(expected), str(result))
+        self.assertEqual(str(expected), str(result))
 
     def test_raises_InvalidGeoJson_when_geometry_is_linestring(self):
 

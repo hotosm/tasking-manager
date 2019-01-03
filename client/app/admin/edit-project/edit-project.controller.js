@@ -59,12 +59,17 @@
         // Delete
         vm.showDeleteConfirmationModal = false;
 
+        // Reset
+        vm.showResetConfirmationModal = false;
+
         // Private project/add users
         vm.addUserEnabled = false;
 
         // Error messages
         vm.deleteProjectFail = false;
         vm.deleteProjectSuccess = false;
+        vm.resetProjectFail = false;
+        vm.resetProjectSuccess = false;
         vm.invalidateTasksFail = false;
         vm.invalidateTasksSuccess = false;
         vm.validateTasksFail = false;
@@ -384,6 +389,65 @@
             })
         };
 
+        /**
+         * Set the reset bad imagery confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showResetBadImageryConfirmation = function(showModal){
+            vm.showResetBadImageryConfirmationModal = showModal;
+        };
+
+        /**
+         * Reset all bad imagery tasks on a project
+         */
+        vm.resetBadImageryTasks = function(){
+            vm.resetBadImageryInProgress = true;
+            vm.resetBadImageryFail = false;
+            vm.resetBadImagerySuccess = false;
+            var resultsPromise = projectService.resetBadImageryTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks mapped successfully
+                vm.resetBadImageryFail = false;
+                vm.resetBadImagerySuccess = true;
+                vm.resetBadImageryInProgress = false;
+            }, function(){
+                // Tasks not mapped successfully
+                vm.resetBadImageryFail = true;
+                vm.resetBadImagerySuccess = false;
+                vm.resetBadImageryInProgress = false;
+            })
+        };
+
+        /*
+         * Set the reset confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showResetConfirmation = function(showModal){
+            vm.showResetConfirmationModal = showModal;
+            if (!showModal && vm.resetProjectSuccess){
+                $location.path('/');
+            }
+        };
+
+        /**
+         * Reset a project
+         */
+        vm.resetProject = function(){
+            vm.resetProjectFail = false;
+            vm.resetProjectSuccess = false;
+            var resultsPromise = projectService.resetProject(vm.project.projectId);
+            resultsPromise.then(function () {
+                // Project reset successfully
+                vm.resetProjectFail = false;
+                vm.resetProjectSuccess = true;
+                // Reset the page elements
+                getProjectMetadata(vm.project.projectId);
+            }, function(){
+                // Project not reset successfully
+                vm.resetProjectFail = true;
+                vm.resetProjectSuccess = false;
+            });
+        };
 
         /**
          * Set the invalidate confirmation modal to visible/invisible
@@ -444,6 +508,27 @@
         };
 
         /**
+         * Reset all tasks on a project
+         */
+        vm.resetAllTasks = function(){
+            vm.resetInProgress = true;
+            vm.resetTasksFail = false;
+            vm.resetTasksSuccess = false;
+            var resultsPromise = projectService.resetAllTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks reset successfully
+                vm.resetTasksFail = false;
+                vm.resetTasksSuccess = true;
+                vm.resetInProgress = false;
+            }, function(){
+                // Tasks not reset successfully
+                vm.resetTasksFail = true;
+                vm.resetTasksSuccess = false;
+                vm.resetInProgress = false;
+            })
+        };
+
+        /**
          * Set the show message contributors modal to visible/invisible
          */
         vm.showMessageContributors = function(showModal){
@@ -485,7 +570,7 @@
             vm.uploadFileFail = false;
             vm.uploadFileInProgress = true;
             if (file) {
-                var resultsPromise = projectService.uploadFile(vm.project.projectId, file)
+                var resultsPromise = projectService.uploadFile(vm.project.projectId, file, vm.uploadPolicy)
                 resultsPromise.then(function(){
                     vm.showUploadFileModal = false;
                     vm.uploadFileFail = false;
@@ -574,7 +659,7 @@
          * @param searchValue
          */
         vm.getUser = function(searchValue){
-            var resultsPromise = userService.searchUser(searchValue);
+            var resultsPromise = userService.searchUser(searchValue, vm.project.id);
             return resultsPromise.then(function (data) {
                 // On success
                 return data.usernames;
