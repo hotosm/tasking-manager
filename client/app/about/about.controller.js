@@ -16,7 +16,12 @@
             {
                 name: 'Kaart',
                 logo: './assets/img/kaart17.jpg',
-                url: 'https://kaartgroup.com'
+                url: 'https://kaart.com'
+            },
+            {
+                name: 'Humanitarian OpenStreetMap Team',
+                logo: './assets/img/hot-logo.png',
+                url: 'https://www.hotosm.org'
             }
         ]
     }
