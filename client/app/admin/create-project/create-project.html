@@ -97,6 +97,36 @@
                                 </dd>
                             </dl>
                         </div>
+                        <div class="form__group form__group--section--sm">
+                            <dl>
+                                <dt>Option 4:</dt>
+                                <dd>
+                                    <p>Create tasks from Mapillary Sequences.</p>
+                                    <label class="form__label">{{ 'Start Date' | translate }} *</label>
+                                    <textarea 
+                                        class="form__control" ng-model="mapillary.startDate" rows="1">
+                                    </textarea>
+                                    <md-calendar></md-calendar>
+                                    <br>
+                                    <label class="form__label">{{ 'End Date' | translate }} *</label>
+                                    <textarea 
+                                        class="form__control" ng-model="mapillary.endDate" rows="1">
+                                    </textarea>
+                                    <button class="button button--achromic" type="button"
+                                            ng-click="createProjectCtrl.drawAOI()"><span>{{ 'Draw' | translate }}</span>
+                                    </button>
+                                </dd>
+                            </dl>
+                            <div>
+                                <span class="error" style="float:left;margin-top:10px" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
+                                    {{ 'No Area of Interest has been drawn.' | translate }}
+                                </span>
+                                <span class="error" style="float:left;margin-top:10px"
+                                      ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
+                                    {{ 'The Area of Interest contains self intersections.' | translate }}
+                                </span>
+                            </div>
+                        </div>
                     </form>
                     <div class="navigation-steps">
                         <div class="button-group button-group--horizontal" role="group">
