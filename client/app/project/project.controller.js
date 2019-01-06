@@ -79,6 +79,9 @@
         vm.showLicenseModal = false;
         vm.lockingReason = '';
 
+        // Augmented diff or attic query selection
+        vm.selectedItem = null;
+
         //interval timer promise for autorefresh
         var autoRefresh = undefined;
 
@@ -1195,15 +1198,27 @@
         }
 
         /**
-         * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
+         * Get a basic bounding box for the selected task
          */
-        vm.viewOSMChangesets = function () {
+        vm.taskBBox = function() {
             var taskId = vm.selectedTaskData.taskId;
             var features = vm.taskVectorLayer.getSource().getFeatures();
             var selectedFeature = taskService.getTaskFeatureById(features, taskId);
-            var bbox = selectedFeature.getGeometry().getExtent();
-            var bboxTransformed = geospatialService.transformExtentToLatLonString(bbox);
-            $window.open('http://www.openstreetmap.org/history?bbox=' + bboxTransformed);
+            return selectedFeature.getGeometry().getExtent();
+        }
+
+        /**
+         * Get the task bounding box, transforming the coordinates to WGS84.
+         */
+        vm.osmBBox = function() {
+            return geospatialService.transformExtentToLatLonString(vm.taskBBox());
+        }
+
+        /**
+         * View OSM changesets by getting the bounding box, transforming the coordinates to WGS84 and passing it to OSM
+         */
+        vm.viewOSMChangesets = function () {
+            $window.open('http://www.openstreetmap.org/history?bbox=' + vm.osmBBox());
         };
 
         /**
@@ -1213,31 +1228,19 @@
             var queryPrefix = '<osm-script output="json" timeout="25"><union>';
             var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
             var queryMiddle = '';
+
             // Get the bbox of the task
-            var taskId = vm.selectedTaskData.taskId;
-            var features = vm.taskVectorLayer.getSource().getFeatures();
-            var selectedFeature = taskService.getTaskFeatureById(features, taskId);
-            var extent = selectedFeature.getGeometry().getExtent();
-            var bboxArray = geospatialService.transformExtentToLatLonArray(extent);
-            var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
-            // Loop through the history and get a unique list of users to pass to Overpass Turbo
-            var userList = [];
-            var history = vm.selectedTaskData.taskHistory;
-            if (history) {
-                for (var i = 0; i < history.length; i++) {
-                    var user = history[i].actionBy;
-                    var indexInArray = userList.indexOf(user);
-                    if (user && indexInArray == -1) {
-                        // user existing and not found in user list yet
-                        var userQuery =
-                            '<query type="node"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
-                            '<query type="way"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
-                            '<query type="relation"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>';
-                        queryMiddle = queryMiddle + userQuery;
-                        userList.push(user);
-                    }
-                }
-            }
+            var bboxArray = vm.overpassBBox();
+            var bbox = 's="' + bboxArray[0] + '" w="' + bboxArray[1] + '" n="' + bboxArray[2] + '" e="' + bboxArray[3] + '"';
+
+            // Add (bounded) work by participating users to query
+            vm.participantUsernames().forEach(function(user) {
+              queryMiddle = queryMiddle +
+                  '<query type="node"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
+                  '<query type="way"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>' +
+                  '<query type="relation"><user name="' + user + '"/><bbox-query ' + bbox + '/></query>';
+            });
+
             var query = queryPrefix + queryMiddle + querySuffix;
             $window.open('http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query));
         };
@@ -1357,6 +1360,147 @@
                 }
 
             }
+        };
+
+        /**
+         * Get the task bounding box, transforming to SWNE (min lat, min lon, max lat, max lon) array
+         * as preferred by Overpass.
+         */
+        vm.overpassBBox = function() {
+            var arrayBBox = geospatialService.transformExtentToLatLonArray(vm.taskBBox());
+
+            // Transform WSEN to SWNE that Overpass prefers
+            return [arrayBBox[1], arrayBBox[0], arrayBBox[3], arrayBBox[2]];
+        }
+
+        /**
+         * Returns an array of unique usernames of users who appear in the selected task history.
+         */
+        vm.participantUsernames = function() {
+            // Loop through the history and get a unique list of users to pass to Overpass Turbo
+            var userList = [];
+            var history = vm.selectedTaskData.taskHistory;
+            if (history) {
+                for (var i = 0; i < history.length; i++) {
+                    var username = history[i].actionBy;
+                    if (username && userList.indexOf(username) === -1) {
+                        // user existing and not found in user list yet
+                        userList.push(username);
+                    }
+                }
+            }
+
+            return userList;
+        }
+
+        /**
+         * Returns a Moment instance representing the action date of the given
+         * item. For non-locking actions, the timestamp is offset by the
+         * configured `atticQueryOffsetMinutes` number of minutes. No offset
+         * is applied for locking actions.
+         *
+         * @param atticDate
+         */
+        vm.offsetAtticDateMoment = function (item) {
+          if (item.action === 'LOCKED_FOR_MAPPING' || item.action === 'LOCKED_FOR_VALIDATION') {
+            return moment.utc(item.actionDate);
+          }
+
+          return moment.utc(item.actionDate).add(configService.atticQueryOffsetMinutes, 'minutes');
+        }
+
+        /**
+         * Returns true if the given attic date, once offset by the configured
+         * `atticQueryOffsetMinutes` number of minutes, represents a date in
+         * the past that can be queried. Returns false if the date is still in
+         * the future.
+         * @param atticDate
+         */
+        vm.isAtticDateLive = function (item) {
+          return vm.offsetAtticDateMoment(item).isSameOrBefore(moment());
+        }
+
+        /**
+         * View the task AOI as of the given date via Overpass attic query.
+         * @param atticDate
+         */
+        vm.viewAtticOverpass = function (item) {
+          var adjustedDateString = vm.offsetAtticDateMoment(item).toISOString();
+          var bbox = vm.overpassBBox().join(',');
+          var query =
+            '[out:xml][timeout:25][bbox:' + bbox + '][date:"' + adjustedDateString + '"];' +
+            '( node(' + bbox + '); <; >; );' +
+            'out meta;';
+
+
+          // Try sending to JOSM if it's user's chosen editor, otherwise Overpass Turbo.
+          var overpassApiURL = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
+          if (vm.selectedEditor === 'josm') {
+            editorService.sendJOSMCmd('http://127.0.0.1:8111/import', {
+                                        new_layer: 'true',
+                                        layer_name: adjustedDateString,
+                                        layer_locked: 'true',
+                                        url: encodeURIComponent(overpassApiURL)
+                                      }
+            ).catch(function() {
+              //warn that JSOM couldn't be contacted
+              vm.editorStartError = 'josm-error';
+            });
+          }
+          else {
+              var overpassTurboURL = 'https://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query);
+              $window.open(overpassTurboURL);
+          }
+        };
+
+        /**
+         * Selects the given item for augmented diffing. If it's the first item,
+         * it becomes selected; if it's the second item, a diff is kicked off. If the
+         * same item is clicked twice, then an attic query is run for the item.
+         */
+        vm.selectItemForDiff = function(item) {
+          if (vm.selectedItem === null) {
+            vm.selectedItem = item;
+          }
+          else {
+            if (vm.selectedItem !== item) {
+              vm.viewAugmentedDiff(vm.selectedItem, item);
+            }
+            else {
+              vm.viewAtticOverpass(item);
+            }
+
+            vm.selectedItem = null;
+          }
+        }
+
+        /**
+         * View augmented diff in achavi of the task AOI for the two given items
+         * @param firstItem
+         * @param secondItem
+         */
+        vm.viewAugmentedDiff = function (firstItem, secondItem) {
+          // order firstItem and secondItem into earlierItem and laterItem
+          var earlierItem = firstItem;
+          var laterItem = secondItem;
+
+          if (moment.utc(firstItem.actionDate).isAfter(moment.utc(secondItem.actionDate))) {
+            earlierItem = secondItem;
+            laterItem = firstItem;
+          }
+
+          var bbox = vm.overpassBBox().join(',');
+          var query =
+            '[out:xml][timeout:25][bbox:' + bbox + ']' +
+            '[adiff:"' + moment.utc(earlierItem.actionDate).toISOString() + '","' +
+                         vm.offsetAtticDateMoment(laterItem).toISOString() + '"];' +
+            '( node(' + bbox + '); <; >; );' +
+            'out meta geom qt;';
+
+          // Send users to achavi for visualization of augmented diff
+          var overpassURL = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
+          var achaviURL = 'https://overpass-api.de/achavi/?url=' + encodeURIComponent(overpassURL);
+          $window.open(achaviURL);
         };
 
         /**
