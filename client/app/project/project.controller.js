@@ -8,9 +8,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
         var vm = this;
         vm.id = 0;
         vm.projectData = null;
@@ -145,7 +145,7 @@
                 $interval.cancel(autoRefresh);
                 autoRefresh = undefined;
             }
-        })
+        });
 
 
         /**
@@ -168,11 +168,19 @@
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
             vm.lockedTasksForCurrentUser = [];
-        }
+        };
 
         vm.updatePreferedEditor = function () {
             userPreferencesService.setFavouriteEditor(vm.selectedEditor);
-        }
+        };
+
+        /**
+         * Reset the user's selected editor back to the default
+         */
+        vm.resetSelectedEditor = function() {
+          vm.selectedEditor = 'ideditor';
+          vm.editorStartError = '';
+        };
 
         /**
          * convenience method to reset task status controller properties
@@ -181,7 +189,7 @@
             vm.isSelectedMappable = false;
             vm.isSelectedValidatable = false;
             vm.isSelectedSplittable = true;
-        }
+        };
 
         /**
          * convenience method to reset error controller properties
@@ -199,7 +207,7 @@
             vm.taskCommentError = false;
             vm.taskCommentErrorMessage = '';
             vm.wasAutoUnlocked = false;
-        }
+        };
 
         /**
          * Make the passed in feature the selected feature and ensure view and map updates for selected feature
@@ -486,7 +494,7 @@
                     selectedFeatures.forEach(function (feature) {
                             vm.selectInteraction.getFeatures().push(feature);
                         }
-                    )
+                    );
                 }
 
             }, function () {
@@ -717,7 +725,7 @@
             vm.map.addLayer(vector);
 
             // read tasks JSON into features
-            var aoiFeature = geospatialService.getFeatureFromGeoJSON(aoi)
+            var aoiFeature = geospatialService.getFeatureFromGeoJSON(aoi);
             source.addFeature(aoiFeature);
         }
 
@@ -828,6 +836,61 @@
             });
         }
 
+        vm.onShortCodeClick = function(event) {
+            // If the link contains one or more OSM entities or a viewport for
+            // the title, and the user has chosen JOSM as their editor, then try
+            // loading them in JOSM instead of following the link.
+            //
+            // Use of the title attribute is a hack, but the sanitizer allows it
+            // through and it's important these comments get properly sanitized.
+            if (event.target.tagName === 'A' && vm.selectedEditor === 'josm') {
+                var title = event.target.getAttribute("title");
+                var editorCommand = null;
+                var params = null;
+
+                if (/^((^|, )(way|node|relation) \d+)+$/.test(title)) {
+                    editorCommand = 'http://127.0.0.1:8111/load_object';
+                    params = vm.osmEntityJOSMParams(title);
+                }
+                else if (/^viewport \d+\/-?[.\d]+\/-?[.\d]+/.test(title)) {
+                    editorCommand = 'http://127.0.0.1:8111/zoom';
+                    params = vm.osmViewportJOSMParams(title);
+                }
+
+                if (editorCommand) {
+                    editorService.sendJOSMCmd(editorCommand, params).catch(function() {
+                        //warn that JSOM couldn't be contacted
+                        vm.editorStartError = 'josm-error';
+                    });
+
+                    event.preventDefault();
+                    return false;
+                }
+            }
+        };
+
+        vm.osmEntityJOSMParams = function(linkTitle) {
+            return {
+                objects: linkTitle.replace(/ /g, ''),
+                new_layer: 'true',
+                layer_name: linkTitle,
+            };
+        };
+
+        vm.osmViewportJOSMParams = function(linkTitle) {
+            // parse the zoom/lat/lon values that come after the space
+            var values = linkTitle.split(' ')[1].split('/');
+            var zoom = parseInt(values[0], 10);
+            var lat = parseFloat(values[1]);
+            var lon = parseFloat(values[2]);
+
+            var params = vm.josmBBoxFromViewport(zoom, lat, lon);
+            params.new_layer = 'true';
+            params.layer_name = linkTitle;
+
+            return params;
+        };
+
         /**
          * Sets up the view model for the task options and actions for passed in task data object.
          * @param data - task JSON data object
@@ -839,13 +902,7 @@
             vm.isSelectedValidatable = (isLockedByMeValidation || data.taskStatus === 'MAPPED' || data.taskStatus === 'VALIDATED' || data.taskStatus === 'BADIMAGERY');
             vm.selectedTaskData = data;
 
-            // Format the comments by adding links to the usernames
-            var history = vm.selectedTaskData.taskHistory;
-            if (history) {
-                for (var i = 0; i < history.length; i++) {
-                    history[i].actionText = messageService.formatUserNamesToLink(history[i].actionText);
-                }
-            }
+            formatHistoryComments(vm.selectedTaskData.taskHistory);
 
             //jump to locked step if mappable and locked by me
             if (isLockedByMeMapping) {
@@ -871,6 +928,24 @@
 
             //update browser address bar with task id search params
             $location.search('task', data.taskId);
+        }
+
+        /**
+         * Format a task comment by linking usernames and short codes
+         */
+        vm.formattedComment = function(commentText) {
+            return messageService.formatShortCodes(commentText);
+        };
+
+        /**
+         * Format all task history comments by linking usernames and short codes
+         */
+        function formatHistoryComments(taskHistory) {
+            if (taskHistory) {
+                for (var i = 0; i < taskHistory.length; i++) {
+                    taskHistory[i].actionText = vm.formattedComment(taskHistory[i].actionText);
+                }
+            }
         }
 
         /**
@@ -1117,6 +1192,7 @@
                 vm.lockedTaskData = data;
                 vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
                 vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
+                formatHistoryComments(vm.selectedTaskData.taskHistory);
             }, function (error) {
                 onLockError(projectId, error);
             });
@@ -1182,6 +1258,7 @@
                 vm.isSelectedValidatable = true;
                 vm.lockedTaskData = tasks[0];
                 vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
+                formatHistoryComments(vm.selectedTaskData.taskHistory);
             }, function (error) {
                 onLockError(projectId, error);
             });
@@ -1196,6 +1273,16 @@
             return properties.taskX && properties.taskY && properties.taskZoom;
 
         }
+
+        vm.josmBBoxFromViewport = function(zoom, lat, lon) {
+          // We also need a window width and height to limit the size of the
+          // box. We use the current browser window dimensions as a proxy for
+          // the JOSM window.
+          var bbox = geoViewport.bounds([lon, lat], zoom, [$window.innerWidth, $window.innerHeight]);
+
+          // Convert WSEN bbox to JOSM params
+          return { left: bbox[0], right: bbox[2], top: bbox[3], bottom: bbox[1] };
+        };
 
         /**
          * Get a basic bounding box for the selected task
@@ -1288,7 +1375,7 @@
                         mime_type: encodeURIComponent('application/x-osm+xml'),
                         layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
                         data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
-                    }
+                    };
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
                         .catch(function() {
                             //warn that JSOM couldn't be started
@@ -1299,7 +1386,7 @@
                     var taskImportParams = {
                         url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
                         new_layer: false
-                    }
+                    };
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
                         .catch(function() {
                             //warn that JSOM couldn't be started
@@ -1659,9 +1746,9 @@
                 vm.isSelectedValidatable = true;
                 vm.multiLockedTasks.forEach(function(task) {
                     vm.lockTime[task.taskId] = getLastLockedAction(task).actionDate;
-                })
+                });
             }, function (error) {
-                onLockError(vm.projectData.projectId, error)
+                onLockError(vm.projectData.projectId, error);
             });
         };
 

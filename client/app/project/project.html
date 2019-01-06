@@ -502,18 +502,7 @@
                                             </ul>
                                         <div>
                                             <h6 style="width:84%">Can't finish but need to stop mapping? Or have you completely mapped the area? Leave a comment and select one of the options below that matches your editing status.</h6>
-                                            <textarea class="form__control space-bottom--none" type="text" mentio
-                                                      rows="4"
-                                                      maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                      placeholder="{{ 'Leave a comment' | translate }}"
-                                                      mentio-typed-text="typedTerm"
-                                                      mentio-search="projectCtrl.searchUser(term)"
-                                                      mentio-select="projectCtrl.formatUserTag(item)"
-                                                      mentio-items="projectCtrl.suggestedUsers"
-                                                      mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                      ng-model="projectCtrl.comment"></textarea>
-                                            <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                                {{ 'characters remaining' | translate }}</p>
+                                            <div ng-include="'/app/project/comment-box.html'"></div>
                                         </div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
@@ -840,18 +829,7 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
-                                         <textarea class="form__control space-bottom--none" type="text" mentio
-                                                   rows="4"
-                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                   placeholder="{{ 'Leave a comment' | translate }}"
-                                                   mentio-typed-text="typedTerm"
-                                                   mentio-search="projectCtrl.searchUser(term)"
-                                                   mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.suggestedUsers"
-                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                   ng-model="projectCtrl.comment"></textarea>
-                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                            {{ 'characters remaining' | translate }}</p>
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -932,19 +910,7 @@
                                     </div>
                                     <div class="form__group form__group--section">
                                         <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
-                                         <textarea class="form__control space-bottom--none" type="text" mentio
-                                                   rows="4"
-                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                   placeholder="{{ 'Leave a comment' | translate }}"
-                                                   mentio-typed-text="typedTerm"
-                                                   mentio-search="projectCtrl.searchUser(term)"
-                                                   mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.suggestedUsers"
-                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                   ng-model="projectCtrl.comment"></textarea>
-                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                            {{ 'characters remaining' | translate }}</p>
-
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -1024,7 +990,7 @@
                                           </tr>
                                           <tr ng-show="item.action === 'COMMENT'">
                                             <td colspan="2" class="comment-text">
-                                              <span markdown-to-html="item.actionText"></span>
+                                              <span markdown-to-html="item.actionText" ng-click="projectCtrl.onShortCodeClick($event)"></span>
                                             </td>
                                           </tr>
                                       </tbody>
@@ -1185,3 +1151,35 @@
     </button>
 </section>
 <!-- accept license modal -->
+
+<!-- JOSM editor failed modal -->
+<section class="modal modal-tm" ng-show="projectCtrl.editorStartError === 'josm-error'">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h3 class="modal__title">{{ 'Contact with JOSM Failed' | translate }}</h3>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div>
+                <p>
+                    {{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}
+                </p>
+            </div>
+        </div>
+        <footer class="modal__footer">
+            <div>
+                <button class="button" type="button"
+                        ng-click="projectCtrl.editorStartError = ''">{{ 'Dismiss' | translate }}
+                </button>
+                <button class="button button--secondary" type="button"
+                        ng-click="projectCtrl.resetSelectedEditor()">{{ "Stop using JOSM" | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>
+    <a class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="projectCtrl.editorStartError = ''">
+        {{ 'Dismiss' | translate }}
+    </a>
+</section>
+<!-- JOSM editor failed modal -->

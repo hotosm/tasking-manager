@@ -110,7 +110,6 @@ class MessageService:
             try:
                 user = UserService.get_user_by_username(username)
             except NotFound:
-                current_app.logger.error(f'Username {username} not found')
                 continue  # If we can't find the user, keep going no need to fail
 
             message = Message()
