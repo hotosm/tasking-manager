@@ -117,7 +117,7 @@
                         title="{{ 'Go to the instructions tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Instructions' | translate }}
                         </a>
                     </li>
@@ -125,7 +125,7 @@
                         title="{{ 'Go to the mapping tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Map' | translate }}
                         </a>
                     </li>
@@ -133,7 +133,7 @@
                         title="{{ 'Go to the validation tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Validate' | translate }}
                         </a>
                     </li>
@@ -141,7 +141,7 @@
                         title="{{ 'Go to the chat tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Questions and Comments' | translate }}
                         </a>
                     </li>
@@ -242,7 +242,7 @@
                                         <div ng-hide="projectCtrl.user"
                                              class="alert"
                                              role="alert">
-                                            <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                            <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                         </div>
                                         <div ng-show="projectCtrl.user && projectCtrl.userCanMap === false"
                                              class="error"
@@ -329,7 +329,7 @@
                                         </div>
                                         <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
                                             <div class="alert" role="alert">
-                                                <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                                <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                             </div>
                                         </div>
                                         <div ng-hide="projectCtrl.taskLockError">
@@ -344,7 +344,7 @@
                                             <div>
                                                 <div ng-hide="projectCtrl.user">
                                                     <div class="alert" role="alert">
-                                                        <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                                        <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                                     </div>
                                                 </div>
                                                 <div ng-show="projectCtrl.user && projectCtrl.taskLockError"
@@ -408,7 +408,7 @@
                                             <p markdown-to-html="projectCtrl.selectedTaskData.perTaskInstructions"></p>
                                         </div>
                                         <div>
-                                            <h6>Get started by choosing your editor of choice.</h6>
+                                            <h6>{{ 'Get started by choosing your editor of choice.' | translate }}</h6>
                                             <div class="form__input-group">
                                                 <select class="form__control form__control__medium"
                                                         ng-model="projectCtrl.selectedEditor"
@@ -839,7 +839,7 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
                                          <textarea class="form__control space-bottom--none" type="text" mentio
                                                    rows="4"
                                                    maxlength="{{ projectCtrl.maxlengthComment }}"
@@ -931,7 +931,7 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
                                          <textarea class="form__control space-bottom--none" type="text" mentio
                                                    rows="4"
                                                    maxlength="{{ projectCtrl.maxlengthComment }}"
@@ -1017,6 +1017,9 @@
                                               </td>
                                               <td>
                                                   <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                                  <span ng-if="projectCtrl.user.isExpert">
+                                                    <a ng-show="projectCtrl.isAtticDateLive(item)" class="diff-control {{projectCtrl.selectedItem.actionDate === item.actionDate ? 'selected' : ''}}" ng-click="projectCtrl.selectItemForDiff(item)" title="{{ 'Choose two entries for diff or same once twice for attic data' | translate }}"></a>
+                                                 </span>
                                               </td>
                                           </tr>
                                           <tr ng-show="item.action === 'COMMENT'">
@@ -1135,9 +1138,7 @@
                         </svg>
                         {{ 'Locked by you' | translate }}
                     </div>
-                </div>
-                <div ng-show="projectCtrl.hasPriorityArea" class="ol-control legend-control priority-areas">
-                    <div>
+                    <div ng-show="projectCtrl.hasPriorityArea">
                         <svg height="15" width="15">
                             <rect width="15" height="15" stroke="rgba(255, 0, 0, 1)" stroke-width="3"
                                   fill="rgba(255, 0, 0, 0.3)"/>
@@ -1183,6 +1184,7 @@
         {{ 'Dismiss' | translate }}
     </button>
 </section>
+<!-- accept license modal -->
 
 <!-- JOSM editor failed modal -->
 <section class="modal modal-tm" ng-show="projectCtrl.editorStartError === 'josm-error'">
@@ -1214,3 +1216,4 @@
         {{ 'Dismiss' | translate }}
     </a>
 </section>
+<!-- JOSM editor failed modal -->
