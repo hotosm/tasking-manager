@@ -37,19 +37,19 @@
                     <form class="form">
                         <div class="form__group form__group--section--sm">
                             <dl>
-                                <dt>Option 1:</dt>
+                                <dt>{{ 'Option 1:' | translate }}</dt>
                                 <dd>
-                                    <p>Draw the Area of Interest on the map.</p>
+                                    <p>{{ 'Draw the Area of Interest on the map.' | translate }}</p>
                                     <button class="button button--achromic" type="button"
                                             ng-click="createProjectCtrl.drawAOI()"><span>{{ 'Draw' | translate }}</span>
                                     </button>
                                 </dd>
                             </dl>
                             <div>
-                                <span class="error" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
+                                <span class="error" style="float:left;margin-top:10px" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
                                     {{ 'No Area of Interest has been drawn.' | translate }}
                                 </span>
-                                <span class="error"
+                                <span class="error" style="float:left;margin-top:10px"
                                       ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
                                     {{ 'The Area of Interest contains self intersections.' | translate }}
                                 </span>
@@ -59,7 +59,7 @@
                             <dl>
                                 <dt>Option 2:</dt>
                                 <dd>
-                                    <p>{{ 'Import a GeoJSON, KML, or zipped SHP file.' | translate }}</p>
+                                    <p>{{ 'Import a GeoJSON, KML, OSM or zipped SHP file.' | translate }}</p>
                                     <button class="button button--achromic"
                                          ngf-select="createProjectCtrl.import($file)">{{ 'Import' | translate }}
                                     </button>
@@ -71,7 +71,6 @@
                                     <strong>{{ 'Error' | translate }}:</strong> {{ 'Please provide a valid GeoJSON, KML or zipped Shapefile.' | translate }}
                                 </p>
                             </div>
-
                             <div ng-show="createProjectCtrl.nonPolygonError"
                                  class="alert alert--danger" role="alert">
                                 <p>
@@ -84,18 +83,6 @@
                                     <strong>{{ 'Error' | translate }}:</strong> {{ 'The AOI contains self intersections' | translate }}
                                 </p>
                             </div>
-
-                        </div>
-                        <div class="form__group form__group--section--sm">
-                            <dl>
-                                <dt>Option 3:</dt>
-                                <dd>
-                                    <p>{{ 'Want to use an .osm file instead? You can use' | translate }} <a
-                                            href="http://geojson.io"
-                                            target="_blank" rel="noopener">GeoJSON.io</a>
-                                        {{ 'to convert it to GeoJSON.' | translate }}</p>
-                                </dd>
-                            </dl>
                         </div>
                     </form>
                     <div class="navigation-steps">

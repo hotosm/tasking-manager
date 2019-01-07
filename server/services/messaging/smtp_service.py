@@ -82,7 +82,7 @@ class SMTPService:
     def _init_smtp_client():
         """ Initialise SMTP client from app settings """
         smtp_settings = current_app.config['SMTP_SETTINGS']
-        sender = smtplib.SMTP(smtp_settings['host'])
+        sender = smtplib.SMTP(smtp_settings['host'], port=smtp_settings['smtp_port'])
         sender.starttls()
         sender.login(smtp_settings['smtp_user'], smtp_settings['smtp_password'])
 

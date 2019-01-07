@@ -28,7 +28,7 @@
             resultsPromise.then(function (data) {
                 // success
                 vm.message = data;
-                vm.message.message = messageService.formatUserNamesToLink(vm.message.message);
+                vm.message.message = messageService.formatShortCodes(vm.message.message);
             }, function () {
                 // an error occurred
             });

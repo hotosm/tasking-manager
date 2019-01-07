@@ -6,7 +6,7 @@ from flask import current_app
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO
 from server.models.postgis.project import Project, Task, ProjectStatus
 from server.models.postgis.statuses import TaskCreationMode
-from server.models.postgis.task import TaskHistory
+from server.models.postgis.task import TaskHistory, TaskStatus, TaskAction
 from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from server.services.grid.grid_service import GridService
 from server.services.license_service import LicenseService
@@ -121,7 +121,7 @@ class ProjectAdminService:
                 user = UserService.get_user_by_username(username)
                 allowed_users.append(user)
 
-            project_dto.allowed_users = allowed_users  # Dynamically attach the user object to the DTO for more efficient persistance
+            project_dto.allowed_users = allowed_users  # Dynamically attach the user object to the DTO for more efficient persistence
         except NotFound:
             raise ProjectAdminServiceError(f'allowedUsers contains an unknown username {user}')
 
@@ -134,6 +134,21 @@ class ProjectAdminService:
             project.delete()
         else:
             raise ProjectAdminServiceError('Project has mapped tasks, cannot be deleted')
+
+    @staticmethod
+    def reset_all_tasks(project_id: int, user_id: int):
+        """ Resets all tasks on project, preserving history"""
+        tasks_to_reset = Task.query.filter(Task.project_id == project_id).all()
+
+        for task in tasks_to_reset:
+            task.set_task_history(TaskAction.COMMENT, user_id, "Task reset", TaskStatus.READY)
+            task.reset_task(user_id)
+
+        # Reset project counters
+        project = ProjectAdminService._get_project_by_id(project_id)
+        project.tasks_mapped = 0
+        project.tasks_validated = 0
+        project.save()
 
     @staticmethod
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:

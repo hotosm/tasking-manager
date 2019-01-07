@@ -87,6 +87,13 @@ class UserService:
         return requested_user.as_dto(logged_in_user.username)
 
     @staticmethod
+    def get_user_dto_by_id(requested_user: int) -> UserDTO:
+        """Gets user DTO for supplied user id """
+        requested_user = UserService.get_user_by_id(requested_user)
+
+        return requested_user.as_dto(requested_user.username)
+
+    @staticmethod
     def get_detailed_stats(username: str):
         user = UserService.get_user_by_username(username)
         stats_dto = UserStatsDTO()
@@ -133,9 +140,9 @@ class UserService:
 
     @staticmethod
     @cached(user_filter_cache)
-    def filter_users(username: str, page: int) -> UserFilterDTO:
+    def filter_users(username: str, project_id: int, page: int) -> UserFilterDTO:
         """ Gets paginated list of users, filtered by username, for autocomplete """
-        return User.filter_users(username, page)
+        return User.filter_users(username, project_id, page)
 
     @staticmethod
     def is_user_a_project_manager(user_id: int) -> bool:
@@ -220,6 +227,17 @@ class UserService:
 
         user = UserService.get_user_by_username(username)
         user.set_mapping_level(requested_level)
+
+        return user
+
+    @staticmethod
+    def set_user_is_expert(user_id: int, is_expert: bool) -> User:
+        """
+        Enabled or disables expert mode for the user
+        :raises: UserServiceError
+        """
+        user = UserService.get_user_by_id(user_id)
+        user.set_is_expert(is_expert)
 
         return user
 
