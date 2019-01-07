@@ -401,7 +401,7 @@ class Project(db.Model):
             .filter(Project.private != True)\
             .filter(Project.organisation_tag.isnot(None))\
             .filter(Project.organisation_tag != '')
-        query = query.distinct()
+        query = query.distinct(Project.organisation_tag)
         query = query.order_by(Project.organisation_tag)
         tags_dto = TagsDTO()
         tags_dto.tags = [r[1] for r in query]
@@ -418,7 +418,7 @@ class Project(db.Model):
             .filter(Project.private != True)\
             .filter(Project.campaign_tag.isnot(None))\
             .filter(Project.campaign_tag != '')
-        query = query.distinct()
+        query = query.distinct(Project.campaign_tag)
         query = query.order_by(Project.campaign_tag)
         tags_dto = TagsDTO()
         tags_dto.tags = [r[1] for r in query]
