@@ -51,7 +51,7 @@ The backend server is made up of a postgres database and an associated API that 
 Since the tasking manager works with your OpenStreetMap credentials, register your local tasking manager application on OpenStreetMap to test advanced functionality.
 * Go to `https://www.openstreetmap.org/user/<Your_OSM_UserName>/oauth_clients/new`, and fill in the following information.
 
-<img width="388" alt="screen shot 2019-01-08 at 10 58 26 pm" src="https://user-images.githubusercontent.com/3166852/50847977-f81b3480-1398-11e9-9cfd-771f58efefb0.png">
+<img width="300" alt="screen shot 2019-01-08 at 10 58 26 pm" src="https://user-images.githubusercontent.com/3166852/50847977-f81b3480-1398-11e9-9cfd-771f58efefb0.png">
 
 * Once registered, you should get a  `Consumer Key` and `Consumer Secret`. Use these values for the `TM_CONSUMER_KEY` and `TM_CONSUMER_SECRET` environment variables below.
 
@@ -88,6 +88,7 @@ export TM_SMTP_PASSWORD=smtp-server-password-here
 
 <details>
    <summary><bold>Set up the environment on Windows</bold></summary>
+ 
 ```bash
 setx TM_DB "postgresql://USER:PASSWORD@HOST/DATABASE"
 setx TM_SECRET "secret-key-here"
@@ -98,6 +99,7 @@ setx TM_SMTP_PORT "smtp-server-port-here"
 setx TM_SMTP_USER "smtp-server-user-here"
 setx TM_SMTP_PASSWORD "smtp-server-password-here"
 ```
+
 </details>
 
 <br/>
