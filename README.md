@@ -117,6 +117,13 @@ If you plan to only work on the API you don't need to build the client and can r
 * Point your browser to:
     * [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
 
+#### Set permissions to create a task
+
+To be able to create a task and have full permissions inside TM, login with your OSM account and then execute the following command on your terminal (with the OS 
+user that is the owner of the database:
+
+`psql -d taskman -c "UPDATE users set role = 1 where username = '<your_osm_username>'"`
+
 #### Seeing the client
 If you want to see the client you will need to follow all the instruction in **Client Development** section then build the client as follows:
 
