@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HOT Tasking Manager</title>
+    <title>{{ title | translate }} - HOT Tasking Manager</title>
     <base href="/">
 
     <!-- for Google -->
@@ -116,9 +116,9 @@
 <div class="mob-disclaimer" ng-show="!hideMobileMessage">
     <p class="centered">
         <i class="modal__button-dismiss pull-right pointer" ng-click="hideMobileMessage = true"></i>
-        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
+        {{ '#MAPTHEDIFFERENCE for Local Leaders. Join our end of the year Microgrants Giving Campaign and help us get to 150 donors by December 25.' | translate }}
     </p>
-    <a href="https://mapswipe.org" class="button button--outline--white">{{ 'Go to MapSwipe' | translate }}</a>
+    <a href="https://donate.hotosm.org" class="button button--outline--white">{{ 'Help us get to 150 donors today' | translate }}</a>
 </div>
 <!--/ mobile message -->
 
@@ -211,6 +211,10 @@
 
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/angular-socialshare/2.3.8/angular-socialshare.min.js -->
 <script src="node_modules/angular-socialshare/dist/angular-socialshare.js"></script>
+<!-- /build -->
+
+<!-- build:js https://cdn.jsdelivr.net/npm/osmtogeojson@2.2.12/osmtogeojson.js -->
+<script src="node_modules/osmtogeojson/osmtogeojson.js"></script>
 <!-- /build -->
 
 <!-- build:js app/taskingmanager.min.js -->

@@ -51,6 +51,7 @@
     "ol3-geocoder": "^2.5.0",
     "ol3-layerswitcher": "^1.1.0",
     "openlayers": "^4.0.1",
+    "osmtogeojson": "^2.2.12",
     "phantomjs-prebuilt": "^2.1.14",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",

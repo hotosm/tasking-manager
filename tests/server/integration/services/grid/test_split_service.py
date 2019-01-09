@@ -11,10 +11,13 @@ from server.models.postgis.project import Project
 from server.models.postgis.task import Task
 from server.services.grid.split_service import SplitService, SplitServiceError
 from tests.server.helpers.test_helpers import get_canned_json
+from tests.server.helpers.test_helpers import create_canned_project
 
 
 class TestSplitService(unittest.TestCase):
     skip_tests = False
+    test_project = None
+    test_user = None
 
     @classmethod
     def setUpClass(cls):
@@ -32,9 +35,14 @@ class TestSplitService(unittest.TestCase):
         self.ctx = self.app.app_context()
         self.ctx.push()
 
+        self.test_project, self.test_user = create_canned_project()
+
     def tearDown(self):
         if self.skip_tests:
             return
+
+        self.test_project.delete()
+        self.test_user.delete()
 
         self.ctx.pop()
 
@@ -81,7 +89,7 @@ class TestSplitService(unittest.TestCase):
         task_stub.task_status = 1
         task_stub.locked_by = 1234
         task_stub.lock_holder = 1234
-        task_stub.splittable = True
+        task_stub.is_square = True
         task_stub.x = 1010
         task_stub.y = 1399
         task_stub.zoom = 11
@@ -99,5 +107,26 @@ class TestSplitService(unittest.TestCase):
 
         # assert
         self.assertEqual(4, len(result.tasks))
+
+    @patch.object(Task, 'get_tasks')
+    def test_split_non_square_task(self, mock_task):
+        if self.skip_tests:
+            return
+
+        # Lock task for mapping
+        task = Task.get(2, self.test_project.id)
+        task.lock_task_for_mapping(self.test_user.id)
+
+        splitTaskDTO = SplitTaskDTO()
+        splitTaskDTO.user_id = self.test_user.id
+        splitTaskDTO.project_id = self.test_project.id
+        splitTaskDTO.task_id = 2
+
+        # Split tasks
+        expected = geojson.loads(json.dumps(get_canned_json('non_square_split_results.json')))
+        result = SplitService._create_split_tasks(task.x, task.y, task.zoom, task)
+
+        self.assertEqual(str(expected), str(result))
+
 
 

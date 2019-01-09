@@ -117,7 +117,7 @@
                         title="{{ 'Go to the instructions tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Instructions' | translate }}
                         </a>
                     </li>
@@ -125,7 +125,7 @@
                         title="{{ 'Go to the mapping tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Map' | translate }}
                         </a>
                     </li>
@@ -133,7 +133,7 @@
                         title="{{ 'Go to the validation tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Validate' | translate }}
                         </a>
                     </li>
@@ -141,7 +141,7 @@
                         title="{{ 'Go to the chat tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Questions and Comments' | translate }}
                         </a>
                     </li>
@@ -242,7 +242,7 @@
                                         <div ng-hide="projectCtrl.user"
                                              class="alert"
                                              role="alert">
-                                            <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                            <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                         </div>
                                         <div ng-show="projectCtrl.user && projectCtrl.userCanMap === false"
                                              class="error"
@@ -329,7 +329,7 @@
                                         </div>
                                         <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
                                             <div class="alert" role="alert">
-                                                <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                                <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                             </div>
                                         </div>
                                         <div ng-hide="projectCtrl.taskLockError">
@@ -344,7 +344,7 @@
                                             <div>
                                                 <div ng-hide="projectCtrl.user">
                                                     <div class="alert" role="alert">
-                                                        <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                                        <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                                     </div>
                                                 </div>
                                                 <div ng-show="projectCtrl.user && projectCtrl.taskLockError"
@@ -408,7 +408,7 @@
                                             <p markdown-to-html="projectCtrl.selectedTaskData.perTaskInstructions"></p>
                                         </div>
                                         <div>
-                                            <h6>Get started by choosing your editor of choice.</h6>
+                                            <h6>{{ 'Get started by choosing your editor of choice.' | translate }}</h6>
                                             <div class="form__input-group">
                                                 <select class="form__control form__control__medium"
                                                         ng-model="projectCtrl.selectedEditor"
@@ -456,8 +456,15 @@
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <div ng-show="projectCtrl.isSelectedSplittable">
-                                                    <button style="padding:16px" class="button button--secondary" ng-click="projectCtrl.splitTask()">
-                                                        <i class="icon-split"></i>
+                                                    <button id="split-task-btn" style="padding:16px" class="button button--secondary" ng-click="projectCtrl.splitTask()">
+                                                        <!-- from collecticons.io-->
+                                                        <?xml version="1.0" encoding="utf-8"?>
+                                                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                                                        <path id="split-task" fill="#ffffff" d="M416,288v64h-79.6c-1.5-0.2-4.2-1.4-5.4-2.2L237.3,256l93.8-93.8c1.2-0.9,3.9-2,5.4-2.2H416v64l96-96l-96-96v64h-80
+                                                            c-17.2,0-37.8,8.5-49.9,20.7L210.7,192H0v128h210.7l75.3,75.3c12.2,12.2,32.7,20.7,49.9,20.7h80v64l96-96L416,288z"/>
+                                                        </svg>
+                                                        <!-- <i class="icon-split"></i> -->
                                                         {{ ' Split Task' | translate }}
                                                     </button>
                                                 </div>
@@ -477,9 +484,17 @@
                                                 </div>
                                             </li>
                                             <li>
-                                                <button style="padding:16px" class="button button--secondary"
+                                                <button id="bad-imagery-btn" style="padding:16px" class="button button--secondary"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'BADIMAGERY')">
-                                                        <i class="icon-danger"></i>
+                                                        <!-- <i class="icon-danger"></i> -->
+                                                        <!-- from collecticons.io-->
+                                                        <?xml version="1.0" encoding="utf-8"?>
+                                                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                                                        <path id="bad-imagery" fill="#ffffff" d="M480.2,392.4L287.8,55.6c-17.5-30.6-46-30.6-63.5,0L31.8,392.4C14.3,423,28.8,448,64,448h384
+                                                            C483.2,448,497.7,423,480.2,392.4z M256,416c-22.1,0-40-17.9-40-40c0-22.1,17.9-40,40-40s40,17.9,40,40C296,398.1,278.1,416,256,416
+                                                            z M288,320h-64V160h64V320z"/>
+                                                        </svg>
                                                         {{ ' Mark as Bad Imagery' | translate }}
                                                 </button>
                                             </li>
@@ -502,19 +517,30 @@
                                         </div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
-                                                <button class="button button--secondary"
+                                                <button id="stop-mapping-btn" class="button button--secondary"
                                                         ng-click="projectCtrl.stopMapping(projectCtrl.comment)"
-                                                        style="width:205%">
-                                                        <i class="icon-stop-map"></i>
+                                                        style="width:208%">
+                                                        <!-- from collecticons.io-->
+                                                        <?xml version="1.0" encoding="utf-8"?>
+                                                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                                                        <path id="stop-mapping" fill="#ffffff"  d="m160,352l192,0l0,-192l-192,0l0,192zm96,-352c-141.4,0 -256,114.6 -256,256s114.6,256 256,256s256,-114.6 256,-256s-114.6,-256 -256,-256zm135.8,391.8c-36.3,36.2 -84.5,56.2 -135.8,56.2s-99.5,-20 -135.8,-56.2c-36.2,-36.3 -56.2,-84.5 -56.2,-135.8s20,-99.5 56.2,-135.8c36.3,-36.2 84.5,-56.2 135.8,-56.2s99.5,20 135.8,56.2c36.2,36.3 56.2,84.5 56.2,135.8s-20,99.5 -56.2,135.8z"/>
+                                                        </svg>
                                                         {{ ' Stop Mapping' | translate }}
                                                 </button>
                                             </li>
                                                     
                                             <li>
-                                                <button class="button"
+                                                <button id="complete-mapping-btn" class="button"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')"
                                                         style="width:132%">
-                                                        <i class="icon-sm-tick"></i>
+                                                        <!-- from collecticons.io-->
+                                                        <?xml version="1.0" encoding="utf-8"?>
+                                                        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12px" height="12px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                                                        <polygon id="complete-mapping" fill="#ffffff"  points="197.43961906433105,462.2024230957031 19.373008728027344,284.13482666015625 62.93051719665527,240.57638549804688 192.86768913269043,370.5115966796875 448.51847648620605,58.048545837402344 496.1955394744873,97.0572280883789 " id="svg_2" fill="#ffffff" fill-opacity="1" stroke="#ffffff" stroke-opacity="1" stroke-width="11"/>
+                                                        </svg>
+                                                        <!-- <i class="icon-sm-tick"></i> -->
                                                         {{ ' Mark as Completely Mapped' | translate }}
                                                 </button>
                                             </li>
@@ -813,7 +839,7 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
                                          <textarea class="form__control space-bottom--none" type="text" mentio
                                                    rows="4"
                                                    maxlength="{{ projectCtrl.maxlengthComment }}"
@@ -905,7 +931,7 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
+                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
                                          <textarea class="form__control space-bottom--none" type="text" mentio
                                                    rows="4"
                                                    maxlength="{{ projectCtrl.maxlengthComment }}"
@@ -1109,9 +1135,7 @@
                         </svg>
                         {{ 'Locked by you' | translate }}
                     </div>
-                </div>
-                <div ng-show="projectCtrl.hasPriorityArea" class="ol-control legend-control priority-areas">
-                    <div>
+                    <div ng-show="projectCtrl.hasPriorityArea">
                         <svg height="15" width="15">
                             <rect width="15" height="15" stroke="rgba(255, 0, 0, 1)" stroke-width="3"
                                   fill="rgba(255, 0, 0, 0.3)"/>
