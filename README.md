@@ -42,6 +42,7 @@ gulp build
 
 Once you've built the dependencies, run the client using
 ```
+cd client
 gulp run
 ```
 
