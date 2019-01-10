@@ -1,0 +1,4 @@
+Find a task on a project which has been validated by a (new)mapper in iDeditor
+Show tasks by the number and mapper which has been validated in iDeditor to be able to do a 2nd validation check.
+This can be used as well to inform a mapper who validate in iDeditor about the incapebility and shortcomings of iDeditor to do a proper validation job
+Now it is not possible to find a project/task based on the location of mappings done on a Changeset nor by the name of the mapper.  This makes it difficult f.i when I want to know which task a (new mapper, validating in iDeditor) has validated. A review could be necessary to check on missing errors and warnings which cannot be found on iDeditor.
