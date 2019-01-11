@@ -434,6 +434,7 @@ class ProjectValidateAll(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+
 class ProjectResetAll(Resource):
 
     @tm.pm_only()
