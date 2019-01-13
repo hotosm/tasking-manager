@@ -1,0 +1,42 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header section__header--nodescription">
+            <div class="inner">
+                <div class="section__header--left">
+                    <h1 class="section__title">
+                        {{ 'Application Keys' | translate }}
+                    </h1>
+                </div>
+                <a class="button button--outline pull-right" ng-href="/user/{{ accountNavCtrl.account.username }}">
+                    {{ 'Return to your profile' | translate }}
+                </a>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body section__body--secondary">
+                <div class="inner">
+                    <div class="profile-container">
+                        <div class="details">
+                            <div>
+                                <table>
+                                    <thead>
+                                        <th><span>{{ 'Expiration date' | translate }}</span></th>
+                                        <th><span>{{ 'Application key' | translate }}</span></th>
+                                        <th><span>{{ 'Revoke key' | translate }}</span></th>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in (orderedData = (profileCtrl.applications | orderBy: '-creationDate'))">
+                                            <td>{{ item.creationDate + 30 days }}</td>
+                                            <td>{{ item.key }}</td>
+                                            <td ng-click="profileCtrl.deleteKey({{ item.key }})"><i></i></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
