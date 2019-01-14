@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('application_keys',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
     sa.Column('user', sa.BigInteger(), nullable=False),
     sa.Column('app_key', sa.String(), nullable=False),
     sa.Column('created', sa.DateTime(), nullable=False),
