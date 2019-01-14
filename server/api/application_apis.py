@@ -1,10 +1,44 @@
 from flask_restful import Resource, current_app
 
-from server.services.application_service import ApplicationService
-from server.services.users.authentication_service import token_auth
+from server.services.application_service import ApplicationService, NotFound
+from server.services.users.authentication_service import token_auth, tm
 
 
 class ApplicationAPI(Resource):
+
+    @token_auth.login_required
+    def get(self):
+        """
+        Gets application keys for a user
+        ---
+        tags:
+          - application
+        produces:
+          - application/json
+        parameters:
+          - in: header
+            name: Authorization
+            description: Base64 encoded session token
+            required: true
+            type: string
+            default: Token sessionTokenHere==
+        responses:
+          200:
+            description: User keys retrieved
+          404:
+            description: User has no keys
+          500:
+            description: A problem occurred
+        """
+        try:
+            tokens = ApplicationService.get_all_tokens_for_logged_in_user(tm.authenticated_user_id)
+            if len(tokens) == 0:
+                return 400
+            return tokens.to_primitive(), 200
+        except Exception as e:
+            error_msg = f'Application GET API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def post(self):
@@ -40,7 +74,7 @@ class ApplicationAPI(Resource):
 
 
     @token_auth.login_required
-    def delete(self):
+    def delete(self, application_key):
         """
         Deletes an application key for a user
         ---
@@ -55,9 +89,9 @@ class ApplicationAPI(Resource):
             required: true
             type: string
             defualt: Token sessionTokenHere==
-          - in: query
-            name: token
-            description: Token to remove
+          - in: path
+            name: application_key
+            description: Application key to remove
             type: string
             required: true
             default: 1 
@@ -72,12 +106,12 @@ class ApplicationAPI(Resource):
             description: A problem occurred
         """
         try:
-            token = ApplicationService.get_token_for_logged_in_user(tm.authenticated_user_id, token)
+            token = ApplicationService.get_token_for_logged_in_user(tm.authenticated_user_id, application_key)
             token.delete()
-            return {"ok"}, 200
+            return 200
         except NotFound:
             return {"Error": "Key does not exist for user"}, 404
         except Exception as e:
-            error_msg = f'Application DELETE API - unhandleed error: {str(e)}'
+            error_msg = f'Application DELETE API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
