@@ -18,17 +18,21 @@
                     <div class="profile-container">
                         <div class="details">
                             <div>
-                                <table>
+                                <a ng-click="appKeyCtrl.createApplicationKey()">Create an application key</a>
+                            </div>
+                            <div>
+                                <p ng-show="!appKeyCtrl.applications.length > 0">{{ 'No application keys generated yet.' | translate }}</p>
+                                <table ng-show="appKeyCtrl.applications.length > 0">
                                     <thead>
-                                        <th><span>{{ 'Expiration date' | translate }}</span></th>
+                                        <th><span>{{ 'Creation date' | translate }}</span></th>
                                         <th><span>{{ 'Application key' | translate }}</span></th>
                                         <th><span>{{ 'Revoke key' | translate }}</span></th>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="item in (orderedData = (profileCtrl.applications | orderBy: '-creationDate'))">
-                                            <td>{{ item.creationDate + 30 days }}</td>
-                                            <td>{{ item.key }}</td>
-                                            <td ng-click="profileCtrl.deleteKey({{ item.key }})"><i></i></td>
+                                        <tr ng-repeat="item in appKeyCtrl.applications | orderBy: 'createdDate'">
+                                            <td>{{ item.createdDate }}</td>
+                                            <td>{{ item.applicationkey }}</td>
+                                            <td><a ng-click="appKeyCtrl.deleteApplicationKey(item.applicationkey)"><i>X</i></a></td>
                                         </tr>
                                     </tbody>
                                 </table>
