@@ -55,7 +55,7 @@ class ApplicationAPI(Resource):
             description: Base64 encoded session token
             required: true
             type: string
-            defualt: Token sessionTokenHere==
+            default: Token sessionTokenHere==
         responses:
           200:
             description: Key generated successfully
@@ -88,7 +88,7 @@ class ApplicationAPI(Resource):
             description: Base64 encoded session token
             required: true
             type: string
-            defualt: Token sessionTokenHere==
+            default: Token sessionTokenHere==
           - in: path
             name: application_key
             description: Application key to remove
