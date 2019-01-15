@@ -72,6 +72,40 @@ class ApplicationAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+    def put(self, application_key):
+        """
+        Checks the validity of an application key
+        ---
+        tags:
+          - application
+        produces:
+          - application/json
+        parameters:
+          - in: path
+            name: application_key
+            description: Application key to test
+            type: string
+            required: true
+            default: 1
+        responses:
+          200:
+            description: Key is valid
+          302:
+            description: Key is not valid
+          500:
+            description: A problem occurred
+        """
+        try:
+            is_valid = ApplicationService.check_token(application_key)
+            if is_valid:
+                return 200
+            else:
+                return 302
+        except Exception as e:
+            error_msg = f'Application PUT API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
 
     @token_auth.login_required
     def delete(self, application_key):
@@ -106,9 +140,12 @@ class ApplicationAPI(Resource):
             description: A problem occurred
         """
         try:
-            token = ApplicationService.get_token_for_logged_in_user(tm.authenticated_user_id, application_key)
-            token.delete()
-            return 200
+            token = ApplicationService.get_token(application_key)
+            if token.user == tm.authenticated_user_id:
+                token.delete()
+                return 200
+            else:
+                return 302
         except NotFound:
             return {"Error": "Key does not exist for user"}, 404
         except Exception as e:

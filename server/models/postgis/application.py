@@ -37,9 +37,8 @@ class Application(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_token(user: int, appkey: str):
-        return db.session.query(Application).filter(Application.user == user) \
-                   .filter(Application.app_key == appkey).one_or_none()
+    def get_token(appkey: str):
+        return db.session.query(Application).filter(Application.app_key == appkey).one_or_none()
 
     @staticmethod
     def get_all_for_user(user: int):

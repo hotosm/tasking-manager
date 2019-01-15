@@ -11,8 +11,8 @@ class ApplicationService():
         return application.as_dto()
 
     @staticmethod
-    def get_token_for_logged_in_user(user_id: int, token: str):
-        application = Application.get_token(user_id, token)
+    def get_token(token: str):
+        application = Application.get_token(token)
 
         if application is None:
             raise NotFound()
@@ -26,8 +26,8 @@ class ApplicationService():
         return tokens
 
     @staticmethod
-    def check_token(userid, token):
-        valid_token = get_token_for_logged_in_user(userid, token)
+    def check_token(token: str):
+        valid_token = ApplicationService.get_token(token)
         if not valid_token:
             return False
 
