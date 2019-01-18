@@ -37,6 +37,11 @@ class EnvironmentConfig:
         'languages': 'Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文'
     }
     PROJECT_FILES_DIR = './server/project_files'
+    MAPILLARY_API = {
+        "base": "https://a.mapillary.com/v3/",
+        "clientId": "LVZRT2ZMZkl5RFpGZFp3NzZKaGhaQTpmMGVmNDU1NDI0NmI2YjNm",
+        "usernames": "kaartcam"
+    }
 
 
 class ProdConfig(EnvironmentConfig):

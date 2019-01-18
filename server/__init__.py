@@ -118,6 +118,7 @@ def init_flask_restful_routes(app):
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
     from server.api.project_files_api import ProjectFilesAPI, ProjectFileAPI
+    from server.api.mapillary_api import MapillaryTasksAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
@@ -186,3 +187,4 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectFilesAPI,   '/api/v1/admin/project/<int:project_id>/project-files')
     api.add_resource(TasksAsProjectFile, '/api/v1/project/<int:project_id>/project-file')
     api.add_resource(ProjectFileAPI, '/api/v1/admin/project/<int:project_id>/project-file')
+    api.add_resource(MapillaryTasksAPI, '/api/v1/admin/mapillary-tasks')
