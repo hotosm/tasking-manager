@@ -36,6 +36,7 @@
             getTaskSize: getTaskSize,
             getNumberOfTasks: getNumberOfTasks,
             addTaskGridToMap: addTaskGridToMap,
+            getMapillarySequences: getMapillarySequences,
             createProject: createProject,
             setAOI: setAOI,
             getAOI: getAOI,
@@ -344,6 +345,29 @@
             return hasSelfIntersections;
         }
 
+        /**
+         * Queries Mapillary API to get all sequences uploaded by Kaart.
+         * @param bbox 
+         * @param {Date} startDate 
+         * @param {Date} endDate 
+         * @returns {geojson}
+         */
+        function getMapillarySequences(bbox, startDate, endDate) {
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_date=' + startDate + '&end_date=' +endDate 
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                // Buffer the LineStrings to Polygons for task areas
+                var buffered = turf.buffer(response.data, 20, {units: 'meters'});
+                return geospatialService.getFeaturesFromGeoJSON(buffered);
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(response);
+            });
+        }
 
         /**
          * Creates a project by calling the API with the AOI, a task grid and a project name
