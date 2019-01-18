@@ -15,6 +15,7 @@ jobs:
               curl -sL https://deb.nodesource.com/setup_6.x | bash -
               apt-get install -y nodejs libgeos-dev python-dev python3-dev gdal-bin libgdal-dev # Required for shapely, gdal for ogr
               node --version
+              gdal-config --version
       - restore_cache:
           keys:
             - cached-directories
