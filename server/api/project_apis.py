@@ -11,7 +11,7 @@ from server.services.project_service import ProjectService, ProjectServiceError,
 from server.services.users.user_service import UserService
 from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.task_annotations_service import TaskAnnotationsService
-
+from server.services.application_service import ApplicationService
 
 class ProjectAPI(Resource):
     def get(self, project_id):
@@ -513,6 +513,11 @@ class TaskAnnotationsAPI(Resource):
               description: Annotation type
               required: true
               type: string
+            - name: Application-Token
+              in: header
+              description: Application token registered with TM
+              required: true
+              type: string
             - in: body
               name: body
               required: true
@@ -546,6 +551,18 @@ class TaskAnnotationsAPI(Resource):
             500:
                 description: Internal Server Error
         """
+
+        if 'Application-Token' in request.headers:
+            application_token = request.headers['Application-Token']
+            try:
+                is_valid_token = ApplicationService.check_token(application_token)
+            except NotFound as e:
+                current_app.logger.error(f'Invalid token')
+                return {"error": "Invalid token"}, 500
+        else:
+            current_app.logger.error(f'No token supplied')
+            return {"error": "No token supplied"}, 500
+
         try:
             annotations = request.get_json()
         except DataError as e:
