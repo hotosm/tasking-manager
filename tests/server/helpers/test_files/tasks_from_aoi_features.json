@@ -1,42 +1,42 @@
 {
-  "features": [
-    {
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              [
-                1275275.3796814454,
-                2828783.0982895694
-              ],
-              [
-                1275200.6907704484,
-                2828781.542271093
-              ],
-              [
-                1275016.6455451597,
-                2828781.542271093
-              ],
-              [
-                1275275.3796814454,
-                2828783.0982895694
-              ]
-            ]
-          ]
-        ],
-        "type": "MultiPolygon"
-      },
-      "properties": {
-        "splittable": false,
-        "x": null,
-        "y": null,
-        "zoom": null,
-        "extra_properties": {
-          "foo": "bar"
-        }
-      },
-      "type": "Feature"
-    }
-  ],
-  "type": "FeatureCollection"
+   "features":[
+      {
+         "geometry":{
+            "coordinates":[
+               [
+                  [
+                     [
+                        1275275.3796814454,
+                        2828783.0982895694
+                     ],
+                     [
+                        1275200.6907704484,
+                        2828781.542271093
+                     ],
+                     [
+                        1275016.6455451597,
+                        2828781.542271093
+                     ],
+                     [
+                        1275275.3796814454,
+                        2828783.0982895694
+                     ]
+                  ]
+               ]
+            ],
+            "type":"MultiPolygon"
+         },
+         "properties":{
+            "isSquare": false,
+            "x": null,
+            "y": null,
+            "zoom": null,
+            "extra_properties":{
+               "foo":"bar"
+            }
+         },
+         "type":"Feature"
+      }
+   ],
+   "type":"FeatureCollection"
 }

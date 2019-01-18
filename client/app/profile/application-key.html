@@ -1,0 +1,46 @@
+<div class="inner">
+    <section class="section section--asided">
+        <header class="section__header section__header--nodescription">
+            <div class="inner">
+                <div class="section__header--left">
+                    <h1 class="section__title">
+                        {{ 'Application Keys' | translate }}
+                    </h1>
+                </div>
+                <a class="button button--outline pull-right" ng-href="/user/{{ accountNavCtrl.account.username }}">
+                    {{ 'Return to your profile' | translate }}
+                </a>
+            </div>
+        </header>
+        <div class="section-container">
+            <div class="section__body section__body--secondary">
+                <div class="inner">
+                    <div class="profile-container">
+                        <div class="details">
+                            <div>
+                                <a ng-click="appKeyCtrl.createApplicationKey()">Create an application key</a>
+                            </div>
+                            <div>
+                                <p ng-show="!appKeyCtrl.applications.length > 0">{{ 'No application keys generated yet.' | translate }}</p>
+                                <table ng-show="appKeyCtrl.applications.length > 0">
+                                    <thead>
+                                        <th><span>{{ 'Creation date' | translate }}</span></th>
+                                        <th><span>{{ 'Application key' | translate }}</span></th>
+                                        <th><span>{{ 'Revoke key' | translate }}</span></th>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in appKeyCtrl.applications | orderBy: 'createdDate'">
+                                            <td>{{ item.createdDate }}</td>
+                                            <td>{{ item.applicationkey }}</td>
+                                            <td><a ng-click="appKeyCtrl.deleteApplicationKey(item.applicationkey)"><i>X</i></a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

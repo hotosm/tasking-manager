@@ -95,6 +95,7 @@ def init_flask_restful_routes(app):
     app.logger.debug('Initialising API Routes')
     api = Api(app)
 
+    from server.api.application_apis import ApplicationAPI
     from server.api.users.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
@@ -130,6 +131,9 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectResetAll,               '/api/v1/admin/project/<int:project_id>/reset-all')
     api.add_resource(ProjectsMessageAll,            '/api/v1/admin/project/<int:project_id>/message-all')
     api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
+    api.add_resource(ApplicationAPI,                '/api/v1/application', methods=['POST','GET'])
+    api.add_resource(ApplicationAPI,                '/api/v1/application/<string:application_key>', endpoint="delete_application", methods=['DELETE'])
+    api.add_resource(ApplicationAPI,                '/api/v1/application/<string:application_key>', endpoint="check_application", methods=['PUT'])
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
     api.add_resource(AuthEmailAPI,                  '/api/auth/email')

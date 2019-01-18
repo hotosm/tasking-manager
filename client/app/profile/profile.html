@@ -272,6 +272,11 @@
                                 </label>
                                 <p ng-show="profileCtrl.errorSetExpertMode" class="error">{{ 'An error occurred when altering expert mode setting.' | translate }}</p>
                             </div>
+                            <div ng-show="profileCtrl.currentlyLoggedInUser.isExpert">
+                                <a class="button button--outline" ng-href="/user/{{ accountNavCtrl.account.username }}/keys">
+                                    {{ 'Application keys' | translate }}
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

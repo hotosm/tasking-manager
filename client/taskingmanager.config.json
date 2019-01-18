@@ -26,6 +26,7 @@
           "imagerySet": "Aerial"
         }
       ],
+      "atticQueryOffsetMinutes": 10,
       "maxCommentLength": 5000,
       "maxChatLength": 5000
     }
@@ -58,6 +59,7 @@
           "imagerySet": "Aerial"
         }
       ],
+      "atticQueryOffsetMinutes": 10,
       "maxCommentLength": 5000,
       "maxChatLength": 5000
     }

@@ -71,7 +71,7 @@ class ProjectAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
         finally:
-            # this will try to unlock tasks older than 2 hours
+            # this will try to unlock tasks that have been locked too long
             try:
                 ProjectService.auto_unlock_tasks(project_id)
             except Exception as e:
