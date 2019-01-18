@@ -13,7 +13,7 @@ jobs:
               # Install latest LTS node
               apt-get update
               curl -sL https://deb.nodesource.com/setup_6.x | bash -
-              apt-get install -y nodejs libgeos-dev python-dev python3-dev gdal-bin libgdal-dev gdal-devel # Required for shapely, gdal for ogr
+              apt-get install -y nodejs libgeos-dev python-dev python3-dev gdal-bin libgdal-dev # Required for shapely, gdal for ogr
               node --version
       - restore_cache:
           keys:
