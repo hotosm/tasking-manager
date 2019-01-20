@@ -35,7 +35,7 @@ PyYAML==3.13
 requests==2.13.0
 requests-oauthlib==0.8.0
 schematics==2.0.0a1
-Shapely==1.5.17
+Shapely==1.6.4.post2
 six==1.10.0
 SQLAlchemy==1.1.10
 transifex-client==0.12.4
