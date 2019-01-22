@@ -326,6 +326,7 @@ class UnlockTaskForMappingAPI(Resource):
             # Refresh mapper level after mapping
             UserService.check_and_update_mapper_level(tm.authenticated_user_id)
 
+
 class CommentOnTaskAPI(Resource):
 
     @tm.pm_only(False)
@@ -505,7 +506,7 @@ class TasksAsGPX(Resource):
 
             if as_file:
                 return send_file(io.BytesIO(xml), mimetype='text.xml', as_attachment=True,
-                                 attachment_filename=f'HOT-project-{project_id}.gpx')
+                                 attachment_filename=f'Kaart-project-{project_id}-task-{tasks}.gpx')
 
             return Response(xml, mimetype='text/xml', status=200)
         except NotFound:
