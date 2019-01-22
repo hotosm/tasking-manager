@@ -5,7 +5,7 @@ import datetime
 
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
-    ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO
+    ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO, CampaignStatsDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User, Task, TaskAction
@@ -186,21 +186,43 @@ class StatsService:
         dto.tasks_mapped = Task.query\
             .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
+    
+        
+        campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
+            .group_by(Project.campaign_tag).all()
+        no_campaign_count = 0
+        unique_campaigns = 0
+
+        for tup in campaign_count:
+            campaign_stats = CampaignStatsDTO(tup)
+            if campaign_stats.tag:
+                dto.campaigns.append(campaign_stats)
+                unique_campaigns += 1
+            else:
+                no_campaign_count += campaign_stats.projects_created
+        
+        if no_campaign_count:
+            no_campaign_proj = CampaignStatsDTO(('Untagged', no_campaign_count))
+            dto.campaigns.append(no_campaign_proj)
+        dto.total_campaigns = unique_campaigns
+
 
         org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
             .group_by(Project.organisation_tag).all()
-
-        untagged_count = 0
+        no_org_count = 0
+        unique_orgs = 0 
 
         for tup in org_proj_count:
             org_stats = OrganizationStatsDTO(tup)
             if org_stats.tag:
                 dto.organizations.append(org_stats)
+                unique_orgs += 1
             else:
-                untagged_count += 1
+                no_org_count += org_stats.projects_created
 
-        if untagged_count:
-            untagged_proj = OrganizationStatsDTO(('Untagged', untagged_count))
-            dto.organizations.append(untagged_proj)
+        if no_org_count:
+            no_org_proj = OrganizationStatsDTO(('Untagged', no_org_count))
+            dto.organizations.append(no_org_proj)
+        dto.total_organizations = unique_orgs
 
         return dto
