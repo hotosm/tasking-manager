@@ -1,7 +1,7 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
 from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
-from schematics.types.compound import ListType, ModelType
+from schematics.types.compound import ListType, ModelType, DictType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode
@@ -221,3 +221,23 @@ class PMDashboardDTO(Model):
     draft_projects = ListType(ModelType(ProjectSummary), serialized_name='draftProjects')
     active_projects = ListType(ModelType(ProjectSummary), serialized_name='activeProjects')
     archived_projects = ListType(ModelType(ProjectSummary), serialized_name='archivedProjects')
+
+
+class TaskAnnotationDTO(Model):
+    """ Model for a single task annotation """
+    task_id = IntType(required=True, serialized_name='taskId')
+    annotation_type = StringType(required=True, serialized_name='annotationType')
+    annotation_source = StringType(serialized_name='annotationSource')
+    properties = DictType(StringType, serialized_name='properties')
+
+
+class ProjectTaskAnnotationsDTO(Model):
+    """ DTO for task annotations of a project """
+
+    def __init__(self):
+        """ DTO constructor set task arrays to empty """
+        super().__init__()
+        self.tasks = []
+
+    project_id = IntType(required=True, serialized_name='projectId')
+    tasks = ListType(ModelType(TaskAnnotationDTO), required=True, serialized_name='tasks')

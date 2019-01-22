@@ -288,7 +288,7 @@
                                 <h3 style="display: inline-block;">{{ 'Mapping' | translate }}</h3>
                                 <div ng-show="projectCtrl.mappingStep === 'locked'" style="display: inline-block; float: right;">
                                     <i class="fa fa-clock-o"></i>
-                                    <span>{{ projectCtrl.getLockTime() }} {{ 'minutes left' | translate }}</span>
+                                    <span>{{ projectCtrl.getLockTime() }} {{ ' left' | translate }}</span>
                                 </div>
                                 <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                     <!-- task information -->
@@ -693,7 +693,7 @@
                                 <h3 style="display: inline-block;">{{ 'Validation' | translate }}</h3>
                                 <div ng-show="projectCtrl.validatingStep === 'locked'" style="display: inline-block; float: right;">
                                     <i class="fa fa-clock-o"></i>
-                                    <span>{{ projectCtrl.getLockTime() }} {{ 'minutes left' | translate }}</span>
+                                    <span>{{ projectCtrl.getLockTime() }} {{ ' left' | translate }}</span>
                                 </div>
                                 <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                     <!-- task information -->
@@ -1051,6 +1051,16 @@
                         <a ng-href="/project/{{ projectCtrl.projectData.projectId }}/dashboard"
                            class="button button--secondary">{{ 'Activity and Stats' | translate }}
                         </a>
+                    </div>
+                </div>
+                <div ng-show="projectCtrl.projectData.annotations">
+                    <div class="ml-project-button">
+                        <button class="button" ng-click="projectCtrl.addAnnotationsToMap()" >
+                            {{ 'ML Layer' | translate }}
+                        </button>
+                        <!-- <button class="button" ng-click="projectCtrl.displayTaskingManagerLayer()" >
+                            {{ 'TM Layer' | translate }}
+                        </button> -->
                     </div>
                 </div>
                 <div class="ol-control legend-control">

@@ -134,6 +134,13 @@
                     title: 'Profile'
                 })
 
+                .when('/user/:id/keys', {
+                    templateUrl: 'app/profile/application-key.html',
+                    controller: 'applicationKeyController',
+                    controllerAs: 'appKeyCtrl',
+                    title: 'User Keys'
+                })
+
                 .when('/authorized', {
                     templateUrl: 'app/login/authorized.html',
                     controller: 'authController',

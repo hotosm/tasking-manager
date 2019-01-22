@@ -1,3 +1,4 @@
+/* eslint-disable angular/di */
 (function () {
 
     'use strict';
@@ -392,7 +393,39 @@
             }
             if (task != null && task.taskId in vm.lockTime) {
                 var lockTime = moment.utc(vm.lockTime[task.taskId]);
-                return lockTime.add(task.autoUnlockSeconds, 'seconds').diff(moment.utc(), 'minutes');
+                var diffTime = lockTime.add(task.autoUnlockSeconds, 'seconds').diff(moment.utc(), 'minutes');
+                var eventDuration = diffTime
+                var eventDurationString = ''
+                var eventMDuration = moment.duration(eventDuration, 'minutes');
+                var days = eventMDuration.days()
+                var hours = eventMDuration.hours()
+                var minutes = eventMDuration.minutes()
+                eventDurationString = ""
+                if (days > 0)
+                {
+                    if (days === 1){
+                        eventDurationString += " " + days + ' day'  
+                    } else {
+                        eventDurationString += " " + days + ' days'
+                    }
+                } 
+                if (hours > 0)
+                {
+                    if (hours === 1){
+                        eventDurationString += " " + hours + ' hour'  
+                    } else {
+                        eventDurationString += " " + hours + ' hours'
+                    }
+                } 
+                if (minutes > 0)
+                {
+                    if (minutes === 1){
+                        eventDurationString += " " + minutes + ' minute'  
+                    } else {
+                        eventDurationString += " " + minutes + ' minutes'
+                    }
+                }
+                return eventDurationString
             }
             else {
                 return null;
@@ -414,9 +447,9 @@
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
+                loadAnnotations(id);
                 // Add OpenLayers interactions
                 addInteractions();
-
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
                     var source = new ol.source.Vector();
@@ -764,6 +797,65 @@
                 }
             }
         }
+        function loadAnnotations(id, annotationType) {
+            annotationType = annotationType || 'ml';
+            var resultsPromise = projectService.getTaskAnnotations(id, annotationType);
+            resultsPromise.then(function (data) {
+                if (data) {
+                    vm.projectData.annotations = data;
+                    // add annotations to the task geojson
+                    var annotationsLookup = _.keyBy(data.tasks, 'taskId');
+                    _.forEach(vm.projectData.tasks.features, function(task) {
+                        if (annotationsLookup.hasOwnProperty(task.properties.taskId)) {
+                            var annotations = annotationsLookup[task.properties.taskId].properties;
+                            _.merge(task.properties, annotations);
+                        }
+                    });
+                } else {
+                    vm.projectData.annotations = false;
+                }
+            }, function () {
+                vm.errorGetProject = true;
+            });
+        }
+
+        vm.addAnnotationsToMap = function addAnnotationsToMap() {
+            var source;
+            if (!vm.taskAnnotationLayer) {
+                // create and add the layer
+
+                // set scale
+                var domain = vm.projectData.annotations.tasks.map(function (task) {
+                    return task.properties.building_area_diff;
+                });
+                domain.sort();
+                styleService.setD3Scale([domain[0], domain[domain.length - 1]]);
+                // add a new layer
+                source = new ol.source.Vector();
+                vm.taskAnnotationLayer = new ol.layer.Vector({
+                    source: source,
+                    name: 'taskAnnotations',
+                    style: styleService.getTaskAnnotationStyle,
+                    opacity: 0.7
+                });
+                vm.map.removeLayer(vm.taskVectorLayer);
+                vm.map.addLayer(vm.taskAnnotationLayer);
+                var taskFeatures = geospatialService.getFeaturesFromGeoJSON(vm.projectData.tasks);
+                source.addFeatures(taskFeatures);
+            } else if (vm.taskAnnotationLayer.getVisible()) {
+
+                // disable the layer
+                vm.map.removeLayer(vm.taskAnnotationLayer);
+                vm.taskAnnotationLayer.setVisible(false);
+                vm.map.addLayer(vm.taskVectorLayer);
+            } else {
+
+                // add the layer
+                vm.taskAnnotationLayer.setVisible(true);
+                vm.map.addLayer(vm.taskAnnotationLayer);
+                vm.map.removeLayer(vm.taskVectorLayer);
+            }
+        };
 
         /**
          * Gets a task from the server and sets up the task returned as the currently selected task

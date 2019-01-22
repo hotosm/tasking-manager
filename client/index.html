@@ -116,9 +116,9 @@
 <div class="mob-disclaimer" ng-show="!hideMobileMessage">
     <p class="centered">
         <i class="modal__button-dismiss pull-right pointer" ng-click="hideMobileMessage = true"></i>
-        {{ '#MAPTHEDIFFERENCE for Local Leaders. Join our end of the year Microgrants Giving Campaign and help us get to 150 donors by December 25.' | translate }}
+        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
     </p>
-    <a href="https://donate.hotosm.org" class="button button--outline--white">{{ 'Help us get to 150 donors today' | translate }}</a>
+    <a href="https://mapswipe.org" class="button button--outline--white">{{ 'Go to MapSwipe' | translate }}</a>
 </div>
 <!--/ mobile message -->
 
@@ -221,6 +221,34 @@
 <script src="node_modules/osmtogeojson/osmtogeojson.js"></script>
 <!-- /build -->
 
+<!-- build:js https://d3js.org/d3-array.v1.min.js -->
+<script src="node_modules/d3-array/dist/d3-array.min.js"></script>
+<!-- /build -->
+
+<!-- build:js https://d3js.org/d3-color.v1.min.js -->
+<script src="node_modules/d3-color/dist/d3-color.min.js"></script>
+<!-- /build -->
+
+<!-- build:js https://d3js.org/d3-format.v1.min.js -->
+<script src="node_modules/d3-format/dist/d3-format.min.js"></script>
+<!-- /build -->
+
+<!-- build:js https://d3js.org/d3-interpolate.v1.min.js -->
+<script src="node_modules/d3-interpolate/dist/d3-interpolate.min.js"></script>
+<!-- /build -->
+
+<!-- build:js https://d3js.org/d3-scale.v2.min.js -->
+<script src="node_modules/d3-scale/dist/d3-scale.min.js"></script>
+<!-- /build -->
+
+<!-- build:js https://d3js.org/d3-scale-chromatic.v1.min.js -->
+<script src="node_modules/d3-scale-chromatic/dist/d3-scale-chromatic.min.js"></script>
+<!-- /build -->
+
+<!-- build:js  https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js -->
+<script src="node_modules/lodash/lodash.min.js"></script>
+<!-- /build -->
+
 <!-- build:js app/taskingmanager.min.js -->
 <script src="app/taskingmanager.config.js"></script>
 <script src="app/taskingmanager.app.js"></script>
@@ -242,6 +270,7 @@
 <script src="app/message/message.controller.js"></script>
 <script src="app/login/auth.controller.js"></script>
 <script src="app/profile/validate-email.controller.js"></script>
+<script src="app/profile/application-key.controller.js"></script>
 
 <script src="app/services/map.service.js"></script>
 <script src="app/services/project.service.js"></script>
@@ -263,6 +292,7 @@
 <script src="app/services/httpInterceptor.service.js"></script>
 <script src="app/services/settings.service.js"></script>
 <script src="app/services/userPreferences.service.js"></script>
+<script src="app/services/applicationKey.service.js"></script>
 
 <script src="app/components/add-layer/add-layer.directive.js"></script>
 <script src="app/components/account-nav/account-nav.directive.js"></script>
@@ -273,22 +303,11 @@
 <script src="app/components/project-chat/project-chat.directive.js"></script>
 <!-- /build -->
 
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(["setDomains", ["*.tasks.hotosm.org"]]);
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//piwik.hotosm.org/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', 7]);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<noscript><p><img src="//piwik.hotosm.org/piwik.php?idsite=7" style="border:0;" alt="" /></p></noscript>
-<!-- End Piwik Code -->
+<!-- Matomo -->
+<div id="optout-form"></div>
+<script type="application/javascript">var site_id="1"</script>
+<script type="application/javascript" src="https://cdn.hotosm.org/tracking-v2.js"></script>
+ <!-- End Matomo Code
 
 </body>
 </html>

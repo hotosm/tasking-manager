@@ -61,5 +61,10 @@
     "run-sequence": "^1.2.2",
     "showdown": "^1.7.1",
     "turf": "^3.0.14"
+  },
+  "dependencies": {
+    "d3-scale": "^2.1.2",
+    "d3-scale-chromatic": "^1.3.3",
+    "lodash": "^4.17.11"
   }
 }

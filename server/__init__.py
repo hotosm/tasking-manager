@@ -95,6 +95,7 @@ def init_flask_restful_routes(app):
     app.logger.debug('Initialising API Routes')
     api = Api(app)
 
+    from server.api.application_apis import ApplicationAPI
     from server.api.users.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
@@ -106,7 +107,7 @@ def init_flask_restful_routes(app):
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
         ProjectValidateAll, ProjectMapAll, ProjectResetAll, ProjectResetBadImagery, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
-        HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
+        HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI, TaskAnnotationsAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
@@ -130,6 +131,9 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectResetAll,               '/api/v1/admin/project/<int:project_id>/reset-all')
     api.add_resource(ProjectsMessageAll,            '/api/v1/admin/project/<int:project_id>/message-all')
     api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
+    api.add_resource(ApplicationAPI,                '/api/v1/application', methods=['POST','GET'])
+    api.add_resource(ApplicationAPI,                '/api/v1/application/<string:application_key>', endpoint="delete_application", methods=['DELETE'])
+    api.add_resource(ApplicationAPI,                '/api/v1/application/<string:application_key>', endpoint="check_application", methods=['PUT'])
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
     api.add_resource(AuthEmailAPI,                  '/api/auth/email')
@@ -162,6 +166,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
     api.add_resource(StopValidatingAPI,             '/api/v1/project/<int:project_id>/stop-validating')
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
+    api.add_resource(TaskAnnotationsAPI, '/api/v1/project/<int:project_id>/task-annotations/<string:annotation_type>', '/api/v1/project/<int:project_id>/task-annotations', methods=['GET', 'POST'])
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
     api.add_resource(StatsUserAPI,                  '/api/v1/stats/user/<string:username>')
