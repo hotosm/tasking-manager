@@ -164,7 +164,7 @@
                                     <span ng-show="createProjectCtrl.waiting">
                                             <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i><span>{{ 'Retrieving Sequences... (This may take a few minutes)' | translate }}</span>
                                         </span>
-                                        <div ng-show="createProjectCtrl.mapillaryErrorReason == 400"
+                                        <div ng-show="createProjectCtrl.mapillaryErrorReason == 404"
                                              class="alert alert--danger" role="alert">
                                             <p>
                                                 <strong>{{ 'Error' | translate }}:</strong> {{ 'No Mapillary Sequences Found.' | translate }}

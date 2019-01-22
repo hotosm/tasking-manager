@@ -13,8 +13,8 @@ jobs:
               # Install latest LTS node
               apt-get update
               curl -sL https://deb.nodesource.com/setup_6.x | bash -
-              add-apt-repository ppa:ubuntugis/ppa && apt-get update
-              apt-get install -y nodejs libgeos-dev python-dev python3-dev gdal-bin libgdal-dev # Required for shapely, gdal for ogr
+              add-apt-repository ppa:ubuntugis/ppa && apt-get update && apt-get upgrade
+              apt-get install -y nodejs libgeos-dev python-dev python3-dev gdal-bin libgdal-dev python-gdal python3-gdal # Required for shapely, gdal for ogr
               node --version
               gdal-config --version
       - restore_cache:
