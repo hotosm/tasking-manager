@@ -29,9 +29,9 @@ const Resources = {
             Version: 1
           },
           Overrides: [{
-            InstanceType: 'r3.8xlarge'
+            InstanceType: 't2.large'
           }, {
-            InstanceType: 'r5d.4xlarge'
+            InstanceType: 't3.large'
           }]
         },
         InstancesDistribution: {
@@ -69,7 +69,7 @@ const Resources = {
         ]),
         InstanceInitiatedShutdownBehavior: 'terminate',
         IamInstanceProfile: {
-          Name: cf.ref('HOTQATilesEC2InstanceProfile')
+          Name: cf.ref('TaskingManagerEC2InstanceProfile')
         },
         KeyName: 'mbtiles',
         ImageId: 'ami-f6ed648c'
@@ -102,7 +102,7 @@ const Resources = {
   TaskingManagerEC2InstanceProfile: {
      Type: "AWS::IAM::InstanceProfile",
      Properties: {
-        Roles: [cf.ref('HOTQATilesEC2Role')],
+        Roles: [cf.ref('TaskingManagerEC2Role')],
         InstanceProfileName: cf.join('-', [cf.stackName, 'ec2', 'instance', 'profile'])
      }
   }
