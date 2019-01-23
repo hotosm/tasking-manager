@@ -1,5 +1,6 @@
 from cachetools import TTLCache, cached
 from sqlalchemy import func
+from geoalchemy2.shape import to_shape
 import dateutil.parser
 import datetime
 
@@ -181,13 +182,13 @@ class StatsService:
 
         dto.mappers_online = Task.query.filter(Task.locked_by != None).distinct(Task.locked_by).count()
         dto.total_mappers = User.query.count()
+        dto.total_projects = Project.query.count()
         dto.total_validators = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value)\
             .distinct(Task.validated_by).count()
         dto.tasks_mapped = Task.query\
             .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
-    
-        
+      
         campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
             .group_by(Project.campaign_tag).all()
         no_campaign_count = 0
