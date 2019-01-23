@@ -276,8 +276,6 @@ class MappingService:
     def generate_project_file_osm_xml(project_id: int, file_id: int, task_ids_str: str) -> str:
         """ Generate xml response suitable for loading into JOSM created from an extract of the specified project file """
 
-        print(task_ids_str)
-
         if task_ids_str:
             task_ids = map(int, task_ids_str.split(','))
             tasks = Task.get_tasks_as_geojson_feature_collection(project_id, task_ids)
