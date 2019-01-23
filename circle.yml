@@ -35,7 +35,9 @@ jobs:
             pip install virtualenv
             virtualenv env
             /app/env/bin/pip install --upgrade pip
-            /app/env/bin/pip install -r requirements.txt --include-dirs=/usr/include/gdal
+            export CPLUS_INCLUDE_PATH=/usr/include/gdal
+            export C_INCLUDE_PATH=/usr/include/gdal
+            /app/env/bin/pip install -r requirements.txt
       - run:
           name: Run tests
           command: |
