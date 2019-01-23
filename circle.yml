@@ -15,8 +15,6 @@ jobs:
               curl -sL https://deb.nodesource.com/setup_6.x | bash -
               add-apt-repository ppa:ubuntugis/ppa && apt-get update && apt-get upgrade
               apt-get install -y nodejs libgeos-dev gdal-bin libgdal-dev # Required for shapely, gdal for ogr
-              export CPLUS_INCLUDE_PATH=/usr/include/gdal
-              export C_INCLUDE_PATH=/usr/include/gdal
               node --version
               gdalinfo --version
       - restore_cache:
@@ -37,7 +35,7 @@ jobs:
             pip install virtualenv
             virtualenv env
             /app/env/bin/pip install --upgrade pip
-            /app/env/bin/pip install -r requirements.txt
+            /app/env/bin/pip install -r requirements.txt --include-dirs=/usr/include/gdal
       - run:
           name: Run tests
           command: |
