@@ -54,6 +54,5 @@ webencodings==0.5.1
 Werkzeug==0.12.2
 newrelic==3.2.0.91
 pyproj==1.9.6
-gdal==2.3.1 # Was removed for circle ci
+gdal==1.11.3
 asyncio==3.4.3
-pyproj==1.9.6
