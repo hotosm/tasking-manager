@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', 'geospatialService', 'accountService', 'authService', createProjectController]);
+        .controller('createProjectController', ['$scope', '$location', 'mapService', 'drawService', 'projectService', 'geospatialService', 'accountService', 'authService', 'geoprocessingWorker', createProjectController]);
 
-    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService, authService) {
+    function createProjectController($scope, $location, mapService, drawService, projectService, geospatialService, accountService, authService, geoprocessingWorker) {
 
         var vm = this;
         vm.map = null;
@@ -40,6 +40,7 @@
         vm.userZoomLevelOffset = 0;
 
         // Validation
+        vm.TaskImportValidationMessage = '';
         vm.isAOIValid = false;
         vm.AOIValidationMessage = '';
         vm.isSplitPolygonValid = true;
@@ -54,6 +55,9 @@
         // Split tasks
         vm.drawAndSelectPolygon = null;
         vm.drawAndSelectPoint = null;
+
+        // Hold task geometry data
+        vm.taskGeometries = null;
 
         // Draw interactions
         vm.modifyInteraction = null;
@@ -231,6 +235,37 @@
             vm.isDrawnAOI = true;
             vm.isImportedAOI = false;
         };
+
+        /**
+         * Import Task Geojson Data
+         */
+        vm.importTaskData = function(file) {
+            // Set drawing an AOI to inactive
+            vm.drawPolygonInteraction.setActive(false);
+            vm.isimportError = false;
+            vm.nonPolygonError = false;
+            vm.selfIntersectionError = false;
+
+            if (file) {
+                drawService.getSource().clear();
+                var fileReader = new FileReader();
+                fileReader.onloadend = function (e) {
+                    var data = e.target.result;
+                    vm.taskGeometries = JSON.parse(data);
+                    var extentPromise = geoprocessingWorker.findExtent(vm.taskGeometries);
+                    extentPromise.then(function(response) {
+                        var taskExtent = geospatialService.getFeaturesFromGeoJSON(response.extent);
+                        setImportedAOI_(taskExtent);
+                    });
+                };
+                if (file.name.substr(-4).toLowerCase() === 'json' || file.name.substr(-7).toLowerCase() === 'geojson') {
+                    fileReader.readAsText(file);
+                }
+            }
+        };
+
+
+
 
         /**
          * Trim the task grid to the AOI
@@ -482,22 +517,57 @@
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
                 vm.waiting = true;
-                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId);
-                resultsPromise.then(function (data) {
-                    vm.waiting = false;
-                    // Project created successfully
-                    vm.createProjectFail = false;
-                    vm.createProjectSuccess = true;
-                    vm.createProjectFailReason = '';
-                    // Navigate to the edit project page
-                    $location.path('/admin/edit-project/' + data.projectId);
-                }, function (reason) {
-                    vm.waiting = false;
-                    // Project not created successfully
-                    vm.createProjectFail = true;
-                    vm.createProjectSuccess = false;
-                    vm.createProjectFailReason = reason.status
-                });
+                if (vm.taskGeometries) {
+                    var filterGeometriesPromise = geoprocessingWorker.clipTaskDataAndFilter(
+                        geospatialService.getGeoJSONObjectFromFeatures(projectService.getTaskGrid()),
+                        vm.taskGeometries
+                    );
+                    filterGeometriesPromise
+                        .then(function (response) {
+                            vm.filterTasksProgress = 0;
+                            projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId, response.taskGeometry)
+                                .then(function (data) {
+                                    vm.waiting = false;
+                                    // Project created successfully
+                                    vm.createProjectFail = false;
+                                    vm.createProjectSuccess = true;
+                                    vm.createProjectFailReason = '';
+                                    // Navigate to the edit project page
+                                    $location.path('/admin/edit-project/' + data.projectId);
+                                }, function (reason) {
+                                    vm.waiting = false;
+                                    // Project not created successfully
+                                    vm.createProjectFail = true;
+                                    vm.createProjectSuccess = false;
+                                    vm.createProjectFailReason = reason.status
+                                });
+                        }, function (error) {
+                            vm.waiting = false
+                            vm.createProjectFail = true;
+                            vm.createProjectSuccess = false;
+                            vm.createProjectFailReason = -2
+                        }, function (report) {
+                            vm.filterTasksProgress = (report.progress * 100).toFixed(1)
+                        });
+
+                } else {
+                    projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId)
+                        .then(function (data) {
+                            vm.waiting = false;
+                            // Project created successfully
+                            vm.createProjectFail = false;
+                            vm.createProjectSuccess = true;
+                            vm.createProjectFailReason = '';
+                            // Navigate to the edit project page
+                            $location.path('/admin/edit-project/' + data.projectId);
+                        }, function (reason) {
+                            vm.waiting = false;
+                            // Project not created successfully
+                            vm.createProjectFail = true;
+                            vm.createProjectSuccess = false;
+                            vm.createProjectFailReason = reason.status
+                        });
+                }
             }
             else {
                 vm.projectNameForm.submitted = true;

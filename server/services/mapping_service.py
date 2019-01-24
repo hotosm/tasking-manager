@@ -86,6 +86,15 @@ class MappingService:
         return task.as_dto_with_instructions(lock_task_dto.preferred_locale)
 
     @staticmethod
+    def get_task_geometry(project_id: int, task_id: int):
+        task = MappingService.get_task(task_id, project_id)
+        task_geometry = task.task_geometry
+        if task_geometry:
+            return task_geometry
+        else:
+            return None
+
+    @staticmethod
     def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
         task = MappingService.get_task_locked_by_user(mapped_task.project_id, mapped_task.task_id, mapped_task.user_id)

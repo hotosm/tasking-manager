@@ -18,6 +18,7 @@ var paths = {
     styles: ['assets/styles/css/*.css'],
     images: ['assets/img/**/*'],
     icons: ['assets/icons/**/*'],
+    josm: ['assets/josm/*'],
     locale: ['locale/*.json']
 };
 
@@ -112,6 +113,12 @@ gulp.task('copy_icons_to_dist', function () {
         .pipe(gulp.dest('../server/web/static/dist/assets/icons'));
 });
 
+gulp.task('copy_josm_plugins_to_dist', function() {
+    /* Copy the josm plugins folder to a dist folder */
+    return gulp.src(paths.josm)
+        .pipe(gulp.dest('../server/web/static/dist/assets/josm'));
+});
+
 gulp.task('copy_translations_to_dist', function () {
     /* Copy the translations in the locale folder to a dist folder */
     return gulp.src(paths.locale)
@@ -139,6 +146,7 @@ gulp.task('build', function (callback) {
         'compile-sass',
         'copy_images_to_dist',
         'copy_icons_to_dist',
+        'copy_josm_plugins_to_dist',
         'copy_translations_to_dist',
         'minify-css',
         'uglify',

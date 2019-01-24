@@ -1467,12 +1467,19 @@
                     top: extentTransformed[3],
                     changeset_comment: encodeURIComponent(changesetComment),
                     changeset_source: encodeURIComponent(changesetSource),
-                    new_layer: false
+                    new_layer: false,
+                };
+
+                // Data required for TM JOSM plugin to download task data
+                var taskParams = {
+                    task_id: vm.getSelectTaskIds(),
+                    project_id: vm.id,
                 };
 
                 if (taskCount == 1) {
                     //load OSM data and zoom to the bbox
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+                    editorService.sendJOSMCmd('http://127.0.0.1:8111/load_tm_data', taskParams);
                 } else {
                     //probably too much OSM data to download, just zoom to the bbox
                     editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);

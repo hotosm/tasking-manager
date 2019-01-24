@@ -348,16 +348,30 @@
          * @param cloneProjectId - the ID of the project to clone
          * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
          */
-        function createProject(projectName, isTaskGrid, cloneProjectId) {
+        function createProject(projectName, isTaskGrid, cloneProjectId, filteredGrid) {
+
+            if (!filteredGrid) {
+                filteredGrid = [];
+            }
 
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
-            var taskGridGeoJSON = isTaskGrid?geospatialService.getGeoJSONObjectFromFeatures(taskGrid):null;
+
+            if (filteredGrid.length > 0) {
+                // Check GeoJSON type and try to ensure result is a FeatureCollection
+                var filteredTaskGridGeoJSON = {
+                    type: "FeatureCollection",
+                    features: filteredGrid
+                };
+            }
+
+            var taskGridGeoJSON = (isTaskGrid && filteredGrid.length === 0)?geospatialService.getGeoJSONObjectFromFeatures(taskGrid):null;
+
 
             // Get the geometry of the area of interest. It should only have one feature.
             var newProject = {
                 areaOfInterest: areaOfInterestGeoJSON,
                 projectName: projectName,
-                tasks: taskGridGeoJSON,
+                tasks: filteredGrid.length > 0 ? filteredTaskGridGeoJSON : taskGridGeoJSON,
                 arbitraryTasks: !isTaskGrid
             };
 
