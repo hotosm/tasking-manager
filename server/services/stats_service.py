@@ -1,8 +1,13 @@
 from cachetools import TTLCache, cached
 from sqlalchemy import func
 from geoalchemy2.shape import to_shape
+from shapely.geometry import Polygon
+from shapely.ops import transform
+from functools import partial
+import pyproj
 import dateutil.parser
 import datetime
+import math
 
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
@@ -188,7 +193,26 @@ class StatsService:
         dto.tasks_mapped = Task.query\
             .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
-      
+        dto.total_area = 0
+        
+        projects = Project.query.filter(Project.geometry != None).distinct(Project.geometry).all()
+        for project in projects:
+            polygon = to_shape(project.geometry)
+            polygon_aea = transform(
+                            partial(
+                            pyproj.transform,
+                            pyproj.Proj(init='EPSG:4326'),
+                            pyproj.Proj(
+                                proj='aea',
+                                lat1=polygon.bounds[1],
+                                lat2=polygon.bounds[3])),
+                            polygon)
+            area = polygon_aea.area/1000000
+            
+            if not (math.isnan(area)):
+                dto.total_area += area
+        
+
         campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
             .group_by(Project.campaign_tag).all()
         no_campaign_count = 0
