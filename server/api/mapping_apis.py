@@ -269,7 +269,7 @@ class GetTaskGeometryApi(Resource):
               required: true
               type: integer
               default: 1
-                        - name: task_id
+            - name: task_id
               in: path
               description: The unique task ID
               required: true
