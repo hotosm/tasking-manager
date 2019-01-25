@@ -1,16 +1,10 @@
-import os
 import io
 from flask import Response, send_file
 from distutils.util import strtobool
 from flask_restful import Resource, current_app, request
-from werkzeug.utils import secure_filename
-from schematics.exceptions import DataError
 
-from server.models.postgis.project_files import ProjectFiles
-from server.models.dtos.project_dto import ProjectFileDTO
-from server.services.project_admin_service import ProjectAdminService
+
 from server.models.postgis.utils import NotFound
-from server.models.postgis.statuses import UploadPolicy
 from server.services.mapillary_service import MapillaryService
 
 
@@ -110,7 +104,7 @@ class SequencesAsGPX(Resource):
                 return send_file(io.BytesIO(gpx), mimetype='text.xml', as_attachment=True,
                                  attachment_filename=f'Kaart-project-{project_id}-task-{tasks}.gpx')
 
-            return Response(gpx, mimetype='gpx/xml', status=200)
+            return Response(gpx, mimetype='text/xml', status=200)
         except NotFound:
             return {"Error": "No Mapillary Sequences found with parameters"}, 404
         except Exception as e:
