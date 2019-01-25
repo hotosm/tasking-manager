@@ -2,9 +2,6 @@
 
 var geoprocessingScript = function(e) {
     if( 'function' === typeof importScripts) {
-        // TODO Can we do this on init, or package it as part of gulp?
-        self.importScripts('https://cdnjs.cloudflare.com/ajax/libs/Turf.js/5.1.6/turf.js');
-
         if (e.data[0] === 'findExtent') {
             var taskGeometries = e.data[1];
             var extent = turf.bbox(taskGeometries);
