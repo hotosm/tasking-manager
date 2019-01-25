@@ -273,6 +273,25 @@
         }
 
         /**
+         * Get Mapillary Sequences to make tasks
+         */
+        vm.getMapillarySequences = function () {
+            var bbox = geospatialService.transformExtentToLatLonString(drawService.getSource().getExtent());
+            vm.waiting = true;
+            var resultsPromise = projectService.getMapillarySequences(bbox, vm.mapillaryStartDate, vm.mapillaryEndDate);
+            resultsPromise.then(function(features) {
+                drawService.getSource().clear();
+                drawService.getSource().addFeatures(features);
+                vm.map.getView().fit(drawService.getSource().getExtent());
+                vm.waiting = false;
+            }, function(reason) {
+                vm.waiting = false;
+                vm.mapillaryError = true;
+                vm.mapillaryErrorReason = reason.status;
+            });
+        }
+
+        /**
          * Trim the task grid to the AOI
          */
         vm.trimTaskGrid = function () {
@@ -322,29 +341,11 @@
                 vm.isTaskGrid = false;
                 vm.isTaskArbitrary = true;
                 projectService.removeTaskGrid();
-                vm.waiting = true;
-                var bbox = geospatialService.transformExtentToLatLonString(drawService.getSource().getExtent());
-
-                // var resultsPromise = projectService.getMapillarySequences(bbox, vm.mapillaryStartDate, vm.mapillaryEndDate);
-                var resultsPromise = projectService.getMapillarySequences(bbox, "2018-01-01", "2019-01-01");
-                resultsPromise.then(function(features) {
-                    // var features = geospatialService.getFeaturesFromGeoJSON(data);
-                    console.log(features);
-                    // setUploadedFeatures(features);
-                    // vm.isImportedAOI = true;
-                    // vm.isDrawnAOI = false;
-                    projectService.setAOI(features);
-                    drawService.getSource().clear();
-                    drawService.getSource().addFeatures(features);
-                    vm.numberOfTasks = drawService.getSource().getFeatures().length;
-                    vm.map.getView().fit(drawService.getSource().getExtent());
-                    vm.waiting = false;
-                }, function(reason) {
-                    vm.waiting = false;
-                    vm.mapillaryError = true;
-                    vm.mapillaryErrorReason = reason.status;
-                });
-                // drawService.getSource().clear();
+                // Get and set the AOI
+                var areaOfInterest = drawService.getSource().getFeatures();
+                projectService.setAOI(areaOfInterest);
+                // Get the number of tasks in project
+                vm.numberOfTasks = drawService.getSource().getFeatures().length;
             }
         }
 
