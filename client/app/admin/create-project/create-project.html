@@ -158,7 +158,7 @@
                                     <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryEndDate" rows="1" value="2019-01-01">
                                     <p></p>
                                     <button ng-disbled="mapillary.endDate === null && mapillary.startDate === null" class="button button--achromic" type="button"
-                                            ng-click="createProjectCtrl.createMapillarySequences()"><span>{{ 'Get Sequences' | translate }}</span>
+                                            ng-click="createProjectCtrl.getMapillarySequences()"><span>{{ 'Get Sequences' | translate }}</span>
                                     </button>
                                     <br>
                                     <span ng-show="createProjectCtrl.waiting">
