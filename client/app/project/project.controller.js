@@ -1646,6 +1646,16 @@
         };
 
         /**
+         * Create the url for downloading the currently selected sequences as a gpx file
+         */
+        vm.getSequencesAsGpxURL = function() {
+            if (vm.projectData && vm.getSelectTaskIds()) {
+                return configService.tmAPI + '/project/' + vm.projectData.projectId + '/sequences-as-gpx?tasks=' + vm.getSelectTaskIds() + '&as_file=true';
+            }
+            else return '';
+        }
+
+        /**
          * Sorts the table by property name
          * @param propertyName
          */

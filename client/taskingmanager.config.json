@@ -1,6 +1,6 @@
 {
   "development": {
-    "EnvironmentConfig":{
+    "EnvironmentConfig": {
       "tmAPI": "http://localhost:5000/api/v1",
       "layers": [
         {
@@ -27,11 +27,16 @@
         }
       ],
       "maxCommentLength": 5000,
-      "maxChatLength": 5000
+      "maxChatLength": 5000,
+      "mapillaryAPI": {
+        "base": "https://a.mapillary.com/v3/",
+        "clientId": "LVZRT2ZMZkl5RFpGZFp3NzZKaGhaQTpmMGVmNDU1NDI0NmI2YjNm",
+        "usernames": "kaartcam"
+      }
     }
   },
   "release": {
-    "EnvironmentConfig":{
+    "EnvironmentConfig": {
       "tmAPI": "/api/v1",
       "layers": [
         {

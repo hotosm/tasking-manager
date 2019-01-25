@@ -43,3 +43,7 @@ urllib3==1.21.1
 webencodings==0.5.1
 Werkzeug==0.12.2
 newrelic==3.2.0.91
+gdal==1.10.0
+asyncio==3.4.3
+pyproj==1.9.6
+
