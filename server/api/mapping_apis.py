@@ -683,7 +683,7 @@ class TasksAsProjectFile(Resource):
 
             if as_file:
                 return send_file(io.BytesIO(xml), mimetype='text.xml', as_attachment=True,
-                                 attachment_filename=f'HOT-project-{project_id}.osm')
+                                 attachment_filename=f'Kaart-project-{project_id}.osm')
 
             return Response(xml, mimetype='text/xml', status=200)
         except NotFound:

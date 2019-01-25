@@ -1,16 +1,10 @@
-import os
 import io
 from flask import Response, send_file
 from distutils.util import strtobool
 from flask_restful import Resource, current_app, request
-from werkzeug.utils import secure_filename
-from schematics.exceptions import DataError
 
-from server.models.postgis.project_files import ProjectFiles
-from server.models.dtos.project_dto import ProjectFileDTO
-from server.services.project_admin_service import ProjectAdminService
+
 from server.models.postgis.utils import NotFound
-from server.models.postgis.statuses import UploadPolicy
 from server.services.mapillary_service import MapillaryService
 
 
@@ -43,6 +37,12 @@ class MapillaryTasksAPI(Resource):
               required: true
               type: string
               default: 2019-01-01
+            - name: usernames
+              in: query
+              description: usernames for query
+              type: string
+              required: false
+              default: kaartcam
         responses:
             200:
                 description: Tasks made from sequences
@@ -52,7 +52,10 @@ class MapillaryTasksAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'])
+            if request.args.get('usernames') is not None:
+                tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'], request.args['usernames'])
+            else:
+                tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'])
             if len(tasks) > 0:
                 return tasks, 200
             else:
@@ -110,7 +113,7 @@ class SequencesAsGPX(Resource):
                 return send_file(io.BytesIO(gpx), mimetype='text.xml', as_attachment=True,
                                  attachment_filename=f'Kaart-project-{project_id}-task-{tasks}.gpx')
 
-            return Response(gpx, mimetype='gpx/xml', status=200)
+            return Response(gpx, mimetype='text/xml', status=200)
         except NotFound:
             return {"Error": "No Mapillary Sequences found with parameters"}, 404
         except Exception as e:
