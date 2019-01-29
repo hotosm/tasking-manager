@@ -352,10 +352,10 @@
          * @param {Date} endDate 
          * @returns {geojson}
          */
-        function getMapillarySequences(bbox, startDate, endDate) {
+        function getMapillarySequences(bbox, startDate, endDate, usernames) {
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_date=' + startDate + '&end_date=' +endDate 
+                url: configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_date=' + startDate + '&end_date=' + endDate + '&usernames=' + usernames 
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available

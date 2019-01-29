@@ -151,11 +151,12 @@
                                 </li>
                                 <div ng-show="createProjectCtrl.taskType === 'mapillary-sequences'">
                                     <label class="form__option form__option--inline">{{ 'Start Date' | translate }} (YYYY-MM-DD)*</label>
-                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryStartDate" rows="1" value="2018-01-01">
+                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryStartDate" rows="1">
                                     <br>
-                                    <label class="form__option form__option--inline">{{ 'End Date' |
-                                        translate }} (YYYY-MM-DD)*</label>
-                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryEndDate" rows="1" value="2019-01-01">
+                                    <label class="form__option form__option--inline">{{ 'End Date' | translate }} (YYYY-MM-DD)*</label>
+                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryEndDate" rows="1">
+                                    <label class="form__option form__option--inline">{{ 'Usernames (comma separated)' | translate }}</label>
+                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryUsernames" rows="1">
                                     <p></p>
                                     <button ng-disbled="mapillary.endDate === null && mapillary.startDate === null" class="button button--achromic" type="button"
                                             ng-click="createProjectCtrl.getMapillarySequences()"><span>{{ 'Get Sequences' | translate }}</span>
