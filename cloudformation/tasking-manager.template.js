@@ -19,6 +19,14 @@ const Parameters = {
     Description: 'Specify an RDS snapshot ID, if you want to create the DB from a snapshot.',
     Default: ''
   },
+  MasterUsername: {
+    Description: 'RDS Username',
+    Type: 'String'
+  },
+  MasterPassword: {
+    Description: 'RDS Password',
+    Type: 'String'
+  },
   OSMConsumerKey: {
     Description: 'OSM Consumer Key',
     Type: 'String'
@@ -27,12 +35,25 @@ const Parameters = {
       Description: 'OSM Consumer Secret',
       Type: 'String'
   },
-  MasterUsername: {
-    Description: 'RDS Username',
+  TaskingManagerSecret: {
+    Description: 'TM_SECRET env variable',
     Type: 'String'
   },
-  MasterPassword: {
-    Description: 'RDS Password',
+  TaskingManagerEnv: {
+    Description: 'TASKING_MANAGER_ENV/TM_ENV environment variable',
+    Type: 'String',
+    Default: 'Demo'
+  },
+  TaskingManagerSMTPHost: {
+    Description: 'TM_SMTP_HOST environment variable',
+    Type: 'String'
+  },
+  TaskingManagerSMTPPassword: {
+    Description: 'TM_SMTP_PASSWORD environment variable',
+    Type: 'String'
+  },
+  TaskingManagerSMTPUser: {
+    Description: 'TM_SMTP_USER environment variable',
     Type: 'String'
   },
   Storage: {
@@ -95,21 +116,60 @@ const Resources = {
       LaunchTemplateName: cf.join('-', [cf.stackName, 'ec2', 'launch', 'template']),
       LaunchTemplateData: {
         UserData: cf.userData([
-          '#!/bin/bash',
-          'while [ ! -e /dev/xvdc ]; do echo waiting for /dev/xvdc to attach; sleep 10; done',
-          'while [ ! -e /dev/xvdb ]; do echo waiting for /dev/xvdb to attach; sleep 10; done',
-          'sudo mkfs -t ext3 /dev/xvdb',
-          'sudo mount /dev/xvdb /tmp',
-          'sudo yum update -y && yum upgrade -y && yum install -y libgeos-dev',
-          'curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash',
-          'export NVM_DIR="$HOME/.nvm"',
-          '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"',
-          '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"',
-          'nvm install v9',
-          'npm install gulp -g',
-          'mkdir -p /usr/local/app && chmod 775 /usr/local/app/ && cd /usr/local/app',
-          'git clone https://github.com/hotosm/tasking-manager.git && cd tasking-manager.git',
-          ''
+          'sudo apt-get update &&',
+          'sudo apt-get -y upgrade &&',
+          'sudo add-apt-repository ppa:jonathonf/python-3.6 &&',
+          'sudo apt-get update &&',
+          'sudo apt-get -y install python3.6 &&',
+          'sudo apt-get -y install python3.6-dev &&',
+          'sudo apt-get -y install python3.6-venv &&',
+          'sudo apt-get -y install curl &&',
+          'curl -sL https://deb.nodesource.com/setup_6.x > install-node6.sh &&',
+          'sudo chmod +x install-node6.sh &&',
+          'sudo ./install-node6.sh &&',
+          'sudo apt-get -y install nodejs &&',
+          'sudo npm install gulp -g &&',
+          'npm i browser-sync --save &&',
+          'sudo apt-get -y install postgresql-9.5 &&',
+          'sudo apt-get -y install libpq-dev &&',
+          'sudo apt-get -y install postgresql-server-dev-9.5 &&',
+          'wget http://postgis.net/stuff/postgis-2.2.4dev.tar.gz &&',
+          'tar -xvzf postgis-2.2.4dev.tar.gz &&',
+          'sudo apt-get -y install libxml2 &&',
+          'sudo apt-get -y install libxml2-dev &&',
+          'sudo apt-get -y install libgeos-3.5.0 &&',
+          'sudo apt-get -y install libgeos-dev &&',
+          'sudo apt-get -y install libproj9 &&',
+          'sudo apt-get -y install libproj-dev &&',
+          'sudo apt-get -y install libgdal1-dev &&',
+          'sudo apt-get -y install libjson-c-dev &&',
+          'cd postgis-2.2.4dev &&',
+          './configure &&',
+          'make &&',
+          'sudo make install &&',
+          'cd .. &&',
+          'sudo apt-get -y install git &&',
+          'git clone --recursive https://github.com/hotosm/tasking-manager.git &&',
+          'cd tasking-manager/ &&',
+          'python3.6 -m venv ./venv &&',
+          '. ./venv/bin/activate &&',
+          'pip install --upgrade pip &&',
+          'pip install -r requirements.txt &&',
+          'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p &&',
+          'sudo -u postgres psql -c "CREATE USER hottm WITH PASSWORD 'hottm';" &&',
+          'sudo -u postgres createdb -T template0 tasking-manager -E UTF8 -O hottm &&',
+          'sudo -u postgres psql -d tasking-manager -c "CREATE EXTENSION postgis;" &&',
+          'export TM_DB="postgresql://hottm:hottm@localhost/tasking-manager" &&',
+          'export TM_CONSUMER_KEY="VLm4AmuigZODSZQSEEdarv8LhFi4NFodc9JbvvEl" &&',
+          'export TM_CONSUMER_SECRET="hkS6CwbTJjpwPeIuVJemj4Y5H2WoXYYpiSUBVlhO" &&',
+          'export TM_ENV="Dev" &&',
+          'export TM_SECRET="45dfHJJ456dRh378gGFergeqrgtDFGerterRte" &&',
+          './venv/bin/python3.6 manage.py db upgrade &&',
+          'cd client/ &&',
+          'npm install &&',
+          'gulp build &&',
+          'cd ../ &&',
+          'venv/bin/python manage.py runserver -d'
         ]),
         InstanceInitiatedShutdownBehavior: 'terminate',
         IamInstanceProfile: {
