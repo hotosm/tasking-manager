@@ -1,4 +1,5 @@
-const cloudfriend = require('@mapbox/cloudfriend');
+const cf = require('@mapbox/cloudfriend');
+
 const Parameters = {
   GitSha: {
     Type: 'String',
@@ -7,7 +8,51 @@ const Parameters = {
   OAuthToken: {
     Type: 'String',
     Description: 'OAuthToken with permissions to clone hot-qa-tiles'
+  },
+  IsStaging: {
+    Type: 'String',
+    Description: 'Is this a staging stack?',
+    AllowedValues: ['Yes', 'No']
+  },
+  DBSnapshot: {
+    Type: 'String',
+    Description: 'Specify an RDS snapshot ID, if you want to create the DB from a snapshot.',
+    Default: ''
+  },
+  OSMConsumerKey: {
+    Description: 'OSM Consumer Key',
+    Type: 'String'
+  },
+  OSMConsumerSecret: {
+      Description: 'OSM Consumer Secret',
+      Type: 'String'
+  },
+  MasterUsername: {
+    Description: 'RDS Username',
+    Type: 'String'
+  },
+  MasterPassword: {
+    Description: 'RDS Password',
+    Type: 'String'
+  },
+  Storage: {
+    Description: 'Storage in GB',
+    Type: 'String',
+    Default: '100'
+  },
+  ELBsSecurityGroup: {
+    Description: 'Security Group for the ELB',
+    Type: 'String'
+  },
+  RDSSecurityGroup: {
+    Description: 'Security Group for the RDS',
+    Type: 'String'
   }
+};
+
+const Conditions = {
+  IsStaging: cf.equals(cf.ref('IsStaging'), 'Yes'),
+  UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), '')
 };
 
 const Resources = {
@@ -64,8 +109,7 @@ const Resources = {
           'npm install gulp -g',
           'mkdir -p /usr/local/app && chmod 775 /usr/local/app/ && cd /usr/local/app',
           'git clone https://github.com/hotosm/tasking-manager.git && cd tasking-manager.git',
-          '',
-        )
+          ''
         ]),
         InstanceInitiatedShutdownBehavior: 'terminate',
         IamInstanceProfile: {
@@ -105,5 +149,28 @@ const Resources = {
         Roles: [cf.ref('TaskingManagerEC2Role')],
         InstanceProfileName: cf.join('-', [cf.stackName, 'ec2', 'instance', 'profile'])
      }
+  },
+  TaskingManagerLoadBalancer: {
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
+    Properties: {
+      Name: cf.stackName,
+      SecurityGroups:cf.ref('ELBsSecurityGroup')
+    }
+  },
+  TaskingManagerRDS: {
+    Type: 'AWS::RDS::DBInstance',
+    Properties: {
+        Engine: 'postgres',
+        EngineVersion: '9.5.4',
+        MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('MasterUsername')),
+        MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('MasterPassword')),
+        AllocatedStorage: cf.ref('Storage'),
+        StorageType: 'gp2',
+        DBInstanceClass: 'db.t2', //rethink here
+        DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
+        VPCSecurityGroups: cf.ref('RDSSecurityGroup')
+    }
   }
 };
+
+module.exports = { Parameters, Resources }
