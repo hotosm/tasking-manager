@@ -69,6 +69,7 @@
         // Mapillary
         vm.mapillaryStartDate = null;
         vm.mapillaryEndDate = null;
+        vm.mapillaryUsernames = null;
         vm.mapillaryError = null;
         vm.mapillaryErrorReason = null;
 
@@ -278,7 +279,7 @@
         vm.getMapillarySequences = function () {
             var bbox = geospatialService.transformExtentToLatLonString(drawService.getSource().getExtent());
             vm.waiting = true;
-            var resultsPromise = projectService.getMapillarySequences(bbox, vm.mapillaryStartDate, vm.mapillaryEndDate);
+            var resultsPromise = projectService.getMapillarySequences(bbox, vm.mapillaryStartDate, vm.mapillaryEndDate, vm.mapillaryUsernames);
             resultsPromise.then(function(features) {
                 drawService.getSource().clear();
                 drawService.getSource().addFeatures(features);
