@@ -5,16 +5,14 @@ import asyncio
 from contextlib import closing
 from concurrent.futures import ThreadPoolExecutor
 from dateutil import parser
-from shapely.geometry import shape
-from shapely.ops import transform
-import pyproj
-from statistics import mean, median
-# import csv
-from functools import partial
+from shapely.geometry import shape, mapping
+from shapely.ops import linemerge
 import xml.etree.ElementTree as ET
 
 import geojson
 from flask import current_app
+
+from server.models.postgis.utils import NotFound
 
 
 # Given 2 mapillary sequences WITHIN a buffer of one, check the properties to determine if the
@@ -28,12 +26,6 @@ def duplicateSequences(props1, props2):
                 return False
 
             return True
-
-
-project = partial(
-    pyproj.transform,
-    pyproj.Proj(init='epsg:4326'),
-    pyproj.Proj(init='epsg:26913'))
 
 
 def fetch(url, session):
@@ -63,10 +55,12 @@ async def run(urls, features):
 class MapillaryService:
 
     @staticmethod
-    def getMapillarySequences(bbox: str, start_date: str, end_date: str):
+    def getMapillarySequences(bbox: str, start_date: str, end_date: str, usernames_str: str = None):
         # set up the url for mapillary
         MAPILLARY_API = current_app.config['MAPILLARY_API']
-        url = MAPILLARY_API['base'] + 'sequences?bbox=' + bbox + '&start_time=' + start_date + '&end_time=' + end_date + '&usernames=' + MAPILLARY_API['usernames'] + '&client_id=' + MAPILLARY_API['clientId']
+        url = MAPILLARY_API['base'] + 'sequences?bbox=' + bbox + '&start_time=' + start_date + '&end_time=' + end_date + '&client_id=' + MAPILLARY_API['clientId']
+        if usernames_str:
+            url += '&usernames=' + usernames_str
 
         # Get all the url's so we can query sequences asynchronously (this part might be able to async too)
         urls = [url]
@@ -91,84 +85,53 @@ class MapillaryService:
         # Make tasks from grouped sequences
         tasks = []
         graves = []
-        # DEBUG for mapillary -- REMOVE FOR PROD
-        # duplicates = []
 
         for feature in reversed(features):
             # Iterate through a reversed list so we can remove elements without causing problems
             if feature['properties']['key'] in graves:
                 # If the feature was added with the inner loop, we can't remove it because it 
                 # would break the outer loop so we'll check if it's "dead"
-                continue
-            # We have to project the geometry so the buffer units are meters
-            geom = transform(project, shape(feature['geometry']))
-            buffer = None
-
-            try:
-                # try to create the buffer
-                if not geom.is_valid:
-                    # if the geometry isn't valid we have to buffer with 0 to fix it
-                    geom = geom.buffer(0)
-                buffer = geom.buffer(40)
-            except:
-                # there is something wrong with the feature's geometry and we can't use it
                 features.remove(feature)
                 continue
 
             t1 = parser.parse(feature['properties']['captured_at'])
             task = []
-            task.append(feature['properties'])
+            task.append(feature)
 
-            for otherFeature in [f for f in features if (
-                abs((t1 - parser.parse(f['properties']['captured_at'])).total_seconds()) <= 60
-            )]:
-                if otherFeature['properties']['key'] in graves or feature['properties']['key'] == otherFeature['properties']['key']:
+            for otherFeature in [f for f in features if (abs((t1 - parser.parse(f['properties']['captured_at'])).total_seconds()) <= 60)]:
+                if otherFeature['properties']['key'] in graves:
                     continue
-                # t2 = parser.parse(otherFeature['properties']['captured_at'])
-                # diffT = abs((t1 - t2).total_seconds())
-                geom2 = transform(project, shape(otherFeature['geometry']))
-                # if diffT <= 60:
-                if geom2.within(buffer):
-                    # check if the sequences were created close enough to be "grouped" as one video 
-                    new = otherFeature['properties']
-                    # if new not in task:
-                    duplicate = False
-                    for t in task:
-                        if t['captured_at'] == new['captured_at']:
-                            duplicate = duplicateSequences(t, new)
-                    if not duplicate:
-                        task.append(new)
-                    # else:
-                        # REMOVE FOR PROD
-                        # if t['key'] != new['key']:
-                        #     duplicates.append({'key1': t['key'], 'key2': new['key']})
-                    graves.append(new['key'])
+                new = otherFeature['properties']
+                # if not in task:
+                duplicate = False
+                for t in task:
+                    if t['properties']['captured_at'] == new['captured_at']:
+                        duplicate = duplicateSequences(t['properties'], new)
+                if not duplicate:
+                    task.append(otherFeature)
+                graves.append(new['key'])
+            '''
+            If we ever need to determine the front camera, we can implement the following
+            '''
+            # props = {}
+            # if len(task) == 3:
+            #     # If there are 3 sequences determine which feature was the front camera
+            #     a0 = mean(task[0]['coordinateProperties']['cas'])
+            #     a1 = mean(task[1]['coordinateProperties']['cas'])
+            #     a2 = mean(task[2]['coordinateProperties']['cas'])
+            #     a = [a0, a1, a2]
+            #     front = task[0] if median(a) == a0 else (task[1] if median(a) == a1 else task[2])
+            #     props['sequence_key'] = front['key']
+            # else:
+            #     # Otherwise just take the first
+            #     props['sequence_key'] = task[0]['key']
 
-            props = {}
-            if len(task) == 3:
-                # If there are 3 sequences determine which feature was the front camera
-                a0 = mean(task[0]['coordinateProperties']['cas'])
-                a1 = mean(task[1]['coordinateProperties']['cas'])
-                a2 = mean(task[2]['coordinateProperties']['cas'])
-                a = [a0, a1, a2]
-                front = task[0] if median(a) == a0 else (task[1] if median(a) == a1 else task[2])
-                props['sequence_key'] = front['key']
-            else:
-                # Otherwise just take the first
-                props['sequence_key'] = task[0]['key']
-
-            if props:
-                tasks.append(geojson.Feature(geometry=feature['geometry'], properties={'mapillary': props}))
+            # if props:
+            #     tasks.append(geojson.Feature(geometry=feature['geometry'], properties={'mapillary': props}))
+            
+            geom = linemerge([shape(t['geometry']) for t in task])
+            tasks.append(geojson.Feature(geometry=mapping(geom), properties={'mapillary': [t['properties']['key'] for t in task]}))
             features.remove(feature)
-
-        # REMOVE FOR PROD
-        # Just some debug stuff to help Mapillary homies
-        # with open('./duplicateSequences.csv', mode='w+') as f:
-        #     columns = ['key1', 'key2']
-        #     writer = csv.DictWriter(f, columns)
-        #     writer.writeheader()
-        #     for dup in duplicates:
-        #         writer.writerow(dup)
 
         return geojson.FeatureCollection(tasks)
 

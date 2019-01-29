@@ -37,6 +37,12 @@ class MapillaryTasksAPI(Resource):
               required: true
               type: string
               default: 2019-01-01
+            - name: usernames
+              in: query
+              description: usernames for query
+              type: string
+              required: false
+              default: kaartcam
         responses:
             200:
                 description: Tasks made from sequences
@@ -46,7 +52,7 @@ class MapillaryTasksAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'])
+            tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'], request.args['usernames'])
             if len(tasks) > 0:
                 return tasks, 200
             else:

@@ -39,8 +39,7 @@ class EnvironmentConfig:
     PROJECT_FILES_DIR = './server/project_files'
     MAPILLARY_API = {
         "base": "https://a.mapillary.com/v3/",
-        "clientId": "LVZRT2ZMZkl5RFpGZFp3NzZKaGhaQTpmMGVmNDU1NDI0NmI2YjNm",
-        "usernames": "kaartcam"
+        "clientId": "LVZRT2ZMZkl5RFpGZFp3NzZKaGhaQTpmMGVmNDU1NDI0NmI2YjNm"
     }
 
 
