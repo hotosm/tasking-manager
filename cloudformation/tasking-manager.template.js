@@ -228,7 +228,7 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
       Name: cf.stackName,
-      SecurityGroups:cf.ref('ELBsSecurityGroup')
+      SecurityGroups: [cf.ref('ELBsSecurityGroup')]
     }
   },
   TaskingManagerRDS: {
@@ -242,7 +242,7 @@ const Resources = {
         StorageType: 'gp2',
         DBInstanceClass: 'db.t2', //rethink here
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
-        VPCSecurityGroups: cf.ref('RDSSecurityGroup')
+        VPCSecurityGroups: [cf.ref('RDSSecurityGroup')]
     }
   }
 };
