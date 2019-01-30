@@ -513,6 +513,7 @@
                 vm.errorGetProject = false;
                 vm.projectData = data;
                 addProjectTasksToMap(vm.projectData.tasks, false);
+                loadAnnotations(id);
                 //TODO: move the selected task refresh to a separate function so it can be called separately
                 if (vm.selectedTaskData) {
                     var selectedFeature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), vm.selectedTaskData.taskId);
@@ -841,25 +842,30 @@
                     style: styleService.getTaskAnnotationStyle,
                     opacity: 0.7
                 });
-                vm.map.removeLayer(vm.taskVectorLayer);
-                vm.map.addLayer(vm.taskAnnotationLayer);
                 var taskFeatures = geospatialService.getFeaturesFromGeoJSON(vm.projectData.tasks);
                 source.addFeatures(taskFeatures);
-                addInteractions();
+                enableLayer();
             } else if (vm.taskAnnotationLayer.getVisible()) {
 
                 // disable the layer
                 vm.map.removeLayer(vm.taskAnnotationLayer);
                 vm.taskAnnotationLayer.setVisible(false);
                 vm.map.addLayer(vm.taskVectorLayer);
+                document.getElementById('legend-control-tm').style.visibility = 'visible';
+                document.getElementById('legend-control-ml').style.visibility = 'hidden';
             } else {
 
                 // add the layer
                 vm.taskAnnotationLayer.setVisible(true);
+                enableLayer();
+            }
+
+            function enableLayer() {
                 vm.map.addLayer(vm.taskAnnotationLayer);
                 vm.map.removeLayer(vm.taskVectorLayer);
+                document.getElementById('legend-control-tm').style.visibility = 'hidden';
+                document.getElementById('legend-control-ml').style.visibility = 'visible';
                 addInteractions();
-
             }
         };
 
