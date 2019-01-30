@@ -5,10 +5,6 @@ const Parameters = {
     Type: 'String',
     Description: 'GitSha for this stack'
   },
-  OAuthToken: {
-    Type: 'String',
-    Description: 'OAuthToken with permissions to clone hot-qa-tiles'
-  },
   IsStaging: {
     Type: 'String',
     Description: 'Is this a staging stack?',
