@@ -316,7 +316,7 @@
             // Select interaction
             vm.selectInteraction = new ol.interaction.Select({
                 style: styleService.getSelectedTaskStyle,
-                layers: [vm.taskVectorLayer]
+                layers: [vm.taskVectorLayer, vm.taskAnnotationLayer]
             });
             vm.map.addInteraction(vm.selectInteraction);
             vm.selectInteraction.on('select', function (event) {
@@ -823,6 +823,7 @@
 
         vm.addAnnotationsToMap = function addAnnotationsToMap() {
             var source;
+            vm.clearCurrentSelection();
             if (!vm.taskAnnotationLayer) {
                 // create and add the layer
 
@@ -844,6 +845,7 @@
                 vm.map.addLayer(vm.taskAnnotationLayer);
                 var taskFeatures = geospatialService.getFeaturesFromGeoJSON(vm.projectData.tasks);
                 source.addFeatures(taskFeatures);
+                addInteractions();
             } else if (vm.taskAnnotationLayer.getVisible()) {
 
                 // disable the layer
@@ -856,6 +858,8 @@
                 vm.taskAnnotationLayer.setVisible(true);
                 vm.map.addLayer(vm.taskAnnotationLayer);
                 vm.map.removeLayer(vm.taskVectorLayer);
+                addInteractions();
+
             }
         };
 
