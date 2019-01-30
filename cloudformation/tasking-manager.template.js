@@ -57,8 +57,12 @@ const Parameters = {
     Type: 'String',
     Default: '100'
   },
-  ELBsSecurityGroup: {
+  ELBSecurityGroup: {
     Description: 'Security Group for the ELB',
+    Type: 'String'
+  },
+  ELBSubnets: {
+    Description: 'ELB subnets',
     Type: 'String'
   },
   RDSSecurityGroup: {
@@ -91,9 +95,10 @@ const Resources = {
             Version: 1
           },
           Overrides: [{
-            InstanceType: 'c3.large'
-          }, {
-            InstanceType: 'c3.large'
+            InstanceType: 'm3.large'
+          },
+          {
+            InstanceType: 'm3.xlarge'
           }]
         },
         InstancesDistribution: {
@@ -112,6 +117,7 @@ const Resources = {
       LaunchTemplateName: cf.join('-', [cf.stackName, 'ec2', 'launch', 'template']),
       LaunchTemplateData: {
         UserData: cf.userData([
+          '#!/bin/bash',
           'echo "configuring locales"',
           'export LC_ALL="en_US.UTF-8"',
           'export LC_CTYPE="en_US.UTF-8"',
@@ -169,7 +175,7 @@ const Resources = {
           'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf sudo sysctl -p',
           '',
           'echo "Export env variables"',
-          'sudo -u postgres psql -c "CREATE USER ${MasterUsername} WITH PASSWORD ${MasterPassword};"',
+          cf.sub('sudo -u postgres psql -c "CREATE USER ${MasterUsername} WITH PASSWORD ${MasterPassword};"'),
           'sudo -u postgres createdb -T template0 tasking-manager -E UTF8 -O hottm',
           'sudo -u postgres psql -d tasking-manager -c "CREATE EXTENSION postgis;"',
           cf.sub('export TM_DB="postgresql://${MasterUsername}:${MasterPassword}@localhost/tasking-manager"'),
@@ -208,10 +214,14 @@ const Resources = {
         }]
       },
       Policies: [{
-        PolicyName: "S3Policy",
+        PolicyName: "RDSPolicy",
         PolicyDocument: {
           Version: "2012-10-17",
-          Statement:[]
+          Statement:[{
+            Action: ['rds:DescribeDBInstances'],
+            Effect: 'Allow',
+            Resource: ['arn:aws:rds:*']
+          }]
         }
       }],
       RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
@@ -228,7 +238,7 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
       Name: cf.stackName,
-      SecurityGroups:cf.ref('ELBsSecurityGroup')
+      SecurityGroups: [cf.ref('ELBsSecurityGroup')]
     }
   },
   TaskingManagerRDS: {
@@ -240,9 +250,9 @@ const Resources = {
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('MasterPassword')),
         AllocatedStorage: cf.ref('Storage'),
         StorageType: 'gp2',
-        DBInstanceClass: 'db.t2', //rethink here
+        DBInstanceClass: 'db.m3.large', //rethink here
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
-        VPCSecurityGroups: cf.ref('RDSSecurityGroup')
+        VPCSecurityGroups: [cf.ref('RDSSecurityGroup')]
     }
   }
 };
