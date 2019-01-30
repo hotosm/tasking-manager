@@ -95,9 +95,9 @@ const Resources = {
             Version: 1
           },
           Overrides: [{
-            InstanceType: 't2.large'
+            InstanceType: 'c3.large'
           }, {
-            InstanceType: 't3.large'
+            InstanceType: 'c3.large'
           }]
         },
         InstancesDistribution: {
@@ -176,7 +176,7 @@ const Resources = {
           Name: cf.ref('TaskingManagerEC2InstanceProfile')
         },
         KeyName: 'mbtiles',
-        ImageId: 'ami-f6ed648c'
+        ImageId: 'ami-0e4372c1860d7426c'
       }
     }
   },
