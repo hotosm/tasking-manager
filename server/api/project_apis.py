@@ -584,10 +584,11 @@ class TaskAnnotationsAPI(Resource):
         for annotation in annotations['tasks']:
             try:
                 TaskAnnotationsService.add_or_update_annotation(annotation, project_id, annotation_type)
-                return project_id, 200
             except DataError as e:
                 current_app.logger.error(f'Error creating annotations: {str(e)}')
                 return {"Error": "Error creating annotations"}, 500
+
+        return project_id, 200
 
     def put(self, project_id: int, task_id: int):
         """
