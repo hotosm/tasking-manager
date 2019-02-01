@@ -91,9 +91,9 @@ const Resources = {
             Version: 1
           },
           Overrides: [{
-            InstanceType: 'c3.large'
+            InstanceType: 'm3.large'
           }, {
-            InstanceType: 'c3.large'
+            InstanceType: 'm3.large'
           }]
         },
         InstancesDistribution: {
@@ -240,7 +240,7 @@ const Resources = {
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('MasterPassword')),
         AllocatedStorage: cf.ref('Storage'),
         StorageType: 'gp2',
-        DBInstanceClass: 'db.t2', //rethink here
+        DBInstanceClass: 'db.m3', //rethink here
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.ref('RDSSecurityGroup')]
     }
