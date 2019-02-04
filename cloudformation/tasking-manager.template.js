@@ -250,7 +250,7 @@ const Resources = {
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('MasterPassword')),
         AllocatedStorage: cf.ref('Storage'),
         StorageType: 'gp2',
-        DBInstanceClass: 'db.m3', //rethink here
+        DBInstanceClass: 'db.m3.large', //rethink here
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.ref('RDSSecurityGroup')]
     }
