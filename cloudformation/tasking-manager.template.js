@@ -96,8 +96,9 @@ const Resources = {
           },
           Overrides: [{
             InstanceType: 'm3.large'
-          }, {
-            InstanceType: 'm3.large'
+          },
+          {
+            InstanceType: 'm3.xlarge'
           }]
         },
         InstancesDistribution: {
