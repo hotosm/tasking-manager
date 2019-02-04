@@ -86,6 +86,7 @@ const Resources = {
       DesiredCapacity: 1,
       MaxSize: 1,
       HealthCheckGracePeriod: 300,
+      LoadBalancerNames: [ cf.ref('TaskingManagerLoadBalancer') ],
       HealthCheckType: 'EC2',
       AvailabilityZones: cf.getAzs(cf.region),
       MixedInstancesPolicy: {
@@ -235,12 +236,28 @@ const Resources = {
      }
   },
   TaskingManagerLoadBalancer: {
-    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
+    Type: 'AWS::ElasticLoadBalancing::LoadBalancer',
     Properties: {
-      Name: cf.stackName,
-      SecurityGroups: [cf.ref('ELBsSecurityGroup')]
-    }
-  },
+      CrossZone: true,
+      HealthCheck: {
+        HealthyThreshold: 5,
+        Interval: 10,
+        Target: 'HTTP:8000/',
+        Timeout: 9,
+        UnhealthyThreshold: 3
+      },
+      Listeners: [{
+        InstancePort: 8000,
+        InstanceProtocol: 'HTTP',
+        LoadBalancerPort: 80,
+        Protocol: 'HTTP'
+      }],
+      LoadBalancerName: cf.stackName,
+      Scheme: 'internet-facing',
+      SecurityGroups: [cf.ref('ELBSecurityGroup')],
+      Subnets: cf.split(',', cf.ref('ELBSubnets'))
+   }
+ },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
     Properties: {
