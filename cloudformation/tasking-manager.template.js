@@ -57,8 +57,12 @@ const Parameters = {
     Type: 'String',
     Default: '100'
   },
-  ELBsSecurityGroup: {
+  ELBSecurityGroup: {
     Description: 'Security Group for the ELB',
+    Type: 'String'
+  },
+  ELBSubnets: {
+    Description: 'ELB subnets',
     Type: 'String'
   },
   RDSSecurityGroup: {
