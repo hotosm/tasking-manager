@@ -86,6 +86,7 @@ const Resources = {
       DesiredCapacity: 1,
       MaxSize: 1,
       HealthCheckGracePeriod: 300,
+      LoadBalancerNames: [ cf.ref('TaskingManagerLoadBalancer') ],
       HealthCheckType: 'EC2',
       AvailabilityZones: cf.getAzs(cf.region),
       MixedInstancesPolicy: {
