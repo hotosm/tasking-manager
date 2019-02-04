@@ -214,10 +214,14 @@ const Resources = {
         }]
       },
       Policies: [{
-        PolicyName: "S3Policy",
+        PolicyName: "RDSPolicy",
         PolicyDocument: {
           Version: "2012-10-17",
-          Statement:[]
+          Statement:[{
+            Action: ['rds:DescribeDBInstances'],
+            Effect: 'Allow',
+            Resource: ['arn:aws:rds:*']
+          }]
         }
       }],
       RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
