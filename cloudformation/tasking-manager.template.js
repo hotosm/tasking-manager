@@ -117,6 +117,7 @@ const Resources = {
       LaunchTemplateName: cf.join('-', [cf.stackName, 'ec2', 'launch', 'template']),
       LaunchTemplateData: {
         UserData: cf.userData([
+          '#!/bin/bash',
           'echo "configuring locales"',
           'export LC_ALL="en_US.UTF-8"',
           'export LC_CTYPE="en_US.UTF-8"',
@@ -174,7 +175,7 @@ const Resources = {
           'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf sudo sysctl -p',
           '',
           'echo "Export env variables"',
-          'sudo -u postgres psql -c "CREATE USER ${MasterUsername} WITH PASSWORD ${MasterPassword};"',
+          cf.sub('sudo -u postgres psql -c "CREATE USER ${MasterUsername} WITH PASSWORD ${MasterPassword};"'),
           'sudo -u postgres createdb -T template0 tasking-manager -E UTF8 -O hottm',
           'sudo -u postgres psql -d tasking-manager -c "CREATE EXTENSION postgis;"',
           cf.sub('export TM_DB="postgresql://${MasterUsername}:${MasterPassword}@localhost/tasking-manager"'),
