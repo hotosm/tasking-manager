@@ -94,6 +94,11 @@ class EnvironmentConfig:
         'languages': 'Arabic, Česky, Dansk, Deutsch, English, Español, Français, Magyar, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, 中文'
     }
     PROJECT_FILES_DIR = './server/project_files'
+    MAPILLARY_API = {
+        "base": "https://a.mapillary.com/v3/",
+        "clientId": "LVZRT2ZMZkl5RFpGZFp3NzZKaGhaQTpmMGVmNDU1NDI0NmI2YjNm",
+        "usernames": "kaartcam"
+    }
 
 
 class ProdConfig(EnvironmentConfig):
@@ -108,7 +113,7 @@ class StageConfig(EnvironmentConfig):
     APP_BASE_URL = 'https://tasks-stage.kaart.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
-    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_DIR = '/var/log/tasking-manager-stage-logs'
     LOG_LEVEL = logging.DEBUG
 
 
