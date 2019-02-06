@@ -101,31 +101,17 @@
                             <dl>
                                 <dt>Option 4:</dt>
                                 <dd>
-                                    <p>Create tasks from Mapillary Sequences.</p>
-                                    <label class="form__label">{{ 'Start Date' | translate }} *</label>
-                                    <textarea 
-                                        class="form__control" ng-model="mapillary.startDate" rows="1">
-                                    </textarea>
-                                    <md-calendar></md-calendar>
-                                    <br>
-                                    <label class="form__label">{{ 'End Date' | translate }} *</label>
-                                    <textarea 
-                                        class="form__control" ng-model="mapillary.endDate" rows="1">
-                                    </textarea>
+                                    <p>Draw Bounding Box. <b>Necessary to create Mapillary Sequences.</b></p>
                                     <button class="button button--achromic" type="button"
-                                            ng-click="createProjectCtrl.drawAOI()"><span>{{ 'Draw' | translate }}</span>
+                                            ng-click="createProjectCtrl.drawBBOX()"><span>{{ 'Draw' | translate }}</span>
                                     </button>
                                 </dd>
                             </dl>
-                            <div>
+                            <!-- <div>
                                 <span class="error" style="float:left;margin-top:10px" ng-show="createProjectCtrl.AOIValidationMessage == 'NO_FEATURES'">
-                                    {{ 'No Area of Interest has been drawn.' | translate }}
+                                    {{ 'No Bounding Box has been drawn.' | translate }}
                                 </span>
-                                <span class="error" style="float:left;margin-top:10px"
-                                      ng-show="createProjectCtrl.AOIValidationMessage == 'SELF_INTERSECTIONS'">
-                                    {{ 'The Area of Interest contains self intersections.' | translate }}
-                                </span>
-                            </div>
+                            </div> -->
                         </div>
                     </form>
                     <div class="navigation-steps">
@@ -144,19 +130,48 @@
                             <ul>
                                 <li>
                                     <label class="form__option form__option--inline">
-                                        <input ng-model="createProjectCtrl.taskType" type="radio" name="form-tasks-type"
-                                               id="square-grid" value="square-grid"/>
+                                        <input ng-model="createProjectCtrl.taskType" type="radio" name="form-tasks-type" id="square-grid"
+                                            value="square-grid" />
                                         {{ 'Square Grid' | translate }}
                                     </label>
                                 </li>
                                 <li>
                                     <label class="form__option form__option--inline">
-                                        <input ng-disabled="createProjectCtrl.isDrawnAOI"
-                                               ng-model="createProjectCtrl.taskType" type="radio" name="form-tasks-type"
-                                               id="arbitrary-tasks" value="arbitrary-tasks"/>
+                                        <input ng-disabled="createProjectCtrl.isDrawnAOI" ng-model="createProjectCtrl.taskType" type="radio"
+                                            name="form-tasks-type" id="arbitrary-tasks" value="arbitrary-tasks" />
                                         <span>{{ 'Arbitrary Tasks' | translate }}</span>
                                     </label>
                                 </li>
+                                <li>
+                                    <label class="form__option form__option--inline">
+                                        <input ng-disabled="!createProjectCtrl.isDrawnBBOX" ng-model="createProjectCtrl.taskType" type="radio"
+                                            name="form-tasks-type" id="mapillary-sequences" value="mapillary-sequences" />
+                                        <span>{{ 'Mapillary Sequences' | translate }}</span>
+                                    </label>
+                                </li>
+                                <div ng-show="createProjectCtrl.taskType === 'mapillary-sequences'">
+                                    <label class="form__option form__option--inline">{{ 'Start Date' | translate }} (YYYY-MM-DD)*</label>
+                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryStartDate" rows="1">
+                                    <br>
+                                    <label class="form__option form__option--inline">{{ 'End Date' | translate }} (YYYY-MM-DD)*</label>
+                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryEndDate" rows="1">
+                                    <label class="form__option form__option--inline">{{ 'Usernames (comma separated)' | translate }}</label>
+                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryUsernames" rows="1">
+                                    <p></p>
+                                    <button ng-disbled="mapillary.endDate === null && mapillary.startDate === null" class="button button--achromic" type="button"
+                                            ng-click="createProjectCtrl.getMapillarySequences()"><span>{{ 'Get Sequences' | translate }}</span>
+                                    </button>
+                                    <br>
+                                    <span ng-show="createProjectCtrl.waiting">
+                                            <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i><span>{{ 'Retrieving Sequences... (This may take a few minutes)' | translate }}</span>
+                                        </span>
+                                        <div ng-show="createProjectCtrl.mapillaryErrorReason == 404"
+                                             class="alert alert--danger" role="alert">
+                                            <p>
+                                                <strong>{{ 'Error' | translate }}:</strong> {{ 'No Mapillary Sequences Found.' | translate }}
+                                            </p>
+                                        </div>
+                                </div>
                             </ul>
                         </div>
                     </form>

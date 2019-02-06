@@ -28,7 +28,7 @@ class EnvironmentConfig:
     SMTP_SETTINGS = {
         'host': os.getenv('TM_SMTP_HOST', None),
         'smtp_user': os.getenv('TM_SMTP_USER', None),
-        'smtp_port': os.getenv('TM_SMTP_PORT', 25), # GMail SMTP is over port 587 and will fail on the default port
+        'smtp_port': os.getenv('TM_SMTP_PORT', 25),  # GMail SMTP is over port 587 and will fail on the default port
         'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
     }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
@@ -37,6 +37,10 @@ class EnvironmentConfig:
         'languages': 'Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文'
     }
     PROJECT_FILES_DIR = './server/project_files'
+    MAPILLARY_API = {
+        "base": "https://a.mapillary.com/v3/",
+        "clientId": "LVZRT2ZMZkl5RFpGZFp3NzZKaGhaQTpmMGVmNDU1NDI0NmI2YjNm"
+    }
 
 
 class ProdConfig(EnvironmentConfig):

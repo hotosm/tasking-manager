@@ -530,7 +530,7 @@
                         <div ng-show="editProjectCtrl.currentSection === 'josmsettings'">
                             <fieldset class="form__fieldset">
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'OSM Files to Load' | translate }}</label>
+                                    <label class="form__label">{{ 'OSM Files' | translate }}</label>
                                     <p>{{ 'Add OSM XML files to load into JOSM. Each file should encompass the entire project area. An extract of the data using the task\'s extent will be sent to JOSM for editing.' | translate }}</p>
                                     <div  ng-show="editProjectCtrl.projectFiles.length">
                                     <label class="form__label">{{ 'Uploaded Files:' | translate }}</label>
@@ -555,14 +555,21 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="form__group form__group--section">
+                                <!-- TODO: implement option to automatically load gpx track -->
+                                <!-- <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Load GPX' | translate }}</label>
+                                    <label class="form__option">
+                                        <input ng-model="editProjectCtrl.project.private" type="checkbox" ng-click="editProjectCtrl.onPrivateChange()"/>{{ 'Automatically Load GPX into JOSM' | translate }}
+                                    </label>
+                                </div> -->
+                                <!-- <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Overpass Query **NOT FUNCTIONAL**' | translate }}</label>
                                     <p>{{ 'When a task is opened, a file obtained from the Overpass API using this query will be loaded into JOSM. ' | translate }}</p>
                                     <textarea
                                             class="form__control"
                                             ng-model="info.overpassQuery" rows="4">
                                     </textarea>
-                                </div>
+                                </div> -->
                             </fieldset>
                         </div>
                             <!--/ josmsettings -->

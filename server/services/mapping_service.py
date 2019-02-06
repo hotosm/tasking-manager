@@ -165,12 +165,12 @@ class MappingService:
             timestamp = datetime.datetime.utcnow()
 
         root = ET.Element('gpx', attrib=dict(xmlns='http://www.topografix.com/GPX/1/1', version='1.1',
-                                             creator='HOT Tasking Manager'))
+                                             creator='Kaart Tasking Manager'))
 
         # Create GPX Metadata element
         metadata = ET.Element('metadata')
-        link = ET.SubElement(metadata, 'link', attrib=dict(href='https://github.com/hotosm/tasking-manager'))
-        ET.SubElement(link, 'text').text = 'HOT Tasking Manager'
+        link = ET.SubElement(metadata, 'link', attrib=dict(href='https://github.com/kaartgroup/tasking-manager'))
+        ET.SubElement(link, 'text').text = 'Kaart Tasking Manager'
         ET.SubElement(metadata, 'time').text = timestamp.isoformat()
         root.append(metadata)
 
@@ -198,8 +198,8 @@ class MappingService:
                     ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
 
                     # Append wpt elements to end of doc
-                    wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
-                    root.append(wpt)
+                    # wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+                    # root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
@@ -275,8 +275,6 @@ class MappingService:
     @staticmethod
     def generate_project_file_osm_xml(project_id: int, file_id: int, task_ids_str: str) -> str:
         """ Generate xml response suitable for loading into JOSM created from an extract of the specified project file """
-
-        print(task_ids_str)
 
         if task_ids_str:
             task_ids = map(int, task_ids_str.split(','))

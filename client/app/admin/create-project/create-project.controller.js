@@ -24,6 +24,7 @@
         vm.AOI = null;
         vm.isDrawnAOI = false;
         vm.isImportedAOI = false;
+        vm.isDrawnBBOX = false;
         vm.clipTasksToAoi = true;
 
         // Grid
@@ -58,11 +59,19 @@
         // Draw interactions
         vm.modifyInteraction = null;
         vm.drawPolygonInteraction = null;
+        vm.drawRectangleInteraction = null;
 
         //waiting spinner
         vm.waiting = false;
         vm.trimError = false;
         vm.trimErrorReason = '';
+
+        // Mapillary
+        vm.mapillaryStartDate = null;
+        vm.mapillaryEndDate = null;
+        vm.mapillaryUsernames = null;
+        vm.mapillaryError = null;
+        vm.mapillaryErrorReason = null;
 
         activate();
 
@@ -98,12 +107,16 @@
             mapService.createOSMMap('map');
             mapService.addGeocoder();
             vm.map = mapService.getOSMMap();
-            drawService.initInteractions(true, false, false, false, false, true);
+            drawService.initInteractions(true, true, false, false, false, true);
             vm.modifyInteraction = drawService.getModifyInteraction();
             vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
             vm.drawPolygonInteraction.on('drawstart', function () {
                 drawService.getSource().clear();
             });
+            vm.drawRectangleInteraction = drawService.getDrawRectangleInteraction();
+            vm.drawRectangleInteraction.on('drawstart', function () {
+                drawService.getSource().clear();
+            })
             projectService.initDraw(vm.map);
         }
 
@@ -117,6 +130,10 @@
             }
             else if (vm.taskType === 'arbitrary-tasks') {
                 vm.createArbitaryTasks();
+                vm.setWizardStep('review');
+            }
+            else if (vm.taskType === 'mapillary-sequences') {
+                vm.createMapillarySequences();
                 vm.setWizardStep('review');
             }
         };
@@ -135,8 +152,15 @@
                     vm.drawPolygonInteraction.setActive(true);
                     vm.modifyInteraction.setActive(true);
                 }
+                else if (vm.isDrawnBBOX) {
+                    vm.drawRectangleInteraction.setActive(true);
+                    vm.modifyInteraction.setActive(true);
+                }
             }
             else if (wizardStep === 'tasks') {
+                // console.log(geospatialService.transformExtentToLatLonString(drawService.getSource().getExtent()))
+                vm.drawPolygonInteraction.setActive(false);
+                vm.drawRectangleInteraction.setActive(false);
                 setSplitToolsActive_(false);
                 vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
                     + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
@@ -160,6 +184,12 @@
                     vm.map.getView().fit(drawService.getSource().getExtent());
                     vm.currentStep = wizardStep;
                     vm.drawPolygonInteraction.setActive(false);
+                    vm.modifyInteraction.setActive(false);
+                }
+                if (vm.isDrawnBBOX) {
+                    vm.map.getView().fit(drawService.getSource().getExtent());
+                    vm.currentStep = wizardStep;
+                    vm.drawRectangleInteraction.setActive(false);
                     vm.modifyInteraction.setActive(false);
                 }
             }
@@ -229,8 +259,38 @@
         vm.drawAOI = function () {
             vm.drawPolygonInteraction.setActive(true);
             vm.isDrawnAOI = true;
+            vm.isDrawnBBOX = false;
             vm.isImportedAOI = false;
         };
+
+        /**
+         * Draw BBOX
+         */
+        vm.drawBBOX = function () {
+            vm.drawRectangleInteraction.setActive(true);
+            vm.isDrawnAOI = false;
+            vm.isImportedAOI = false;
+            vm.isDrawnBBOX = true;
+        }
+
+        /**
+         * Get Mapillary Sequences to make tasks
+         */
+        vm.getMapillarySequences = function () {
+            var bbox = geospatialService.transformExtentToLatLonString(drawService.getSource().getExtent());
+            vm.waiting = true;
+            var resultsPromise = projectService.getMapillarySequences(bbox, vm.mapillaryStartDate, vm.mapillaryEndDate, vm.mapillaryUsernames);
+            resultsPromise.then(function(features) {
+                drawService.getSource().clear();
+                drawService.getSource().addFeatures(features);
+                vm.map.getView().fit(drawService.getSource().getExtent());
+                vm.waiting = false;
+            }, function(reason) {
+                vm.waiting = false;
+                vm.mapillaryError = true;
+                vm.mapillaryErrorReason = reason.status;
+            });
+        }
 
         /**
          * Trim the task grid to the AOI
@@ -271,6 +331,22 @@
                 // Get the number of tasks in project
                 vm.numberOfTasks = drawService.getSource().getFeatures().length;
 
+            }
+        }
+
+        /**
+         * Create mapillary sequences
+         */
+        vm.createMapillarySequences = function () {
+            if (vm.isDrawnBBOX) {
+                vm.isTaskGrid = false;
+                vm.isTaskArbitrary = true;
+                projectService.removeTaskGrid();
+                // Get and set the AOI
+                var areaOfInterest = drawService.getSource().getFeatures();
+                projectService.setAOI(areaOfInterest);
+                // Get the number of tasks in project
+                vm.numberOfTasks = drawService.getSource().getFeatures().length;
             }
         }
 
