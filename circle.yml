@@ -14,8 +14,6 @@ jobs:
               apt-get update
               curl -sL https://deb.nodesource.com/setup_6.x | bash -
               apt-get install -y nodejs libgeos-dev
-              add-apt-repository -y ppa:ubuntugis/ppa
-              apt update
               apt install -y gdal-bin python-gdal python3-gdal python3.6-dev
               apt-get install -y libproj-dev libgdal-dev
               apt install -y default-jre # Required for shapely, gdal for ogr
