@@ -429,9 +429,6 @@
                                         <div>
                                             <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
                                         </div>
-                                        <div>
-                                            <p><a href="{{ projectCtrl.getSequencesAsGpxURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this sequence as a gpx file to see the route.' | translate }}</p>
-                                        </div>
                                         <div ng-show="projectCtrl.project_files.length">
                                             <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit' | translate }}</h6>
                                             <h6>{{ 'The following files will be loaded into JOSM as separate layers:' | translate }}</h6>
