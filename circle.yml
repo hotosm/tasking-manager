@@ -17,7 +17,7 @@ jobs:
               apt update &&
               apt install -y gdal-bin python-gdal python3-gdal python3.6-dev &&
               apt-get install -y libproj-dev libgdal-dev libgeos-dev &&
-              apt install -y default-jre # Required for shapely, gdal for ogr
+              apt install -y nodejs default-jre # Required for shapely, gdal for ogr
               node --version
               gdalinfo --version
       - restore_cache:
