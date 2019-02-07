@@ -164,6 +164,12 @@ python3 manage.py db upgrade
 
 You can use [this script](devops/tm2-pg-migration/migrationscripts.sql) to migrate your data from the prior tasking manager version (v2) to the current one. Please see [this wiki page](https://github.com/hotosm/tasking-manager/wiki/Migrating-from-TM2-to-TM3) for important information about this process.
 
+**Set permissions to create a task**
+
+To be able to create a task and have full permissions as an admin inside TM, login to the TM with your OSM account to populate your user information in the database, then execute the following command on your terminal (with the OS user that is the owner of the database):
+
+`psql -d <your_database> -c "UPDATE users set role = 1 where username = '<your_osm_username>'"`
+
 ## API
 
 If you plan to only work on the API you only have to build the server architecture. Install the server dependencies, and run these commands:
