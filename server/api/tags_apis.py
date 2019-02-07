@@ -1,5 +1,6 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource, current_app, request
 from server.services.tags_service import TagsService
+from server.services.users.user_service import UserService
 
 
 class OrganisationTagsAPI(Resource):
@@ -19,7 +20,8 @@ class OrganisationTagsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            tags = TagsService.get_all_organisation_tags()
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            tags = TagsService.get_all_organisation_tags(preferred_locale=preferred_locale)
             return tags.to_primitive(), 200
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
@@ -44,7 +46,8 @@ class CampaignsTagsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            tags = TagsService.get_all_campaign_tags()
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            tags = TagsService.get_all_campaign_tags(preferred_locale=preferred_locale)
             return tags.to_primitive(), 200
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'

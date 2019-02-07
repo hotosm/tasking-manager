@@ -116,9 +116,9 @@
 <div class="mob-disclaimer" ng-show="!hideMobileMessage">
     <p class="centered">
         <i class="modal__button-dismiss pull-right pointer" ng-click="hideMobileMessage = true"></i>
-        {{ '#MAPTHEDIFFERENCE for Local Leaders. Join our end of the year Microgrants Giving Campaign and help us get to 150 donors by December 25.' | translate }}
+        {{ 'In order to make full use of the many features in the Tasking Manager, please use a desktop or laptop computer rather than a mobile device. If you would like to contribute on a mobile device, please use MapSwipe instead.' | translate }}
     </p>
-    <a href="https://donate.hotosm.org" class="button button--outline--white">{{ 'Help us get to 150 donors today' | translate }}</a>
+    <a href="https://mapswipe.org" class="button button--outline--white">{{ 'Go to MapSwipe' | translate }}</a>
 </div>
 <!--/ mobile message -->
 
@@ -175,6 +175,10 @@
 
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/ng-showdown/1.1.0/ng-showdown.min.js-->
 <script src="node_modules/ng-showdown/dist/ng-showdown.js"></script>
+<!-- /build -->
+
+<!-- build:js https://cdn.jsdelivr.net/npm/@mapbox/geo-viewport@0.4.0/geo-viewport.js -->
+<script src="node_modules/@mapbox/geo-viewport/geo-viewport.js"></script>
 <!-- /build -->
 
 <!-- build:js https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js-->
@@ -269,22 +273,11 @@
 <script src="app/components/project-chat/project-chat.directive.js"></script>
 <!-- /build -->
 
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(["setDomains", ["*.tasks.hotosm.org"]]);
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//piwik.hotosm.org/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', 7]);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<noscript><p><img src="//piwik.hotosm.org/piwik.php?idsite=7" style="border:0;" alt="" /></p></noscript>
-<!-- End Piwik Code -->
+<!-- Matomo -->
+<div id="optout-form"></div>
+<script type="application/javascript">var site_id="9"</script>
+<script type="application/javascript" src="https://cdn.hotosm.org/tracking-v2.js"></script>
+ <!-- End Matomo Code -->
 
 </body>
 </html>
