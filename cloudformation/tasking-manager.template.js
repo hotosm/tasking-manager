@@ -114,6 +114,20 @@ const Resources = {
       // }
     }
   },
+  TaskingManagerScaleUp: {
+      Type: "AWS::AutoScaling::ScalingPolicy",
+      Properties: {
+        AutoScalingGroupName: cf.ref('TaskingManagerASG'),
+        PolicyType: 'TargetTrackingScaling',
+        TargetTrackingConfiguration: {
+          TargetValue: 85,
+          PredefinedMetricSpecification: {
+            PredefinedMetricType: 'ASGAverageCPUUtilization'
+          }
+        },
+        Cooldown: 300
+      }
+  },
   TaskingManagerLaunchConfiguration: {
     Type: 'AWS::AutoScaling::LaunchConfiguration',
       Properties: {
