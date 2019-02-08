@@ -152,6 +152,7 @@ const Resources = {
           'sudo apt-get -y install python3.6-dev',
           'sudo apt-get -y install python3.6-venv',
           'sudo apt-get -y install curl',
+          'sudo apt-get install -y nginx',
           '',
           'echo "Install node"',
           'curl -sL https://deb.nodesource.com/setup_6.x > install-node6.sh',
@@ -192,11 +193,6 @@ const Resources = {
           'pip install --upgrade pip',
           'pip install -r requirements.txt',
           '',
-          'cd client/',
-          'npm install',
-          'gulp build',
-          'gulp run &',
-          'cd ../',
           'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf sudo sysctl -p',
           '',
           'echo "Export env variables"',
@@ -214,7 +210,11 @@ const Resources = {
           cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
           '',
           'gunicorn -b 0.0.0.0:8000 -w 5 --timeout 179 manage:application &',
-          ''
+          'cd client/',
+          'npm install',
+          'gulp build',
+          'gulp run &',
+          'cd ../',
         ]),
         KeyName: 'mbtiles'
       }
