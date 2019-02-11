@@ -1705,7 +1705,7 @@
             }
 
             //load aerial photography if present
-            var changesetSource = "Bing";
+            var changesetSource = "Kaart Ground Survey 2020";
             var hasImagery = false;
             if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
                 changesetSource = imageryUrl;
