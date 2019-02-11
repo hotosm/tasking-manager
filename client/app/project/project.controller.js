@@ -1339,7 +1339,7 @@
 
                 //load aerial photography if present
                 // TODO: make changeset source part of project info
-                var changesetSource = "Bing";
+                var changesetSource = "Kaart Ground Survey 2019";
                 var hasImagery = false;
                 if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
                     changesetSource = imageryUrl;
