@@ -290,18 +290,21 @@ class Project(db.Model):
         summary = ProjectSummary()
         summary.project_id = self.id
         summary.campaign_tag = self.campaign_tag
+        summary.changeset_comment = self.changeset_comment
         summary.created = self.created
         summary.last_updated = self.last_updated
         summary.mapper_level = MappingLevel(self.mapper_level).name
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
         summary.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
+        summary.total_tasks = self.total_tasks
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
         summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
         summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
+        summary.percent_bad_imagery = int ((self.tasks_bad_imagery / self.total_tasks) * 100)
 
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
