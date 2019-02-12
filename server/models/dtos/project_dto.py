@@ -206,6 +206,7 @@ class ProjectSummary(Model):
     mapper_level = StringType(serialized_name='mapperLevel')
     organisation_tag = StringType(serialized_name='organisationTag')
     short_description = StringType(serialized_name='shortDescription')
+    total_mappers = IntType(serialized_name='total_mappers')
     status = StringType()
 
 

@@ -295,6 +295,7 @@ class Project(db.Model):
         summary.mapper_level = MappingLevel(self.mapper_level).name
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
+        summary.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
