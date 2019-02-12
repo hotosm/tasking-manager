@@ -13,6 +13,7 @@ from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectS
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
+from server.models.postgis.project_chat import ProjectChat
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
@@ -298,6 +299,7 @@ class Project(db.Model):
         summary.status = ProjectStatus(self.status).name
         summary.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
         summary.total_tasks = self.total_tasks
+        summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)

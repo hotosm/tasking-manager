@@ -202,6 +202,7 @@ class ProjectSummary(Model):
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
     percent_bad_imagery = IntType(serialized_name='percentBadImagery')
+    total_comments = IntType(serialized_name='totalComments')
     created = DateTimeType()
     last_updated = DateTimeType(serialized_name='lastUpdated')
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
