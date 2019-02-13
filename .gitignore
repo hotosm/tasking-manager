@@ -37,4 +37,3 @@ venv_aws/
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
-!.elasticbeanstalk/config.yml
