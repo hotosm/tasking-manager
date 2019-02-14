@@ -35,6 +35,7 @@ class UserDTO(Model):
     username = StringType()
     role = StringType()
     mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])
+    date_registered = StringType(serialized_name='dateRegistered')
     projects_mapped = IntType(serialized_name='projectsMapped')
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
