@@ -113,7 +113,7 @@ class UserService:
                                              microseconds=duration.microsecond)
 
         stats_dto.time_spent_mapping = total_time.time().isoformat()
-
+       
         return stats_dto
 
     @staticmethod
