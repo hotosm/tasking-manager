@@ -18,6 +18,7 @@ class User(db.Model):
     username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0, nullable=False)
     mapping_level = db.Column(db.Integer, default=1, nullable=False)
+    projects_mapped = db.Column(db.Integer, default=1, nullable=False)
     tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
     tasks_validated = db.Column(db.Integer, default=0, nullable=False)
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
@@ -245,6 +246,7 @@ class User(db.Model):
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
         user_dto.is_expert = self.is_expert or False
+        user_dto.projects_mapped = self.projects_mapped
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
         user_dto.tasks_invalidated = self.tasks_invalidated
