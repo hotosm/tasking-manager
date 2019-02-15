@@ -7,6 +7,11 @@ from flask import current_app
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
+from geoalchemy2.shape import to_shape
+from shapely.geometry import Polygon
+from shapely.ops import transform
+from functools import partial
+import pyproj
 
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
@@ -290,6 +295,19 @@ class Project(db.Model):
         """ Create Project Summary model for postgis project object"""
         summary = ProjectSummary()
         summary.project_id = self.id
+        summary.author = User().get_by_id(self.author_id).username
+        polygon = to_shape(self.geometry)
+        polygon_aea = transform(
+                            partial(
+                            pyproj.transform,
+                            pyproj.Proj(init='EPSG:4326'),
+                            pyproj.Proj(
+                                proj='aea',
+                                lat1=polygon.bounds[1],
+                                lat2=polygon.bounds[3])),
+                            polygon)
+        area = polygon_aea.area/1000000
+        summary.area = area
         summary.campaign_tag = self.campaign_tag
         summary.changeset_comment = self.changeset_comment
         summary.created = self.created

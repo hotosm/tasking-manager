@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
+from schematics.types import StringType, BaseType, FloatType, IntType, BooleanType, DateTimeType, FloatType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
@@ -196,7 +196,9 @@ class ProjectCommentsDTO(Model):
 class ProjectSummary(Model):
     """ Model used for PM dashboard """
     project_id = IntType(required=True, serialized_name='projectId')
+    area = FloatType(serialized_name='projectArea')
     name = StringType()
+    author = StringType(serialized_name='createdBy')
     campaign_tag = StringType(serialized_name='campaignTag')
     changeset_comment = StringType(serialized_name='changesetComment')
     percent_mapped = IntType(serialized_name='percentMapped')
