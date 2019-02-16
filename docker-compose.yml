@@ -1,3 +1,7 @@
+# To use this file, issue `docker-compose up`.
+# If Python says the database is not running,
+#    Ctrl+C and run it one more time.
+# Note this currently only runs the backend.
 version: '2'
 services:
   base:
