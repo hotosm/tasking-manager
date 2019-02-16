@@ -295,6 +295,15 @@ class Project(db.Model):
         """ Create Project Summary model for postgis project object"""
         summary = ProjectSummary()
         summary.project_id = self.id
+        priority = self.priority
+        if priority == 0:
+            summary.priority = 'URGENT'
+        elif priority == 1:
+            summary.priority = 'HIGH'
+        elif priority == 2:
+            summary.priority = 'MEDIUM'
+        else:
+            summary.priority = 'LOW'
         summary.author = User().get_by_id(self.author_id).username
         polygon = to_shape(self.geometry)
         polygon_aea = transform(
@@ -312,19 +321,23 @@ class Project(db.Model):
         summary.changeset_comment = self.changeset_comment
         summary.created = self.created
         summary.last_updated = self.last_updated
+        summary.due_date = self.due_date
         summary.mapper_level = MappingLevel(self.mapper_level).name
+        summary.mapper_level_enforced = self.enforce_mapper_level
+        summary.validator_level_enforced = self.enforce_validator_role
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
         summary.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
         summary.total_tasks = self.total_tasks
         summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
+        summary.entities_to_map = self.entities_to_map
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
         summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
         summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
-        summary.percent_bad_imagery = int ((self.tasks_bad_imagery / self.total_tasks) * 100)
+        summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
 
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
