@@ -8,6 +8,7 @@ import pyproj
 import dateutil.parser
 import datetime
 import math
+from flask import current_app
 
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
@@ -184,7 +185,7 @@ class StatsService:
     def get_homepage_stats() -> HomePageStatsDTO:
         """ Get overall TM stats to give community a feel for progress that's being made """
         dto = HomePageStatsDTO()
-
+        total_area = 0
         dto.mappers_online = Task.query.filter(Task.locked_by != None).distinct(Task.locked_by).count()
         dto.total_mappers = User.query.count()
         dto.total_projects = Project.query.count()
@@ -195,24 +196,17 @@ class StatsService:
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
         dto.total_area = 0
         
-        projects = Project.query.filter(Project.geometry != None).distinct(Project.geometry).all()
-        for project in projects:
-            polygon = to_shape(project.geometry)
-            polygon_aea = transform(
-                            partial(
-                            pyproj.transform,
-                            pyproj.Proj(init='EPSG:4326'),
-                            pyproj.Proj(
-                                proj='aea',
-                                lat1=polygon.bounds[1],
-                                lat2=polygon.bounds[3])),
-                            polygon)
-            area = polygon_aea.area/1000000
-            
-            if not (math.isnan(area)):
-                dto.total_area += area
-        
+        sql = """select sum(ST_Area(geometry)) from public.projects as area"""
 
+        resultproxy = db.engine.execute(sql)
+        current_app.logger.debug(resultproxy)
+        for rowproxy in resultproxy:
+            # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+            for tup in rowproxy.items():
+                total_area += tup[1]
+                current_app.logger.debug(total_area)
+        dto.total_area = total_area
+    
         campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
             .group_by(Project.campaign_tag).all()
         no_campaign_count = 0
