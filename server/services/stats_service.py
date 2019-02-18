@@ -196,16 +196,34 @@ class StatsService:
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
         dto.total_area = 0
         
-        sql = """select sum(ST_Area(geometry)) from public.projects as area"""
+        total_area_sql = """select sum(ST_Area(geometry)) from public.projects as area"""
 
-        resultproxy = db.engine.execute(sql)
-        current_app.logger.debug(resultproxy)
-        for rowproxy in resultproxy:
+        total_area_result = db.engine.execute(total_area_sql)
+        current_app.logger.debug(total_area_result)
+        for rowproxy in total_area_result:
             # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
             for tup in rowproxy.items():
                 total_area += tup[1]
                 current_app.logger.debug(total_area)
         dto.total_area = total_area
+
+        tasks_mapped_area = 0
+        tasks_mapped_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 2"""
+        tasks_mapped_result = db.engine.execute(tasks_mapped_result)
+        for rowproxy in tasks_mapped_result:
+            for tup in rowproxy:
+                tasks_mapped_area += tup[1]
+                current_app.logger.debug(tasks_mapped_area)
+        dto.total_mapped_area = tasks_mapped_area
+
+        tasks_validated_area = 0
+        tasks_validated_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 3"""
+        tasks_validated_result = db.engine.execute(tasks_validated_result)
+        for rowproxy in tasks_validated_result:
+            for tup in rowproxy:
+                tasks_validated_area += tup[1]
+                current_app.logger.debug(tasks_validated_area)
+        dto.total_validated_area = tasks_validated_area
     
         campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
             .group_by(Project.campaign_tag).all()
