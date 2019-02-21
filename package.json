@@ -1,0 +1,25 @@
+{
+  "name": "tasking-manager",
+  "version": "1.0.0",
+  "description": "The HOT tasking manager",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hotosm/tasking-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hotosm/tasking-manager/issues"
+  },
+  "homepage": "https://github.com/hotosm/tasking-manager#readme",
+  "dependencies": {
+    "@mapbox/cloudfriend": "^2.6.0"
+  }
+}
