@@ -2,6 +2,8 @@ from cachetools import TTLCache, cached
 from sqlalchemy import func
 import dateutil.parser
 import datetime
+from flask import current_app
+
 
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
@@ -114,7 +116,7 @@ class StatsService:
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
         """ Gets all the activity on a project """
 
-        results = db.session.query(TaskHistory.action, TaskHistory.action_date, TaskHistory.action_text, User.username) \
+        results = db.session.query(TaskHistory.task_id, TaskHistory.action, TaskHistory.action_date, TaskHistory.action_text, User.username) \
             .join(User).filter(TaskHistory.project_id == project_id, TaskHistory.action != 'COMMENT')\
             .order_by(TaskHistory.action_date.desc())\
             .paginate(page, 10, True)
@@ -168,9 +170,41 @@ class StatsService:
             user_contrib.username = row[1] if row[1] else row[4]
             user_contrib.mapped = row[2] if row[2] else 0
             user_contrib.validated = row[5] if row[5] else 0
+            users_durations = TaskHistory.query.filter(
+                TaskHistory.user_id == row[0],
+                TaskHistory.action_text != '',
+                TaskHistory.project_id == project_id
+            ).all()
 
+            total_mapping_time = datetime.datetime.min
+            total_validating_time = datetime.datetime.min
+            total_time_spent = datetime.datetime.min
+
+            for user_duration in users_durations:
+                try:
+                    duration = dateutil.parser.parse(user_duration.action_text)
+                    total_time_spent += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+                    if user_duration.action == 'LOCKED_FOR_MAPPING':
+                        total_mapping_time += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+                    elif user_duration.action == 'LOCKED_FOR_VALIDATION':
+                        total_validating_time += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+                except ValueError:
+                    current_app.logger.info('Invalid duration specified')
+                
+            user_contrib.time_spent_mapping = total_mapping_time.time().isoformat()
+            user_contrib.time_spent_validating = total_validating_time.time().isoformat()
+            user_contrib.total_time_spent = total_time_spent.time().isoformat()
             contrib_dto.user_contributions.append(user_contrib)
-
+        
         return contrib_dto
 
     @staticmethod
@@ -186,6 +220,8 @@ class StatsService:
         dto.tasks_mapped = Task.query\
             .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
+
+        
 
         org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
             .group_by(Project.organisation_tag).all()

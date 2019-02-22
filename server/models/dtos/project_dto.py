@@ -218,6 +218,12 @@ class ProjectSummary(Model):
     total_mappers = IntType(serialized_name='totalMappers')
     total_tasks = IntType(serialized_name='totalTasks')
     total_comments = IntType(serialized_name='totalComments')
+    total_mapping_time = IntType(serialized_name='totalMappingTime')
+    total_validation_time = IntType(serialized_name='totalValidationTime')
+    total_time_spent = StringType(serialized_name='totalTimeSpent')
+    average_mapping_time=StringType(serialized_name='averageMappingTime')
+    average_validation_time=StringType(serialized_name='averageValidationTime')
+    
     status = StringType()
 
 
