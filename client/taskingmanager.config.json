@@ -1,7 +1,7 @@
 {
   "development": {
     "EnvironmentConfig":{
-      "tmAPI": "http://localhost:5000/api/v1",
+      "tmAPI": "http://taskingmanager-dev.livingmap.com:8000/api/v1",
       "layers": [
         {
           "id": "mapBoxAerial",
