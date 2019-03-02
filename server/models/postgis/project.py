@@ -378,11 +378,14 @@ class Project(db.Model):
 
         return self, base_dto
 
-    def as_dto_for_mapping(self, locale: str) -> Optional[ProjectDTO]:
+    def as_dto_for_mapping(self, locale: str, abbrev: bool) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         project, project_dto = self._get_project_and_base_dto()
 
-        project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+        if abbrev == False:
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+        else:
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection_no_geom(self.id)
         project_dto.project_info = ProjectInfo.get_dto_for_locale(self.id, locale, project.default_locale)
 
         return project_dto
