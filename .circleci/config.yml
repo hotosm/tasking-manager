@@ -52,10 +52,10 @@ jobs:
           paths:
             - /app/client/node_modules
             - /app/env
-      - deploy:
-          name: Deploy application
-          command: |
-            pip install newrelic
-            newrelic-admin generate-config $NEW_RELIC_LICENSE /app/newrelic.ini
-            chmod +x /app/devops/ci/circleci_deploy.sh
-            /app/devops/ci/circleci_deploy.sh
+#      - deploy:
+#          name: Deploy application
+#          command: |
+#            pip install newrelic
+#            newrelic-admin generate-config $NEW_RELIC_LICENSE /app/newrelic.ini
+#            chmod +x /app/devops/ci/circleci_deploy.sh
+#            /app/devops/ci/circleci_deploy.sh
