@@ -131,7 +131,7 @@
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
-                refreshProject(vm.id);
+                refreshAbbreviatedProject(vm.id);
                 updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refresh too
             }, 10000);
@@ -437,7 +437,7 @@
          */
         function initialiseProject(id) {
             vm.errorGetProject = false;
-            var resultsPromise = projectService.getProject(id);
+            var resultsPromise = projectService.getProject(id, false);
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.loaded = true;
@@ -492,7 +492,7 @@
          */
         function updateDescriptionAndInstructions(id) {
             vm.errorGetProject = false;
-            var resultsPromise = projectService.getProject(id);
+            var resultsPromise = projectService.getProject(id, false);
             resultsPromise.then(function (data) {
                 vm.projectData = data;
             }, function () {
@@ -506,7 +506,8 @@
          * @param id - id of project to be refreshed
          */
         function refreshProject(id) {
-            var resultsPromise = projectService.getProject(id);
+            vm.errorGetProject = false;
+            var resultsPromise = projectService.getProject(id, false);
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.errorGetProject = false;
@@ -534,6 +535,32 @@
             }, function () {
                 // project not returned successfully
                 vm.errorGetProject = true;
+            });
+        }
+
+        /**
+         * Gets abbreviated project data from server and updates the map
+         * @param id - id of project to be refreshed
+         */
+        function refreshAbbreviatedProject(id) {
+            vm.errorGetProject = false;
+            var resultsPromise = projectService.getProject(id, true);
+            resultsPromise.then(function (data) {
+                //project returned successfully
+                if (vm.projectData.tasks.features.length == data.tasks.features.length) {
+                    // length of tasks is the same; we can assume only states changed
+                    var source = vm.taskVectorLayer.getSource();
+                    var features = source.getFeatures();
+                    updateProjectTasksOnMap(features, data.tasks);
+                } else {
+                    // length of tasks has changed since last update; likely a split occurred.
+                    // fall back to full update
+                    refreshProject(id);
+                }
+
+            }, function () {
+               // project not returned successfully
+               vm.errorGetProject = true;
             });
         }
 
@@ -595,6 +622,21 @@
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
             }
+        }
+
+        /**
+         * Updates the map task properties (colors, locked status)
+         * @param oldTasks
+         * @param newTasks
+         */
+        function updateProjectTasksOnMap(oldTasks, newTasks) {
+            var newFeatures = geospatialService.getFeaturesFromGeoJSON(newTasks);
+
+            for (var i=0; i < newFeatures.length; i++) {
+                var feature = taskService.getTaskFeatureById(oldTasks, newFeatures[i].getProperties()['taskId']);
+                feature.setProperties({"taskStatus": newFeatures[i].getProperties()['taskStatus']});
+            }
+            // for each task in features, update source
         }
 
         /**

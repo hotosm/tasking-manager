@@ -582,6 +582,27 @@ class Task(db.Model):
         return geojson.FeatureCollection(tasks_features)
 
     @staticmethod
+    def get_tasks_as_geojson_feature_collection_no_geom(project_id):
+        """
+        Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID without geometry
+        :param project_id: Owning project ID
+        :return: geojson.FeatureCollection
+        """
+        project_tasks = \
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status) \
+                             .filter(Task.project_id == project_id).all()
+
+        tasks_features = []
+        for task in project_tasks:
+            task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
+                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name)
+
+            feature = geojson.Feature(properties=task_properties)
+            tasks_features.append(feature)
+
+        return geojson.FeatureCollection(tasks_features)
+
+    @staticmethod
     def get_mapped_tasks_by_user(project_id: int):
         """ Gets all mapped tasks for supplied project grouped by user"""
 

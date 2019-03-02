@@ -37,6 +37,11 @@ class ProjectAPI(Resource):
               type: boolean
               description: Set to true if file download is preferred
               default: False
+            - in: query
+              name: abbreviated
+              type: boolean
+              description: Set to true if only state information is desired
+              default: False
         responses:
             200:
                 description: Project found
@@ -49,9 +54,10 @@ class ProjectAPI(Resource):
         """
         try:
             as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
+            abbreviated = strtobool(request.args.get('abbreviated')) if request.args.get('abbreviated') else False
 
             project_dto = ProjectService.get_project_dto_for_mapper(project_id,
-                                                                    request.environ.get('HTTP_ACCEPT_LANGUAGE'))
+                                                                    request.environ.get('HTTP_ACCEPT_LANGUAGE'), abbreviated)
             project_dto = project_dto.to_primitive()
 
             if as_file:
