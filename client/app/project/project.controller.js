@@ -105,6 +105,7 @@
             vm.map = mapService.getOSMMap();
 
             vm.id = $routeParams.id;
+            vm.highlightHistory = $routeParams.history ? parseInt($routeParams.history, 10) : null;
 
             updateMappedTaskPerUser(vm.id);
 
