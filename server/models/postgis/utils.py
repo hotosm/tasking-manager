@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 from flask import current_app
 from geoalchemy2 import Geometry
 from geoalchemy2.functions import GenericFunction
@@ -86,6 +87,21 @@ class ST_MakeEnvelope(GenericFunction):
 def timestamp():
     """ Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""
     return datetime.datetime.utcnow()
+
+
+# Based on https://stackoverflow.com/a/51916936
+duration_regex = re.compile(r'^((?P<days>[\.\d]+?)d)?((?P<hours>[\.\d]+?)h)?((?P<minutes>[\.\d]+?)m)?((?P<seconds>[\.\d]+?)s)?$')
+def parse_duration(time_str):
+    """
+    Parse a duration string e.g. (2h13m) into a timedelta object.
+
+    :param time_str: A string identifying a duration.  (eg. 2h13m)
+    :return datetime.timedelta: A datetime.timedelta object
+    """
+    parts = duration_regex.match(time_str)
+    assert parts is not None, "Could not parse duration from '{}'".format(time_str)
+    time_params = {name: float(param) for name, param in parts.groupdict().items() if param}
+    return datetime.timedelta(**time_params)
 
 
 class DateTimeEncoder(json.JSONEncoder):

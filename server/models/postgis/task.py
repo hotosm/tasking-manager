@@ -3,6 +3,7 @@ import datetime
 import geojson
 import json
 from enum import Enum
+from flask import current_app
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
@@ -13,7 +14,7 @@ from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks, Inv
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, NotFound
+from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, parse_duration, NotFound
 
 
 class TaskAction(Enum):
@@ -311,8 +312,8 @@ class Task(db.Model):
     y = db.Column(db.Integer)
     zoom = db.Column(db.Integer)
     extra_properties = db.Column(db.Unicode)
-    # Tasks are not splittable if created from an arbitrary grid or were clipped to the edge of the AOI
-    splittable = db.Column(db.Boolean, default=True)
+    # Tasks need to be split differently if created from an arbitrary grid or were clipped to the edge of the AOI
+    is_square = db.Column(db.Boolean, default=True)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
     locked_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_locked'))
@@ -363,7 +364,7 @@ class Task(db.Model):
             task.x = task_feature.properties['x']
             task.y = task_feature.properties['y']
             task.zoom = task_feature.properties['zoom']
-            task.splittable = task_feature.properties['splittable']
+            task.is_square = task_feature.properties['isSquare']
         except KeyError as e:
             raise InvalidData(f'Task: Expected property not found: {str(e)}')
 
@@ -400,9 +401,13 @@ class Task(db.Model):
         return Task.query.filter(Task.project_id == project_id).all()
 
     @staticmethod
+    def auto_unlock_delta():
+      return parse_duration(current_app.config['TASK_AUTOUNLOCK_AFTER'])
+
+    @staticmethod
     def auto_unlock_tasks(project_id: int):
-        """Unlock all tasks locked more than 2 hours ago"""
-        expiry_delta = datetime.timedelta(hours=2)
+        """Unlock all tasks locked for longer than the auto-unlock delta"""
+        expiry_delta = Task.auto_unlock_delta()
         lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
         expiry_date = datetime.datetime.utcnow() - expiry_delta
         old_locks_query = '''SELECT t.id
@@ -419,7 +424,7 @@ class Task(db.Model):
         old_tasks = db.engine.execute(old_locks_query)
 
         if old_tasks.rowcount == 0:
-            # no tasks older than 2 hours found, return without further processing
+            # no tasks older than the delta found, return without further processing
             return
 
         for old_task in old_tasks:
@@ -562,14 +567,15 @@ class Task(db.Model):
         :return: geojson.FeatureCollection
         """
         project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.splittable, Task.task_status,
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status,
                              Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
             task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskSplittable=task.splittable, taskStatus=TaskStatus(task.task_status).name)
+                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name)
+
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
             tasks_features.append(feature)
 
@@ -641,6 +647,7 @@ class Task(db.Model):
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
+        task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
 
         per_task_instructions = self.get_per_task_instructions(preferred_locale)
 
