@@ -382,7 +382,7 @@ class UserInvalidatedTasks(Resource):
                 request.args.get('page', None, type=int),
                 request.args.get('pageSize', None, type=int),
                 sort_column,
-                request.args.get('sortDirection')
+                sort_direction
             )
             return invalidated_tasks.to_primitive(), 200
         except NotFound:
