@@ -385,16 +385,17 @@
         /**
          * Get a project JSON
          * @param id - project id
+         * @param abbreviated - abbreviated project info or not
          * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}
          */
-        function getProject(id) {
+        function getProject(id, abbreviated) {
 
             var preferredLanguage = languageService.getLanguageCode();
 
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/project/' + id,
+                url: configService.tmAPI + '/project/' + id + '?abbreviated=' + abbreviated,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8',
                     'Accept-Language': preferredLanguage
