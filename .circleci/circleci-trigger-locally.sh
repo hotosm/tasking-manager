@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CIRCLE_UPSTREAM_COMMIT="$(git rev-parse origin/master)"
+CIRCLE_UPSTREAM_COMMIT="$(git rev-parse origin/develop)"
 GIT_UPSTREAM_ADDRESS="$(git config --get remote.origin.url)"
 
 echo "This script will run your LOCAL version of .circleci/config.yml on the remote build server."
@@ -25,4 +25,4 @@ curl --user ${CIRCLE_TOKEN}: \
   --form revision=${CIRCLE_UPSTREAM_COMMIT} \
   --form config=@config.yml \
   --form notify=false \
-    https://circleci.com/api/v1.1/project/github/livingmap/gis-osm-tasking-manager/tree/master
+    https://circleci.com/api/v1.1/project/github/livingmap/gis-osm-tasking-manager/tree/develop
