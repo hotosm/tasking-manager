@@ -1,61 +1,141 @@
+# Tasking Manager, Build, Test, make Docker image and Deploy to GCR. CircleCI config.
+#
+# Currently this fully deploys the Living Map 'fork' to GCR upon commits to the 'develop' 
+# branch and just builds and tests on PR's or commits to other branches.
+#
+# Not using workspaces at the moment due to the API issues running workspace builds off external events.
+#
+# Just an FYI: In CircleCI 2 working_directory will default to ~/project/ and can
+# be set to sub folder on a per-run basis to be relative to the global working_directory
+#
+# Setup:
+#
+# CircleCI will need the following configured as secrets at the project level to allow the pipeline to work.
+#
+# Deployment Vairables: (Used to get things deployed)
+# 
+# GCLOUD_SERVICE_KEY: JSON GCP service account key value
+# GOOGLE_PROJECT_ID: e.g. dev-livingmap
+# GOOGLE_CLUSTER_NAME: e.g. osm-tm-cluster-1 (the cluster will be created if it doesn't yet exist)
+# GOOGLE_COMPUTE_ZONE: e.g. us-central1-a
+# DOCKER_IMAGE_NAME: e.g. eu.gcr.io/dev-livingmap/osm-tm (should match project id)
+#
+# Solution Vairables: (Used inside the deployment)
+# 
+# TM_DB: This is for the PostGIS connection string.
+# TM_SECRET: This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy.
+# TM_CONSUMER_KEY: This is the [OAUTH Consumer Key used for authenticating the Tasking Manager App in OSM]
+# TM_CONSUMER_SECRET: This is the [OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM]
+# TM_ENV: Allows you to specify which config to load from `./server/config.py`.
+#
+# See Also:
+# README.md in this projects root folder.
+# https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project
+# https://circleci.com/docs/2.0/google-auth/#creating-and-storing-a-service-account
+
 version: 2
 jobs:
   build:
-    working_directory: /app
     docker:
-      - image: python:3.6-jessie
+      - image: circleci/python:3.6.7-node
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: Install dependencies
+          name: Install dependencies and check versions
           command: |
-              # Install latest LTS node
-              apt-get update
-              curl -sL https://deb.nodesource.com/setup_6.x | bash -
-              apt-get install -y nodejs libgeos-dev # Required for shapely
+              sudo apt-get update
+              sudo apt-get install -y libgeos-dev lsb-release
               node --version
-      - restore_cache:
-          keys:
-            - cached-directories
-          paths:
-            - /app/client/node_modules
-            - /app/env
+              python --version
       - run:
-          name: Install requirements
+          name: Install GCP tools to existing container (workaround to not using workspaces yet)
           command: |
-            # Install NPM packages and build client from gulpfile
-            cd /app/client
+              export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
+              echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+              curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
+              sudo apt-get update -y && sudo apt-get install google-cloud-sdk -y
+      - run:
+          name: Update npm, gulp and pip
+          command: |
+            sudo npm install -g npm@latest
+            sudo npm install --global gulp-cli
+            sudo pip install --upgrade pip
+      - restore_cache:
+          key: v2-core-cache
+          paths:
+            - client/node_modules
+            - env
+      - run:
+          name: Install NPM packages and build client from gulpfile
+          command: |
+            cd client
             npm install
-            ./node_modules/.bin/gulp build
-            cd /app
+            gulp build
+      - run:
+          name: Install Python requirements
+          command: |
             # Install Python dependencies
             pip install virtualenv
             virtualenv env
-            /app/env/bin/pip install --upgrade pip
-            /app/env/bin/pip install -r requirements.txt
+            env/bin/pip install --upgrade pip
+            env/bin/pip install -r requirements.txt
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test_reports
+            mkdir -p ~/test_reports/nose
+            mkdir -p ~/test_reports/coverage.py
+          when: always
       - run:
           name: Run tests
           command: |
             # JS Unit Tests
-            cd /app/tests/client
+            cd tests/client
             ../../client/node_modules/.bin/karma start ./karma.conf.js \
               --single-run --browsers PhantomJS --reporters junit
             # Run Python tests
-            cd /app
+            cd ../..
             env/bin/nosetests ./tests/server --with-xunit \
-              --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
+              --xunit-file ~/test_reports/nose/unitresults.xml \
               --with-coverage --cover-erase --cover-package=./server
-            env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
+            env/bin/coverage xml -o ~/test_reports/coverage.py/coverage.xml
+      - store_test_results:
+          path: ~/test_reports
+      - store_artifacts:
+          path: ~/test_reports
       - save_cache:
-          key: cached-directories
+          key: v2-core-cache
           paths:
-            - /app/client/node_modules
-            - /app/env
-#      - deploy:
-#          name: Deploy application
-#          command: |
-#            pip install newrelic
-#            newrelic-admin generate-config $NEW_RELIC_LICENSE /app/newrelic.ini
-#            chmod +x /app/devops/ci/circleci_deploy.sh
-#            /app/devops/ci/circleci_deploy.sh
+            - client/node_modules
+            - env
+      - run:
+          name: Generate full image name for new docker image
+          command: |
+            set -x
+            if [ "${CIRCLE_BRANCH}" == "develop" ]
+            then
+              DOCKER_IMAGE_TAG=latest
+              echo "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG" > full_docker_image_name
+            else
+              DOCKER_IMAGE_TAG=${CIRCLE_BRANCH}
+              echo "osm-tm:$DOCKER_IMAGE_TAG" > full_docker_image_name
+            fi
+      - run:
+          name: Build Docker image
+          command: |
+            FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+            docker build -t $FULL_DOCKER_IMAGE_NAME .
+      - run:
+          name: Deployment Steps - Push Docker image to GCR
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]
+            then
+              FULL_DOCKER_IMAGE_NAME=$(cat full_docker_image_name)
+              echo $GCLOUD_SERVICE_KEY > gcloud-service-key.json
+              gcloud auth activate-service-account --key-file gcloud-service-key.json
+              gcloud --quiet auth configure-docker
+              docker push $FULL_DOCKER_IMAGE_NAME
+            else
+              echo "Not on a controlled branch; skipping image push.."
+            fi
