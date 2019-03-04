@@ -131,7 +131,7 @@
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
-                refreshProject(vm.id, true);
+                refreshAbbreviatedProject(vm.id);
                 updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refresh too
             }, 10000);
@@ -376,7 +376,7 @@
                 vm.resetStatusFlags();
                 vm.resetTaskData();
                 setUpSelectedTask(data);
-                refreshProject(vm.projectData.projectId, false);
+                refreshProject(vm.projectData.projectId);
             }, function (error) {
                 // TODO - show message
                 vm.taskUndoError = true;
@@ -503,18 +503,9 @@
         /**
          * Gets project data from server and updates the map
          * @param id - id of project to be refreshed
-         * @param abbreviated - whether to load abbreviated or full
          */
-        function refreshProject(id, abbreviated) {
+        function refreshProject(id) {
             vm.errorGetProject = false;
-
-            if (abbreviated) {
-                vm.errorGetAbbreviatedProject = refreshAbbreviatedProject(id);
-                if (!vm.errorGetAbbreviatedProject) {
-                    return
-                }
-            }
-
             var resultsPromise = projectService.getProject(id, false);
             resultsPromise.then(function (data) {
                 //project returned successfully
@@ -548,25 +539,27 @@
         /**
          * Gets abbreviated project data from server and updates the map
          * @param id - id of project to be refreshed
-         * @returns error - boolean if promise returned error
          */
         function refreshAbbreviatedProject(id) {
+            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id, true);
             resultsPromise.then(function (data) {
+                //project returned successfully
                 if (vm.projectData.tasks.features.length == data.tasks.features.length) {
+                    // length of tasks is the same; we can assume only states changed
                     var source = vm.taskVectorLayer.getSource();
                     var features = source.getFeatures();
                     updateProjectTasksOnMap(features, data.tasks);
                 } else {
                     // length of tasks has changed since last update; likely a split occurred.
                     // fall back to full update
-                    refreshProject(id, false);
+                    refreshProject(id);
                 }
 
             }, function () {
-                return true
+               // project not returned successfully
+               vm.errorGetProject = true;
             });
-            return false
         }
 
         /**
@@ -1056,7 +1049,7 @@
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
@@ -1085,7 +1078,7 @@
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
@@ -1120,7 +1113,7 @@
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
@@ -1152,7 +1145,7 @@
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
@@ -1194,7 +1187,7 @@
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
@@ -1234,7 +1227,7 @@
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
@@ -1264,7 +1257,7 @@
                 vm.resetTaskData();
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.currentTab = 'mapping';
                 vm.mappingStep = 'locked';
@@ -1293,7 +1286,7 @@
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
@@ -1331,7 +1324,7 @@
                 vm.resetTaskData();
                 // refresh the project, to ensure we catch up with any status changes that have happened meantime
                 // on the server
-                refreshProject(projectId, false);
+                refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'locked';
@@ -1706,7 +1699,7 @@
         function onLockError(projectId, error) {
             // Could not lock task
             // Refresh the map and selected task.
-            refreshProject(projectId, false);
+            refreshProject(projectId);
             vm.taskLockError = true;
             // Check if it is an unauthorized error. If so, display appropriate message
             if (error.status == 401) {
@@ -1745,7 +1738,7 @@
             vm.resetStatusFlags();
             vm.resetTaskData();
             vm.clearCurrentSelection();
-            refreshProject(projectId, false);
+            refreshProject(projectId);
             vm.taskUnLockError = true;
             // Check if it is an unauthorized error. If so, display appropriate message
             if (error.status == 401) {
@@ -1819,7 +1812,7 @@
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.resetTaskData();
-                refreshProject(vm.projectData.projectId, false);
+                refreshProject(vm.projectData.projectId);
                 vm.currentTab = 'validation';
                 vm.validatingStep = 'multi-locked';
                 vm.multiSelectedTasksData = tasks;
