@@ -2,6 +2,8 @@ $xxlarge-range: (1600px);
 
 /* Colors
    ========================================================================== */
+$lm-blue: #004A61;
+$lm-orange: #EC7127;
 
 $orange: #FB6624;
 $darker-red: #D73F3F;
@@ -10,8 +12,8 @@ $yellow: #FFD709;
 $darker-yellow: #F2C40A;
 $lighter-orange: #FAD4C2;
 
-$darkest-grey: #494646;
-$medium-grey: #6E6767;
+$darkest-grey: $lm-blue;
+$medium-grey: #494646;
 $grey: #938C8C;
 $lightgrey: #B7B0B0;
 $lightest-background-grey: #F9F9F9;
@@ -24,7 +26,7 @@ $danger-color: #ea4f54;                                 // Mandy
 $success-color: $secondary-color;                       //
 $warning-color: #f6d55f;                                // Energy Yellow                        //
 
-$link-color: $orange;
+$link-color: $lm-blue;
 $base-alpha-color: rgba($medium-grey, 0.12);
 
 
