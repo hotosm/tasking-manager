@@ -108,8 +108,8 @@ const Resources = {
     Type: 'AWS::AutoScaling::LaunchConfiguration',
       Properties: {
         IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-        ImageId: 'ami-0565af6e282977273',
-        InstanceType: 't2.large',
+        ImageId: 'ami-0e4372c1860d7426c',
+        InstanceType: 'm3.medium',
         SecurityGroups: [cf.ref('RDSSecurityGroup')],
         UserData: cf.userData([
           'set -x',
