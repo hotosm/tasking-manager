@@ -51,7 +51,7 @@ class ProdConfig(EnvironmentConfig):
 
 
 class StageConfig(EnvironmentConfig):
-    APP_BASE_URL = 'https://tasks-stage.hotosm.org'
+    APP_BASE_URL = 'http://tasking-manager-staging-863370235.us-east-1.elb.amazonaws.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
