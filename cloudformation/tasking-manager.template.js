@@ -112,6 +112,7 @@ const Resources = {
         InstanceType: 'm3.medium',
         SecurityGroups: [cf.ref('RDSSecurityGroup')],
         UserData: cf.userData([
+          '#!/bin/bash',
           'set -x',
           'export DEBIAN_FRONTEND=noninteractive',
           'export LC_ALL="en_US.UTF-8"',
