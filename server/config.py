@@ -43,7 +43,7 @@ class EnvironmentConfig:
 
 
 class ProdConfig(EnvironmentConfig):
-    APP_BASE_URL = 'https://tasks.hotosm.org'
+    APP_BASE_URL = os.getenv('APP_BASE_URL', https://tasks.hotosm.org')
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
@@ -51,7 +51,7 @@ class ProdConfig(EnvironmentConfig):
 
 
 class StageConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tasking-manager-staging-863370235.us-east-1.elb.amazonaws.com'
+    APP_BASE_URL = os.getenv('APP_BASE_URL', 'https://tasks-stage.hotosm.org')
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
@@ -59,7 +59,7 @@ class StageConfig(EnvironmentConfig):
 
 
 class DemoConfig(EnvironmentConfig):
-    APP_BASE_URL = 'https://tasks-demo.hotosm.org'
+    APP_BASE_URL = os.getenv('APP_BASE_URL', 'https://tasks-demo.hotosm.org')
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
@@ -68,7 +68,7 @@ class DemoConfig(EnvironmentConfig):
 
 class StagingConfig(EnvironmentConfig):
     # Currently being used by Thinkwhere
-    APP_BASE_URL = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com'
+    APP_BASE_URL = os.getenv('APP_BASE_URL', 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com')
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
@@ -76,7 +76,7 @@ class StagingConfig(EnvironmentConfig):
 
 
 class DevConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://127.0.0.1:5000'
+    APP_BASE_URL = os.getenv('APP_BASE_URL', 'http://127.0.0.1:5000')
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = 'logs'
@@ -84,7 +84,7 @@ class DevConfig(EnvironmentConfig):
 
 
 class DevIPv6Config(EnvironmentConfig):
-    APP_BASE_URL = 'http://[::1]:5000'
+    APP_BASE_URL = os.getenv('APP_BASE_URL', 'http://[::1]:5000')
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = 'logs'
