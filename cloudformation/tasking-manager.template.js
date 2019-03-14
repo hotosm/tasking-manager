@@ -80,9 +80,9 @@ const Resources = {
     Properties: {
       AutoScalingGroupName: cf.stackName,
       Cooldown: 300,
-      MinSize: 0,
+      MinSize: 1,
       DesiredCapacity: 1,
-      MaxSize: 1,
+      MaxSize: 5,
       HealthCheckGracePeriod: 300,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       LoadBalancerNames: [ cf.ref('TaskingManagerLoadBalancer') ],
