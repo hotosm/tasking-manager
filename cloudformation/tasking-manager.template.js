@@ -105,17 +105,20 @@ const Resources = {
     Type: 'AWS::AutoScaling::LaunchConfiguration',
       Properties: {
         IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-        ImageId: 'ami-0e4372c1860d7426c',
-        InstanceType: 'c3.2xlarge',
+        ImageId: 'ami-0565af6e282977273',
+        InstanceType: 't2.large',
         SecurityGroups: [cf.ref('RDSSecurityGroup')],
         UserData: cf.userData([
-          '#!/bin/bash',
           'set -x',
-          'sudo apt-get update && sudo apt-get -y upgrade && sudo add-apt-repository ppa:jonathonf/python-3.6 && sudo apt-get update && sudo apt-get -y install python3.6 && sudo apt-get -y install python3.6-dev && sudo apt-get -y install python3.6-venv && sudo apt-get -y install curl && curl -sL https://deb.nodesource.com/setup_6.x > install-node6.sh && sudo chmod +x install-node6.sh && sudo ./install-node6.sh && sudo apt-get -y install nodejs && sudo npm install gulp -g && npm i browser-sync --save && sudo apt-get -y install postgresql-9.5 && sudo apt-get -y install libpq-dev && sudo apt-get -y install postgresql-server-dev-9.5 && sudo apt-get -y install libxml2 && sudo apt-get -y install libxml2-dev && sudo apt-get -y install libgeos-3.5.0 && sudo apt-get -y install libgeos-dev && sudo apt-get -y install libproj9 && sudo apt-get -y install libproj-dev && sudo apt-get -y install libgdal1-dev && sudo apt-get -y install libjson-c-dev && sudo apt-get -y install git && git clone --recursive https://github.com/hotosm/tasking-manager.git && cd tasking-manager/ && python3.6 -m venv ./venv && . ./venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt',
+          'export DEBIAN_FRONTEND=noninteractive',
+          'export LC_ALL="en_US.UTF-8"',
+          'export LC_CTYPE="en_US.UTF-8"',
+          'dpkg-reconfigure --frontend=noninteractive locales',
+          cf.sub('sudo apt-get update && sudo apt-get -y upgrade && sudo add-apt-repository ppa:jonathonf/python-3.6 && sudo apt-get update && sudo apt-get -y install python3.6 && sudo apt-get -y install python3.6-dev && sudo apt-get -y install python3.6-venv && sudo apt-get -y install curl && curl -sL https://deb.nodesource.com/setup_6.x > install-node6.sh && sudo chmod +x install-node6.sh && sudo ./install-node6.sh && sudo apt-get -y install nodejs && sudo npm install gulp -g && npm i browser-sync --save && sudo apt-get -y install postgresql-9.5 && sudo apt-get -y install libpq-dev && sudo apt-get -y install postgresql-server-dev-9.5 && sudo apt-get -y install libxml2 && sudo apt-get -y install libxml2-dev && sudo apt-get -y install libgeos-3.5.0 && sudo apt-get -y install libgeos-dev && sudo apt-get -y install libproj9 && sudo apt-get -y install libproj-dev && sudo apt-get -y install libgdal1-dev && sudo apt-get -y install libjson-c-dev && sudo apt-get -y install git && git clone --recursive https://github.com/hotosm/tasking-manager.git && cd tasking-manager/ && python3.6 -m venv ./venv && . ./venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt'),
           'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
           cf.join('', [cf.sub('export TM_DB="postgresql://${MasterUsername}:${MasterPassword}@'), cf.if('UseASnapshot', cf.getAtt('TaskingManagerRDS', 'Endpoint.Address'), cf.ref('RDSUrl')) , '/tm3"']),
           cf.sub('export TM_CONSUMER_KEY=${OSMConsumerKey} && export TM_CONSUMER_SECRET=${OSMConsumerSecret} && export TM_ENV=${TaskingManagerEnv} && export TM_SECRET=${TaskingManagerSecret} && ./venv/bin/python3.6 manage.py db upgrade && cd client/ && npm install && gulp build && cd ../ && echo "done"'),
-          'gunicorn -b 0.0.0.0:8000 -w 15 --timeout 179 manage:application'
+          'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 2 --timeout 179 manage:application'
         ]),
         KeyName: 'mbtiles'
       }
