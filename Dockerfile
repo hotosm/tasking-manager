@@ -1,25 +1,28 @@
-FROM python:3.6-jessie
+# Base on Python on Debian stable
+FROM python:3-stretch
 
-# Install dependencies for shapely
+EXPOSE 5000
+
+# Install dependencies
 RUN apt-get update \
- && apt-get upgrade -y \
- && apt-get install -y libgeos-dev \
- && rm -rf /var/lib/apt/lists/*
+  && apt-get upgrade -y \
+  && apt-get install -y libgeos-dev \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-
-# Uncomment and set with valid connection string for use locally
-#ENV TM_DB=postgresql://user:pass@host/db
-
-WORKDIR /src
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
 
 # Add and install Python modules
-ADD requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
-ADD . .
+# Add code base of Tasking Manager
+COPY . . 
 
-# Expose
-EXPOSE 8000
-
-# Gunicorn configured for single-core machine, if more cores available increase workers using formula ((cores x 2) + 1))
-CMD NEW_RELIC_CONFIG_FILE=newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 -w 5 --timeout 179 manage:application
+# Serve application
+# CMD python manage.py runserver -h 0.0.0.0
+#
+# Alternative command to serve the application
+# Gunicorn has been configured for single-core machine, if more cores available 
+# you mayb increase the workers (-w) by using the formula ((cores x 2) + 1))
+CMD NEW_RELIC_CONFIG_FILE=newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:5000 -w 5 --timeout 179 manage:application

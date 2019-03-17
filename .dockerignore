@@ -1,0 +1,23 @@
+# Basic stuff
+Dockerfile*
+docker-compose*
+.dockerignore
+.git
+.gitignore
+
+# Python
+venv/
+*pyc
+
+# Dev artifacts
+client/node_modules/
+client/npm-debug.log
+client/assets/styles/css
+shippable/
+
+# Programms that like to leave stuff
+.DS_Store
+.vscode
+.idea/
+.elasticbeanstalk/
+venv_aws/
