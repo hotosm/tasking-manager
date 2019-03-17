@@ -1,6 +1,9 @@
 #Pycharm
 .idea/
 
+# Custom configuration
+.env
+
 # Dev artifacts
 client/node_modules/
 client/assets/styles/css

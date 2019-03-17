@@ -1,0 +1,47 @@
+# Tasking Manager configuration file
+#
+
+
+#
+# Rename to `.env` and adjust to make it work!
+#
+
+# The base url the application is reachable (required)
+#
+TM_APP_BASE_URL=http://0.0.0.0:5000
+
+
+# The connection to the postgres database (required)
+#
+POSTGRES_DB=tasking-manager
+POSTGRES_USER=hottm
+POSTGRES_PASSWORD=hottm
+
+# Secret (required)
+#
+# A freely definable secret. Gives authorization to the front- and and back-end 
+# to talk to each other.
+#
+TM_SECRET=s0m3l0ngr4nd0mstr1ng-b3cr34tiv3&h4v3fun
+
+
+# OpenStreetMap OAuth consumer key and secret (required)
+#
+TM_CONSUMER_KEY=foo
+TM_CONSUMER_SECRET=s0m3l0ngr4nd0mstr1ng-b3cr34tiv3&h4v3fun
+
+
+# The default tag used in the OSM changeset comment
+#
+TM_DEFAULT_CHANGESET_COMMENT="#tm-project"
+
+
+# The address to use as the sender on auto generated emails
+#
+TM_EMAIL_FROM_ADDRESS=noreply@localhost
+
+
+# Logging settings (e.g. ERROR, DEBUG, etc.)
+# If not specified DEBUG is default. ERROR is a good value for a live site.
+#
+# TM_LOG_LEVEL="ERROR"

@@ -10,8 +10,8 @@ from server.services.users.user_service import UserService
 import os
 import warnings
 
-# Check that environmental variables are set
-for key in ['TM_DB','TM_SECRET','TM_CONSUMER_KEY','TM_CONSUMER_SECRET','TM_ENV']:
+# Check that required environmental variables are set
+for key in ['TM_APP_BASE_URL', 'POSTGRES_DB','POSTGRES_USER','POSTGRES_PASSWORD','TM_SECRET','TM_CONSUMER_KEY','TM_CONSUMER_SECRET']:
     if not os.getenv(key):
         warnings.warn("%s environmental variable not set." % (key,))
 
