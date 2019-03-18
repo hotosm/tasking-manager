@@ -59,6 +59,14 @@ const Parameters = {
     Description: 'ELB subnets',
     Type: 'String'
   },
+  VpcId: {
+    Description: "ID of the VPC",
+    Type: 'String'
+  },
+  SSLCertificateIdentifier: {
+    Type: 'String',
+    Description: 'SSL certificate for HTTPS protocol'
+  },
   RDSSecurityGroup: {
     Description: 'Security Group for the RDS',
     Type: 'String'
@@ -85,7 +93,7 @@ const Resources = {
       MaxSize: 5,
       HealthCheckGracePeriod: 300,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
-      LoadBalancerNames: [ cf.ref('TaskingManagerLoadBalancer') ],
+      TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
       AvailabilityZones: cf.getAzs(cf.region)
     }
@@ -124,7 +132,7 @@ const Resources = {
           cf.sub('export TM_CONSUMER_KEY=${OSMConsumerKey} && export TM_CONSUMER_SECRET=${OSMConsumerSecret} && export TM_ENV=${TaskingManagerEnv} && export TM_SECRET=${TaskingManagerSecret} && ./venv/bin/python3.6 manage.py db upgrade && cd client/ && npm install && gulp build && cd ../ && echo "done"'),
           'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 2 --timeout 179 manage:application'
         ]),
-        KeyName: 'mbtiles'
+        KeyName: 'dakota'
       }
   },
   TaskingManagerEC2Role: {
@@ -162,25 +170,61 @@ const Resources = {
      }
   },
   TaskingManagerLoadBalancer: {
-    Type: 'AWS::ElasticLoadBalancing::LoadBalancer',
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
-      CrossZone: true,
-      Listeners: [{
-        InstancePort: 8000,
-        InstanceProtocol: 'HTTP',
-        LoadBalancerPort: 80,
-        Protocol: 'HTTP',
-        PolicyNames: [ cf.sub('${AWS::StackName}-stickiness') ]
-      }],
-      LBCookieStickinessPolicy: [{
-        PolicyName: cf.sub('${AWS::StackName}-stickiness')
-      }],
-      LoadBalancerName: cf.stackName,
+      IpAddressType: 'ipv4',
+      Name: cf.join('-', [cf.stackName, 'lb']),
       Scheme: 'internet-facing',
       SecurityGroups: [cf.ref('ELBSecurityGroup')],
-      Subnets: cf.split(',', cf.ref('ELBSubnets'))
-   }
- },
+      Subnets: cf.split(',', cf.ref('ELBSubnets')),
+      Type: 'application'
+    }
+  },
+  TaskingManagerTargetGroup: {
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup',
+    Properties: {
+      HealthCheckIntervalSeconds: 30,
+      HealthCheckPort: 8000,
+      HealthCheckProtocol: 'HTTP',
+      HealthCheckTimeoutSeconds: 10,
+      HealthyThresholdCount: 5,
+      UnhealthyThresholdCount: 3,
+      Port: 8000,
+      Protocol: 'HTTP',
+      VpcId: cf.ref('VpcId'),
+      Matcher: {
+        HttpCode: '200,202,302,304'
+      }
+    }
+  },
+  TaskingManagerHTTPListener: {
+    Type: 'AWS::ElasticLoadBalancingV2::Listener',
+    Properties: {
+      DefaultActions: [{
+        Type: 'forward',
+        TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
+      }],
+      LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
+      Port: 80,
+      Protocol: 'HTTP'
+    }
+  },
+  // TaskingManagerHTTPSListener: {
+  //   Type: 'AWS::ElasticLoadBalancingV2::Listener',
+  //   Properties: {
+  //     Certificates : [ {
+  //       CertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier'))
+  //     }],
+  //     DefaultActions: [{
+  //       Type: 'forward',
+  //       TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
+  //     }],
+  //     LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
+  //     Port: 443,
+  //     Protocol: 'HTTPS',
+  //     SslPolicy: 'ELBSecurityPolicy-2016-08'
+  //   }
+  // },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
     Condition: 'UseASnapshot',
