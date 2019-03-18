@@ -1,18 +1,12 @@
 # To use this file, run `docker-compose up`.
-version: '2'
+version: '3'
 
 services:
 
-  # Define base for application
-  base:
-    build: .
-    env_file: .env
-    command: "false"
-
   # Main application
   app:
-    extends:
-      service: base
+    build: .
+    env_file: .env
     depends_on:
       - postgresql
     ports:
@@ -23,8 +17,8 @@ services:
 
   # Migration service
   migration:
-    extends:
-      service: base
+    build: .
+    env_file: .env
     depends_on:
       - postgresql
     links:
