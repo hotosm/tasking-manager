@@ -132,7 +132,7 @@ const Resources = {
           cf.sub('export TM_CONSUMER_KEY=${OSMConsumerKey} && export TM_CONSUMER_SECRET=${OSMConsumerSecret} && export TM_ENV=${TaskingManagerEnv} && export TM_SECRET=${TaskingManagerSecret} && ./venv/bin/python3.6 manage.py db upgrade && cd client/ && npm install && gulp build && cd ../ && echo "done"'),
           'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 2 --timeout 179 manage:application'
         ]),
-        KeyName: 'dakota'
+        KeyName: 'mbtiles'
       }
   },
   TaskingManagerEC2Role: {
