@@ -13,6 +13,8 @@ services:
       - "5000:5000"
     links:
       - postgresql
+    volumes:
+      - .:/usr/src/app
     command: python manage.py runserver -h 0.0.0.0
 
   # Migration service
@@ -23,6 +25,8 @@ services:
       - postgresql
     links:
       - postgresql
+    volumes:
+      - .:/usr/src/app
     command: python manage.py db upgrade
 
   # Database

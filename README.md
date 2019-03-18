@@ -28,6 +28,8 @@ In order to configure the Tasking Manager:
 
 **Start and stop**
 
+Check out the code: `git clone https://github.com/hotosm/tasking-manager.git`
+
 The easiest way to run the Tasking Manager requires [Docker](https://docs.docker.com/get-started/) and [Docker Compose](https://docs.docker.com/compose/) to be installed on your system. Afterwards you'll just need:
 
 * One command to get everything together and start the Tasking Manager: `docker-compose up -d`
