@@ -16,8 +16,29 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
+## Install required dependencies
+RUN apt-get install -y python3 libgeos-dev
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \ 
+  && apt-get install -y nodejs
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Build front-end
+RUN npm i gulp-cli -g
+
+# Build front-end
+COPY client/package.json /tmp/package.json
+RUN cd /tmp && npm install acorn ajv
+RUN mkdir -p /usr/src/app/client && cp -a /tmp/node_modules /usr/src/app/client
+
+RUN npm link gulp
+RUN npm i closure-util --save
+RUN npm i openlayers --save
+
 # Add code base of Tasking Manager
 COPY . . 
+
+# Assamble the tasking manager front-end interface
+# RUN cd client && gulp build
 
 # Serve application
 # CMD python manage.py runserver -h 0.0.0.0

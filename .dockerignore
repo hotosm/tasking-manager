@@ -11,8 +11,7 @@ venv/
 
 # Dev artifacts
 client/node_modules/
-client/npm-debug.log
-client/assets/styles/css
+client/assets/styles/css/
 shippable/
 
 # Programms that like to leave stuff

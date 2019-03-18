@@ -8,10 +8,8 @@
 client/node_modules/
 client/assets/styles/css
 shippable/
-
-# Ignore generated config
-client/app/taskingmanager.config.js
 client/package-lock.json
+client/app/taskingmanager.config.js
 
 # Ignore dist folder as this contains the minimized build for deploy
 server/web/static/dist
