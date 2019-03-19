@@ -14,6 +14,7 @@
         vm.message = {};
         vm.showDeleteMessageModal = false;
         vm.errorRetrievingMessages = false;
+        vm.errorMessage = [];
 
         activate();
 
@@ -26,13 +27,15 @@
          * Get a message
          */
         function getMessage(){
+            vm.errorRetrievingMessages = false;
             var resultsPromise = messageService.getMessage(vm.messageId);
             resultsPromise.then(function (data) {
                 // success
                 vm.message = data;
                 vm.message.message = messageService.formatShortCodes(vm.message.message);
-            }, function () {
-                // an error occurred
+            }, function (error) {
+                    vm.errorMessage = error.data.Error;
+                    vm.errorRetrievingMessages = true;
             });
         }
 

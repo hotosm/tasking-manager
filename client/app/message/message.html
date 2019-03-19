@@ -2,12 +2,15 @@
     <section class="section section--asided">
         <header class="section__header">
             <div class="inner">
-                <h1 class="section__title">
+                <h1 class="section__title" ng-hide="messageCtrl.errorRetrievingMessages">
                     {{ 'Message' | translate }}
                 </h1>
+                <div ng-show="messageCtrl.errorRetrievingMessages">
+                    <h1>{{ messageCtrl.errorMessage}}</h1>
+                </div>
             </div>
         </header>
-        <div class="section-container">
+        <div class="section-container" ng-hide="messageCtrl.errorRetrievingMessages">
             <div class="section__body">
                 <div class="inner">
                     <a href="/inbox" class="button button--achromic">{{ 'Return to inbox' | translate }}</a>
