@@ -12,6 +12,7 @@
     function inboxController(NgTableParams, messageService, MessageType) {
         var vm = this;
         vm.messages = [];
+        vm.readMessages = [];
         vm.selectedIndividualMessages = {};
         vm.allVisibleMessagesSelected = false;
         vm.showDeleteMessageModal = false;
@@ -51,6 +52,10 @@
                 if (vm.messages){
                     for (var i = 0; i < vm.messages.length; i++){
                         vm.messages[i].subject = htmlToPlaintext(vm.messages[i].subject);
+                        if(vm.messages[i].read == true)
+                            vm.readMessages[vm.messages[i].messageId] = true;
+                        else
+                            vm.readMessages[vm.messages[i].messageId] = false;
                     }
                 }
                 params.total(data.pagination.total);
@@ -64,6 +69,7 @@
                 vm.selectedIndividualMessages = {};
                 vm.allVisibleMessagesSelected = false;
                 vm.messages = [];
+                vm.readMessages = [];
                 params.total(0);
               });
           }
@@ -142,7 +148,7 @@
                 vm.selectedIndividualMessages = {};
                 vm.allVisibleMessagesSelected = false;
                 vm.inboxTableSettings.reload();
-            }, function () {
+            }, function (error) {
                 // an error occurred
                 vm.deleteMessageFail = true;
                 vm.showDeleteSelectedMessagesModal = false;
@@ -188,6 +194,20 @@
          */
         vm.isAnyMessageSelected = function() {
             return vm.allVisibleMessagesSelected || Object.keys(vm.selectedIndividualMessages).length > 0;
+        };
+
+        /**
+         * Mark/Unmark message as Read
+         */
+        vm.markUnmarkMultipleMessagesAsRead = function(){
+            console.log(Object.keys(vm.selectedIndividualMessages));
+            var resultsPromise = messageService.markUnmarkMultipleMessagesAsRead(Object.keys(vm.selectedIndividualMessages));
+            resultsPromise.then(function (data) {
+                // success
+                vm.inboxTableSettings.reload();
+                }, function () {
+                        // an error occurred
+                    });
         };
 
         /**

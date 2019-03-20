@@ -1,5 +1,5 @@
 import threading
-
+from flask import jsonify
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
@@ -236,6 +236,53 @@ class DeleteMultipleMessages(Resource):
             return {"error": error_msg}, 500
 
 
+class MarkMultipleMessagesAsRead(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def patch(self):
+        """
+        Delete specified messages for logged in user
+        ---
+        tags:
+          - messaging
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: body
+              name: body
+              required: true
+              description: JSON object containing message ids to delete
+              schema:
+                  properties:
+                      messageIds:
+                          type: array
+                          items: integer
+                          required: true
+        responses:
+            200:
+                description: Messages deleted
+            500:
+                description: Internal Server Error
+        """
+        try:
+            message_ids = request.get_json()['messageIds']
+            if message_ids:
+                MessageService.mark_unmark_multiple_messages_as_read(message_ids, tm.authenticated_user_id)
+            
+            return {"Success": "Messages updated"}, 200
+        except Exception as e:
+            error_msg = f'MarkMultipleMessagesAsRead - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
 class MessagesAPI(Resource):
 
     @tm.pm_only(False)
@@ -328,7 +375,7 @@ class MessagesAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-
+    
 class ResendEmailValidationAPI(Resource):
 
     @tm.pm_only(False)

@@ -101,6 +101,18 @@ class Message(db.Model):
         db.session.commit()
 
     @staticmethod
+    def mark_unmark_multiple_messages_as_read(message_ids: list, user_id: int):
+        """ Mark the message in scope as Read """
+        messages = Message.query.filter(Message.to_user_id == user_id, Message.id.in_(message_ids))
+        for msg in messages:
+            if msg.read == False:
+                msg.read = True
+            else:
+                msg.read = False
+            db.session.add(msg)
+        db.session.commit()
+
+    @staticmethod
     def get_unread_message_count(user_id: int):
         """ Get count of unread messages for user """
         return Message.query.filter(Message.to_user_id == user_id, Message.read == False).count()

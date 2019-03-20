@@ -24,6 +24,7 @@
             hasNewMessages: hasNewMessages,
             getAllMessages: getAllMessages,
             getMessage: getMessage,
+            markUnmarkMultipleMessagesAsRead: markUnmarkMultipleMessagesAsRead,
             getProjectChatMessages: getProjectChatMessages,
             addProjectChatMessage: addProjectChatMessage,
             deleteMessage: deleteMessage,
@@ -160,6 +161,32 @@
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject(response);
+            });
+        }
+
+
+        /**
+         * Deletes a message
+         * @param messageId
+         * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
+         */
+        function markUnmarkMultipleMessagesAsRead(messageIds){
+            // Returns a promise
+            return $http({
+                method: 'PATCH',
+                url: configService.tmAPI + '/messages/mark-multiple',
+                data: {
+                    messageIds: messageIds,
+                },
+                headers: authService.getAuthenticatedHeader(),
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
             });
         }
 

@@ -99,7 +99,7 @@ def init_flask_restful_routes(app):
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
         CommentOnTaskAPI, TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
     from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
-        DeleteMultipleMessages, ResendEmailValidationAPI
+        DeleteMultipleMessages, ResendEmailValidationAPI, MarkMultipleMessagesAsRead
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
         ProjectValidateAll, ProjectMapAll, ProjectResetAll, ProjectResetBadImagery, ProjectsForAdminAPI,\
@@ -142,8 +142,9 @@ def init_flask_restful_routes(app):
     api.add_resource(LicenceListAPI,                '/api/v1/license/list')
     api.add_resource(HasNewMessages,                '/api/v1/messages/has-new-messages')
     api.add_resource(GetAllMessages,                '/api/v1/messages/get-all-messages')
-    api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
     api.add_resource(DeleteMultipleMessages,        '/api/v1/messages/delete-multiple', methods=['DELETE'])
+    api.add_resource(MarkMultipleMessagesAsRead,    '/api/v1/messages/mark-multiple', methods=['PATCH'])
+    api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
     api.add_resource(ResendEmailValidationAPI,      '/api/v1/messages/resend-email-verification')
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')

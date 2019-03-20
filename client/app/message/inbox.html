@@ -12,10 +12,14 @@
                 <div class="inner">
                     <div ng-show="inboxCtrl.errorRetrievingMessages" class="error">An error occurred.</div>
                     <div class="inbox__batch-controls">
-                      <button ng-disabled="!inboxCtrl.isAnyMessageSelected()" class="button button--base" type="button"
+                        <button  class="button button--base" type="button"
+                            ng-click="inboxCtrl.markUnmarkMultipleMessagesAsRead()">
+                            {{ 'Mark as read selected messages' | translate }}
+                        </button>
+                        <button ng-disabled="!inboxCtrl.isAnyMessageSelected()" class="button button--base" type="button"
                               ng-click="inboxCtrl.setShowDeleteSelectedMessagesModal(true)">
                           {{ 'Delete All Selected Messages' | translate }}
-                      </button>
+                        </button>
                     </div>
                     <div>
                         <table ng-table="inboxCtrl.inboxTableSettings" class="table table-inbox">
@@ -49,6 +53,10 @@
                                 </td>
                                 <td title="'Sent' | translate" sortable="'sentDate'">
                                     <span tm-timestamp="message.sentDate"></span>
+                                </td>
+                                <td title="'Read' | translate">
+                                    <input type="checkbox" ng-checked="inboxCtrl.checkReadMessage(message.messageId)"
+                                    ng-click="inboxCtrl.markUnmarkMultipleMessagesAsRead(message.messageId)" />
                                 </td>
                                 <td>
                                     <button class="button"

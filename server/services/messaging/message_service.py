@@ -258,6 +258,11 @@ class MessageService:
         return message.as_dto()
 
     @staticmethod
+    def mark_unmark_multiple_messages_as_read(message_ids: list, user_id: int):
+        """ Marks Unmark multiple message as read """
+        Message.mark_unmark_multiple_messages_as_read(message_ids, user_id)
+        
+    @staticmethod
     def delete_message(message_id: int, user_id: int):
         """ Deletes the specified message """
         message = MessageService.get_message(message_id, user_id)
