@@ -1,3 +1,4 @@
+<script src="profile.controller.js"></script>
 <div class="inner">
     <section class="section section--asided">
         <header class="section__header section__header--nodescription">
@@ -117,6 +118,21 @@
                                                     ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
                                         </span>
                                     </li>
+                          #$%---    <li>
+                                        <label class="form__label"
+                                               ng-show="profileCtrl.userDetails.gender || profileCtrl.editDetails">
+                                              Gender: </label>
+                                         
+                                         <span ng-hide="profileCtrl.editDetails">
+                                            {{ profileCtrl.userDetails.gender }}
+                                         </span>
+                                            {{ profileCtrl.userDetails.gender }}
+                                        </a>
+                                        <input ng-show="profileCtrl.editDetails" type="text" size="30"
+                                               class="form__control form__control__inline"
+                                               placeholder="Gender (e.g. Female, Male or Prefer not to say)"
+                                               ng-model="profileCtrl.userDetails.gender"/>
+                                    </li>
                                     <li>
                                         <label class="form__label"
                                                ng-show="profileCtrl.userDetails.facebookId || profileCtrl.editDetails">Facebook:</label>
@@ -157,6 +173,7 @@
                                                title="{{ 'Your ID is the part after https://www.linkedin.com/in/....' | translate}}"
                                                ng-model="profileCtrl.userDetails.linkedinId"/>
                                     </li>
+                                    
                                     <li>
                                         <label class="form__option form__option--custom-checkbox" ng-show="profileCtrl.editDetails">
                                               <input ng-show="profileCtrl.editDetails" type="checkbox" name="form-custom-checkbox"
