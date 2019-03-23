@@ -118,19 +118,15 @@
                                                     ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
                                         </span>
                                     </li>
-                          #$%---    <li>
+                                    <li>
                                         <label class="form__label"
-                                               ng-show="profileCtrl.userDetails.gender || profileCtrl.editDetails">
-                                              Gender: </label>
-                                         
-                                         <span ng-hide="profileCtrl.editDetails">
+                                               ng-show="profileCtrl.userDetails.gender || profileCtrl.editDetails">Gender:</label>
+                                        <span ng-hide="profileCtrl.editDetails">
                                             {{ profileCtrl.userDetails.gender }}
-                                         </span>
-                                            {{ profileCtrl.userDetails.gender }}
-                                        </a>
+                                        </span>
                                         <input ng-show="profileCtrl.editDetails" type="text" size="30"
                                                class="form__control form__control__inline"
-                                               placeholder="Gender (e.g. Female, Male or Prefer not to say)"
+                                               placeholder="Gender (Female, Male, or Prefer not to say"
                                                ng-model="profileCtrl.userDetails.gender"/>
                                     </li>
                                     <li>

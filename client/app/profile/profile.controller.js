@@ -159,7 +159,7 @@
                 vm.errorSetContactDetails = false;
                 var contactDetails = {
                     emailAddress: vm.userDetails.emailAddress,
-                    gender: vm.userDetails.gender,
+                    gender: vm.userDetails.gender, 
                     facebookId: vm.userDetails.facebookId,
                     linkedinId: vm.userDetails.linkedinId,
                     twitterId: vm.userDetails.twitterId,
