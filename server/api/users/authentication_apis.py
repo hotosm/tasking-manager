@@ -15,6 +15,36 @@ def get_oauth_token():
         return resp['oauth_token'], resp['oauth_token_secret']
 
 
+class TokenAPI(Resource):
+    
+    def get(self):
+        """
+        Checks the Token and if valid returns a new token
+        ---
+        tags:
+          - authentication
+        produces:
+          - application/json
+        responses:
+          400:
+            description: Token is not valid
+          404:
+            description: Token not found
+        """
+        if request.headers.get('Authorization'):
+            
+            token = request.headers.get('Authorization').split('Bearer ')[1]
+            is_valid, tokenised_email = AuthenticationService.is_valid_token(token, 86400)
+            
+            if is_valid:
+                new_token = AuthenticationService.generate_session_token_for_user(tokenised_email)
+                return new_token
+            
+            return 400
+        
+        return 404
+
+
 class LoginAPI(Resource):
 
     def get(self):
