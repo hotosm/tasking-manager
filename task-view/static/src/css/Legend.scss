@@ -1,0 +1,39 @@
+.legend {
+    p {
+        font-size: 14px;
+        margin-bottom: 0.5rem;
+    }
+    .road {
+        width: 22px;
+        height: 4px;
+        background: red;
+    }
+    .node {
+        width: 5px;
+        height: 5px;
+        display: inline-block;
+        border-radius: 2.5px;
+        border: 1px solid #555;
+    }
+
+    .table {
+        font-size: 0.75rem;
+        max-width: 125px;
+
+        td {
+            vertical-align: middle;
+            border: none;
+            padding: 3px 5px;
+        }
+
+        td:nth-child(1) {
+            text-align: center;
+            padding-left: 0;
+        }
+
+    }
+}
+
+.unimportant {
+    color: #d5d5d5;
+}

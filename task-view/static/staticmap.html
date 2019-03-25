@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Canvas Render</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" rel='stylesheet' />
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='/static/dist/index.js'></script>
+    <style>
+        html {
+            background: #222;
+        }
+        body {
+            padding: 20px;
+            background: #222;
+            color: white;
+        }
+        #map-container {
+            display: inline-block;
+            background: #222;
+            width: 500px;
+            height: 500px;
+        }
+        #inspector {
+            display: inline-block;
+            width: 500px;
+            height: 500px;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            /* height: 200px; */
+            width: 200px;
+            overflow: auto;
+            border-radius: 5px;
+            padding: 10px;
+            background: rgba(200, 200, 200, 0.04);
+            color: white;
+            /* border: 1px solid #555; */
+        }
+        .table {
+            background: none;
+            color: white;
+            font-size: 0.75rem;
+            width: 100%;
+        }
+        .table td {
+            border-color: #555;
+        }
+    </style>
+</head>
+<body>
+<h2>StaticMap</h2>
+<div id="map-container"></div>
+<h2>VectorMap</h2>
+<div id="inspector"></div>
+<div id="info">
+    <table class="table is-bordered">
+    </table>
+</div>
+
+<script>
+var selectedFeature;
+
+function onFeatureSelected(feature) {
+    selectedFeature = feature;
+    renderInfoTable(feature);
+}
+function onFeatureHovered(feature) {
+    if (!selectedFeature) {
+        renderInfoTable(feature);
+    }
+}
+
+function renderInfoTable(f) {
+    var data = [];
+    if (f) {
+        data.push(['id', f.properties.id]);
+        data.push(['type', f.properties.type]);
+
+        if (f.properties.tags) {
+            var tags = JSON.parse(f.properties.tags);
+            Object.keys(tags).forEach(k => {
+                data.push([k, tags[k]]);
+            });
+        }
+    }
+
+
+    var rows = d3.select('#info .table').selectAll('tr').data(data);
+    rows.exit().remove();
+    rows.enter()
+        .append('tr')
+        .merge(rows)
+        .html(d => {
+            return `
+            <td>${d[0]}</td><td>${d[1]}</td>
+            `;
+        });
+}
+
+var height = 500,
+    width = 500,
+    margin = 10,
+    _data,
+    _dataXml,
+    vectorMap = new TaskView.VectorMap('inspector', {
+        onFeatureHovered: onFeatureHovered,
+        onFeatureSelected: onFeatureSelected
+    });
+
+d3.queue()
+    .defer(d3.xml, '/static/data/v3.xml')
+    .await(function (error, dataXml) {
+        var data = TaskView.fbXMLtoGeoJSON(dataXml);
+        _data = data;
+        _dataXml = dataXml;
+
+        // compute the extents just from fb data so we don't show really large
+        // osm roads
+        var projection = TaskView.getProjection(data, width, height, margin);
+        var rc = TaskView.StaticMap('#map-container', width, height, projection);
+        rc.render(data, {showConnectedNodes: true});
+
+        vectorMap.onLoad(() => {
+            vectorMap.setData(data);
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

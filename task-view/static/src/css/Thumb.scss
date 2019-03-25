@@ -1,0 +1,55 @@
+.thumb {
+    display: inline-block;
+    border: 2px solid #a9a9a9;
+    width: 180px;
+    margin: 2px;
+    background-color: #292929;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 2.5px;
+
+    img {
+        width: 180px;
+        height: 180px;
+    }
+
+    &.selected {
+        border: 5px solid #0e74e3;
+    }
+
+    .caption {
+        width: 100%;
+        border-top: 1px solid #a9a9a9;
+        height: 18px;
+        box-sizing: border-box;
+        position: relative;
+        font-family: Fira Sans, sans-serif;
+        font-size: 12px;
+        background-color: white;
+    }
+
+    .index {
+        width: 18px;
+        border-right: 1px solid #a9a9a9;
+        box-sizing: border-box;
+        line-height: 18px;
+        position: absolute;
+        left: 0;
+        text-align: center;
+    }
+
+    .upload_time {
+        line-height: 18px;
+        position: absolute;
+        right: 2px;
+    }
+
+    .role {
+        line-height: 18px;
+        left: 23px;
+        position: absolute;
+    }
+}
+
+
+

@@ -1,0 +1,1259 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<osm attribution="http://www.openstreetmap.org/copyright" copyright="OpenStreetMap and contributors" generator="iD" license="http://opendatacommons.org/licenses/odbl/1-0/" version="0.6">
+  <bounds maxlat="13.6669922" maxlon="102.26074220000001" minlat="13.6230469" minlon="102.2167969"/>
+  <way action="modify" id="-925" visible="true">
+    <nd ref="-306"/>
+    <nd ref="-101"/>
+    <nd ref="-1235"/>
+    <nd ref="-1180"/>
+    <nd ref="-1181"/>
+    <nd ref="-1158"/>
+    <nd ref="-1157"/>
+    <nd ref="-1159"/>
+    <nd ref="-1237"/>
+    <nd ref="-553"/>
+    <nd ref="-1238"/>
+    <nd ref="-194"/>
+    <nd ref="-167"/>
+    <nd ref="-184"/>
+    <nd ref="-633"/>
+    <nd ref="-1239"/>
+    <nd ref="-504"/>
+    <nd ref="-152"/>
+    <nd ref="-803"/>
+    <nd ref="-75"/>
+    <nd ref="-537"/>
+    <nd ref="-421"/>
+    <nd ref="-175"/>
+    <nd ref="-777"/>
+    <nd ref="-750"/>
+    <nd ref="-844"/>
+    <nd ref="-190"/>
+    <nd ref="-784"/>
+    <nd ref="-764"/>
+    <nd ref="-614"/>
+    <nd ref="-203"/>
+    <nd ref="-183"/>
+    <nd ref="-760"/>
+    <nd ref="-36"/>
+    <nd ref="-572"/>
+    <nd ref="-90"/>
+    <nd ref="-756"/>
+    <nd ref="-460"/>
+    <nd ref="-102"/>
+    <nd ref="-728"/>
+    <nd ref="-632"/>
+    <nd ref="-55"/>
+    <nd ref="-126"/>
+    <nd ref="-742"/>
+    <nd ref="-88"/>
+    <nd ref="-1179"/>
+    <nd ref="-1178"/>
+    <nd ref="-1177"/>
+    <nd ref="-1176"/>
+    <nd ref="-1175"/>
+    <nd ref="-1174"/>
+    <nd ref="-1173"/>
+    <nd ref="-1172"/>
+    <nd ref="-1171"/>
+    <nd ref="-1170"/>
+    <nd ref="-1169"/>
+    <nd ref="-1168"/>
+    <tag k="highway" v="unclassified"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-306" lat="13.6231501" lon="102.2361666" visible="true"/>
+  <node action="modify" id="-101" lat="13.623538692622853" lon="102.2364044" visible="true"/>
+  <node id="-1235" lat="13.623633868833705" lon="102.23647255148694" visible="true"/>
+  <node id="-1180" lat="13.623711032755855" lon="102.23653699622278" visible="true"/>
+  <node id="-1181" lat="13.623795754363831" lon="102.2366155035748" visible="true"/>
+  <node id="-1158" lat="13.623861630046195" lon="102.23668749408645" visible="true"/>
+  <node id="-1157" lat="13.623898726116561" lon="102.23669214897242" visible="true"/>
+  <node id="-1159" lat="13.623948749517803" lon="102.23669806029294" visible="true"/>
+  <node id="-1237" lat="13.624116329335681" lon="102.23673114280298" visible="true"/>
+  <node action="modify" id="-553" lat="13.6243484" lon="102.236741" visible="true"/>
+  <node id="-1238" lat="13.624541013194921" lon="102.23673868580372" visible="true"/>
+  <node action="modify" id="-194" lat="13.6247433" lon="102.2367231" visible="true"/>
+  <node action="modify" id="-167" lat="13.6250395" lon="102.2366872" visible="true"/>
+  <node action="modify" id="-184" lat="13.625212385846833" lon="102.23665295895096" visible="true"/>
+  <node action="modify" id="-633" lat="13.6258024" lon="102.2365884" visible="true"/>
+  <node id="-1239" lat="13.626374349023553" lon="102.23650480895093" visible="true"/>
+  <node action="modify" id="-504" lat="13.626952747023877" lon="102.23642785370559" visible="true"/>
+  <node action="modify" id="-152" lat="13.627629" lon="102.2363416" visible="true"/>
+  <node action="modify" id="-803" lat="13.6284009" lon="102.2363371" visible="true"/>
+  <node action="modify" id="-75" lat="13.6288901" lon="102.236391" visible="true"/>
+  <node action="modify" id="-537" lat="13.6293299" lon="102.236382" visible="true"/>
+  <node action="modify" id="-421" lat="13.6297338" lon="102.2363551" visible="true"/>
+  <node action="modify" id="-175" lat="13.630571272331583" lon="102.23634042820373" visible="true"/>
+  <node action="modify" id="-777" lat="13.6316008" lon="102.2362967" visible="true"/>
+  <node action="modify" id="-750" lat="13.6321842" lon="102.2362967" visible="true"/>
+  <node action="modify" id="-844" lat="13.6326958" lon="102.2363551" visible="true"/>
+  <node action="modify" id="-190" lat="13.6332254" lon="102.2364717" visible="true"/>
+  <node action="modify" id="-784" lat="13.6346436" lon="102.2366872" visible="true"/>
+  <node action="modify" id="-764" lat="13.6352045" lon="102.2368891" visible="true"/>
+  <node action="modify" id="-614" lat="13.6355725" lon="102.2369744" visible="true"/>
+  <node action="modify" id="-203" lat="13.6358328" lon="102.2370552" visible="true"/>
+  <node action="modify" id="-183" lat="13.6361919" lon="102.2372302" visible="true"/>
+  <node action="modify" id="-760" lat="13.6364746" lon="102.2373962" visible="true"/>
+  <node action="modify" id="-36" lat="13.6367394" lon="102.2375982" visible="true"/>
+  <node action="modify" id="-572" lat="13.6367843" lon="102.237661" visible="true"/>
+  <node action="modify" id="-90" lat="13.6369862" lon="102.2383073" visible="true"/>
+  <node action="modify" id="-756" lat="13.6371702" lon="102.2385676" visible="true"/>
+  <node action="modify" id="-460" lat="13.6372914" lon="102.2386977" visible="true"/>
+  <node action="modify" id="-102" lat="13.6375517" lon="102.2388772" visible="true"/>
+  <node action="modify" id="-728" lat="13.6379915" lon="102.2390298" visible="true"/>
+  <node action="modify" id="-632" lat="13.638732" lon="102.2392049" visible="true"/>
+  <node action="modify" id="-55" lat="13.6390686" lon="102.2392991" visible="true"/>
+  <node action="modify" id="-126" lat="13.6391988" lon="102.239353" visible="true"/>
+  <node action="modify" id="-742" lat="13.6403521" lon="102.2402819" visible="true"/>
+  <node action="modify" id="-88" lat="13.6410926" lon="102.240825" visible="true"/>
+  <node id="-1179" lat="13.641328397391339" lon="102.24093137262658" visible="true"/>
+  <node id="-1178" lat="13.641580224921833" lon="102.24099753542914" visible="true"/>
+  <node id="-1177" lat="13.64185884230212" lon="102.24103061683043" visible="true"/>
+  <node id="-1176" lat="13.642137459353613" lon="102.2410416439642" visible="true"/>
+  <node id="-1175" lat="13.642448224138485" lon="102.24103337361387" visible="true"/>
+  <node id="-1174" lat="13.642737556501475" lon="102.24098099472852" visible="true"/>
+  <node id="-1173" lat="13.642959913539437" lon="102.24094791332722" visible="true"/>
+  <node id="-1172" lat="13.64321173932952" lon="102.24091758870938" visible="true"/>
+  <node id="-1171" lat="13.643637699362904" lon="102.24088726409154" visible="true"/>
+  <node id="-1170" lat="13.64415206517114" lon="102.24085693947369" visible="true"/>
+  <node id="-1169" lat="13.644315483240163" lon="102.24086796660747" visible="true"/>
+  <node id="-1168" lat="13.644533310364457" lon="102.2409262825575" visible="true"/>
+  <way action="modify" id="-929" visible="true">
+    <nd ref="-81"/>
+    <nd ref="-720"/>
+    <nd ref="-605"/>
+    <nd ref="-621"/>
+    <nd ref="-745"/>
+    <nd ref="-516"/>
+    <nd ref="-824"/>
+    <nd ref="-86"/>
+    <nd ref="-908"/>
+    <nd ref="-268"/>
+    <nd ref="-891"/>
+    <nd ref="-24"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-81" lat="13.6352449" lon="102.2513805" visible="true"/>
+  <node action="modify" id="-720" lat="13.635963585397521" lon="102.25170935573531" visible="true"/>
+  <node action="modify" id="-605" lat="13.636448628806734" lon="102.2519562557353" visible="true"/>
+  <node action="modify" id="-621" lat="13.636792614542989" lon="102.25216274733452" visible="true"/>
+  <node action="modify" id="-745" lat="13.63685898575627" lon="102.25219423893381" visible="true"/>
+  <node action="modify" id="-516" lat="13.63690955669023" lon="102.25219433053307" visible="true"/>
+  <node action="modify" id="-824" lat="13.6374619" lon="102.2520267" visible="true"/>
+  <node action="modify" id="-86" lat="13.6384223" lon="102.2517754" visible="true"/>
+  <node action="modify" id="-908" lat="13.6397238" lon="102.2513805" visible="true"/>
+  <node action="modify" id="-268" lat="13.640772385708427" lon="102.25112613893384" visible="true"/>
+  <node action="modify" id="-891" lat="13.641703" lon="102.2508554" visible="true"/>
+  <node action="modify" id="-24" lat="13.6427038" lon="102.2505637" visible="true"/>
+  <way action="modify" id="-940" visible="true">
+    <nd ref="-1182"/>
+    <nd ref="-1183"/>
+    <nd ref="-1184"/>
+    <nd ref="-1185"/>
+    <nd ref="-1186"/>
+    <nd ref="-1187"/>
+    <nd ref="-1188"/>
+    <nd ref="-1189"/>
+    <nd ref="-1190"/>
+    <nd ref="-1191"/>
+    <nd ref="-1192"/>
+    <nd ref="-119"/>
+    <nd ref="-559"/>
+    <nd ref="-885"/>
+    <nd ref="-693"/>
+    <nd ref="-117"/>
+    <nd ref="-527"/>
+    <nd ref="-316"/>
+    <nd ref="-1236"/>
+    <nd ref="-1157"/>
+    <tag k="highway" v="track"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+    <tag k="surface" v="unpaved"/>
+  </way>
+  <node id="-1182" lat="13.625316614994237" lon="102.22941166669075" visible="true"/>
+  <node id="-1183" lat="13.62530915245796" lon="102.22948077441443" visible="true"/>
+  <node id="-1184" lat="13.625271839773044" lon="102.22955756077407" visible="true"/>
+  <node id="-1185" lat="13.625110151403685" lon="102.22985190848598" visible="true"/>
+  <node id="-1186" lat="13.624871349917377" lon="102.23028703119056" visible="true"/>
+  <node id="-1187" lat="13.624824133001441" lon="102.23039032521443" visible="true"/>
+  <node id="-1188" lat="13.624779633127828" lon="102.23051242761268" visible="true"/>
+  <node id="-1189" lat="13.624748483211317" lon="102.23067726585033" visible="true"/>
+  <node id="-1190" lat="13.62471584996105" lon="102.23097641672605" visible="true"/>
+  <node id="-1191" lat="13.624693600015087" lon="102.23128777784162" visible="true"/>
+  <node id="-1192" lat="13.624656516767192" lon="102.23191050007273" visible="true"/>
+  <node action="modify" id="-119" lat="13.6246131" lon="102.2329039" visible="true"/>
+  <node action="modify" id="-559" lat="13.6246087" lon="102.2334963" visible="true"/>
+  <node action="modify" id="-885" lat="13.6245279" lon="102.2340258" visible="true"/>
+  <node action="modify" id="-693" lat="13.6244695" lon="102.2346407" visible="true"/>
+  <node action="modify" id="-117" lat="13.6243618" lon="102.2351029" visible="true"/>
+  <node action="modify" id="-527" lat="13.624308" lon="102.2354305" visible="true"/>
+  <node action="modify" id="-316" lat="13.6241868" lon="102.2360095" visible="true"/>
+  <node id="-1236" lat="13.624144078251598" lon="102.23614465046863" visible="true"/>
+  <way action="modify" id="-942" visible="true">
+    <nd ref="-140"/>
+    <nd ref="-237"/>
+    <nd ref="-34"/>
+    <nd ref="-707"/>
+    <nd ref="-168"/>
+    <nd ref="-778"/>
+    <nd ref="-395"/>
+    <nd ref="-898"/>
+    <nd ref="-617"/>
+    <nd ref="-343"/>
+    <nd ref="-1099"/>
+    <nd ref="-1100"/>
+    <nd ref="-1101"/>
+    <nd ref="-135"/>
+    <nd ref="-399"/>
+    <nd ref="-876"/>
+    <nd ref="-1098"/>
+    <nd ref="-788"/>
+    <nd ref="-838"/>
+    <tag k="highway" v="track"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+    <tag k="surface" v="unpaved"/>
+  </way>
+  <node action="modify" id="-140" lat="13.659479500000005" lon="102.25139513973953" visible="true"/>
+  <node action="modify" id="-237" lat="13.6588691" lon="102.2513087" visible="true"/>
+  <node action="modify" id="-34" lat="13.6576619" lon="102.2513087" visible="true"/>
+  <node action="modify" id="-707" lat="13.6567419" lon="102.2512548" visible="true"/>
+  <node action="modify" id="-168" lat="13.6566252" lon="102.2512324" visible="true"/>
+  <node action="modify" id="-778" lat="13.6564546" lon="102.2512279" visible="true"/>
+  <node action="modify" id="-395" lat="13.6559206" lon="102.251174" visible="true"/>
+  <node action="modify" id="-898" lat="13.6552788" lon="102.2511381" visible="true"/>
+  <node action="modify" id="-617" lat="13.6542646" lon="102.2511247" visible="true"/>
+  <node action="modify" id="-343" lat="13.6535106" lon="102.2511785" visible="true"/>
+  <node id="-1099" lat="13.6508358" lon="102.2516946" visible="true"/>
+  <node id="-1100" lat="13.650286403830055" lon="102.25178091066799" visible="true"/>
+  <node id="-1101" lat="13.649707813254565" lon="102.25177668791905" visible="true"/>
+  <node action="modify" id="-135" lat="13.648716166934875" lon="102.25169238061014" visible="true"/>
+  <node action="modify" id="-399" lat="13.6480623" lon="102.2516049" visible="true"/>
+  <node action="modify" id="-876" lat="13.647651638593398" lon="102.2515449735836" visible="true"/>
+  <node id="-1098" lat="13.647213686043674" lon="102.25140552609781" visible="true"/>
+  <node action="modify" id="-788" lat="13.6467148807168" lon="102.25121737358361" visible="true"/>
+  <node action="modify" id="-838" lat="13.645208" lon="102.2507387" visible="true"/>
+  <way action="modify" id="-943" visible="true">
+    <nd ref="-140"/>
+    <nd ref="-413"/>
+    <nd ref="-531"/>
+    <nd ref="-563"/>
+    <nd ref="-1216"/>
+    <nd ref="-401"/>
+    <nd ref="-1217"/>
+    <nd ref="-675"/>
+    <nd ref="-604"/>
+    <nd ref="-1215"/>
+    <nd ref="-376"/>
+    <nd ref="-441"/>
+    <nd ref="-487"/>
+    <nd ref="-387"/>
+    <nd ref="-1212"/>
+    <nd ref="-1214"/>
+    <nd ref="-861"/>
+    <nd ref="-282"/>
+    <nd ref="-405"/>
+    <nd ref="-739"/>
+    <nd ref="-809"/>
+    <nd ref="-878"/>
+    <nd ref="-761"/>
+    <nd ref="-1210"/>
+    <nd ref="-402"/>
+    <nd ref="-538"/>
+    <nd ref="-766"/>
+    <nd ref="-326"/>
+    <nd ref="-409"/>
+    <nd ref="-426"/>
+    <nd ref="-1208"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-413" lat="13.6612477" lon="102.2520178" visible="true"/>
+  <node action="modify" id="-531" lat="13.6620376" lon="102.2523409" visible="true"/>
+  <node action="modify" id="-563" lat="13.6626524" lon="102.2526281" visible="true"/>
+  <node id="-1216" lat="13.662722984271795" lon="102.25264605982632" visible="true"/>
+  <node action="modify" id="-401" lat="13.662787" lon="102.2526505" visible="true"/>
+  <node id="-1217" lat="13.662863300000007" lon="102.25265055982634" visible="true"/>
+  <node action="modify" id="-675" lat="13.6629396" lon="102.2526371" visible="true"/>
+  <node action="modify" id="-604" lat="13.6636218" lon="102.2523858" visible="true"/>
+  <node id="-1215" lat="13.663693599999998" lon="102.25237567008682" visible="true"/>
+  <node action="modify" id="-376" lat="13.6637654" lon="102.2523723" visible="true"/>
+  <node action="modify" id="-441" lat="13.6638327" lon="102.2523858" visible="true"/>
+  <node action="modify" id="-487" lat="13.6639853" lon="102.2524486" visible="true"/>
+  <node action="modify" id="-387" lat="13.664412537100606" lon="102.25267932225753" visible="true"/>
+  <node id="-1212" lat="13.664485228388356" lon="102.25273774191024" visible="true"/>
+  <node id="-1214" lat="13.664548066933408" lon="102.25281982095514" visible="true"/>
+  <node action="modify" id="-861" lat="13.664597768491385" lon="102.25292217947901" visible="true"/>
+  <node action="modify" id="-282" lat="13.66468296848902" lon="102.25310267991317" visible="true"/>
+  <node action="modify" id="-405" lat="13.6647213" lon="102.2532564" visible="true"/>
+  <node action="modify" id="-739" lat="13.6647168" lon="102.2533327" visible="true"/>
+  <node action="modify" id="-809" lat="13.6646899" lon="102.253418" visible="true"/>
+  <node action="modify" id="-878" lat="13.664612252736552" lon="102.25352795" visible="true"/>
+  <node action="modify" id="-761" lat="13.663941615745221" lon="102.25421678034732" visible="true"/>
+  <node id="-1210" lat="13.663865315744152" lon="102.25435925043413" visible="true"/>
+  <node action="modify" id="-402" lat="13.6637923" lon="102.254522" visible="true"/>
+  <node action="modify" id="-538" lat="13.6636667" lon="102.2548361" visible="true"/>
+  <node action="modify" id="-766" lat="13.6634378" lon="102.2555991" visible="true"/>
+  <node action="modify" id="-326" lat="13.663182" lon="102.2563755" visible="true"/>
+  <node action="modify" id="-409" lat="13.66299997758314" lon="102.25698105505077" visible="true"/>
+  <node action="modify" id="-426" lat="13.6627108" lon="102.2581302" visible="true"/>
+  <node id="-1208" lat="13.662611123622076" lon="102.25863543807465" visible="true"/>
+  <way action="modify" id="-956" visible="true">
+    <nd ref="-190"/>
+    <nd ref="-1166"/>
+    <nd ref="-1167"/>
+    <nd ref="-736"/>
+    <nd ref="-384"/>
+    <nd ref="-233"/>
+    <nd ref="-582"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node id="-1166" lat="13.633146802089382" lon="102.23659982444057" visible="true"/>
+  <node id="-1167" lat="13.633119314066477" lon="102.23665983554199" visible="true"/>
+  <node action="modify" id="-736" lat="13.63309379453207" lon="102.23672794888115" visible="true"/>
+  <node action="modify" id="-384" lat="13.6329741" lon="102.2371315" visible="true"/>
+  <node action="modify" id="-233" lat="13.6329023" lon="102.2373558" visible="true"/>
+  <node action="modify" id="-582" lat="13.632633" lon="102.2383118" visible="true"/>
+  <way action="modify" id="-957" visible="true">
+    <nd ref="-5"/>
+    <nd ref="-1094"/>
+    <nd ref="-362"/>
+    <nd ref="-283"/>
+    <nd ref="-1095"/>
+    <nd ref="-488"/>
+    <nd ref="-1096"/>
+    <nd ref="-624"/>
+    <nd ref="-245"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-5" lat="13.644564008456749" lon="102.240847259251" visible="true"/>
+  <node id="-1094" lat="13.645044054936358" lon="102.24078675126944" visible="true"/>
+  <node action="modify" id="-362" lat="13.64526989393587" lon="102.2407805356712" visible="true"/>
+  <node action="modify" id="-283" lat="13.645649161388278" lon="102.24080699999999" visible="true"/>
+  <node id="-1095" lat="13.645760680694139" lon="102.24080840093188" visible="true"/>
+  <node action="modify" id="-488" lat="13.645874922773961" lon="102.24081120279565" visible="true"/>
+  <node id="-1096" lat="13.645949861386981" lon="102.2408029532616" visible="true"/>
+  <node action="modify" id="-624" lat="13.6460248" lon="102.2407891" visible="true"/>
+  <node action="modify" id="-245" lat="13.6471513" lon="102.2404794" visible="true"/>
+  <way action="modify" id="-964" visible="true">
+    <nd ref="-262"/>
+    <nd ref="-1030"/>
+    <nd ref="-116"/>
+    <nd ref="-1244"/>
+    <nd ref="-1243"/>
+    <nd ref="-1242"/>
+    <nd ref="-254"/>
+    <nd ref="-1031"/>
+    <nd ref="-588"/>
+    <nd ref="-1029"/>
+    <nd ref="-1028"/>
+    <nd ref="-629"/>
+    <nd ref="-606"/>
+    <nd ref="-320"/>
+    <nd ref="-297"/>
+    <nd ref="-1027"/>
+    <nd ref="-751"/>
+    <nd ref="-1026"/>
+    <nd ref="-207"/>
+    <nd ref="-780"/>
+    <nd ref="-596"/>
+    <nd ref="-171"/>
+    <nd ref="-653"/>
+    <nd ref="-1025"/>
+    <nd ref="-318"/>
+    <nd ref="-595"/>
+    <nd ref="-179"/>
+    <nd ref="-1023"/>
+    <nd ref="-873"/>
+    <nd ref="-361"/>
+    <nd ref="-743"/>
+    <nd ref="-1021"/>
+    <nd ref="-498"/>
+    <nd ref="-688"/>
+    <nd ref="-1020"/>
+    <nd ref="-76"/>
+    <nd ref="-783"/>
+    <nd ref="-1019"/>
+    <nd ref="-309"/>
+    <nd ref="-1241"/>
+    <nd ref="-1240"/>
+    <nd ref="-391"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-262" lat="13.652841392572444" lon="102.2278575284668" visible="true"/>
+  <node id="-1030" lat="13.651992575790118" lon="102.22869928966787" visible="true"/>
+  <node action="modify" id="-116" lat="13.651913500910835" lon="102.22879853327692" visible="true"/>
+  <node id="-1244" lat="13.651876047575136" lon="102.22887546728899" visible="true"/>
+  <node id="-1243" lat="13.651843623936587" lon="102.22897310501729" visible="true"/>
+  <node id="-1242" lat="13.651783806357967" lon="102.22925119533889" visible="true"/>
+  <node action="modify" id="-254" lat="13.651679260300133" lon="102.22972456111712" visible="true"/>
+  <node id="-1031" lat="13.651648810050911" lon="102.22980233888289" visible="true"/>
+  <node action="modify" id="-588" lat="13.6516183598017" lon="102.22986743888288" visible="true"/>
+  <node id="-1029" lat="13.651574729656526" lon="102.22992875276577" visible="true"/>
+  <node id="-1028" lat="13.651531099510256" lon="102.22998372776577" visible="true"/>
+  <node action="modify" id="-629" lat="13.6514192" lon="102.230081" visible="true"/>
+  <node action="modify" id="-606" lat="13.651376059808028" lon="102.2301079" visible="true"/>
+  <node action="modify" id="-320" lat="13.651328079904605" lon="102.23011106944143" visible="true"/>
+  <node action="modify" id="-297" lat="13.651205220093821" lon="102.23008784720724" visible="true"/>
+  <node id="-1027" lat="13.651135249769455" lon="102.23006079025231" visible="true"/>
+  <node action="modify" id="-751" lat="13.65105603972465" lon="102.23001788609014" visible="true"/>
+  <node id="-1026" lat="13.650988149548413" lon="102.22996525969377" visible="true"/>
+  <node action="modify" id="-207" lat="13.65091717946051" lon="102.22990312497306" visible="true"/>
+  <node action="modify" id="-780" lat="13.6507595" lon="102.2296771" visible="true"/>
+  <node action="modify" id="-596" lat="13.6506967" lon="102.2296367" visible="true"/>
+  <node action="modify" id="-171" lat="13.6506249" lon="102.2296322" visible="true"/>
+  <node action="modify" id="-653" lat="13.6505665" lon="102.2296546" visible="true"/>
+  <node id="-1025" lat="13.650499319874534" lon="102.22973064583782" visible="true"/>
+  <node action="modify" id="-318" lat="13.650432139749075" lon="102.22981303055856" visible="true"/>
+  <node action="modify" id="-595" lat="13.649987370859295" lon="102.23037814994608" visible="true"/>
+  <node action="modify" id="-179" lat="13.649907329739202" lon="102.23046902778717" visible="true"/>
+  <node id="-1023" lat="13.649822944978062" lon="102.23053371667007" visible="true"/>
+  <node action="modify" id="-873" lat="13.649731835311133" lon="102.23059090371625" visible="true"/>
+  <node action="modify" id="-361" lat="13.649103500000008" lon="102.23089315279276" visible="true"/>
+  <node action="modify" id="-743" lat="13.649027200000006" lon="102.23095876111711" visible="true"/>
+  <node id="-1021" lat="13.648977020064736" lon="102.23101936111712" visible="true"/>
+  <node action="modify" id="-498" lat="13.648933" lon="102.2310863" visible="true"/>
+  <node action="modify" id="-688" lat="13.6487041" lon="102.2315575" visible="true"/>
+  <node id="-1020" lat="13.648638986066299" lon="102.23164541085123" visible="true"/>
+  <node action="modify" id="-76" lat="13.648559574427455" lon="102.23173332170245" visible="true"/>
+  <node action="modify" id="-783" lat="13.64817" lon="102.2321679" visible="true"/>
+  <node id="-1019" lat="13.647904791339535" lon="102.23243387062877" visible="true"/>
+  <node action="modify" id="-309" lat="13.6478469" lon="102.2324865" visible="true"/>
+  <node id="-1241" lat="13.647770342790276" lon="102.23254123763158" visible="true"/>
+  <node id="-1240" lat="13.647673666441316" lon="102.23257009561785" visible="true"/>
+  <node action="modify" id="-391" lat="13.647505462669383" lon="102.23260193194511" visible="true"/>
+  <way action="modify" id="-969" visible="true">
+    <nd ref="-10"/>
+    <nd ref="-810"/>
+    <nd ref="-523"/>
+    <nd ref="-670"/>
+    <nd ref="-123"/>
+    <nd ref="-307"/>
+    <nd ref="-215"/>
+    <nd ref="-327"/>
+    <nd ref="-258"/>
+    <nd ref="-367"/>
+    <nd ref="-872"/>
+    <nd ref="-622"/>
+    <nd ref="-79"/>
+    <nd ref="-385"/>
+    <nd ref="-868"/>
+    <nd ref="-817"/>
+    <nd ref="-613"/>
+    <nd ref="-608"/>
+    <nd ref="-447"/>
+    <nd ref="-895"/>
+    <nd ref="-694"/>
+    <nd ref="-284"/>
+    <nd ref="-333"/>
+    <nd ref="-181"/>
+    <nd ref="-302"/>
+    <nd ref="-39"/>
+    <nd ref="-354"/>
+    <nd ref="-417"/>
+    <nd ref="-41"/>
+    <nd ref="-353"/>
+    <nd ref="-732"/>
+    <nd ref="-477"/>
+    <nd ref="-899"/>
+    <nd ref="-598"/>
+    <nd ref="-241"/>
+    <nd ref="-715"/>
+    <nd ref="-251"/>
+    <nd ref="-97"/>
+    <nd ref="-1032"/>
+    <nd ref="-424"/>
+    <nd ref="-277"/>
+    <nd ref="-587"/>
+    <nd ref="-506"/>
+    <nd ref="-197"/>
+    <nd ref="-854"/>
+    <tag k="highway" v="unclassified"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-10" lat="13.647793" lon="102.2236768" visible="true"/>
+  <node action="modify" id="-810" lat="13.6483136" lon="102.223771" visible="true"/>
+  <node action="modify" id="-523" lat="13.6487086" lon="102.223789" visible="true"/>
+  <node action="modify" id="-670" lat="13.6499697" lon="102.2237127" visible="true"/>
+  <node action="modify" id="-123" lat="13.6520296" lon="102.2235601" visible="true"/>
+  <node action="modify" id="-307" lat="13.6524066" lon="102.2235466" visible="true"/>
+  <node action="modify" id="-215" lat="13.6525861" lon="102.2235601" visible="true"/>
+  <node action="modify" id="-327" lat="13.6529137" lon="102.2236364" visible="true"/>
+  <node action="modify" id="-258" lat="13.6532503" lon="102.2237935" visible="true"/>
+  <node action="modify" id="-367" lat="13.6543992" lon="102.224525" visible="true"/>
+  <node action="modify" id="-872" lat="13.6550814" lon="102.2249873" visible="true"/>
+  <node action="modify" id="-622" lat="13.6555077" lon="102.2253463" visible="true"/>
+  <node action="modify" id="-79" lat="13.6559296" lon="102.2257906" visible="true"/>
+  <node action="modify" id="-385" lat="13.6561944" lon="102.2261496" visible="true"/>
+  <node action="modify" id="-868" lat="13.6564008" lon="102.2265266" visible="true"/>
+  <node action="modify" id="-817" lat="13.6565624" lon="102.2269036" visible="true"/>
+  <node action="modify" id="-613" lat="13.6569932" lon="102.228214" visible="true"/>
+  <node action="modify" id="-608" lat="13.6570919" lon="102.2284788" visible="true"/>
+  <node action="modify" id="-447" lat="13.657258" lon="102.2287885" visible="true"/>
+  <node action="modify" id="-895" lat="13.6573881" lon="102.2289456" visible="true"/>
+  <node action="modify" id="-694" lat="13.6576035" lon="102.2291251" visible="true"/>
+  <node action="modify" id="-284" lat="13.6577382" lon="102.2292059" visible="true"/>
+  <node action="modify" id="-333" lat="13.6578908" lon="102.2292732" visible="true"/>
+  <node action="modify" id="-181" lat="13.6582678" lon="102.2293899" visible="true"/>
+  <node action="modify" id="-302" lat="13.6590576" lon="102.2295739" visible="true"/>
+  <node action="modify" id="-39" lat="13.6598879" lon="102.2297938" visible="true"/>
+  <node action="modify" id="-354" lat="13.6601751" lon="102.2299105" visible="true"/>
+  <node action="modify" id="-417" lat="13.660413" lon="102.2300541" visible="true"/>
+  <node action="modify" id="-41" lat="13.6605431" lon="102.2301752" visible="true"/>
+  <node action="modify" id="-353" lat="13.6606508" lon="102.2303099" visible="true"/>
+  <node action="modify" id="-732" lat="13.660781" lon="102.2305253" visible="true"/>
+  <node action="modify" id="-477" lat="13.660947" lon="102.2309247" visible="true"/>
+  <node action="modify" id="-899" lat="13.6612477" lon="102.2317684" visible="true"/>
+  <node action="modify" id="-598" lat="13.6614811" lon="102.2323025" visible="true"/>
+  <node action="modify" id="-241" lat="13.6625133" lon="102.2339406" visible="true"/>
+  <node action="modify" id="-715" lat="13.6626479" lon="102.234165" visible="true"/>
+  <node action="modify" id="-251" lat="13.6627063" lon="102.2342906" visible="true"/>
+  <node action="modify" id="-97" lat="13.6628364" lon="102.2344926" visible="true"/>
+  <node id="-1032" lat="13.663198542647514" lon="102.2349628753534" visible="true"/>
+  <node action="modify" id="-424" lat="13.6632269" lon="102.2349997" visible="true"/>
+  <node action="modify" id="-277" lat="13.6635141" lon="102.2352914" visible="true"/>
+  <node action="modify" id="-587" lat="13.663734" lon="102.2354889" visible="true"/>
+  <node action="modify" id="-506" lat="13.6647168" lon="102.2362473" visible="true"/>
+  <node action="modify" id="-197" lat="13.6668082" lon="102.2379123" visible="true"/>
+  <node action="modify" id="-854" lat="13.6679975" lon="102.2388952" visible="true">
+    <tag k="splitPoint" v="true"/>
+  </node>
+  <way action="modify" id="-987" visible="true">
+    <nd ref="-421"/>
+    <nd ref="-444"/>
+    <nd ref="-1196"/>
+    <nd ref="-1194"/>
+    <nd ref="-1193"/>
+    <nd ref="-93"/>
+    <nd ref="-906"/>
+    <nd ref="-128"/>
+    <nd ref="-866"/>
+    <nd ref="-1199"/>
+    <nd ref="-1198"/>
+    <nd ref="-578"/>
+    <nd ref="-276"/>
+    <nd ref="-479"/>
+    <nd ref="-151"/>
+    <nd ref="-1200"/>
+    <nd ref="-1202"/>
+    <nd ref="-1201"/>
+    <nd ref="-1203"/>
+    <nd ref="-1204"/>
+    <nd ref="-161"/>
+    <nd ref="-507"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-444" lat="13.6297742" lon="102.236014" visible="true"/>
+  <node id="-1196" lat="13.630053738970059" lon="102.23480754661048" visible="true"/>
+  <node id="-1194" lat="13.630243864365896" lon="102.23404392215254" visible="true"/>
+  <node id="-1193" lat="13.630365433025" lon="102.23346523601529" visible="true"/>
+  <node action="modify" id="-93" lat="13.630525266603922" lon="102.2327630879949" visible="true"/>
+  <node action="modify" id="-906" lat="13.63077951352809" lon="102.23166603048949" visible="true"/>
+  <node action="modify" id="-128" lat="13.630896399804412" lon="102.2312147879949" visible="true"/>
+  <node action="modify" id="-866" lat="13.630999799604817" lon="102.23085444380645" visible="true"/>
+  <node id="-1199" lat="13.631013734241737" lon="102.23076880584034" visible="true"/>
+  <node id="-1198" lat="13.631088766302039" lon="102.23009962203055" visible="true"/>
+  <node action="modify" id="-578" lat="13.6311699" lon="102.2292642" visible="true"/>
+  <node action="modify" id="-276" lat="13.631210972600115" lon="102.22891447222725" visible="true"/>
+  <node action="modify" id="-479" lat="13.631218805003924" lon="102.22889001499547" visible="true"/>
+  <node action="modify" id="-151" lat="13.63124360864071" lon="102.22887417888185" visible="true"/>
+  <node id="-1200" lat="13.631295087106473" lon="102.22885976446354" visible="true"/>
+  <node id="-1202" lat="13.631356437107572" lon="102.22886009919077" visible="true"/>
+  <node id="-1201" lat="13.631415235510278" lon="102.22886305947256" visible="true"/>
+  <node id="-1203" lat="13.631721542694537" lon="102.22892967935428" visible="true"/>
+  <node id="-1204" lat="13.631882342985753" lon="102.2289505151738" visible="true"/>
+  <node action="modify" id="-161" lat="13.6320406" lon="102.2289635" visible="true"/>
+  <node action="modify" id="-507" lat="13.632538310572006" lon="102.22897585099332" visible="true"/>
+  <way action="modify" id="-989" visible="true">
+    <nd ref="-429"/>
+    <nd ref="-710"/>
+    <nd ref="-830"/>
+    <nd ref="-436"/>
+    <nd ref="-1113"/>
+    <nd ref="-1114"/>
+    <nd ref="-1128"/>
+    <nd ref="-1127"/>
+    <nd ref="-1115"/>
+    <nd ref="-1116"/>
+    <nd ref="-1117"/>
+    <nd ref="-1129"/>
+    <nd ref="-1118"/>
+    <nd ref="-1119"/>
+    <nd ref="-1120"/>
+    <nd ref="-1121"/>
+    <nd ref="-1122"/>
+    <nd ref="-1123"/>
+    <nd ref="-1124"/>
+    <nd ref="-1125"/>
+    <nd ref="-1126"/>
+    <nd ref="-582"/>
+    <tag k="highway" v="track"/>
+    <tag k="surface" v="unpaved"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-429" lat="13.632191225317062" lon="102.24570719778099" visible="true"/>
+  <node action="modify" id="-710" lat="13.632808020444912" lon="102.24454843654327" visible="true"/>
+  <node action="modify" id="-830" lat="13.63283184548183" lon="102.24449795348879" visible="true"/>
+  <node action="modify" id="-436" lat="13.632835184002753" lon="102.24446009037014" visible="true"/>
+  <node id="-1113" lat="13.632818646329756" lon="102.24439524502476" visible="true"/>
+  <node id="-1114" lat="13.632570059101297" lon="102.244012547508" visible="true"/>
+  <node id="-1128" lat="13.632512687464772" lon="102.24392307600883" visible="true"/>
+  <node id="-1127" lat="13.632449996477495" lon="102.24383907806458" visible="true"/>
+  <node id="-1115" lat="13.632308656444714" lon="102.24368202928594" visible="true"/>
+  <node id="-1116" lat="13.632185359949052" lon="102.24354151665155" visible="true"/>
+  <node id="-1117" lat="13.63216414764224" lon="102.24350195484189" visible="true"/>
+  <node id="-1129" lat="13.632150881808474" lon="102.24347126033437" visible="true"/>
+  <node id="-1118" lat="13.632142935333526" lon="102.24344056582686" visible="true"/>
+  <node id="-1119" lat="13.632145586872223" lon="102.24337781261151" visible="true"/>
+  <node id="-1120" lat="13.632162821873004" lon="102.24311861454811" visible="true"/>
+  <node id="-1121" lat="13.632168124949912" lon="102.24253064420427" visible="true"/>
+  <node id="-1122" lat="13.63217607956507" lon="102.2419126614531" visible="true"/>
+  <node id="-1123" lat="13.632242368014186" lon="102.2410150176335" visible="true"/>
+  <node id="-1124" lat="13.632275512231773" lon="102.24036838667531" visible="true"/>
+  <node id="-1125" lat="13.632325891433615" lon="102.23978178053181" visible="true"/>
+  <node id="-1126" lat="13.632545968873535" lon="102.23872316107284" visible="true"/>
+  <way action="modify" id="-991" visible="true">
+    <nd ref="-567"/>
+    <nd ref="-266"/>
+    <nd ref="-829"/>
+    <nd ref="-1207"/>
+    <nd ref="-279"/>
+    <nd ref="-616"/>
+    <tag k="highway" v="track"/>
+    <tag k="surface" v="unpaved"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-567" lat="13.6600315" lon="102.2606165" visible="true">
+    <tag k="splitPoint" v="true"/>
+  </node>
+  <node action="modify" id="-266" lat="13.6604219" lon="102.2601184" visible="true"/>
+  <node action="modify" id="-829" lat="13.6611669" lon="102.2590906" visible="true"/>
+  <node id="-1207" lat="13.661210120069466" lon="102.25900583584833" visible="true"/>
+  <node action="modify" id="-279" lat="13.6612387" lon="102.2589201" visible="true"/>
+  <node action="modify" id="-616" lat="13.661288601328994" lon="102.25837522859327" visible="true"/>
+  <way action="modify" id="-1010" visible="true">
+    <nd ref="-1218"/>
+    <nd ref="-1219"/>
+    <nd ref="-1226"/>
+    <nd ref="-1221"/>
+    <nd ref="-1222"/>
+    <nd ref="-1224"/>
+    <nd ref="-1223"/>
+    <nd ref="-1225"/>
+    <nd ref="-702"/>
+    <nd ref="-644"/>
+    <nd ref="-772"/>
+    <nd ref="-51"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node id="-1218" lat="13.664576945507884" lon="102.25850182951251" visible="true"/>
+  <node id="-1219" lat="13.66413199211518" lon="102.25841438863564" visible="true"/>
+  <node id="-1226" lat="13.664060100878455" lon="102.25840631855083" visible="true"/>
+  <node id="-1221" lat="13.663993363248341" lon="102.25840355218102" visible="true"/>
+  <node id="-1222" lat="13.66389498142239" lon="102.25842359293846" visible="true"/>
+  <node id="-1224" lat="13.663830138824526" lon="102.25843739939272" visible="true"/>
+  <node id="-1223" lat="13.663767532177724" lon="102.2584604101498" visible="true"/>
+  <node id="-1225" lat="13.663681216088861" lon="102.25850620399918" visible="true"/>
+  <node action="modify" id="-702" lat="13.6635949" lon="102.2585566" visible="true"/>
+  <node action="modify" id="-644" lat="13.6633525" lon="102.2587944" visible="true"/>
+  <node action="modify" id="-772" lat="13.663334600000006" lon="102.2601299374514" visible="true"/>
+  <node action="modify" id="-51" lat="13.6635006" lon="102.2615051" visible="true">
+    <tag k="splitPoint" v="true"/>
+  </node>
+  <way id="-1020" visible="true">
+    <nd ref="-1032"/>
+    <nd ref="-1033"/>
+    <nd ref="-1035"/>
+    <nd ref="-1036"/>
+    <nd ref="-1037"/>
+    <nd ref="-1038"/>
+    <nd ref="-1040"/>
+    <nd ref="-1041"/>
+    <nd ref="-1042"/>
+    <nd ref="-1052"/>
+    <nd ref="-1043"/>
+    <nd ref="-1051"/>
+    <nd ref="-1044"/>
+    <nd ref="-1045"/>
+    <nd ref="-1047"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="track"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="surface" v="unpaved"/>
+  </way>
+  <node id="-1033" lat="13.663025561786785" lon="102.23515086763459" visible="true"/>
+  <node id="-1035" lat="13.662987637929787" lon="102.2351898959205" visible="true"/>
+  <node id="-1036" lat="13.662935492616477" lon="102.23522404567068" visible="true"/>
+  <node id="-1037" lat="13.66286438535246" lon="102.23525006452793" visible="true"/>
+  <node id="-1038" lat="13.662796438391247" lon="102.23525169070652" visible="true"/>
+  <node id="-1040" lat="13.66269846831965" lon="102.23523542892072" visible="true"/>
+  <node id="-1041" lat="13.662480917284439" lon="102.23520545580753" visible="true"/>
+  <node id="-1042" lat="13.662412288174638" lon="102.23519987537303" visible="true"/>
+  <node id="-1052" lat="13.662323668081976" lon="102.23519348184925" visible="true"/>
+  <node id="-1043" lat="13.66222279326583" lon="102.23520150155161" visible="true"/>
+  <node id="-1051" lat="13.662097664657686" lon="102.2352254320904" visible="true"/>
+  <node id="-1044" lat="13.661995294836647" lon="102.23525656924227" visible="true"/>
+  <node id="-1045" lat="13.661433890297031" lon="102.23544944519827" visible="true"/>
+  <node id="-1047" lat="13.661262166117018" lon="102.23552070484946" visible="true"/>
+  <way id="-1021" visible="true">
+    <nd ref="-1047"/>
+    <nd ref="-1048"/>
+    <nd ref="-1049"/>
+    <nd ref="-1050"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="track"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="surface" v="unpaved"/>
+  </way>
+  <node id="-1048" lat="13.661291571938582" lon="102.2360006123293" visible="true"/>
+  <node id="-1049" lat="13.66133036077871" lon="102.23651534665461" visible="true"/>
+  <node id="-1050" lat="13.661387523268296" lon="102.23726538810003" visible="true"/>
+  <way id="-1022" visible="true">
+    <nd ref="-310"/>
+    <nd ref="-475"/>
+    <nd ref="-344"/>
+    <nd ref="-623"/>
+    <nd ref="-392"/>
+    <nd ref="-1091"/>
+    <nd ref="-1090"/>
+    <nd ref="-805"/>
+    <nd ref="-1093"/>
+    <nd ref="-1092"/>
+    <nd ref="-314"/>
+    <nd ref="-512"/>
+    <nd ref="-1073"/>
+    <nd ref="-1074"/>
+    <nd ref="-1075"/>
+    <nd ref="-1076"/>
+    <nd ref="-1077"/>
+    <nd ref="-1078"/>
+    <nd ref="-1079"/>
+    <nd ref="-1080"/>
+    <nd ref="-1081"/>
+    <nd ref="-1082"/>
+    <nd ref="-1083"/>
+    <nd ref="-1084"/>
+    <nd ref="-1085"/>
+    <nd ref="-1086"/>
+    <nd ref="-1087"/>
+    <nd ref="-1088"/>
+    <nd ref="-1089"/>
+    <nd ref="-713"/>
+    <nd ref="-38"/>
+    <nd ref="-455"/>
+    <nd ref="-319"/>
+    <nd ref="-292"/>
+    <nd ref="-1072"/>
+    <nd ref="-850"/>
+    <nd ref="-196"/>
+    <nd ref="-1071"/>
+    <nd ref="-1069"/>
+    <nd ref="-1070"/>
+    <nd ref="-508"/>
+    <nd ref="-748"/>
+    <nd ref="-1067"/>
+    <nd ref="-1066"/>
+    <nd ref="-1068"/>
+    <nd ref="-452"/>
+    <nd ref="-1065"/>
+    <nd ref="-709"/>
+    <nd ref="-638"/>
+    <nd ref="-585"/>
+    <nd ref="-716"/>
+    <nd ref="-53"/>
+    <nd ref="-1063"/>
+    <nd ref="-870"/>
+    <nd ref="-519"/>
+    <nd ref="-679"/>
+    <nd ref="-1062"/>
+    <nd ref="-1061"/>
+    <nd ref="-239"/>
+    <nd ref="-154"/>
+    <nd ref="-1054"/>
+    <nd ref="-1055"/>
+    <nd ref="-1056"/>
+    <nd ref="-1057"/>
+    <nd ref="-1058"/>
+    <nd ref="-1059"/>
+    <nd ref="-1060"/>
+    <nd ref="-245"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="track"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="surface" v="unpaved"/>
+  </way>
+  <node action="modify" id="-310" lat="13.666687" lon="102.2433965" visible="true">
+    <tag k="splitPoint" v="true"/>
+  </node>
+  <node action="modify" id="-475" lat="13.6663998" lon="102.2434998" visible="true"/>
+  <node action="modify" id="-344" lat="13.6662876" lon="102.243576" visible="true"/>
+  <node action="modify" id="-623" lat="13.665749" lon="102.2440652" visible="true"/>
+  <node action="modify" id="-392" lat="13.6656144" lon="102.244155" visible="true"/>
+  <node id="-1091" lat="13.665572899571917" lon="102.24417765372807" visible="true"/>
+  <node id="-1090" lat="13.665531399143829" lon="102.24419503636722" visible="true"/>
+  <node action="modify" id="-805" lat="13.66544048541745" lon="102.24422517230792" visible="true"/>
+  <node id="-1093" lat="13.665322453649132" lon="102.24423773937914" visible="true"/>
+  <node id="-1092" lat="13.665204421880814" lon="102.24424327833181" visible="true"/>
+  <node action="modify" id="-314" lat="13.6649547" lon="102.2442403" visible="true"/>
+  <node action="modify" id="-512" lat="13.6637968" lon="102.2441909" visible="true"/>
+  <node id="-1073" lat="13.6633839" lon="102.2441819" visible="true"/>
+  <node id="-1074" lat="13.662889868750627" lon="102.24418006374607" visible="true"/>
+  <node id="-1075" lat="13.662744199321216" lon="102.24417843427287" visible="true"/>
+  <node id="-1076" lat="13.662661864386498" lon="102.24416702796051" visible="true"/>
+  <node id="-1077" lat="13.662543112026178" lon="102.2440757774617" visible="true"/>
+  <node id="-1078" lat="13.662372108522185" lon="102.24391445961557" visible="true"/>
+  <node id="-1079" lat="13.662175771012766" lon="102.24380039649203" visible="true"/>
+  <node id="-1080" lat="13.661702343603734" lon="102.24356901129859" visible="true"/>
+  <node id="-1081" lat="13.661393586085584" lon="102.243420729238" visible="true"/>
+  <node id="-1082" lat="13.661051577285686" lon="102.24316001352707" visible="true"/>
+  <node id="-1083" lat="13.66082515452017" lon="102.24301010199326" visible="true"/>
+  <node id="-1084" lat="13.660633565856426" lon="102.2429302578068" visible="true"/>
+  <node id="-1085" lat="13.6600730493675" lon="102.24278360521942" visible="true"/>
+  <node id="-1086" lat="13.659618618354479" lon="102.24265813578351" visible="true"/>
+  <node id="-1087" lat="13.659178436956202" lon="102.24252777792806" visible="true"/>
+  <node id="-1088" lat="13.658678085879574" lon="102.24239090217982" visible="true"/>
+  <node id="-1089" lat="13.658469350879459" lon="102.24230926634866" visible="true"/>
+  <node action="modify" id="-713" lat="13.658260615879332" lon="102.24221133578554" visible="true"/>
+  <node action="modify" id="-38" lat="13.657087400000004" lon="102.24157844967714" visible="true"/>
+  <node action="modify" id="-455" lat="13.6563335" lon="102.2412872" visible="true"/>
+  <node action="modify" id="-319" lat="13.6553282" lon="102.2409641" visible="true"/>
+  <node action="modify" id="-292" lat="13.6550993" lon="102.2409058" visible="true"/>
+  <node id="-1072" lat="13.654967230980327" lon="102.24088862548432" visible="true"/>
+  <node action="modify" id="-850" lat="13.654839" lon="102.2408833" visible="true"/>
+  <node action="modify" id="-196" lat="13.6546774" lon="102.2408878" visible="true"/>
+  <node id="-1071" lat="13.654573420057618" lon="102.24090109872988" visible="true"/>
+  <node id="-1069" lat="13.65446944011525" lon="102.24092081847587" visible="true"/>
+  <node id="-1070" lat="13.654367020057627" lon="102.24094374872989" visible="true"/>
+  <node action="modify" id="-508" lat="13.6542646" lon="102.2409731" visible="true"/>
+  <node action="modify" id="-748" lat="13.653877040111327" lon="102.24109751050803" visible="true"/>
+  <node id="-1067" lat="13.65380966455801" lon="102.24111978940518" visible="true"/>
+  <node id="-1066" lat="13.653737609337774" lon="102.24113725254023" visible="true"/>
+  <node id="-1068" lat="13.65366087444912" lon="102.2411474920322" visible="true"/>
+  <node action="modify" id="-452" lat="13.6535779" lon="102.2411481" visible="true"/>
+  <node id="-1065" lat="13.653512350671749" lon="102.24115066576208" visible="true"/>
+  <node action="modify" id="-709" lat="13.6531785" lon="102.2411436" visible="true"/>
+  <node action="modify" id="-638" lat="13.6530214" lon="102.2411571" visible="true"/>
+  <node action="modify" id="-585" lat="13.652448739592574" lon="102.24127732627011" visible="true"/>
+  <node action="modify" id="-716" lat="13.651895" lon="102.2412648" visible="true"/>
+  <node action="modify" id="-53" lat="13.651607699999994" lon="102.24129491050806" visible="true"/>
+  <node id="-1063" lat="13.651554259424389" lon="102.24129398677816" visible="true"/>
+  <node action="modify" id="-870" lat="13.651499258949022" lon="102.24128503677818" visible="true"/>
+  <node action="modify" id="-519" lat="13.651330379493423" lon="102.24122901637371" visible="true"/>
+  <node action="modify" id="-679" lat="13.6511096" lon="102.2411391" visible="true"/>
+  <node id="-1062" lat="13.651078379722254" lon="102.24112108944858" visible="true"/>
+  <node id="-1061" lat="13.651047159444522" lon="102.24109986838909" visible="true"/>
+  <node action="modify" id="-239" lat="13.650650898388346" lon="102.24092740069423" visible="true"/>
+  <node action="modify" id="-154" lat="13.650187980175254" lon="102.24079403699504" visible="true"/>
+  <node id="-1054" lat="13.649886394952157" lon="102.24072687162065" visible="true"/>
+  <node id="-1055" lat="13.64926832905156" lon="102.24063039528684" visible="true"/>
+  <node id="-1056" lat="13.648490535954583" lon="102.24048746738497" visible="true"/>
+  <node id="-1057" lat="13.64819240567543" lon="102.24045131298148" visible="true"/>
+  <node id="-1058" lat="13.64793272153376" lon="102.24042630902356" visible="true"/>
+  <node id="-1059" lat="13.647767191727059" lon="102.2404294345183" visible="true"/>
+  <node id="-1060" lat="13.647382979893333" lon="102.24045131298148" visible="true"/>
+  <way id="-1025" visible="true">
+    <nd ref="-838"/>
+    <nd ref="-1097"/>
+    <nd ref="-105"/>
+    <nd ref="-464"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node id="-1097" lat="13.644248244860442" lon="102.250486021381" visible="true"/>
+  <node action="modify" id="-105" lat="13.64410565388856" lon="102.25043837357268" visible="true"/>
+  <node action="modify" id="-464" lat="13.642806999999996" lon="102.249802747346" visible="true"/>
+  <way id="-1026" visible="true">
+    <nd ref="-429"/>
+    <nd ref="-833"/>
+    <nd ref="-69"/>
+    <nd ref="-1103"/>
+    <nd ref="-1104"/>
+    <nd ref="-1105"/>
+    <nd ref="-1106"/>
+    <nd ref="-1107"/>
+    <nd ref="-1108"/>
+    <nd ref="-1109"/>
+    <nd ref="-1110"/>
+    <nd ref="-1111"/>
+    <nd ref="-1112"/>
+    <nd ref="-565"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="track"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="surface" v="unpaved"/>
+  </way>
+  <node action="modify" id="-833" lat="13.62991851198802" lon="102.24557329482234" visible="true"/>
+  <node action="modify" id="-69" lat="13.6288613086078" lon="102.24559522196988" visible="true"/>
+  <node id="-1103" lat="13.628650207161355" lon="102.24561180261402" visible="true"/>
+  <node id="-1104" lat="13.628313893205338" lon="102.2456362713301" visible="true"/>
+  <node id="-1105" lat="13.627930019115084" lon="102.24567821770053" visible="true"/>
+  <node id="-1106" lat="13.627529158780062" lon="102.24573414619442" visible="true"/>
+  <node id="-1107" lat="13.627192843228714" lon="102.24579007468833" visible="true"/>
+  <node id="-1108" lat="13.626601742009019" lon="102.24591940933047" visible="true"/>
+  <node id="-1109" lat="13.626068390789198" lon="102.24603825738" visible="true"/>
+  <node id="-1110" lat="13.625487478218721" lon="102.24614312330606" visible="true"/>
+  <node id="-1111" lat="13.625171542712593" lon="102.24622352051605" visible="true"/>
+  <node id="-1112" lat="13.62478426635483" lon="102.24630391772602" visible="true"/>
+  <node action="modify" id="-565" lat="13.624113220583206" lon="102.24640423658855" visible="true"/>
+  <way id="-1028" visible="true">
+    <nd ref="-464"/>
+    <nd ref="-260"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+  </way>
+  <node action="modify" id="-260" lat="13.6413484" lon="102.2491186" visible="true"/>
+  <way id="-1029" visible="true">
+    <nd ref="-260"/>
+    <nd ref="-577"/>
+    <nd ref="-191"/>
+    <nd ref="-1135"/>
+    <nd ref="-216"/>
+    <nd ref="-1134"/>
+    <nd ref="-121"/>
+    <nd ref="-1133"/>
+    <nd ref="-382"/>
+    <nd ref="-681"/>
+    <nd ref="-1130"/>
+    <nd ref="-1131"/>
+    <nd ref="-1132"/>
+    <nd ref="-429"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="track"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="surface" v="unpaved"/>
+  </way>
+  <node action="modify" id="-577" lat="13.6388352" lon="102.247871" visible="true"/>
+  <node action="modify" id="-191" lat="13.6382967" lon="102.2475568" visible="true"/>
+  <node id="-1135" lat="13.637798186957559" lon="102.24718205948285" visible="true"/>
+  <node action="modify" id="-216" lat="13.63728643563388" lon="102.24686180838286" visible="true"/>
+  <node id="-1134" lat="13.63684762318803" lon="102.2466399792786" visible="true"/>
+  <node action="modify" id="-121" lat="13.6368202" lon="102.2466323" visible="true"/>
+  <node id="-1133" lat="13.636532599370916" lon="102.24658568768606" visible="true"/>
+  <node action="modify" id="-382" lat="13.636509494313035" lon="102.24658046971726" visible="true"/>
+  <node action="modify" id="-681" lat="13.6357565" lon="102.2463316" visible="true"/>
+  <node id="-1130" lat="13.6346301" lon="102.2459232" visible="true"/>
+  <node id="-1131" lat="13.633783100304237" lon="102.24581284879838" visible="true"/>
+  <node id="-1132" lat="13.63266811578997" lon="102.24572685707781" visible="true"/>
+  <way id="-1034" visible="true">
+    <nd ref="-299"/>
+    <nd ref="-1230"/>
+    <nd ref="-1232"/>
+    <nd ref="-473"/>
+    <nd ref="-1228"/>
+    <nd ref="-1137"/>
+    <nd ref="-1136"/>
+    <nd ref="-482"/>
+    <nd ref="-1138"/>
+    <nd ref="-820"/>
+    <nd ref="-265"/>
+    <nd ref="-44"/>
+    <nd ref="-1140"/>
+    <nd ref="-791"/>
+    <nd ref="-1141"/>
+    <nd ref="-1139"/>
+    <nd ref="-811"/>
+    <nd ref="-378"/>
+    <nd ref="-1142"/>
+    <nd ref="-851"/>
+    <nd ref="-246"/>
+    <nd ref="-480"/>
+    <nd ref="-1143"/>
+    <nd ref="-71"/>
+    <nd ref="-856"/>
+    <nd ref="-749"/>
+    <nd ref="-565"/>
+    <nd ref="-530"/>
+    <nd ref="-235"/>
+    <nd ref="-1156"/>
+    <nd ref="-1155"/>
+    <nd ref="-1154"/>
+    <nd ref="-1153"/>
+    <nd ref="-1152"/>
+    <nd ref="-1151"/>
+    <nd ref="-1150"/>
+    <nd ref="-1149"/>
+    <nd ref="-1148"/>
+    <nd ref="-1147"/>
+    <nd ref="-1146"/>
+    <nd ref="-1145"/>
+    <nd ref="-781"/>
+    <nd ref="-187"/>
+    <nd ref="-440"/>
+    <nd ref="-667"/>
+    <nd ref="-1165"/>
+    <nd ref="-1164"/>
+    <nd ref="-1163"/>
+    <nd ref="-1158"/>
+    <tag k="highway" v="unclassified"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node action="modify" id="-299" lat="13.6282214" lon="102.260069" visible="true">
+    <tag k="splitPoint" v="true"/>
+  </node>
+  <node id="-1230" lat="13.628208690689286" lon="102.25990487345115" visible="true"/>
+  <node id="-1232" lat="13.628185563450025" lon="102.25960621101655" visible="true"/>
+  <node action="modify" id="-473" lat="13.6281227" lon="102.2587944" visible="true"/>
+  <node id="-1228" lat="13.628106503107631" lon="102.25870919967157" visible="true"/>
+  <node id="-1137" lat="13.628085800882284" lon="102.25860029999998" visible="true"/>
+  <node id="-1136" lat="13.628042733921896" lon="102.25840619999998" visible="true"/>
+  <node action="modify" id="-482" lat="13.627844148226764" lon="102.25764110000001" visible="true"/>
+  <node id="-1138" lat="13.627789008037823" lon="102.2572686" visible="true"/>
+  <node action="modify" id="-820" lat="13.62772153214793" lon="102.25690879305026" visible="true"/>
+  <node action="modify" id="-265" lat="13.627469980353728" lon="102.25592802673745" visible="true"/>
+  <node action="modify" id="-44" lat="13.6273642" lon="102.2555318" visible="true"/>
+  <node id="-1140" lat="13.627262598783023" lon="102.25512165201374" visible="true"/>
+  <node action="modify" id="-791" lat="13.627155224392371" lon="102.2546521" visible="true"/>
+  <node id="-1141" lat="13.627105591344" lon="102.25446367810022" visible="true"/>
+  <node id="-1139" lat="13.627042487545523" lon="102.25428317673745" visible="true"/>
+  <node action="modify" id="-811" lat="13.6268885" lon="102.2539206" visible="true"/>
+  <node action="modify" id="-378" lat="13.6262781" lon="102.2527268" visible="true"/>
+  <node id="-1142" lat="13.625683132744657" lon="102.25154451986576" visible="true"/>
+  <node action="modify" id="-851" lat="13.625054273228503" lon="102.25020856026852" visible="true"/>
+  <node action="modify" id="-246" lat="13.6247523" lon="102.2495763" visible="true"/>
+  <node action="modify" id="-480" lat="13.624566968548855" lon="102.24918826563844" visible="true"/>
+  <node id="-1143" lat="13.624537818551465" lon="102.24911622033716" visible="true"/>
+  <node action="modify" id="-71" lat="13.62451829062347" lon="102.24904219490162" visible="true"/>
+  <node action="modify" id="-856" lat="13.6243304" lon="102.2477677" visible="true"/>
+  <node action="modify" id="-749" lat="13.6242586" lon="102.2472426" visible="true"/>
+  <node action="modify" id="-530" lat="13.623910424418808" lon="102.24515274040276" visible="true"/>
+  <node action="modify" id="-235" lat="13.6237919" lon="102.2439979" visible="true"/>
+  <node id="-1156" lat="13.623681720027129" lon="102.24317688997581" visible="true"/>
+  <node id="-1155" lat="13.62361964506649" lon="102.24257514779953" visible="true"/>
+  <node id="-1154" lat="13.623582073371855" lon="102.24203727769782" visible="true"/>
+  <node id="-1153" lat="13.623552669432772" lon="102.24141704623678" visible="true"/>
+  <node id="-1152" lat="13.623555936537294" lon="102.24113466443337" visible="true"/>
+  <node id="-1151" lat="13.623554302985033" lon="102.24093968652151" visible="true"/>
+  <node id="-1150" lat="13.623549402328214" lon="102.24080185730794" visible="true"/>
+  <node id="-1149" lat="13.623515097727502" lon="102.24064385796557" visible="true"/>
+  <node id="-1148" lat="13.623353375971455" lon="102.2400152222842" visible="true"/>
+  <node id="-1147" lat="13.62330110224886" lon="102.23975469145368" visible="true"/>
+  <node id="-1146" lat="13.623289667370505" lon="102.23955803269774" visible="true"/>
+  <node id="-1145" lat="13.623294568032717" lon="102.2394504586774" visible="true"/>
+  <node action="modify" id="-781" lat="13.623315160457352" lon="102.23922212066407" visible="true"/>
+  <node action="modify" id="-187" lat="13.6233924" lon="102.2387067" visible="true"/>
+  <node action="modify" id="-440" lat="13.6236572" lon="102.2373603" visible="true"/>
+  <node action="modify" id="-667" lat="13.623732303909344" lon="102.23688628898925" visible="true"/>
+  <node id="-1165" lat="13.623764818322957" lon="102.23678338473717" visible="true"/>
+  <node id="-1164" lat="13.623782913975171" lon="102.23673869783198" visible="true"/>
+  <node id="-1163" lat="13.623801009626009" lon="102.23671356144781" visible="true"/>
+  <way id="-1041" visible="true">
+    <nd ref="-1205"/>
+    <nd ref="-1206"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="service"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+  </way>
+  <node id="-1205" lat="13.644218554593335" lon="102.25140225741548" visible="true"/>
+  <node id="-1206" lat="13.642592814089332" lon="102.25136965075275" visible="true"/>
+  <way id="-1043" visible="true">
+    <nd ref="-644"/>
+    <nd ref="-1208"/>
+    <nd ref="-616"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+  </way>
+  <way id="-1230" visible="true">
+    <nd ref="-1228"/>
+    <nd ref="-1229"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="lint_review" v="R-I've started this, extend to service more houses"/>
+  </way>
+  <node id="-1229" lat="13.627529372696449" lon="102.25866224965777" visible="true"/>
+  <way id="-1231" visible="true">
+    <nd ref="-1230"/>
+    <nd ref="-1231"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="lint_review" v="R-I've started this, extend this to service more houses"/>
+  </way>
+  <node id="-1231" lat="13.62700925352313" lon="102.25971235759131" visible="true"/>
+  <way id="-1232" visible="true">
+    <nd ref="-1232"/>
+    <nd ref="-1234"/>
+    <nd ref="-1246"/>
+    <tag k="edited" v="true"/>
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="digitalglobe"/>
+    <tag k="import" v="yes"/>
+    <tag k="lint_review" v="R-I've started this, extend to reach to cover more houses"/>
+  </way>
+  <node id="-1234" lat="13.628282090583257" lon="102.25962044184223" visible="true"/>
+  <node id="-1246" lat="13.629287400531421" lon="102.25983831912956" visible="true"/>
+  <way changeset="46485942" id="159209975" timestamp="2017-03-01T06:45:14Z" uid="136154" user="136154" version="13" visible="true">
+    <nd ref="2103978989"/>
+    <nd ref="4442387167"/>
+    <nd ref="4442366663"/>
+    <nd ref="2103978990"/>
+    <nd ref="4442366661"/>
+    <nd ref="4442310986"/>
+    <nd ref="2103978991"/>
+    <nd ref="4442076493"/>
+    <nd ref="2103978992"/>
+    <nd ref="1713054225"/>
+    <nd ref="1713054216"/>
+    <nd ref="2103979003"/>
+    <nd ref="1713054338"/>
+    <nd ref="2103979004"/>
+    <nd ref="1713054372"/>
+    <nd ref="1713054371"/>
+    <nd ref="4442021122"/>
+    <nd ref="4442038959"/>
+    <nd ref="4442021114"/>
+    <nd ref="1713054365"/>
+    <nd ref="1713054268"/>
+    <nd ref="3001950199"/>
+    <nd ref="1713054208"/>
+    <nd ref="1713054340"/>
+    <nd ref="1713054259"/>
+    <nd ref="1713054250"/>
+    <nd ref="1713054223"/>
+    <nd ref="1713054220"/>
+    <nd ref="1713054215"/>
+    <nd ref="1713054342"/>
+    <nd ref="1713054336"/>
+    <nd ref="1713054173"/>
+    <nd ref="1713054374"/>
+    <nd ref="-10"/>
+    <nd ref="-391"/>
+    <nd ref="1713054370"/>
+    <nd ref="1713054177"/>
+    <nd ref="-5"/>
+    <nd ref="-1168"/>
+    <nd ref="1713054367"/>
+    <nd ref="1713054287"/>
+    <nd ref="-464"/>
+    <nd ref="-24"/>
+    <nd ref="-1206"/>
+    <nd ref="1713054252"/>
+    <nd ref="1713054255"/>
+    <nd ref="1713054205"/>
+    <nd ref="1713054337"/>
+    <nd ref="1580650498"/>
+    <nd ref="1580650496"/>
+    <nd ref="1580650499"/>
+    <nd ref="1580650501"/>
+    <nd ref="1580650502"/>
+    <nd ref="1580650503"/>
+    <nd ref="1580650505"/>
+    <nd ref="1580650465"/>
+    <nd ref="1580650506"/>
+    <nd ref="1580650507"/>
+    <nd ref="1580650479"/>
+    <nd ref="1580650508"/>
+    <nd ref="1580650510"/>
+    <nd ref="1580650512"/>
+    <tag k="description" v="SKW.3008"/>
+    <tag k="fixme" v="precision"/>
+    <tag k="highway" v="tertiary"/>
+    <tag k="ref" v="สก.3008"/>
+    <tag k="source" v="Survey, GPS"/>
+    <tag k="edited" v="true"/>
+  </way>
+  <node changeset="54462111" id="2103978989" lat="13.6508168" lon="102.0896729" timestamp="2017-12-08T15:41:45Z" uid="1293386" user="Sal73x" version="3" visible="true"/>
+  <node changeset="54462111" id="4442387167" lat="13.6509188" lon="102.0899155" timestamp="2017-12-08T15:41:45Z" uid="1293386" user="Sal73x" version="2" visible="true"/>
+  <node changeset="42805710" id="4442366663" lat="13.652343" lon="102.0951043" timestamp="2016-10-11T15:44:19Z" uid="38985" user="Johnny Carlsen" version="1" visible="true"/>
+  <node changeset="14595653" id="2103978990" lat="13.6527102" lon="102.096474" timestamp="2013-01-10T09:35:14Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="42805710" id="4442366661" lat="13.6527729" lon="102.0967206" timestamp="2016-10-11T15:44:19Z" uid="38985" user="Johnny Carlsen" version="1" visible="true"/>
+  <node changeset="42805710" id="4442310986" lat="13.6529846" lon="102.0975538" timestamp="2016-10-11T15:16:22Z" uid="38985" user="Johnny Carlsen" version="1" visible="true"/>
+  <node changeset="14595653" id="2103978991" lat="13.654352" lon="102.1029348" timestamp="2013-01-10T09:35:14Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="42801753" id="4442076493" lat="13.6550224" lon="102.1054469" timestamp="2016-10-11T12:38:32Z" uid="38985" user="Johnny Carlsen" version="1" visible="true"/>
+  <node changeset="14595653" id="2103978992" lat="13.6560117" lon="102.1091543" timestamp="2013-01-10T09:35:14Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054225" lat="13.6565652" lon="102.1114396" timestamp="2012-04-12T17:29:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="14595653" id="1713054216" lat="13.6578478" lon="102.1158722" timestamp="2013-01-10T09:35:20Z" uid="381887" user="RocketMan" version="2" visible="true"/>
+  <node changeset="14595653" id="2103979003" lat="13.6593312" lon="102.1218717" timestamp="2013-01-10T09:35:14Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="14595653" id="1713054338" lat="13.6595091" lon="102.1228869" timestamp="2013-01-10T09:35:20Z" uid="381887" user="RocketMan" version="2" visible="true"/>
+  <node changeset="14595653" id="2103979004" lat="13.6594575" lon="102.1236354" timestamp="2013-01-10T09:35:14Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054372" lat="13.6592132" lon="102.1247004" timestamp="2012-04-12T17:29:43Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="42801753" id="1713054371" lat="13.6556945" lon="102.1378265" timestamp="2016-10-11T12:24:56Z" uid="38985" user="Johnny Carlsen" version="2" visible="true"/>
+  <node changeset="42801753" id="4442021122" lat="13.6551821" lon="102.140134" timestamp="2016-10-11T12:24:56Z" uid="38985" user="Johnny Carlsen" version="1" visible="true"/>
+  <node changeset="42801753" id="4442038959" lat="13.65517" lon="102.1401864" timestamp="2016-10-11T12:32:22Z" uid="38985" user="Johnny Carlsen" version="1" visible="true"/>
+  <node changeset="42801753" id="4442021114" lat="13.6542383" lon="102.1442383" timestamp="2016-10-11T12:24:56Z" uid="38985" user="Johnny Carlsen" version="1" visible="true"/>
+  <node changeset="42801753" id="1713054365" lat="13.6539672" lon="102.1453908" timestamp="2016-10-11T12:24:56Z" uid="38985" user="Johnny Carlsen" version="2" visible="true"/>
+  <node changeset="42801753" id="1713054268" lat="13.6538908" lon="102.146019" timestamp="2016-10-11T12:24:56Z" uid="38985" user="Johnny Carlsen" version="2" visible="true"/>
+  <node changeset="45809311" id="3001950199" lat="13.6529118" lon="102.1567378" timestamp="2017-02-04T16:20:27Z" uid="136154" user="136154" version="2" visible="true"/>
+  <node changeset="11278493" id="1713054208" lat="13.6524575" lon="102.1606849" timestamp="2012-04-12T17:29:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054340" lat="13.6505183" lon="102.1799539" timestamp="2012-04-12T17:29:42Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054259" lat="13.6503515" lon="102.182679" timestamp="2012-04-12T17:29:40Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054250" lat="13.6508102" lon="102.1852754" timestamp="2012-04-12T17:29:40Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054223" lat="13.6509145" lon="102.1865629" timestamp="2012-04-12T17:29:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054220" lat="13.6495174" lon="102.1919273" timestamp="2012-04-12T17:29:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054215" lat="13.6491838" lon="102.1933435" timestamp="2012-04-12T17:29:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054342" lat="13.6487876" lon="102.1967982" timestamp="2012-04-12T17:29:42Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054336" lat="13.6486416" lon="102.1999525" timestamp="2012-04-12T17:29:42Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054173" lat="13.6483706" lon="102.2063039" timestamp="2012-04-12T17:29:38Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054374" lat="13.6479118" lon="102.2198652" timestamp="2012-04-12T17:29:43Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054370" lat="13.6474948" lon="102.2329329" timestamp="2012-04-12T17:29:43Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054177" lat="13.6470986" lon="102.2342418" timestamp="2012-04-12T17:29:38Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054367" lat="13.6439708" lon="102.2423743" timestamp="2012-04-12T17:29:43Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054287" lat="13.6435746" lon="102.2441553" timestamp="2012-04-12T17:29:41Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054252" lat="13.6417188" lon="102.2577165" timestamp="2012-04-12T17:29:40Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054255" lat="13.6411766" lon="102.260742" timestamp="2012-04-12T17:29:40Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054205" lat="13.637298" lon="102.2700118" timestamp="2012-04-12T17:29:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="11278493" id="1713054337" lat="13.636589" lon="102.2719644" timestamp="2012-04-12T17:29:42Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650498" lat="13.636553" lon="102.2756647" timestamp="2012-01-07T08:47:38Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650496" lat="13.6363653" lon="102.2794627" timestamp="2012-01-07T08:47:38Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650499" lat="13.6360317" lon="102.2819089" timestamp="2012-01-07T08:47:38Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650501" lat="13.6360943" lon="102.2824238" timestamp="2012-01-07T08:47:38Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650502" lat="13.6362402" lon="102.2828745" timestamp="2012-01-07T08:47:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650503" lat="13.6379084" lon="102.2851919" timestamp="2012-01-07T08:47:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650505" lat="13.6395767" lon="102.2870802" timestamp="2012-01-07T08:47:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650465" lat="13.6416828" lon="102.2889255" timestamp="2012-01-07T08:47:36Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650506" lat="13.6499818" lon="102.2951912" timestamp="2012-01-07T08:47:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650507" lat="13.650941" lon="102.2958993" timestamp="2012-01-07T08:47:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650479" lat="13.6517751" lon="102.2968434" timestamp="2012-01-07T08:47:37Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650508" lat="13.6567377" lon="102.3057913" timestamp="2012-01-07T08:47:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650510" lat="13.6583015" lon="102.3089884" timestamp="2012-01-07T08:47:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+  <node changeset="10318978" id="1580650512" lat="13.6586559" lon="102.3110484" timestamp="2012-01-07T08:47:39Z" uid="381887" user="RocketMan" version="1" visible="true"/>
+</osm>
+

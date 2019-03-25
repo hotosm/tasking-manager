@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js'></script>
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" rel='stylesheet' />
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+
+<body>
+<style>
+.thumb {
+    display: inline-block;
+    border: 1px solid #a9a9a9;
+    width: 180px;
+    margin: 2px;
+    background-color: #292929;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 2.5px;
+}
+</style>
+
+<div class="container">
+    <div class="section">
+        <h1 class="title is-1">Longish Edits of the last week</h1>
+        <table class="table">
+            <thead>
+                <th>date</th>
+                <th>id</th>
+                <th>project id</th>
+                <th>project name</th>
+                <th>task type</th>
+                <th>total time</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr id='task-{{row.task_id}}-project-{{row.project_id}}'>
+                        <td>{{ row.date }}</td>
+                        <td>{{ row.task_id }}</td>
+                        <td>{{ row.project_id }}</td>
+                        <td>{{ row.project_name }}</td>
+                        <td>{{ row.task_type }}</td>
+                        <td>{{ row.total_time }}</td>
+                        <td><a href="{{SERVER_PREFIX}}/task/{{row.task_osm}}">view</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</div>
+
+<script>
+
+// var rcs = [];
+// take the first task and get the edit from setInterval(function () {
+// function retrieveXML(task) {
+//     var parser = new DOMParser();
+//     d3.json(`{{SERVER_PREFIX}}/project/${task.project_id}/task/${task.task_id}/json`, (error, data) => {
+//         console.log(data);
+//         // now render the xml into the
+//         var width = 180;
+//         var height = 180;
+//         var margin = 10;
+//         var xml = parser.parseFromString(data.last_editor_edit[0].data, 'text/xml');
+//         console.log('xml', xml)
+//         var geojson = fbXMLtoGeoJSON(xml);
+//         console.log(geojson);
+//
+//         var projection = getProjection(geojson, width, height, margin);
+//         var rc = new RoadCanvas(`#task-${data.task_id}-project-${data.project_id} .thumb`, width, height, projection);
+//         rc.render(geojson, {showConnectedNodes: false})
+//         rcs.push(rc);
+//     });
+// }
+// tasks.forEach(t => {
+//     retrieveXML(t);
+// });
+//
+// function renderTable(data) {
+//
+// }
+//
+// function renderTimeline(taskId, projectId, edits) {
+//     var container = d3.select(`.${taskId}-${projectId}`).append('div');
+//     edits.forEach(edit => {
+//         // draw the frame here
+//     });
+// }
+//
+// renderTable(tasks);
+// tasks.forEach(task => {
+//     // download the files
+//     d3.json(`/task/${edit.taskOSM}/json`, function(error, edits) {
+//         if (error) {
+//             console.log(error);
+//             return;
+//         }
+//         renderTimeline(task.taskId, task.projectId, edits);
+//     });
+// });
+</script>
+</html>

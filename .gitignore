@@ -6,6 +6,10 @@ client/node_modules/
 client/assets/styles/css
 shippable/
 
+task-view/node_modules/
+task-view/package-lock.json
+.cache
+
 # Ignore generated config
 client/app/taskingmanager.config.js
 client/package-lock.json

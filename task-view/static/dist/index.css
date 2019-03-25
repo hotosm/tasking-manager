@@ -1,0 +1,353 @@
+#button-container button:not(:first-child) {
+  margin-left: 4px;
+}
+
+.fullscreen-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.sidepane {
+  position: absolute;
+  top: 80px;
+  bottom: 0px;
+  width: 220px;
+  /* padding: 20px; */
+  box-sizing: border-box;
+  border-right: 1px solid #eee;
+}
+
+.sidepane-header {
+  position: absolute;
+  top: 0;
+  height: 40px;
+  width: 100%;
+  padding: 10px 20px;
+  font-size: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.sidepane-header .button-container {
+  margin-top: -3px;
+}
+
+.sidepane-content {
+  position: absolute;
+  width: 100%;
+  top: 40px;
+  bottom: 0px;
+  padding: 10px;
+  overflow-y: scroll;
+}
+
+.sidepane-content::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #F5F5F5;
+}
+
+.sidepane-content::-webkit-scrollbar {
+  width: 6px;
+  background-color: #F5F5F5;
+}
+
+.sidepane-content::-webkit-scrollbar-thumb {
+  background-color: #bfbfbf;
+}
+
+.main {
+  position: absolute;
+  left: 220px;
+  top: 80px;
+  right: 0;
+  bottom: 0;
+  /* padding: 20px; */
+  display: flex;
+  flex-direction: column;
+}
+
+.main-header {
+  height: 40px;
+  order: 1;
+  padding-left: 10px;
+  padding-top: 6px;
+  font-size: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.main-header .timestamp {
+  margin-top: 2px;
+}
+
+.main-header label {
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.main-header .inline-buttons {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.main-toolbar {
+  height: 40px;
+  order: 2;
+  padding-left: 10px;
+  padding-top: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.main-content {
+  order: 3;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+#vector-map {
+  flex: 1;
+}
+
+.infopanel {
+  width: 350px;
+  background: white;
+  padding: 0;
+  border-left: 1px solid #eee;
+  overflow-y: scroll;
+}
+
+.panel-section-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: bold;
+  background: #f7f7f7;
+  border-bottom: 1px solid #eee;
+  line-height: 24px;
+  padding-left: 1rem;
+}
+
+.infopanel .section {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+}.thumb {
+  display: inline-block;
+  border: 2px solid #a9a9a9;
+  width: 180px;
+  margin: 2px;
+  background-color: #292929;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-radius: 2.5px;
+}
+.thumb img {
+  width: 180px;
+  height: 180px;
+}
+.thumb.selected {
+  border: 5px solid #0e74e3;
+}
+.thumb .caption {
+  width: 100%;
+  border-top: 1px solid #a9a9a9;
+  height: 18px;
+  box-sizing: border-box;
+  position: relative;
+  font-family: Fira Sans, sans-serif;
+  font-size: 12px;
+  background-color: white;
+}
+.thumb .index {
+  width: 18px;
+  border-right: 1px solid #a9a9a9;
+  box-sizing: border-box;
+  line-height: 18px;
+  position: absolute;
+  left: 0;
+  text-align: center;
+}
+.thumb .upload_time {
+  line-height: 18px;
+  position: absolute;
+  right: 2px;
+}
+.thumb .role {
+  line-height: 18px;
+  left: 23px;
+  position: absolute;
+}.header {
+  position: absolute;
+  height: 80px;
+  width: 100%;
+  border-bottom: 1px solid #eee;
+  padding: 1.5rem 1.5rem;
+}
+
+.header h2 {
+  margin-right: 20px;
+}.legend p {
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+}
+.legend .road {
+  width: 22px;
+  height: 4px;
+  background: red;
+}
+.legend .node {
+  width: 5px;
+  height: 5px;
+  display: inline-block;
+  border-radius: 2.5px;
+  border: 1px solid #555;
+}
+.legend .table {
+  font-size: 0.75rem;
+  max-width: 125px;
+}
+.legend .table td {
+  vertical-align: middle;
+  border: none;
+  padding: 3px 5px;
+}
+.legend .table td:nth-child(1) {
+  text-align: center;
+  padding-left: 0;
+}
+
+.unimportant {
+  color: #d5d5d5;
+}.unimportant {
+  color: #d5d5d5;
+}
+
+.selected-feature .table {
+  font-size: 0.75rem;
+  width: 100%;
+}#tooltip {
+  position: absolute;
+  color: white;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 10px;
+}
+
+#project-overview .fullscreen-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+#project-overview .sidepane {
+  display: none;
+  position: absolute;
+  top: 80px;
+  bottom: 0px;
+  width: 400px;
+  padding: 5px;
+  box-sizing: border-box;
+  border-right: 1px solid #eee;
+}
+#project-overview .sidepane-header {
+  position: absolute;
+  top: 0;
+  height: 40px;
+  width: 100%;
+  padding: 10px 20px;
+  font-size: 12px;
+  border-bottom: 1px solid #eee;
+}
+#project-overview .sidepane-header .button-container {
+  margin-top: -3px;
+}
+#project-overview .sidepane-content {
+  position: absolute;
+  width: 100%;
+  top: 40px;
+  bottom: 0px;
+  padding: 10px;
+  overflow-y: scroll;
+}
+#project-overview .sidepane-content::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #F5F5F5;
+}
+#project-overview .sidepane-content::-webkit-scrollbar {
+  width: 6px;
+  background-color: #F5F5F5;
+}
+#project-overview .sidepane-content::-webkit-scrollbar-thumb {
+  background-color: #bfbfbf;
+}
+#project-overview .main {
+  position: absolute;
+  left: 0;
+  top: 80px;
+  right: 0;
+  bottom: 0;
+  /* padding: 20px; */
+  display: flex;
+  flex-direction: column;
+}
+#project-overview .main-header {
+  height: 40px;
+  order: 1;
+  padding-left: 10px;
+  padding-top: 6px;
+  font-size: 12px;
+  border-bottom: 1px solid #eee;
+}
+#project-overview .main-header .timestamp {
+  margin-top: 2px;
+}
+#project-overview .main-header label {
+  display: inline-block;
+  margin-top: 4px;
+}
+#project-overview .main-header .inline-buttons {
+  display: inline-block;
+  margin-right: 10px;
+}
+#project-overview .main-toolbar {
+  height: 40px;
+  order: 2;
+  padding-left: 10px;
+  padding-top: 6px;
+  border-bottom: 1px solid #eee;
+}
+#project-overview .main-content {
+  order: 3;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+#project-overview #vector-map {
+  flex: 1;
+}
+#project-overview .infopanel {
+  width: 350px;
+  background: white;
+  padding: 0;
+  border-left: 1px solid #eee;
+  overflow-y: scroll;
+}
+#project-overview .panel-section-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: bold;
+  background: #f7f7f7;
+  border-bottom: 1px solid #eee;
+  line-height: 24px;
+  padding-left: 1rem;
+}
+#project-overview .infopanel .section {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+#project-overview .map-container {
+  background: #333;
+  width: 100%;
+  height: 100%;
+}

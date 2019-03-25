@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Diff Debugger</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" rel='stylesheet' />
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='/static/dist/index.js'></script>
+    <style>
+        body {
+            padding: 20px;
+            background: white;
+        }
+        .canvasmap {
+            display: inline-block;
+            background: #222;
+            width: 250px;
+            height: 250px;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+<h2>Diff</h2>
+<div id="v1-map" class="canvasmap"></div>
+<div id="v2-map" class="canvasmap"></div>
+<div id="diff-map" class="canvasmap"></div>
+<script>
+
+var height = 250,
+    width = 250,
+    margin = 10,
+    _data,
+    _dataXml;
+
+d3.queue()
+    .defer(d3.xml, '/static/data/v2.xml')
+    .defer(d3.xml, '/static/data/v3.xml')
+    .await(function (error, xml1, xml2) {
+        var v1 = TaskView.fbXMLtoGeoJSON(xml1);
+        var v2 = TaskView.fbXMLtoGeoJSON(xml2);
+
+        // compute the extents just from fb data so we don't show really large
+        // osm roads
+        var projection = TaskView.getProjection(v1, width, height, margin);
+        var rc1 = TaskView.StaticMap('#v1-map', width, height, projection);
+        rc1.render(v1, {showConnectedNodes: false, connectedNodeRadius: 2.5});
+        var rc2 = TaskView.StaticMap('#v2-map', width, height, projection);
+        rc2.render(v2, {showConnectedNodes: false, connectedNodeRadius: 2.5});
+        var rc3 = TaskView.StaticMap('#diff-map', width, height, projection);
+        rc3.render(v2, {showConnectedNodes: false});
+
+        var differ = new TaskView.MapDiff(width, height, projection);
+        var diffImg = differ.diff(v1, v2, true);
+        rc3.ctx.clearRect(0, 0, width, height);
+        rc3.ctx.putImageData(diffImg, 0, 0);
+
+        d3.select('#v2-map canvas').on('mousedown', function() {
+            var [x, y] = d3.mouse(this);
+            x = Math.round(x);
+            y = Math.round(y);
+
+            // grab the diff stats for this point
+            console.log(JSON.stringify(rc2.stats(x, y)));
+        });
+        d3.select('#diff-map canvas').on('mousedown', function() {
+            var [x, y] = d3.mouse(this);
+            x = Math.round(x);
+            y = Math.round(y);
+
+            // grab the diff stats for this point
+            console.log(differ.stats(x, y));
+        });
+    });
+
+</script>
+</body>
+</html>
