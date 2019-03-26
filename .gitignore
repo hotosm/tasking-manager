@@ -2,7 +2,7 @@
 .idea/
 
 # Custom configuration
-.env
+tasking-manager.env
 
 # Dev artifacts
 client/node_modules/

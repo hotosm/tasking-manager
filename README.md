@@ -23,8 +23,8 @@ Set up the environment variables to configure your local Tasking Manager instanc
 
 In order to configure the Tasking Manager:
 
-* Copy the example file to start your own configuration: `cp env-example .env`
-* Edit the `.env` file to fit your configuration (this includes setting the connection to the databse and OpenStreetMap's authentification mechanism).
+* Copy the example file to start your own configuration: `cp env-example tasking-manager.env`
+* Edit the `tasking-manager.env` file to fit your configuration (this includes setting the connection to the databse and OpenStreetMap's authentification mechanism).
 
 **Start and stop**
 
@@ -108,11 +108,11 @@ The backend server is made up of a postgres database and an associated API that 
 
 **Environment**
 
-Source the configuration from the environment configuration file: `export $(grep -v '^#' .env | xargs)`
+Source the configuration from the environment configuration file: `export $(grep -v '^#' tasking-manager.env | xargs)`
 
 **NOTE:** It is strongly recommended to add this initialization within your `.bash_profile` so they are available to all processes:
 
-`export $(grep -v '^#' /path/to/tasking-manager/.env | xargs)`
+`export $(grep -v '^#' /path/to/tasking-manager/tasking-manager.env | xargs)`
 
 Or you can set environment variable manually, too:
 

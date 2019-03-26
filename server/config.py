@@ -1,10 +1,13 @@
 import logging
 import os
-
+from dotenv import load_dotenv
 
 class EnvironmentConfig:
     """ Base class for configuration. """
     """ Most settings can be defined through environment variables. """
+
+    # Load configuration from file
+    load_dotenv(os.path.join(os.path.dirname(__file__), 'tasking-manager.env'))
 
     # The base url the application is reachable
     APP_BASE_URL = os.getenv('TM_APP_BASE_URL', 'http://127.0.0.1:5000')
@@ -25,14 +28,17 @@ class EnvironmentConfig:
     POSTGRES_DB = os.getenv('POSTGRES_DB', None)
 
     # Assamble the database uri
-    SQLALCHEMY_DATABASE_URI = f'postgresql://{POSTGRES_USER}' +  \
-                                    f':{POSTGRES_PASSWORD}' + \
-                                        f'@{POSTGRES_ENDPOINT}' + \
-                                            f'/{POSTGRES_DB}'
+    if os.getenv('TM_DB', False):
+        SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
+    else:
+        SQLALCHEMY_DATABASE_URI = f'postgresql://{POSTGRES_USER}' +  \
+                                        f':{POSTGRES_PASSWORD}' + \
+                                            f'@{POSTGRES_ENDPOINT}' + \
+                                                f'/{POSTGRES_DB}'
    
     # Logging settings
     LOG_LEVEL = os.getenv('TM_LOG_LEVEL', logging.DEBUG)
-    LOG_DIR = os.getenv('TM_LOG_DIR', '/var/log/tasking-manager.log')
+    LOG_DIR = os.getenv('TM_LOG_DIR', '/var/log/tasking-manager-logs')
 
     # Mapper Level values represent number of OSM changesets
     MAPPER_LEVEL_INTERMEDIATE = os.getenv('TM_MAPPER_LEVEL_INTERMEDIATE', 250)
