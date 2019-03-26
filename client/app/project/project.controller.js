@@ -13,6 +13,7 @@
     function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
         var vm = this;
         vm.id = 0;
+        vm.loaded = false;
         vm.projectData = null;
         vm.taskVectorLayer = null;
         vm.highlightVectorLayer = null;
@@ -103,7 +104,7 @@
             mapService.createOSMMap('map');
             mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
-
+            vm.loaded = false;
             vm.id = $routeParams.id;
             vm.highlightHistory = $routeParams.history ? parseInt($routeParams.history, 10) : null;
 
@@ -441,6 +442,7 @@
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
+                vm.loaded = true;
                 vm.projectData = data;
                 vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
                 vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
@@ -481,6 +483,7 @@
                 }
             }, function () {
                 // project not returned successfully
+                vm.loaded = true;
                 vm.errorGetProject = true;
             });
         }
@@ -505,10 +508,10 @@
          * @param id - id of project to be refreshed
          */
         function refreshProject(id) {
-            vm.errorGetProject = false;
             var resultsPromise = projectService.getProject(id);
             resultsPromise.then(function (data) {
                 //project returned successfully
+                vm.errorGetProject = false;
                 vm.projectData = data;
                 addProjectTasksToMap(vm.projectData.tasks, false);
                 //TODO: move the selected task refresh to a separate function so it can be called separately
