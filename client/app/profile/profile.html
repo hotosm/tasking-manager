@@ -59,6 +59,12 @@
                                 <hr/>
                             </div>
                             <div>
+                                <h4>Stats</h4>
+                                <span>Time Spent Mapping (TM3 only)</span>
+                                <span class="pull-right">{{ profileCtrl.userStats.timeSpentMapping | amDurationFormat : 'second' }}</span>
+                                <hr/>
+                            </div>
+                            <div>
                                 <h4>OSM details</h4>
                                 <div ng-show="profileCtrl.osmUserDetails">
                                     <p>{{ 'Joined OSM' | translate }} <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
@@ -70,7 +76,7 @@
                                     </a>
                                    </p>
                                 <p>
-                                    <a href="http://www.missingmaps.org/users/#/{{ profileCtrl.username }}/history" target="_blank" rel="noopener">
+                                    <a href="http://www.missingmaps.org/users/#/{{ profileCtrl.username }}/badges" target="_blank" rel="noopener">
                                         {{ 'Missing Maps Badges' | translate }}
                                     </a>
                                     </p>
@@ -84,6 +90,7 @@
                                         {{ 'OSM heat map' | translate }}
                                     </a>
                                 </p>
+                                <hr/>
                             </div>
                         </div>
                         <div class="roles pull-right">
@@ -254,6 +261,16 @@
                                     </button>
                                     <p ng-show="profileCtrl.errorSetLevel" class="error">{{ 'An error occurred when setting the level.' | translate }}</p>
                                 </div>
+                            </div>
+                            <div>
+                                <h4>{{ 'Expert Mode' | translate }}</h4>
+                                <p>{{ 'Expert mode makes advanced and experimental features available. Most users should leave this off.' | translate }}</p>
+                                <label class="form__option">
+                                    <i ng-show="profileCtrl.savingExpertMode" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
+                                    <input ng-show="!profileCtrl.savingExpertMode" type="checkbox" ng-model="profileCtrl.userDetails.isExpert" ng-change="profileCtrl.setExpertMode(profileCtrl.userDetails.isExpert)"/>
+                                    {{ 'Expert Mode' | translate }}
+                                </label>
+                                <p ng-show="profileCtrl.errorSetExpertMode" class="error">{{ 'An error occurred when altering expert mode setting.' | translate }}</p>
                             </div>
                         </div>
                     </div>

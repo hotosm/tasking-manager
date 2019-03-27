@@ -10,9 +10,10 @@ from sqlalchemy.orm.session import make_transient
 
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
+from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task
 from server.models.postgis.user import User
@@ -56,6 +57,7 @@ class Project(db.Model):
     license_id = db.Column(db.Integer, db.ForeignKey('licenses.id', name='fk_licenses'))
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     centroid = db.Column(Geometry('POINT', srid=4326))
+    task_creation_mode = db.Column(db.Integer, default=TaskCreationMode.GRID.value, nullable=False)
 
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
@@ -240,7 +242,7 @@ class Project(db.Model):
             return False
 
     def get_locked_tasks_for_user(self, user_id: int):
-        """ Gets tasks on project owned by specifed user id"""
+        """ Gets tasks on project owned by specified user id"""
         tasks = self.tasks.filter_by(locked_by=user_id)
 
         locked_tasks = []
@@ -250,7 +252,7 @@ class Project(db.Model):
         return locked_tasks
 
     def get_locked_tasks_details_for_user(self, user_id: int):
-        """ Gets tasks on project owned by specifed user id"""
+        """ Gets tasks on project owned by specified user id"""
         tasks = self.tasks.filter_by(locked_by=user_id)
 
         locked_tasks = []
@@ -297,8 +299,8 @@ class Project(db.Model):
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = int((self.tasks_mapped / (self.total_tasks - self.tasks_bad_imagery)) * 100)
-        summary.percent_validated = int(((self.tasks_validated + self.tasks_bad_imagery) / self.total_tasks) * 100)
+        summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
+        summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
 
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
@@ -321,8 +323,10 @@ class Project(db.Model):
         """ Get count of Locked tasks as a proxy for users who are currently active on the project """
 
         return Task.query \
-            .filter(Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value) \
+            .filter(Task.task_status.in_((TaskStatus.LOCKED_FOR_MAPPING.value,
+                    TaskStatus.LOCKED_FOR_VALIDATION.value))) \
             .filter(Task.project_id == project_id) \
+            .distinct(Task.locked_by) \
             .count()
 
     def _get_project_and_base_dto(self):
@@ -345,9 +349,11 @@ class Project(db.Model):
         base_dto.campaign_tag = self.campaign_tag
         base_dto.organisation_tag = self.organisation_tag
         base_dto.license_id = self.license_id
+        base_dto.created = self.created
         base_dto.last_updated = self.last_updated
         base_dto.author = User().get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
+        base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
 
         if self.private:
             # If project is private it should have a list of allowed users
@@ -386,6 +392,41 @@ class Project(db.Model):
         project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
 
         return project_tasks
+
+    @staticmethod
+    def get_all_organisations_tag(preferred_locale='en'):
+        query = db.session.query(Project.id,
+                                 Project.organisation_tag,
+                                 Project.private,
+                                 Project.status)\
+            .join(ProjectInfo)\
+            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
+            .filter(Project.private != True)\
+            .filter(Project.organisation_tag.isnot(None))\
+            .filter(Project.organisation_tag != '')
+        query = query.distinct(Project.organisation_tag)
+        query = query.order_by(Project.organisation_tag)
+        tags_dto = TagsDTO()
+        tags_dto.tags = [r[1] for r in query]
+        return tags_dto
+
+    @staticmethod
+    def get_all_campaign_tag(preferred_locale='en'):
+        query = db.session.query(Project.id,
+                                 Project.campaign_tag,
+                                 Project.private,
+                                 Project.status)\
+            .join(ProjectInfo)\
+            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
+            .filter(Project.private != True)\
+            .filter(Project.campaign_tag.isnot(None))\
+            .filter(Project.campaign_tag != '')
+        query = query.distinct(Project.campaign_tag)
+        query = query.order_by(Project.campaign_tag)
+        tags_dto = TagsDTO()
+        tags_dto.tags = [r[1] for r in query]
+        return tags_dto
+
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

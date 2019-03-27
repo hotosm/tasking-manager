@@ -62,8 +62,17 @@ class TaskDTO(Model):
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
     per_task_instructions = StringType(serialized_name='perTaskInstructions', serialize_when_none=False)
     is_undoable = BooleanType(serialized_name='isUndoable', default=False)
+    auto_unlock_seconds = IntType(serialized_name='autoUnlockSeconds')
 
 
 class TaskDTOs(Model):
     """ Describes an array of Task DTOs"""
     tasks = ListType(ModelType(TaskDTO))
+
+class TaskCommentDTO(Model):
+    """ Describes the model used to add a standalone comment to a task outside of mapping/validation """
+    user_id = IntType(required=True)
+    comment = StringType(required=True)
+    task_id = IntType(required=True)
+    project_id = IntType(required=True)
+    preferred_locale = StringType(default='en')

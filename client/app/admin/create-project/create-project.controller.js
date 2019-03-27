@@ -108,7 +108,7 @@
         }
 
         /**
-         * Move the wizard to appropiate step for type of tasks selected
+         * Move the wizard to appropriate step for type of tasks selected
          */
         vm.setWizardStepAfterTaskTypeSelection = function () {
             if (vm.taskType === 'square-grid') {
@@ -258,7 +258,7 @@
         };
 
         /**
-         * Create arbitary tasks
+         * Create arbitrary tasks
          */
         vm.createArbitaryTasks = function () {
             if (vm.isImportedAOI) {
@@ -346,6 +346,12 @@
                             setUploadedFeatures(uploadedFeatures);
                         });
                     }
+                    else if (file.name.substr(-3).toLowerCase() === 'osm') {
+                        // Use the osmtogeojson.js library to read the osm (with GeoJSON as output)
+                        var xml = (new DOMParser()).parseFromString(data, 'text/xml')
+                        uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(osmtogeojson(xml, {flatProperties: true}));
+                        setUploadedFeatures(uploadedFeatures);
+                    }
                 };
                 if (file.name.substr(-4).toLowerCase() === 'json') {
                     fileReader.readAsText(file);
@@ -355,6 +361,9 @@
                 }
                 else if (file.name.substr(-3).toLowerCase() === 'zip') {
                     fileReader.readAsArrayBuffer(file);
+                }
+                else if (file.name.substr(-3).toLowerCase() === 'osm') {
+                    fileReader.readAsText(file);
                 }
                 else {
                     vm.isImportError = true;

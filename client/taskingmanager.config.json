@@ -25,7 +25,10 @@
           "key": "AioPAglzP9Qw32KN17dOkKYRdSlzj7W5kIQY6zct_UCmGc0WRxAh-QeiRBpRUgrv",
           "imagerySet": "Aerial"
         }
-      ]
+      ],
+      "atticQueryOffsetMinutes": 10,
+      "maxCommentLength": 5000,
+      "maxChatLength": 5000
     }
   },
   "release": {
@@ -55,7 +58,10 @@
           "attribution": "Courtesy of Microsoft Bing",
           "imagerySet": "Aerial"
         }
-      ]
+      ],
+      "atticQueryOffsetMinutes": 10,
+      "maxCommentLength": 5000,
+      "maxChatLength": 5000
     }
   }
 }

@@ -58,7 +58,7 @@ class TestProject(unittest.TestCase):
 
         # Assert
         self.assertIsInstance(feature_collection, geojson.FeatureCollection)
-        self.assertEqual(1, len(feature_collection.features))
+        self.assertEqual(2, len(feature_collection.features))
 
     def test_project_can_be_generated_as_dto(self):
         if self.skip_tests:

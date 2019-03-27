@@ -4,9 +4,19 @@ from unittest.mock import MagicMock, patch
 from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, Project, \
     ProjectAdminServiceError, ProjectDTO, ProjectStatus, NotFound, LicenseService
 from server.models.dtos.project_dto import ProjectInfoDTO
+from server.models.postgis.task import Task
+from server import create_app
 
 
 class TestProjectAdminService(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app()
+        self.ctx = self.app.app_context()
+        self.ctx.push()
+
+    def tearDown(self):
+        self.ctx.pop()
+
     def test_cant_add_tasks_if_geojson_not_feature_collection(self):
         # Arrange
         invalid_feature = '{"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715], [-3.8122, 56.098],' \
@@ -20,7 +30,7 @@ class TestProjectAdminService(unittest.TestCase):
         # Arrange
         valid_feature_collection = json.loads('{"features": [{"geometry": {"coordinates": [[[[-4.0237, 56.0904],'
                                               '[-3.9111, 56.1715], [-3.8122, 56.098], [-4.0237, 56.0904]]]], "type":'
-                                              '"MultiPolygon"}, "properties": {"x": 2402, "y": 1736, "zoom": 12, "splittable": true}, "type":'
+                                              '"MultiPolygon"}, "properties": {"x": 2402, "y": 1736, "zoom": 12, "isSquare": true}, "type":'
                                               '"Feature"}], "type": "FeatureCollection"}')
 
         test_project = Project()
@@ -112,3 +122,28 @@ class TestProjectAdminService(unittest.TestCase):
 
         with self.assertRaises(ProjectAdminServiceError):
             ProjectAdminService._validate_imagery_licence(1)
+
+    @patch.object(ProjectAdminService, '_get_project_by_id')
+    @patch('flask_sqlalchemy._QueryProperty.__get__')
+    @patch.object(Task, 'set_task_history')
+    def test_reset_all_tasks(self, mock_set_task_history, mock_query, mock_get_project):
+        user_id = 123
+        test_project = MagicMock(spec=Project)
+        test_project.id = 456
+        test_project.tasks_mapped = 2
+        test_project.tasks_validated = 2
+        test_tasks = [MagicMock(spec=Task), MagicMock(spec=Task), MagicMock(spec=Task)]
+
+        mock_query.return_value.filter.return_value.all.return_value = test_tasks
+        mock_get_project.return_value = test_project
+
+        ProjectAdminService.reset_all_tasks(test_project.id, user_id)
+
+        for test_task in test_tasks:
+            test_task.set_task_history.assert_called()
+            test_task.reset_task.assert_called_with(user_id)
+
+        mock_get_project.assert_called_with(test_project.id)
+        self.assertEqual(test_project.tasks_mapped, 0)
+        self.assertEqual(test_project.tasks_validated, 0)
+        test_project.save.assert_called()

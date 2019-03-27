@@ -37,11 +37,18 @@ class UserDTO(Model):
     mapping_level = StringType(serialized_name='mappingLevel', validators=[is_known_mapping_level])
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
+    tasks_invalidated = IntType(serialized_name='tasksInvalidated')
     email_address = EmailType(serialized_name='emailAddress', serialize_when_none=False)
     is_email_verified = EmailType(serialized_name='isEmailVerified', serialize_when_none=False)
+    is_expert = BooleanType(serialized_name='isExpert', serialize_when_none=False)
     twitter_id = StringType(serialized_name='twitterId')
     facebook_id = StringType(serialized_name='facebookId')
     linkedin_id = StringType(serialized_name='linkedinId')
+
+
+class UserStatsDTO(Model):
+    """ DTO containing statistics about the user """
+    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
 
 
 class UserOSMDTO(Model):
@@ -58,7 +65,6 @@ class MappedProject(Model):
     tasks_validated = IntType(serialized_name='tasksValidated')
     status = StringType()
     centroid = BaseType()
-    aoi = BaseType()
 
 
 class UserMappedProjectsDTO(Model):
@@ -90,6 +96,13 @@ class ListedUser(Model):
     mapping_level = StringType(serialized_name='mappingLevel')
 
 
+class ProjectParticipantUser(Model):
+    """ Describes a user who has participated in a project """
+    username = StringType()
+    project_id = LongType(serialized_name='projectId')
+    is_participant = BooleanType(serialized_name='isParticipant')
+
+
 class UserSearchDTO(Model):
     """ Paginated list of TM users """
     def __init__(self):
@@ -105,6 +118,8 @@ class UserFilterDTO(Model):
     def __init__(self):
         super().__init__()
         self.usernames = []
+        self.users = []
 
     pagination = ModelType(Pagination)
     usernames = ListType(StringType)
+    users = ListType(ModelType(ProjectParticipantUser))

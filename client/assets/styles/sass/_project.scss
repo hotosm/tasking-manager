@@ -115,6 +115,44 @@
   }
   a {
     color: $link-color;
+
+    &.diff-control {
+      display: inline-block;
+      margin-left: 0.5em;
+      border: 2px solid $orange;
+      border-radius: 4px;
+
+      &:before {
+        content: '\B1';
+        display: inline-block;
+        text-align: center;
+        width: 1.5em;
+        background-color: $orange;
+        color: white;
+        transition: all 0.3s ease 0s;
+      }
+
+      &.selected {
+        border-color: darken($link-color, 13%);
+
+        &:before {
+          content: '\2713';
+          border-radius: 4px;
+          color: darken($link-color, 13%);
+          background-color: white;
+        }
+      }
+
+      &:hover {
+        text-decoration: none;
+
+        &:before {
+          border-radius: 4px;
+          color: $orange;
+          background-color: white;
+        }
+      }
+    }
   }
 }
 
@@ -192,4 +230,14 @@
 
 .indent--right {
   padding-left: 1.5em;
+}
+
+.user-suggestions-menu {
+  h6 {
+    margin: 0.25em 0.5em;
+  }
+
+  hr {
+    margin: 1rem auto;
+  }
 }

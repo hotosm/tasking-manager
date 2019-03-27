@@ -65,6 +65,17 @@ INSERT INTO hotnew.projects(
 
 select setval('hotnew.projects_id_seq',(select max(id) from hotnew.projects));
 
+-- Set the task_creation_mode to 'arbitrary' when project's zoom was None in
+-- TM2 or 'grid' when it was not None
+Update hotnew.projects
+   set task_creation_mode = 1
+  from hotold.projects as p
+ where p.id = hotnew.projects.id and p.zoom is NULL;
+
+Update hotnew.projects
+   set task_creation_mode = 0
+  from hotold.projects as p
+ where p.id = hotnew.projects.id and p.zoom is not NULL;
 
 -- Project info & translations
 -- Skip any records relating to projects that have not been imported
@@ -292,9 +303,9 @@ INSERT INTO hotnew.project_allowed_users(
     (select distinct project_id, user_id
     from hotold.project_allowed_users);
 
--- TASK SPLITTABLE FLAG
--- Ensure the splittable flag is consistent with the x,y,zoom values
-UPDATE hotnew.tasks SET splittable = (x IS NOT NULL AND y IS NOT NULL AND zoom IS NOT NULL);
+-- TASK ISSQUARE FLAG
+-- Ensure the is_sqaure flag is consistent with the x,y,zoom values
+UPDATE hotnew.tasks SET is_square = (x IS NOT NULL AND y IS NOT NULL AND zoom IS NOT NULL);
 
 
 --------------------------------------------------	

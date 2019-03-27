@@ -8,6 +8,7 @@ from flask import current_app
 from server import create_app
 from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message, NotFound
+from server.models.postgis.task import TaskStatus
 from server.services.messaging.smtp_service import SMTPService
 from server.services.messaging.template_service import get_template, get_profile_url
 from server.services.project_service import ProjectService
@@ -43,16 +44,18 @@ class MessageService:
         return welcome_message.id
 
     @staticmethod
-    def send_message_after_validation(validated_by: int, mapped_by: int, task_id: int, project_id: int):
-        """ Sends mapper a thank you, after their task has been marked as valid """
+    def send_message_after_validation(status: int, validated_by: int, mapped_by: int, task_id: int, project_id: int):
+        """ Sends mapper a notification after their task has been marked valid or invalid """
         if validated_by == mapped_by:
-            return  # No need to send a thankyou to yourself
+            return  # No need to send a message to yourself
 
         user = UserService.get_user_by_id(mapped_by)
         if user.validation_message == False:
             return # No need to send validation message
 
-        text_template = get_template('validation_message_en.txt')
+        text_template = get_template('invalidation_message_en.txt' if status == TaskStatus.INVALIDATED \
+                                                                   else 'validation_message_en.txt')
+        status_text = 'marked invalid' if status == TaskStatus.INVALIDATED else 'validated'
         task_link = MessageService.get_task_link(project_id, task_id)
 
         text_template = text_template.replace('[USERNAME]', user.username)
@@ -61,7 +64,7 @@ class MessageService:
         validation_message = Message()
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = f'Your mapping in Project {project_id} on {task_link} has just been validated'
+        validation_message.subject = f'Your mapping in Project {project_id} on {task_link} has just been {status_text}'
         validation_message.message = text_template
         validation_message.add_message()
 
@@ -107,7 +110,6 @@ class MessageService:
             try:
                 user = UserService.get_user_by_username(username)
             except NotFound:
-                current_app.logger.error(f'Username {username} not found')
                 continue  # If we can't find the user, keep going no need to fail
 
             message = Message()
