@@ -59,7 +59,7 @@ class MapillaryService:
         # set up the url for mapillary
         MAPILLARY_API = current_app.config['MAPILLARY_API']
         url = MAPILLARY_API['base'] + 'sequences?bbox=' + bbox + '&start_time=' + start_date + '&end_time=' + end_date + '&client_id=' + MAPILLARY_API['clientId']
-        if usernames_str:
+        if usernames_str is not None:
             url += '&usernames=' + usernames_str
 
         # Get all the url's so we can query sequences asynchronously (this part might be able to async too)

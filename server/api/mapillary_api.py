@@ -52,7 +52,10 @@ class MapillaryTasksAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'], request.args['usernames'])
+            if request.args.get('usernames') is not None:
+                tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'], request.args['usernames'])
+            else:
+                tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'])                
             if len(tasks) > 0:
                 return tasks, 200
             else:
