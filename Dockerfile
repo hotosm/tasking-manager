@@ -1,4 +1,4 @@
-FROM python:3.6-jessie
+FROM python:3-stretch
 
 # Install dependencies for shapely
 RUN apt-get update \
