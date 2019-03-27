@@ -1,36 +1,31 @@
-# To use this file, issue `docker-compose up`.
-# If Python says the database is not running,
-#    Ctrl+C and run it one more time.
-# Note this currently only runs the backend.
-version: '2'
+# To use this file, run `docker-compose up`.
+version: '3'
+
 services:
-  base:
-    build:
-      context: .
-      dockerfile: Dockerfile
+
+  # Main application
+  app:
+    build: .
     environment:
       - TM_DB=postgresql://hottm:hottm@postgresql/tasking-manager
-    command: "false"
-  app:
-    extends:
-      service: base
     depends_on:
       - postgresql
-    expose:
-      - "5000"
     ports:
       - "5000:5000"
     links:
       - postgresql
     command: python manage.py runserver -h 0.0.0.0
+
+  # Migration service
   migration:
-    extends:
-      service: base
+    build: .
     depends_on:
       - postgresql
     links:
       - postgresql
     command: python manage.py db upgrade
+
+  # Database
   postgresql:
     image: mdillon/postgis:9.6
     environment:
@@ -43,6 +38,7 @@ services:
       driver: none
     volumes:
       - pgdata:/var/lib/postgresql/data
+
 volumes:
   pgdata:
   stage:
