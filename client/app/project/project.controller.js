@@ -156,7 +156,7 @@
                 refreshAbbreviatedProject(vm.id);
                 updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refresh too
-            }, 10000);
+            }, 120000);
 
             // set up the preferred editor from user preferences
 
