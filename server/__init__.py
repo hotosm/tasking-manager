@@ -99,19 +99,19 @@ def init_flask_restful_routes(app):
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
-        TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
+        CommentOnTaskAPI, TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
     from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
         ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
-        ProjectValidateAll, ProjectsForAdminAPI
+        ProjectValidateAll, ProjectMapAll, ProjectResetAll, ProjectResetBadImagery, ProjectsForAdminAPI
     from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
         HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
-    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI
+    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.users.user_apis import UserAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
-        UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+    from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
+        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
         MappedTasksByUser
     from server.api.grid.grid_apis import IntersectingTilesAPI
@@ -125,6 +125,9 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectCommentsAPI,            '/api/v1/admin/project/<int:project_id>/comments')
     api.add_resource(ProjectInvalidateAll,          '/api/v1/admin/project/<int:project_id>/invalidate-all')
     api.add_resource(ProjectValidateAll,            '/api/v1/admin/project/<int:project_id>/validate-all')
+    api.add_resource(ProjectMapAll,                 '/api/v1/admin/project/<int:project_id>/map-all')
+    api.add_resource(ProjectResetBadImagery,        '/api/v1/admin/project/<int:project_id>/reset-all-badimagery')
+    api.add_resource(ProjectResetAll,               '/api/v1/admin/project/<int:project_id>/reset-all')
     api.add_resource(ProjectsMessageAll,            '/api/v1/admin/project/<int:project_id>/message-all')
     api.add_resource(ProjectsForAdminAPI,           '/api/v1/admin/my-projects')
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
@@ -154,12 +157,14 @@ def init_flask_restful_routes(app):
     api.add_resource(MappingTaskAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>')
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
     api.add_resource(StopMappingAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/stop-mapping')
+    api.add_resource(CommentOnTaskAPI,              '/api/v1/project/<int:project_id>/task/<int:task_id>/comment')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
     api.add_resource(StopValidatingAPI,             '/api/v1/project/<int:project_id>/stop-validating')
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
+    api.add_resource(StatsUserAPI,                  '/api/v1/stats/user/<string:username>')
     api.add_resource(HomePageStatsAPI,              '/api/v1/stats/home-page')
     api.add_resource(CampaignsTagsAPI,              '/api/v1/tags/campaigns')
     api.add_resource(OrganisationTagsAPI,           '/api/v1/tags/organisations')
@@ -167,11 +172,13 @@ def init_flask_restful_routes(app):
     api.add_resource(UserSearchFilterAPI,           '/api/v1/user/search/filter/<string:username>')
     api.add_resource(UserAPI,                       '/api/v1/user/<string:username>')
     api.add_resource(UserUpdateAPI,                 '/api/v1/user/update-details')
+    api.add_resource(UserSetExpertMode,             '/api/v1/user/set-expert-mode/<string:is_expert>')
     api.add_resource(UserMappedProjects,            '/api/v1/user/<string:username>/mapped-projects')
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')
     api.add_resource(UserAcceptLicense,             '/api/v1/user/accept-license/<int:license_id>')
+    api.add_resource(UserIdAPI,                     '/api/v1/user-id/<int:userid>')
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')
     api.add_resource(SplitTaskAPI,                  '/api/v1/project/<int:project_id>/task/<int:task_id>/split')
     api.add_resource(LanguagesAPI,                  '/api/v1/settings')

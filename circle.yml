@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /app
     docker:
-      - image: python:3.6-jessie
+      - image: python:3.6-stretch
     steps:
       - checkout
       - setup_remote_docker

@@ -4,8 +4,8 @@
             <p class="space-bottom--none">
                 <strong>
                     <a href="./user/{{ message.username }}" target="_blank"/>{{ message.username }}</a>
-                </strong> <span class="metadata" am-time-ago="message.timestamp | amUtc | amLocal"></span></p>
-            <p ng-bind-html="message.message"></p>
+                </strong> <span class="metadata" am-time-ago="message.timestamp | amUtc | amLocal" title="{{ message.timestamp }}"></span></p>
+            <p markdown-to-html="message.message"></p>
         </div>
         <div ng-show="projectChatCtrl.messages.length < 1">
             {{ 'No project discussion yet' | translate }}
@@ -24,7 +24,8 @@
                       mentio-typed-text="typedTerm"
                       mentio-search="projectChatCtrl.searchUser(term)"
                       mentio-select="projectChatCtrl.formatUserTag(item)"
-                      mentio-items="projectChatCtrl.usernames | filter:label:typedTerm"
+                      mentio-items="projectChatCtrl.suggestedUsers"
+                      mentio-template-url="/app/project/user-suggestions-menu.html"
                       ng-model="projectChatCtrl.message"></textarea>
             <p>{{ projectChatCtrl.maxlengthComment - projectChatCtrl.message.length }}
                 {{ 'characters remaining' | translate }}

@@ -58,7 +58,7 @@ class TestMappingService(unittest.TestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode('utf-8')).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, '97c4274c013964091974916ffee07846')
+        self.assertEqual(gpx_hash, 'b91f7361cc1d6d9433cf393609103272')
 
     @patch.object(Task, 'get_all_tasks')
     def test_gpx_xml_file_generated_correctly_all_tasks(self, mock_task):
@@ -78,7 +78,7 @@ class TestMappingService(unittest.TestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode('utf-8')).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, '97c4274c013964091974916ffee07846')
+        self.assertEqual(gpx_hash, 'b91f7361cc1d6d9433cf393609103272')
 
     @patch.object(Task, 'get_tasks')
     def test_osm_xml_file_generated_correctly(self, mock_task):
@@ -114,9 +114,27 @@ class TestMappingService(unittest.TestCase):
         # Convert XML into a hash that should be identical every time
         osm_xml_str = osm_xml.decode('utf-8')
         osm_hash = hashlib.md5(osm_xml_str.encode('utf-8')).hexdigest()
-        f = open('/home/enelson/test.xml', 'w')
-        f.write(osm_xml_str)
-        f.close()
 
         # Assert
         self.assertEqual(osm_hash, 'eafd0760a0d372e2ab139e25a2d300f1')
+
+    def test_map_all_sets_counters_correctly(self):
+        if self.skip_tests:
+            return
+
+        # Act
+        MappingService.map_all_tasks(self.test_project.id, self.test_user.id)
+
+        # Assert
+        self.assertEqual(self.test_project.tasks_mapped, self.test_project.total_tasks)
+
+    def test_mapped_by_is_set_after_mapping_all(self):
+        if self.skip_tests:
+            return
+
+        # Act
+        MappingService.map_all_tasks(self.test_project.id, self.test_user.id)
+
+        # Assert
+        for task in self.test_project.tasks:
+            self.assertIsNotNone(task.mapped_by)

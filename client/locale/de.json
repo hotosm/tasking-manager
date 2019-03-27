@@ -283,7 +283,7 @@
 	"Required": "Erforderlich",
 	"Reset": "Zurücksetzen",
 	"Return to inbox": "Zurück zum Postfach",
-	"Return": "Return",
+	"Return": "Zurückkehren",
 	"Roads": "Straßen",
 	"Role": "Rolle",
 	"Save changes": "Änderungen speichern",
@@ -441,5 +441,5 @@
 	"Your profile": "Ihr Profil",
 	"Your project has been updated successfully.": "Ihr Projekt wurde aktualisiert. ",
 	"Your project was created successfully.": "Ihr Projekt wurde erstellt. ",
-	"Back to Previous": "Back to Previous"
+	"Back to Previous": "Zu vorherigem zurück"
 }

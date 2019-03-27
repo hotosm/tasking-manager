@@ -20,7 +20,7 @@ class GridService:
     @staticmethod
     def trim_grid_to_aoi(grid_dto: GridDTO) -> geojson.FeatureCollection:
         """
-        Removes grid squares not intersecting with the aoi.  Optionally leaves partialy intersecting task squares
+        Removes grid squares not intersecting with the aoi.  Optionally leaves partially intersecting task squares
         complete or clips them exactly to the AOI outline
         :param grid_dto: the dto containing
         :return: geojson.FeatureCollection trimmed task grid
@@ -65,17 +65,19 @@ class GridService:
             # put the geometry back to geojson
 
             if feature.geometry.has_z:
-                # Strip Z dimension, as can't persist geometry otherewise.  Most likely exists in KML data
+                # Strip Z dimension, as can't persist geometry otherwise.  Most likely exists in KML data
                 feature.geometry = shapely.ops.transform(GridService._to_2d, feature.geometry)
 
             feature.geometry = shapely.geometry.mapping(feature.geometry)
 
             # set default properties
+            # and put any already existing properties in `extra_properties`
             feature.properties = {
                 'x': None,
                 'y': None,
                 'zoom': None,
-                'splittable': False
+                'isSquare': False,
+                'extra_properties': feature.properties
             }
 
             tasks.append(feature)
@@ -109,8 +111,8 @@ class GridService:
     @staticmethod
     def _update_feature(clip_to_aoi: bool, feature: dict, new_shape) -> dict:
         """
-        Updates the feature with the new shape, and splittable property
-        :param clip_to_aoi: value for feature's splittable property
+        Updates the feature with the new shape, and isSquare property
+        :param clip_to_aoi: value for feature's is_square property
         :param feature: feature to be updated
         :param new_shape: new shape to use for feature
         :return:
@@ -121,10 +123,7 @@ class GridService:
                 # shapely may return a POLYGON rather than a MULTIPOLYGON if there is just one intersection area
                 new_shape = MultiPolygon([new_shape])
             feature['geometry'] = mapping(new_shape)
-            feature['properties']['x'] = None
-            feature['properties']['y'] = None
-            feature['properties']['zoom'] = None
-            feature['properties']['splittable'] = False
+            feature['properties']['isSquare'] = False
         return feature
 
     @staticmethod

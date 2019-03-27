@@ -1,11 +1,14 @@
 from cachetools import TTLCache, cached
+from sqlalchemy import func
+import dateutil.parser
+import datetime
 
 from server import db
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
-    ProjectActivityDTO, HomePageStatsDTO
+    ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
-from server.models.postgis.task import TaskHistory, User, Task
+from server.models.postgis.task import TaskHistory, User, Task, TaskAction
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
@@ -174,9 +177,28 @@ class StatsService:
         """ Get overall TM stats to give community a feel for progress that's being made """
         dto = HomePageStatsDTO()
 
-        dto.mappers_online = Task.query.distinct(Task.locked_by).count()
+        dto.mappers_online = Task.query.filter(Task.locked_by != None).distinct(Task.locked_by).count()
         dto.total_mappers = User.query.count()
-        dto.tasks_mapped = Task.query.\
-            filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
+        dto.total_validators = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value)\
+            .distinct(Task.validated_by).count()
+        dto.tasks_mapped = Task.query\
+            .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
+        dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
+
+        org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
+            .group_by(Project.organisation_tag).all()
+
+        untagged_count = 0
+
+        for tup in org_proj_count:
+            org_stats = OrganizationStatsDTO(tup)
+            if org_stats.tag:
+                dto.organizations.append(org_stats)
+            else:
+                untagged_count += 1
+
+        if untagged_count:
+            untagged_proj = OrganizationStatsDTO(('Untagged', untagged_count))
+            dto.organizations.append(untagged_proj)
 
         return dto

@@ -1,12 +1,13 @@
 import geojson
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import mapping, Polygon, MultiPolygon
+from shapely.geometry import Polygon, Point, MultiPolygon, shape as shapely_shape
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
 from server.models.dtos.grid_dto import SplitTaskDTO
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.postgis.utils import ST_Transform
-from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.task import Task, TaskStatus, TaskAction
 from server.models.postgis.project import Project
 from server.models.postgis.utils import NotFound
 
@@ -21,13 +22,20 @@ class SplitServiceError(Exception):
 
 class SplitService:
     @staticmethod
-    def _create_split_tasks(x, y, zoom) -> list:
+    def _create_split_tasks(x, y, zoom, task=None) -> list:
         """
         function for splitting a task square geometry into 4 smaller squares
         :param geom_to_split: {geojson.Feature} the geojson feature to b split
         :return: list of {geojson.Feature}
         """
         try:
+            task_geojson = False
+
+            if task and not task.is_square:
+                query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
+                    .filter(Task.id == task.id, Task.project_id == task.project_id)
+
+                task_geojson = geojson.loads(query[0].geometry)
             split_geoms = []
             for i in range(0, 2):
                 for j in range(0, 2):
@@ -37,13 +45,26 @@ class SplitService:
                     new_square = SplitService._create_square(new_x, new_y, new_zoom)
                     feature = geojson.Feature()
                     feature.geometry = new_square
+                    feature_shape = shapely_shape(feature.geometry)
+                    if task and not task.is_square:
+                        intersection = shapely_shape(task_geojson).intersection(feature_shape)
+                        multipolygon = MultiPolygon([intersection])
+                        feature.geometry = geojson.loads(geojson.dumps(mapping(multipolygon)))
+
+                    if task and not task.is_square:
+                        is_square = False
+                    else:
+                        is_square = True
+
                     feature.properties = {
                         'x': new_x,
                         'y': new_y,
                         'zoom': new_zoom,
-                        'splittable': True
+                        'isSquare': is_square
                     }
-                    split_geoms.append(feature)
+
+                    if (len(feature.geometry.coordinates) > 0):
+                        split_geoms.append(feature)
 
             return split_geoms
         except Exception as e:
@@ -87,7 +108,6 @@ class SplitService:
         Replaces a task square with 4 smaller tasks at the next OSM tile grid zoom level
         Validates that task is:
          - locked for mapping by current user
-         - splittable (splittable property is True)
         :param split_task_dto:
         :return: new tasks in a DTO
         """
@@ -95,10 +115,6 @@ class SplitService:
         original_task = Task.get(split_task_dto.task_id, split_task_dto.project_id)
         if original_task is None:
             raise NotFound()
-
-        # check it's splittable
-        if not original_task.splittable:
-            raise SplitServiceError('Task is not splittable')
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
@@ -109,7 +125,8 @@ class SplitService:
 
         # create new geometries from the task geometry
         try:
-            new_tasks_geojson = SplitService._create_split_tasks(original_task.x, original_task.y, original_task.zoom)
+            new_tasks_geojson = SplitService._create_split_tasks(original_task.x, original_task.y, original_task.zoom,
+                                                                 original_task)
         except Exception as e:
             raise SplitServiceError(f'Error splitting task{str(e)}')
 
@@ -123,6 +140,13 @@ class SplitService:
             new_task.project_id = split_task_dto.project_id
             new_task.task_status = TaskStatus.READY.value
             new_task.create()
+            new_task.task_history.extend(original_task.copy_task_history())
+            if new_task.task_history:
+                new_task.clear_task_lock() # since we just copied the lock
+            new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.SPLIT)
+            new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.READY)
+            new_task.task_status = TaskStatus.READY.value
+            new_task.update()
             new_tasks_dto.append(new_task.as_dto_with_instructions(split_task_dto.preferred_locale))
 
         # delete original task from the database

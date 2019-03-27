@@ -5,10 +5,10 @@ from flask import current_app
 from geoalchemy2 import shape
 
 from server import db
-from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO, TaskCommentDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
-from server.models.postgis.task import Task, TaskStatus, TaskHistory
+from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound, UserLicenseError
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
@@ -137,6 +137,21 @@ class MappingService:
         return task
 
     @staticmethod
+    def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
+        """ Adds the comment to the task history """
+        task = Task.get(task_comment.task_id, task_comment.project_id)
+        if task is None:
+            raise MappingServiceError(f'Task {task_id} not found')
+
+        task.set_task_history(TaskAction.COMMENT, task_comment.user_id, task_comment.comment)
+
+        # Parse comment to see if any users have been @'d
+        MessageService.send_message_after_comment(task_comment.user_id, task_comment.comment, task.id,
+                                                  task_comment.project_id)
+        task.update()
+        return task.as_dto_with_instructions(task_comment.preferred_locale)
+
+    @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
         """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.  You can use the following URL to test locally:
@@ -145,7 +160,7 @@ class MappingService:
         if timestamp is None:
             timestamp = datetime.datetime.utcnow()
 
-        root = ET.Element('gpx', attrib=dict(xmlns='http://topografix.com/GPX/1/1', version='1.1',
+        root = ET.Element('gpx', attrib=dict(xmlns='http://www.topografix.com/GPX/1/1', version='1.1',
                                              creator='HOT Tasking Manager'))
 
         # Create GPX Metadata element
@@ -232,3 +247,37 @@ class MappingService:
                          f'Undo state from {current_state.name} to {undo_state.name}', True)
 
         return task.as_dto_with_instructions(preferred_locale)
+
+    @staticmethod
+    def map_all_tasks(project_id: int, user_id: int):
+        """ Marks all tasks on a project as mapped """
+        tasks_to_map = Task.query.filter(Task.project_id == project_id,
+                                         Task.task_status.notin_([TaskStatus.BADIMAGERY.value,
+                                                                  TaskStatus.MAPPED.value,
+                                                                  TaskStatus.VALIDATED.value])).all()
+
+        for task in tasks_to_map:
+            if TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
+                # Only lock tasks that are not already locked to avoid double lock issue
+                task.lock_task_for_mapping(user_id)
+
+            task.unlock_task(user_id, new_state=TaskStatus.MAPPED)
+
+        # Set counters to fully mapped
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
+        project.save()
+
+    @staticmethod
+    def reset_all_badimagery(project_id: int, user_id: int):
+        """ Marks all bad imagery tasks ready for mapping """
+        badimagery_tasks = Task.query.filter(Task.task_status == TaskStatus.BADIMAGERY.value).all()
+
+        for task in badimagery_tasks:
+            task.lock_task_for_mapping(user_id)
+            task.unlock_task(user_id, new_state=TaskStatus.READY)
+
+        # Reset bad imagery counter
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_bad_imagery = 0
+        project.save()
