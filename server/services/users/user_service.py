@@ -138,7 +138,7 @@ class UserService:
                                              minutes=duration.minute,
                                              seconds=duration.second,
                                              microseconds=duration.microsecond)
-                    total_time += datetime.timedelta(hours=duration.hour,
+                    total_time +=  datetime.timedelta(hours=duration.hour,
                                              minutes=duration.minute,
                                              seconds=duration.second,
                                              microseconds=duration.microsecond) 

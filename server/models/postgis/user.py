@@ -1,7 +1,6 @@
 import geojson
 import datetime
 import dateutil.parser
-from flask import current_app
 from server import db
 from sqlalchemy import desc
 from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
@@ -258,28 +257,49 @@ class User(db.Model):
         user_dto.facebook_id = self.facebook_id
         user_dto.validation_message = self.validation_message
         
-        sql = """select action_text
+        sql = """select action, action_text
                       from task_history
                      where user_id = {0}
-                       and action != 'STATE_CHANGE'""".format(self.id)
+                       and action != 'STATE_CHANGE'
+                       and action != 'COMMENT'""".format(self.id)
 
         results = db.engine.execute(sql)
         total_time = datetime.datetime.min
+        total_mapping_time = datetime.datetime.min
+        total_validation_time = datetime.datetime.min
+
         for row in results:
-             try:
-                duration = dateutil.parser.parse(row[0])
-                total_time += datetime.timedelta(hours=duration.hour,
+            try:
+                if row[0] == 'LOCKED_FOR_MAPPING':
+                    duration = dateutil.parser.parse(row[1])
+                    total_mapping_time += datetime.timedelta(hours=duration.hour,
                                              minutes=duration.minute,
                                              seconds=duration.second,
                                              microseconds=duration.microsecond)
-             except:
+                    total_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)                                            
+                elif row[0] == 'LOCKED_FOR_VALIDATION':
+                    duration = dateutil.parser.parse(row[1])
+                    total_validation_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)
+                    total_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)
+            except:
                 pass
-        
-        user_dto.time_spent_mapping = total_time.strftime('%H:%M:%S')
-        
+           
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
-
+        
+        user_dto.total_time_spent = total_time.time().strftime('%H:%M:%S')
+        user_dto.time_spent_mapping = total_mapping_time.time().strftime('%H:%M:%S')
+        user_dto.time_spent_validating = total_validation_time.time().strftime('%H:%M:%S')
+        
         return user_dto
