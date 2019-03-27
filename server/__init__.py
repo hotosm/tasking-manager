@@ -30,13 +30,10 @@ def create_app(env=None):
     """
     app = Flask(__name__)
 
-    if env is None:
-        env = os.getenv('TM_ENV', 'Dev')  # default to Dev if config environment var not set
-
-    app.config.from_object(f'server.config.{env}Config')
+    app.config.from_object(f'server.config.EnvironmentConfig')
 
     initialise_logger(app)
-    app.logger.info(f'HOT Tasking Manager App Starting Up, Environment = {env}')
+    app.logger.info(f'Tasking Manager App Starting Up, Environment = {env}')
 
     db.init_app(app)
     migrate.init_app(app, db)
