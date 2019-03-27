@@ -51,15 +51,12 @@ class UserDTO(Model):
 
 class UserStatsDTO(Model):
     """ DTO containing statistics about the user """
+    total_time_spent = IntType(serialized_name='totalTimeSpent')
     time_spent_mapping = IntType(serialized_name='timeSpentMapping')
-    id = LongType()
-    username = StringType()
-    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
+    time_spent_validating = IntType(serialized_name='timeSpentValidating') 
     projects_mapped = IntType(serialized_name='projectsMapped')
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
-    tasks_invalidated = IntType(serialized_name='tasksInvalidated')
-    
 
 class UserOSMDTO(Model):
     """ DTO containing OSM details for the user """
