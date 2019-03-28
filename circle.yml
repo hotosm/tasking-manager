@@ -12,7 +12,7 @@ jobs:
           command: |
               # Install latest LTS node
               apt-get update
-              curl -sL https://deb.nodesource.com/setup_10.x | bash -
+              curl -sL https://deb.nodesource.com/setup_9.x | bash -
               apt-get install -y nodejs libgeos-dev # Required for shapely
               node --version
       - restore_cache:
