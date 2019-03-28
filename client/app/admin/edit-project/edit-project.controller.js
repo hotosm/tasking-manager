@@ -22,10 +22,10 @@
         vm.drawRectangleInteraction = null;
         vm.drawCircleInteraction = null;
         vm.selectInteraction = null;
-    
+
         vm.editPriority = false;
         vm.deletePriority = false;
-        
+
         vm.numberOfPriorityAreas = 0;
 
         // Locale
@@ -55,21 +55,46 @@
         vm.perTaskInstructionsLanguage = 'en';
 
         vm.descriptionHTML = '';
-        
+
         // Delete
         vm.showDeleteConfirmationModal = false;
-        
+
+        // Reset
+        vm.showResetConfirmationModal = false;
+
         // Private project/add users
         vm.addUserEnabled = false;
 
         // Error messages
         vm.deleteProjectFail = false;
         vm.deleteProjectSuccess = false;
+        vm.resetProjectFail = false;
+        vm.resetProjectSuccess = false;
         vm.invalidateTasksFail = false;
         vm.invalidateTasksSuccess = false;
         vm.validateTasksFail = false;
         vm.validateTasksSuccess = false;
-        
+        vm.uploadFileFail = false;
+        vm.uploadFileSuccess = false;
+        vm.uploadFileInProgress = false;
+        vm.updateFileSuccess = false;
+        vm.updateFileFail = false;
+
+        // Messages
+        vm.messageSubject = '';
+        vm.messageContent = '';
+
+        // Form
+        vm.form = {};
+
+        // File
+        vm.fileName = '';
+
+        //Project Files
+        vm.projectFiles = [];
+        vm.projectFile = {};
+        vm.uploadPolicy = "ALLOW";
+
         activate();
 
         function activate() {
@@ -96,7 +121,7 @@
                     $location.path('/');
                 });
             }
-            
+
             var id = $routeParams.id;
 
             // Initialise the map and add interactions
@@ -109,6 +134,8 @@
             getProjectMetadata(id);
 
             vm.currentSection = 'description';
+
+            getProjectFiles(id)
         }
 
         /**
@@ -127,7 +154,7 @@
 
             vm.updateProjectFail = false;
             vm.updateProjectSuccess = false;
-            
+
             // Only check required fields when publishing
             if (vm.project.projectStatus === 'PUBLISHED') {
                 var requiredFieldsMissing = checkRequiredFields();
@@ -191,7 +218,7 @@
         vm.changeLanguageDescription = function(language){
             vm.descriptionLanguage = language;
         };
-        
+
         /**
          * Change the language of name field
          * @param language
@@ -312,7 +339,7 @@
                 $location.path('/');
             }
         };
-        
+
         /**
          * Delete a project
          */
@@ -334,6 +361,95 @@
         };
 
         /**
+         * Set the map confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showMapConfirmation = function(showModal){
+            vm.showMapConfirmationModal = showModal;
+        };
+
+        /**
+         * Map all tasks on a project
+         */
+        vm.mapAllTasks = function(){
+            vm.mapInProgress = true;
+            vm.mapTasksFail = false;
+            vm.mapTasksSuccess = false;
+            var resultsPromise = projectService.mapAllTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks mapped successfully
+                vm.mapTasksFail = false;
+                vm.mapTasksSuccess = true;
+                vm.mapInProgress = false;
+            }, function(){
+                // Tasks not mapped successfully
+                vm.mapTasksFail = true;
+                vm.mapTasksSuccess = false;
+                vm.mapInProgress = false;
+            })
+        };
+
+        /**
+         * Set the reset bad imagery confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showResetBadImageryConfirmation = function(showModal){
+            vm.showResetBadImageryConfirmationModal = showModal;
+        };
+
+        /**
+         * Reset all bad imagery tasks on a project
+         */
+        vm.resetBadImageryTasks = function(){
+            vm.resetBadImageryInProgress = true;
+            vm.resetBadImageryFail = false;
+            vm.resetBadImagerySuccess = false;
+            var resultsPromise = projectService.resetBadImageryTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks mapped successfully
+                vm.resetBadImageryFail = false;
+                vm.resetBadImagerySuccess = true;
+                vm.resetBadImageryInProgress = false;
+            }, function(){
+                // Tasks not mapped successfully
+                vm.resetBadImageryFail = true;
+                vm.resetBadImagerySuccess = false;
+                vm.resetBadImageryInProgress = false;
+            })
+        };
+
+        /*
+         * Set the reset confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showResetConfirmation = function(showModal){
+            vm.showResetConfirmationModal = showModal;
+            if (!showModal && vm.resetProjectSuccess){
+                $location.path('/');
+            }
+        };
+
+        /**
+         * Reset a project
+         */
+        vm.resetProject = function(){
+            vm.resetProjectFail = false;
+            vm.resetProjectSuccess = false;
+            var resultsPromise = projectService.resetProject(vm.project.projectId);
+            resultsPromise.then(function () {
+                // Project reset successfully
+                vm.resetProjectFail = false;
+                vm.resetProjectSuccess = true;
+                // Reset the page elements
+                getProjectMetadata(vm.project.projectId);
+            }, function(){
+                // Project not reset successfully
+                vm.resetProjectFail = true;
+                vm.resetProjectSuccess = false;
+            });
+        };
+
+        /**
          * Set the invalidate confirmation modal to visible/invisible
          * @param showModal
          */
@@ -343,7 +459,6 @@
 
         /**
          * Invalidate all tasks on a project
-         * @param comment
          */
         vm.invalidateAllTasks = function(){
             vm.invalidateInProgress = true;
@@ -373,7 +488,6 @@
 
         /**
          * Validate all tasks on a project
-         * @param comment
          */
         vm.validateAllTasks = function(){
             vm.validateInProgress = true;
@@ -394,6 +508,27 @@
         };
 
         /**
+         * Reset all tasks on a project
+         */
+        vm.resetAllTasks = function(){
+            vm.resetInProgress = true;
+            vm.resetTasksFail = false;
+            vm.resetTasksSuccess = false;
+            var resultsPromise = projectService.resetAllTasks(vm.project.projectId);
+            resultsPromise.then(function(){
+                // Tasks reset successfully
+                vm.resetTasksFail = false;
+                vm.resetTasksSuccess = true;
+                vm.resetInProgress = false;
+            }, function(){
+                // Tasks not reset successfully
+                vm.resetTasksFail = true;
+                vm.resetTasksSuccess = false;
+                vm.resetInProgress = false;
+            })
+        };
+
+        /**
          * Set the show message contributors modal to visible/invisible
          */
         vm.showMessageContributors = function(showModal){
@@ -402,33 +537,110 @@
 
         /**
          * Send a message to all users on this project
-         * @param subject
-         * @param message
          */
-        vm.sendMessage = function(subject, message){
+        vm.sendMessage = function(){
             vm.sendMessageInProgress = true;
             vm.sendMessageFail = false;
-            vm.sendMessageSuccess = false;
-            var resultsPromise = messageService.messageAll(vm.project.projectId, subject, message);
+            var resultsPromise = messageService.messageAll(vm.project.projectId, vm.messageSubject, vm.messageContent);
             resultsPromise.then(function(){
                 // Messages sent successfully
                 vm.sendMessageFail = false;
-                vm.sendMessageSuccess = true;
                 vm.sendMessageInProgress = false;
+                vm.messageSubject = '';
+                vm.messageContent = '';
+                vm.showMessageContributorsModal = false;
             }, function(){
                 // Messages not sent successfully
                 vm.sendMessageFail = true;
-                vm.sendMessageSuccess = false;
                 vm.sendMessageInProgress = false;
             })
         };
 
         /**
+         * Set the show upload file modal to visible/invisible
+         */
+        vm.showUploadFile = function(showModal){
+            vm.showUploadFileModal = showModal;
+        };
+
+        /**
+         * Upload new file to upload to JOSM
+         */
+        vm.uploadFile = function (file){
+            vm.uploadFileFail = false;
+            vm.uploadFileInProgress = true;
+            if (file) {
+                var resultsPromise = projectService.uploadFile(vm.project.projectId, file, vm.uploadPolicy)
+                resultsPromise.then(function(){
+                    vm.showUploadFileModal = false;
+                    vm.uploadFileFail = false;
+                    vm.uploadFileInProgress = false;
+                    vm.uploadFileSuccess = true;
+                    getProjectFiles(vm.project.projectId);
+                }, function(){
+                    // File not uploaded successfully
+                    vm.uploadFileFail = true;
+                    vm.uploadFileSuccess = false;
+                    vm.showUploadFileModal = false;
+                    vm.uploadFileInProgress = false;
+                })
+            }
+        }
+
+        /**
+         * Set the show delete file modal to visible/invisible
+         */
+        vm.showDeleteFile = function(showModal){
+            vm.showDeleteFileModal = showModal
+            if (showModal===false){
+                vm.projectFile = {};
+            }
+        }
+
+        /**
+         * Show delete file modal and set file to delete
+         */
+        vm.removeFile = function(file){
+            vm.projectFile = file;
+            vm.showDeleteFileModal = true;
+        }
+
+        /**
+         * Remove file from project
+         */
+        vm.deleteFile = function(){
+            var resultsPromise = projectService.deleteProjectFile(vm.project.projectId, vm.projectFile.id)
+            resultsPromise.then(function(){
+                vm.showDeleteFileModal = false;
+                getProjectFiles(vm.project.projectId)
+            })
+        }
+
+        /**
+         * Updates a project file's upload policy
+         */
+        vm.updateProjectFile = function(file){
+            vm.updateFileFail = false;
+            vm.updateFileSuccess = false;
+            vm.projectFile = {};
+            vm.projectFile.path = file.path;
+            vm.projectFile.file_name = file.fileName;
+            vm.projectFile.upload_policy = file.uploadPolicy;
+            var resultsPromise = projectService.updateProjectFile(vm.project.projectId, file.id, vm.projectFile);
+            resultsPromise.then(function(){
+                vm.updateFileSuccess = true;
+                setTimeout(function(){ vm.updateFileSuccess = false; }, 2000);
+            })
+        }
+
+        /**
          * Get organisation tags
          * @returns {Array|*}
          */
-        vm.getOrganisationTags = function(){
-            return vm.organisationTags;
+        vm.getOrganisationTags = function(query){
+            return vm.organisationTags.filter(function (item) {
+                return (item && item.toLowerCase().indexOf(query.toLowerCase()) > -1);
+            });
         };
 
         /**
@@ -436,8 +648,10 @@
           * @returns {Array|*}
           * @returns {Array|*}
          */
-        vm.getCampaignTags = function(){
-            return vm.campaignTags;
+        vm.getCampaignTags = function(query){
+            return vm.campaignTags.filter(function (item) {
+                return (item && item.toLowerCase().indexOf(query.toLowerCase()) > -1);
+            });
         };
 
         /**
@@ -445,7 +659,7 @@
          * @param searchValue
          */
         vm.getUser = function(searchValue){
-            var resultsPromise = userService.searchUser(searchValue);
+            var resultsPromise = userService.searchUser(searchValue, vm.project.id);
             return resultsPromise.then(function (data) {
                 // On success
                 return data.usernames;
@@ -528,7 +742,6 @@
 
         /**
          * Priority areas: set interactions to active/inactive
-         * @param boolean
          * @private
          */
         function setInteractionsInactive_(){
@@ -858,6 +1071,17 @@
                 }
             }
             return projectName;
+        }
+
+        /**
+         * Get all project files for a project
+         * @param project_id
+         */
+        function getProjectFiles(project_id) {
+            var resultsPromise = projectService.getProjectFiles(project_id);
+            resultsPromise.then(function (data) {
+               vm.projectFiles = data.projectFiles
+            })
         }
     }
 })();

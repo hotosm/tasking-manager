@@ -35,18 +35,20 @@ class SMTPService:
     @staticmethod
     def send_email_alert(to_address: str, username: str):
         """ Send an email to user to alert them they have a new message"""
+        current_app.logger.debug(f'Test if email required {to_address}')
         if not to_address:
             return False  # Many users will not have supplied email address so return
 
         # TODO these could be localised if needed, in the future
         html_template = get_template('message_alert_en.html')
         text_template = get_template('message_alert_en.txt')
+        inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox"
 
         html_template = html_template.replace('[USERNAME]', username)
-        html_template = html_template.replace('[PROFILE_LINK]', get_profile_url(username))
+        html_template = html_template.replace('[PROFILE_LINK]', inbox_url)
 
         text_template = text_template.replace('[USERNAME]', username)
-        text_template = text_template.replace('[PROFILE_LINK]', get_profile_url(username))
+        text_template = text_template.replace('[PROFILE_LINK]', inbox_url)
 
         subject = 'You have a new message on the HOT Tasking Manager'
         SMTPService._send_mesage(to_address, subject, html_template, text_template)
@@ -70,14 +72,17 @@ class SMTPService:
         msg.attach(part2)
 
         sender = SMTPService._init_smtp_client()
+
+        current_app.logger.debug(f'Sending email via SMTP {to_address}')
         sender.sendmail(from_address, to_address, msg.as_string())
         sender.quit()
+        current_app.logger.debug(f'Email sent {to_address}')
 
     @staticmethod
     def _init_smtp_client():
         """ Initialise SMTP client from app settings """
         smtp_settings = current_app.config['SMTP_SETTINGS']
-        sender = smtplib.SMTP(smtp_settings['host'])
+        sender = smtplib.SMTP(smtp_settings['host'], port=smtp_settings['smtp_port'])
         sender.starttls()
         sender.login(smtp_settings['smtp_user'], smtp_settings['smtp_password'])
 

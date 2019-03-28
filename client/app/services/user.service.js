@@ -13,8 +13,10 @@
         var service = {
             setRole: setRole,
             setLevel: setLevel,
+            setExpertMode: setExpertMode,
             getOSMUserDetails: getOSMUserDetails,
             getUserProjects: getUserProjects,
+            getUserStats: getUserStats,
             searchUser: searchUser,
             searchAllUsers: searchAllUsers,
             acceptLicense: acceptLicense,
@@ -68,7 +70,29 @@
                 return $q.reject("error");
             })
         }
-        
+
+        /**
+         * Enable or disable user's expert mode setting
+         * @param isExpert
+         * @returns {!jQuery.Promise|*|!jQuery.jqXHR|!jQuery.deferred}
+         */
+        function setExpertMode(isExpert){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/user/set-expert-mode/' + (isExpert ? 'true' : 'false'),
+                headers: authService.getAuthenticatedHeader(),
+            }).then(function successCallback(response){
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status
+                return $q.reject("error");
+            })
+        }
+
          /**
          * Get the user's OSM details
          * @param username
@@ -118,14 +142,43 @@
         }
 
         /**
-         * Search a user
-         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         * Get detailed stats about the user
+         * @param username
+         * @returns {!jQuery.jqXHR|!jQuery.deferred|*|!jQuery.Promise}
          */
-        function searchUser(username){
+        function getUserStats(username){
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/user/search/filter/' + username,
+                url: configService.tmAPI + '/stats/user/' + username,
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Search a user
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         */
+        function searchUser(username, projectId){
+            var params = '';
+            if (typeof projectId === "number" && !isNaN(projectId)) {
+              params = '?projectId=' + projectId;
+            }
+
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/user/search/filter/' + username + params,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
@@ -165,7 +218,7 @@
             if (username){
                 searchParams += '&username=' + username;
             }
-            
+
             // Returns a promise
             return $http({
                 method: 'GET',

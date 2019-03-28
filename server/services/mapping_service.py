@@ -1,13 +1,19 @@
 import datetime
+import os
+import subprocess
+import shutil
 import xml.etree.ElementTree as ET
 
 from flask import current_app
 from geoalchemy2 import shape
 
-from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO
+from server import db
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO, TaskCommentDTO
+from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
-from server.models.postgis.task import Task, TaskStatus
+from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound, UserLicenseError
+from server.models.postgis.project_files import ProjectFiles
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
@@ -36,10 +42,28 @@ class MappingService:
         return task
 
     @staticmethod
-    def get_task_as_dto(task_id: int, project_id: int, preferred_local: str = 'en') -> TaskDTO:
+    def get_task_as_dto(task_id: int, project_id: int, preferred_local: str = 'en', logged_in_user_id: int = None) -> TaskDTO:
         """ Get task as DTO for transmission over API """
         task = MappingService.get_task(task_id, project_id)
-        return task.as_dto_with_instructions(preferred_local)
+        task_dto = task.as_dto_with_instructions(preferred_local)
+        task_dto.is_undoable = MappingService._is_task_undoable(logged_in_user_id, task)
+        return task_dto
+
+    @staticmethod
+    def _is_task_undoable(logged_in_user_id: int, task: Task) -> bool:
+        """ Determines if the current task status can be undone by the logged in user """
+        # Test to see if user can undo status on this task
+        if logged_in_user_id and TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING,
+                                                                      TaskStatus.LOCKED_FOR_VALIDATION,
+                                                                      TaskStatus.READY]:
+
+            last_action = TaskHistory.get_last_action(task.project_id, task.id)
+
+            # User requesting task made the last change, so they are allowed to undo it.
+            if last_action.user_id == int(logged_in_user_id):
+                return True
+
+        return False
 
     @staticmethod
     def lock_task_for_mapping(lock_task_dto: LockTaskDTO) -> TaskDTO:
@@ -55,7 +79,7 @@ class MappingService:
             raise MappingServiceError('Task in invalid state for mapping')
 
         user_can_map, error_reason = ProjectService.is_user_permitted_to_map(lock_task_dto.project_id,
-                                                                              lock_task_dto.user_id)
+                                                                             lock_task_dto.user_id)
         if not user_can_map:
             if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError('User must accept license to map this task')
@@ -103,11 +127,7 @@ class MappingService:
     @staticmethod
     def get_task_locked_by_user(project_id: int, task_id: int, user_id: int) -> Task:
         """
-        Returns task specified by project id and task id if found and locked for mapping by user, otherwise raises MappingServiceError
-        :param project_id:
-        :param task_id:
-        :param user_id:
-        :return: Task
+        Returns task specified by project id and task id if found and locked for mapping by user
         :raises: MappingServiceError
         """
         task = MappingService.get_task(task_id, project_id)
@@ -121,32 +141,55 @@ class MappingService:
         return task
 
     @staticmethod
+    def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
+        """ Adds the comment to the task history """
+        task = Task.get(task_comment.task_id, task_comment.project_id)
+        if task is None:
+            raise MappingServiceError(f'Task {task_id} not found')
+
+        task.set_task_history(TaskAction.COMMENT, task_comment.user_id, task_comment.comment)
+
+        # Parse comment to see if any users have been @'d
+        MessageService.send_message_after_comment(task_comment.user_id, task_comment.comment, task.id,
+                                                  task_comment.project_id)
+        task.update()
+        return task.as_dto_with_instructions(task_comment.preferred_locale)
+
+    @staticmethod
     def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
-        """ 
+        """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.  You can use the following URL to test locally:
         http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v1/project/111/tasks_as_gpx%3Ftasks=2
         """
         if timestamp is None:
             timestamp = datetime.datetime.utcnow()
 
-        root = ET.Element('gpx', attrib=dict(xmlns='http://topografix.com/GPX/1/1', version='1.1',
-                                             creator='HOT Tasking Manager'))
+        root = ET.Element('gpx', attrib=dict(xmlns='http://www.topografix.com/GPX/1/1', version='1.1',
+                                             creator='Kaart Tasking Manager'))
 
         # Create GPX Metadata element
         metadata = ET.Element('metadata')
-        link = ET.SubElement(metadata, 'link', attrib=dict(href='https://github.com/hotosm/tasking-manager'))
-        ET.SubElement(link, 'text').text = 'HOT Tasking Manager'
+        link = ET.SubElement(metadata, 'link', attrib=dict(href='https://github.com/kaartgroup/tasking-manager'))
+        ET.SubElement(link, 'text').text = 'Kaart Tasking Manager'
         ET.SubElement(metadata, 'time').text = timestamp.isoformat()
         root.append(metadata)
 
         # Create trk element
         trk = ET.Element('trk')
         root.append(trk)
-        ET.SubElement(trk, 'name').text = f'Task for project {project_id}. Do not edit outside of this box!'
+        ET.SubElement(trk, 'name').text = f'Task for project {project_id}. Do not edit outside of this area!'
 
         # Construct trkseg elements
-        task_ids = map(int, task_ids_str.split(','))
-        tasks = Task.get_tasks(project_id, task_ids)
+        if task_ids_str is not None:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or tasks.count() == 0:
+                raise NotFound()
+        else:
+            tasks = Task.get_all_tasks(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
+
         for task in tasks:
             task_geom = shape.to_shape(task.geometry)
             for poly in task_geom:
@@ -155,22 +198,28 @@ class MappingService:
                     ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
 
                     # Append wpt elements to end of doc
-                    wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
-                    ET.SubElement(wpt, 'name').text = 'Do not edit outside of this box!'
-                    root.append(wpt)
+                    # wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+                    # root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
 
     @staticmethod
     def generate_osm_xml(project_id: int, task_ids_str: str) -> str:
-        """ Generate xml response suitable for loading into JOSM.  A sample output file is in 
+        """ Generate xml response suitable for loading into JOSM.  A sample output file is in
             /server/helpers/testfiles/osm-sample.xml """
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
         root = ET.Element('osm', attrib=dict(version='0.6', upload='never', creator='HOT Tasking Manager'))
 
-        task_ids = map(int, task_ids_str.split(','))
-        tasks = Task.get_tasks(project_id, task_ids)
+        if task_ids_str:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or tasks.count() == 0:
+                raise NotFound()
+        else:
+            tasks = Task.get_all_tasks(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
 
         fake_id = -1  # We use fake-ids to ensure XML will not be validated by OSM
         for task in tasks:
@@ -185,3 +234,119 @@ class MappingService:
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
+
+    @staticmethod
+    def undo_mapping(project_id: int, task_id: int, user_id: int, preferred_locale: str = 'en') -> TaskDTO:
+        """ Allows a user to Undo the task state they updated """
+        task = MappingService.get_task(task_id, project_id)
+
+        if not MappingService._is_task_undoable(user_id, task):
+            raise MappingServiceError('Undo not allowed for this user')
+
+        current_state = TaskStatus(task.task_status)
+        undo_state = TaskHistory.get_last_status(project_id, task_id, True)
+
+        StatsService.set_counters_after_undo(project_id, user_id, current_state, undo_state)
+        task.unlock_task(user_id, undo_state,
+                         f'Undo state from {current_state.name} to {undo_state.name}', True)
+
+        return task.as_dto_with_instructions(preferred_locale)
+
+    @staticmethod
+    def map_all_tasks(project_id: int, user_id: int):
+        """ Marks all tasks on a project as mapped """
+        tasks_to_map = Task.query.filter(Task.project_id == project_id,
+                                         Task.task_status.notin_([TaskStatus.BADIMAGERY.value,
+                                                                  TaskStatus.MAPPED.value,
+                                                                  TaskStatus.VALIDATED.value])).all()
+
+        for task in tasks_to_map:
+            if TaskStatus(task.task_status) not in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
+                # Only lock tasks that are not already locked to avoid double lock issue
+                task.lock_task_for_mapping(user_id)
+
+            task.unlock_task(user_id, new_state=TaskStatus.MAPPED)
+
+        # Set counters to fully mapped
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_mapped = (project.total_tasks - project.tasks_bad_imagery)
+        project.save()
+
+    @staticmethod
+    def generate_project_file_osm_xml(project_id: int, file_id: int, task_ids_str: str) -> str:
+        """ Generate xml response suitable for loading into JOSM created from an extract of the specified project file """
+
+        if task_ids_str:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks_as_geojson_feature_collection(project_id, task_ids)
+            if not tasks:
+                raise NotFound()
+        else:
+            tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
+
+        dto = ProjectFiles.get_file(project_id, file_id)
+        dir = os.path.join(dto.path, os.path.splitext(dto.file_name)[0])
+
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
+        tasks_file = os.path.join(dir, "{project_id}_tasks.geojson".format(project_id=str(project_id)))
+
+        with open(tasks_file, 'w') as t:
+            t.write(str(tasks))
+
+        # Convert the geojson features into separate .poly files
+        # to use with osmosis
+        poly_cmd = './server/tools/ogr2poly.py {file} -p {dir}/ -f taskId'.format(file=tasks_file, dir=dir)
+        subprocess.call(poly_cmd, shell=True)
+        os.remove(tasks_file)
+
+        osm_files = []
+        for poly in os.listdir(dir):
+            """ Extract from osm file into a file for each poly file """
+            task_cmd = './server/tools/osmosis/bin/osmosis -q --rx file={xml} enableDateParsing=no --bp completeWays=yes file={task_poly} --wx file={task_xml}'.format(
+                    xml=os.path.join(dto.path, dto.file_name),
+                    task_poly=os.path.join(dir, poly),
+                    task_xml=os.path.join(dir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0]))
+                )
+            osm_files.append(
+                os.path.join(
+                    dir,
+                    "task_{task_id}_{file_name}.osm".format(
+                        task_id=os.path.splitext(poly)[0],
+                        file_name=os.path.splitext(dto.file_name)[0])
+                    )
+                )
+            subprocess.call(task_cmd, shell=True)
+            os.remove(os.path.join(dir, poly))
+
+        # Merge the extracted files back together. Used if more than one task is sent in request.
+        merge_cmd = ['./server/tools/osmosis/bin/osmosis']
+
+        for osm in osm_files:
+            merge_cmd.extend(['--rx', 'file={file}'.format(file=osm), '--s'])
+
+        for x in range(0, len(osm_files)-1):
+            merge_cmd.append('--m')
+
+        merge_cmd.extend(['--wx', 'file=-'])
+        merge_string = ' '.join(merge_cmd)
+        xml = subprocess.check_output(merge_string, shell=True)
+        shutil.rmtree(dir)
+
+        return xml
+    
+    def reset_all_badimagery(project_id: int, user_id: int):
+        """ Marks all bad imagery tasks ready for mapping """
+        badimagery_tasks = Task.query.filter(Task.task_status == TaskStatus.BADIMAGERY.value).all()
+
+        for task in badimagery_tasks:
+            task.lock_task_for_mapping(user_id)
+            task.unlock_task(user_id, new_state=TaskStatus.READY)
+
+        # Reset bad imagery counter
+        project = ProjectService.get_project_by_id(project_id)
+        project.tasks_bad_imagery = 0
+        project.save()

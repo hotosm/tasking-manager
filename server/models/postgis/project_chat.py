@@ -1,3 +1,5 @@
+import bleach
+from flask import current_app
 from server import db
 from server.models.postgis.user import User
 from server.models.postgis.utils import timestamp, NotFound
@@ -11,7 +13,7 @@ class ProjectChat(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     time_stamp = db.Column(db.DateTime, nullable=False, default=timestamp)
-    message = db.Column(db.String(250), nullable=False)
+    message = db.Column(db.String, nullable=False)
 
     # Relationships
     posted_by = db.relationship(User, foreign_keys=[user_id])
@@ -19,20 +21,25 @@ class ProjectChat(db.Model):
     @classmethod
     def create_from_dto(cls, dto: ChatMessageDTO):
         """ Creates a new ProjectInfo class from dto, used from project edit """
+        current_app.logger.debug('Create chat message from DTO')
         new_message = cls()
         new_message.project_id = dto.project_id
         new_message.user_id = dto.user_id
-        # TODO bleach input
-        new_message.message = dto.message
+
+        # Use bleach to remove any potential mischief
+        clean_message = bleach.clean(dto.message)
+        clean_message = bleach.linkify(clean_message)
+        new_message.message = clean_message
 
         db.session.add(new_message)
-        db.session.commit()
         return new_message
 
     @staticmethod
     def get_messages(project_id: int, page: int) -> ProjectChatDTO:
+        """ Get all messages on the project """
 
-        project_messages = ProjectChat.query.filter_by(project_id = project_id).paginate(
+        project_messages = ProjectChat.query.filter_by(project_id=project_id).order_by(
+            ProjectChat.time_stamp.desc()).paginate(
             page, 50, True)
 
         if project_messages.total == 0:

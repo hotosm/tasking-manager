@@ -3,29 +3,37 @@
         <header class="section__header">
             <div class="inner">
                 <h1 class="section__title">
-                    {{ 'About the OSM Tasking Manager' | translate }}
+                    {{ 'About the Tasking Manager' | translate }}
                 </h1>
+                <p>
+                    {{ "The Tasking Manager is a mapping tool designed and built for the Humanitarian OpenStreetMap Team's collaborative mapping process in OpenStreetMap. The purpose of the tool is to divide up a mapping project into smaller tasks that can be completed rapidly with many people working on the same overall area. It shows which areas need to be mapped and which areas need the mapping validated." | translate }}
+                </p>
+                <p>
+                    {{ 'This approach allows the distribution of tasks to many individual mappers in the context of emergency or other humanitarian mapping scenario. It also allows monitoring of the overall project progress and helps improve the consistency of the mapping (e.g., elements to cover, specific tags to use, etc.).' | translate }}
+                </p>
+                <p>
+                    All of this work is done through <a href="https://www.openstreetmap.org/" target="_top">OpenStreetMap</a>. OpenStreetMap is the community-driven free and editable map of the world, supported by the not-for-profit <a href="http://wiki.osmfoundation.org/wiki/Main_Page" target="_top">OpenStreetMap Foundation</a>. Read more on the <a href="https://wiki.openstreetmap.org/wiki/Main_Page">OSM Wiki</a> or join the discussion with your <a href="http://wiki.openstreetmap.org/wiki/Mailing_lists#Country-Specific_Lists">local OSM community</a>.
+                </p>
             </div>
         </header>
         <div class="section-container">
-            <div class="section__body">
+            <div class="section__body section__body--secondary">
                 <div class="inner">
+                    <h2>{{ 'Contact Information' | translate }}</h2>
                     <p>
-                        {{ "The OSM Tasking Manager is a mapping tool designed and built for the Humanitarian OpenStreetMap Team's collaborative mapping process. The purpose of the tool is to divide up a mapping project into smaller tasks that can be completed rapidly with many people working on the same overall area. It shows which areas need to be mapped and which areas need the mapping validated." | translate }}
+                        {{ 'For help with mapping or mapping related questions, please email: ' | translate }}
+                        <a href="mailto:osm@kaartgroup.com" target="_top">osm@kaartgroup.com</a>
                     </p>
                     <p>
-                        {{ 'This approach allows the distribution of tasks to many individual mappers in the context of emergency or other humanitarian mapping scenario. It also allows monitoring of the overall project progress and helps improve the consistency of the mapping (e.g., elements to cover, specific tags to use, etc.).' | translate }}
+                        {{ 'General questions or comments about Kaart, please email: ' | translate }}
+                        <a href="mailto:osm@kaartgroup.com" target="_top">osm@kaartgroup.com</a>
                     </p>
                 </div>
-            </div>
-        </div>
-        <div class="section-container">
-            <div class="section__body">
                 <div class="inner">
-                    <h2>{{ 'Sponsorship and Funding' | translate }}</h2>
+                    <h2>{{ 'Partnership and Funding' | translate }}</h2>
                     <p>
-                        {{ 'The OSM Tasking Manager was designed and built for the' | translate }}
-                        <a href="https://hotosm.org" target="_blank">Humanitarian OpenStreetMap Team.</a>
+                        {{ 'The Tasking Manager was designed and built for the' | translate }}
+                        <a href="https://kaart.com" target="_blank" rel="noopener">Kaart Team.</a>
                     </p>
                     <p>
                         {{ 'With the invaluable support of:' | translate }}
@@ -33,14 +41,20 @@
                             <div class="sponsor__card"
                                  ng-repeat="sponsor in aboutCtrl.sponsors">
                                 <section class="panel sponsor__content">
-                                    <h3>{{ sponsor.name }}</h3>
-                                    <div ng-show="sponsor.logo" class="sponsor-logo">
+                                    <div ng-show="sponsor.logo" class="supporters-logo">
                                         <span class="helper"></span>
-                                        <a href="{{ sponsor.url }}" target="_blank">
+                                        <a href="{{ sponsor.url }}" target="_blank" rel="noopener">
                                             <img src="{{ sponsor.logo }}"
                                                  alt="{{ sponsor.name }} + logo">
                                         </a>
                                     </div>
+                                    <span>{{ sponsor.name }}</span>
+                                </section>
+                            </div>
+                            <div class="sponsor__card sponsor__card--become">
+                                <section class="panel sponsor__content">
+                                    <p>{{ 'Want to become a sponsor? Contact us to learn how.' | translate }}</p>
+                                    <a href="mailto:osm@kaartgroup.com" target="_top">Contact Us</a>
                                 </section>
                             </div>
                         </div>
@@ -53,10 +67,10 @@
                 <div class="inner">
                     <h2>{{ 'Open Source' | translate }}</h2>
                     <p>
-                        {{ 'The OSM Tasking Manager is Open Source software. Please feel free to report issues and contribute.' | translate }}
+                        {{ 'The Tasking Manager is Open Source software. Please feel free to report issues and contribute.' | translate }}
                     </p>
                     <p>
-                        <a href="https://github.com/hotosm/tasking-manager" target="_blank">{{ 'The application code is available on GitHub.' | translate }}</a>
+                        <a href="https://github.com/KaartGroup/tasking-manager" target="_blank" rel="noopener">{{ 'The application code is available on GitHub.' | translate }}</a>
                     </p>
                 </div>
             </div>

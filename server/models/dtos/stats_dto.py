@@ -53,3 +53,10 @@ class ProjectActivityDTO(Model):
 
     pagination = ModelType(Pagination)
     activity = ListType(ModelType(TaskHistoryDTO))
+
+
+class HomePageStatsDTO(Model):
+    """ DTO for stats we want to display on the homepage """
+    mappers_online = IntType(serialized_name='mappersOnline')
+    tasks_mapped = IntType(serialized_name='tasksMapped')
+    total_mappers = IntType(serialized_name='totalMappers')

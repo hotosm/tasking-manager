@@ -6,9 +6,12 @@
 
     angular
         .module('taskingManager')
-        .service('editorService', ['$window', '$location', 'mapService', 'configService', editorService]);
+        .service('editorService', ['$window', '$location', '$q', 'mapService', 'configService', editorService]);
 
-    function editorService($window, $location, mapService, configService) {
+    var JOSM_COMMAND_TIMEOUT = 1000;
+    var josmLastCommand = 0;
+
+    function editorService($window, $location, $q, mapService, configService) {
 
         var service = {
             sendJOSMCmd: sendJOSMCmd,
@@ -16,11 +19,12 @@
             launchPotlatch2Editor: launchPotlatch2Editor,
             launchIdEditor: launchIdEditor,
             getGPXUrl: getGPXUrl,
-            getOSMXMLUrl: getOSMXMLUrl
+            getOSMXMLUrl: getOSMXMLUrl,
+            getProjectFileOSMXMLUrl: getProjectFileOSMXMLUrl
         };
 
         return service;
-        
+
         /**
          * Launch the Field Papers editor
          * @param centroid
@@ -44,7 +48,7 @@
         }
 
         /**
-         * Lauch the iD editor
+         * Launch the iD editor
          * @param centroid
          * @param changesetComment
          * @param imageryUrl
@@ -104,41 +108,44 @@
 
         /**
          * Sends a synchronous remote control command to JOSM and returns a boolean to indicate success
-         * @param URL of the JOSM remote control endpoint
-         * @param Object containing key, value pairs to be used as URL parameters
+         * @param endpoint of the JOSM remote control endpoint
+         * @param params containing key, value pairs to be used as URL parameters
          * @returns {boolean} Did JOSM Repond successfully
          */
         function sendJOSMCmd(endpoint, params) {
-            // This has been implemented using XMLHTTP rather than Angular promises
-            // THis was done because angular was adding request headers such that the browser was
-            // preflighing the GET request with an OPTIONS requests due to CORS.
-            // JOSM does not suppport the OPTIONS requests
-            // After some time, we were unable to find a way to control the headrer to stop the preflighting
-            // The workaround is as you see here, to use XMLHttpRequest in synchrounous mode
+            var url = endpoint + formatUrlParams_(params),
+                loaded,
+                iframe;
 
-            var reqObj = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");//new XMLHttpRequest();
-            var url = endpoint + formatUrlParams_(params);
-            var success = false;
-            reqObj.onreadystatechange = function () {
-                if (this.readyState == 4) {
-                    if (this.status == 200) {
-                        success = true;
+            return $q(function (resolve, reject) {
+                // Figure out when we can next run a command
+                var wait = Math.max(josmLastCommand + JOSM_COMMAND_TIMEOUT - Date.now(), 0);
+
+                // This remembers when we are going to run THIS command, and adds the timeout (yes, it is double-counted - this seems to be more reliable).
+                josmLastCommand = Date.now() + wait + JOSM_COMMAND_TIMEOUT;
+
+                setTimeout(function () {
+                    iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.addEventListener('load', function () {
+                        if (loaded === undefined) {
+                            loaded = true;
+                            resolve();
+                            iframe.parentElement.removeChild(iframe);
+                        }
+                    });
+                    iframe.setAttribute('src', url);
+                    document.body.appendChild(iframe);
+                }, wait);
+
+                setTimeout(function () {
+                    if (loaded === undefined) {
+                        loaded = false;
+                        reject();
+                        iframe.parentElement.removeChild(iframe);
                     }
-                    else {
-                        success = false;
-                    }
-                }
-            };
-            try {
-                //use synchronous mode.  Not ideal but should be ok since JOSM is local.
-                //Otherwise callbacks would be required
-                reqObj.open('GET', url, false);
-                reqObj.send();
-            }
-            catch (e) {
-                success = false;
-            }
-            return success;
+                }, wait + JOSM_COMMAND_TIMEOUT);
+            });
         }
 
         /**
@@ -149,7 +156,7 @@
          * @returns string - gpxUrl
          */
         function getGPXUrl(projectId, taskIds, as_file){
-            var gpxUrl = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds + '&as_file='+(as_file?true:false);
+            var gpxUrl = configService.tmAPI + '/project/' + projectId + '/tasks_as_gpx?tasks=' + taskIds + '&as_file='+(as_file?true:false) + '&filename=task.gpx';
             // If it is not a full path, then it must be relative and for the GPX callback to work it needs
             // a full URL so get the current host and append it
             // Check if it is a full URL
@@ -165,7 +172,6 @@
          * Format the GPX url for the project ID and taskIds
          * @param projectId
          * @param taskIds (comma separated)
-         * @param as_file {true|false}
          * @returns string - gpxUrl
          */
         function getOSMXMLUrl(projectId, taskIds){
@@ -179,6 +185,25 @@
                 osmUrl = $location.protocol() + '://' + $location.host() + osmUrl;
             }
             return encodeURIComponent(osmUrl);
+        }
+
+        /**
+         * Format the OSM url for the project files
+         * @param projectId
+         * @param taskId
+         * @returns string - taskUrl
+         */
+        function getProjectFileOSMXMLUrl(projectId, taskId, file){
+            var taskUrl = configService.tmAPI + '/project/' + projectId + '/project-file?tasks=' + taskId + '&file_id=' + file.id;
+            // If it is not a full path, then it must be relative and for the GPX callback to work it needs
+            // a full URL so get the current host and append it
+            // Check if it is a full URL
+            var fullUrl = taskUrl.indexOf('http');
+            if (fullUrl == -1){
+                // Not a full URL - so add the absolute part
+                taskUrl = $location.protocol() + '://' + $location.host() + taskUrl;
+            }
+            return encodeURIComponent(taskUrl);
         }
     }
 })();

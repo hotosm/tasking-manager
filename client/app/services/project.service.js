@@ -36,6 +36,7 @@
             getTaskSize: getTaskSize,
             getNumberOfTasks: getNumberOfTasks,
             addTaskGridToMap: addTaskGridToMap,
+            getMapillarySequences: getMapillarySequences,
             createProject: createProject,
             setAOI: setAOI,
             getAOI: getAOI,
@@ -44,13 +45,21 @@
             getProjectMetadata: getProjectMetadata,
             updateProject: updateProject,
             deleteProject: deleteProject,
+            mapAllTasks: mapAllTasks,
+            resetBadImageryTasks: resetBadImageryTasks,
             invalidateAllTasks: invalidateAllTasks,
             validateAllTasks: validateAllTasks,
+            resetAllTasks: resetAllTasks,
             getCommentsForProject: getCommentsForProject,
             userCanMapProject: userCanMapProject,
             userCanValidateProject: userCanValidateProject,
             getMyProjects: getMyProjects,
-            trimTaskGrid: trimTaskGrid
+            trimTaskGrid: trimTaskGrid,
+            getProjectSummary: getProjectSummary,
+            uploadFile: uploadFile,
+            getProjectFiles: getProjectFiles,
+            deleteProjectFile: deleteProjectFile,
+            updateProjectFile: updateProjectFile
         };
 
         return service;
@@ -336,6 +345,35 @@
             return hasSelfIntersections;
         }
 
+        /**
+         * Queries Mapillary API to get all sequences uploaded by Kaart.
+         * @param bbox 
+         * @param {Date} startDate 
+         * @param {Date} endDate 
+         * @returns {geojson}
+         */
+        function getMapillarySequences(bbox, startDate, endDate, usernames) {
+	    if (usernames) {
+		var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_date=' + startDate + '&end_date=' + endDate + '&usernames=' + usernames
+	    }
+	    else {
+		var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_date=' + startDate + '&end_date=' + endDate
+	    }
+            return $http({
+                method: 'GET',
+                url: url
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                // Buffer the LineStrings to Polygons for task areas
+                var buffered = turf.buffer(response.data, 20, {units: 'meters'});
+                return geospatialService.getFeaturesFromGeoJSON(buffered);
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(response);
+            });
+        }
 
         /**
          * Creates a project by calling the API with the AOI, a task grid and a project name
@@ -432,6 +470,7 @@
         /**
          * Updates a project
          * @param id
+         * @param projectData
          * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
          */
         function updateProject(id, projectData) {
@@ -477,9 +516,52 @@
         }
 
         /**
+         * Map all tasks on the project
+         * @param projectId
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function mapAllTasks(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/map-all',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Mark all bad imagery tasks ready for mapping
+         * @param projectId
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function resetBadImageryTasks(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/reset-all-badimagery',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
          * Invalidate all tasks on the project
          * @param projectId
-         * @param comment
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
         function invalidateAllTasks(projectId) {
@@ -502,7 +584,6 @@
         /**
          * Validate all tasks on the project
          * @param projectId
-         * @param comment
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
          */
         function validateAllTasks(projectId) {
@@ -510,6 +591,28 @@
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/admin/project/' + projectId + '/validate-all',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Resets all tasks on the project
+         * @param projectId
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function resetAllTasks(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/reset-all',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
@@ -544,11 +647,11 @@
             });
         }
 
-        /**
-         * enumerate mapper levels
-         * @param levelText
-         * @returns {string|*}
-         */
+            /**
+             * enumerate mapper levels
+             * @param levelText
+             * @returns {string|*}
+             */
         function enumerateMapperLevel(levelText) {
             var levelEnum = -1;
             switch (levelText) {
@@ -652,6 +755,137 @@
                 return $q.reject(reason);
             });
 
+        }
+
+        /**
+         * Get a project summary JSON
+         * @param id - project id
+         * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function getProjectSummary(id) {
+
+            var preferredLanguage = languageService.getLanguageCode();
+
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + id + '/summary',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Accept-Language': preferredLanguage
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Upload new file for a project
+         * @param id
+         * @param file
+         * @param uploadPolicy
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function uploadFile(id, file, uploadPolicy) {
+            var form_data = new FormData()
+            form_data.append('file', file);
+            // Returns a promise
+            return $http({
+                method: 'PUT',
+                url: configService.tmAPI + '/admin/project/' + id + '/project-files?upload_policy=' + uploadPolicy,
+                headers: {
+                    'Authorization': 'Token ' + btoa(authService.getSession().sessionToken),
+                    'Content-Type': undefined
+                },
+                data: form_data
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get all project files
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         * @param projectId - unique id for the project
+         */
+        function getProjectFiles(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/project-files',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Remove file from project
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         * @param projectId - unique id for the project
+         * @param fileId - unique id for the file
+         */
+        function deleteProjectFile(projectId, fileId) {
+            // Returns a promise
+            return $http({
+                method: 'DELETE',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/project-file?file_id=' + fileId,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Update project file
+         * @param projectId - unique id for the project
+         * @param fileId - unique id for the file
+         * @param fileData
+         * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function updateProjectFile(projectId, fileId, fileData) {
+            console.log(fileData)
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/admin/project/' + projectId + '/project-file?file_id=' + fileId,
+                headers: authService.getAuthenticatedHeader(),
+                data: fileData
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
         }
     }
 })();

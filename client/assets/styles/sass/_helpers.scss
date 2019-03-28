@@ -14,6 +14,21 @@
 
 .error {
   color: $danger-color;
+  background-color: rgba(234, 79, 84, .2);
+  width: 100%;
+  padding: .3em .5em;
+  border: 1px solid rgba(234, 79, 84, .4);
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 1.5em;
+  p {
+    margin-bottom: 0;
+    max-width: none;
+  }
+}
+
+.error--below {
+  margin-top: 2em;
 }
 
 .pointer {
@@ -25,9 +40,6 @@
 }
 
 /** Override the OSM design system **/
-.form__group {
-  margin-top: $global-spacing;
-}
 
 hr {
   width: 100%;
@@ -35,11 +47,11 @@ hr {
 }
 
 .tr-hover:hover {
-  background-color: rgba($base-color, 0.1);
+  background-color: rgba($medium-grey, 0.1);
 }
 
 .tr-darker {
-  background-color: rgba($base-color, 0.1);
+  background-color: rgba($medium-grey, 0.1);
 }
 
 .pagination {
@@ -49,7 +61,6 @@ hr {
       cursor: pointer;
       padding: 0.8rem;
     }
-    @extend .button--achromic;
     display: inline;
     padding: 0.5rem;
     a {
@@ -57,7 +68,6 @@ hr {
     }
   }
   > li.active {
-    @extend .button--active;
   }
 }
 
@@ -112,7 +122,6 @@ hr {
   background-color: #fff;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, .15);
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
@@ -140,7 +149,7 @@ hr {
 .badge {
   display: inline-block;
   min-width: 10px;
-  padding: 0px 7px;
+  padding: 0 7px;
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
@@ -148,7 +157,7 @@ hr {
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
-  background-color: $base-color;
+  background-color: $medium-grey;
   border-radius: 10px;
 }
 
@@ -159,4 +168,14 @@ hr {
 
 .button[disabled]{
   cursor: not-allowed;
+}
+
+.hot-ds-icon-sm-xmark:before {
+  width: 12px;
+  height: 12px;
+  background-size: 12px 12px;
+  content: " ";
+  background-image: url('../../icons/xmark.svg');
+  display: inline-block;
+  margin-right: .3em;
 }

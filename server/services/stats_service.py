@@ -1,13 +1,17 @@
+from cachetools import TTLCache, cached
+
 from server import db
-from server.models.dtos.project_dto import ProjectSummary
 from server.models.dtos.stats_dto import ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO, \
-    ProjectActivityDTO
+    ProjectActivityDTO, HomePageStatsDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
-from server.models.postgis.task import TaskHistory, User
+from server.models.postgis.task import TaskHistory, User, Task
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
+
+
+homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
 
 class StatsService:
@@ -44,6 +48,7 @@ class StatsService:
     @staticmethod
     def _set_counters_after_validated(project: Project, user: User):
         """ Set counters after user has validated a task """
+        # TODO - There is a potential problem with the counters if people mark bad imagery tasks validated
         project.tasks_validated += 1
         user.tasks_validated += 1
 
@@ -51,6 +56,40 @@ class StatsService:
     def _set_counters_after_bad_imagery(project: Project):
         """ Set counters after user has marked a task as Bad Imagery """
         project.tasks_bad_imagery += 1
+
+    @staticmethod
+    def set_counters_after_undo(project_id: int, user_id: int, current_state: TaskStatus, undo_state: TaskStatus):
+        """ Resets counters after a user undoes their task"""
+        project = ProjectService.get_project_by_id(project_id)
+        user = UserService.get_user_by_id(user_id)
+
+        # This is best endeavours to reset the stats and may have missed some edge cases, hopefully majority of
+        # cases will be Mapped to Ready
+        if current_state == TaskStatus.MAPPED and undo_state == TaskStatus.READY:
+            project.tasks_mapped -= 1
+            user.tasks_mapped -= 1
+        if current_state == TaskStatus.MAPPED and undo_state == TaskStatus.INVALIDATED:
+            user.tasks_mapped -= 1
+            project.tasks_mapped -= 1
+        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.READY:
+            project.tasks_bad_imagery -= 1
+        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.MAPPED:
+            project.tasks_mapped += 1
+            project.tasks_bad_imagery -= 1
+        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.INVALIDATED:
+            project.tasks_bad_imagery -= 1
+        elif current_state == TaskStatus.INVALIDATED and undo_state == TaskStatus.MAPPED:
+            user.tasks_invalidated -= 1
+            project.tasks_mapped += 1
+        elif current_state == TaskStatus.INVALIDATED and undo_state == TaskStatus.VALIDATED:
+            user.tasks_invalidated -= 1
+            project.tasks_validated += 1
+        elif current_state == TaskStatus.VALIDATED and undo_state == TaskStatus.MAPPED:
+            user.tasks_validated -= 1
+            project.tasks_validated -= 1
+        elif current_state == TaskStatus.VALIDATED and undo_state == TaskStatus.BADIMAGERY:
+            user.tasks_validated -= 1
+            project.tasks_validated -= 1
 
     @staticmethod
     def _set_counters_after_invalidated(task_id: int, project: Project, user: User):
@@ -94,25 +133,6 @@ class StatsService:
         return activity_dto
 
     @staticmethod
-    def get_project_stats(project_id: int, preferred_locale: str) -> ProjectSummary:
-        """ Gets stats for the specified project """
-        project = db.session.query(Project.id,
-                                   Project.status,
-                                   Project.campaign_tag,
-                                   Project.total_tasks,
-                                   Project.tasks_mapped,
-                                   Project.tasks_validated,
-                                   Project.tasks_bad_imagery,
-                                   Project.created,
-                                   Project.last_updated,
-                                   Project.default_locale,
-                                   Project.centroid.ST_AsGeoJSON().label('geojson')) \
-            .filter(Project.id == project_id).one_or_none()
-
-        pm_project = Project.get_project_summary(project, preferred_locale)
-        return pm_project
-
-    @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
         """ Get all user contributions on a project"""
         contrib_query = '''select m.mapped_by, m.username, m.mapped, v.validated_by, v.username, v.validated
@@ -147,3 +167,16 @@ class StatsService:
             contrib_dto.user_contributions.append(user_contrib)
 
         return contrib_dto
+
+    @staticmethod
+    @cached(homepage_stats_cache)
+    def get_homepage_stats() -> HomePageStatsDTO:
+        """ Get overall TM stats to give community a feel for progress that's being made """
+        dto = HomePageStatsDTO()
+
+        dto.mappers_online = Task.query.filter(Task.locked_by != None).distinct(Task.locked_by).count()
+        dto.total_mappers = User.query.count()
+        dto.tasks_mapped = Task.query.\
+            filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
+
+        return dto

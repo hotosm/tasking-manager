@@ -1,0 +1,521 @@
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+/* Reset the box-sizing */
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Make viewport responsive on every browser */
+
+@at-root {
+  @-moz-viewport      { width: device-width; }
+  @-ms-viewport       { width: device-width; }
+  @-o-viewport        { width: device-width; }
+  @-webkit-viewport   { width: device-width; }
+  @viewport           { width: device-width; }
+}
+
+/* Reset HTML, body, etc */
+
+html {
+  font-size: $root-font-size;
+  // Changes the default tap highlight to be completely transparent in iOS.
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+body {
+  background: #fff;
+  color: $base-font-color;
+  font-size: $base-font-size;
+  line-height: $base-line-height;
+  font-family: $base-font-family;
+  font-weight: $base-font-weight;
+  font-style: $base-font-style;
+  min-width: $row-min-width;
+}
+
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+
+/* Links
+   ========================================================================== */
+
+a {
+  cursor: pointer;
+  color: $base-font-color;
+  text-decoration: none;
+  transition: opacity 0.24s ease 0s;
+}
+
+.normallink, .normallink:visited, footer a, footer a:visited, p a, p a:visited, tbody a, tbody a:visited {
+  color: $link-color;
+  &:hover {
+    border-bottom: 1px solid $lighter-orange;
+    transition: all 0.6s ease 0.2s;
+    -webkit-transition: all 0.6s;
+    -moz-transition: all 0.6s;
+  }
+}
+
+a:active {
+  outline: none;
+  transform: translate(0, 1px);
+}
+
+
+/* Rows
+   ========================================================================== */
+
+.row {
+  @extend .clearfix;
+  padding-left: $global-spacing;
+  padding-right: $global-spacing;
+  @include media(small-up) {
+    padding-left: $global-spacing * 2;
+    padding-right: $global-spacing * 2;
+  }
+  @include media(xlarge-up) {
+    padding-left: $global-spacing * 4;
+    padding-right: $global-spacing * 4;
+  }
+  &--centered {
+    max-width: $row-max-width;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+
+/* Buttons
+   ========================================================================== */
+
+/**
+ * iOS "clickable elements" fix for role="button":
+ * https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile
+ */
+
+ .button, .button:visited {
+   -webkit-border-radius: 4px;
+   -moz-border-radius: 4px;
+   border-radius: 4px;
+   background-color: $kaart-green;
+   padding: .3em 2.5em;
+   color: #fff;
+   text-transform: uppercase;
+   display: inline-block;
+   font-weight: 600;
+   border: 2px solid $link-color;
+   &:hover {
+     transition: all 0.3s ease 0s;
+     -webkit-transition: all 0.3s;
+     -moz-transition: all 0.3s;
+     color: $link-color;
+     background-color: inherit;
+     border: 2px solid $link-color;
+   }
+ }
+
+ button:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+ .button--outline, .button--outline:visited {
+   background-color: inherit;
+   border: 2px solid $darkest-grey;
+   color: $darkest-grey;
+ }
+
+ .button--outline--white, .button--outline--white:visited {
+   background-color: inherit;
+   border: 3px solid #FFF;
+   color: #FFF;
+   font-weight: 600;
+   transition: all 0.3s ease 0s;
+   -webkit-transition: all 0.3s;
+   -moz-transition: all 0.3s;
+
+   &:hover {
+     background-color: #fff;
+     color: $link-color;
+     margin-top: -.3em;
+     margin-bottom: .3em;
+     border: 3px solid #FFF;
+   }
+ }
+
+ .button--sm, .button--small {
+  padding: 0 1.8em;
+  font-size: .86em;
+ }
+
+[role="button"] {
+  cursor: pointer;
+}
+
+.button-group {
+  margin-top: 1.5em;
+  a {
+    &:first-of-type {
+      margin-right: 1em;
+    }
+  }
+}
+
+.buttons--sidebyside {
+  li {
+    display: inline-block;
+    margin-right: 1em;
+    margin-top: 1em;
+  }
+}
+
+.button--secondary, .button--secondary:visited {
+  background-color: $warm-grey;
+  border: 2px solid $warm-grey;
+  transition: all 0.3s ease 0s;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+
+  &:hover {
+    background-color: inherit;
+    color: $warm-grey;
+    border: 2px solid $warm-grey;
+  }
+}
+
+.button--outline--secondary, .button--outline--secondary:visited {
+  border: 2px solid $warm-grey;
+  background-color: inherit;
+  color: $warm-grey;
+  transition: all 0.3s ease 0s;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+
+  &:hover {
+    color: darken($warm-grey, 20%);
+    border: 2px solid darken($warm-grey, 20%);
+  }
+}
+
+.button-group--stacked {
+  button {
+    &:first-of-type {
+      margin-bottom: .5em;
+    }
+  }
+}
+
+.button-group--horizontal {
+  button {
+    margin-bottom: .5em;
+  }
+  .button--active {
+    background-color: darken($link-color, 13%);
+    border: 2px solid darken($link-color, 13%);
+  }
+}
+
+
+.search-options-container, .list-type--none {
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+}
+
+.list-type--none {
+  list-style: none;
+  padding-left: 0;
+}
+
+#split-task-btn:hover #split-task
+{ 
+  fill: $warm-grey;
+}
+#bad-imagery-btn:hover #bad-imagery
+{ 
+  fill: $warm-grey;
+}
+#stop-mapping-btn:hover #stop-mapping
+{ 
+  fill: $warm-grey;
+}
+
+#complete-mapping-btn:hover #complete-mapping
+{ 
+  fill: $orange;
+}
+
+.icon-sm-tick {
+  background-image: url("../../icons/tick.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$link-color;
+  }
+}
+
+
+
+.icon-split {
+  background-image: url("../../icons/split.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
+}
+
+.icon-danger {
+  background-image: url("../../icons/sign-danger.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
+}
+
+.icon-stop-map {
+  background-image: url("../../icons/stop-map.svg");
+  background-size: 12px 12px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: .2em;
+  fill:white;
+  &:hover {
+    fill:$warm-grey;
+  }
+}
+
+/* Forms
+   ========================================================================== */
+
+input, select, textarea {
+  font: inherit;
+  height: auto;
+  width: auto;
+  margin: 0;
+  padding: .2em .8em;
+
+}
+
+textarea {
+  border: 1px solid $lightgrey;
+}
+
+input, textarea {
+  width: 80%;
+}
+
+.form__standard {
+  margin-bottom: 2em;
+  list-style: none;
+  padding-left: 0;
+  label {
+    font-weight: 600;
+    margin-bottom: .5em;
+    display: block;
+  }
+  li {
+    margin-bottom: 1.3em;
+
+  }
+}
+
+.search-option  {
+  padding-bottom: 1em;
+  margin-bottom: 2em;
+}
+
+[type="radio"], [type="checkbox"] {
+  margin-left: .1em;
+  width: 15px;
+}
+
+.form__option--custom-checkbox, .form__option--radio {
+  span {
+    padding-left: .3em;
+  }
+}
+
+.section__body {
+  .space-bottom--none {
+    margin-bottom: 0;
+  }
+}
+
+/* Tables
+   ========================================================================== */
+
+/**
+ * Remove most spacing between table cells.
+ */
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.dropdown-arrow {
+  background-image: url('../../icons/chevron-down.svg');
+  width: 18px;
+  height: 13px;
+  content: '';
+  background-size: 18px 13px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  margin-left: .3em;
+}
+
+.search--wrapper {
+  position: relative;
+  input {
+    width: 100%;
+  }
+}
+
+.icon--search {
+  background-image: url('../../icons/magnifier-left.svg');
+  width: 18px;
+  height: 18px;
+  content: '';
+  background-size: 18px 18px;
+  display: inline-block;
+  position: absolute;
+  border: none;
+  background-color: inherit;
+  top: .6em;
+  right: .6em;
+  span {
+    visibility: hidden;
+  }
+}
+
+.icon--xmark {
+  width: 12px;
+  height: 12px;
+  background-size: 12px 12px;
+  content: " ";
+  background-image: url('../../icons/xmark.svg');
+  display: inline-block;
+  margin-right: .3em;
+}
+
+/*pagination*/
+.paging {
+  text-align: center;
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      display: inline-block;
+      padding: 0 .3em;
+      margin: 0 .3em;
+      cursor: pointer;
+    }
+    .paging--next {
+      margin-left: 1em;
+    }
+
+    .paging--previous {
+      margin-right: 1em;
+    }
+  }
+  .button--active {
+    font-weight: 600;
+  }
+}
+
+
+.content--left {
+  float: left;
+  margin-right: 5%;
+}
+
+.block--action {
+  .content--left {
+    width: 300px;
+    margin-bottom: 2em;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+    display: block;
+    float: none;
+    @include media(medium-up) {
+      float: left;
+      margin-right: 5%;
+      width: 43%;
+    }
+  }
+}
+
+.content--right {
+  float: left;
+  width: 100%;
+  @include media(medium-up) {
+    float: left;
+    width: 52%;
+  }
+}
+
+.list--piped {
+  list-style: none;
+  padding-left: 0;
+  li {
+    margin-right: 1em;
+    padding-right: 1em;
+    border-right: 1px solid $lightgrey;
+    display: inline-block;
+
+    &:last-of-type {
+      border-right: none;
+    }
+  }
+}
+
+.object--primary {
+  display: block;
+  margin-top: .5em;
+}
+
+
+/* Markdown-to-html (Showdown) common stylings
+   ========================================================================== */
+p[markdown-to-html] {
+    code {
+        color: $red;
+    }
+}

@@ -1,0 +1,42 @@
+<div>
+    <div ng-show="!projectChatCtrl.errorGetMessages">
+        <div class="chat--individual list--zebra" ng-repeat="message in projectChatCtrl.messages | orderBy: 'timestamp' track by $index" ng-show="projectChatCtrl.messages.length > 0">
+            <p class="space-bottom--none">
+                <strong>
+                    <a href="./user/{{ message.username }}" target="_blank"/>{{ message.username }}</a>
+                </strong> <span class="metadata" am-time-ago="message.timestamp | amUtc | amLocal" title="{{ message.timestamp }}"></span></p>
+            <p markdown-to-html="message.message"></p>
+        </div>
+        <div ng-show="projectChatCtrl.messages.length < 1">
+            {{ 'No project discussion yet' | translate }}
+        </div>
+        <a id="bottom"></a>
+    </div>
+    <p class="error" ng-show="projectChatCtrl.errorGetMessages">
+        {{ 'An error occurred' | translate  }}
+    </p>
+    <div>
+        <div>
+            <textarea class="form__control space-bottom--none" type="text" mentio
+                      rows="4"
+                      maxlength="{{ projectChatCtrl.maxlengthComment }}"
+                      placeholder="{{ 'Type a message' | translate }}"
+                      mentio-typed-text="typedTerm"
+                      mentio-search="projectChatCtrl.searchUser(term)"
+                      mentio-select="projectChatCtrl.formatUserTag(item)"
+                      mentio-items="projectChatCtrl.suggestedUsers"
+                      mentio-template-url="/app/project/user-suggestions-menu.html"
+                      ng-model="projectChatCtrl.message"></textarea>
+            <p>{{ projectChatCtrl.maxlengthComment - projectChatCtrl.message.length }}
+                {{ 'characters remaining' | translate }}
+            </p>
+            <a ng-show="projectChatCtrl.author" class="normallink"
+                    ng-click="projectChatCtrl.messageProjectManager()">
+                {{ 'Contact project manager' | translate }}
+            </a>
+            <button class="button object--primary" ng-click="projectChatCtrl.addMessage()">Add message</button>
+        </div>
+    </div>
+    <p ng-show="projectChatCtrl.errorMessageAdded" class="error">{{ 'Error: your message was not added' | translate }}</p>
+    <p ng-show="projectChatCtrl.errorAddPMUsername" class="error">{{ 'Error: too many characters in your message' | translate }}</p>
+</div>

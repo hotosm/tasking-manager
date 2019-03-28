@@ -1,9 +1,10 @@
-<a class="global-menu-item">
+<a>
     <div class="drop drop--down drop--align-left drop--open">
-        <button class="button button--achromic drop__toggle drop__toggle--caret" type="button"
+        <div
             ng-click="languageSwitchCtrl.toggleMenu($event)">
             <span>{{ languageSwitchCtrl.selectedLanguage }}</span>
-        </button>
+            <i class="dropdown-arrow"></i>
+        </div>
         <div ng-show="languageSwitchCtrl.showDropdown" class="drop__content">
             <ul class="drop__menu drop__menu--iconified" role="menu">
                 <li ng-repeat="language in languageSwitchCtrl.availableLanguages">

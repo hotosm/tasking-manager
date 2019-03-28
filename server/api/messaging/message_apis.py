@@ -1,3 +1,5 @@
+import threading
+
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
@@ -15,7 +17,7 @@ class ProjectsMessageAll(Resource):
         Send message to all contributors to a project
         ---
         tags:
-            - messages
+            - messaging
         produces:
             - application/json
         parameters:
@@ -39,7 +41,7 @@ class ProjectsMessageAll(Resource):
                   properties:
                       subject:
                           type: string
-                          default: Thanks 
+                          default: Thanks
                           required: true
                       message:
                           type: string
@@ -62,10 +64,12 @@ class ProjectsMessageAll(Resource):
             return str(e), 400
 
         try:
-            MessageService.send_message_to_all_contributors(project_id, message_dto)
-            return {"Success": "Messages sent"}, 200
+            threading.Thread(target=MessageService.send_message_to_all_contributors,
+                             args=(project_id, message_dto)).start()
+
+            return {"Success": "Messages started"}, 200
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f'Send message all - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -79,7 +83,7 @@ class HasNewMessages(Resource):
         Gets count of unread messages
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -113,7 +117,7 @@ class GetAllMessages(Resource):
         Get all messages for logged in user
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -151,7 +155,7 @@ class MessagesAPI(Resource):
         Gets the specified message
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -196,7 +200,7 @@ class MessagesAPI(Resource):
         Deletes the specified message
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:
@@ -244,7 +248,7 @@ class ResendEmailValidationAPI(Resource):
         Resends the validation user to the logged in user
         ---
         tags:
-          - messages
+          - messaging
         produces:
           - application/json
         parameters:

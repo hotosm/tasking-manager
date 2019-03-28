@@ -8,6 +8,7 @@ shippable/
 
 # Ignore generated config
 client/app/taskingmanager.config.js
+client/package-lock.json
 
 # Ignore dist folder as this contains the minimized build for deploy
 server/web/static/dist
@@ -26,3 +27,13 @@ venv_aws/
 
 # Mac
 .DS_Store
+
+# Project Files Dir
+/server/project_files/
+
+# VSCode
+.vscode
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

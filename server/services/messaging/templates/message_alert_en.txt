@@ -4,5 +4,7 @@ You have a new message on the HOT Tasking Manager.  Click the link below to view
 
 [PROFILE_LINK]
 
-Many thanks
-HOT Mapping Team
+Please note: You can now opt-out of all automated validation messages by visiting your User Profile and clicking "Edit-Add Contact Details."
+
+Many thanks,
+Humanitarian OpenStreetMap Team

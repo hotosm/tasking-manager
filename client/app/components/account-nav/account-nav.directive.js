@@ -8,7 +8,7 @@
 
     angular
         .module('taskingManager')
-        .controller('accountNavController', ['$scope','$location', '$interval', '$document','$element', 'accountService','authService', 'messageService', accountNavController])
+        .controller('accountNavController', ['$scope','$location', '$interval', '$document','$element', '$timeout', '$route', 'accountService','authService', 'messageService', accountNavController])
         .directive('accountNav', accountNavDirective);
 
     /**
@@ -30,7 +30,7 @@
         return directive;
     }
 
-    function accountNavController($scope, $location, $interval, $document, $element, accountService, authService, messageService) {
+    function accountNavController($scope, $location, $interval, $document, $element, $timeout, $route, accountService, authService, messageService) {
 
         var vm = this;
         vm.account = {};
@@ -47,6 +47,10 @@
                 checkIfUserHasMessages();
             }
         }, true);
+
+          $timeout(function () {
+              vm.newMessageNotification = false;
+          }, 10000);
 
         activate();
 
@@ -100,6 +104,7 @@
          * Navigate to the create project page
          */
         vm.goToCreateNewProject = function () {
+            $route.reload();
             $location.path('admin/create-project');
             vm.showDropdown = false;
         };
@@ -127,7 +132,7 @@
             $location.path('admin/users');
             vm.showDropdown = false;
         };
-        
+
         /**
          * Go to the messages page
          */

@@ -2,7 +2,17 @@
    Header
    ========================================================================== */
 .tm-header {
-  background-image: url('../../img/background-header.png');
+  background-image: url('../../img/Kaart-plate.jpg');
+  // background-color: $kaart-green;
+  h1, p {
+    color: #fff;
+  }
+  p {
+    margin-bottom: 3em;
+    a {
+      color: #000!important;
+    }
+  }
   .inner {
     padding-top: 5rem;
     padding-bottom: 5rem;
@@ -12,58 +22,42 @@
 /* ==========================================================================
    Get involved
    ========================================================================== */
-.get-involved-container {
-  @include span(12/12);
-
-  .description {
-    @include span(4/12);
-    padding: 1rem;
-    @include media(medium-down) {
-      @include stack();
-    }
-  }
-  .action {
-    @include span(4/12);
-    padding: 1rem;
-    @include media(medium-down) {
-      @include stack();
-    }
-  }
-}
-
 .get-involved-section {
-  border-bottom: 2px solid $base-alpha-color;
+  border-bottom: 10px solid $base-alpha-color;
 }
+
 /* ==========================================================================
    Field stories
    ========================================================================== */
 
 .field-stories-container {
-  text-align: center !important;
-  @include span(12/12);
+  text-align: center;
 }
 
 .field-stories {
   &__cards {
     text-align: left;
     list-style: none;
-    padding-bottom: 2em;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     align-content: top;
     align-items: center;
+    padding-left: 3%;
+    margin-top: 3em;
   }
 
   &__card {
-    margin: 1rem;
-    width: 312px;
-    height: 400px;
-  }
-
-  &__content {
-    padding: 1rem;
+    margin-right: 3.5%;
+    width: 100%;
+    align-self: flex-start;
+    &:last-of-type {
+      margin-right: 0;
+    }
+    @include media(medium-up) {
+      width: 31%;
+    }
   }
 }
 
@@ -78,5 +72,92 @@
   display: none;
   @include media(xlarge-up) {
     display: block;
+  }
+}
+
+/* ==========================================================================
+   Stats
+   ========================================================================== */
+
+.homepage-stats-container {
+  text-align: center;
+  color: white;
+  .inner {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+.homepage-stats {
+  &__cards {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: top;
+    align-items: center;
+    padding-left: 3%;
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-right: 3.5%;
+    width: 100%;
+    align-self: flex-start;
+    &:last-of-type {
+      margin-right: 0;
+    }
+    @include media(medium-up) {
+      width: 31%;
+    }
+  }
+}
+
+#homepage-stats-2 {
+  display: none;
+  @include media(medium-up) {
+    display: flex;
+  }
+}
+
+#homepage-stats-3 {
+  display: none;
+  @include media(xlarge-up) {
+    display: flex;
+  }
+}
+
+.stats-card {
+  &__container {
+    height: 50px;
+  }
+
+  &__amount {
+    font-size: 2em;
+    letter-spacing: -1px;
+  }
+
+  &__title {
+    letter-spacing: 1px;
+    opacity: .7;
+    line-height: 18px;
+  }
+
+  &__loading {
+    width: 20px;
+    height: 20px;
+    border: 2px solid $medium-grey;
+    border-bottom: 2px solid $lightgrey;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   }
 }

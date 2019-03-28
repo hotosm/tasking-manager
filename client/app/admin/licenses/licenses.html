@@ -1,18 +1,20 @@
 <div class="inner">
     <section class="section section--asided">
-        <header class="section__header">
+        <header class="section__header section__header--nodescription">
             <div class="inner">
-                <h1 class="section__title">
-                    {{ 'Licenses' | translate }}
-                </h1>
+                <div class="section__header--left">
+                    <h1 class="section__title">
+                        {{ 'Licenses' | translate }}
+                    </h1>
+                </div>
+                <button class="button button--primary pull-right" type="button" ng-click="licensesCtrl.createNewLicense()">
+                    {{ 'Create new license' | translate }}
+                </button>
             </div>
         </header>
         <div class="section-container">
-            <div class="section__body">
+            <div class="section__body section__body--secondary">
                 <div class="inner">
-                    <button class="button button--primary pull-right" type="button" ng-click="licensesCtrl.createNewLicense()">
-                        {{ 'Create new license' | translate }}
-                    </button>
                     <table class="table table--zebra">
                         <thead>
                         <tr>

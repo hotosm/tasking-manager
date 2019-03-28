@@ -44,6 +44,10 @@ Following must be available locally:
 
 * Python 3.6 - [Python 3.6 install here](https://www.python.org/downloads/)
 
+#### For the Project Files Feature
+
+* Osmosis - [Follow Instructions here](https://wiki.openstreetmap.org/wiki/Osmosis/Installation)
+
 ### Build the Server
 * Create a Python Virtual Environment, using Python 3.6:
     * ```python -m venv ./venv```
@@ -54,14 +58,17 @@ Following must be available locally:
     * Windows (use installer because of precompiled libs):
         * ```.\venv\scripts\activate```
         * ```.\devops\win\install.bat```
-        
+
 ### Environment vars:
 As the project is open source we have to keep secrets out of the repo.  You will need to setup the following env vars locally:
 
-* **TM_DB** - This is the for the PostGIS connection string.  If you can't access an existing DB refer to DevOps page to [set up a local DB in Docker](https://github.com/hotosm/tasking-manager/wiki/Dev-Ops#creating-a-local-postgis-database-with-docker)
+* **TM_DB** - This is for the PostGIS connection string.  If you can't access an existing DB refer to DevOps page to [set up a local DB in Docker](https://github.com/hotosm/tasking-manager/wiki/Dev-Ops#creating-a-local-postgis-database-with-docker)
 * **TM_SECRET** - This is secret key for the TM app used by itsdangerous and flask-oauthlib for entropy
 * **TM_CONSUMER_KEY** - This is the OAUTH Consumer Key used for authenticating the Tasking Manager App in OSM
 * **TM_CONSUMER_SECRET** - This is the OAUTH Consumer Secret used for authenticating the Tasking Manager App in OSM
+* **TM_SMTP_HOST** - The hostname for the SMTP server that is used to send email alerts
+* **TM_SMTP_PORT** - The port number for the SMTP server that is used to send email alerts
+* **TM_SMTP_USER** - The user for the SMTP server that is used to send email alerts
 * **TM_SMTP_PASSWORD** - The password for the SMTP server that is used to send email alerts
 
 * Linux/Mac
@@ -70,12 +77,18 @@ As the project is open source we have to keep secrets out of the repo.  You will
     * ```export TM_SECRET=secret-key-here```
     * ```export TM_CONSUMER_KEY=oauth-consumer-key-goes-here```
     * ```export TM_CONSUMER_SECRET=oauth-consumer-secret-key-goes-here```
+    * ```export TM_SMTP_HOST=smtp-server-host-here```
+    * ```export TM_SMTP_PORT=smtp-server-port-here```
+    * ```export TM_SMTP_USER=smtp-server-user-here```
     * ```export TM_SMTP_PASSWORD=smtp-server-password-here```
 * Windows:
     * ```setx TM_DB "postgresql://USER:PASSWORD@HOST/DATABASE"```
     * ```setx TM_SECRET "secret-key-here"```
     * ```setx TM_CONSUMER_KEY "oauth-consumer-key-goes-here"```
     * ```setx TM_CONSUMER_SECRET "oauth-consumer-secret-key-goes-here"```
+    * ```setx TM_SMTP_HOST "smtp-server-host-here"```
+    * ```setx TM_SMTP_PORT "smtp-server-port-here"```
+    * ```setx TM_SMTP_USER "smtp-server-user-here"```
     * ```setx TM_SMTP_PASSWORD "smtp-server-password-here"```
 
 ### Creating the DB
@@ -91,10 +104,10 @@ python manage.py db upgrade
 If you plan to only work on the API you don't need to build the client and can run as follows:
 
 * Run the server:
-    * ``` python manage.py runserver -d ```
+    * ``` python manage.py runserver -d -r```
 * Point your browser to:
     * [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
-    
+
 #### Seeing the client
 If you want to see the client you will need to follow all the instruction in **Client Development** section then build the client as follows:
 
@@ -103,7 +116,7 @@ If you want to see the client you will need to follow all the instruction in **C
     * ```gulp build```
 * You can now run the server as above from the root dir:
     * ```cd ..```
-    * ``` python manage.py runserver -d ```
+    * ``` python manage.py runserver -d -r```
 * Point your browser to:
     * [http://localhost:5000](http://localhost:5000)
 
@@ -122,7 +135,7 @@ python -m unittest discover tests/server
 
 On boot the Tasking Manager App will look for the following environment vars:
 
-* **TASKING_MANAGER_ENV** - Allows you to specify which config to load from ./server/config.py  Acceptable values:
+* **TM_ENV** - Allows you to specify which config to load from ./server/config.py  Acceptable values:
     * **Dev** - This is the default
     * **Staging** - Use this for your staging/test environment
     * **Prod** - Use this for your production environment

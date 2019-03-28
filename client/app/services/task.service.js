@@ -15,6 +15,7 @@
             unLockTaskMapping: unLockTaskMapping,
             stopMapping: stopMapping,
             lockTaskMapping: lockTaskMapping,
+            addTaskComment: addTaskComment,
             unLockTaskValidation: unLockTaskValidation,
             stopValidating: stopValidating,
             lockTasksValidation: lockTasksValidation,
@@ -25,7 +26,10 @@
             getTaskFeaturesByIds: getTaskFeaturesByIds,
             getMappedTasksByUser: getMappedTasksByUser,
             getLockedTasksForCurrentUser: getLockedTasksForCurrentUser,
-            splitTask: splitTask
+            getLockedTaskDetailsForCurrentUser: getLockedTaskDetailsForCurrentUser,
+            splitTask: splitTask,
+            getTaskFeaturesByIdAndStatus: getTaskFeaturesByIdAndStatus,
+            undo: undo
         };
 
         return service;
@@ -37,13 +41,19 @@
          * @returns {!jQuery.jqXHR|!jQuery.deferred|!jQuery.Promise|*}
          */
         function getTask(projectId, taskId) {
+
+            // Optionally pass in an authenticated header (only when available)
+            var headers = {'Content-Type': 'application/json; charset=UTF-8'};
+            var authenticatedHeaders = authService.getAuthenticatedHeader();
+            if (authenticatedHeaders){
+                headers = authenticatedHeaders;
+            }
+
             // Returns a promise
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId,
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
+                headers: headers
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -84,7 +94,7 @@
             });
         }
 
-/**
+        /**
          * Requests stop mapping a task
          * @param projectId - id of the task project
          * @param taskId - id of the task
@@ -122,6 +132,33 @@
             return $http({
                 method: 'POST',
                 url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/lock-for-mapping',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback(error) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
+
+        /**
+         * Adds a comment to a task outside of a locked session
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @param comment - the comment text
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function addTaskComment(projectId, taskId, comment) {
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                data: {
+                    comment: comment,
+                },
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/comment',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
@@ -217,7 +254,7 @@
          * Will return a READY task if available,
          * otherwise will return an INVALIDATED task if available,
          * otherwise will return null.
-         * @param feature - array of ol.Feature objects from which to find a random task
+         * @param features - array of ol.Feature objects from which to find a random task
          * @returns ol.Feature - randomly selected mappable ol.Feature object
          */
         function getRandomMappableTaskFeature(features) {
@@ -248,7 +285,7 @@
          * returns a randomly selected validatable task feature from the passed in vector features.
          * Will return a MAPPED task if available,
          * otherwise will return null.
-         * @param feature - array of ol.Feature objects from which to find a random task
+         * @param features - array of ol.Feature objects from which to find a random task
          * @returns ol.Feature - randomly selected mappable ol.Feature object
          */
         function getRandomTaskFeatureForValidation(features) {
@@ -273,7 +310,7 @@
         /**
          * Returns an array of task features that meet passed in status criteria
          * @param features - array of ol.Feature objects
-         * @param taskStatus - required task status
+         * @param status - required task status
          */
         function getTasksByStatus(features, status) {
             candidates = [];
@@ -350,6 +387,36 @@
         }
 
         /**
+         * Filters features by id and status
+         * @param features {Array<ol.Feature>} Features to be filtered
+         * @param ids {Array} task ids to filter on
+         * @param status to filter on
+         * @returns {Array<ol.Feature>}
+         */
+        function getTaskFeaturesByIdAndStatus(features, ids, status) {
+
+            candidates = [];
+            //first check we are working with a non empty array
+            if (features && (features instanceof Array) && features.length > 0) {
+                // get all tasks with taskId= id
+                var candidates = features.filter(function (item) {
+                    //check we are working with an ol.Feature
+                    if (item instanceof ol.Feature) {
+                        // safe to use the function
+                        var taskId = item.get('taskId');
+                        var taskStatus = item.get('taskStatus');
+                        var i = ids.indexOf(taskId);
+                        if (i !== -1 && taskStatus === status) {
+                            return item;
+                        }
+                    }
+                });
+            }
+            return candidates;
+
+        }
+
+        /**
          * Gets mapped tasks grouped by user and returns a promise
          * @param projectId
          * @returns {!jQuery.jqXHR|*|!jQuery.Promise|!jQuery.deferred}
@@ -395,6 +462,28 @@
             });
         }
 
+       /**
+         * Gets details of tasks which are locked by the current user
+         * @param projectId
+         * @returns {*|!jQuery.deferred|!jQuery.jqXHR|!jQuery.Promise}
+         */
+        function getLockedTaskDetailsForCurrentUser(projectId) {
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + projectId + '/has-user-locked-tasks/details',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data.tasks);
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
         /**
          * Requests a task split
          * @param projectId - id of the task project
@@ -418,5 +507,27 @@
             });
         }
 
+        /**
+         * Undo marking a task. It returns it to its previous state.
+         * @param projectId
+         * @param taskId
+         * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
+         */
+        function undo(projectId, taskId){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/project/' + projectId + '/task/' + taskId + '/undo-mapping',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response){
+                // this callback will be called asynchronously
+                // when the response is available
+                return (response.data);
+            }, function errorCallback(error) {
+                 // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject(error);
+            });
+        }
     }
 })();

@@ -1,9 +1,20 @@
+from cachetools import TTLCache, cached
 from flask import current_app
-from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO
+from functools import reduce
+import dateutil.parser
+import datetime
+
+from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
+    UserStatsDTO
+from server.models.postgis.task import TaskHistory
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
+
+
+user_filter_cache = TTLCache(maxsize=1024, ttl=600)
+user_all_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class UserServiceError(Exception):
@@ -30,6 +41,14 @@ class UserService:
 
         if user is None:
             raise NotFound()
+
+        return user
+
+    @staticmethod
+    def update_username(user_id: int, osm_username: str) -> User:
+        user = UserService.get_user_by_id(user_id)
+        if user.username != osm_username:
+            user.update_username(osm_username)
 
         return user
 
@@ -68,6 +87,36 @@ class UserService:
         return requested_user.as_dto(logged_in_user.username)
 
     @staticmethod
+    def get_user_dto_by_id(requested_user: int) -> UserDTO:
+        """Gets user DTO for supplied user id """
+        requested_user = UserService.get_user_by_id(requested_user)
+
+        return requested_user.as_dto(requested_user.username)
+
+    @staticmethod
+    def get_detailed_stats(username: str):
+        user = UserService.get_user_by_username(username)
+        stats_dto = UserStatsDTO()
+
+        actions = TaskHistory.query.filter(
+            TaskHistory.user_id == user.id,
+            TaskHistory.action == 'LOCKED_FOR_MAPPING',
+            TaskHistory.action_text != ''
+        ).all()
+
+        total_time = datetime.datetime.min
+        for action in actions:
+            duration = dateutil.parser.parse(action.action_text)
+            total_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)
+
+        stats_dto.time_spent_mapping = total_time.time().isoformat()
+
+        return stats_dto
+
+    @staticmethod
     def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
         """ Update user with info supplied by user, if they add or change their email address a verification mail 
             will be sent """
@@ -84,14 +133,16 @@ class UserService:
         return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
+    @cached(user_all_cache)
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Gets paginated list of users """
         return User.get_all_users(query)
 
     @staticmethod
-    def filter_users(username: str, page: int) -> UserFilterDTO:
+    @cached(user_filter_cache)
+    def filter_users(username: str, project_id: int, page: int) -> UserFilterDTO:
         """ Gets paginated list of users, filtered by username, for autocomplete """
-        return User.filter_users(username, page)
+        return User.filter_users(username, project_id, page)
 
     @staticmethod
     def is_user_a_project_manager(user_id: int) -> bool:
@@ -115,6 +166,16 @@ class UserService:
         user = UserService.get_user_by_id(user_id)
 
         if UserRole(user.role) in [UserRole.VALIDATOR, UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+            return True
+
+        return False
+
+    @staticmethod
+    def is_user_blocked(user_id: int) -> bool:
+        """ Determines if a user is blocked """
+        user = UserService.get_user_by_id(user_id)
+
+        if UserRole(user.role) == UserRole.READ_ONLY:
             return True
 
         return False
@@ -170,6 +231,17 @@ class UserService:
         return user
 
     @staticmethod
+    def set_user_is_expert(user_id: int, is_expert: bool) -> User:
+        """
+        Enabled or disables expert mode for the user
+        :raises: UserServiceError
+        """
+        user = UserService.get_user_by_id(user_id)
+        user.set_is_expert(is_expert)
+
+        return user
+
+    @staticmethod
     def accept_license_terms(user_id: int, license_id: int):
         """ Saves the fact user has accepted license terms """
         user = UserService.get_user_by_id(user_id)
@@ -220,3 +292,20 @@ class UserService:
 
         user.save()
         return user
+
+    @staticmethod
+    def refresh_mapper_level() -> int:
+        """ Helper function to run thru all users in the DB and update their mapper level """
+        users = User.get_all_users_not_pagainated()
+        users_updated = 1
+        total_users = len(users)
+
+        for user in users:
+            UserService.check_and_update_mapper_level(user.id)
+
+            if users_updated % 50 == 0:
+                print(f'{users_updated} users updated of {total_users}')
+
+            users_updated += 1
+
+        return users_updated

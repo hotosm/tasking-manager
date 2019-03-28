@@ -1,19 +1,23 @@
 import geojson
+from cachetools import TTLCache, cached
 from shapely.geometry import Polygon, box
-from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResultsDTO, ProjectSearchResultDTO, \
+from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResultsDTO, ListSearchResultDTO, \
     Pagination, ProjectSearchBBoxDTO
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
 from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform, ST_Area
+from server.services.users.user_service import UserService
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
+import math
 
 
-# max area allowed for passed in bbox, calculation shown to help future maintenace
-# 243375 is arbitrarily chosen map maximum map width in meters multiply by 1.5 to give a buffer beyond edge of map
-# raise to power 2 to get the maxim allowed area
-MAX_AREA = 133270628906.25
+search_cache = TTLCache(maxsize=128, ttl=300)
+
+# max area allowed for passed in bbox, calculation shown to help future maintenance
+# client resolution (mpp)* arbitrary large map size on a large screen in pixels * 50% buffer, all squared
+MAX_AREA = math.pow(1250*4275*1.5,2)
 
 
 class ProjectSearchServiceError(Exception):
@@ -33,39 +37,56 @@ class BBoxTooBigError(Exception):
 
 
 class ProjectSearchService:
+
     @staticmethod
+    @cached(search_cache)
     def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
         """ Searches all projects for matches to the criteria provided by the user """
 
-        filtered_projects = ProjectSearchService._filter_projects(search_dto)
+        all_results, paginated_results = ProjectSearchService._filter_projects(search_dto)
 
-        if filtered_projects.total == 0:
+        if paginated_results.total == 0:
             raise NotFound()
 
+        features = []
+        for project in all_results:
+            # This loop creates a geojson feature collection so you can see all active projects on the map
+            properties = {
+                "projectId": project.id,
+                "priority": ProjectPriority(project.priority).name
+            }
+            centroid = project.centroid
+            feature = geojson.Feature(geometry=geojson.loads(project.centroid), properties=properties)
+            features.append(feature)
+        feature_collection = geojson.FeatureCollection(features)
         dto = ProjectSearchResultsDTO()
-        for project in filtered_projects.items:
+        dto.map_results = feature_collection
+
+        for project in paginated_results.items:
+            # This loop loads the paginated text results
             # TODO would be nice to get this for an array rather than individually would be more efficient
             project_info_dto = ProjectInfo.get_dto_for_locale(project.id, search_dto.preferred_locale,
                                                               project.default_locale)
 
-            result_dto = ProjectSearchResultDTO()
-            result_dto.project_id = project.id
-            result_dto.locale = project_info_dto.locale
-            result_dto.name = project_info_dto.name
-            result_dto.priority = ProjectPriority(project.priority).name
-            result_dto.mapper_level = MappingLevel(project.mapper_level).name
-            result_dto.short_description = project_info_dto.short_description
-            result_dto.aoi_centroid = geojson.loads(project.centroid)
-            result_dto.organisation_tag = project.organisation_tag
-            result_dto.campaign_tag = project.campaign_tag
-            result_dto.percent_mapped = round(
-                (project.tasks_mapped / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
-            result_dto.percent_validated = round(
-                ((project.tasks_validated + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
+            list_dto = ListSearchResultDTO()
+            list_dto.project_id = project.id
+            list_dto.locale = project_info_dto.locale
+            list_dto.name = project_info_dto.name
+            list_dto.priority = ProjectPriority(project.priority).name
+            list_dto.mapper_level = MappingLevel(project.mapper_level).name
+            list_dto.short_description = project_info_dto.short_description
+            list_dto.organisation_tag = project.organisation_tag
+            list_dto.campaign_tag = project.campaign_tag
+            list_dto.percent_mapped = round(
+                ((project.tasks_mapped + project.tasks_bad_imagery) / project.total_tasks) * 100, 0)
+            list_dto.percent_validated = round(
+                (project.tasks_validated / project.total_tasks) * 100, 0)
+            list_dto.status = ProjectStatus(project.status).name
+            list_dto.active_mappers = Project.get_active_mappers(project.id)
 
-            dto.results.append(result_dto)
+            dto.results.append(list_dto)
 
-        dto.pagination = Pagination(filtered_projects)
+        dto.pagination = Pagination(paginated_results)
         return dto
 
     @staticmethod
@@ -81,9 +102,22 @@ class ProjectSearchService:
                                  Project.tasks_bad_imagery,
                                  Project.tasks_mapped,
                                  Project.tasks_validated,
+                                 Project.status,
                                  Project.total_tasks).join(ProjectInfo) \
-            .filter(Project.status == ProjectStatus.PUBLISHED.value).filter(
-            ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])).filter(Project.private != True)
+            .filter(ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])) \
+            .filter(Project.private != True)
+
+        project_status_array = [ProjectStatus.PUBLISHED.value]
+
+        if search_dto.project_statuses:
+            for project_status in search_dto.project_statuses:
+                project_status_array.append(ProjectStatus[project_status].value)
+
+        if not search_dto.is_project_manager:
+            project_status_array = list(filter(lambda x: x != ProjectStatus.DRAFT.value,
+                                               project_status_array))
+
+        query = query.filter(Project.status.in_(project_status_array))
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != 'ALL':
             query = query.filter(Project.mapper_level == MappingLevel[search_dto.mapper_level].value)
@@ -107,9 +141,12 @@ class ProjectSearchService:
             or_search = search_dto.text_search.replace(' ', ' | ')
             query = query.filter(ProjectInfo.text_searchable.match(or_search, postgresql_regconfig='english'))
 
-        results = query.order_by(Project.priority, Project.id.desc()).paginate(search_dto.page, 6, True)
+        all_results = query.order_by(Project.priority, Project.id.desc()) \
+            .distinct(Project.priority, Project.id).all()
+        paginated_results = query.order_by(Project.priority, Project.id.desc()) \
+            .distinct(Project.priority, Project.id).paginate(search_dto.page, 14, True)
 
-        return results
+        return all_results, paginated_results
 
     @staticmethod
     def get_projects_geojson(search_bbox_dto: ProjectSearchBBoxDTO) -> geojson.FeatureCollection:

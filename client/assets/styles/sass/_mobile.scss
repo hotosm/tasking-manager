@@ -5,10 +5,10 @@
   width: 100%;
   padding: .5em 4em;
   z-index: 10;
-  background: $primary-color;
+  background: #d34143;
   color: white;
   text-align: center;
   @include media(large-up) {
-    display: none;
+  	display: none;
   }
 }

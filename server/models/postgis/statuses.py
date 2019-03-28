@@ -3,7 +3,6 @@ from enum import Enum
 
 class ProjectStatus(Enum):
     """ Enum to describes all possible states of a Mapping Project """
-    # TODO add DELETE state, others??
     ARCHIVED = 0
     PUBLISHED = 1
     DRAFT = 2
@@ -17,6 +16,12 @@ class ProjectPriority(Enum):
     LOW = 3
 
 
+class TaskCreationMode(Enum):
+    """ Enum to describe task creation mode """
+    GRID = 0
+    ARBITRARY = 1
+
+
 class TaskStatus(Enum):
     """ Enum describing available Task Statuses """
     READY = 0
@@ -26,7 +31,7 @@ class TaskStatus(Enum):
     VALIDATED = 4
     INVALIDATED = 5
     BADIMAGERY = 6  # Task cannot be mapped because of clouds, fuzzy imagery
-    # REMOVED = -1 TODO this looks weird can it be removed
+    SPLIT = 7       # Task has been split
 
 
 class MappingLevel(Enum):
@@ -51,6 +56,7 @@ class MappingNotAllowed(Enum):
     USER_NOT_CORRECT_MAPPING_LEVEL = 101
     USER_NOT_ACCEPTED_LICENSE = 102
     USER_NOT_ON_ALLOWED_LIST = 103
+    PROJECT_NOT_PUBLISHED = 104
 
 
 class ValidatingNotAllowed(Enum):
@@ -58,11 +64,20 @@ class ValidatingNotAllowed(Enum):
     USER_NOT_VALIDATOR = 100
     USER_NOT_ACCEPTED_LICENSE = 101
     USER_NOT_ON_ALLOWED_LIST = 102
+    PROJECT_NOT_PUBLISHED = 103
 
 
 class UserRole(Enum):
     """ Describes the role a user can be assigned, app doesn't support multiple roles """
+    READ_ONLY = -1
     MAPPER = 0
     ADMIN = 1
     PROJECT_MANAGER = 2
     VALIDATOR = 4
+
+
+class UploadPolicy(Enum):
+    """ Describes the upload policies for a project file """
+    BLOCK = 0
+    ALLOW = 1
+    DISCOURAGE = 2

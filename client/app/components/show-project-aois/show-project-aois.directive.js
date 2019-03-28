@@ -37,12 +37,12 @@
 
         var vm = this;
         vm.otherProjectVectorLayer = null;
-        vm.otherProjectMaxResolution = 200;
+        vm.otherProjectMaxResolution = 1250
         vm.currentResolution = 0;
         vm.errorLoadingExistingProjects = false;
-        
+
         activate();
-        
+
         function activate(){
             vm.map = mapService.getOSMMap();
         }
@@ -57,7 +57,7 @@
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             vm.currentResolution = vm.map.getView().getResolution();
         });
-        
+
         /**
          * Add a layer that shows the AOIs of other projects
          */
@@ -105,6 +105,7 @@
 
             // Update the resolution after moveend
             vm.map.on('moveend', function(){
+                vm.errorLoadingExistingProjects = false;
                 vm.currentResolution = vm.map.getView().getResolution();
                 $scope.$apply();
             })

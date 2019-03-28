@@ -147,3 +147,36 @@ class TestMappingService(unittest.TestCase):
         self.assertEqual(test_task.task_history[0].action_text, TaskStatus.MAPPED.name)
         self.assertEqual(TaskStatus.MAPPED.name, test_task.task_status)
 
+    @patch.object(TaskHistory, 'get_last_action')
+    def test_task_is_undoable_if_last_change_made_by_you(self, last_action):
+        # Arrange
+        task_history = TaskHistory(1, 1, 1)
+        task_history.user_id = 1
+        last_action.return_value = task_history
+
+        task = Task()
+        task.task_status = TaskStatus.MAPPED.value
+        task.mapped_by = 1
+
+        # Act
+        is_undoable = MappingService._is_task_undoable(1, task)
+
+        # Assert
+        self.assertTrue(is_undoable)
+
+    @patch.object(TaskHistory, 'get_last_action')
+    def test_task_is_not_undoable_if_last_change_not_made_by_you(self, last_action):
+        # Arrange
+        task_history = TaskHistory(1, 1, 1)
+        task_history.user_id = 2
+        last_action.return_value = task_history
+
+        task = Task()
+        task.task_status = TaskStatus.MAPPED.value
+        task.mapped_by = 1
+
+        # Act
+        is_undoable = MappingService._is_task_undoable(1, task)
+
+        # Assert
+        self.assertFalse(is_undoable)

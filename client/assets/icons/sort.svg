@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="30px" viewBox="0 0 20 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Artboard 4</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-4" fill-rule="nonzero" fill="#000000">
+            <g id="chevron-down" transform="translate(0.000000, 18.000000)">
+                <polygon id="Shape" points="18.1583476 0.0364300331 9.99802019 8.19675744 1.83769278 0.0364300331 0.0242866887 1.88626616 9.99802019 11.8599997 19.9717537 1.88626616"></polygon>
+            </g>
+            <g id="chevron-down" transform="translate(9.998020, 5.930000) rotate(-180.000000) translate(-9.998020, -5.930000) ">
+                <polygon id="Shape" points="18.1583476 0.0364300331 9.99802019 8.19675744 1.83769278 0.0364300331 0.0242866887 1.88626616 9.99802019 11.8599997 19.9717537 1.88626616"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

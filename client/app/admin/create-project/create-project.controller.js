@@ -14,16 +14,17 @@
         var vm = this;
         vm.map = null;
 
-        // Wizard 
+        // Wizard
         vm.currentStep = '';
         vm.projectName = '';
         vm.projectNameForm = {};
         vm.taskType = 'square-grid';
 
-        // AOI 
+        // AOI
         vm.AOI = null;
         vm.isDrawnAOI = false;
         vm.isImportedAOI = false;
+        vm.isDrawnBBOX = false;
         vm.clipTasksToAoi = true;
 
         // Grid
@@ -32,7 +33,6 @@
         vm.sizeOfTasks = 0;
         vm.MAX_SIZE_OF_TASKS = 1000; //in square kilometers
         vm.numberOfTasks = 0;
-        vm.MAX_NUMBER_OF_TASKS = 2000;
         vm.MAX_NUMBER_OF_TASKS_SPLIT = 1500; // by limiting the split button, the user will not likely create a project with more than the max number of tasks
 
         // Variables for the zoom level used for creating the grid
@@ -46,6 +46,8 @@
         vm.isSplitPolygonValid = true;
         vm.splitPolygonValidationMessage = '';
         vm.isimportError = false;
+        vm.nonPolygonError = false;
+        vm.selfIntersectionError = false;
         vm.createProjectFail = false;
         vm.createProjectFailReason = '';
         vm.createProjectSuccess = false;
@@ -57,11 +59,19 @@
         // Draw interactions
         vm.modifyInteraction = null;
         vm.drawPolygonInteraction = null;
+        vm.drawRectangleInteraction = null;
 
         //waiting spinner
         vm.waiting = false;
         vm.trimError = false;
         vm.trimErrorReason = '';
+
+        // Mapillary
+        vm.mapillaryStartDate = null;
+        vm.mapillaryEndDate = null;
+        vm.mapillaryUsernames = null;
+        vm.mapillaryError = null;
+        vm.mapillaryErrorReason = null;
 
         activate();
 
@@ -70,7 +80,7 @@
             // Check if cloning a project or creating a new one
             vm.cloneProjectId = $location.search().projectId;
             vm.cloneProjectName = $location.search().projectName;
-            if (vm.cloneProjectId){
+            if (vm.cloneProjectId) {
                 vm.isCloneProject = true;
                 // Clear the URL parameters
                 $location.search('projectId', null);
@@ -97,17 +107,21 @@
             mapService.createOSMMap('map');
             mapService.addGeocoder();
             vm.map = mapService.getOSMMap();
-            drawService.initInteractions(true, false, false, false, false, true);
+            drawService.initInteractions(true, true, false, false, false, true);
             vm.modifyInteraction = drawService.getModifyInteraction();
             vm.drawPolygonInteraction = drawService.getDrawPolygonInteraction();
             vm.drawPolygonInteraction.on('drawstart', function () {
                 drawService.getSource().clear();
             });
+            vm.drawRectangleInteraction = drawService.getDrawRectangleInteraction();
+            vm.drawRectangleInteraction.on('drawstart', function () {
+                drawService.getSource().clear();
+            })
             projectService.initDraw(vm.map);
         }
 
         /**
-         * Move the wizard to appropiate step for type of tasks selected
+         * Move the wizard to appropriate step for type of tasks selected
          */
         vm.setWizardStepAfterTaskTypeSelection = function () {
             if (vm.taskType === 'square-grid') {
@@ -116,6 +130,10 @@
             }
             else if (vm.taskType === 'arbitrary-tasks') {
                 vm.createArbitaryTasks();
+                vm.setWizardStep('review');
+            }
+            else if (vm.taskType === 'mapillary-sequences') {
+                vm.createMapillarySequences();
                 vm.setWizardStep('review');
             }
         };
@@ -134,8 +152,15 @@
                     vm.drawPolygonInteraction.setActive(true);
                     vm.modifyInteraction.setActive(true);
                 }
+                else if (vm.isDrawnBBOX) {
+                    vm.drawRectangleInteraction.setActive(true);
+                    vm.modifyInteraction.setActive(true);
+                }
             }
             else if (wizardStep === 'tasks') {
+                // console.log(geospatialService.transformExtentToLatLonString(drawService.getSource().getExtent()))
+                vm.drawPolygonInteraction.setActive(false);
+                vm.drawRectangleInteraction.setActive(false);
                 setSplitToolsActive_(false);
                 vm.zoomLevelForTaskGridCreation = mapService.getOSMMap().getView().getZoom()
                     + vm.DEFAULT_ZOOM_LEVEL_OFFSET;
@@ -159,6 +184,12 @@
                     vm.map.getView().fit(drawService.getSource().getExtent());
                     vm.currentStep = wizardStep;
                     vm.drawPolygonInteraction.setActive(false);
+                    vm.modifyInteraction.setActive(false);
+                }
+                if (vm.isDrawnBBOX) {
+                    vm.map.getView().fit(drawService.getSource().getExtent());
+                    vm.currentStep = wizardStep;
+                    vm.drawRectangleInteraction.setActive(false);
                     vm.modifyInteraction.setActive(false);
                 }
             }
@@ -186,7 +217,7 @@
 
         /**
          * Decides if a step should be shown as completed in the progress bar
-         * @param step
+         * @param wizardStep
          * @returns {boolean}
          */
         vm.showWizardStep = function (wizardStep) {
@@ -228,8 +259,38 @@
         vm.drawAOI = function () {
             vm.drawPolygonInteraction.setActive(true);
             vm.isDrawnAOI = true;
+            vm.isDrawnBBOX = false;
             vm.isImportedAOI = false;
         };
+
+        /**
+         * Draw BBOX
+         */
+        vm.drawBBOX = function () {
+            vm.drawRectangleInteraction.setActive(true);
+            vm.isDrawnAOI = false;
+            vm.isImportedAOI = false;
+            vm.isDrawnBBOX = true;
+        }
+
+        /**
+         * Get Mapillary Sequences to make tasks
+         */
+        vm.getMapillarySequences = function () {
+            var bbox = geospatialService.transformExtentToLatLonString(drawService.getSource().getExtent());
+            vm.waiting = true;
+            var resultsPromise = projectService.getMapillarySequences(bbox, vm.mapillaryStartDate, vm.mapillaryEndDate, vm.mapillaryUsernames);
+            resultsPromise.then(function(features) {
+                drawService.getSource().clear();
+                drawService.getSource().addFeatures(features);
+                vm.map.getView().fit(drawService.getSource().getExtent());
+                vm.waiting = false;
+            }, function(reason) {
+                vm.waiting = false;
+                vm.mapillaryError = true;
+                vm.mapillaryErrorReason = reason.status;
+            });
+        }
 
         /**
          * Trim the task grid to the AOI
@@ -257,7 +318,7 @@
         };
 
         /**
-         * Create arbitary tasks
+         * Create arbitrary tasks
          */
         vm.createArbitaryTasks = function () {
             if (vm.isImportedAOI) {
@@ -270,6 +331,22 @@
                 // Get the number of tasks in project
                 vm.numberOfTasks = drawService.getSource().getFeatures().length;
 
+            }
+        }
+
+        /**
+         * Create mapillary sequences
+         */
+        vm.createMapillarySequences = function () {
+            if (vm.isDrawnBBOX) {
+                vm.isTaskGrid = false;
+                vm.isTaskArbitrary = true;
+                projectService.removeTaskGrid();
+                // Get and set the AOI
+                var areaOfInterest = drawService.getSource().getFeatures();
+                projectService.setAOI(areaOfInterest);
+                // Get the number of tasks in project
+                vm.numberOfTasks = drawService.getSource().getFeatures().length;
             }
         }
 
@@ -320,43 +397,69 @@
         vm.import = function (file) {
             // Set drawing an AOI to inactive
             vm.drawPolygonInteraction.setActive(false);
-            vm.isImportError = false;
+            vm.isimportError = false;
+            vm.nonPolygonError = false;
+            vm.selfIntersectionError = false;
+
             if (file) {
                 drawService.getSource().clear();
                 var fileReader = new FileReader();
                 fileReader.onloadend = function (e) {
                     var data = e.target.result;
                     var uploadedFeatures = null;
-                    if (file.name.substr(-4) === 'json') {
+                    if (file.name.substr(-4).toLowerCase() === 'json') {
                         uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(data);
-                        setImportedAOI_(uploadedFeatures);
+                        setUploadedFeatures(uploadedFeatures);
                     }
-                    else if (file.name.substr(-3) === 'kml') {
+                    else if (file.name.substr(-3).toLowerCase() === 'kml') {
                         uploadedFeatures = geospatialService.getFeaturesFromKML(data);
-                        setImportedAOI_(uploadedFeatures);
+                        setUploadedFeatures(uploadedFeatures);
                     }
-                    else if (file.name.substr(-3) === 'zip') {
+                    else if (file.name.substr(-3).toLowerCase() === 'zip') {
                         // Use the Shapefile.js library to read the zipped Shapefile (with GeoJSON as output)
                         shp(data).then(function (geojson) {
                             var uploadedFeatures = geospatialService.getFeaturesFromGeoJSON(geojson);
-                            setImportedAOI_(uploadedFeatures);
+                            setUploadedFeatures(uploadedFeatures);
                         });
                     }
                 };
-                if (file.name.substr(-4) === 'json') {
+                if (file.name.substr(-4).toLowerCase() === 'json') {
                     fileReader.readAsText(file);
                 }
-                else if (file.name.substr(-3) === 'kml') {
+                else if (file.name.substr(-3).toLowerCase() === 'kml') {
                     fileReader.readAsText(file);
                 }
-                else if (file.name.substr(-3) === 'zip') {
+                else if (file.name.substr(-3).toLowerCase() === 'zip') {
                     fileReader.readAsArrayBuffer(file);
                 }
                 else {
                     vm.isImportError = true;
+                    vm.nonPolygonError = false;
+                    vm.selfIntersectionError = false;
                 }
             }
         };
+
+        /**
+         * Set the uploaded features
+         * @param uploadedFeatures
+         */
+        function setUploadedFeatures(uploadedFeatures) {
+            if (uploadedFeatures) {
+                var aoiValidationResult = projectService.validateAOI(uploadedFeatures);
+                if (aoiValidationResult.valid) {
+                    setImportedAOI_(uploadedFeatures)
+                }
+                else {
+                    if (aoiValidationResult.message == 'CONTAINS_NON_POLYGON_FEATURES') {
+                        vm.nonPolygonError = true;
+                    }
+                    else if (aoiValidationResult.message == 'SELF_INTERSECTIONS') {
+                        vm.selfIntersectionError = true;
+                    }
+                }
+            }
+        }
 
         /**
          * Set the AOI to the imported AOI
@@ -439,7 +542,7 @@
          */
         vm.createProject = function () {
             var cloneProjectId = null;
-            if (vm.isCloneProject){
+            if (vm.isCloneProject) {
                 cloneProjectId = vm.cloneProjectId;
             }
             vm.createProjectFail = false;
@@ -471,7 +574,6 @@
         /**
          * Set split tools to active/inactive
          * @param boolean
-         * @param private
          */
         function setSplitToolsActive_(boolean) {
             if (vm.drawAndSelectPolygon) {

@@ -4,9 +4,9 @@ import os
 
 class EnvironmentConfig:
     """ Base class for config that is shared between environments """
-    DEFAULT_CHANGESET_COMMENT = '#hotosm-project'
+    DEFAULT_CHANGESET_COMMENT = '#Kaart'
     # This is the address we'll use as the sender on all auto generated emails
-    EMAIL_FROM_ADDRESS = 'noreply@hotosmmail.org'
+    EMAIL_FROM_ADDRESS = 'osm@kaartgroup.com'
     LOG_LEVEL = logging.ERROR
     # Mapper Level values represent number of OSM changesets
     MAPPER_LEVEL_INTERMEDIATE = 250
@@ -19,41 +19,50 @@ class EnvironmentConfig:
         'access_token_url': 'https://www.openstreetmap.org/oauth/access_token',
         'authorize_url': 'https://www.openstreetmap.org/oauth/authorize'
     }
+    SEND_FILE_MAX_AGE_DEFAULT = 0
     SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_POOL_SIZE = 10
+    SQLALCHEMY_MAX_OVERFLOW = 10
     SECRET_KEY = os.getenv('TM_SECRET', None)
     SMTP_SETTINGS = {
-        'host': 'email-smtp.eu-west-1.amazonaws.com',
-        'smtp_user': 'AKIAIIBGP3IBB3NWDX5Q',
+        'host': os.getenv('TM_SMTP_HOST', None),
+        'smtp_user': os.getenv('TM_SMTP_USER', None),
+        'smtp_port': os.getenv('TM_SMTP_PORT', 25),  # GMail SMTP is over port 587 and will fail on the default port
         'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
     }
     # Note that there must be exactly the same number of Codes as languages, or errors will occur
     SUPPORTED_LANGUAGES = {
-        'codes': 'en, fr, es, de, pt, ja, lt, zh_TW, id, da, pt_BR, ru, sl, it, nl_NL, uk, ta, si, cs, nb, hu',
-        'languages': 'English, Français, Español, Deutsch, Português, 日本語, Lietuvos, 中文, Indonesia, Dansk, Português (Brasil), Русский, Slovenščina, Italiano, Nederlands, Українська, தமிழ், සිංහල, Česky, Bokmål, Magyar'
+        'codes': 'ar, cs, da, de, en, es, fa_IR, fi, fr, hu, gl, id, it, ja, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, vi, zh_TW',
+        'languages': 'Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文'
+    }
+    PROJECT_FILES_DIR = './server/project_files'
+    MAPILLARY_API = {
+        "base": "https://a.mapillary.com/v3/",
+        "clientId": "LVZRT2ZMZkl5RFpGZFp3NzZKaGhaQTpmMGVmNDU1NDI0NmI2YjNm"
     }
 
 
 class ProdConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tasks-prod.hotosm.org'
+    APP_BASE_URL = 'https://tasks.kaart.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasks-prod.hotosm.org/api/docs'
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
-    LOG_LEVEL = logging.DEBUG
+    LOG_LEVEL = logging.ERROR
 
 
 class StageConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tasks-stage.hotosm.org'
+    APP_BASE_URL = 'https://tasks-stage.kaart.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasks-stage.hotosm.org/api/docs'
-    LOG_DIR = '/var/log/tasking-manager-logs'
+                   f'url={APP_BASE_URL}/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-stage-logs'
     LOG_LEVEL = logging.DEBUG
 
 
 class DemoConfig(EnvironmentConfig):
-    APP_BASE_URL = 'http://tasks-demo.hotosm.org'
+    APP_BASE_URL = 'https://tasks-demo.hotosm.org'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasks-demo.hotosm.org/api/docs'
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
@@ -62,20 +71,22 @@ class StagingConfig(EnvironmentConfig):
     # Currently being used by Thinkwhere
     APP_BASE_URL = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com'
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
-                   'url=http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/docs'
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
     LOG_LEVEL = logging.DEBUG
 
 
 class DevConfig(EnvironmentConfig):
     APP_BASE_URL = 'http://127.0.0.1:5000'
-    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?url=http://127.0.0.1:5000/api/docs'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = 'logs'
     LOG_LEVEL = logging.DEBUG
 
 
 class DevIPv6Config(EnvironmentConfig):
     APP_BASE_URL = 'http://[::1]:5000'
-    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?url=http://[::1]:5000/api/docs'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = 'logs'
     LOG_LEVEL = logging.DEBUG

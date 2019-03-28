@@ -13,9 +13,9 @@ class TestValidationService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('SHIPPABLE', 'false')
+        env = os.getenv('CI', 'false')
 
-        # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
+        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
         if env == 'true':
             cls.skip_tests = True
 
@@ -77,5 +77,5 @@ class TestValidationService(unittest.TestCase):
         ValidatorService.validate_all_tasks(self.test_project.id, self.test_user.id)
 
         for task in self.test_project.tasks:
-            self.assertEqual(task.mapped_by, self.test_user.id)
+            self.assertIsNotNone(task.mapped_by)
             self.assertEqual(task.validated_by, self.test_user.id)

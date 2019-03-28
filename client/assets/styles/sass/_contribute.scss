@@ -1,31 +1,39 @@
 .contribute-container {
   @include column(24/24);
 
-  .search {
-    background: #f6f5f5;
-    box-shadow: 0 2px 12px 2px rgba(34, 10, 10, 0.12), 0 0 0 1px rgba(34, 10, 10, 0.12);
-    border-radius: 0.25rem;
-    border-radius: 20px;
-    padding: 10px;
-    @include column(24/24);
-    @include media(medium-up) {
-      @include column(7/24);
-    }
-  }
-
   .search-results {
     @include column(24/24);
     @include media(medium-up) {
       @include column(24/24);
     }
-    .paging {
-      text-align: center !important;
-    }
   }
 }
 
+.search {
+  padding-bottom: 2em;
+  margin-bottom: 1em;
+  border-bottom: 1px solid darken($lightest-background-grey, 8%);
+}
+
 .search-container {
-  margin-bottom: 2em;
+  width: 25%;
+  float: left;
+  margin-right: 3%;
+  @include media(large-up) {
+    width: 18%;
+  }
+
+  select {
+    width: 100%;
+  }
+}
+
+.page__body {
+  .section__body--contribute, .project-container--wrapper, .create-project {
+    .inner {
+      padding-top: 3em;
+    }
+  }
 }
 
 /* ==========================================================================
@@ -33,7 +41,6 @@
    ========================================================================== */
 .project-result {
   &__cards {
-    text-align: left;
     padding-bottom: 2em;
     display: flex;
     flex-direction: row;
@@ -44,18 +51,89 @@
   }
 
   &__card {
-    width: 500px;
-    margin-bottom: 2rem;
+    width: 88%;
+    margin-bottom: 1rem;
+    margin-top: 1em;
+    background-color: #fff;
+    -moz-box-shadow:    0 2px 3px 1px darken($lightest-background-grey, 8%);
+    -webkit-box-shadow: 0 2px 3px 1px darken($lightest-background-grey, 8%);
+    box-shadow:         0 2px 3px 1px darken($lightest-background-grey, 8%);
+    transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    position: relative;
+    margin-right: 0;
+    min-height: 420px;
+    border: 1px solid darken($lightest-background-grey, 6%);
+    font-size: .86em;
+
+    code {
+      color: $red;
+    }
+
+    .ng-isolate-scope {
+      max-height: 180px;
+      margin-bottom: 1em;
+      overflow: hidden;
+    }
+
+    @include media(large-up) {
+      width: 47%;
+      margin-right: 1%;
+      &:nth-child(2n) {
+        margin-right: 0;
+      }
+    }
+
+    &:active {
+      border: 1.5px solid darken($lightest-background-grey, 40%);
+      -moz-box-shadow:    0 5px 5px 1px darken($lightest-background-grey, 18%);
+      -webkit-box-shadow: 0 5px 5px 1px darken($lightest-background-grey, 18%);
+      box-shadow:         0 5px 5px 1px darken($lightest-background-grey, 18%);
+    }
+
+    &:hover {
+      -moz-box-shadow:    0 5px 5px 1px darken($lightest-background-grey, 11%);
+      -webkit-box-shadow: 0 5px 5px 1px darken($lightest-background-grey, 11%);
+      box-shadow:         0 5px 5px 1px darken($lightest-background-grey, 11%);
+      margin-top: .5em;
+      margin-bottom: 1.5em;
+    }
+
+    ul {
+      padding: 0;
+      list-style-type: none;
+    }
+
+    &.draft,
+    &.archived {
+      background: url(../../img/closed_back.gif) transparent;
+    }
   }
 
   &__content {
-    padding: 1rem;
+    padding: 1.3rem 1.8rem 1.75rem;
+    overflow: hidden;
+
+    @include media(medium-up) {
+      padding: 2.5rem 2.5rem 3rem;
+    }
+  }
+
+  &__footer {
+    position: absolute;
+    bottom: 0;
+    padding: 1rem 2.5rem;
+    width: 100%;
+    border-top: 1px solid darken($lightest-background-grey, 2%);
+    dt, dd {
+      margin-bottom: 0;
+    }
+    dd { margin-right: 2em; }
   }
 }
 
 .progress-bar-container {
-  float: right;
-  max-width: 100px;
   .label {
     font-size: x-small;
   }
@@ -69,14 +147,6 @@
 .search-options-container {
   margin-top: 15px;
   @include span(20/20);
-  .search-option {
-    @include span(10/20);
-    float: left;
-    padding: 0.25em;
-     @include media(large-up) {
-      @include span(5/20);
-    }
-  }
   .search-button {
     padding-top: 1.75em;
   }
@@ -84,7 +154,7 @@
 
 /** Make button look like a select button **/
 .drop__toggle--caret-select:after {
-  float:right;
+  float: right;
 }
 
 .drop--full-width {
@@ -96,6 +166,58 @@
   width: 100%;
   text-align: left;
   &drop__toggle--caret:after {
-    float:right
+    float: right
   }
 }
+
+/** Wider column for project description in list view **/
+.list {
+  .wider-column {
+    width: 25%;
+  }
+}
+
+.popup-short-desc {
+  height: 10em;
+  overflow-y: auto;
+}
+
+.page__project {
+  dd {
+    width: 45%;
+    margin-right: 4%;
+    @include media(medium-up) {
+      width: 15%;
+    }
+  }
+  dt {
+    width: 45%;
+    clear: none;
+    &:nth-of-type(odd) {
+      clear: left;
+    }
+    @include media(medium-up) {
+      width: 20%;
+    }
+  }
+  .active-mappers{
+    margin-left: 4em;
+    font-weight: bold;
+  }
+
+  .ng-isolate-scope {
+    overflow-y: visible;
+    max-height: 100%;
+    margin-bottom: 2em;
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      li {
+        display: inline-block;
+        margin-right: 1em;
+      }
+    }
+  }
+}
+

@@ -9,7 +9,7 @@
         .service('settingsService', ['$http', '$q', 'configService', settingsService]);
 
     function settingsService($http, $q, configService) {
-        
+
         var service = {
             getSettings: getSettings
         };
@@ -17,7 +17,7 @@
         return service;
 
         /**
-         * Get the app settins
+         * Get the app settings
          * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
          */
         function getSettings(){

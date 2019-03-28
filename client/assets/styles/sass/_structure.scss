@@ -3,7 +3,7 @@
    ========================================================================== */
 
 .page__inner {
-  background: tint($base-color, 96%);
+  background: tint($medium-grey, 96%);
 }
 
 /* ==========================================================================
@@ -15,34 +15,32 @@
   z-index: 10;
   background: #fff;
   color: $base-font-color;
-  padding: $global-spacing 0;
   box-shadow: inset 0 -1px 0 0 $base-alpha-color;
 
   > .inner {
     @extend .row, .row--centered;
-  }
-
-  @include media(medium-up) {
-    padding: ($global-spacing * 2) 0;
   }
 }
 
 .page__header__fixed {
   position: fixed;
   width: 100%;
+  @extend .clearfix;
 }
 
 /* Headline */
 
 .page__headline {
   float: left;
-  margin: -0.5rem 0;
+  margin-right: 1em;
 }
 
 .page__title {
   font-size: inherit;
   line-height: 1;
   margin: 0;
+  padding-top: .7em;
+  padding-bottom: .8em;
   a {
     display: inline-block;
     vertical-align: top;
@@ -52,12 +50,7 @@
 /* Navigation */
 
 .page__prime-nav {
-  font-weight: $base-font-bold;
-
-  @include media(medium-up) {
-    float: right;
-    margin: -0.5rem 0;
-  }
+  position: relative;
 
   .toggle-menu {
     position: absolute;
@@ -66,67 +59,46 @@
     margin: 0;
 
     a {
-      @extend .button, .button--base-unbounded, .button--medium, .button--text-hidden;
-      vertical-align: top;
+      background-image: url('../../icons/hamburger-menu.svg');
+      width: 23px;
+      height: 23px;
+      background-size: 23px 23px;
+      display: inline-block;
+      margin-top: .4em;
 
-      &:before {
-        @extend %hot-ds-icon-hamburger-menu;
-      }
-
-      @include media(medium-up) {
+      @include media(large-up) {
         &:before {
           font-size: 1.5rem;
         }
       }
     }
 
-    @include media(small-up) {
-      right: $global-spacing * 1.5;
-    }
-
-    @include media(medium-up) {
+    @include media(large-up) {
       display: none;
     }
   }
 }
 
 .menu-wrapper {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  clear: both;
-  background: #fff;
-  padding: $global-spacing;
-  box-shadow: 0 4px 12px 0 $base-alpha-color, 0 1px 0 0 $base-alpha-color;
-
-  /* Animation */
-
-  margin-top: - $global-spacing;
-  opacity: 0;
-  visibility: hidden;
   transition: opacity 0.16s ease 0s, margin 0.16s ease 0s, visibility 0.16s linear 0s;
-
+  display: none;
   &.menu-wrapper--open {
     margin-top: 0;
-    opacity: 1;
-    visibility: visible;
+    display: inline-block;
+    position: absolute;
+    max-width: 200px;
+    background-color: #fff;
+    right: 0;
+    top: 3.5em;
+    border: 1px solid lighten($lightgrey, 10%);
+    z-index: 30;
   }
 
-  @include media(small-up) {
-    padding: $global-spacing ($global-spacing * 2);
-  }
-
-  @include media(medium-up) {
-    position: initial;
-    float: left;
-    width: auto;
-    margin-top: 0;
-    background: none;
-    box-shadow: none;
+  @include media(large-up) {
     padding: 0;
-    opacity: 1;
-    visibility: visible;
+    display: block;
+    position: inherit;
+    max-width: 1200px;
   }
 }
 
@@ -134,11 +106,12 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  @include media(medium-up) {
-    float: left;
-    > li {
-      float: left;
+  float: left;
+  @include media(large-up) {
+    li {
+      display: inline-block;
       margin: 0 ($global-spacing / 2) 0 0;
+      position: relative;
       &:last-child {
         margin-right: 0;
       }
@@ -146,39 +119,99 @@
   }
 }
 
-.global-menu-item {
-  display: block;
-  line-height: 2rem;
-  font-size: 0.9rem !important;
-  padding: 0 ($global-spacing / 2);
-  border-radius: $base-border-radius;
-  .button {
-    font-size: 0.9rem !important;
-    @include media(large-up) {
-      font-size: 1rem !important;
-    }
+.menu-secondary-wrapper {
+  list-style: none;
+  @include media(large-up) {
+    float: right;
   }
+}
+
+.global-menu-item {
+  display: inline-block;
+  line-height: 2rem;
+  padding: 1em 1rem .7rem;
+  border-bottom: 2px solid #fff;
+  transition: all 0.3s ease 0s;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
   &, &:visited {
     color: $base-font-color;
-  }
-  &--active {
-    background: rgba($base-color, 0.08);
   }
   @include media(large-up) {
     font-size: 1rem !important;
   }
+  &:hover {
+    border-bottom: 2px solid $link-color;
+    &, &:visited {
+      color: darken($darkest-grey, 10%);
+    }
+  }
+}
+
+@include media(large-up) {
+  .global-menu-divider {
+    border-right: 1px solid darken($lightest-background-grey, 5%);
+    &:after {
+      content: '\00a0';
+    }
+  }
+}
+
+.language-dropown-wrapper {
+  display: inline-block;
+}
+
+.drop__content {
+  position: absolute;
+  width: 180px;
+  max-height: 350px;
+  overflow-y: scroll;
+  background-color: #fff;
+  border: 1px solid darken($lightest-background-grey, 5%);
+  -moz-box-shadow:    0 1px 2px 1px darken($lightest-background-grey, 5%);
+  -webkit-box-shadow: 0 1px 2px 1px darken($lightest-background-grey, 5%);
+  box-shadow:         0 1px 2px 1px darken($lightest-background-grey, 5%);
+  right: 0;
+  top: 3.5em;
+}
+
+.drop__menu {
+  margin: 0;
+  padding: 0;
+  li {
+    display: block;
+    padding: .5em 1em;
+    transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    margin: 0;
+    &:hover {
+      background-color: $lightest-background-grey;
+    }
+  }
+}
+
+.drop__menu--iconified {
+  &:last-of-type {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.drop__menu-item {
+  display: block;
 }
 
 /* ==========================================================================
    Body
    ========================================================================== */
+.section__body {
+  @extend .clearfix;
 
-.page__body {
-  .section__body {
-    @extend .clearfix;
-    .inner {
-      padding-top: 2rem;
-    }
+  .inner {
+    padding-top: 5rem;
+    padding-bottom: 5em;
   }
 }
 
@@ -193,15 +226,19 @@
   text-align: center;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: rgba($base-font-color, 0.64);
   @include column(12/12);
 
-  .left {
-    @include column(5/12, $offset: 1/12);
+  .inner {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 4rem;
+    padding-right: 4rem;
   }
 
   .right {
-    @include column(6/12);
+    text-align: right;
+    float: right;
   }
 }
 
@@ -219,8 +256,6 @@
       bottom: ($global-spacing * 2);
       left: 0;
     }
-    background-color: #fff;
-    background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
     transform: translateZ(0);
@@ -236,39 +271,10 @@
       @extend .row--centered;
     }
 
-    &::before {
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      content: "";
-      background: linear-gradient(rgba(#fff, 0.92), rgba(#fff, 0.80), rgba(#fff, 0.64));
-    }
-
-    &::after {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      z-index: 1;
-      height: 1px;
-      width: 100%;
-      content: "";
-      background: $base-alpha-color;
-    }
-
-    @include media(medium-up) {
+    @include media(large-up) {
       text-align: center;
       padding: {
-        top: ($global-spacing * 8);
-        bottom: ($global-spacing * 3);
-      }
-    }
-
-    @include media(large-up) {
-      padding: {
-        top: ($global-spacing * 8);
+        top: ($global-spacing * 7);
         bottom: ($global-spacing * 4);
       }
     }
@@ -278,7 +284,7 @@
     position: relative;
     color: inherit;
     padding: {
-      top: ($global-spacing * 4);
+      top: ($global-spacing * 8);
       right: 0;
       bottom: ($global-spacing * 0.5);
       left: 0;
@@ -311,30 +317,22 @@
       background: linear-gradient(rgba(#fff, 0.64), rgba(#fff, 0.80), rgba(#fff, 0.92));
     }
 
-    &::after {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      z-index: 1;
-      height: 1px;
-      width: 100%;
-      content: "";
-      background: $base-alpha-color;
-    }
-
     @include media(medium-up) {
-      text-align: center;
       padding: {
-        top: ($global-spacing * 7);
+        top: ($global-spacing * 8);
         bottom: ($global-spacing * 1);
       }
     }
 
     @include media(large-up) {
       padding: {
-        top: ($global-spacing * 7);
-        bottom: ($global-spacing * 2);
+        top: ($global-spacing * 10);
+        bottom: ($global-spacing * 3);
       }
+    }
+
+    &--nodescription {
+      padding-bottom: 1em;
     }
   }
 
@@ -402,6 +400,33 @@
   }
 }
 
+.header--withShare {
+  @extend .clearfix;
+
+  .section__title {
+    float: left;
+    width: 85%;
+  }
+  .component--share {
+    float: right;
+    width: 15%;
+    text-align: right;
+    position: relative;
+  }
+  .share--options {
+    text-align: left;
+  }
+  .drop__content {
+    width: 140px;
+  }
+  .section__header--left {
+    width: 100%;
+    @include media(medium-up) {
+      width: 80%;
+    }
+  }
+}
+
 /* Section layout modifiers
    ========================================================================== */
 
@@ -443,6 +468,29 @@
   }
 }
 
+.section__body--secondary {
+  background-color: $lightest-background-grey;
+  border-top: 1px solid darken($lightest-background-grey, 3%);
+  margin-bottom: 0;
+  @extend .clearfix;
+}
+
+.section__body--secondary--dark {
+  background-color: $darkest-grey;
+  border-top: 1px solid darken($darkest-grey, 3%);
+  margin-bottom: 0;
+  @extend .clearfix;
+}
+
+.section__body {
+    .section--centered--sm {
+        max-width: 100%;
+        @include media(medium-up) {
+            max-width: 80%;
+        }
+    }
+}
+
 /* Section aside
    ========================================================================== */
 
@@ -468,6 +516,46 @@
   margin-bottom: $global-spacing;
 }
 
-.section-container {
-  box-shadow: inset 0 1px 0 0 $base-alpha-color;
+.tab--wrapper {
+  margin: 0;
+  padding: 0;
+  float: left;
+
+  .button--active, .active {
+    border-bottom: 2px solid $link-color;
+    color: $link-color;
+  }
+}
+
+.tab--item {
+  list-style: none;
+  display: inline-block;
+  margin-right: .5em;
+  a {
+    padding: .5em .8em;
+    display: block;
+    &:hover {
+      color: $link-color;
+    }
+  }
+}
+
+.form__group {
+  border-bottom: 1px solid darken($lightest-background-grey, 8%);
+  margin-bottom: 3em;
+  @extend .clearfix;
+}
+
+.form__group--section {
+  padding-bottom: 3em;
+}
+
+.form__group--section--sm {
+  padding-bottom: 2em;
+  margin-bottom: 2em;
+}
+
+.search-results-container--wrapper {
+  float: left;
+  width: 78%;
 }

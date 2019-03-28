@@ -1,7 +1,8 @@
 import geojson
 from server import db
+from sqlalchemy import desc
 from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
-    UserSearchQuery, UserSearchDTO, ListedUser
+    UserSearchQuery, UserSearchDTO, ProjectParticipantUser, ListedUser
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
@@ -13,6 +14,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.BigInteger, primary_key=True, index=True)
+    validation_message = db.Column(db.Boolean, default=True, nullable=False)
     username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0, nullable=False)
     mapping_level = db.Column(db.Integer, default=1, nullable=False)
@@ -22,6 +24,7 @@ class User(db.Model):
     projects_mapped = db.Column(db.ARRAY(db.Integer))
     email_address = db.Column(db.String)
     is_email_verified = db.Column(db.Boolean, default=False)
+    is_expert = db.Column(db.Boolean, default=False)
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
@@ -48,12 +51,18 @@ class User(db.Model):
         """ Return the user for the specified username, or None if not found """
         return User.query.filter_by(username=username).one_or_none()
 
+    def update_username(self, username: str):
+        """ Update the username """
+        self.username = username
+        db.session.commit()
+
     def update(self, user_dto: UserDTO):
         """ Update the user details """
         self.email_address = user_dto.email_address.lower() if user_dto.email_address else None
         self.twitter_id = user_dto.twitter_id.lower() if user_dto.twitter_id else None
         self.facebook_id = user_dto.facebook_id.lower() if user_dto.facebook_id else None
         self.linkedin_id = user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
+        self.validation_message = user_dto.validation_message
         db.session.commit()
 
     def set_email_verified_status(self, is_verified: bool):
@@ -61,35 +70,32 @@ class User(db.Model):
         self.is_email_verified = is_verified
         db.session.commit()
 
+    def set_is_expert(self, is_expert: bool):
+        """ Enables or disables expert mode on the user"""
+        self.is_expert = is_expert
+        db.session.commit()
+
     @staticmethod
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Search and filter all users """
 
         # Base query that applies to all searches
-        base = db.session.query(User.username, User.mapping_level, User.role).order_by(User.username)
+        base = db.session.query(User.id, User.username, User.mapping_level, User.role)
 
         # Add filter to query as required
-        if query.mapping_level and query.username is None and query.role is None:
+        if query.mapping_level:
             base = base.filter(User.mapping_level == MappingLevel[query.mapping_level.upper()].value)
-        elif query.mapping_level is None and query.username and query.role is None:
+        if query.username:
             base = base.filter(User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level is None and query.username is None and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value).order_by(User.username)
-        elif query.mapping_level and query.username and query.role is None:
-            base = base.filter(User.mapping_level == MappingLevel[query.mapping_level.upper()].value,
-                               User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level is None and query.username and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value,
-                               User.username.ilike(query.username.lower() + '%'))
-        elif query.mapping_level and query.username is None and query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value,
-                               User.mapping_level == MappingLevel[query.mapping_level.upper()].value)
+        if query.role:
+            base = base.filter(User.role == UserRole[query.role.upper()].value)
 
-        results = base.paginate(query.page, 20, True)
+        results = base.order_by(User.username).paginate(query.page, 20, True)
 
         dto = UserSearchDTO()
         for result in results.items:
             listed_user = ListedUser()
+            listed_user.id = result.id
             listed_user.mapping_level = MappingLevel(result.mapping_level).name
             listed_user.username = result.username
             listed_user.role = UserRole(result.role).name
@@ -100,17 +106,34 @@ class User(db.Model):
         return dto
 
     @staticmethod
-    def filter_users(user_filter: str, page: int) -> UserFilterDTO:
-        """ Finds users that matches first characters, for auto-complete """
-        results = db.session.query(User.username).filter(User.username.ilike(user_filter.lower() + '%')) \
-            .order_by(User.username).paginate(page, 20, True)
+    def get_all_users_not_pagainated():
+        """ Get all users in DB"""
+        return db.session.query(User.id).all()
 
+
+    @staticmethod
+    def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
+        """ Finds users that matches first characters, for auto-complete.
+
+        Users who have participated (mapped or validated) in the project, if given, will be
+        returned ahead of those who have not.
+        """
+        # Note that the projects_mapped column includes both mapped and validated projects.
+        results = db.session.query(User.username, User.projects_mapped.any(project_id).label("participant")) \
+            .filter(User.username.ilike(user_filter.lower() + '%')) \
+            .order_by(desc("participant").nullslast(), User.username).paginate(page, 20, True)
         if results.total == 0:
             raise NotFound()
 
         dto = UserFilterDTO()
         for result in results.items:
             dto.usernames.append(result.username)
+            if project_id is not None:
+                participant = ProjectParticipantUser()
+                participant.username = result.username
+                participant.project_id = project_id
+                participant.is_participant = bool(result.participant)
+                dto.users.append(participant)
 
         dto.pagination = Pagination(results)
         return dto
@@ -198,14 +221,18 @@ class User(db.Model):
     def as_dto(self, logged_in_username: str) -> UserDTO:
         """ Create DTO object from user in scope """
         user_dto = UserDTO()
+        user_dto.id = self.id
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.is_expert = self.is_expert or False
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
+        user_dto.tasks_invalidated = self.tasks_invalidated
         user_dto.twitter_id = self.twitter_id
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
+        user_dto.validation_message = self.validation_message
 
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile

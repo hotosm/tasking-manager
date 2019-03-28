@@ -18,9 +18,9 @@ class TestProjectSearchService(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 
-        env = os.getenv('SHIPPABLE', 'false')
+        env = os.getenv('CI', 'false')
 
-        # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
+        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
         if env == 'true':
             cls.skip_tests = True
 
@@ -84,7 +84,7 @@ class TestProjectSearchService(unittest.TestCase):
         result = ProjectSearchService.get_projects_geojson(dto)
 
         # assert
-        self.assertEquals(str(expected), str(expected))
+        self.assertEqual(str(expected), str(expected))
 
     def test_make_polygon_from_3857_bbox(self):
 
@@ -99,7 +99,7 @@ class TestProjectSearchService(unittest.TestCase):
             [3618104.193026841, -1413969.7644834695, 3861479.691086842, -1297785.4814900015], 3857)
 
         # assert
-        self.assertEquals(expected, polygon.bounds)
+        self.assertEqual(expected, polygon.bounds)
 
     def test_get_area_from_3857_bbox(self):
 
@@ -117,4 +117,4 @@ class TestProjectSearchService(unittest.TestCase):
         expected = ProjectSearchService._get_area_sqm(polygon)
 
         # assert
-        self.assertEquals(expected, 28276407740.2797)
+        self.assertEqual(expected, 28276407740.2797)

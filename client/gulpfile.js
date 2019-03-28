@@ -4,11 +4,12 @@ var gulp = require('gulp'),
     config = require('gulp-ng-config'),
     cssnano = require('gulp-cssnano'),
     del = require('del'),
+    eslint = require("gulp-eslint"),
     modRewrite = require('connect-modrewrite'),
     processhtml = require('gulp-processhtml'),
     runSequence = require('run-sequence'),
-    sass = require('gulp-sass');
-uglify = require('gulp-uglify');
+    sass = require('gulp-sass'),
+    uglify = require('gulp-uglify');
 
 // paths object holds references to location of all assets
 var paths = {
@@ -16,8 +17,15 @@ var paths = {
     html: ['./**/*.html', '!node_modules/**/*.html'],
     styles: ['assets/styles/css/*.css'],
     images: ['assets/img/**/*'],
+    icons: ['assets/icons/**/*'],
     locale: ['locale/*.json']
 };
+
+gulp.task('eslint', function () {
+  return gulp.src('**/*.js')
+    .pipe(eslint())
+    .pipe(eslint.format('stylish'));
+});
 
 gulp.task('browser-sync', function () {
     /** Runs the web app currently under development and watches the filesystem for changes */
@@ -65,7 +73,7 @@ gulp.task('uglify', function () {
         .pipe(concat('taskingmanager.min.js'))
         .pipe(gulp.dest('../server/web/static/dist/app'))
         .pipe(uglify())
-        .pipe(gulp.dest('../server/web/static/dist/app'))
+        .pipe(gulp.dest('../server/web/static/dist/app'));
 });
 
 gulp.task('processhtml', function () {
@@ -98,6 +106,12 @@ gulp.task('copy_images_to_dist', function () {
         .pipe(gulp.dest('../server/web/static/dist/assets/img'));
 });
 
+gulp.task('copy_icons_to_dist', function () {
+    /* Copy the icons in the icons folder to a dist folder */
+    return gulp.src(paths.icons)
+        .pipe(gulp.dest('../server/web/static/dist/assets/icons'));
+});
+
 gulp.task('copy_translations_to_dist', function () {
     /* Copy the translations in the locale folder to a dist folder */
     return gulp.src(paths.locale)
@@ -108,14 +122,14 @@ gulp.task('create-dev-config', function () {
     /** Creates a config file for Angular with the relevant environment variables for development */
     return gulp.src('taskingmanager.config.json')
         .pipe(config('taskingmanager.config', {environment: 'development'}))
-        .pipe(gulp.dest('app'))
+        .pipe(gulp.dest('app'));
 });
 
 gulp.task('create-release-config', function () {
     /** Creates a config file for Angular with the relevant environment variables for release */
     return gulp.src('taskingmanager.config.json')
         .pipe(config('taskingmanager.config', {environment: 'release'}))
-        .pipe(gulp.dest('app'))
+        .pipe(gulp.dest('app'));
 });
 
 /** Build task for will minify the app and copy it to the dist folder ready to deploy */
@@ -124,6 +138,7 @@ gulp.task('build', function (callback) {
         'create-release-config',
         'compile-sass',
         'copy_images_to_dist',
+        'copy_icons_to_dist',
         'copy_translations_to_dist',
         'minify-css',
         'uglify',
@@ -142,4 +157,3 @@ gulp.task('run', function (callback) {
     )
     ;
 });
-

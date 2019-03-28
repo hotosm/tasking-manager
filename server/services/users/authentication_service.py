@@ -37,7 +37,6 @@ def verify_token(token):
             current_app.logger.debug(f'User {user_id} is not a PM {request.base_url}')
             return False
 
-    current_app.logger.debug(f'Validated user {user_id} for {request.base_url}')
     tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
     return True  # All tests passed token is good for the requested resource
 
@@ -72,6 +71,7 @@ class AuthenticationService:
 
         try:
             UserService.get_user_by_id(osm_id)
+            UserService.update_username(osm_id, username)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.find('changesets')
@@ -113,7 +113,6 @@ class AuthenticationService:
         verification_params = {'is_valid': is_valid}
         verification_url = '{0}/validate-email?{1}'.format(base_url, urllib.parse.urlencode(verification_params))
         return verification_url
-
 
     @staticmethod
     def get_authentication_failed_url():

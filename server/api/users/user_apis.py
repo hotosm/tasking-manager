@@ -7,7 +7,6 @@ from server.services.users.user_service import UserService, UserServiceError, No
 
 
 class UserAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, username):
@@ -50,8 +49,50 @@ class UserAPI(Resource):
             return {"error": error_msg}, 500
 
 
-class UserUpdateAPI(Resource):
+class UserIdAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self, userid):
+        """
+        Gets user information by id
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded sesesion token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: userid
+              in: path
+              description: The users user id
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: User found
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user_dto = UserService.get_user_dto_by_id(userid)
+            return user_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f'Userid GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
 
+
+class UserUpdateAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self):
@@ -99,6 +140,9 @@ class UserUpdateAPI(Resource):
         """
         try:
             user_dto = UserDTO(request.get_json())
+            if user_dto.email_address == '':
+                user_dto.email_address = None  # Replace empty string with None so validation doesn't break
+
             user_dto.validate()
         except DataError as e:
             current_app.logger.error(f'error validating request: {str(e)}')
@@ -116,7 +160,6 @@ class UserUpdateAPI(Resource):
 
 
 class UserSearchAllAPI(Resource):
-
     def get(self):
         """
         Gets paged list of all usernames
@@ -169,7 +212,6 @@ class UserSearchAllAPI(Resource):
 
 
 class UserSearchFilterAPI(Resource):
-
     def get(self, username):
         """
         Gets paged lists of users matching username filter
@@ -188,6 +230,10 @@ class UserSearchFilterAPI(Resource):
               name: page
               description: Page of results user requested
               type: integer
+            - in: query
+              name: projectId
+              description: Optional, promote project participants to head of results
+              type: integer
         responses:
             200:
                 description: Users found
@@ -198,7 +244,8 @@ class UserSearchFilterAPI(Resource):
         """
         try:
             page = int(request.args.get('page')) if request.args.get('page') else 1
-            users_dto = UserService.filter_users(username, page)
+            project_id = request.args.get('projectId', None, int)
+            users_dto = UserService.filter_users(username, project_id, page)
             return users_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404
@@ -209,7 +256,6 @@ class UserSearchFilterAPI(Resource):
 
 
 class UserOSMAPI(Resource):
-
     def get(self, username):
         """
         Gets details from OSM for the specified username
@@ -249,7 +295,6 @@ class UserOSMAPI(Resource):
 
 
 class UserMappedProjects(Resource):
-
     def get(self, username):
         """
         Gets projects user has mapped
@@ -280,7 +325,8 @@ class UserMappedProjects(Resource):
                 description: Internal Server Error
         """
         try:
-            locale = request.environ.get('HTTP_ACCEPT_LANGUAGE') if request.environ.get('HTTP_ACCEPT_LANGUAGE') else 'en'
+            locale = request.environ.get('HTTP_ACCEPT_LANGUAGE') if request.environ.get(
+                'HTTP_ACCEPT_LANGUAGE') else 'en'
             user_dto = UserService.get_mapped_projects(username, locale)
             return user_dto.to_primitive(), 200
         except NotFound:
@@ -292,7 +338,6 @@ class UserMappedProjects(Resource):
 
 
 class UserSetRole(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, username, role):
@@ -321,7 +366,7 @@ class UserSetRole(Resource):
               description: The role to add
               required: true
               type: string
-              default: ADMIN 
+              default: ADMIN
         responses:
             200:
                 description: Role set
@@ -348,7 +393,6 @@ class UserSetRole(Resource):
 
 
 class UserSetLevel(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, username, level):
@@ -377,7 +421,7 @@ class UserSetLevel(Resource):
               description: The mapping level that should be set
               required: true
               type: string
-              default: ADVANCED 
+              default: ADVANCED
         responses:
             200:
                 description: Level set
@@ -402,9 +446,55 @@ class UserSetLevel(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+class UserSetExpertMode(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self, is_expert):
+        """
+        Allows user to enable or disable expert mode
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: is_expert
+              in: path
+              description: true to enable expert mode, false to disable
+              required: true
+              type: string
+        responses:
+            200:
+                description: Mode set
+            400:
+                description: Bad Request - Client Error
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            UserService.set_user_is_expert(tm.authenticated_user_id, is_expert == 'true')
+            return {"Success": "Expert mode updated"}, 200
+        except UserServiceError:
+            return {"Error": "Not allowed"}, 400
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f'UserSetExpert POST - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
 
 class UserAcceptLicense(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, license_id):
@@ -427,7 +517,7 @@ class UserAcceptLicense(Resource):
               description: ID of license terms have been accepted for
               required: true
               type: integer
-              default: 1 
+              default: 1
         responses:
             200:
                 description: Terms accepted
@@ -447,6 +537,3 @@ class UserAcceptLicense(Resource):
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
-
-
-

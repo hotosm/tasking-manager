@@ -1,33 +1,32 @@
 <div class="inner">
     <section class="section section--asided">
-        <header class="section__header">
+        <header class="section__header section__header--nodescription">
             <div class="inner">
-                <h1 class="section__title">
+                <h1 class="section__title section__header--left">
                     {{ 'Project Dashboard' | translate }}
                 </h1>
+                <a role="button" href="/admin/create-project" class="button button--achromic pull-right">
+                    {{ 'Create a new project' | translate }}
+                </a>
             </div>
         </header>
         <div class="section-container">
-            <div class="section__body">
+            <div class="section__body section__body--secondary">
                 <div class="inner">
                      <div class="dashboard-container">
                          <p>
                              {{ 'View the projects that you have created' | translate }}
-                             <a role="button" href="/admin/create-project" class="button button--achromic pull-right">
-                                 {{ 'Create a new project' | translate }}
-                             </a>
                          </p>
                          <div>
                              <h3>{{ 'Filter' | translate }}</h3>
                              <form class="form">
-                                 <div class="form__group">
+                                 <div class="form__group form__group--section">
                                      <input type="text" class="form__control form__control--medium"
                                             size="500"
                                             placeholder="{{ 'Filter projects (on name, campaign, ...)' | translate }}" ng-model="dashboardCtrl.searchText"/>
                                  </div>
                              </form>
                          </div>
-                         <hr>
                          <!-- error -->
                          <p class="error" ng-show="dashboardCtrl.errorReturningProjects">An error occurred.</p>
                          <!-- error -->
@@ -84,12 +83,12 @@
                                          <span am-time-ago="project.lastUpdated | amUtc | amLocal"></span>
                                      </td>
                                      <td>
-                                         <a class="button button--primary button--small"
+                                         <a class="button button--small"
                                             ng-href="/project/{{ project.projectId }}/dashboard">{{ 'Activity and Stats' | translate }}
                                          </a>
                                      </td>
                                      <td>
-                                         <a class="button button--primary button--small"
+                                         <a class="button button--small"
                                             ng-href="/admin/edit-project/{{ project.projectId }}">{{ 'Edit' | translate }}
                                          </a>
                                      </td>
@@ -239,6 +238,38 @@
             <div class="section__body">
                 <div class="inner">
                     <div id="map" class="map-container">
+                        <div class="legend-control ol-control legend-control-offset">
+                            <h3>{{ 'Legend' | translate }}</h3>
+                            <div>
+                                <div>
+                                    <svg height="25" width="25">
+                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                stroke-width="1"
+                                                fill="blue"
+                                                fill-opacity="0.5"/>
+                                    </svg>
+                                    {{ 'Draft' | translate }}
+                                </div>
+                                <div>
+                                    <svg height="25" width="25">
+                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                stroke-width="1"
+                                                fill="red"
+                                                fill-opacity="0.5"/>
+                                    </svg>
+                                    {{ 'Published' | translate }}
+                                </div>
+                                <div>
+                                    <svg height="25" width="25">
+                                        <circle cx="15" cy="15" r="8" stroke="black"
+                                                stroke-width="1"
+                                                fill="black"
+                                                fill-opacity="0.5"/>
+                                    </svg>
+                                    {{ 'Archived' | translate }}
+                                </div>
+                            </div>
+                        </div>
                         <div class="show-other-projects">
                             <show-project-aois your-projects='true'></show-project-aois>
                         </div>

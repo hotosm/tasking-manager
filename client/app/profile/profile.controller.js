@@ -15,14 +15,17 @@
         vm.username = '';
         vm.currentlyLoggedInUser = null;
         vm.userDetails = null;
+        vm.userStats = null;
         vm.osmUserDetails = null;
         vm.projects = [];
         vm.map = null;
         vm.highlightSource = null;
+        vm.savingExpertMode = false;
 
         // Errors - for displaying messages when API calls were not successful
         vm.errorSetRole = false;
         vm.errorSetLevel = false;
+        vm.errorSetExpertMode = false;
         vm.errorSetContactDetails = false;
         vm.errorVerificationEmailSent = false;
 
@@ -31,13 +34,14 @@
         // pressed the resent verification email button
         vm.verificationEmailSent = false;
 
-        // Edit user details
+        // User details
+        vm.contactDetailsForm = {};
         vm.editDetails = false;
-        
+
         // mapper levels
         vm.mapperLevelIntermediate = 0;
         vm.mapperLevelAdvanced = 0;
-        
+
         activate();
 
         function activate() {
@@ -49,8 +53,9 @@
             var hoverIdentify = true;
             var clickIdentify = true;
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
-            getUserProjects();
             getLevelSettings();
+            getUserStats();
+            getUserProjects();
         }
 
         /**
@@ -113,6 +118,22 @@
         };
 
         /**
+         * Set the user's expert mode
+         * @param isExpert
+         */
+        vm.setExpertMode = function(isExpert){
+            vm.errorSetExpertMode = false;
+            vm.savingExpertMode = true;
+            userService.setExpertMode(isExpert).then(function(data) {
+                getUser();
+                vm.savingExpertMode = false;
+            }, function(){
+                vm.errorSetExpertMode = true;
+                vm.savingExpertMode = false;
+            });
+        };
+
+        /**
          * Get the user's details from the account service
          */
         function getUser() {
@@ -134,25 +155,28 @@
          * Set contact details
          */
         vm.setContactDetails = function(){
-            vm.errorSetContactDetails = false;
-            var contactDetails = {
-                emailAddress: vm.userDetails.emailAddress,
-                facebookId: vm.userDetails.facebookId,
-                linkedinId: vm.userDetails.linkedinId,
-                twitterId: vm.userDetails.twitterId
-            };
-            var resultsPromise = userService.setContactDetails(contactDetails);
-            resultsPromise.then(function (data) {
-                // Successfully saved
+            if (vm.contactDetailsForm.$valid){
+                vm.errorSetContactDetails = false;
+                var contactDetails = {
+                    emailAddress: vm.userDetails.emailAddress,
+                    facebookId: vm.userDetails.facebookId,
+                    linkedinId: vm.userDetails.linkedinId,
+                    twitterId: vm.userDetails.twitterId,
+                    validation_message : vm.userDetails.validation_message
+                };
+                var resultsPromise = userService.setContactDetails(contactDetails);
+                resultsPromise.then(function (data) {
+                    // Successfully saved
+                    vm.editDetails = false;
+                    vm.verificationEmailSent = data.verificationEmailSent;
+                    getUser();
+                }, function () {
+                    vm.editDetails = false;
+                    vm.errorSetContactDetails = true;
+                    getUser();
+                });
                 vm.editDetails = false;
-                vm.verificationEmailSent = data.verificationEmailSent;
-                getUser();
-            }, function () {
-                vm.editDetails = false;
-                vm.errorSetContactDetails = true;
-                getUser();
-            });
-            vm.editDetails = false;
+            }
         };
 
         /**
@@ -174,7 +198,7 @@
 
         /**
          * View project for user and bounding box in Overpass Turbo
-         * @param bboxArray
+         * @param aoi
          */
         vm.viewOverpassTurbo = function (aoi) {
             var feature = geospatialService.getFeatureFromGeoJSON(aoi);
@@ -201,5 +225,17 @@
                 vm.mapperLevelAdvanced = data.mapperLevelAdvanced;
             });
         }
+
+        /**
+         * Get stats about the user
+         */
+        function getUserStats() {
+            var resultsPromise = userService.getUserStats(vm.username);
+            resultsPromise.then(function (data) {
+                // On success, set the detailed stats for this user
+                vm.userStats = data;
+            });
+        }
+
     }
 })();

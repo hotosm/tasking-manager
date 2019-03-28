@@ -27,9 +27,14 @@
         return service;
 
         /**
-         * Login to OSM account 
+         * Login to OSM account
          */
         function login(redirectURL){
+            // Force a logout first by clearing the local storage. This prevents getting stuck in a loop with an
+            // invalid/expired token. The GET user API is called if a token is there on loading the page, so also if
+            // there was an invalid/expired one. By removing the token before logging in, it doesn't have an invalid
+            // token when it returns from OpenStreetMap.
+            logout();
             var urlBeforeLoggingIn = '';
             if (!redirectURL){
                 // Get the current page the user is on and remember it so we can go back to it
@@ -40,7 +45,7 @@
             }
             $window.location.href = configService.tmAPI + '/auth/login?redirect_to=' + urlBeforeLoggingIn;
         }
-        
+
         /**
          * Log the user out by resetting the local storage ('cookies')
          */

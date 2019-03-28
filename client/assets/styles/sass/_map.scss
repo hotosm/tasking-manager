@@ -15,10 +15,14 @@
   background-color: $secondary-color;
 }
 
-.ol-overviewmap {
+.ol-custom-overviewmap {
   left: 0.5em;
   top: 5em;
   bottom: auto;
+}
+
+.ol-custom-overviewmap:not(.ol-collapsed) button{
+  top: 1px;
 }
 
 /* Layer switcher override */
@@ -34,6 +38,17 @@
   position: absolute;
   z-index: 1000;
 }
+.add-layer-control {
+  button {
+    width: 115px;
+  }
+}
+
+.add-layer-wrapper {
+  input {
+    width: 100%;
+  }
+}
 
 .add-layer-panel {
   top: 3rem;
@@ -48,7 +63,7 @@
   position: absolute;
   z-index: 5;
   background: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 0.5rem 0rem 0.5rem;
+  padding: 0.5rem 0.5rem 0 0.5rem;
   border-radius: 0.5rem;
 }
 
@@ -67,8 +82,12 @@
   background-color: rgba(255,255,255,0.8);
   bottom: 2.5em;
   left: 0.6em;
-  padding: 0.5em;
+  padding: 1em;
   z-index: 5;
+}
+
+.legend-control-offset {
+  bottom: 6.5em;
 }
 
 .priority-areas {
@@ -121,6 +140,7 @@
   position: absolute;
   top: 2px;
   right: 8px;
+  color: black !important;
 }
 .ol-popup-closer:after {
   content: "x";
@@ -129,4 +149,8 @@
 .ol-attribution.ol-logo-only, .ol-attribution.ol-uncollapsible {
     max-width: calc(100% - 3em);
     height: 1.5em;
+}
+
+.ol-viewport {
+  min-height: 700px;
 }

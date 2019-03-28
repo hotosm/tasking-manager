@@ -18,9 +18,9 @@ class TestSplitService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('SHIPPABLE', 'false')
+        env = os.getenv('CI', 'false')
 
-        # Firewall rules mean we can't hit Postgres from Shippable so we have to skip them in the CI build
+        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
         if env == 'true':
             cls.skip_tests = True
 
@@ -52,7 +52,7 @@ class TestSplitService(unittest.TestCase):
         result = SplitService._create_split_tasks(x, y, zoom)
 
         # assert
-        self.assertEquals(str(expected), str(result))
+        self.assertEqual(str(expected), str(result))
 
     def test_split_geom_raise_grid_service_error_when_task_not_usable(self):
         if self.skip_tests:
@@ -98,6 +98,6 @@ class TestSplitService(unittest.TestCase):
         result = SplitService.split_task(splitTaskDTO)
 
         # assert
-        self.assertEquals(4, len(result.tasks))
+        self.assertEqual(4, len(result.tasks))
 
 

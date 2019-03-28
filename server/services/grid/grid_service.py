@@ -1,7 +1,6 @@
 import geojson
 import json
 from shapely.geometry import MultiPolygon, mapping
-from geoalchemy2 import shape
 from shapely.ops import cascaded_union
 import shapely.geometry
 from flask import current_app
@@ -21,7 +20,7 @@ class GridService:
     @staticmethod
     def trim_grid_to_aoi(grid_dto: GridDTO) -> geojson.FeatureCollection:
         """
-        Removes grid squares not intersecting with the aoi.  Optionally leaves partialy intersecting task squares
+        Removes grid squares not intersecting with the aoi.  Optionally leaves partially intersecting task squares
         complete or clips them exactly to the AOI outline
         :param grid_dto: the dto containing
         :return: geojson.FeatureCollection trimmed task grid
@@ -64,14 +63,21 @@ class GridService:
             if not isinstance(feature.geometry, MultiPolygon):
                 feature.geometry = MultiPolygon([feature.geometry])
             # put the geometry back to geojson
+
+            if feature.geometry.has_z:
+                # Strip Z dimension, as can't persist geometry otherwise.  Most likely exists in KML data
+                feature.geometry = shapely.ops.transform(GridService._to_2d, feature.geometry)
+
             feature.geometry = shapely.geometry.mapping(feature.geometry)
 
             # set default properties
+            # and put any already existing properties in `extra_properties`
             feature.properties = {
                 'x': None,
                 'y': None,
                 'zoom': None,
-                'splittable': False
+                'splittable': False,
+                'extra_properties': feature.properties
             }
 
             tasks.append(feature)

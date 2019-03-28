@@ -1,0 +1,14 @@
+<div>
+    <textarea class="form__control space-bottom--none" type="text" mentio
+              rows="4"
+              maxlength="{{ projectCtrl.maxlengthComment }}"
+              placeholder="{{ 'Leave a comment' | translate }}"
+              mentio-typed-text="typedTerm"
+              mentio-search="projectCtrl.searchUser(term)"
+              mentio-select="projectCtrl.formatUserTag(item)"
+              mentio-items="projectCtrl.suggestedUsers"
+              mentio-template-url="/app/project/user-suggestions-menu.html"
+              ng-model="projectCtrl.comment"></textarea>
+    <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
+        {{ 'characters remaining' | translate }}</p>
+</div>

@@ -1,7 +1,10 @@
-Hi [USERNAME]
-
-I just validated your mapping on [TASK_LINK].
-
-Awesome work!
-
-Keep mapping :)
+Hi [USERNAME],<br />
+<br />
+The task you marked as "Completely Mapped" was just validated! [TASK_LINK].<br />
+<br />
+This is an automated message, the person who validated it hopefully shared some feedback with you.<br />
+<br />
+Thank you very much for mapping!<br />
+<br />
+Please note: You can opt-out of these automated validation messages by visiting your User Profile and clicking "Edit-Add Contact Details."<br />
+<br />
