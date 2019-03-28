@@ -18,7 +18,7 @@ RUN pip install -r requirements.txt
 
 ## Install required dependencies
 RUN apt-get install -y python3 libgeos-dev
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \ 
+RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \ 
   && apt-get install -y nodejs
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
