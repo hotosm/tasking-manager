@@ -347,7 +347,7 @@
                                      role="alert">
                                     <p>{{ 'Please login first.' | translate }}</p>
                                 </div>
-                                <div ng-show="projectCtrl.user && !projectCtrl.userCanValidate"
+                                <div ng-show="vm.user && !projectCtrl.userCanValidate"
                                      class="alert alert--warning"
                                      role="alert">
                                     <p>{{ 'You cannot select tasks for validation on this project because you do not have the Validator role.' | translate }}</p>
