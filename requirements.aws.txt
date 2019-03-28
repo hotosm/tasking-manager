@@ -1,13 +1,13 @@
-awsebcli==3.10.1
-botocore==1.5.44
+awsebcli==3.14.13
+botocore==1.12.29
 cement==2.8.2
-colorama==0.3.7
+colorama==0.3.9
 docker-py==1.7.2
 dockerpty==0.4.1
 docopt==0.6.2
 docutils==0.13.1
 jmespath==0.9.2
-pathspec==0.5.0
+pathspec==0.5.9
 python-dateutil==2.6.0
 PyYAML==3.13
 requests==2.21.0
