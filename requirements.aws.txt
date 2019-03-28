@@ -9,7 +9,7 @@ docutils==0.13.1
 jmespath==0.9.2
 pathspec==0.5.9
 python-dateutil==2.6.0
-PyYAML==3.13
+PyYAML==5.1
 requests==2.20.1
 semantic-version==2.5.0
 six==1.11.0
