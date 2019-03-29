@@ -116,7 +116,7 @@
                         'x': x,
                         'y': y,
                         'zoom': zoomLevel,
-                        'splittable': true
+                        'isSquare': true
                     });
                     taskFeatures.push(taskFeature);
                 }

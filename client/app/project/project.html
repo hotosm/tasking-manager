@@ -117,7 +117,7 @@
                         title="{{ 'Go to the instructions tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Instructions' | translate }}
                         </a>
                     </li>
@@ -125,7 +125,7 @@
                         title="{{ 'Go to the mapping tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Map' | translate }}
                         </a>
                     </li>
@@ -133,7 +133,7 @@
                         title="{{ 'Go to the validation tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Validate' | translate }}
                         </a>
                     </li>
@@ -141,7 +141,7 @@
                         title="{{ 'Go to the chat tab' | translate }}"
                         class='tab--item'
                         ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
-                        <a href="#">
+                        <a>
                             {{ 'Questions and Comments' | translate }}
                         </a>
                     </li>
@@ -242,7 +242,7 @@
                                         <div ng-hide="projectCtrl.user"
                                              class="alert"
                                              role="alert">
-                                            <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                            <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                         </div>
                                         <div ng-show="projectCtrl.user && projectCtrl.userCanMap === false"
                                              class="error"
@@ -288,7 +288,7 @@
                                 <h3 style="display: inline-block;">{{ 'Mapping' | translate }}</h3>
                                 <div ng-show="projectCtrl.mappingStep === 'locked'" style="display: inline-block; float: right;">
                                     <i class="fa fa-clock-o"></i>
-                                    <span>{{ projectCtrl.getLockTime() }} {{ 'minutes left' | translate }}</span>
+                                    <span>{{ projectCtrl.getLockTime() }} {{ ' left' | translate }}</span>
                                 </div>
                                 <div ng-show="projectCtrl.mappingStep === 'viewing' ">
                                     <!-- task information -->
@@ -329,7 +329,7 @@
                                         </div>
                                         <div ng-show="projectCtrl.taskLockError && !projectCtrl.isAuthorized">
                                             <div class="alert" role="alert">
-                                                <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                                <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                             </div>
                                         </div>
                                         <div ng-hide="projectCtrl.taskLockError">
@@ -344,7 +344,7 @@
                                             <div>
                                                 <div ng-hide="projectCtrl.user">
                                                     <div class="alert" role="alert">
-                                                        <p>In order to start contributing, please <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">login first</a>.</p>
+                                                        <p>{{ 'In order to start contributing, please' | translate }} <a ng-show="!accountNavCtrl.account.username" ng-click="accountNavCtrl.login()">{{ 'login first' | translate }}</a>.</p>
                                                     </div>
                                                 </div>
                                                 <div ng-show="projectCtrl.user && projectCtrl.taskLockError"
@@ -408,7 +408,7 @@
                                             <p markdown-to-html="projectCtrl.selectedTaskData.perTaskInstructions"></p>
                                         </div>
                                         <div>
-                                            <h6>Get started by choosing your editor of choice.</h6>
+                                            <h6>{{ 'Get started by choosing your editor of choice.' | translate }}</h6>
                                             <div class="form__input-group">
                                                 <select class="form__control form__control__medium"
                                                         ng-model="projectCtrl.selectedEditor"
@@ -511,18 +511,7 @@
                                             </ul>
                                         <div>
                                             <h6 style="width:84%">Can't finish but need to stop mapping? Or have you completely mapped the area? Leave a comment and select one of the options below that matches your editing status.</h6>
-                                            <textarea class="form__control space-bottom--none" type="text" mentio
-                                                      rows="4"
-                                                      maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                      placeholder="{{ 'Leave a comment' | translate }}"
-                                                      mentio-typed-text="typedTerm"
-                                                      mentio-search="projectCtrl.searchUser(term)"
-                                                      mentio-select="projectCtrl.formatUserTag(item)"
-                                                      mentio-items="projectCtrl.suggestedUsers"
-                                                      mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                      ng-model="projectCtrl.comment"></textarea>
-                                            <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                                {{ 'characters remaining' | translate }}</p>
+                                            <div ng-include="'/app/project/comment-box.html'"></div>
                                         </div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
@@ -713,7 +702,7 @@
                                 <h3 style="display: inline-block;">{{ 'Validation' | translate }}</h3>
                                 <div ng-show="projectCtrl.validatingStep === 'locked'" style="display: inline-block; float: right;">
                                     <i class="fa fa-clock-o"></i>
-                                    <span>{{ projectCtrl.getLockTime() }} {{ 'minutes left' | translate }}</span>
+                                    <span>{{ projectCtrl.getLockTime() }} {{ ' left' | translate }}</span>
                                 </div>
                                 <div ng-show="projectCtrl.validatingStep === 'viewing' ">
                                     <!-- task information -->
@@ -935,19 +924,8 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                         <textarea class="form__control space-bottom--none" type="text" mentio
-                                                   rows="4"
-                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                   placeholder="{{ 'Leave a comment' | translate }}"
-                                                   mentio-typed-text="typedTerm"
-                                                   mentio-search="projectCtrl.searchUser(term)"
-                                                   mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.suggestedUsers"
-                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                   ng-model="projectCtrl.comment"></textarea>
-                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                            {{ 'characters remaining' | translate }}</p>
+                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -1043,20 +1021,8 @@
                                         </div>
                                     </div>
                                     <div class="form__group form__group--section">
-                                        <h6>Done editing? Leave a comment and select one of the options below that matches your editing status</h6>
-                                         <textarea class="form__control space-bottom--none" type="text" mentio
-                                                   rows="4"
-                                                   maxlength="{{ projectCtrl.maxlengthComment }}"
-                                                   placeholder="{{ 'Leave a comment' | translate }}"
-                                                   mentio-typed-text="typedTerm"
-                                                   mentio-search="projectCtrl.searchUser(term)"
-                                                   mentio-select="projectCtrl.formatUserTag(item)"
-                                                   mentio-items="projectCtrl.suggestedUsers"
-                                                   mentio-template-url="/app/project/user-suggestions-menu.html"
-                                                   ng-model="projectCtrl.comment"></textarea>
-                                        <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
-                                            {{ 'characters remaining' | translate }}</p>
-
+                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
+                                        <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
                                                 <button class="button"
@@ -1129,11 +1095,14 @@
                                               </td>
                                               <td>
                                                   <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                                  <span ng-if="projectCtrl.user.isExpert">
+                                                    <a ng-show="projectCtrl.isAtticDateLive(item)" class="diff-control {{projectCtrl.selectedItem.actionDate === item.actionDate ? 'selected' : ''}}" ng-click="projectCtrl.selectItemForDiff(item)" title="{{ 'Choose two entries for diff or same once twice for attic data' | translate }}"></a>
+                                                 </span>
                                               </td>
                                           </tr>
                                           <tr ng-show="item.action === 'COMMENT'">
                                             <td colspan="2" class="comment-text">
-                                              <span markdown-to-html="item.actionText"></span>
+                                              <span markdown-to-html="item.actionText" ng-click="projectCtrl.onShortCodeClick($event)"></span>
                                             </td>
                                           </tr>
                                       </tbody>
@@ -1247,9 +1216,7 @@
                         </svg>
                         {{ 'Locked by you' | translate }}
                     </div>
-                </div>
-                <div ng-show="projectCtrl.hasPriorityArea" class="ol-control legend-control priority-areas">
-                    <div>
+                    <div ng-show="projectCtrl.hasPriorityArea">
                         <svg height="15" width="15">
                             <rect width="15" height="15" stroke="rgba(255, 0, 0, 1)" stroke-width="3"
                                   fill="rgba(255, 0, 0, 0.3)"/>
@@ -1296,3 +1263,35 @@
     </button>
 </section>
 <!-- accept license modal -->
+
+<!-- JOSM editor failed modal -->
+<section class="modal modal-tm" ng-show="projectCtrl.editorStartError === 'josm-error'">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h3 class="modal__title">{{ 'Contact with JOSM Failed' | translate }}</h3>
+            </div>
+        </header>
+        <div class="modal__body">
+            <div>
+                <p>
+                    {{ 'JOSM remote control did not respond. Do you have JOSM running and configured to be controlled remotely?' | translate }}
+                </p>
+            </div>
+        </div>
+        <footer class="modal__footer">
+            <div>
+                <button class="button" type="button"
+                        ng-click="projectCtrl.editorStartError = ''">{{ 'Dismiss' | translate }}
+                </button>
+                <button class="button button--secondary" type="button"
+                        ng-click="projectCtrl.resetSelectedEditor()">{{ "Stop using JOSM" | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>
+    <a class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="projectCtrl.editorStartError = ''">
+        {{ 'Dismiss' | translate }}
+    </a>
+</section>
+<!-- JOSM editor failed modal -->
