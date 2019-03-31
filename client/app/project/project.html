@@ -133,7 +133,7 @@
             <div ng-hide="projectCtrl.errorGetProject || projectCtrl.loaded === false">
                 <div class="form__group" >
                     <ul class="tab--wrapper">
-                        <li ng-click="projectCtrl.currentTab = 'instructions'"
+                        <li ng-click="projectCtrl.currentTab = 'instructions'; projectCtrl.showWarning = false"
                             title="{{ 'Go to the instructions tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
@@ -141,7 +141,7 @@
                                 {{ 'Instructions' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'mapping'"
+                        <li ng-click="projectCtrl.currentTab = 'mapping'; projectCtrl.showWarning = false"
                             title="{{ 'Go to the mapping tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
@@ -149,7 +149,7 @@
                                 {{ 'Map' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'validation'"
+                        <li ng-click="projectCtrl.currentTab = 'validation'; projectCtrl.showWarning = false"
                             title="{{ 'Go to the validation tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
@@ -157,7 +157,7 @@
                                 {{ 'Validate' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'chat'"
+                        <li ng-click="projectCtrl.currentTab = 'chat'; projectCtrl.showWarning = false"
                             title="{{ 'Go to the chat tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
@@ -388,6 +388,10 @@
                                         <!-- task action buttons -->
                                         <div class="form__group form__group--section">
                                             <div ng-show="!(projectCtrl.enforceRandomTaskSelection() && projectCtrl.randomTaskSelectionError)">
+                                                <div ng-show="projectCtrl.showWarning">
+                                                    <p class="error"><a href="/user/{{projectCtrl.user.username}}">{{ 'Add your email address' | translate }}</a>
+                                                        {{ 'to continue mapping' | translate }}</p>
+                                                </div>
                                                 <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
                                                         class="button button--large"
                                                         ng-click="projectCtrl.lockSelectedTaskMapping()">
@@ -590,7 +594,11 @@
                                             role="alert">
                                         <p>{{ 'You cannot select tasks for validation on this project because you do not have the Validator role.' | translate }}</p>
                                     </div>
-                                    <div ng-show="projectCtrl.userCanValidate">
+                                    <div ng-show="projectCtrl.showWarning">
+                                            <p class="error"><a href="/user/{{projectCtrl.user.username}}">{{'Add your email address' | translate}}</a>
+                                                {{ 'to continue validation' | translate }}</p>
+                                    </div>
+                                    <div ng-show="projectCtrl.userCanValidate && !project.showWarning">
                                         <p class="description--block">{{ 'Find a task for validation through one of the options below.' | translate }}</p>
                                         <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
                                             <div class="error" role="alert">
@@ -771,6 +779,10 @@
                                     <!-- task action buttons -->
                                     <div class="form__group form__group--section">
                                         <div>
+                                            <div ng-show="projectCtrl.showWarning">
+                                                <p class="error"><a href="/user/{{projectCtrl.user.username}}">{{'Add your email address' | translate}}</a>
+                                                    {{ 'to continue validation' | translate }}</p>
+                                            </div>
                                             <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate"
                                                     class="button button--large"
                                                     ng-click="projectCtrl.lockSelectedTaskValidation()">
@@ -906,7 +918,6 @@
                                             {{ 'Cancel' | translate }}
                                         </button> -->
                                     </div>
-
                                 </div>
                                 <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
                                     <p>Multiple Tasks are locked for you for validation.</p>
@@ -989,8 +1000,14 @@
                         </div>
                         <div ng-show="projectCtrl.currentTab === 'chat'">
                             <h3>{{ 'Project Questions and Comments' | translate }}</h3>
-                            <project-chat project-id="projectCtrl.id"
-                                          project-author="projectCtrl.projectData.author" role="projectCtrl.user.role"></project-chat>
+                            <div ng-show="projectCtrl.user.isEmailVerified">
+                                <project-chat project-id="projectCtrl.id"
+                                            project-author="projectCtrl.projectData.author" role="projectCtrl.user.role"></project-chat>
+                            </div>
+                            <div class='error' ng-hide="projectCtrl.user.isEmailVerified">
+                                <a href="/user/{{ projectCtrl.user.username }}">{{ 'Add your email address' | translate }}</a>
+                                {{ 'to continue' | translate }}
+                            </div>
                         </div>
                         <!-- advanced options UI -->
 
