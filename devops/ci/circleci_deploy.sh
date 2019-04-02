@@ -9,6 +9,7 @@ PROD_BRANCH="master"
 DEMO_ENV="taskingmanager-demo"
 STAGE_ENV="taskingmanager-stage"
 PROD_ENV="taskingmanager-prod"
+EXP_ENV="tm3-db-stretch"
 
 echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 
@@ -23,9 +24,10 @@ echo Running HOT Tasking Manager Deploy, current branch is $CIRCLE_BRANCH
 # Set Version Number
 VERSION=v.0.0.$CIRCLE_BUILD_NUM-$(echo $CIRCLE_BRANCH | tr -cd '[[:alnum:]]._-')
 
-if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
+if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH|'modify/Dockerfile')$ ]];
   then
     # Install AWS requirements
+    mv devops/aws/* ../../ && mv devops/aws/.* ../../
     pip install -r requirements.aws.txt
     printf '1\nn\n' | eb init taskingmanager --region us-east-1
   else
@@ -56,5 +58,14 @@ if [ $CIRCLE_BRANCH == $PROD_BRANCH ]
     # Deploy develop builds to Staging environment
     eb use $PROD_ENV
     echo Deploying $VERSION to $PROD_ENV
+    eb deploy -l $VERSION
+fi
+
+# Deploy to Prod Env
+if [ $CIRCLE_BRANCH == 'modify/Dockerfile' ]
+  then
+    # Deploy develop builds to Staging environment
+    eb use $EXP_ENV
+    echo Deploying $VERSION to $EXP_ENV
     eb deploy -l $VERSION
 fi
