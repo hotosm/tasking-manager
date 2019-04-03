@@ -5,7 +5,7 @@ services:
 
   # Main application
   app:
-    build: .
+    build: devops/docker/tasking-manager
     env_file: tasking-manager.env
     depends_on:
       - postgresql
@@ -21,7 +21,7 @@ services:
 
   # Migration service
   migration:
-    build: .
+    build: devops/docker/tasking-manager
     env_file: tasking-manager.env
     depends_on:
       - postgresql
