@@ -16,7 +16,7 @@
         {{ 'An error occurred' | translate  }}
     </p>
     <div>
-        <div>
+        <div ng-show="projectChatCtrl.role != 'READ_ONLY'">
             <textarea class="form__control space-bottom--none" type="text" mentio
                       rows="4"
                       maxlength="{{ projectChatCtrl.maxlengthComment }}"
@@ -36,7 +36,11 @@
             </a>
             <button class="button object--primary" ng-click="projectChatCtrl.addMessage()">Add message</button>
         </div>
+        <div ng-show="projectChatCtrl.role == 'READ_ONLY'">
+            {{ 'You can not comment' | translate }}
+        </div>
     </div>
     <p ng-show="projectChatCtrl.errorMessageAdded" class="error">{{ 'Error: your message was not added' | translate }}</p>
     <p ng-show="projectChatCtrl.errorAddPMUsername" class="error">{{ 'Error: too many characters in your message' | translate }}</p>
+    <p ng-show="projectChatCtrl.errorReadOnly" class="error">{{ "Error: you don't have permission to send message" | translate }}</p>
 </div>

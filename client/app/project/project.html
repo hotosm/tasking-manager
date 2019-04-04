@@ -990,7 +990,7 @@
                         <div ng-show="projectCtrl.currentTab === 'chat'">
                             <h3>{{ 'Project Questions and Comments' | translate }}</h3>
                             <project-chat project-id="projectCtrl.id"
-                                            project-author="projectCtrl.projectData.author"></project-chat>
+                                          project-author="projectCtrl.projectData.author" role="projectCtrl.user.role"></project-chat>
                         </div>
                         <!-- advanced options UI -->
 
