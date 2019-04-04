@@ -15,7 +15,7 @@
      * Creates project-chat directive
      * Example:
      *
-     *  <project-chat project-id="projectCtrl.id" project-author="projectCtrl.projectData.author"></project-chat>
+     *  <project-chat project-id="projectCtrl.id" project-author="projectCtrl.projectData.author" role="projectCtrl.user.role"></project-chat>
      */
     function projectChatDirective() {
 
@@ -26,7 +26,8 @@
             controllerAs: 'projectChatCtrl',
             scope: {
                 projectId: '=projectId',
-                projectAuthor: '=projectAuthor'
+                projectAuthor: '=projectAuthor',
+                role: '=role'
             },
             bindToController: true // because the scope is isolated
         };
@@ -43,7 +44,7 @@
         vm.messages = [];
         vm.maxlengthComment = configService.maxChatLength;
         vm.suggestedUsers = [];
-
+        vm.role = '';
         vm.hasScrolled = false;
 
         // Errors
@@ -66,6 +67,9 @@
         });
         $scope.$watch('projectChatCtrl.projectAuthor', function (authorName) {
             vm.author = authorName;
+        });
+        $scope.$watch('projectChatCtrl.role', function (role) {
+            vm.role = role;
         });
 
         //start up a timer for getting the chat messages
@@ -144,26 +148,26 @@
          * Add message to the chat
          */
         vm.addMessage = function () {
-            vm.successMessageAdded = false;
-            vm.errorMessageAdded = false;
-            var resultsPromise = messageService.addProjectChatMessage(vm.message, vm.projectId);
-            resultsPromise.then(function (data) {
-                vm.messages = data.chat;
-                for (var i = 0; i < vm.messages.length; i++) {
-                    vm.messages[i].message = messageService.formatShortCodes(vm.messages[i].message);
-                }
-                // set the location.hash to the id of the element to scroll to
-                $timeout(function () {
-                    // TODO: find out if it is possible remove location hash
-                    $anchorScroll(['bottom']);
-                }, 1000);
-                vm.message = '';
-                vm.successMessageAdded = true;
-            }, function (response) {
-                if (response.status !== '404') {
-                    vm.errorMessageAdded = true;
-                }
-            });
+                vm.successMessageAdded = false;
+                vm.errorMessageAdded = false;
+                var resultsPromise = messageService.addProjectChatMessage(vm.message, vm.projectId);
+                resultsPromise.then(function (data) {
+                    vm.messages = data.chat;
+                    for (var i = 0; i < vm.messages.length; i++) {
+                        vm.messages[i].message = messageService.formatShortCodes(vm.messages[i].message);
+                    }
+                    // set the location.hash to the id of the element to scroll to
+                    $timeout(function () {
+                        // TODO: find out if it is possible remove location hash
+                        $anchorScroll(['bottom']);
+                    }, 1000);
+                    vm.message = '';
+                    vm.successMessageAdded = true;
+                }, function (response) {
+                    if (response.status !== '404') {
+                        vm.errorMessageAdded = true;
+                    }
+                });
         };
 
         /**
