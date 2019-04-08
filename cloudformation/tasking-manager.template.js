@@ -4,6 +4,10 @@ const Parameters = {
   GitSha: {
     Type: 'String'
   },
+  Environment: {
+    Type :'String',
+    AllowedValues: ['staging', 'production']
+  },
   DBSnapshot: {
     Type: 'String',
     Description: 'Specify an RDS snapshot ID, if you want to create the DB from a snapshot.',
@@ -46,30 +50,18 @@ const Parameters = {
     Description: 'TM_SMTP_USER environment variable',
     Type: 'String'
   },
-  Storage: {
-    Description: 'Storage in GB',
+  DatabaseSize: {
+    Description: 'Database size in GB',
     Type: 'String',
     Default: '100'
-  },
-  ELBSecurityGroup: {
-    Description: 'Security Group for the ELB',
-    Type: 'String'
   },
   ELBSubnets: {
     Description: 'ELB subnets',
     Type: 'String'
   },
-  VpcId: {
-    Description: "ID of the VPC",
-    Type: 'String'
-  },
   SSLCertificateIdentifier: {
     Type: 'String',
     Description: 'SSL certificate for HTTPS protocol'
-  },
-  RDSSecurityGroup: {
-    Description: 'Security Group for the RDS',
-    Type: 'String'
   },
   RDSUrl: {
     Description: 'Remote RDS URL',
@@ -118,7 +110,7 @@ const Resources = {
         IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
         ImageId: 'ami-0e4372c1860d7426c',
         InstanceType: 'm3.medium',
-        SecurityGroups: [cf.ref('RDSSecurityGroup')],
+        SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
         UserData: cf.userData([
           '#!/bin/bash',
           'set -x',
@@ -172,10 +164,8 @@ const Resources = {
   TaskingManagerLoadBalancer: {
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
-      IpAddressType: 'ipv4',
-      Name: cf.join('-', [cf.stackName, 'lb']),
-      Scheme: 'internet-facing',
-      SecurityGroups: [cf.ref('ELBSecurityGroup')],
+      Name: cf.stackName,
+      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'elbs-security-group', cf.region]))],
       Subnets: cf.split(',', cf.ref('ELBSubnets')),
       Type: 'application'
     }
@@ -183,61 +173,67 @@ const Resources = {
   TaskingManagerTargetGroup: {
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup',
     Properties: {
-      HealthCheckIntervalSeconds: 30,
+      HealthCheckIntervalSeconds: 60,
       HealthCheckPort: 8000,
       HealthCheckProtocol: 'HTTP',
       HealthCheckTimeoutSeconds: 10,
-      HealthyThresholdCount: 5,
+      HealthyThresholdCount: 3,
       UnhealthyThresholdCount: 3,
       Port: 8000,
       Protocol: 'HTTP',
-      VpcId: cf.ref('VpcId'),
+      VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
       Matcher: {
         HttpCode: '200,202,302,304'
       }
     }
   },
-  TaskingManagerHTTPListener: {
+  TaskingManagerLoadBalancerHTTPSListener: {
     Type: 'AWS::ElasticLoadBalancingV2::Listener',
     Properties: {
+      Certificates: [ {
+        CertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier'))
+      }],
       DefaultActions: [{
         Type: 'forward',
         TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
+      }],
+      LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
+      Port: 443,
+      Protocol: 'HTTPS'
+    }
+  },
+  TaskingManagerLoadBalancerHTTPListener: {
+    Type: 'AWS::ElasticLoadBalancingV2::Listener',
+    Properties: {
+      DefaultActions: [{
+        Type: 'redirect',
+        RedirectConfig: {
+          Protocol: 'HTTPS',
+          Port: '443',
+          Host: '#{host}',
+          Path: '/#{path}',
+          Query: '#{query}',
+          StatusCode: 'HTTP_301'
+        }
       }],
       LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
       Port: 80,
       Protocol: 'HTTP'
     }
   },
-  // TaskingManagerHTTPSListener: {
-  //   Type: 'AWS::ElasticLoadBalancingV2::Listener',
-  //   Properties: {
-  //     Certificates : [ {
-  //       CertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier'))
-  //     }],
-  //     DefaultActions: [{
-  //       Type: 'forward',
-  //       TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
-  //     }],
-  //     LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
-  //     Port: 443,
-  //     Protocol: 'HTTPS',
-  //     SslPolicy: 'ELBSecurityPolicy-2016-08'
-  //   }
-  // },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
     Condition: 'UseASnapshot',
     Properties: {
         Engine: 'postgres',
-        EngineVersion: '9.5.10',
+        EngineVersion: '9.5.15',
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('MasterUsername')),
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('MasterPassword')),
-        AllocatedStorage: cf.ref('Storage'),
+        AllocatedStorage: cf.ref('DatabaseSize'),
         StorageType: 'gp2',
         DBInstanceClass: 'db.m3.large', //rethink here
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
-        VPCSecurityGroups: [cf.ref('RDSSecurityGroup')]
+        VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
     }
   }
 };
