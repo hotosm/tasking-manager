@@ -51,7 +51,7 @@ class ProdConfig(EnvironmentConfig):
 
 
 class StageConfig(EnvironmentConfig):
-    APP_BASE_URL = os.getenv('APP_BASE_URL', 'https://tasks-cfn.hotosm.org')
+    APP_BASE_URL = os.getenv('APP_BASE_URL', 'https://tasks-cfn-stage.hotosm.org')
     API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
                    f'url={APP_BASE_URL}/api/docs'
     LOG_DIR = '/var/log/tasking-manager-logs'
