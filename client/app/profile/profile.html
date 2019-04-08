@@ -215,7 +215,7 @@
                                             </button>
                                             <button class="button button--achromic"
                                                     ng-class="profileCtrl.userDetails.role === 'PROJECT_MANAGER'? 'button--active' : ''"
-                                                    ng-hide="profileCtrl.userDetails.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
+                                                    ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
                                                     ng-click="profileCtrl.setRole('PROJECT_MANAGER')">{{ 'Project Manager' | translate }}
                                             </button>
                                             <button class="button button--achromic"
