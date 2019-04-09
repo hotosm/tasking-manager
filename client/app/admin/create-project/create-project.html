@@ -259,11 +259,12 @@
                     <h4>{{ 'Step 5: Review' | translate }}</h4>
                     <form class="form" name="createProjectCtrl.projectNameForm">
                         <p>{{ 'Project has' | translate }} {{ createProjectCtrl.numberOfTasks }} {{ 'tasks.' | translate }}</p>
-                        <div>
+                        <div ng-hide="createProjectCtrl.isCloneProject">
                             <label class="form__label" for="projectName">{{ 'Project name' | translate }}</label>
                             <input type="text" class="form__control form__control--medium" id="projectName"
                                    name="projectName"
-                                   ng-class="{ 'ng-touched': createProjectCtrl.projectNameForm.submitted }" required
+                                   ng-class="{ 'ng-touched': createProjectCtrl.projectNameForm.submitted }"
+                                   ng-required="!createProjectCtrl.isCloneProject"
                                    ng-model="createProjectCtrl.projectName"
                             />
                         </div>
