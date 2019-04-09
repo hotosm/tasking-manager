@@ -102,7 +102,7 @@ class Project(db.Model):
     def set_default_changeset_comment(self):
         """ Sets the default changeset comment"""
         default_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
-        self.changeset_comment = f'{default_comment}-{self.id}'
+        self.changeset_comment = f'{default_comment}-{self.id} {self.changeset_comment}' if self.changeset_comment is not None else f'{default_comment}-{self.id}'
         self.save()
 
     def create(self):
@@ -155,7 +155,6 @@ class Project(db.Model):
             cloned_project.allowed_users.append(user)
 
         # Add other project metadata
-        # We ignore changeset comment because that is reinitialized after creation
         cloned_project.priority = original_project.priority
         cloned_project.default_locale = original_project.default_locale
         cloned_project.mapper_level = original_project.mapper_level
@@ -170,6 +169,15 @@ class Project(db.Model):
         cloned_project.mapping_types = original_project.mapping_types
         cloned_project.organisation_tag = original_project.organisation_tag
         cloned_project.campaign_tag = original_project.campaign_tag
+
+        # We try to remove the changeset comment referencing the old project. This
+        #  assumes the default changeset comment has not changed between the old
+        #  project and the cloned. This is a best effort basis.
+        default_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
+        changeset_comments = original_project.changeset_comment.split(' ')
+        if f'{default_comment}-{original_project.id}' in changeset_comments:
+            changeset_comments.remove(f'{default_comment}-{original_project.id}')
+        cloned_project.changeset_comment = " ".join(changeset_comments)
 
         db.session.add(cloned_project)
         db.session.commit()
