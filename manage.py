@@ -2,6 +2,7 @@ import base64
 
 from flask_migrate import MigrateCommand
 from flask_script import Manager
+from dotenv import load_dotenv
 
 from server import create_app, init_counters
 from server.services.users.authentication_service import AuthenticationService
@@ -9,11 +10,21 @@ from server.services.users.user_service import UserService
 
 import os
 import warnings
+ 
+# Load configuration from file
+load_dotenv(os.path.join(os.path.dirname(__file__), 'tasking-manager.env'))
 
-# Check that environmental variables are set
-for key in ['TM_DB','TM_SECRET','TM_CONSUMER_KEY','TM_CONSUMER_SECRET','TM_ENV']:
-    if not os.getenv(key):
-        warnings.warn("%s environmental variable not set." % (key,))
+# Temporarily here - to support backwards compatibility with TM_DB key.
+if os.getenv('TM_DB', False):
+    for key in ['TM_APP_BASE_URL','TM_SECRET','TM_CONSUMER_KEY','TM_CONSUMER_SECRET']:
+        if not os.getenv(key):
+            warnings.warn("%s environmental variable not set." % (key,))
+else:
+    # Check that required environmental variables are set
+    for key in ['TM_APP_BASE_URL','POSTGRES_DB','POSTGRES_USER','POSTGRES_PASSWORD','TM_SECRET','TM_CONSUMER_KEY','TM_CONSUMER_SECRET']:
+        if not os.getenv(key):
+            warnings.warn("%s environmental variable not set." % (key,))
+
 
 # Initialise the flask app object
 application = create_app()
