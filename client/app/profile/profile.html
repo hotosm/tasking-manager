@@ -60,7 +60,7 @@
                             </div>
                             <div>
                                 <h4>Stats</h4>
-                                <span>Time Spent Mapping (TM3 only)</span>
+                                <span>{{ 'Time Spent Mapping (TM3 only)' | translate }}</span>
                                 <span class="pull-right">{{ profileCtrl.userStats.timeSpentMapping | amDurationFormat : 'second' }}</span>
                                 <hr/>
                             </div>
@@ -99,7 +99,7 @@
                                     <li>
                                         <label class="form__label"
                                                ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.editDetails">
-                                            Email (only visible to you):
+                                            {{ 'Email (only visible to you):' | translate }}
                                         </label>
                                         <span ng-hide="profileCtrl.editDetails">
                                             {{ profileCtrl.userDetails.emailAddress }}
@@ -114,7 +114,7 @@
                                         </span>
                                         <span ng-show="profileCtrl.userDetails.emailAddress && !profileCtrl.userDetails.isEmailVerified && !profileCtrl.editDetails">
                                             <button class="button button--achromic button--small"
-                                                    ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
+                                                    ng-click="profileCtrl.resendVerificationEmail()">{{ 'Resend validation email' | translate }}</button>
                                         </span>
                                     </li>
                                     <li>
@@ -171,7 +171,7 @@
                                             ng-click="profileCtrl.editDetails = !profileCtrl.editDetails"
                                             ng-show="!profileCtrl.editDetails">
                                         <i class="hot-ds-icon-pencil" title="Edit Twitter URL"></i>
-                                        <span>{{ 'Add/edit contact details' | translate}}</span>
+                                        <span>{{ 'Add/edit contact details' | translate }}</span>
                                     </button>
                                     <button class="button button--achromic" type="button"
                                             ng-click="profileCtrl.setContactDetails()"
