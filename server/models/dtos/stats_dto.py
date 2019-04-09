@@ -86,7 +86,7 @@ class HomePageStatsDTO(Model):
     total_mappers = IntType(serialized_name='totalMappers')
     total_validators = IntType(serialized_name='totalValidators')
     total_projects = IntType(serialized_name='totalProjects')
-    total_area = FloatType(serialized_name='totalArea')
+    # total_area = FloatType(serialized_name='totalArea')
     total_mapped_area = FloatType(serialized_name='totalMappedArea')
     total_validated_area = FloatType(serialized_name='totalValidatedArea')
     total_organizations = IntType(serialized_name='totalOrganizations')

@@ -185,7 +185,7 @@ class StatsService:
     def get_homepage_stats() -> HomePageStatsDTO:
         """ Get overall TM stats to give community a feel for progress that's being made """
         dto = HomePageStatsDTO()
-        total_area = 0
+        # total_area = 0
         dto.mappers_online = Task.query.filter(Task.locked_by != None).distinct(Task.locked_by).count()
         dto.total_mappers = User.query.count()
         dto.total_projects = Project.query.count()
@@ -194,18 +194,18 @@ class StatsService:
         dto.tasks_mapped = Task.query\
             .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
-        dto.total_area = 0
+        # dto.total_area = 0
         
-        total_area_sql = """select sum(ST_Area(geometry)) from public.projects as area"""
+        # total_area_sql = """select sum(ST_Area(geometry)) from public.projects as area"""
 
-        total_area_result = db.engine.execute(total_area_sql)
-        current_app.logger.debug(total_area_result)
-        for rowproxy in total_area_result:
+        # total_area_result = db.engine.execute(total_area_sql)
+        # current_app.logger.debug(total_area_result)
+        # for rowproxy in total_area_result:
             # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
-            for tup in rowproxy.items():
-                total_area += tup[1]
-                current_app.logger.debug(total_area)
-        dto.total_area = total_area
+            # for tup in rowproxy.items():
+                # total_area += tup[1]
+                # current_app.logger.debug(total_area)
+        # dto.total_area = total_area
 
         tasks_mapped_area = 0
         tasks_mapped_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 2"""
