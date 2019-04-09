@@ -202,6 +202,25 @@ const Resources = {
       Protocol: 'HTTPS'
     }
   },
+  TaskingManagerLoadBalancerHTTPListener: {
+    Type: 'AWS::ElasticLoadBalancingV2::Listener',
+    Properties: {
+      DefaultActions: [{
+        Type: 'redirect',
+        RedirectConfig: {
+          Protocol: 'HTTPS',
+          Port: '443',
+          Host: '#{host}',
+          Path: '/#{path}',
+          Query: '#{query}',
+          StatusCode: 'HTTP_301'
+        }
+      }],
+      LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
+      Port: 80,
+      Protocol: 'HTTP'
+    }
+  },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
     Condition: 'UseASnapshot',
