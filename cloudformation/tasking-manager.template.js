@@ -202,18 +202,6 @@ const Resources = {
       Protocol: 'HTTPS'
     }
   },
-  TaskingManagerLoadBalancerHTTPListener: {
-    Type: 'AWS::ElasticLoadBalancingV2::Listener',
-    Properties: {
-      DefaultActions: [{
-        Type: 'forward',
-        TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
-      }],
-      LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
-      Port: 80,
-      Protocol: 'HTTP'
-    }
-  },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
     Condition: 'UseASnapshot',
