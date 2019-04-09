@@ -154,6 +154,23 @@ class Project(db.Model):
         for user in original_project.allowed_users:
             cloned_project.allowed_users.append(user)
 
+        # Add other project metadata
+        # We ignore changeset comment because that is reinitialized after creation
+        cloned_project.priority = original_project.priority
+        cloned_project.default_locale = original_project.default_locale
+        cloned_project.mapper_level = original_project.mapper_level
+        cloned_project.enforce_mapper_level = original_project.enforce_mapper_level
+        cloned_project.enforce_validator_role = original_project.enforce_validator_role
+        cloned_project.private = original_project.private
+        cloned_project.entities_to_map = original_project.entities_to_map
+        cloned_project.due_date = original_project.due_date
+        cloned_project.imagery = original_project.imagery
+        cloned_project.josm_preset = original_project.josm_preset
+        cloned_project.license_id = original_project.license_id
+        cloned_project.mapping_types = original_project.mapping_types
+        cloned_project.organisation_tag = original_project.organisation_tag
+        cloned_project.campaign_tag = original_project.campaign_tag
+
         db.session.add(cloned_project)
         db.session.commit()
 
