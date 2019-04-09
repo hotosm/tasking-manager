@@ -206,8 +206,15 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::Listener',
     Properties: {
       DefaultActions: [{
-        Type: 'forward',
-        TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
+        Type: 'redirect',
+        RedirectConfig: {
+          Protocol: 'HTTPS',
+          Port: '443',
+          Host: '#{host}',
+          Path: '/#{path}',
+          Query: '#{query}',
+          StatusCode: 'HTTP_301'
+        }
       }],
       LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
       Port: 80,
