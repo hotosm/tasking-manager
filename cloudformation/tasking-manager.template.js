@@ -88,6 +88,12 @@ const Resources = {
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
       AvailabilityZones: cf.getAzs(cf.region)
+    },
+    UpdatePolicy: {
+      AutoScalingRollingUpdate: {
+        PauseTime: 'PT20M',
+        WaitOnResourceSignals: true
+      }
     }
   },
   TaskingManagerScaleUp: {
@@ -122,7 +128,8 @@ const Resources = {
           'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
           cf.join('', [cf.sub('export TM_DB="postgresql://${MasterUsername}:${MasterPassword}@'), cf.if('UseASnapshot', cf.getAtt('TaskingManagerRDS', 'Endpoint.Address'), cf.ref('RDSUrl')) , '/tm3"']),
           cf.sub('export TM_CONSUMER_KEY=${OSMConsumerKey} && export TM_CONSUMER_SECRET=${OSMConsumerSecret} && export TM_ENV=${TaskingManagerEnv} && export TM_SECRET=${TaskingManagerSecret} && ./venv/bin/python3.6 manage.py db upgrade && cd client/ && npm install && gulp build && cd ../ && echo "done"'),
-          'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 2 --timeout 179 manage:application'
+          'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 2 --timeout 179 manage:application &',
+          cf.sub('cfn-signal --exit-code|-e $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
         ]),
         KeyName: 'mbtiles'
       }
