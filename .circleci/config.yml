@@ -1,0 +1,218 @@
+version: 2
+jobs:
+  build:
+    working_directory: /home/circleci/app
+    docker:
+    - image: circleci/python:3-stretch-browsers
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Install Node and modules
+        command: |
+          sudo apt-get update
+          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+          sudo pip3 install awscli --upgrade
+    - run:
+        name: Set folder permissions
+        command: |
+          chown -R circleci:circleci $CIRCLE_WORKING_DIRECTORY
+          chmod -R 755 $CIRCLE_WORKING_DIRECTORY
+    - restore_cache:
+        keys:
+        - cached-dependencies
+        paths:
+        - client/node_modules
+        - env
+    - run:
+        name: Install requirements
+        command: |
+          # Install NPM packages and build client from gulpfile
+          cd $CIRCLE_WORKING_DIRECTORY/client
+          npm install
+          ./node_modules/.bin/gulp build
+          cd $CIRCLE_WORKING_DIRECTORY
+          # Install Python dependencies
+          pip install virtualenv
+          virtualenv env
+          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install --upgrade pip
+          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install -r requirements.txt
+    - run:
+        name: Run JS Unit tests
+        command: |
+          # JS Unit Tests
+          cd $CIRCLE_WORKING_DIRECTORY/tests/client
+          mkdir $CIRCLE_WORKING_DIRECTORY/tests/client/junit
+          $CIRCLE_WORKING_DIRECTORY/client/node_modules/.bin/karma start ./karma.conf.js \
+            --single-run --browsers PhantomJS --reporters junit
+        environment:
+            JUNIT_REPORT_PATH: $CIRCLE_WORKING_DIRECTORY/tests/client/junit/
+            JUNIT_REPORT_NAME: test-results.xml
+    - store_test_results:
+        path: tests/client/junit
+    - store_artifacts:
+          path: tests/client/junit
+    - run:
+        name: Run Python Tests
+        command: |
+          # Run Python tests
+          cd $CIRCLE_WORKING_DIRECTORY
+          mkdir $CIRCLE_WORKING_DIRECTORY/tests/server/results
+          sudo env/bin/nosetests ./tests/server --with-xunit \
+            --xunit-file $CIRCLE_WORKING_DIRECTORY/tests/server/results/unitresults.xml \
+            --with-coverage --cover-erase --cover-package=./server
+          env/bin/coverage xml -o $CIRCLE_WORKING_DIRECTORY/tests/server/results/coverage.xml
+    - store_test_results:
+        path: tests/server/results
+    - store_artifacts:
+          path: tests/server/results
+    - save_cache:
+        key: cached-dependencies
+        paths:
+        - client/node_modules
+        - env
+  deploy-staging:
+    working_directory: /home/circleci/app
+    docker:
+    - image: circleci/python:3-stretch
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Install Node and modules
+        command: |
+          sudo apt-get update
+          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+          npm install
+          sudo pip3 install awscli --upgrade
+    - run:
+        name: Configure AWS Access Key ID
+        command: |
+          aws configure set aws_access_key_id \
+          $AWS_ACCESS_KEY_ID \
+          --profile default
+    - run:
+        name: Configure AWS Secret Access Key
+        command: |
+          aws configure set aws_secret_access_key \
+          $AWS_SECRET_ACCESS_KEY \
+          --profile default
+    - run:
+        name: Configure AWS default region
+        command: |
+          aws configure set region $AWS_REGION \
+          --profile default
+    - run:
+        name: Remove last snapshot and backup database
+        command: |
+          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --query "DBSnapshots[? DBSnapshotIdentifier=='tm3-staging-deployment-snapshot-latest']" --output text`
+          # Copy old snapshot to temporary
+          if [ -z "$DESCRIBE_SNAPSHOT" ]
+          then
+              echo "Snapshot does not exist, creating one now."
+          else
+              aws rds copy-db-snapshot --source-db-snapshot tm3-staging-deployment-snapshot-latest --target-db-snapshot tm3-staging-deployment-snapshot-temp
+              aws rds delete-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-latest
+          fi
+          # create new aws rds snapshot
+          aws rds create-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-latest --db-instance-identifier tasking-manager-staging
+    - run:
+        name: Create config file
+        command: |
+          touch $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
+          printf '{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"staging\", \"DBSnapshot\":\"tm3-staging-deployment-snapshot-latest\", \"MasterUsername\":\"$MASTER_USERNAME_STAGING\", \"MasterPassword\":\"$MASTER_PASSWORD_STAGING\", \"OSMConsumerKey\":\"$OSM_CONSUMER_KEY_STAGING\",\"OSMConsumerSecret\":\"$OSM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TASKINGMANAGER_SECRET_STAGING\", \"TaskingManagerEnv\":\"$TASKINGMANAGER_ENV_STAGING\", \"TaskingManagerSMTPHost\":\"$TASKINGMANAGER_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TASKINGMANAGER_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TASKINGMANAGER_SMTP_USER_STAGING\", \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\",\"RDSUrl\":\"$RDS_URL_STAGING\"}' > $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
+    - run:
+        name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
+        command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
+    - deploy:
+        name: Deploy to staging
+        command: sudo cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
+          -f -c hot-cfn-config -t hot-cfn-config
+    - run:
+        name: Cleanup
+        command: aws rds delete-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-temp
+  deploy-production:
+    working_directory: /home/circleci/app
+    docker:
+    - image: circleci/python:3-stretch
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Install Node and modules
+        command: |
+          sudo apt-get update
+          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+          npm install
+          sudo pip3 install awscli --upgrade
+    - run:
+        name: Configure AWS Access Key ID
+        command: |
+          aws configure set aws_access_key_id \
+          $AWS_ACCESS_KEY_ID \
+          --profile default
+    - run:
+        name: Configure AWS Secret Access Key
+        command: |
+          aws configure set aws_secret_access_key \
+          $AWS_SECRET_ACCESS_KEY \
+          --profile default
+    - run:
+        name: Configure AWS default region
+        command: |
+          aws configure set region $AWS_REGION \
+          --profile default
+    - run:
+        name: Remove last snapshot and backup database
+        command: |
+          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --query "DBSnapshots[? DBSnapshotIdentifier=='tm3-production-deployment-snapshot-latest']" --output text`
+          # Copy old snapshot to temporary
+          if [ -z "$DESCRIBE_SNAPSHOT" ]
+          then
+              echo "Snapshot does not exist, creating one now."
+          else
+              aws rds copy-db-snapshot --source-db-snapshot tm3-production-deployment-snapshot-latest --target-db-snapshot tm3-production-deployment-snapshot-temp
+              aws rds delete-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-latest
+          fi
+          # create new aws rds snapshot
+          aws rds create-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-latest --db-instance-identifier tasking-manager-production
+    - run:
+        name: Create config file
+        command: |
+          touch $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
+          printf '{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"tm3-production-deployment-snapshot-latest\", \"MasterUsername\":\"$MASTER_USERNAME_STAGING\", \"MasterPassword\":\"$MASTER_PASSWORD_STAGING\", \"OSMConsumerKey\":\"$OSM_CONSUMER_KEY_STAGING\",\"OSMConsumerSecret\":\"$OSM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TASKINGMANAGER_SECRET_STAGING\", \"TaskingManagerEnv\":\"$TASKINGMANAGER_ENV_STAGING\", \"TaskingManagerSMTPHost\":\"$TASKINGMANAGER_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TASKINGMANAGER_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TASKINGMANAGER_SMTP_USER_STAGING\", \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\",\"RDSUrl\":\"$RDS_URL_STAGING\"}' > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
+    - run:
+        name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
+        command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
+    - deploy:
+        name: Deploy to production
+        command: sudo cfn-config update production $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
+          -f -c hot-cfn-config -t hot-cfn-config
+    - run:
+        name: Cleanup
+        command: aws rds delete-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-temp
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+    - build
+    - deploy-staging:
+        filters:
+          branches:
+            only:
+            - develop
+            - cloudformation
+        requires:
+        - build
+    - deploy-prod:
+        filters:
+          branches:
+            only: master
+        requires:
+        - build
