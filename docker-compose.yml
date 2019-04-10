@@ -11,6 +11,8 @@ services:
       - POSTGRES_ENDPOINT=postgresql
     depends_on:
       - postgresql
+    expose:
+      - "5000"
     ports:
       - "5000:5000"
     links:

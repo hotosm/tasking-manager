@@ -18,18 +18,27 @@
                                     <a title="{{ 'Edit description' | translate }}" ng-click="editProjectCtrl.currentSection = 'description'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'description' ? 'aside-menu-item--active' : ''">
                                     {{ 'Description' | translate }} *
+                                        <span ng-show="editProjectCtrl.nameMissing || editProjectCtrl.shortDescriptionMissing || editProjectCtrl.descriptionMissing">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a title="{{ 'Edit instructions' | translate }}" ng-click="editProjectCtrl.currentSection = 'instructions'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'instructions' ? 'aside-menu-item--active' : ''">
                                         {{ 'Instructions' | translate }} *
+                                        <span ng-show="editProjectCtrl.instructionsMissing">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a title="{{ 'Edit tags' | translate }}" ng-click="editProjectCtrl.currentSection = 'metadata'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'metadata' ? 'aside-menu-item--active' : ''">
                                         {{ 'Metadata' | translate }}
+                                        <span ng-show="!editProjectCtrl.editForm.organisationTag.$valid || !editProjectCtrl.editForm.campaignTag.$valid">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
@@ -48,13 +57,20 @@
                                     <a title="{{ 'Edit permissions' | translate }}" ng-click="editProjectCtrl.currentSection = 'permissions'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'permissions' ? 'aside-menu-item--active' : ''">
                                         {{ 'Permissions' | translate }}
+                                        <span ng-show="editProjectCtrl.project.private && editProjectCtrl.project.allowedUsernames.length < 1">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a title="{{ 'Edit settings' | translate }}" ng-click="editProjectCtrl.currentSection = 'settings'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'settings' ? 'aside-menu-item--active' : ''">
                                         {{ 'Settings' | translate }}
+                                        <span ng-show="editProjectCtrl.project.mappingEditors.length < 1 || editProjectCtrl.project.validationEditors.length < 1">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
+                                    
                                 </li>
                                 <li>
                                     <a title="{{ 'Project wide actions' | translate }}" ng-click="editProjectCtrl.currentSection = 'actions'"
@@ -113,6 +129,9 @@
                                                    ng-model="info.name"/>
                                         </div>
                                     </div>
+                                    <p class="error" ng-show="editProjectCtrl.nameMissing">
+                                        {{ 'A name for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
+                                    </p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Short description' | translate }} *</label>
@@ -142,6 +161,9 @@
                                             <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewShortDescription" markdown-to-html="info.shortDescription"></p>
                                         </div>
                                     </div>
+                                    <p class="error" ng-show="editProjectCtrl.shortDescriptionMissing">
+                                        {{ 'A short description for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
+                                    </p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Description' | translate }} *</label>
@@ -174,6 +196,9 @@
                                             </p>
                                         </div>
                                     </div>
+                                    <p class="error" ng-show="editProjectCtrl.descriptionMissing">
+                                        {{ 'A description for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
+                                    </p>
                                 </div>
                             </fieldset>
                         </div>
@@ -221,6 +246,9 @@
                                             <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewInstructions" markdown-to-html="info.instructions"></p>
                                         </div>
                                     </div>
+                                    <p class="error" ng-show="editProjectCtrl.instructionsMissing">
+                                        {{ 'Instructions for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'are missing.' | translate }}
+                                    </p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Per Task Instructions' | translate }}</label>
@@ -314,6 +342,9 @@
                                         replace-spaces-with-dashes="false" max-tags="1">
                                         <auto-complete source="editProjectCtrl.getOrganisationTags($query)"></auto-complete>
                                     </tags-input>
+                                    <p class="error" ng-show="!editProjectCtrl.editForm.organisationTag.$valid">
+                                        {{ 'Please make sure you only have one organisation tag.' | translate }}
+                                    </p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Campaign Tag' | translate }}</label>
@@ -323,6 +354,9 @@
                                                 replace-spaces-with-dashes="false" max-tags="1">
                                         <auto-complete source="editProjectCtrl.getCampaignTags($query)"></auto-complete>
                                     </tags-input>
+                                    <p class="error" ng-show="!editProjectCtrl.editForm.campaignTag.$valid">
+                                        {{ 'Please make sure you only have one campaign tag.' | translate }}
+                                    </p>
                                 </div>
                             </fieldset>
                         </div>
@@ -424,6 +458,9 @@
                                                 <span>{{ 'Add user' | translate }}</span>
                                             </button>
                                         </span>
+                                        <p class="error" ng-show="editProjectCtrl.project.private && editProjectCtrl.project.allowedUsernames.length < 1">
+                                            {{ 'You need to add at least one allowed user to a private project.' | translate }}
+                                        </p>
                                     </div>
                                 </div>
                             </fieldset>
@@ -447,10 +484,46 @@
                                         </li>
                                     </ul>
                                 </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Editors for mapping' | translate }}</label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.id"/>{{ 'iD Editor' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.josm"/>{{ 'JOSM' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.potlatch2"/>{{ 'Potlatch 2' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
+                                    </label>
+                                    <p class="error" ng-show="editProjectCtrl.project.mappingEditors.length < 1">
+                                        {{ 'You need at least one mapping editor.' | translate }}
+                                    </p>
+                                </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Editors for validation' | translate }}</label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.id"/>{{ 'iD Editor' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.josm"/>{{ 'JOSM' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.potlatch2"/>{{ 'Potlatch 2' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
+                                    </label>
+                                    <p class="error" ng-show="editProjectCtrl.project.validationEditors.length < 1">
+                                        {{ 'You need at least one validation editor.' | translate }}
+                                    </p>
+                                </div>
                             </fieldset>
                         </div>
                             <!--/ settings -->
-                            <!-- settings -->
+                            <!-- actions -->
                         <div ng-show="editProjectCtrl.currentSection === 'actions'">
                             <fieldset class="form__fieldset">
                                 <div class="form__group form__group--section">
@@ -519,7 +592,7 @@
                                 </div>
                             </fieldset>
                         </div>
-                            <!--/ settings -->
+                            <!--/ actions -->
                             <div ng-show="editProjectCtrl.currentSection !== 'actions'">
                                 <div class="button-group">
                                     <button class="button button--primary" type="button"
@@ -535,29 +608,6 @@
                                         <p ng-show="editProjectCtrl.updateProjectSuccess">{{ 'Your project has been updated successfully.' | translate }}</p>
                                         <p class="error" ng-show="editProjectCtrl.updateProjectFail">{{ 'There was an error updating your project. Please try again.' | translate }}</p>
                                     </div>
-                                </div>
-                                <div>
-                                    <p class="error" ng-show="editProjectCtrl.project.private && editProjectCtrl.project.allowedUsernames.length < 1">
-                                        {{ 'You need to add at least one allowed user to a private project.' | translate }}
-                                    </p>
-                                    <p class="error" ng-show="editProjectCtrl.nameMissing">
-                                        {{ 'A name for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
-                                    </p>
-                                    <p class="error" ng-show="editProjectCtrl.shortDescriptionMissing">
-                                        {{ 'A short description for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
-                                    </p>
-                                    <p class="error" ng-show="editProjectCtrl.descriptionMissing">
-                                        {{ 'A description for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
-                                    </p>
-                                    <p class="error" ng-show="editProjectCtrl.instructionsMissing">
-                                        {{ 'Instructions for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'are missing.' | translate }}
-                                    </p>
-                                    <p class="error" ng-show="!editProjectCtrl.editForm.campaignTag.$valid">
-                                        {{ 'Please make sure you only have one campaign tag.' | translate }}
-                                    </p>
-                                    <p class="error" ng-show="!editProjectCtrl.editForm.organisationTag.$valid">
-                                        {{ 'Please make sure you only have one organisation tag.' | translate }}
-                                    </p>
                                 </div>
                             </div>
                         </form>

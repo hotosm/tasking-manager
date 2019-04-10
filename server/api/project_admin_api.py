@@ -206,6 +206,16 @@ class ProjectAdminAPI(Resource):
                           items:
                               type: string
                           default: [BUILDINGS, ROADS]
+                      mappingEditors:
+                          type: array
+                          items:
+                              type: string
+                          default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
+                      validationEditors:
+                          type: array
+                          items:
+                              type: string
+                          default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
                       campaignTag:
                           type: string
                           default: malaria
@@ -231,6 +241,9 @@ class ProjectAdminAPI(Resource):
                           items:
                               schema:
                                   $ref: "#/definitions/ProjectInfo"
+                      taskCreationMode:
+                          type: integer
+                          default: GRID
         responses:
             200:
                 description: Project updated

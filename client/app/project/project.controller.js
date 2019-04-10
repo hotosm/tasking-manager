@@ -59,7 +59,10 @@
 
         //editor
         vm.editorStartError = '';
-        vm.selectedEditor = 'ideditor';
+        vm.selectedMappingEditor = 'ideditor';
+        vm.selectedValidationEditor = 'josm';
+        vm.mappingEditors = [];
+        vm.validationEditors = [];
 
         //interaction
         vm.selectInteraction = null;
@@ -99,7 +102,8 @@
             vm.currentTab = 'instructions';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
-            vm.selectedEditor = 'ideditor'; // default to iD editor
+            vm.selectedMappingEditor = 'ideditor'; // default to iD editor
+            vm.selectedValidationEditor = 'josm';
             mapService.createOSMMap('map');
             mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
@@ -137,7 +141,9 @@
             }, 10000);
 
             // set up the preferred editor from user preferences
-            vm.selectedEditor = userPreferencesService.getFavouriteEditor();
+            
+            vm.selectedMappingEditor = userPreferencesService.getFavouriteEditor();
+            vm.selectedValidationEditor = userPreferencesService.getFavouriteEditor();
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -172,14 +178,15 @@
         };
 
         vm.updatePreferedEditor = function () {
-            userPreferencesService.setFavouriteEditor(vm.selectedEditor);
+            userPreferencesService.setFavouriteEditor(vm.selectedMappingEditor);
         };
 
         /**
          * Reset the user's selected editor back to the default
          */
         vm.resetSelectedEditor = function() {
-          vm.selectedEditor = 'ideditor';
+          vm.selectedMappingEditor = vm.mappingEditors[0].value;
+          vm.selectedValidationEditor = vm.validationEditors[0].value;
           vm.editorStartError = '';
         };
 
@@ -442,6 +449,10 @@
                 //project returned successfully
                 vm.loaded = true;
                 vm.projectData = data;
+                vm.mappingEditors = createEditorList(vm.projectData.mappingEditors);
+                vm.selectedMappingEditor = vm.mappingEditors[0].value;
+                vm.validationEditors = createEditorList(vm.projectData.validationEditors);
+                vm.selectedValidationEditor = vm.validationEditors[0].value;
                 vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
                 vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
                 addAoiToMap(vm.projectData.areaOfInterest);
@@ -449,6 +460,22 @@
                 addProjectTasksToMap(vm.projectData.tasks, true);
                 // Add OpenLayers interactions
                 addInteractions();
+
+
+                // set up the preferred editor from user preferences
+                // check if their preferred editor is in the allowed editors otherwise, pick first of allowed editors
+                if (vm.mappingEditors.filter(function(e) { return e.value === userPreferencesService.getFavouriteEditor() }).length > 0) {
+                    vm.selectedMappingEditor = userPreferencesService.getFavouriteEditor();
+                }
+                else {
+                    vm.selectedMappingEditor = vm.mappingEditors[0].value;
+                }
+                if (vm.validationEditors.filter(function(e) { return e.value === userPreferencesService.getFavouriteEditor() }).length > 0) {
+                    vm.selectedValidationEditor = userPreferencesService.getFavouriteEditor();
+                }
+                else {
+                    vm.selectedValidationEditor = vm.validationEditors[0].value;
+                }
 
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
@@ -877,7 +904,7 @@
             //
             // Use of the title attribute is a hack, but the sanitizer allows it
             // through and it's important these comments get properly sanitized.
-            if (event.target.tagName === 'A' && vm.selectedEditor === 'josm') {
+            if (event.target.tagName === 'A' && (vm.selectedMappingEditor === 'josm' || vm.selectedValidationEditor === 'josm')) {
                 var title = event.target.getAttribute("title");
                 var editorCommand = null;
                 var params = null;
@@ -1545,7 +1572,7 @@
 
           // Try sending to JOSM if it's user's chosen editor, otherwise Overpass Turbo.
           var overpassApiURL = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
-          if (vm.selectedEditor === 'josm') {
+          if (vm.selectedMappingEditor === 'josm' || vm.selectedValidationEditor === 'josm') {
             editorService.sendJOSMCmd('http://127.0.0.1:8111/import', {
                                         new_layer: 'true',
                                         layer_name: adjustedDateString,
@@ -1840,6 +1867,39 @@
             // Format the user tag by wrapping into brackets so it is easier to detect that it is a username
             // especially when there are spaces in the username
             return '@[' + item.username + ']';
+        };
+
+        /**
+         * Creates json objects for editors 
+         * @params editors
+         */
+        function createEditorList(editors) {
+            var result = [];
+            if (editors.includes("ID")) {
+                result.push({
+                    "name": "iD Editor",
+                    "value": "ideditor"
+                });
+            }
+            if (editors.includes("JOSM")) {
+                result.push({
+                    "name": "JOSM",
+                    "value": "josm"
+                });
+            }
+            if (editors.includes("POTLATCH_2")) {
+                result.push({
+                    "name": "Potlatch 2",
+                    "value": "potlatch2"
+                });
+            }
+            if (editors.includes("FIELD_PAPERS")) {
+                result.push({
+                    "name": "Field Papers",
+                    "value": "fieldpapers"
+                });
+            }
+            return result;
         };
     }
 })
