@@ -1,9 +1,9 @@
 version: 2
 jobs:
   build:
-    working_directory: /app
+    working_directory: /usr/src/app
     docker:
-      - image: python:3.6-stretch
+      - image: python:3-stretch
     steps:
       - checkout
       - setup_remote_docker
@@ -12,37 +12,37 @@ jobs:
           command: |
               # Install latest LTS node
               apt-get update
-              curl -sL https://deb.nodesource.com/setup_6.x | bash -
+              curl -sL https://deb.nodesource.com/setup_9.x | bash -
               apt-get install -y nodejs libgeos-dev # Required for shapely
               node --version
       - restore_cache:
           keys:
             - cached-directories
           paths:
-            - /app/client/node_modules
-            - /app/env
+            - /usr/src/app/client/node_modules
+            - /usr/src/app/env
       - run:
           name: Install requirements
           command: |
             # Install NPM packages and build client from gulpfile
-            cd /app/client
+            cd /usr/src/app/client
             npm install
             ./node_modules/.bin/gulp build
-            cd /app
+            cd /usr/src/app
             # Install Python dependencies
             pip install virtualenv
             virtualenv env
-            /app/env/bin/pip install --upgrade pip
-            /app/env/bin/pip install -r requirements.txt
+            /usr/src/app/env/bin/pip install --upgrade pip
+            /usr/src/app/env/bin/pip install -r requirements.txt
       - run:
           name: Run tests
           command: |
             # JS Unit Tests
-            cd /app/tests/client
+            cd /usr/src/app/tests/client
             ../../client/node_modules/.bin/karma start ./karma.conf.js \
               --single-run --browsers PhantomJS --reporters junit
             # Run Python tests
-            cd /app
+            cd /usr/src/app
             env/bin/nosetests ./tests/server --with-xunit \
               --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
               --with-coverage --cover-erase --cover-package=./server
@@ -50,12 +50,12 @@ jobs:
       - save_cache:
           key: cached-directories
           paths:
-            - /app/client/node_modules
-            - /app/env
+            - /usr/src/app/client/node_modules
+            - /usr/src/app/env
       - deploy:
           name: Deploy application
           command: |
             pip install newrelic
-            newrelic-admin generate-config $NEW_RELIC_LICENSE /app/newrelic.ini
-            chmod +x /app/devops/ci/circleci_deploy.sh
-            /app/devops/ci/circleci_deploy.sh
+            newrelic-admin generate-config $NEW_RELIC_LICENSE /usr/src/app/newrelic.ini
+            chmod +x /usr/src/app/devops/ci/circleci_deploy.sh
+            /usr/src/app/devops/ci/circleci_deploy.sh

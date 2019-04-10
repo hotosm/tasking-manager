@@ -211,6 +211,9 @@ class UserService:
         if admin_role == UserRole.PROJECT_MANAGER and requested_role == UserRole.ADMIN:
             raise UserServiceError(f'You must be an Admin to assign Admin role')
 
+        if admin_role == UserRole.PROJECT_MANAGER and requested_role == UserRole.PROJECT_MANAGER:
+            raise UserServiceError(f'You must be an Admin to assign Project Manager role')
+
         user = UserService.get_user_by_username(username)
         user.set_user_role(requested_role)
 
