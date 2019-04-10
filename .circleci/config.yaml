@@ -1,0 +1,120 @@
+version: 2.1
+commands:
+  install-cloudfriend:
+    description: "Install mapbox/cloudfriend"
+    steps:
+      - run: npm install -g @mapbox/cfn-config
+jobs:
+  build:
+    working_directory: /usr/src/app
+    docker:
+      - image: python:3-stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+              # Install latest LTS node
+              apt-get update
+              curl -sL https://deb.nodesource.com/setup_10.x | bash -
+              apt-get install -y nodejs libgeos-dev # Required for shapely
+              node --version
+      - restore_cache:
+          keys:
+            - cached-directories
+          paths:
+            - $CIRCLE_WORKING_DIRECTORY/client/node_modules
+            - $CIRCLE_WORKING_DIRECTORY/env
+      - run:
+          name: Install requirements
+          command: |
+            # Install NPM packages and build client from gulpfile
+            cd $CIRCLE_WORKING_DIRECTORY/client
+            npm install
+            ./node_modules/.bin/gulp build
+            cd $CIRCLE_WORKING_DIRECTORY
+            # Install Python dependencies
+            pip install virtualenv
+            virtualenv env
+            $CIRCLE_WORKING_DIRECTORY/env/bin/pip install --upgrade pip
+            $CIRCLE_WORKING_DIRECTORY/env/bin/pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: |
+            # JS Unit Tests
+            cd $CIRCLE_WORKING_DIRECTORY/tests/client
+            ../../client/node_modules/.bin/karma start ./karma.conf.js \
+              --single-run --browsers PhantomJS --reporters junit
+            # Run Python tests
+            cd $CIRCLE_WORKING_DIRECTORY
+            env/bin/nosetests ./tests/server --with-xunit \
+              --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
+              --with-coverage --cover-erase --cover-package=./server
+            env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
+      - save_cache:
+          key: cached-directories
+          paths:
+            - $CIRCLE_WORKING_DIRECTORY/client/node_modules
+            - $CIRCLE_WORKING_DIRECTORY/env
+  deploy-stage:
+    working_directory: /usr/src/app
+    docker:
+      - image: python:3-stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - install-cloudfriend
+      - run: 
+          name: Remove last snapshot and backup database
+          command: |
+            # Delete old snapshot
+            aws rds delete-db-snapshot tm3-staging-deployment-snapshot-latest
+            # create new aws rds snapshot
+            aws rds create-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-latest --db-instance-identifier tasking-manager-staging 
+      - run: 
+          name: Create config file
+          command: |
+            printf '{"GitSha":"$CIRCLE_SHA1", "Environment":"staging", "DBSnapshot":"$DB_SNAPSHOT_STAGING", "MasterUsername":"$MASTER_USERNAME_STAGING", "MasterPassword":"$MASTER_PASSWORD_STAGING", "OSMConsumerKey":"$OSM_CONSUMER_KEY_STAGING","OSMConsumerSecret":"$OSM_CONSUMER_SECRET_STAGING", "TaskingManagerSecret":"$TASKINGMANAGER_SECRET_STAGING", "TaskingManagerEnv":"$TASKINGMANAGER_ENV_STAGING", "TaskingManagerSMTPHost":"$TASKINGMANAGER_SMTP_HOST_STAGING", "TaskingManagerSMTPPassword":"$TASKINGMANAGER_SMTP_PASSWORD_STAGING", "TaskingManagerSMTPUser":"$TASKINGMANAGER_SMTP_USER_STAGING", "DatabaseSize":"$DATABASE_SIZE","ELBSubnets":"$ELB_SUBNETS_STAGING", "SSLCertificateIdentifier":"$SSL_CERTIFICATE_ID_STAGING","RDSUrl":"$RDS_URL_STAGING"}' > cfn-config-production.json
+      - deploy:
+          name: Deploy to Production
+          command: cfn-config update staging cfn-config-staging.json -f -c hot-cfn-config -t hot-cfn-config
+  deploy-prod:
+    working_directory: /usr/src/app
+    docker:
+      - image: python:3-stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - install-cloudfriend
+      - run: 
+          name: Remove last snapshot and backup database
+          command: |
+            # Delete old snapshot
+            aws rds delete-db-snapshot tm3-prod-deployment-snapshot-latest
+            # create new aws rds snapshot
+            aws rds create-db-snapshot --db-snapshot-identifier tm3-prod-deployment-snapshot-latest --db-instance-identifier tasking-manager-production 
+      - run: 
+          name: Create config file
+          command: |
+            printf '{"GitSha":"$CIRCLE_SHA1", "Environment":"production", "DBSnapshot":"$DB_SNAPSHOT", "MasterUsername":"$MASTER_USERNAME", "MasterPassword":"$MASTER_PASSWORD", "OSMConsumerKey":"$OSM_CONSUMER_KEY","OSMConsumerSecret":"$OSM_CONSUMER_SECRET", "TaskingManagerSecret":"$TASKINGMANAGER_SECRET", "TaskingManagerEnv":"$TASKINGMANAGER_ENV", "TaskingManagerSMTPHost":"$TASKINGMANAGER_SMTP_HOST", "TaskingManagerSMTPPassword":"$TASKINGMANAGER_SMTP_PASSWORD", "TaskingManagerSMTPUser":"$TASKINGMANAGER_SMTP_USER", "DatabaseSize":"$DATABASE_SIZE","ELBSubnets":"$ELB_SUBNETS", "SSLCertificateIdentifier":"$SSL_CERTIFICATE_ID","RDSUrl":"$RDS_URL"}' > cfn-config-production.json
+      - deploy:
+          name: Deploy to Production
+          command: cfn-config update production cfn-config-production.json -f -c hot-cfn-config -t hot-cfn-config
+workflows:
+  version: 2.1
+  build-deploy:
+    jobs:
+      - build
+      - deploy-stage:
+          requires:
+            - build
+          filters:
+            branches: 
+              only: develop
+      - deploy-prod:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
