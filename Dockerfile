@@ -14,6 +14,8 @@ WORKDIR /src
 
 WORKDIR /src
 
+WORKDIR /src
+
 # Add and install Python modules
 ADD requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
