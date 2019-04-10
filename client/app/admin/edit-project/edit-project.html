@@ -447,6 +447,36 @@
                                         </li>
                                     </ul>
                                 </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Editors for mapping' | translate }}</label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.id"/>{{ 'iD Editor' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.josm"/>{{ 'JOSM' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.potlatch2"/>{{ 'Potlatch 2' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
+                                    </label>
+                                </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Editors for validation' | translate }}</label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.id"/>{{ 'iD Editor' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.josm"/>{{ 'JOSM' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.potlatch2"/>{{ 'Potlatch 2' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
+                                    </label>
+                                </div>
                             </fieldset>
                         </div>
                             <!--/ settings -->
