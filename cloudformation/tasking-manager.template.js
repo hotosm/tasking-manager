@@ -91,7 +91,7 @@ const Resources = {
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
-        PauseTime: 'PT20M',
+        PauseTime: 'PT60M',
         WaitOnResourceSignals: true
       }
     }
