@@ -164,7 +164,10 @@ const Resources = {
         PolicyDocument: {
           Version: "2012-10-17",
           Statement:[{
-            Action: ['cloudformation:SignalResource', 'cloudformation:DescribeStackResource'],
+            Action: [
+              'cloudformation:SignalResource',
+              'cloudformation:DescribeStackResource'
+            ],
             Effect: 'Allow',
             Resource: ['arn:aws:cloudformation:*']
           }]
