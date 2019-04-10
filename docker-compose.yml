@@ -9,8 +9,6 @@ services:
     env_file: tasking-manager.env
     depends_on:
       - postgresql
-    expose:
-      - "5000"
     ports:
       - "5000:5000"
     links:
@@ -43,6 +41,7 @@ services:
       driver: none
     volumes:
       - pgdata:/var/lib/postgresql/data
+
 volumes:
   pgdata:
   stage:
