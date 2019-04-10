@@ -1,6 +1,7 @@
 {
   "capabilities": [
     "submit",
+    "land",
   ],
   "project_id": "hotosm-tasking-manager",
 }
