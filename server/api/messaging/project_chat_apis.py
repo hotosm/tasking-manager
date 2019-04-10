@@ -4,6 +4,7 @@ from schematics.exceptions import DataError
 from server.models.dtos.message_dto import ChatMessageDTO
 from server.models.postgis.utils import NotFound
 from server.services.messaging.chat_service import ChatService
+from server.services.users.user_service import UserService
 from server.services.users.authentication_service import token_auth, tm
 
 
@@ -49,11 +50,15 @@ class ProjectChatAPI(Resource):
             500:
                 description: Internal Server Error
         """
+
+        if UserService.is_user_blocked(tm.authenticated_user_id):
+            return 'User is on read only mode', 403
+
         try:
-            chat_dto = ChatMessageDTO(request.get_json())
-            chat_dto.user_id = tm.authenticated_user_id
-            chat_dto.project_id = project_id
-            chat_dto.validate()
+              chat_dto = ChatMessageDTO(request.get_json())
+              chat_dto.user_id = tm.authenticated_user_id
+              chat_dto.project_id = project_id
+              chat_dto.validate()
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
             return str(e), 400
