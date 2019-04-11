@@ -282,3 +282,112 @@ class MappedTasksByUser(Resource):
             error_msg = f'Task Lock API - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+
+
+class UserInvalidatedTasks(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self, username):
+        """
+        Get invalidated tasks either mapped by user or invalidated by user
+        ---
+        tags:
+            - validation
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: username
+              in: path
+              description: The users username
+              required: true
+              type: string
+            - in: query
+              name: asValidator
+              description: treats user as validator, rather than mapper, if true
+              type: string
+            - in: query
+              name: sortBy
+              description: field to sort by, defaults to action_date
+              type: string
+            - in: query
+              name: sortDirection
+              description: direction of sort, defaults to desc
+              type: string
+            - in: query
+              name: page
+              description: Page of results user requested
+              type: integer
+            - in: query
+              name: pageSize
+              description: Size of page, defaults to 10
+              type: integer
+            - in: query
+              name: project
+              description: Optional project filter
+              type: integer
+            - in: query
+              name: closed
+              description: Optional filter for open/closed invalidations
+              type: boolean
+        responses:
+            200:
+                description: Invalidated tasks user has invalidated
+            404:
+                description: No invalidated tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            sort_column = {
+                'updatedDate': 'updated_date',
+                'projectId': 'project_id'
+            }
+            if request.args.get('sortBy','updatedDate') in sort_column:
+                sort_column = sort_column[request.args.get('SortBy','updatedDate')]
+            else:
+                sort_column = sort_column['updatedDate']
+
+            # closed needs to be set to True, False, or None
+            closed = None
+            if request.args.get('closed') == 'true':
+                closed = True
+            elif request.args.get('closed') == 'false':
+                closed = False
+
+            # sort direction should only be desc or asc
+            if request.args.get('sortDirection') in ['asc','desc']:
+                sort_direction = request.args.get('sortDirection')
+            else:
+                sort_direction = 'desc'
+
+            invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
+                request.args.get('asValidator') == 'true',
+                username,
+                request.environ.get('HTTP_ACCEPT_LANGUAGE'),
+                closed,
+                request.args.get('project', None, type=int),
+                request.args.get('page', None, type=int),
+                request.args.get('pageSize', None, type=int),
+                sort_column,
+                sort_direction
+            )
+            return invalidated_tasks.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No invalidated tasks"}, 404
+        except Exception as e:
+            error_msg = f'Invalidated Tasks API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500

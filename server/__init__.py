@@ -30,13 +30,10 @@ def create_app(env=None):
     """
     app = Flask(__name__)
 
-    if env is None:
-        env = os.getenv('TM_ENV', 'Dev')  # default to Dev if config environment var not set
-
-    app.config.from_object(f'server.config.{env}Config')
+    app.config.from_object(f'server.config.EnvironmentConfig')
 
     initialise_logger(app)
-    app.logger.info(f'HOT Tasking Manager App Starting Up, Environment = {env}')
+    app.logger.info(f'Tasking Manager App Starting Up, Environment = {env}')
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -113,7 +110,7 @@ def init_flask_restful_routes(app):
     from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
         UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
-        MappedTasksByUser
+        MappedTasksByUser, UserInvalidatedTasks
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
@@ -174,6 +171,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UserUpdateAPI,                 '/api/v1/user/update-details')
     api.add_resource(UserSetExpertMode,             '/api/v1/user/set-expert-mode/<string:is_expert>')
     api.add_resource(UserMappedProjects,            '/api/v1/user/<string:username>/mapped-projects')
+    api.add_resource(UserInvalidatedTasks,          '/api/v1/user/<string:username>/invalidated-tasks')
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')

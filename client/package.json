@@ -60,6 +60,7 @@
     "react-tether": "^0.5.5",
     "run-sequence": "^1.2.2",
     "showdown": "^1.7.1",
-    "turf": "^3.0.14"
+    "turf": "^3.0.14",
+    "ng-table": "^3.0.1"
   }
 }

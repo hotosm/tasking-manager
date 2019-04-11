@@ -1,0 +1,48 @@
+# To use this file, run `docker-compose up`.
+version: '3'
+
+services:
+
+  # Main application
+  app:
+    build: devops/docker/tasking-manager
+    env_file: tasking-manager.env
+    depends_on:
+      - postgresql
+    ports:
+      - "5000:5000"
+    links:
+      - postgresql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/client/node_modules
+      - /usr/src/app/client/assets/styles/css
+    command: python manage.py runserver -h 0.0.0.0
+
+  # Migration service
+  migration:
+    build: devops/docker/tasking-manager
+    env_file: tasking-manager.env
+    depends_on:
+      - postgresql
+    links:
+      - postgresql
+    volumes:
+      - .:/usr/src/app
+    command: python manage.py db upgrade
+
+  # Database
+  postgresql:
+    image: mdillon/postgis:9.6
+    env_file: tasking-manager.env
+    expose:
+      - "5432"
+    logging:
+      driver: none
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+  stage:
+  downloads:
