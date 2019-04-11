@@ -33,7 +33,9 @@ The easiest way to run the Tasking Manager requires [Docker](https://docs.docker
 
 * One command to get everything together and start the Tasking Manager: `docker-compose up -d`
 * Visit with your browser `http://127.0.0.1:5000`
-
+* Incase the browser shows an Error 404, execute the following code after running the above docker-compose command:-
+  ' sudo docker exec -it tasking-manager_app_1 /bin/bash -c 'cd client && npm install && gulp build' '
+* Again visit `http://127.0.0.1:5000` with your browser.
 
 For stopping this command do the job: `docker-compose stop`
 And you can check the logs with `docker-compose logs -f`
