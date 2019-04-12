@@ -646,7 +646,10 @@
             vm.descriptionMissing = false;
             vm.shortDescriptionMissing = false;
             vm.instructionsMissing = false;
-            vm.instructionsMissing = false;
+            vm.mapperLevelMissing = false;
+            vm.organisationTagMissing = false;
+            vm.mappingTypeMissing = false;
+
             for (var i = 0; i < vm.project.projectInfoLocales.length; i++) {
                 if (vm.project.projectInfoLocales[i].locale === vm.project.defaultLocale) {
                     // check that the name, short description, description and instructions are populated for the default locale
@@ -663,10 +666,15 @@
                     if (typeof info.instructions == 'undefined' || info.instructions === ''){
                         vm.instructionsMissing = true;
                     }
+                    if (typeof vm.projectOrganisationTag == 'undefined' || vm.projectOrganisationTag.length === 0 ){
+                        vm.organisationTagMissing = true;
+                    }
+
                     break;
                 }
             }
-            var somethingMissing = vm.name || vm.descriptionMissing || vm.shortDescriptionMissing || vm.instructionsMissing;
+            vm.mappingTypeMissing = getMappingTypesArray().length === 0;
+            var somethingMissing = vm.name || vm.descriptionMissing || vm.shortDescriptionMissing || vm.instructionsMissing || vm.organisationTagMissing || vm.mappingTypeMissing;
             return somethingMissing;
         }
 
