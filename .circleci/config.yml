@@ -1,9 +1,11 @@
 version: 2.1
+orbs:
+  aws-s3: circleci/aws-s3@1.0.4
 commands:
   install-cloudfriend:
-    description: "Install mapbox/cloudfriend"
+    description: "Install mapbox dependencies"
     steps:
-      - run: npm install -g @mapbox/cfn-config
+      - run: npm install -g @mapbox/cfn-config @mapbox/cloudfriend
 jobs:
   build:
     working_directory: /usr/src/app
@@ -57,7 +59,7 @@ jobs:
           paths:
             - $CIRCLE_WORKING_DIRECTORY/client/node_modules
             - $CIRCLE_WORKING_DIRECTORY/env
-  deploy-stage:
+  deploy-staging:
     working_directory: /usr/src/app
     docker:
       - image: python:3-stretch
@@ -75,10 +77,14 @@ jobs:
       - run: 
           name: Create config file
           command: |
-            printf '{"GitSha":"$CIRCLE_SHA1", "Environment":"staging", "DBSnapshot":"$DB_SNAPSHOT_STAGING", "MasterUsername":"$MASTER_USERNAME_STAGING", "MasterPassword":"$MASTER_PASSWORD_STAGING", "OSMConsumerKey":"$OSM_CONSUMER_KEY_STAGING","OSMConsumerSecret":"$OSM_CONSUMER_SECRET_STAGING", "TaskingManagerSecret":"$TASKINGMANAGER_SECRET_STAGING", "TaskingManagerEnv":"$TASKINGMANAGER_ENV_STAGING", "TaskingManagerSMTPHost":"$TASKINGMANAGER_SMTP_HOST_STAGING", "TaskingManagerSMTPPassword":"$TASKINGMANAGER_SMTP_PASSWORD_STAGING", "TaskingManagerSMTPUser":"$TASKINGMANAGER_SMTP_USER_STAGING", "DatabaseSize":"$DATABASE_SIZE","ELBSubnets":"$ELB_SUBNETS_STAGING", "SSLCertificateIdentifier":"$SSL_CERTIFICATE_ID_STAGING","RDSUrl":"$RDS_URL_STAGING"}' > cfn-config-production.json
+            printf '{"GitSha":"$CIRCLE_SHA1", "Environment":"staging", "DBSnapshot":"$DB_SNAPSHOT_STAGING", "MasterUsername":"$MASTER_USERNAME_STAGING", "MasterPassword":"$MASTER_PASSWORD_STAGING", "OSMConsumerKey":"$OSM_CONSUMER_KEY_STAGING","OSMConsumerSecret":"$OSM_CONSUMER_SECRET_STAGING", "TaskingManagerSecret":"$TASKINGMANAGER_SECRET_STAGING", "TaskingManagerEnv":"$TASKINGMANAGER_ENV_STAGING", "TaskingManagerSMTPHost":"$TASKINGMANAGER_SMTP_HOST_STAGING", "TaskingManagerSMTPPassword":"$TASKINGMANAGER_SMTP_PASSWORD_STAGING", "TaskingManagerSMTPUser":"$TASKINGMANAGER_SMTP_USER_STAGING", "DatabaseSize":"$DATABASE_SIZE","ELBSubnets":"$ELB_SUBNETS_STAGING", "SSLCertificateIdentifier":"$SSL_CERTIFICATE_ID_STAGING","RDSUrl":"$RDS_URL_STAGING"}' > cfn-config-staging.json
+      - aws-s3/sync:
+          from: cfn-config-staging.json
+          to: 's3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json'
+          overwrite: true
       - deploy:
-          name: Deploy to Production
-          command: cfn-config update staging cfn-config-staging.json -f -c hot-cfn-config -t hot-cfn-config
+          name: Deploy to staging
+          command: cfn-config update staging tasking-manager.template.json -f -c hot-cfn-config -t hot-cfn-config
   deploy-prod:
     working_directory: /usr/src/app
     docker:
@@ -98,15 +104,19 @@ jobs:
           name: Create config file
           command: |
             printf '{"GitSha":"$CIRCLE_SHA1", "Environment":"production", "DBSnapshot":"$DB_SNAPSHOT", "MasterUsername":"$MASTER_USERNAME", "MasterPassword":"$MASTER_PASSWORD", "OSMConsumerKey":"$OSM_CONSUMER_KEY","OSMConsumerSecret":"$OSM_CONSUMER_SECRET", "TaskingManagerSecret":"$TASKINGMANAGER_SECRET", "TaskingManagerEnv":"$TASKINGMANAGER_ENV", "TaskingManagerSMTPHost":"$TASKINGMANAGER_SMTP_HOST", "TaskingManagerSMTPPassword":"$TASKINGMANAGER_SMTP_PASSWORD", "TaskingManagerSMTPUser":"$TASKINGMANAGER_SMTP_USER", "DatabaseSize":"$DATABASE_SIZE","ELBSubnets":"$ELB_SUBNETS", "SSLCertificateIdentifier":"$SSL_CERTIFICATE_ID","RDSUrl":"$RDS_URL"}' > cfn-config-production.json
+      - aws-s3/sync:
+          from: cfn-config-production.json
+          to: 's3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json'
+          overwrite: true
       - deploy:
           name: Deploy to Production
-          command: cfn-config update production cfn-config-production.json -f -c hot-cfn-config -t hot-cfn-config
+          command: cfn-config update production tasking-manager.template.json -f -c hot-cfn-config -t hot-cfn-config
 workflows:
   version: 2.1
   build-deploy:
     jobs:
       - build
-      - deploy-stage:
+      - deploy-staging:
           requires:
             - build
           filters:
