@@ -1,11 +1,20 @@
 version: 2.1
 orbs:
   aws-s3: circleci/aws-s3@1.0.4
+  aws-cli: circleci/aws-cli@0.1.13
 commands:
-  install-cloudfriend:
-    description: "Install mapbox dependencies"
+  install-deploy-deps:
+    description: \"Install dependencies\"
     steps:
-      - run: npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+      - run:
+          name: "Install Node and modules"
+          command: |
+            apt-get update
+            curl -sL https://deb.nodesource.com/setup_10.x | bash -
+            apt-get install -y nodejs libgeos-dev # Required for shapely
+            npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+      - aws-cli/install
+      - aws-cli/configure
 jobs:
   build:
     working_directory: /usr/src/app
@@ -14,14 +23,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install dependencies
-          command: |
-              # Install latest LTS node
-              apt-get update
-              curl -sL https://deb.nodesource.com/setup_10.x | bash -
-              apt-get install -y nodejs libgeos-dev # Required for shapely
-              node --version
+      - install-deploy-deps
       - restore_cache:
           keys:
             - cached-directories
@@ -46,12 +48,12 @@ jobs:
           command: |
             # JS Unit Tests
             cd $CIRCLE_WORKING_DIRECTORY/tests/client
-            ../../client/node_modules/.bin/karma start ./karma.conf.js \
+            $CIRCLE_WORKING_DIRECTORY/client/node_modules/.bin/karma start ./karma.conf.js \\
               --single-run --browsers PhantomJS --reporters junit
             # Run Python tests
             cd $CIRCLE_WORKING_DIRECTORY
-            env/bin/nosetests ./tests/server --with-xunit \
-              --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
+            env/bin/nosetests ./tests/server --with-xunit \\
+              --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \\
               --with-coverage --cover-erase --cover-package=./server
             env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
       - save_cache:
@@ -66,25 +68,33 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - install-cloudfriend
+      - install-deploy-deps
       - run: 
           name: Remove last snapshot and backup database
           command: |
-            # Delete old snapshot
-            aws rds delete-db-snapshot tm3-staging-deployment-snapshot-latest
+            # Copy old snapshot to temporary
+            if [ -z $(aws rds describe-db-snapshots --filters Name='db-instance-id',Values='tm3-staging-deployment-snapshot-latest' --output text)]
+            then 
+                echo "Snapshot does not exist, creating one now."
+            else
+                aws rds copy-db-snapshot --source-db-snapshot tm3-staging-deployment-snapshot-latest --target-db-snapshot tm3-staging-deployment-snapshot-temp
+            fi
             # create new aws rds snapshot
             aws rds create-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-latest --db-instance-identifier tasking-manager-staging 
       - run: 
           name: Create config file
           command: |
-            printf '{"GitSha":"$CIRCLE_SHA1", "Environment":"staging", "DBSnapshot":"$DB_SNAPSHOT_STAGING", "MasterUsername":"$MASTER_USERNAME_STAGING", "MasterPassword":"$MASTER_PASSWORD_STAGING", "OSMConsumerKey":"$OSM_CONSUMER_KEY_STAGING","OSMConsumerSecret":"$OSM_CONSUMER_SECRET_STAGING", "TaskingManagerSecret":"$TASKINGMANAGER_SECRET_STAGING", "TaskingManagerEnv":"$TASKINGMANAGER_ENV_STAGING", "TaskingManagerSMTPHost":"$TASKINGMANAGER_SMTP_HOST_STAGING", "TaskingManagerSMTPPassword":"$TASKINGMANAGER_SMTP_PASSWORD_STAGING", "TaskingManagerSMTPUser":"$TASKINGMANAGER_SMTP_USER_STAGING", "DatabaseSize":"$DATABASE_SIZE","ELBSubnets":"$ELB_SUBNETS_STAGING", "SSLCertificateIdentifier":"$SSL_CERTIFICATE_ID_STAGING","RDSUrl":"$RDS_URL_STAGING"}' > cfn-config-staging.json
-      - aws-s3/sync:
-          from: cfn-config-staging.json
+            printf '{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"staging\", \"DBSnapshot\":\"$DB_SNAPSHOT_STAGING\", \"MasterUsername\":\"$MASTER_USERNAME_STAGING\", \"MasterPassword\":\"$MASTER_PASSWORD_STAGING\", \"OSMConsumerKey\":\"$OSM_CONSUMER_KEY_STAGING\",\"OSMConsumerSecret\":\"$OSM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TASKINGMANAGER_SECRET_STAGING\", \"TaskingManagerEnv\":\"$TASKINGMANAGER_ENV_STAGING\", \"TaskingManagerSMTPHost\":\"$TASKINGMANAGER_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TASKINGMANAGER_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TASKINGMANAGER_SMTP_USER_STAGING\", \"DatabaseSize\":\"$DATABASE_SIZE\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\",\"RDSUrl\":\"$RDS_URL_STAGING\"}' > $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
+      - aws-s3/copy:
+          from: $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
           to: 's3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json'
-          overwrite: true
       - deploy:
           name: Deploy to staging
-          command: cfn-config update staging tasking-manager.template.json -f -c hot-cfn-config -t hot-cfn-config
+          command: cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.json -f -c hot-cfn-config -t hot-cfn-config
+      - run:
+          name: Cleanup
+          command:
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-temp
   deploy-prod:
     working_directory: /usr/src/app
     docker:
@@ -92,25 +102,39 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - install-cloudfriend
+      - install-deploy-deps
       - run: 
           name: Remove last snapshot and backup database
           command: |
-            # Delete old snapshot
-            aws rds delete-db-snapshot tm3-prod-deployment-snapshot-latest
+            # Copy old snapshot to temporary
+            if [ -z $(aws rds describe-db-snapshots --filters Name='db-instance-id',Values='tm3-production-deployment-snapshot-latest' --output text)]
+            then 
+                echo "Snapshot does not exist, creating one now."
+            else
+                aws rds copy-db-snapshot --source-db-snapshot tm3-production-deployment-snapshot-latest --target-db-snapshot tm3-production-deployment-snapshot-temp
+            fi
             # create new aws rds snapshot
-            aws rds create-db-snapshot --db-snapshot-identifier tm3-prod-deployment-snapshot-latest --db-instance-identifier tasking-manager-production 
+            aws rds create-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-latest --db-instance-identifier tasking-manager-production 
       - run: 
           name: Create config file
           command: |
-            printf '{"GitSha":"$CIRCLE_SHA1", "Environment":"production", "DBSnapshot":"$DB_SNAPSHOT", "MasterUsername":"$MASTER_USERNAME", "MasterPassword":"$MASTER_PASSWORD", "OSMConsumerKey":"$OSM_CONSUMER_KEY","OSMConsumerSecret":"$OSM_CONSUMER_SECRET", "TaskingManagerSecret":"$TASKINGMANAGER_SECRET", "TaskingManagerEnv":"$TASKINGMANAGER_ENV", "TaskingManagerSMTPHost":"$TASKINGMANAGER_SMTP_HOST", "TaskingManagerSMTPPassword":"$TASKINGMANAGER_SMTP_PASSWORD", "TaskingManagerSMTPUser":"$TASKINGMANAGER_SMTP_USER", "DatabaseSize":"$DATABASE_SIZE","ELBSubnets":"$ELB_SUBNETS", "SSLCertificateIdentifier":"$SSL_CERTIFICATE_ID","RDSUrl":"$RDS_URL"}' > cfn-config-production.json
-      - aws-s3/sync:
-          from: cfn-config-production.json
+            printf '{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"$DB_SNAPSHOT_STAGING\", \"MasterUsername\":\"$MASTER_USERNAME_STAGING\", \"MasterPassword\":\"$MASTER_PASSWORD_STAGING\", \"OSMConsumerKey\":\"$OSM_CONSUMER_KEY_STAGING\",\"OSMConsumerSecret\":\"$OSM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TASKINGMANAGER_SECRET_STAGING\", \"TaskingManagerEnv\":\"$TASKINGMANAGER_ENV_STAGING\", \"TaskingManagerSMTPHost\":\"$TASKINGMANAGER_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TASKINGMANAGER_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TASKINGMANAGER_SMTP_USER_STAGING\", \"DatabaseSize\":\"$DATABASE_SIZE\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\",\"RDSUrl\":\"$RDS_URL_STAGING\"}' > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
+      - aws-s3/copy:
+          from: $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
           to: 's3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json'
-          overwrite: true
       - deploy:
-          name: Deploy to Production
-          command: cfn-config update production tasking-manager.template.json -f -c hot-cfn-config -t hot-cfn-config
+          name: Deploy to production
+          command: cfn-config update production $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.json -f -c hot-cfn-config -t hot-cfn-config
+      - run:
+          name: Cleanup
+          command: |
+            if [ -z $(aws rds describe-db-snapshots --filters Name='db-instance-id',Values='tm3-production-deployment-snapshot-temp' --output text)]
+            then 
+                echo "Old snapshot does not exist, nothing to delete."
+            else
+                aws rds delete-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-temp
+            fi
+
 workflows:
   version: 2.1
   build-deploy:
@@ -121,7 +145,9 @@ workflows:
             - build
           filters:
             branches: 
-              only: develop
+              only: 
+                - develop
+                - cloudformation
       - deploy-prod:
           requires:
             - build
