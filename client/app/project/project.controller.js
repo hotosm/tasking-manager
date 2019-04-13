@@ -48,7 +48,6 @@
         //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
-        vm.isSelectedSplittable = true;
 
         //task data
         vm.selectedTaskData = null;
@@ -189,7 +188,6 @@
         vm.resetStatusFlags = function () {
             vm.isSelectedMappable = false;
             vm.isSelectedValidatable = false;
-            vm.isSelectedSplittable = true;
         };
 
         /**
@@ -1224,7 +1222,6 @@
                 vm.isSelectedMappable = true;
                 vm.lockedTaskData = data;
                 vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
-                vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
                 formatHistoryComments(vm.selectedTaskData.taskHistory);
             }, function (error) {
                 onLockError(projectId, error);
@@ -1296,16 +1293,6 @@
                 onLockError(projectId, error);
             });
         };
-
-        /**
-         * Is the the task splittable.  Older tasks don't have an x, y, zoom property needed for splitting
-         */
-        function isTaskSplittable(taskFeatures, taskId) {
-            var feature = taskService.getTaskFeatureById(taskFeatures, taskId);
-            var properties = feature.getProperties();
-            return properties.taskX && properties.taskY && properties.taskZoom;
-
-        }
 
         vm.josmBBoxFromViewport = function(zoom, lat, lon) {
           // We also need a window width and height to limit the size of the
