@@ -7,7 +7,6 @@ tasking-manager.env
 # Dev artifacts
 client/node_modules/
 client/assets/styles/css
-shippable/
 
 # Ignore generated config
 client/app/taskingmanager.config.js

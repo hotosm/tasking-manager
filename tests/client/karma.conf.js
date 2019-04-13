@@ -50,8 +50,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {},
-    
-    
+
+
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
@@ -61,10 +61,10 @@ module.exports = function(config) {
     // Junit Reporter can be used to output test info for CI system, see homepage for config
     // https://github.com/karma-runner/karma-junit-reporter
     junitReporter: {
-      outputDir: '../shippable/testresults',
+      outputDir: '../testresults',
       useBrowserName: true
     },
-    
+
 
     // web server port
     port: 9876,

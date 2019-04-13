@@ -57,7 +57,7 @@ class TestSplitService(unittest.TestCase):
         expected = geojson.loads(json.dumps(get_canned_json('split_task.json')))
 
         # act
-        result = SplitService._create_split_tasks(x, y, zoom)
+        result = SplitService._create_split_tasks(x, y, zoom, None)
 
         # assert
         self.assertEqual(str(expected), str(result))
@@ -66,7 +66,7 @@ class TestSplitService(unittest.TestCase):
         if self.skip_tests:
             return
         with self.assertRaises(SplitServiceError):
-            SplitService._create_split_tasks("foo", "bar", "dum")
+            SplitService._create_split_tasks("foo", "bar", "dum", None)
 
     @patch.object(Task, 'get_per_task_instructions')
     @patch.object(Project, 'tasks')

@@ -1,15 +1,20 @@
+from cachetools import TTLCache, cached
+from sqlalchemy import func
+from geoalchemy2.shape import to_shape
+from shapely.geometry import Polygon
+from shapely.ops import transform
+from functools import partial
+import pyproj
 import dateutil.parser
 import datetime
-
-from sqlalchemy import func
-from cachetools import TTLCache, cached
+import math
 from flask import current_app
 
-from server import db
 from server.models.dtos.stats_dto import (
     ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO,
     ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO
     )
+
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User, Task
@@ -224,6 +229,8 @@ class StatsService:
     def get_homepage_stats() -> HomePageStatsDTO:
         """ Get overall TM stats to give community a feel for progress that's being made """
         dto = HomePageStatsDTO()
+
+        dto.total_projects = Project.query.count()
         dto.mappers_online = Task.query.filter(
             Task.locked_by is not None
             ).distinct(Task.locked_by).count()
@@ -247,15 +254,79 @@ class StatsService:
 
         untagged_count = 0
 
+        # total_area = 0
+     
+       
+       
+       # dto.total_area = 0
+        
+        # total_area_sql = """select sum(ST_Area(geometry)) from public.projects as area"""
+
+        # total_area_result = db.engine.execute(total_area_sql)
+        # current_app.logger.debug(total_area_result)
+        # for rowproxy in total_area_result:
+            # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+            # for tup in rowproxy.items():
+                # total_area += tup[1]
+                # current_app.logger.debug(total_area)
+        # dto.total_area = total_area
+
+        tasks_mapped_area = 0
+        tasks_mapped_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 2"""
+        tasks_mapped_result = db.engine.execute(tasks_mapped_sql)
+        current_app.logger.debug(tasks_mapped_result)
+        for rowproxy in tasks_mapped_result:
+            for tup in rowproxy:
+                current_app.logger.debug(tup)
+                tasks_mapped_area += tup
+                current_app.logger.debug(tasks_mapped_area)
+        dto.total_mapped_area = tasks_mapped_area
+
+        tasks_validated_area = 0
+        tasks_validated_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 4"""
+        tasks_validated_result = db.engine.execute(tasks_validated_sql)
+        current_app.logger.debug(tasks_validated_result)
+        for rowproxy in tasks_validated_result:
+            for tup in rowproxy:
+                tasks_validated_area += tup
+                current_app.logger.debug(tasks_validated_area)
+        dto.total_validated_area = tasks_validated_area
+    
+        campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
+            .group_by(Project.campaign_tag).all()
+        no_campaign_count = 0
+        unique_campaigns = 0
+
+        for tup in campaign_count:
+            campaign_stats = CampaignStatsDTO(tup)
+            if campaign_stats.tag:
+                dto.campaigns.append(campaign_stats)
+                unique_campaigns += 1
+            else:
+                no_campaign_count += campaign_stats.projects_created
+        
+        if no_campaign_count:
+            no_campaign_proj = CampaignStatsDTO(('Untagged', no_campaign_count))
+            dto.campaigns.append(no_campaign_proj)
+        dto.total_campaigns = unique_campaigns
+
+
+        org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
+            .group_by(Project.organisation_tag).all()
+        no_org_count = 0
+        unique_orgs = 0 
+
         for tup in org_proj_count:
             org_stats = OrganizationStatsDTO(tup)
             if org_stats.tag:
                 dto.organizations.append(org_stats)
+                unique_orgs += 1
             else:
-                untagged_count += 1
+                no_org_count += org_stats.projects_created
 
-        if untagged_count:
-            untagged_proj = OrganizationStatsDTO(('Untagged', untagged_count))
-            dto.organizations.append(untagged_proj)
+        if no_org_count:
+            no_org_proj = OrganizationStatsDTO(('Untagged', no_org_count))
+            dto.organizations.append(no_org_proj)
+        dto.total_organizations = unique_orgs
 
         return dto
