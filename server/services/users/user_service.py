@@ -100,20 +100,57 @@ class UserService:
 
         actions = TaskHistory.query.filter(
             TaskHistory.user_id == user.id,
-            TaskHistory.action == 'LOCKED_FOR_MAPPING',
             TaskHistory.action_text != ''
         ).all()
 
+        tasks_mapped = TaskHistory.query.filter(
+            TaskHistory.user_id == user.id,
+            TaskHistory.action_text == 'MAPPED'
+        ).count()
+        tasks_validated = TaskHistory.query.filter(
+            TaskHistory.user_id == user.id,
+            TaskHistory.action_text == 'VALIDATED'
+        ).count()
+        projects_mapped = TaskHistory.query.filter(
+            TaskHistory.user_id == user.id,
+            TaskHistory.action == 'STATE_CHANGE'
+        ).distinct(TaskHistory.project_id).count()
+
         total_time = datetime.datetime.min
+        total_mapping_time = datetime.datetime.min
+        total_validation_time = datetime.datetime.min
+        
         for action in actions:
-            duration = dateutil.parser.parse(action.action_text)
-            total_time += datetime.timedelta(hours=duration.hour,
+            try:
+                if action.action == 'LOCKED_FOR_MAPPING':
+                    duration = dateutil.parser.parse(action.action_text)
+                    total_mapping_time += datetime.timedelta(hours=duration.hour,
                                              minutes=duration.minute,
                                              seconds=duration.second,
                                              microseconds=duration.microsecond)
+                    total_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)                                            
+                elif action.action == 'LOCKED_FOR_VALIDATION':
+                    duration = dateutil.parser.parse(action.action_text)
+                    total_validation_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)
+                    total_time +=  datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond) 
+            except:
+                pass
 
-        stats_dto.time_spent_mapping = total_time.time().isoformat()
-
+        stats_dto.total_time_spent = total_time.time().strftime('%H:%M:%S')
+        stats_dto.time_spent_mapping = total_mapping_time.time().strftime('%H:%M:%S')
+        stats_dto.time_spent_validating = total_validation_time.time().strftime('%H:%M:%S')
+        stats_dto.tasks_mapped = tasks_mapped
+        stats_dto.tasks_validated = tasks_validated
+        stats_dto.projects_mapped = projects_mapped
         return stats_dto
 
     @staticmethod

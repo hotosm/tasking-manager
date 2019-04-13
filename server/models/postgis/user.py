@@ -1,4 +1,6 @@
 import geojson
+import datetime
+import dateutil.parser
 from server import db
 from sqlalchemy import desc
 from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
@@ -7,7 +9,6 @@ from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
 from server.models.postgis.utils import NotFound, timestamp
-
 
 class User(db.Model):
     """ Describes the history associated with a task """
@@ -18,6 +19,7 @@ class User(db.Model):
     username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0, nullable=False)
     mapping_level = db.Column(db.Integer, default=1, nullable=False)
+    projects_mapped = db.Column(db.Integer, default=1, nullable=False)
     tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
     tasks_validated = db.Column(db.Integer, default=0, nullable=False)
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
@@ -245,6 +247,8 @@ class User(db.Model):
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
         user_dto.is_expert = self.is_expert or False
+        user_dto.date_registered = str(self.date_registered)
+        user_dto.projects_mapped = len(self.projects_mapped)
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
         user_dto.tasks_invalidated = self.tasks_invalidated
@@ -252,10 +256,50 @@ class User(db.Model):
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
         user_dto.validation_message = self.validation_message
+        
+        sql = """select action, action_text
+                      from task_history
+                     where user_id = {0}
+                       and action != 'STATE_CHANGE'
+                       and action != 'COMMENT'""".format(self.id)
 
+        results = db.engine.execute(sql)
+        total_time = datetime.datetime.min
+        total_mapping_time = datetime.datetime.min
+        total_validation_time = datetime.datetime.min
+
+        for row in results:
+            try:
+                if row[0] == 'LOCKED_FOR_MAPPING':
+                    duration = dateutil.parser.parse(row[1])
+                    total_mapping_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)
+                    total_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)                                            
+                elif row[0] == 'LOCKED_FOR_VALIDATION':
+                    duration = dateutil.parser.parse(row[1])
+                    total_validation_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)
+                    total_time += datetime.timedelta(hours=duration.hour,
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond)
+            except:
+                pass
+           
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
-
+        
+        user_dto.total_time_spent = total_time.time().strftime('%H:%M:%S')
+        user_dto.time_spent_mapping = total_mapping_time.time().strftime('%H:%M:%S')
+        user_dto.time_spent_validating = total_validation_time.time().strftime('%H:%M:%S')
+        
         return user_dto
