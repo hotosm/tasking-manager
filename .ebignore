@@ -7,5 +7,4 @@ bin/
 tests/
 client/
 logs/
-shippable/
 venv/
