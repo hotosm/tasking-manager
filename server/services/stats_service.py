@@ -10,9 +10,11 @@ import datetime
 import math
 from flask import current_app
 
+from server import db
 from server.models.dtos.stats_dto import (
     ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO,
-    ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO
+    ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO,
+    CampaignStatsDTO
     )
 
 from server.models.postgis.project import Project
@@ -124,7 +126,7 @@ class StatsService:
         """ Gets all the activity on a project """
 
         results = db.session.query(
-                TaskHistory.task_id, TaskHistory.action, TaskHistory.action_date,
+                TaskHistory.id, TaskHistory.task_id, TaskHistory.action, TaskHistory.action_date,
                 TaskHistory.action_text, User.username
             ).join(User).filter(
                 TaskHistory.project_id == project_id,
@@ -274,22 +276,17 @@ class StatsService:
         tasks_mapped_area = 0
         tasks_mapped_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 2"""
         tasks_mapped_result = db.engine.execute(tasks_mapped_sql)
-        current_app.logger.debug(tasks_mapped_result)
         for rowproxy in tasks_mapped_result:
             for tup in rowproxy:
-                current_app.logger.debug(tup)
                 tasks_mapped_area += tup
-                current_app.logger.debug(tasks_mapped_area)
         dto.total_mapped_area = tasks_mapped_area
 
         tasks_validated_area = 0
         tasks_validated_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 4"""
         tasks_validated_result = db.engine.execute(tasks_validated_sql)
-        current_app.logger.debug(tasks_validated_result)
         for rowproxy in tasks_validated_result:
             for tup in rowproxy:
                 tasks_validated_area += tup
-                current_app.logger.debug(tasks_validated_area)
         dto.total_validated_area = tasks_validated_area
     
         campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
