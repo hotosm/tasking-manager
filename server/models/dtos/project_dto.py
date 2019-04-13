@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
+from schematics.types import StringType, BaseType, FloatType, IntType, BooleanType, DateTimeType, FloatType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
@@ -196,16 +196,34 @@ class ProjectCommentsDTO(Model):
 class ProjectSummary(Model):
     """ Model used for PM dashboard """
     project_id = IntType(required=True, serialized_name='projectId')
+    area = FloatType(serialized_name='projectArea(in sq.km)')
     name = StringType()
+    author = StringType(serialized_name='createdBy')
+    created = DateTimeType()
+    due_date = DateTimeType()
+    last_updated = DateTimeType(serialized_name='lastUpdated')
+    priority = StringType(serialized_name='projectPriority')
     campaign_tag = StringType(serialized_name='campaignTag')
+    organisation_tag = StringType(serialized_name='organisationTag')
+    entities_to_map = StringType(serialized_name='entitiesToMap')
+    changeset_comment = StringType(serialized_name='changesetComment')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
-    created = DateTimeType()
-    last_updated = DateTimeType(serialized_name='lastUpdated')
+    percent_bad_imagery = IntType(serialized_name='percentBadImagery')
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
     mapper_level = StringType(serialized_name='mapperLevel')
-    organisation_tag = StringType(serialized_name='organisationTag')
+    mapper_level_enforced = BooleanType(serialized_name='mapperLevelEnforced')
+    validator_level_enforced = BooleanType(serialized_name='validatorLevelEnforced')
     short_description = StringType(serialized_name='shortDescription')
+    total_mappers = IntType(serialized_name='totalMappers')
+    total_tasks = IntType(serialized_name='totalTasks')
+    total_comments = IntType(serialized_name='totalComments')
+    total_mapping_time = IntType(serialized_name='totalMappingTime')
+    total_validation_time = IntType(serialized_name='totalValidationTime')
+    total_time_spent = StringType(serialized_name='totalTimeSpent')
+    average_mapping_time=StringType(serialized_name='averageMappingTime')
+    average_validation_time=StringType(serialized_name='averageValidationTime')
+    
     status = StringType()
 
 

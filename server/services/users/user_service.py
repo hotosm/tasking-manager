@@ -153,6 +153,7 @@ class UserService:
         stats_dto.projects_mapped = projects_mapped
         return stats_dto
 
+    
     @staticmethod
     def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
         """ Update user with info supplied by user, if they add or change their email address a verification mail 

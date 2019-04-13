@@ -9,6 +9,9 @@ class UserContribution(Model):
     username = StringType()
     mapped = IntType()
     validated = IntType()
+    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
+    time_spent_validating = IntType(serialized_name='timeSpentValidating')
+    total_time_spent = IntType(serialized_name='totalTimeSpent')
 
 
 class ProjectContributionsDTO(Model):
@@ -81,6 +84,7 @@ class HomePageStatsDTO(Model):
         self.campaigns = []
 
     mappers_online = IntType(serialized_name='mappersOnline')
+    total_area = IntType(serialized_name='totalArea')
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
     total_mappers = IntType(serialized_name='totalMappers')

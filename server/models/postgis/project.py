@@ -7,17 +7,26 @@ from flask import current_app
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
+from geoalchemy2.shape import to_shape
+from shapely.geometry import Polygon
+from shapely.ops import transform
+from functools import partial
+import pyproj
+import dateutil.parser
+import datetime
 
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
+from server.models.postgis.project_chat import ProjectChat
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode
 from server.models.postgis.tags import Tags
-from server.models.postgis.task import Task
+from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.user import User
-from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
+
+from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound, ST_Area, ST_Transform
 from server.services.grid.grid_service import GridService
 
 # Secondary table defining many-to-many join for private projects that only defined users can map on
@@ -289,23 +298,114 @@ class Project(db.Model):
         """ Create Project Summary model for postgis project object"""
         summary = ProjectSummary()
         summary.project_id = self.id
+        priority = self.priority
+        if priority == 0:
+            summary.priority = 'URGENT'
+        elif priority == 1:
+            summary.priority = 'HIGH'
+        elif priority == 2:
+            summary.priority = 'MEDIUM'
+        else:
+            summary.priority = 'LOW'
+        summary.author = User().get_by_id(self.author_id).username
+        polygon = to_shape(self.geometry)
+        polygon_aea = transform(
+                            partial(
+                            pyproj.transform,
+                            pyproj.Proj(init='EPSG:4326'),
+                            pyproj.Proj(
+                                proj='aea',
+                                lat1=polygon.bounds[1],
+                                lat2=polygon.bounds[3])),
+                            polygon)
+        area = polygon_aea.area/1000000
+        summary.area = area
         summary.campaign_tag = self.campaign_tag
+        summary.changeset_comment = self.changeset_comment
         summary.created = self.created
         summary.last_updated = self.last_updated
+        summary.due_date = self.due_date
         summary.mapper_level = MappingLevel(self.mapper_level).name
+        summary.mapper_level_enforced = self.enforce_mapper_level
+        summary.validator_level_enforced = self.enforce_validator_role
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
+        summary.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
+        unique_mappers = TaskHistory.query.filter(
+                TaskHistory.action == 'LOCKED_FOR_MAPPING',
+                TaskHistory.project_id == self.id
+            ).distinct(TaskHistory.user_id).count()
+        unique_validators = TaskHistory.query.filter(
+                TaskHistory.action == 'LOCKED_FOR_VALIDATION',
+                TaskHistory.project_id == self.id
+            ).distinct(TaskHistory.user_id).count()
+        current_app.logger.debug(unique_mappers)
+        current_app.logger.debug(unique_validators)
+        summary.total_tasks = self.total_tasks
+        summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
+        
+        summary.entities_to_map = self.entities_to_map
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
-
+        
         summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
         summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
-
+        summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
 
+        users_durations = TaskHistory.query.filter(
+                TaskHistory.action_text != '',
+                TaskHistory.project_id == self.id
+            ).all()
+        total_mapping_time = datetime.datetime.min
+        total_validation_time = datetime.datetime.min
+        total_time_spent = datetime.datetime.min
+        for user_duration in users_durations:
+            try:
+                duration = dateutil.parser.parse(user_duration.action_text)
+                total_time_spent += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+                if user_duration.action == 'LOCKED_FOR_MAPPING':
+                    total_mapping_time += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+                elif user_duration.action == 'LOCKED_FOR_VALIDATION':
+                    total_validation_time += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+            except ValueError:
+                current_app.logger.info('Invalid duration specified')
+            current_app.logger.debug(total_mapping_time)
+            current_app.logger.debug(total_validation_time)
+            total_mapping_seconds = int(datetime.timedelta(hours=total_mapping_time.hour,
+                                                    minutes=total_mapping_time.minute,
+                                                    seconds=total_mapping_time.second,
+                                                    microseconds=total_mapping_time.microsecond).total_seconds())
+            total_validation_seconds = int(datetime.timedelta(hours=total_validation_time.hour,
+                                                    minutes=total_validation_time.minute,
+                                                    seconds=total_validation_time.second,
+                                                    microseconds=total_validation_time.microsecond).total_seconds())                                       
+            current_app.logger.debug(total_mapping_seconds)
+            current_app.logger.debug(total_validation_seconds)
+            if unique_mappers:
+                average_mapping_time = total_mapping_seconds/unique_mappers
+                summary.average_mapping_time = str(datetime.timedelta(seconds=average_mapping_time))
+            if unique_validators:
+                average_validation_time = total_validation_seconds/unique_validators
+                summary.average_validation_time = str(datetime.timedelta(seconds=average_validation_time))
+            
+            summary.total_mapping_time = total_mapping_time.time().isoformat()
+            summary.total_validation_time = total_validation_time.time().isoformat()
+            summary.total_time_spent = total_time_spent.time().isoformat()
+
+            
         return summary
 
     def get_project_title(self, preferred_locale):
