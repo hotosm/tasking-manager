@@ -3,6 +3,7 @@ from cachetools import TTLCache, cached
 from server.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
 from server.models.postgis.project_chat import ProjectChat
 from server.services.messaging.message_service import MessageService
+from server.services.users.authentication_service import tm
 from server.services.users.user_service import UserService
 from server import db
 
