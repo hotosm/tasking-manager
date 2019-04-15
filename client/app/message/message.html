@@ -11,6 +11,10 @@
             <div class="section__body">
                 <div class="inner">
                     <a href="/inbox" class="button button--achromic">{{ 'Return to inbox' | translate }}</a>
+                    <button class="button"
+                        ng-click="messageCtrl.confirmDeleteMessage(messageCtrl.message.messageId)">
+                        {{ 'Delete' | translate }}
+                    </button>
                     <div class="inbox-message">
                         <h3 ng-bind-html="messageCtrl.message.subject"></h3>
                         <p>{{ 'From' | translate }}: <a ng-href="user/{{ messageCtrl.message.fromUsername }}">{{ messageCtrl.message.fromUsername }}</a></p>
@@ -24,3 +28,33 @@
         </div>
     </section>
 </div>
+
+<!-- delete message modal -->
+<section class="modal modal-tm" ng-show="messageCtrl.showDeleteMessageModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">{{ 'Delete message' | translate }}</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <p>{{ 'Are you sure you want to delete this message?' | translate }}</p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="messageCtrl.validateTasksSuccess">
+                <button class="button button--achromic" type="button"
+                    ng-click="messageCtrl.setShowDeleteMessageModal(false)">
+                    {{ 'Cancel' | translate }}
+                </button>
+                <button class="button button--base" type="button"
+                    ng-click="messageCtrl.deleteMessage(messageCtrl.message.messageId)">
+                    {{ 'Delete' | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>
+    <a class="modal__button-dismiss" title="{{ 'Dismiss' | translate }}" ng-click="messageCtrl.setShowDeleteMessageModal(false)">
+        {{ 'Dismiss' | translate }}
+    </a>
+</section>
+<!-- delete message modal -->

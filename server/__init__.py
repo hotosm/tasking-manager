@@ -162,7 +162,7 @@ def init_flask_restful_routes(app):
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
     api.add_resource(StatsUserAPI,                  '/api/v1/stats/user/<string:username>')
-    api.add_resource(HomePageStatsAPI,              '/api/v1/stats/home-page')
+    api.add_resource(HomePageStatsAPI,              '/api/v1/stats/summary')
     api.add_resource(CampaignsTagsAPI,              '/api/v1/tags/campaigns')
     api.add_resource(OrganisationTagsAPI,           '/api/v1/tags/organisations')
     api.add_resource(UserSearchAllAPI,              '/api/v1/user/search-all')
