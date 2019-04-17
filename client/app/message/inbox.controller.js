@@ -12,7 +12,7 @@
     function inboxController(NgTableParams, messageService, MessageType) {
         var vm = this;
         vm.messages = [];
-        vm.selectedIndividualMessages = new Map();
+        vm.selectedIndividualMessages = {};
         vm.allVisibleMessagesSelected = false;
         vm.showDeleteMessageModal = false;
         vm.showDeleteSelectedMessagesModal = false;
@@ -45,7 +45,7 @@
             ).then(function(data) {
                 // success
                 vm.inboxPagination = data.pagination;
-                vm.selectedIndividualMessages.clear();
+                vm.selectedIndividualMessages = {};
                 vm.allVisibleMessagesSelected = false;
                 vm.messages = data.userMessages;
                 if (vm.messages){
@@ -61,7 +61,7 @@
                     vm.errorRetrievingMessages = true;
                 }
                 vm.inboxPagination = null;
-                vm.selectedIndividualMessages.clear();
+                vm.selectedIndividualMessages = {};
                 vm.allVisibleMessagesSelected = false;
                 vm.messages = [];
                 params.total(0);
@@ -134,12 +134,12 @@
             }
             else {
               resultsPromise =
-                  messageService.deleteMultipleMessages(Array.from(vm.selectedIndividualMessages.keys()));
+                  messageService.deleteMultipleMessages(Object.keys(vm.selectedIndividualMessages));
             }
             resultsPromise.then(function (data) {
                 // success
                 vm.showDeleteSelectedMessagesModal = false;
-                vm.selectedIndividualMessages.clear();
+                vm.selectedIndividualMessages = {};
                 vm.allVisibleMessagesSelected = false;
                 vm.inboxTableSettings.reload();
             }, function () {
@@ -159,17 +159,17 @@
           if (vm.allVisibleMessagesSelected) {
             vm.allVisibleMessagesSelected = false;
             vm.messages.forEach(function(message) {
-                vm.selectedIndividualMessages.set(message.messageId, true);
+                vm.selectedIndividualMessages[message.messageId] = true;
             });
-            vm.selectedIndividualMessages.delete(messageId);
+            delete vm.selectedIndividualMessages[messageId];
           }
           else {
             // Simply toggle message off or on depending on its current state
-            if (vm.selectedIndividualMessages.has(messageId)) {
-              vm.selectedIndividualMessages.delete(messageId);
+            if (vm.selectedIndividualMessages[messageId]) {
+                delete vm.selectedIndividualMessages[messageId];
             }
             else {
-              vm.selectedIndividualMessages.set(messageId, true);
+                vm.selectedIndividualMessages[messageId] = true;
             }
           }
         };
@@ -180,14 +180,14 @@
          */
         vm.toggleAllVisibleMessagesSelected = function() {
           vm.allVisibleMessagesSelected = !vm.allVisibleMessagesSelected;
-          vm.selectedIndividualMessages.clear();
+          vm.selectedIndividualMessages = {};
         };
 
         /**
          * Determine if at least one message is currently selected
          */
         vm.isAnyMessageSelected = function() {
-            return vm.allVisibleMessagesSelected || vm.selectedIndividualMessages.size > 0
+            return vm.allVisibleMessagesSelected || Object.keys(vm.selectedIndividualMessages).length > 0;
         };
 
         /**

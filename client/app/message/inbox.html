@@ -22,7 +22,7 @@
                             <tr ng-repeat="message in $data" ng-class="!message.read ? 'tr-darker' : ''">
                                 <td header="'headerCheckbox.html'">
                                     <input type="checkbox"
-                                           ng-checked="inboxCtrl.allVisibleMessagesSelected || inboxCtrl.selectedIndividualMessages.has(message.messageId)"
+                                           ng-checked="inboxCtrl.allVisibleMessagesSelected || inboxCtrl.selectedIndividualMessages[message.messageId]"
                                            ng-click="inboxCtrl.toggleIndividualMessageSelection(message.messageId)" />
                                 </td>
                                 <td title="'Type' | translate" filter="{messageType: 'select'}" filter-data="inboxCtrl.messageTypeLabels">
