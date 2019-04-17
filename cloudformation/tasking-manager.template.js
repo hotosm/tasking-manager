@@ -80,9 +80,9 @@ const Resources = {
     Properties: {
       AutoScalingGroupName: cf.stackName,
       Cooldown: 300,
-      MinSize: 1,
-      DesiredCapacity: 1,
-      MaxSize: 5,
+      MinSize: 3,
+      DesiredCapacity: 3,
+      MaxSize: 12,
       HealthCheckGracePeriod: 300,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
@@ -130,7 +130,7 @@ const Resources = {
           'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz && pip2 install aws-cfn-bootstrap-latest.tar.gz',
           cf.join('', [cf.sub('export TM_DB="postgresql://${MasterUsername}:${MasterPassword}@'), cf.if('UseASnapshot', cf.getAtt('TaskingManagerRDS', 'Endpoint.Address'), cf.ref('RDSUrl')) , '/tm3"']),
           cf.sub('export TM_CONSUMER_KEY=${OSMConsumerKey} && export TM_CONSUMER_SECRET=${OSMConsumerSecret} && export TM_ENV=${TaskingManagerEnv} && export TM_SECRET=${TaskingManagerSecret} && ./venv/bin/python3.6 manage.py db upgrade && cd client/ && npm install && gulp build && cd ../ && echo "------------------------------------------------------------"'),
-          'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 4 --threads 3 --timeout 179 manage:application &',
+          'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application &',
           cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
         ]),
         KeyName: 'mbtiles'
