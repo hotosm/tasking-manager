@@ -2,11 +2,13 @@
 version: '3'
 
 services:
-
   # Main application
   app:
-    build: devops/docker/tasking-manager
+    image: hotosm/tasking-manager
+    container_name: app
     env_file: tasking-manager.env
+    environment:
+      - POSTGRES_ENDPOINT=postgresql
     depends_on:
       - postgresql
     ports:
@@ -14,35 +16,30 @@ services:
     links:
       - postgresql
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/client/node_modules
-      - /usr/src/app/client/assets/styles/css
-    command: python manage.py runserver -h 0.0.0.0
+      - node_modules:/usr/src/app/client/node_modules
 
   # Migration service
   migration:
-    build: devops/docker/tasking-manager
+    image: hotosm/tasking-manager
     env_file: tasking-manager.env
+    restart: on-failure
+    environment:
+      - POSTGRES_ENDPOINT=postgresql
     depends_on:
       - postgresql
     links:
       - postgresql
-    volumes:
-      - .:/usr/src/app
     command: python manage.py db upgrade
 
   # Database
   postgresql:
     image: mdillon/postgis:9.6
+    container_name: postgresql
     env_file: tasking-manager.env
+    # logging:
+    #   driver: none
     expose:
       - "5432"
-    logging:
-      driver: none
-    volumes:
-      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
-  stage:
-  downloads:
+  node_modules:
