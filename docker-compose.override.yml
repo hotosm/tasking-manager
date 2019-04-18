@@ -1,0 +1,18 @@
+# To use this file, run `docker-compose up`.
+version: '3'
+
+services:
+
+  # Main application
+  app:
+    build: ./devops/docker/tasking-manager
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3000:3000"
+
+  # Migration service
+  migration:
+    build: ./devops/docker/tasking-manager
+    volumes:
+      - .:/usr/src/app
