@@ -167,6 +167,12 @@
                                     </li>
                                 </ul>
                                 <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
+                                    <div ng-show="!profileCtrl.userDetails.emailAddress && !profileCtrl.editDetails"
+                                         class="important-message">
+                                      <span class="important-message__icon fa fa-exclamation-circle"></span>
+                                      {{ "Please provide an email address to receive notifications about your mapping" | translate }}
+                                    </div>
+
                                     <button class="button button--achromic" type="button"
                                             ng-click="profileCtrl.editDetails = !profileCtrl.editDetails"
                                             ng-show="!profileCtrl.editDetails">

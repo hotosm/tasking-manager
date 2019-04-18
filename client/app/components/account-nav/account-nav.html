@@ -6,6 +6,9 @@
     <div class="drop drop--down drop--align-left drop--open" ng-click="accountNavCtrl.toggleMenu($event)">
         <div>
             <span>{{ accountNavCtrl.account.username }}</span>
+            <span ng-show="!accountNavCtrl.account.emailAddress">
+              <span class="missing-email-indicator fa fa-exclamation"></span>
+            </span>
             <span class="badge" ng-show="accountNavCtrl.userMessages.newMessages">
                 {{ accountNavCtrl.userMessages.unread }}
             </span>
@@ -16,6 +19,9 @@
                 <li>
                     <a title="{{ 'Your profile' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToProfile()">
                         {{ 'Your profile' | translate }}
+                        <span ng-show="!accountNavCtrl.account.emailAddress">
+                          <span class="missing-email-indicator fa fa-exclamation"></span>
+                        </span>
                     </a>
                 </li>
                 <li>
