@@ -454,6 +454,7 @@ class TaskHistory(db.Model):
             ],
         )
 
+    @staticmethod
     def get_last_mapped_action(project_id: int, task_id: int):
         """Gets the most recent mapped action, if any, in the task history"""
         return (
