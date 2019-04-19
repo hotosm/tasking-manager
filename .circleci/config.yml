@@ -20,12 +20,12 @@ jobs:
         command: |
           chown -R circleci:circleci $CIRCLE_WORKING_DIRECTORY
           chmod -R 755 $CIRCLE_WORKING_DIRECTORY
-    - restore_cache:
-        keys:
-        - cached-directories
-        paths:
-        - $CIRCLE_WORKING_DIRECTORY/client/node_modules
-        - $CIRCLE_WORKING_DIRECTORY/env
+    # - restore_cache:
+    #     keys:
+    #     - cached-directories
+    #     paths:
+    #     - $CIRCLE_WORKING_DIRECTORY/client/node_modules
+    #     - $CIRCLE_WORKING_DIRECTORY/env
     - run:
         name: Install requirements
         command: |
@@ -64,11 +64,11 @@ jobs:
           env/bin/coverage xml -o $CIRCLE_WORKING_DIRECTORY/tests/server/results/coverage.xml
     - store_test_results:
         path: $CIRCLE_WORKING_DIRECTORY/tests/server/results
-    - save_cache:
-        key: cached-directories
-        paths:
-        - $CIRCLE_WORKING_DIRECTORY/client/node_modules
-        - $CIRCLE_WORKING_DIRECTORY/env
+    # - save_cache:
+    #     key: cached-directories
+    #     paths:
+    #     - $CIRCLE_WORKING_DIRECTORY/client/node_modules
+    #     - $CIRCLE_WORKING_DIRECTORY/env
   deploy-staging:
     working_directory: /home/circleci/app
     docker:
