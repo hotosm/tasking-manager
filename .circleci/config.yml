@@ -22,7 +22,7 @@ jobs:
           chmod -R 755 $CIRCLE_WORKING_DIRECTORY
     - restore_cache:
         keys:
-        - cached-directories
+        - cached-dependencies
         paths:
         - client/node_modules
         - env
@@ -69,7 +69,7 @@ jobs:
     - store_artifacts:
           path: tests/server/results
     - save_cache:
-        key: cached-directories
+        key: cached-dependencies
         paths:
         - client/node_modules
         - env
