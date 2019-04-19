@@ -1,9 +1,9 @@
 version: 2
 jobs:
   build:
-    working_directory: /usr/src/app
+    working_directory: /home/circleci/app
     docker:
-    - image: python:3-stretch
+    - image: circleci/python:3-stretch-browsers
     steps:
     - checkout
     - setup_remote_docker
@@ -14,7 +14,7 @@ jobs:
           curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
           sudo apt-get install -y nodejs libgeos-dev # Required for shapely
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
-          pip3 install awscli --upgrade
+          sudo pip3 install awscli --upgrade
     - restore_cache:
         keys:
         - cached-directories
@@ -39,12 +39,12 @@ jobs:
         command: |
           # JS Unit Tests
           cd $CIRCLE_WORKING_DIRECTORY/tests/client
-          $CIRCLE_WORKING_DIRECTORY/client/node_modules/.bin/karma start ./karma.conf.js \\
+          $CIRCLE_WORKING_DIRECTORY/client/node_modules/.bin/karma start ./karma.conf.js \
             --single-run --browsers PhantomJS --reporters junit
           # Run Python tests
           cd $CIRCLE_WORKING_DIRECTORY
-          env/bin/nosetests ./tests/server --with-xunit \\
-            --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \\
+          sudo env/bin/nosetests ./tests/server --with-xunit \
+            --xunit-file $CIRCLE_TEST_REPORTS/unitresults.xml \
             --with-coverage --cover-erase --cover-package=./server
           env/bin/coverage xml -o $CIRCLE_TEST_REPORTS/coverage.xml
     - save_cache:
