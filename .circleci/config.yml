@@ -51,7 +51,7 @@ jobs:
             JUNIT_REPORT_PATH: $CIRCLE_WORKING_DIRECTORY/tests/client/junit/
             JUNIT_REPORT_NAME: test-results.xml
     - store_test_results:
-        path: $CIRCLE_WORKING_DIRECTORY/tests/client/junit/
+        path: tests/client/junit/
     - run:
         name: Run Python Tests
         command: |
@@ -63,12 +63,12 @@ jobs:
             --with-coverage --cover-erase --cover-package=./server
           env/bin/coverage xml -o $CIRCLE_WORKING_DIRECTORY/tests/server/results/coverage.xml
     - store_test_results:
-        path: $CIRCLE_WORKING_DIRECTORY/tests/server/results
-    # - save_cache:
-    #     key: cached-directories
-    #     paths:
-    #     - $CIRCLE_WORKING_DIRECTORY/client/node_modules
-    #     - $CIRCLE_WORKING_DIRECTORY/env
+        path: tests/server/results
+    - save_cache:
+        key: cached-directories
+        paths:
+        - client/node_modules
+        - env
   deploy-staging:
     working_directory: /home/circleci/app
     docker:
