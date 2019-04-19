@@ -7,10 +7,11 @@ from dotenv import load_dotenv
 from server import create_app, init_counters
 from server.services.users.authentication_service import AuthenticationService
 from server.services.users.user_service import UserService
+from server.services.messaging.message_service import MessageService
 
 import os
 import warnings
- 
+
 # Load configuration from file
 load_dotenv(os.path.join(os.path.dirname(__file__), 'tasking-manager.env'))
 
@@ -53,6 +54,13 @@ def refresh_levels():
     print('Started updating mapper levels...')
     users_updated = UserService.refresh_mapper_level()
     print(f'Updated {users_updated} user mapper levels')
+
+
+@manager.command
+def send_weekly_manager_email():
+    print('Sending weekly email contribution updates to managers ...')
+    messages_sent = MessageService.send_weekly_managers_email()
+    print(f'Sent {messages_sent} messages')
 
 
 if __name__ == '__main__':

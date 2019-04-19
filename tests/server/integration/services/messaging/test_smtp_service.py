@@ -12,7 +12,6 @@ class TestStatsService(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         env = os.getenv('CI', 'false')
-
         # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
         if env == 'true':
             cls.skip_tests = True
@@ -25,31 +24,32 @@ class TestStatsService(unittest.TestCase):
     def tearDown(self):
         self.ctx.pop()
 
+    @unittest.skipIf(not os.getenv('TM_SMTP_HOST'), 'TM_SMTP_HOST not set')
     def test_send_verification_mail(self):
         if self.skip_tests:
-            return
-
-        if os.getenv('TM_SMTP_HOST') is None:
-            return  # If SMTP not setup there's no value attempting the integration tests
+            self.skipTest('CI build')
 
         self.assertTrue(SMTPService.send_verification_email('hot-test@mailinator.com', 'mrtest'))
 
+    @unittest.skipIf(not os.getenv('TM_SMTP_HOST'), 'TM_SMTP_HOST not set')
+    def test_send_templated_email(self):
+        if self.skip_tests:
+            self.skipTest('CI build')
+
+        self.assertTrue(SMTPService.send_templated_email('hot-test@mailinator.com', 'Test send templated email', 'weekly_email_managers_en', {}))
+
+    @unittest.skipIf(not os.getenv('TM_SMTP_HOST'), 'TM_SMTP_HOST not set')
     def test_send_alert(self):
         if self.skip_tests:
-            return
-
-        if os.getenv('TM_SMTP_HOST') is None:
-            return  # If SMTP not setup there's no value attempting the integration tests
+            self.skipTest('CI build')
 
         self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',
                                                      'Iain Hunter'))
 
+    @unittest.skipIf(not os.getenv('TM_SMTP_HOST'), 'TM_SMTP_HOST not set')
     def test_send_alert_message_limits(self):
         if self.skip_tests:
-            return
-
-        if os.getenv('TM_SMTP_HOST') is None:
-            return  # If SMTP not setup there's no value attempting the integration tests
+            self.skipTest('CI build')
 
         for x in range(0, 50):
             self.assertTrue(SMTPService.send_email_alert('hot-test@mailinator.com',

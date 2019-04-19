@@ -7,14 +7,14 @@ class EnvironmentConfig:
     """ Most settings can be defined through environment variables. """
 
     # Load configuration from file
-    load_dotenv(os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'tasking-manager.env')))
+    load_dotenv(os.path.join(os.path.dirname(__file__), os.path.pardir, 'tasking-manager.env'))
 
     # The base url the application is reachable
     APP_BASE_URL = os.getenv('TM_APP_BASE_URL', 'http://127.0.0.1:5000')
-    
+
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv('TM_DEFAULT_CHANGESET_COMMENT', '#tm-project')
-    
+
     # The address to use as the sender on auto generated emails
     EMAIL_FROM_ADDRESS = os.getenv('TM_EMAIL_FROM_ADDRESS', None)
 
@@ -37,7 +37,7 @@ class EnvironmentConfig:
                                             f'@{POSTGRES_ENDPOINT}:' + \
                                                 f'{POSTGRES_PORT}' + \
                                                     f'/{POSTGRES_DB}'
-   
+
     # Logging settings
     LOG_LEVEL = os.getenv('TM_LOG_LEVEL', logging.DEBUG)
     LOG_DIR = os.getenv('TM_LOG_DIR', 'logs')
@@ -45,7 +45,7 @@ class EnvironmentConfig:
     # Mapper Level values represent number of OSM changesets
     MAPPER_LEVEL_INTERMEDIATE = os.getenv('TM_MAPPER_LEVEL_INTERMEDIATE', 250)
     MAPPER_LEVEL_ADVANCED = os.getenv('TM_MAPPER_LEVEL_ADVANCED', 500)
-    
+
     # Time to wait until task auto-unlock (e.g. '2h' or '7d' or '30m' or '1h30m')
     TASK_AUTOUNLOCK_AFTER = os.getenv('TM_TASK_AUTOUNLOCK_AFTER', '2h')
 

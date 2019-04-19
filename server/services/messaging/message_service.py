@@ -1,5 +1,6 @@
 import re
 import time
+import datetime
 
 from cachetools import TTLCache, cached
 from typing import List
@@ -10,7 +11,8 @@ from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.message import Message, MessageType, NotFound
 from server.models.postgis.project_info import ProjectInfo
-from server.models.postgis.task import TaskStatus
+from server.models.postgis.project import Project, ProjectStatus
+from server.models.postgis.task import TaskStatus, TaskHistory
 from server.services.messaging.smtp_service import SMTPService
 from server.services.messaging.template_service import get_template, get_profile_url
 from server.services.project_service import ProjectService
@@ -165,6 +167,72 @@ class MessageService:
         """ Resends the email validation email to the logged in user """
         user = UserService.get_user_by_id(user_id)
         SMTPService.send_verification_email(user.email_address, user.username)
+
+
+    @staticmethod
+    def send_weekly_managers_email():
+        """ Sends a weekly project activity summary for all active projects """
+        projects = Project.query.filter_by(status=ProjectStatus.PUBLISHED.value).all()
+        messages_sent = 0
+        one_week_ago =  datetime.datetime.now() - datetime.timedelta(days=7)
+        for project in projects:
+            project_info = project.project_info.first()
+            subject = f'Weekly summary for {project_info.name}'
+            sent = MessageService._send_managers_project_email(project, subject, one_week_ago)
+            if sent:
+                messages_sent += 1
+        return messages_sent
+
+    @staticmethod
+    def _send_managers_project_email(project: Project, subject: str, min_date: datetime.datetime, max_date=datetime.datetime.now()):
+        """ Sends a weekly project activity summary. """
+        project_info = project.project_info.first()
+        task_histories_query = TaskHistory.query.filter_by(project_id=project.id).filter(TaskHistory.action_date.between(min_date, max_date))
+
+        if db.session.query(task_histories_query.exists()).scalar() and project.author.email_address:
+            message = ''
+            num_contributions = 0
+            validations = 0
+            invalidations = 0 
+            mapped = 0
+            for task_history in task_histories_query.all():
+                message += f'{task_history.actioned_by.username} {task_history.action_text} on {task_history.action_date} \n'
+                num_contributions += 1
+
+                if task_history.action_text == TaskStatus.VALIDATED:
+                    validations += 1 
+                    
+                if task_history.action_text == TaskStatus.MAPPED:
+                    mapped += 1 
+
+                invalidation_history = task_history.invalidation_history.first()
+                if invalidation_history:
+                    invalidations += 1
+
+            mapped_percent = (mapped * 100) / num_contributions
+            mapped_percent = f'{mapped_percent}%'
+            validation_percentage = (validations * 100) / num_contributions
+            #we substract invalidation percentage, this might be negative
+            validation_percentage -= (invalidations * 100) / num_contributions
+            validation_percentage = f'{validation_percentage}%'
+
+            context = {
+                'USERNAME': project.author.username,
+                'PROJECT_NAME': project_info.name,
+                'CONTRIBUTION_LIST': message,
+                'NUM_CONTRIBUTIONS': str(num_contributions),
+                'MAPPED_TASKS':  str(mapped),
+                'MAPPED_TASKS_PERCENTAGE':  mapped_percent,
+                'VALIDATED_TASKS':  str(validations),
+                'INVALIDATED_TASKS':  str(invalidations),
+                'VALIDATION_PERCENTAGE':  validation_percentage,
+            }
+
+            SMTPService.send_templated_email(project.author.email_address, subject, 'weekly_email_managers_en', context)
+            return True
+        else:
+            return False
+
 
     @staticmethod
     def _parse_message_for_username(message: str) -> List[str]:

@@ -56,6 +56,20 @@ class SMTPService:
         return True
 
     @staticmethod
+    def send_templated_email(to_address: str, subject: str, template_name: str, template_context: dict):
+        """ Sends a email to an address built from a template with a dictionary as a context """
+        html_template = get_template(f'{template_name}.html')
+        text_template = get_template(f'{template_name}.txt')
+
+        for key, value in template_context.items():
+            text_template = text_template.replace(f'[{key}]', value)
+            html_template = html_template.replace(f'[{key}]', value)
+
+        SMTPService._send_mesage(to_address, subject, html_template, text_template)
+        return True
+
+
+    @staticmethod
     def _send_mesage(to_address: str, subject: str, html_message: str, text_message: str):
         """ Helper sends SMTP message """
         from_address = current_app.config['EMAIL_FROM_ADDRESS']
