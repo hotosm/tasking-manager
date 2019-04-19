@@ -20,12 +20,12 @@ jobs:
         command: |
           chown -R circleci:circleci $CIRCLE_WORKING_DIRECTORY
           chmod -R 755 $CIRCLE_WORKING_DIRECTORY
-    # - restore_cache:
-    #     keys:
-    #     - cached-directories
-    #     paths:
-    #     - $CIRCLE_WORKING_DIRECTORY/client/node_modules
-    #     - $CIRCLE_WORKING_DIRECTORY/env
+    - restore_cache:
+        keys:
+        - cached-directories
+        paths:
+        - client/node_modules
+        - env
     - run:
         name: Install requirements
         command: |
@@ -51,7 +51,9 @@ jobs:
             JUNIT_REPORT_PATH: $CIRCLE_WORKING_DIRECTORY/tests/client/junit/
             JUNIT_REPORT_NAME: test-results.xml
     - store_test_results:
-        path: tests/client/junit/
+        path: tests/client/junit
+    - store_artifacts:
+          path: tests/client/junit
     - run:
         name: Run Python Tests
         command: |
@@ -64,6 +66,8 @@ jobs:
           env/bin/coverage xml -o $CIRCLE_WORKING_DIRECTORY/tests/server/results/coverage.xml
     - store_test_results:
         path: tests/server/results
+    - store_artifacts:
+          path: tests/server/results
     - save_cache:
         key: cached-directories
         paths:
