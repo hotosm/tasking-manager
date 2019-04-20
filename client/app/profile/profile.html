@@ -119,15 +119,27 @@
                                         </span>
                                     </li>
                                     <li>
-                                        <label class="form__label"
-                                               ng-show="profileCtrl.userDetails.gender || profileCtrl.editDetails">Gender:</label>
-                                        <span ng-hide="profileCtrl.editDetails">
-                                            {{ profileCtrl.userDetails.gender }}
-                                        </span>
-                                        <input ng-show="profileCtrl.editDetails" type="text" size="30"
-                                               class="form__control form__control__inline"
-                                               placeholder="Gender (Female, Male, or Prefer not to say"
-                                               ng-model="profileCtrl.userDetails.gender"/>
+                                        <label class="form_label"
+                                               ng-show="profileCtrl.userDetails.gender || profileCtrl.editDetails">Gender:</label><!--<p>HOT envisions a world where everyone can contribute to OpenStreetMap, and 						OpenStreetMap genderbalance more closely matches that of our world in general. Help us measure our progress toward this goal by providing your gender.</p>-->
+                                        <span ng-hide="profileCtrl.editDetails">{{profileCtrl.userDetails.gender}}</span>
+                                        <div ng-show="profileCtrl.editDetails">
+                                            <input ng-show="profileCtrl.editDetails"  type="radio" 
+                                                   class="form__control form__control__inline"
+                                                   ng-model="profileCtrl.userDetails.gender"  value="Female"/>Female<br>
+                                            <input ng-show="profileCtrl.editDetails" type="radio" 
+                                                   class="form__control form__control__inline"                           
+                                                   ng-model="profileCtrl.userDetails.gender"  value="Male">Male<br>
+                                            <input ng-show="profileCtrl.editDetails" type="radio" 
+                                                   class="form__control form__control__inline"
+                                                   ng-model="profileCtrl.userDetails.gender"  value="Self-describe:"/>Prefer to self-describe:<br>
+                                            <div ng-switch="profileCtrl.userDetails.gender">
+                                                <input ng-switch-when="Self-describe:"  type="text" size="30"
+                                                    class="form__control form__control__inline"/>
+                                            </div>
+                                            <input ng-show="profileCtrl.editDetails" type="radio" 
+                                                   class="form__control form__control__inline" 
+                                                   ng-model="profileCtrl.userDetails.gender"  value="Prefer not to say"/>Prefer not to say<br> 
+                                       </div>
                                     </li>
                                     <li>
                                         <label class="form__label"
