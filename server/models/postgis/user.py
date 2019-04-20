@@ -25,6 +25,7 @@ class User(db.Model):
     email_address = db.Column(db.String)
     is_email_verified = db.Column(db.Boolean, default=False)
     is_expert = db.Column(db.Boolean, default=False)
+    gender = db.Column(db.String)
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
@@ -59,6 +60,7 @@ class User(db.Model):
     def update(self, user_dto: UserDTO):
         """ Update the user details """
         self.email_address = user_dto.email_address.lower() if user_dto.email_address else None
+        self.gender = user_dto.gender.lower() if user_dto.gender else None
         self.twitter_id = user_dto.twitter_id.lower() if user_dto.twitter_id else None
         self.facebook_id = user_dto.facebook_id.lower() if user_dto.facebook_id else None
         self.linkedin_id = user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
@@ -248,6 +250,7 @@ class User(db.Model):
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
         user_dto.tasks_invalidated = self.tasks_invalidated
+        user_dto.gender = self.gender
         user_dto.twitter_id = self.twitter_id
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
