@@ -64,7 +64,7 @@ def upgrade():
             match = message_all_re.search(message.message)
             if match:
                 project_id = match.group(1)
-                message_type = MessageType.DIRECT.value
+                message_type = MessageType.BROADCAST.value
 
         # Update message with assigned classification
         if message_type is not None or project_id is not None:

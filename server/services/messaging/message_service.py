@@ -196,14 +196,16 @@ class MessageService:
     @staticmethod
     def get_all_messages(user_id: int, locale: str, page: int, page_size=10, sort_by=None, sort_direction=None, message_type=None, from_username=None, project=None, task_id=None):
         """ Get all messages for user """
-        sort_by = sort_by or "date"
-        sort_direction = sort_direction or "desc"
+        sort_column = Message.__table__.columns.get(sort_by)
+        if sort_column is None:
+            sort_column = Message.date
+        sort_column = sort_column.asc() if sort_direction.lower() == "asc" else sort_column.desc()
         query = Message.query
 
         if project is not None:
             query = db.session.query(Message, ProjectInfo) \
                               .filter(Message.project_id == ProjectInfo.project_id) \
-                              .filter(ProjectInfo.locale == locale) \
+                              .filter(ProjectInfo.locale.in_([locale, 'en'])) \
                               .filter(ProjectInfo.name.ilike('%' + project.lower() + '%'))
 
         if task_id is not None:
@@ -215,7 +217,7 @@ class MessageService:
         if from_username is not None:
             query = query.join(Message.from_user).filter(User.username.ilike(from_username + '%'))
 
-        results = query.filter(Message.to_user_id == user_id).order_by(sort_by + " " + sort_direction).paginate(page, page_size, True)
+        results = query.filter(Message.to_user_id == user_id).order_by(sort_column).paginate(page, page_size, True)
         if results.total == 0:
             raise NotFound()
 
