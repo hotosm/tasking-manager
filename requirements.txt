@@ -34,7 +34,6 @@ oauthlib==2.0.2
 psycopg2==2.7.3.2
 pycodestyle==2.5.0
 pyflakes==2.1.1
-pkg-resources==0.0.0
 python-dateutil==2.6.0
 python-dotenv==0.10.1
 python-editor==1.0.3
