@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.2 (Debian 11.2-2)
--- Dumped by pg_dump version 11.2 (Debian 11.2-2)
+-- Dumped from database version 11.2
+-- Dumped by pg_dump version 11.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,44 +16,42 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: topology; Type: SCHEMA; Schema: -; Owner: postgres
+-- Name: topology; Type: SCHEMA; Schema: -; Owner: -
 --
 
 CREATE SCHEMA topology;
 
 
-ALTER SCHEMA topology OWNER TO postgres;
-
 --
--- Name: SCHEMA topology; Type: COMMENT; Schema: -; Owner: postgres
+-- Name: SCHEMA topology; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON SCHEMA topology IS 'PostGIS Topology schema';
 
 
 --
--- Name: postgis; Type: EXTENSION; Schema: -; Owner: 
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
 
 
 --
--- Name: postgis_topology; Type: EXTENSION; Schema: -; Owner: 
+-- Name: postgis_topology; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS postgis_topology WITH SCHEMA topology;
 
 
 --
--- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION postgis_topology IS 'PostGIS topology spatial types and functions';
@@ -64,7 +62,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: alembic_version; Type: TABLE; Schema: public; Owner: tm
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.alembic_version (
@@ -72,10 +70,8 @@ CREATE TABLE public.alembic_version (
 );
 
 
-ALTER TABLE public.alembic_version OWNER TO tm;
-
 --
--- Name: licenses; Type: TABLE; Schema: public; Owner: tm
+-- Name: licenses; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.licenses (
@@ -86,10 +82,8 @@ CREATE TABLE public.licenses (
 );
 
 
-ALTER TABLE public.licenses OWNER TO tm;
-
 --
--- Name: licenses_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: licenses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.licenses_id_seq
@@ -101,17 +95,15 @@ CREATE SEQUENCE public.licenses_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.licenses_id_seq OWNER TO tm;
-
 --
--- Name: licenses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: licenses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.licenses_id_seq OWNED BY public.licenses.id;
 
 
 --
--- Name: messages; Type: TABLE; Schema: public; Owner: tm
+-- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.messages (
@@ -128,10 +120,8 @@ CREATE TABLE public.messages (
 );
 
 
-ALTER TABLE public.messages OWNER TO tm;
-
 --
--- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.messages_id_seq
@@ -143,17 +133,15 @@ CREATE SEQUENCE public.messages_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.messages_id_seq OWNER TO tm;
-
 --
--- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 
 --
--- Name: priority_areas; Type: TABLE; Schema: public; Owner: tm
+-- Name: priority_areas; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.priority_areas (
@@ -162,10 +150,8 @@ CREATE TABLE public.priority_areas (
 );
 
 
-ALTER TABLE public.priority_areas OWNER TO tm;
-
 --
--- Name: priority_areas_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: priority_areas_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.priority_areas_id_seq
@@ -177,17 +163,15 @@ CREATE SEQUENCE public.priority_areas_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.priority_areas_id_seq OWNER TO tm;
-
 --
--- Name: priority_areas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: priority_areas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.priority_areas_id_seq OWNED BY public.priority_areas.id;
 
 
 --
--- Name: project_allowed_users; Type: TABLE; Schema: public; Owner: tm
+-- Name: project_allowed_users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.project_allowed_users (
@@ -196,10 +180,8 @@ CREATE TABLE public.project_allowed_users (
 );
 
 
-ALTER TABLE public.project_allowed_users OWNER TO tm;
-
 --
--- Name: project_chat; Type: TABLE; Schema: public; Owner: tm
+-- Name: project_chat; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.project_chat (
@@ -211,10 +193,8 @@ CREATE TABLE public.project_chat (
 );
 
 
-ALTER TABLE public.project_chat OWNER TO tm;
-
 --
--- Name: project_chat_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: project_chat_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.project_chat_id_seq
@@ -225,17 +205,15 @@ CREATE SEQUENCE public.project_chat_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.project_chat_id_seq OWNER TO tm;
-
 --
--- Name: project_chat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: project_chat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.project_chat_id_seq OWNED BY public.project_chat.id;
 
 
 --
--- Name: project_info; Type: TABLE; Schema: public; Owner: tm
+-- Name: project_info; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.project_info (
@@ -251,10 +229,8 @@ CREATE TABLE public.project_info (
 );
 
 
-ALTER TABLE public.project_info OWNER TO tm;
-
 --
--- Name: project_priority_areas; Type: TABLE; Schema: public; Owner: tm
+-- Name: project_priority_areas; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.project_priority_areas (
@@ -263,10 +239,8 @@ CREATE TABLE public.project_priority_areas (
 );
 
 
-ALTER TABLE public.project_priority_areas OWNER TO tm;
-
 --
--- Name: projects; Type: TABLE; Schema: public; Owner: tm
+-- Name: projects; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.projects (
@@ -300,10 +274,8 @@ CREATE TABLE public.projects (
 );
 
 
-ALTER TABLE public.projects OWNER TO tm;
-
 --
--- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.projects_id_seq
@@ -315,17 +287,15 @@ CREATE SEQUENCE public.projects_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.projects_id_seq OWNER TO tm;
-
 --
--- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.projects_id_seq OWNED BY public.projects.id;
 
 
 --
--- Name: tags; Type: TABLE; Schema: public; Owner: tm
+-- Name: tags; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.tags (
@@ -335,10 +305,8 @@ CREATE TABLE public.tags (
 );
 
 
-ALTER TABLE public.tags OWNER TO tm;
-
 --
--- Name: tags_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.tags_id_seq
@@ -350,17 +318,15 @@ CREATE SEQUENCE public.tags_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.tags_id_seq OWNER TO tm;
-
 --
--- Name: tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.tags_id_seq OWNED BY public.tags.id;
 
 
 --
--- Name: task_history; Type: TABLE; Schema: public; Owner: tm
+-- Name: task_history; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.task_history (
@@ -374,10 +340,8 @@ CREATE TABLE public.task_history (
 );
 
 
-ALTER TABLE public.task_history OWNER TO tm;
-
 --
--- Name: task_history_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: task_history_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.task_history_id_seq
@@ -389,17 +353,15 @@ CREATE SEQUENCE public.task_history_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.task_history_id_seq OWNER TO tm;
-
 --
--- Name: task_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: task_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.task_history_id_seq OWNED BY public.task_history.id;
 
 
 --
--- Name: task_invalidation_history; Type: TABLE; Schema: public; Owner: tm
+-- Name: task_invalidation_history; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.task_invalidation_history (
@@ -418,10 +380,8 @@ CREATE TABLE public.task_invalidation_history (
 );
 
 
-ALTER TABLE public.task_invalidation_history OWNER TO tm;
-
 --
--- Name: task_invalidation_history_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: task_invalidation_history_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.task_invalidation_history_id_seq
@@ -433,17 +393,15 @@ CREATE SEQUENCE public.task_invalidation_history_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.task_invalidation_history_id_seq OWNER TO tm;
-
 --
--- Name: task_invalidation_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: task_invalidation_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.task_invalidation_history_id_seq OWNED BY public.task_invalidation_history.id;
 
 
 --
--- Name: tasks; Type: TABLE; Schema: public; Owner: tm
+-- Name: tasks; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.tasks (
@@ -462,10 +420,8 @@ CREATE TABLE public.tasks (
 );
 
 
-ALTER TABLE public.tasks OWNER TO tm;
-
 --
--- Name: users; Type: TABLE; Schema: public; Owner: tm
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users (
@@ -489,10 +445,8 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO tm;
-
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: tm
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.users_id_seq
@@ -503,17 +457,15 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq OWNER TO tm;
-
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tm
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: users_licenses; Type: TABLE; Schema: public; Owner: tm
+-- Name: users_licenses; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users_licenses (
@@ -522,73 +474,71 @@ CREATE TABLE public.users_licenses (
 );
 
 
-ALTER TABLE public.users_licenses OWNER TO tm;
-
 --
--- Name: licenses id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: licenses id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.licenses ALTER COLUMN id SET DEFAULT nextval('public.licenses_id_seq'::regclass);
 
 
 --
--- Name: messages id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: messages id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
 
 
 --
--- Name: priority_areas id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: priority_areas id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.priority_areas ALTER COLUMN id SET DEFAULT nextval('public.priority_areas_id_seq'::regclass);
 
 
 --
--- Name: project_chat id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: project_chat id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_chat ALTER COLUMN id SET DEFAULT nextval('public.project_chat_id_seq'::regclass);
 
 
 --
--- Name: projects id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: projects id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.projects ALTER COLUMN id SET DEFAULT nextval('public.projects_id_seq'::regclass);
 
 
 --
--- Name: tags id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tags ALTER COLUMN id SET DEFAULT nextval('public.tags_id_seq'::regclass);
 
 
 --
--- Name: task_history id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: task_history id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_history ALTER COLUMN id SET DEFAULT nextval('public.task_history_id_seq'::regclass);
 
 
 --
--- Name: task_invalidation_history id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: task_invalidation_history id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_invalidation_history ALTER COLUMN id SET DEFAULT nextval('public.task_invalidation_history_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: tm
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
--- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
@@ -597,7 +547,7 @@ COPY public.alembic_version (version_num) FROM stdin;
 
 
 --
--- Data for Name: licenses; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: licenses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.licenses (id, name, description, plain_text) FROM stdin;
@@ -605,7 +555,7 @@ COPY public.licenses (id, name, description, plain_text) FROM stdin;
 
 
 --
--- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.messages (id, message, subject, from_user_id, to_user_id, date, read, message_type, project_id, task_id) FROM stdin;
@@ -614,7 +564,7 @@ COPY public.messages (id, message, subject, from_user_id, to_user_id, date, read
 
 
 --
--- Data for Name: priority_areas; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: priority_areas; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.priority_areas (id, geometry) FROM stdin;
@@ -622,7 +572,7 @@ COPY public.priority_areas (id, geometry) FROM stdin;
 
 
 --
--- Data for Name: project_allowed_users; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: project_allowed_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.project_allowed_users (project_id, user_id) FROM stdin;
@@ -630,7 +580,7 @@ COPY public.project_allowed_users (project_id, user_id) FROM stdin;
 
 
 --
--- Data for Name: project_chat; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: project_chat; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.project_chat (id, project_id, user_id, time_stamp, message) FROM stdin;
@@ -638,7 +588,7 @@ COPY public.project_chat (id, project_id, user_id, time_stamp, message) FROM std
 
 
 --
--- Data for Name: project_info; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: project_info; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.project_info (project_id, locale, name, short_description, description, instructions, project_id_str, text_searchable, per_task_instructions) FROM stdin;
@@ -649,7 +599,7 @@ COPY public.project_info (project_id, locale, name, short_description, descripti
 
 
 --
--- Data for Name: project_priority_areas; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: project_priority_areas; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.project_priority_areas (project_id, priority_area_id) FROM stdin;
@@ -657,7 +607,7 @@ COPY public.project_priority_areas (project_id, priority_area_id) FROM stdin;
 
 
 --
--- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.projects (id, status, created, priority, default_locale, author_id, mapper_level, enforce_mapper_level, enforce_validator_role, private, entities_to_map, changeset_comment, due_date, imagery, josm_preset, last_updated, mapping_types, organisation_tag, campaign_tag, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery, license_id, centroid, geometry, task_creation_mode) FROM stdin;
@@ -668,7 +618,7 @@ COPY public.projects (id, status, created, priority, default_locale, author_id, 
 
 
 --
--- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
@@ -676,7 +626,7 @@ COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM
 
 
 --
--- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.tags (id, organisations, campaigns) FROM stdin;
@@ -684,7 +634,7 @@ COPY public.tags (id, organisations, campaigns) FROM stdin;
 
 
 --
--- Data for Name: task_history; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: task_history; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.task_history (id, project_id, task_id, action, action_text, action_date, user_id) FROM stdin;
@@ -777,7 +727,7 @@ COPY public.task_history (id, project_id, task_id, action, action_text, action_d
 
 
 --
--- Data for Name: task_invalidation_history; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: task_invalidation_history; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.task_invalidation_history (id, project_id, task_id, is_closed, mapper_id, mapped_date, invalidator_id, invalidated_date, invalidation_history_id, validator_id, validated_date, updated_date) FROM stdin;
@@ -785,7 +735,7 @@ COPY public.task_invalidation_history (id, project_id, task_id, is_closed, mappe
 
 
 --
--- Data for Name: tasks; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: tasks; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.tasks (id, project_id, x, y, zoom, geometry, task_status, locked_by, mapped_by, validated_by, is_square, extra_properties) FROM stdin;
@@ -981,7 +931,7 @@ COPY public.tasks (id, project_id, x, y, zoom, geometry, task_status, locked_by,
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.users (id, username, role, mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, projects_mapped, email_address, facebook_id, is_email_verified, linkedin_id, twitter_id, date_registered, last_validation_date, validation_message, is_expert) FROM stdin;
@@ -992,7 +942,7 @@ COPY public.users (id, username, role, mapping_level, tasks_mapped, tasks_valida
 
 
 --
--- Data for Name: users_licenses; Type: TABLE DATA; Schema: public; Owner: tm
+-- Data for Name: users_licenses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.users_licenses ("user", license) FROM stdin;
@@ -1000,7 +950,7 @@ COPY public.users_licenses ("user", license) FROM stdin;
 
 
 --
--- Data for Name: topology; Type: TABLE DATA; Schema: topology; Owner: postgres
+-- Data for Name: topology; Type: TABLE DATA; Schema: topology; Owner: -
 --
 
 COPY topology.topology (id, name, srid, "precision", hasz) FROM stdin;
@@ -1008,7 +958,7 @@ COPY topology.topology (id, name, srid, "precision", hasz) FROM stdin;
 
 
 --
--- Data for Name: layer; Type: TABLE DATA; Schema: topology; Owner: postgres
+-- Data for Name: layer; Type: TABLE DATA; Schema: topology; Owner: -
 --
 
 COPY topology.layer (topology_id, layer_id, schema_name, table_name, feature_column, feature_type, level, child_id) FROM stdin;
@@ -1016,70 +966,70 @@ COPY topology.layer (topology_id, layer_id, schema_name, table_name, feature_col
 
 
 --
--- Name: licenses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: licenses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.licenses_id_seq', 1, false);
 
 
 --
--- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.messages_id_seq', 2, true);
 
 
 --
--- Name: priority_areas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: priority_areas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.priority_areas_id_seq', 1, false);
 
 
 --
--- Name: project_chat_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: project_chat_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.project_chat_id_seq', 1, false);
 
 
 --
--- Name: projects_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: projects_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.projects_id_seq', 3, true);
 
 
 --
--- Name: tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.tags_id_seq', 1, false);
 
 
 --
--- Name: task_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: task_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.task_history_id_seq', 123, true);
 
 
 --
--- Name: task_invalidation_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: task_invalidation_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.task_invalidation_history_id_seq', 1, false);
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tm
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.users_id_seq', 1, false);
 
 
 --
--- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alembic_version
@@ -1087,7 +1037,7 @@ ALTER TABLE ONLY public.alembic_version
 
 
 --
--- Name: licenses licenses_name_key; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: licenses licenses_name_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.licenses
@@ -1095,7 +1045,7 @@ ALTER TABLE ONLY public.licenses
 
 
 --
--- Name: licenses licenses_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: licenses licenses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.licenses
@@ -1103,7 +1053,7 @@ ALTER TABLE ONLY public.licenses
 
 
 --
--- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.messages
@@ -1111,7 +1061,7 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: priority_areas priority_areas_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: priority_areas priority_areas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.priority_areas
@@ -1119,7 +1069,7 @@ ALTER TABLE ONLY public.priority_areas
 
 
 --
--- Name: project_chat project_chat_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_chat project_chat_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_chat
@@ -1127,7 +1077,7 @@ ALTER TABLE ONLY public.project_chat
 
 
 --
--- Name: project_info project_info_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_info project_info_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_info
@@ -1135,7 +1085,7 @@ ALTER TABLE ONLY public.project_info
 
 
 --
--- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.projects
@@ -1143,7 +1093,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- Name: tags tags_campaigns_key; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: tags tags_campaigns_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tags
@@ -1151,7 +1101,7 @@ ALTER TABLE ONLY public.tags
 
 
 --
--- Name: tags tags_organisations_key; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: tags tags_organisations_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tags
@@ -1159,7 +1109,7 @@ ALTER TABLE ONLY public.tags
 
 
 --
--- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tags
@@ -1167,7 +1117,7 @@ ALTER TABLE ONLY public.tags
 
 
 --
--- Name: task_history task_history_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_history task_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_history
@@ -1175,7 +1125,7 @@ ALTER TABLE ONLY public.task_history
 
 
 --
--- Name: task_invalidation_history task_invalidation_history_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_invalidation_history task_invalidation_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_invalidation_history
@@ -1183,7 +1133,7 @@ ALTER TABLE ONLY public.task_invalidation_history
 
 
 --
--- Name: tasks tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: tasks tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tasks
@@ -1191,7 +1141,7 @@ ALTER TABLE ONLY public.tasks
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -1199,7 +1149,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: tm
+-- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -1207,133 +1157,133 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: idx_geometry; Type: INDEX; Schema: public; Owner: tm
+-- Name: idx_geometry; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_geometry ON public.projects USING gist (geometry);
 
 
 --
--- Name: idx_project_info composite; Type: INDEX; Schema: public; Owner: tm
+-- Name: idx_project_info composite; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX "idx_project_info composite" ON public.project_info USING btree (locale, project_id);
 
 
 --
--- Name: idx_task_history_composite; Type: INDEX; Schema: public; Owner: tm
+-- Name: idx_task_history_composite; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_task_history_composite ON public.task_history USING btree (task_id, project_id);
 
 
 --
--- Name: idx_task_validation_history_composite; Type: INDEX; Schema: public; Owner: tm
+-- Name: idx_task_validation_history_composite; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_task_validation_history_composite ON public.task_invalidation_history USING btree (task_id, project_id);
 
 
 --
--- Name: idx_task_validation_mapper_status_composite; Type: INDEX; Schema: public; Owner: tm
+-- Name: idx_task_validation_mapper_status_composite; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_task_validation_mapper_status_composite ON public.task_invalidation_history USING btree (invalidator_id, is_closed);
 
 
 --
--- Name: idx_username_lower; Type: INDEX; Schema: public; Owner: tm
+-- Name: idx_username_lower; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_username_lower ON public.users USING btree (lower((username)::text));
 
 
 --
--- Name: ix_messages_message_type; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_messages_message_type; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_messages_message_type ON public.messages USING btree (message_type);
 
 
 --
--- Name: ix_messages_project_id; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_messages_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_messages_project_id ON public.messages USING btree (project_id);
 
 
 --
--- Name: ix_messages_task_id; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_messages_task_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_messages_task_id ON public.messages USING btree (task_id);
 
 
 --
--- Name: ix_messages_to_user_id; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_messages_to_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_messages_to_user_id ON public.messages USING btree (to_user_id);
 
 
 --
--- Name: ix_project_chat_project_id; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_project_chat_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_project_chat_project_id ON public.project_chat USING btree (project_id);
 
 
 --
--- Name: ix_projects_campaign_tag; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_projects_campaign_tag; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_projects_campaign_tag ON public.projects USING btree (campaign_tag);
 
 
 --
--- Name: ix_projects_mapper_level; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_projects_mapper_level; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_projects_mapper_level ON public.projects USING btree (mapper_level);
 
 
 --
--- Name: ix_projects_mapping_types; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_projects_mapping_types; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_projects_mapping_types ON public.projects USING btree (mapping_types);
 
 
 --
--- Name: ix_projects_organisation_tag; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_projects_organisation_tag; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_projects_organisation_tag ON public.projects USING btree (organisation_tag);
 
 
 --
--- Name: ix_task_history_project_id; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_task_history_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_task_history_project_id ON public.task_history USING btree (project_id);
 
 
 --
--- Name: ix_tasks_project_id; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_tasks_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_tasks_project_id ON public.tasks USING btree (project_id);
 
 
 --
--- Name: ix_users_id; Type: INDEX; Schema: public; Owner: tm
+-- Name: ix_users_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_users_id ON public.users USING btree (id);
 
 
 --
--- Name: task_invalidation_history fk_invalidation_history; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_invalidation_history fk_invalidation_history; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_invalidation_history
@@ -1341,7 +1291,7 @@ ALTER TABLE ONLY public.task_invalidation_history
 
 
 --
--- Name: task_invalidation_history fk_invalidators; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_invalidation_history fk_invalidators; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_invalidation_history
@@ -1349,7 +1299,7 @@ ALTER TABLE ONLY public.task_invalidation_history
 
 
 --
--- Name: projects fk_licenses; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: projects fk_licenses; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.projects
@@ -1357,7 +1307,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- Name: task_invalidation_history fk_mappers; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_invalidation_history fk_mappers; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_invalidation_history
@@ -1365,7 +1315,7 @@ ALTER TABLE ONLY public.task_invalidation_history
 
 
 --
--- Name: messages fk_message_projects; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: messages fk_message_projects; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.messages
@@ -1373,7 +1323,7 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: task_history fk_tasks; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_history fk_tasks; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_history
@@ -1381,7 +1331,7 @@ ALTER TABLE ONLY public.task_history
 
 
 --
--- Name: task_invalidation_history fk_tasks; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_invalidation_history fk_tasks; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_invalidation_history
@@ -1389,7 +1339,7 @@ ALTER TABLE ONLY public.task_invalidation_history
 
 
 --
--- Name: projects fk_users; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: projects fk_users; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.projects
@@ -1397,7 +1347,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- Name: task_history fk_users; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_history fk_users; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_history
@@ -1405,7 +1355,7 @@ ALTER TABLE ONLY public.task_history
 
 
 --
--- Name: tasks fk_users_locked; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: tasks fk_users_locked; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tasks
@@ -1413,7 +1363,7 @@ ALTER TABLE ONLY public.tasks
 
 
 --
--- Name: tasks fk_users_mapper; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: tasks fk_users_mapper; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tasks
@@ -1421,7 +1371,7 @@ ALTER TABLE ONLY public.tasks
 
 
 --
--- Name: tasks fk_users_validator; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: tasks fk_users_validator; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tasks
@@ -1429,7 +1379,7 @@ ALTER TABLE ONLY public.tasks
 
 
 --
--- Name: task_invalidation_history fk_validators; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_invalidation_history fk_validators; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_invalidation_history
@@ -1437,7 +1387,7 @@ ALTER TABLE ONLY public.task_invalidation_history
 
 
 --
--- Name: messages messages_from_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: messages messages_from_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.messages
@@ -1445,7 +1395,7 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: messages messages_to_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: messages messages_to_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.messages
@@ -1453,7 +1403,7 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: project_allowed_users project_allowed_users_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_allowed_users project_allowed_users_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_allowed_users
@@ -1461,7 +1411,7 @@ ALTER TABLE ONLY public.project_allowed_users
 
 
 --
--- Name: project_allowed_users project_allowed_users_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_allowed_users project_allowed_users_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_allowed_users
@@ -1469,7 +1419,7 @@ ALTER TABLE ONLY public.project_allowed_users
 
 
 --
--- Name: project_chat project_chat_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_chat project_chat_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_chat
@@ -1477,7 +1427,7 @@ ALTER TABLE ONLY public.project_chat
 
 
 --
--- Name: project_chat project_chat_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_chat project_chat_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_chat
@@ -1485,7 +1435,7 @@ ALTER TABLE ONLY public.project_chat
 
 
 --
--- Name: project_info project_info_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_info project_info_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_info
@@ -1493,7 +1443,7 @@ ALTER TABLE ONLY public.project_info
 
 
 --
--- Name: project_priority_areas project_priority_areas_priority_area_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_priority_areas project_priority_areas_priority_area_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_priority_areas
@@ -1501,7 +1451,7 @@ ALTER TABLE ONLY public.project_priority_areas
 
 
 --
--- Name: project_priority_areas project_priority_areas_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: project_priority_areas project_priority_areas_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_priority_areas
@@ -1509,7 +1459,7 @@ ALTER TABLE ONLY public.project_priority_areas
 
 
 --
--- Name: task_history task_history_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_history task_history_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_history
@@ -1517,7 +1467,7 @@ ALTER TABLE ONLY public.task_history
 
 
 --
--- Name: task_invalidation_history task_invalidation_history_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: task_invalidation_history task_invalidation_history_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.task_invalidation_history
@@ -1525,7 +1475,7 @@ ALTER TABLE ONLY public.task_invalidation_history
 
 
 --
--- Name: tasks tasks_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: tasks tasks_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tasks
@@ -1533,7 +1483,7 @@ ALTER TABLE ONLY public.tasks
 
 
 --
--- Name: users_licenses users_licenses_license_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: users_licenses users_licenses_license_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users_licenses
@@ -1541,54 +1491,11 @@ ALTER TABLE ONLY public.users_licenses
 
 
 --
--- Name: users_licenses users_licenses_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tm
+-- Name: users_licenses users_licenses_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users_licenses
     ADD CONSTRAINT users_licenses_user_fkey FOREIGN KEY ("user") REFERENCES public.users(id);
-
-
---
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT ALL ON SCHEMA public TO PUBLIC;
-GRANT USAGE ON SCHEMA public TO tm;
-
-
---
--- Name: TABLE geography_columns; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.geography_columns TO tm;
-
-
---
--- Name: TABLE geometry_columns; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.geometry_columns TO tm;
-
-
---
--- Name: TABLE raster_columns; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.raster_columns TO tm;
-
-
---
--- Name: TABLE raster_overviews; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.raster_overviews TO tm;
-
-
---
--- Name: TABLE spatial_ref_sys; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.spatial_ref_sys TO tm;
 
 
 --
