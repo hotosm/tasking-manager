@@ -1,4 +1,4 @@
-<div class="inner">
+<div class="inner inbox">
     <section class="section section--asided">
         <header class="section__header">
             <div class="inner">
@@ -10,30 +10,44 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
-                    <div ng-hide="inboxCtrl.messages.length > 0 || inboxCtrl.errorRetrievingMessages">
-                        <p>{{ 'You have no messages.' | translate }}</p>
-                    </div>
                     <div ng-show="inboxCtrl.errorRetrievingMessages" class="error">An error occurred.</div>
-                    <div ng-show="inboxCtrl.messages.length > 0">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>{{ 'From' | translate }}</th>
-                                <th>{{ 'Subject' | translate }}</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr ng-class="!message.read ? 'tr-darker' : ''"
-                                ng-repeat="message in inboxCtrl.messages | orderBy:'-sentDate'">
-                                <td>
+                    <div class="inbox__batch-controls">
+                      <button ng-disabled="!inboxCtrl.isAnyMessageSelected()" class="button button--base" type="button"
+                              ng-click="inboxCtrl.setShowDeleteSelectedMessagesModal(true)">
+                          {{ 'Delete All Selected Messages' | translate }}
+                      </button>
+                    </div>
+                    <div>
+                        <table ng-table="inboxCtrl.inboxTableSettings" class="table table-inbox">
+                            <tr ng-repeat="message in $data" ng-class="!message.read ? 'tr-darker' : ''">
+                                <td header="'headerCheckbox.html'">
+                                    <input type="checkbox"
+                                           ng-checked="inboxCtrl.allVisibleMessagesSelected || inboxCtrl.selectedIndividualMessages[message.messageId]"
+                                           ng-click="inboxCtrl.toggleIndividualMessageSelection(message.messageId)" />
+                                </td>
+                                <td title="'Type' | translate" filter="{messageType: 'select'}" filter-data="inboxCtrl.messageTypeLabels">
+                                  {{ inboxCtrl.messageTypeLabelFor(message.messageType) }}
+                                </td>
+                                <td title="'From' | translate" filter="{username: 'text'}">
                                     <a ng-href="user/{{ message.fromUsername }}">{{ message.fromUsername }}</a>
                                 </td>
-                                <td>
+                                <td title="'Subject' | translate">
                                     <a ng-href="message/{{ message.messageId }}" ng-bind-html="message.subject"></a>
                                 </td>
-                                <td>
+                                <td title="'Project' | translate" filter="{projectTitle: 'text'}">
+                                    <a ng-if="message.projectId && message.taskId" ng-href="/project/{{ message.projectId + (message.taskId ? '?task=' + message.taskId : '') }}">
+                                        {{ message.projectTitle }}
+                                    </a>
+                                    <a ng-if="message.projectId && !message.taskId" ng-href="/project/{{ message.projectId }}?tab=chat">
+                                        {{ message.projectTitle }}
+                                    </a>
+                                </td>
+                                <td title="'Task' | translate" filter="{taskId: 'number'}">
+                                  <a ng-if="message.taskId" ng-href="/project/{{ message.projectId }}?task={{ message.taskId }}">
+                                      {{ 'Task' | translate }} {{ message.taskId }}
+                                  </a>
+                                </td>
+                                <td title="'Sent' | translate" sortable="'sentDate'">
                                     <span am-time-ago="message.sentDate | amUtc | amLocal"></span>
                                 </td>
                                 <td>
@@ -43,8 +57,10 @@
                                     </button>
                                 </td>
                             </tr>
-                            </tbody>
                         </table>
+                        <div ng-hide="inboxCtrl.messages.length > 0 || inboxCtrl.errorRetrievingMessages">
+                            <p>{{ 'No messages' | translate }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,3 +97,39 @@
     </a>
 </section>
 <!-- delete message modal -->
+
+<!-- delete selected messages modal -->
+<section class="modal modal-tm" ng-show="inboxCtrl.showDeleteSelectedMessagesModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">{{ 'Delete selected messages' | translate }}</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <p>{{ 'Are you sure you want to delete these messages? This cannot be undone' | translate }}</p>
+        </div>
+        <footer class="modal__footer">
+            <div>
+                <button class="button button--achromic" type="button"
+                    ng-click="inboxCtrl.setShowDeleteSelectedMessagesModal(false)">
+                    {{ 'Cancel' | translate }}
+                </button>
+                <button class="button button--base" type="button"
+                    ng-click="inboxCtrl.deleteSelectedMessages()">
+                    {{ 'Delete Selected' | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>
+    <a class="modal__button-dismiss" title="{{ 'Dismiss' | translate }}" ng-click="inboxCtrl.setShowDeleteSelectedMessagesModal(false)">
+        {{ 'Dismiss' | translate }}
+    </a>
+</section>
+<!-- delete selected messages modal -->
+
+<script type="text/ng-template" id="headerCheckbox.html">
+  <input type="checkbox"
+         ng-checked="inboxCtrl.allVisibleMessagesSelected"
+         ng-click="inboxCtrl.toggleAllVisibleMessagesSelected()" />
+</script>

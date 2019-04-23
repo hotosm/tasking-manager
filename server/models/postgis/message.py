@@ -1,10 +1,19 @@
 from server import db
 from flask import current_app
+from enum import Enum
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.postgis.user import User
+from server.models.postgis.project import Project
 from server.models.postgis.utils import timestamp
 from server.models.postgis.utils import NotFound
 
+class MessageType(Enum):
+    """ Describes the various kinds of messages a user might receive """
+    SYSTEM = 1                     # Generic system-generated message
+    BROADCAST = 2                  # Broadcast message from a project manager
+    MENTION_NOTIFICATION = 3       # Notification that user was mentioned in a comment/chat
+    VALIDATION_NOTIFICATION = 4    # Notification that user's mapped task was validated
+    INVALIDATION_NOTIFICATION = 5  # Notification that user's mapped task was invalidated
 
 class Message(db.Model):
     """ Describes an individual Message a user can send """
@@ -15,12 +24,17 @@ class Message(db.Model):
     subject = db.Column(db.String)
     from_user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     to_user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), index=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True)
+    task_id = db.Column(db.Integer, index=True)
+    message_type = db.Column(db.Integer, index=True)
     date = db.Column(db.DateTime, default=timestamp)
     read = db.Column(db.Boolean, default=False)
 
     # Relationships
     from_user = db.relationship(User, foreign_keys=[from_user_id])
     to_user = db.relationship(User, foreign_keys=[to_user_id], backref='messages')
+    project=db.relationship(Project, foreign_keys=[project_id])
+
 
     @classmethod
     def from_dto(cls, to_user_id: int, dto: MessageDTO):
@@ -30,6 +44,10 @@ class Message(db.Model):
         message.message = dto.message
         message.from_user_id = dto.from_user_id
         message.to_user_id = to_user_id
+        message.project_id = dto.project_id
+        message.task_id = dto.task_id
+        if dto.message_type is not None:
+            message.message_type = MessageType(dto.message_type)
 
         return message
 
@@ -41,6 +59,11 @@ class Message(db.Model):
         dto.sent_date = self.date
         dto.read = self.read
         dto.subject = self.subject
+        dto.project_id = self.project_id
+        dto.task_id = self.task_id
+        if self.message_type is not None:
+            dto.message_type = MessageType(self.message_type).name
+
         if self.from_user_id:
             dto.from_username = self.from_user.username
 
@@ -89,6 +112,13 @@ class Message(db.Model):
             messages_dto.user_messages.append(message.as_dto())
 
         return messages_dto
+
+    @staticmethod
+    def delete_multiple_messages(message_ids: list, user_id: int):
+        """ Deletes the specified messages to the user """
+        Message.query.filter(Message.to_user_id == user_id, Message.id.in_(message_ids)).\
+                delete(synchronize_session=False)
+        db.session.commit()
 
     def delete(self):
         """ Deletes the current model from the DB """
