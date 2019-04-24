@@ -74,14 +74,15 @@ class TaskInvalidationHistory(db.Model):
         TaskInvalidationHistory.close_all_for_task(project_id, task_id)
 
         last_mapped = TaskHistory.get_last_mapped_action(project_id, task_id)
-        entry = TaskInvalidationHistory(project_id, task_id)
-        entry.invalidation_history_id = history.id
-        entry.mapper_id = last_mapped.user_id
-        entry.mapped_date = last_mapped.action_date
-        entry.invalidator_id = invalidator_id
-        entry.invalidated_date = history.action_date
-        entry.updated_date = timestamp()
-        db.session.add(entry)
+        if last_mapped:
+            entry = TaskInvalidationHistory(project_id, task_id)
+            entry.invalidation_history_id = history.id
+            entry.mapper_id = last_mapped.user_id
+            entry.mapped_date = last_mapped.action_date
+            entry.invalidator_id = invalidator_id
+            entry.invalidated_date = history.action_date
+            entry.updated_date = timestamp()
+            db.session.add(entry)
 
     @staticmethod
     def record_validation(project_id, task_id, validator_id, history):
