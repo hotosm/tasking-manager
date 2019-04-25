@@ -17,7 +17,7 @@ The client is the front-end user interface of the Tasking Manager. If you're int
 **Dependencies**
 
 The following dependencies must be available _globally_ on your system:
-* Download and install [NodeJS LTS v6+](https://nodejs.org/en/) and [NPM](https://www.npmjs.com/)
+* Download and install [NodeJS LTS v9+](https://nodejs.org/en/) and [NPM](https://www.npmjs.com/)
 * Install [Gulp](http://gulpjs.com/).
   * `npm install gulp -g`
 * Install [Karma](https://karma-runner.github.io/1.0/index.html)
@@ -53,14 +53,17 @@ The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests. Thes
 
 The backend server is made up of a postgres database and an associated API that calls various end points to create tasks, manage task state, and produce analytics.
 
-**Dependencies**
+#### Dependencies
 
 * [Python 3.6+](https://www.python.org/downloads/)
   * Note: The project does not work with Python 2.x. You **will** need Python 3.6+
-* [postgreSQL](https://www.postgresql.org/download/) with [postGIS](https://postgis.net/install/)
+* [PostgreSQL](https://www.postgresql.org/download/) with [PostGIS](https://postgis.net/install/)
 * [pip](https://pip.pypa.io/en/stable/installing/)
+* [libgeos-dev](https://trac.osgeo.org/geos/)
 
-**Configuration**
+You can check the [Dockerfile](../devops/docker/tasking-manager/Dockerfile) to have a reference of how to install it in a Debian/Ubuntu system.
+
+#### Configuration
 
 * Copy the example configuration file to start your own configuration: `cp example.env tasking-manager.env`.
 * Adjust the `tasking-manager.env` configuration file to fit your configuration.
@@ -73,7 +76,7 @@ The backend server is made up of a postgres database and an associated API that 
   - `TM_CONSUMER_KEY`=oauth-consumer-key-from-openstreetmap
   - `TM_CONSUMER_SECRET`=oauth-consumer-secret-key-from-openstreetmap
 
-**Build**
+#### Build
 
 * Create a Python Virtual Environment, using Python 3.6+:
     * ```python3 -m venv ./venv```
@@ -85,29 +88,29 @@ The backend server is made up of a postgres database and an associated API that 
         * ```.\venv\scripts\activate```
         * ```.\devops\win\install.bat```
 
-**Tests**
+#### Tests
 
 The project includes a suite of Unit and Integration tests that you should run after any changes
 
 ```
-python -m unittest discover tests/server
+python3 -m unittest discover tests/server
 ```
 
 ### Database
 
-**Create a fresh database**
+#### Create a fresh database
 
-We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to create the database from the migrations directory. If you can't access an existing DB refer to documentation to set up a local DB in Docker create the database as follows
+We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to create the database from the migrations directory. Check the instructions on how to setup a PostGIS database with [docker](#creating-a-local-postgis-database-with-docker) or on your [local system](#non-docker). Then you can execute the following command to apply the migrations:
 
 ```
 python3 manage.py db upgrade
 ```
 
-**Migrating your data from TM2**
+#### Migrating your data from TM2
 
 You can use [this script](../devops/tm2-pg-migration/migrationscripts.sql) to migrate your data from the prior tasking manager version (v2) to the current one. Please see [this documentation page](./migration-tm2-to-tm3.md) for important information about this process.
 
-**Set permissions to create a task**
+#### Set permissions to create a task
 
 To be able to create a task and have full permissions as an admin inside TM, login to the TM with your OSM account to populate your user information in the database, then execute the following command on your terminal (with the OS user that is the owner of the database):
 
@@ -115,29 +118,28 @@ To be able to create a task and have full permissions as an admin inside TM, log
 
 ### API
 
-If you plan to only work on the API you only have to build the server architecture. Install the server dependencies, and run these commands:
+If you plan to only work on the API you only have to build the server architecture. Install the server dependencies, and run the server:
 
-* Run the server:
-    * ``` python manage.py runserver -d -r```
-* Point your browser to:
-    * [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+`
+python3 manage.py runserver -d -r
+`
 
-## DevOps
-If you encounter any issues while setting up a dev environment, please visit our [FAQ ❓ page](./setup-development-faqs.md) to find possible solutions.
+You can access the API documentation on [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it also allows you to execute requests on your local TM instance. The API docs is also available on our [production](https://tasks.hotosm.org/api-docs/) and [staging](https://tasks-stage.hotosm.org) instances.
 
+#### API Authentication
 
-# Test the swagger API
+In order to authenticate on the API, you need to have an Authorization Token.
 
-(The command line can be run in any shell session as long as you are in the tasking-manager directory.)
+1. Run the command line `manage.py` with the `gen_token` option and `-u <OSM_User_ID_number>`. The command line can be run in any shell session as long as you are in the tasking-manager directory.
 
-
-1. Run the command line manage.py with the gen_token option and -u OSM_User_ID_number
-> venv/bin/python manage.py gen_token -u 99999999
+```
+venv/bin/python manage.py gen_token -u 99999999
+```
 
 This will generate a line that looks like this:
 > Your base64 encoded session token: b'SWpFaS5EaEoxRlEubHRVC1DSTVJZ2hfalMc0xlalu3KRk5BUGk0'
 
-2. In the Swagger UI, where it says 
+2. In the Swagger UI, where it says
 > Token sessionTokenHere==
 
 replace `sessionTokenHere==` with the string of characters between the apostrophes (' ') above so you end up with something that looks like this in that field:
@@ -146,56 +148,18 @@ replace `sessionTokenHere==` with the string of characters between the apostroph
 
 Your user must have logged in to the local testing instance once of course and have the needed permissions for the API call.
 
-You can get your OSM user id number either by finding it in your local testing/dev database `select * from users` or from OSM by viewing the edit history of the user, selecting a changeset from the list, and then at the bottom link 'Changeset XML` and it will be in the XML returned.
+You can get your OSM user id number either by finding it in your local testing/dev database `select * from users` or from OSM by viewing the edit history of your user, selecting a changeset from the list, and then at the bottom link `Changeset XML` and it will be in the `uid` field of the XML returned.
 
+To get your token on the production or staging Tasking Manager instances, after sign in in the browser, inspect a network request and search for the `Authorization` field in the request headers section.
 
-
-### 1. I'm on Linux and see a _ENOSPC_ error when running the client with Gulp
-There's a known issue with Gulp watch that is discussed in [this Stack Overflow post](http://stackoverflow.com/questions/16748737/grunt-watch-error-waiting-fatal-error-watch-enospc)
-
-If you run the following command it should resolve this issue:
-
-`echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`
-
-### 2. I'm on Mac and see _pg_config executable not found_ when pip installing requirements.txt
-Unfortunately, on Mac, the latest [psycopg](http://initd.org/psycopg/) release requires postgresql to be intalled locally to build, as described in [this Stack Overflow post](http://stackoverflow.com/questions/33866695/install-psycopg2-on-mac-osx-10-9-5-pg-config-pip)
-
-Easiest way to resolve to to install postgres with [Homebrew](https://brew.sh/)
-
-`brew install postgresql`
-
-### 3. I'm on Mac and see [SSL: CERTIFICATE_VERIFY_FAILED] when authenticating locally
-This is super annoying (as it works fine on Win and Lin)  I couldn't find any elegant solution other than monkey patching my local request.py file, at line 1363, replacing https_open to look like this.  [Some background here](http://stackoverflow.com/questions/33770129/how-do-i-disable-the-ssl-check-in-python-3-x) Better solutions are most welcome, please submit if you have them 😄 
-
-
-```
-def https_open(self, req):
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
-
-    return self.do_open(http.client.HTTPSConnection, req,
-            context=ctx, check_hostname=self._check_hostname)
-```
-
-**Update:**
-- Run `venv/bin/pip install requests[security]` from TM working directory
-- If the [error still persists](https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error), there are chances that might be running a fresh installation of Python 3.6. You'll have to install the `certifi` package using:
-`/Applications/Python\ 3.6/Install\ Certificates.command`
-
-### 4. I can't login locally when not running the API locally
-Your login callback will be redirected relatively to the API URL. If you running the client locally but not pointing to a local API, this means that you cannot login locally. To work around this, you can do the following:
-- open your developer tools in your browser and watch the network tab
-- click the login button and login to OSM. After a successful login it will redirect you where the API lives.
-- look for the URL "...../authorized?username=username-here&session_token=token-here&ng=0&redirect_to=/" in your network tab in your developer tools. Take the relative part of the URL and point it to localhost. E.g. "localhost:3000/authorized?username=username-here&session_token=token-here&ng=0&redirect_to=/". 
-- now you should be logged in locally
-
+### DevOps
+If you encounter any issues while setting up a dev environment, please visit our [FAQ ❓ page](./setup-development-faqs.md) to find possible solutions.
 
 # Docker
 
 ## Creating a local PostGIS database with Docker
 
-If you're not able to connect to an existing tasking-manager DB, the project ships a Dockerfile that will allow you to run PostGIS locally as follows.
+If you're not able to connect to an existing tasking-manager DB, we have a [Dockerfile]() that will allow you to run PostGIS locally as follows.
 
 ### Dependencies
 
@@ -209,13 +173,13 @@ Following must be available locally:
 
 `
 docker build -t tasking-manager-db ./devops/docker/postgis
-` 
+`
 
 2. The image should be downloaded and build locally.  Once complete you should see it listed, with
 
 `
 docker images
-` 
+`
 
 3. You can now run the image (this will run PostGIS in a docker container, with port 5432 mapped to localhost):
 
