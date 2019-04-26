@@ -13,11 +13,9 @@ const Parameters = {
     Description: 'Specify an RDS snapshot ID, if you want to create the DB from a snapshot.',
     Default: ''
   },
-  EmptyDatabase: {
+  DatabaseDump: {
     Type: 'String',
-    Description: 'Are you creating an empty database, without using a snapshot or referencing to a remote RDS database?',
-    Default: 'false',
-    AllowedValues: ['true', 'false']
+    Description: 'Path to database dump on S3'
   },
   NewRelicLicense: {
     Type: 'String',
@@ -97,7 +95,7 @@ const Parameters = {
 const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
   UsePostgresEndpoint: cf.notEquals(cf.ref('PostgresEndpoint'), ''),
-  IsDatabaseEmpty: cf.equals(cf.ref('EmptyDatabase'), 'true')
+  DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), '')
 };
 
 const Resources = {
@@ -177,6 +175,7 @@ const Resources = {
         'sudo apt-get -y install python-pip libgdal1-dev',
         'sudo apt-get -y install libjson-c-dev',
         'sudo apt-get -y install git',
+        'sudo apt-get -y install awscli',
         'git clone --recursive https://github.com/hotosm/tasking-manager.git',
         'cd tasking-manager/',
         cf.sub('git reset --hard ${GitSha}'),
@@ -204,7 +203,7 @@ const Resources = {
         cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
         cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
         cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
-        cf.if('IsDatabaseEmpty', 'psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" -f ./tests/database/tasking-manager.sql', ''),
+        cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" -f dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
         'cd client/',
         'npm install',
@@ -251,6 +250,40 @@ const Resources = {
             ],
             Effect: 'Allow',
             Resource: ['arn:aws:cloudformation:*']
+          }]
+        }
+      }, {
+        PolicyName: "AccessToDatabaseDump",
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement:[{
+            Action: [ 's3:ListBucket'],
+            Effect: 'Allow',
+            Resource: [cf.join('',
+              ['arn:aws:s3:::',
+                cf.select(0,
+                  cf.split('/',
+                    cf.select(1,
+                      cf.split('s3://', cf.ref('DatabaseDump'))
+                    )
+                  )
+                )
+              ]
+            )]
+          }, {
+            Action: [
+              's3:GetObject',
+              's3:GetObjectAcl',
+              's3:ListObjects',
+              's3:ListBucket'
+            ],
+            Effect: 'Allow',
+            Resource: [cf.join('',
+              ['arn:aws:s3:::',
+                cf.select(1,
+                  cf.split('s3://', cf.ref('DatabaseDump'))
+              )]
+            )]
           }]
         }
       }],
