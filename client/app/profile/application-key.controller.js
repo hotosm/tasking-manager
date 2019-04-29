@@ -69,7 +69,7 @@
          * Delete a user's application key
          * @param applicationKey
          */
-        function deleteApplicationKey(applicationKey){
+        vm.deleteApplicationKey = function deleteApplicationKey(applicationKey){
             var resultsPromise = applicationKeyService.deleteApplicationKey(applicationKey);
             resultsPromise.then(function (data) {
                 vm.deleteResult = data
