@@ -29,8 +29,8 @@
                                         <th><span>{{ 'Revoke key' | translate }}</span></th>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="item in appKeyCtrl.applications | orderBy: 'createdDate'">
-                                            <td>{{ item.createdDate }}</td>
+                                        <tr ng-repeat="item in appKeyCtrl.applications">
+                                            <td>{{ item.createdDate | date: 'yyyy/MM/dd HH:mm'}}Z</td>
                                             <td>{{ item.applicationkey }}</td>
                                             <td><a ng-click="appKeyCtrl.deleteApplicationKey(item.applicationkey)"><i>X</i></a></td>
                                         </tr>
