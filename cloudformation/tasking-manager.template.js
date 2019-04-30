@@ -271,6 +271,29 @@ const Resources = {
         }]
       },
       Policies: [{
+        PolicyName: "RDSPolicy",
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement:[{
+            Action: ['rds:DescribeDBInstances'],
+            Effect: 'Allow',
+            Resource: ['arn:aws:rds:*']
+          }]
+        }
+      }, {
+        PolicyName: "CloudFormationPermissions",
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement:[{
+            Action: [
+              'cloudformation:SignalResource',
+              'cloudformation:DescribeStackResource'
+            ],
+            Effect: 'Allow',
+            Resource: ['arn:aws:cloudformation:*']
+          }]
+        }
+      }, {
         PolicyName: "AccessToDatabaseDump",
         PolicyDocument: {
           Version: "2012-10-17",
@@ -311,7 +334,7 @@ const Resources = {
   TaskingManagerEC2InstanceProfile: {
      Type: "AWS::IAM::InstanceProfile",
      Properties: {
-        Roles: cf.if('DatabaseDumpFileGiven', [cf.ref('TaskingManagerEC2Role'), cf.ref('TaskingManagerDatabaseDumpAccessRole')], [cf.ref('TaskingManagerEC2Role')]),
+        Roles: cf.if('DatabaseDumpFileGiven', [cf.ref('TaskingManagerDatabaseDumpAccessRole')], [cf.ref('TaskingManagerEC2Role')]),
         InstanceProfileName: cf.join('-', [cf.stackName, 'ec2', 'instance', 'profile'])
      }
   },
