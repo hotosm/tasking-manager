@@ -124,7 +124,7 @@ jobs:
         name: Create config file
         command: |
           touch $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
-          printf '{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"staging\", \"DBSnapshot\":\"tm3-staging-deployment-snapshot-latest\", \"MasterUsername\":\"$MASTER_USERNAME_STAGING\", \"MasterPassword\":\"$MASTER_PASSWORD_STAGING\", \"OSMConsumerKey\":\"$OSM_CONSUMER_KEY_STAGING\",\"OSMConsumerSecret\":\"$OSM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TASKINGMANAGER_SECRET_STAGING\", \"TaskingManagerEnv\":\"$TASKINGMANAGER_ENV_STAGING\", \"TaskingManagerSMTPHost\":\"$TASKINGMANAGER_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TASKINGMANAGER_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TASKINGMANAGER_SMTP_USER_STAGING\", \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\",\"RDSUrl\":\"$RDS_URL_STAGING\"}' > $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
+          echo {\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"staging\", \"DBSnapshot\":\"tm3-staging-deployment-snapshot-latest\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_STAGING\", \"PostgresUser\":\"$POSTGRES_USER_STAGING\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_STAGING\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASEURL_STAGING\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_STAGING\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TM_SECRET_STAGING\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_STAGING\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_STAGING\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_STAGING\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_STAGING\",  \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\"} > $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
     - run:
         name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
         command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
@@ -186,7 +186,7 @@ jobs:
         name: Create config file
         command: |
           touch $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
-          printf '{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"tm3-production-deployment-snapshot-latest\", \"MasterUsername\":\"$MASTER_USERNAME_STAGING\", \"MasterPassword\":\"$MASTER_PASSWORD_STAGING\", \"OSMConsumerKey\":\"$OSM_CONSUMER_KEY_STAGING\",\"OSMConsumerSecret\":\"$OSM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TASKINGMANAGER_SECRET_STAGING\", \"TaskingManagerEnv\":\"$TASKINGMANAGER_ENV_STAGING\", \"TaskingManagerSMTPHost\":\"$TASKINGMANAGER_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TASKINGMANAGER_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TASKINGMANAGER_SMTP_USER_STAGING\", \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\",\"RDSUrl\":\"$RDS_URL_STAGING\"}' > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
+          echo {\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"tm3-production-deployment-snapshot-latest\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_PRODUCTION\", \"PostgresUser\":\"$POSTGRES_USER_PRODUCTION\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_PRODUCTION\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASEURL_PRODUCTION\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_PRODUCTION\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_PRODUCTION\", \"TaskingManagerSecret\":\"$TM_SECRET_PRODUCTION\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_PRODUCTION\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_PRODUCTION\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_PRODUCTION\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_PRODUCTION\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_PRODUCTION\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_PRODUCTION\",  \"DatabaseSize\":\"$DATABASE_SIZE_PRODUCTION\",\"ELBSubnets\":\"$ELB_SUBNETS_PRODUCTION\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_PRODUCTION\"} > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
     - run:
         name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
         command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
@@ -207,12 +207,13 @@ workflows:
           branches:
             only:
             - develop
-            - cloudformation
         requires:
         - build
     - deploy-prod:
         filters:
           branches:
-            only: master
+            only: 
+              - master
+              - cloudformation
         requires:
         - build
