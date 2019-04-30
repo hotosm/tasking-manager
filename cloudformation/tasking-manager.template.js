@@ -25,10 +25,6 @@ const Parameters = {
     Type: 'String',
     Description: 'POSTGRES_DB'
   },
-  PostgresEndpoint: {
-    Type: 'String',
-    Description: 'POSTGRES_ENDPOINT'
-  },
   PostgresPassword: {
     Type: 'String',
     Description: 'POSTGRES_PASSWORD'
@@ -94,7 +90,6 @@ const Parameters = {
 
 const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
-  UsePostgresEndpoint: cf.notEquals(cf.ref('PostgresEndpoint'), ''),
   DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), '')
 };
 
@@ -189,7 +184,7 @@ const Resources = {
         'pip2 install aws-cfn-bootstrap-latest.tar.gz',
         'echo "Exporting environment variables:"',
         cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
-        cf.join('', ['export POSTGRES_ENDPOINT=', cf.if('UsePostgresEndpoint', cf.ref('PostgresEndpoint'), cf.getAtt('TaskingManagerRDS', 'Endpoint.Address'))]),
+        cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
         cf.sub('export POSTGRES_DB=${PostgresDB}'),
         cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
