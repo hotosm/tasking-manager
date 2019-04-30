@@ -252,14 +252,32 @@ const Resources = {
             Resource: ['arn:aws:cloudformation:*']
           }]
         }
-      }, {
+      }],
+      RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
+    }
+  },
+  TaskingManagerDatabaseDumpAccessRole: {
+    Condition: 'DatabaseDumpFileGiven',
+    Type: 'AWS::IAM::Role',
+    Properties: {
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [{
+          Effect: "Allow",
+          Principal: {
+             Service: [ "ec2.amazonaws.com" ]
+          },
+          Action: [ "sts:AssumeRole" ]
+        }]
+      },
+      Policies: [{
         PolicyName: "AccessToDatabaseDump",
         PolicyDocument: {
           Version: "2012-10-17",
           Statement:[{
             Action: [ 's3:ListBucket'],
             Effect: 'Allow',
-            Resource: [cf.join('',
+            Resource: [ cf.join('',
               ['arn:aws:s3:::',
                 cf.select(0,
                   cf.split('/',
@@ -287,13 +305,13 @@ const Resources = {
           }]
         }
       }],
-      RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
+      RoleName: cf.join('-', [cf.stackName, 'ec2', 'database-dump-access', 'role'])
     }
   },
   TaskingManagerEC2InstanceProfile: {
      Type: "AWS::IAM::InstanceProfile",
      Properties: {
-        Roles: [cf.ref('TaskingManagerEC2Role')],
+        Roles: cf.if('DatabaseDumpFileGiven', [cf.ref('TaskingManagerEC2Role'), cf.ref('TaskingManagerDatabaseDumpAccessRole')], [cf.ref('TaskingManagerEC2Role')]),
         InstanceProfileName: cf.join('-', [cf.stackName, 'ec2', 'instance', 'profile'])
      }
   },
