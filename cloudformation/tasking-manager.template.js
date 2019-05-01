@@ -25,10 +25,6 @@ const Parameters = {
     Type: 'String',
     Description: 'POSTGRES_DB'
   },
-  PostgresEndpoint: {
-    Type: 'String',
-    Description: 'POSTGRES_ENDPOINT'
-  },
   PostgresPassword: {
     Type: 'String',
     Description: 'POSTGRES_PASSWORD'
@@ -94,7 +90,6 @@ const Parameters = {
 
 const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
-  UsePostgresEndpoint: cf.notEquals(cf.ref('PostgresEndpoint'), ''),
   DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), '')
 };
 
@@ -105,9 +100,9 @@ const Resources = {
     Properties: {
       AutoScalingGroupName: cf.stackName,
       Cooldown: 300,
-      MinSize: 3,
-      DesiredCapacity: 3,
-      MaxSize: 12,
+      MinSize: 1,
+      DesiredCapacity: 1,
+      MaxSize: 1,
       HealthCheckGracePeriod: 300,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
@@ -189,7 +184,7 @@ const Resources = {
         'pip2 install aws-cfn-bootstrap-latest.tar.gz',
         'echo "Exporting environment variables:"',
         cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
-        cf.join('', ['export POSTGRES_ENDPOINT=', cf.if('UsePostgresEndpoint', cf.ref('PostgresEndpoint'), cf.getAtt('TaskingManagerRDS', 'Endpoint.Address'))]),
+        cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
         cf.sub('export POSTGRES_DB=${PostgresDB}'),
         cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
@@ -252,6 +247,47 @@ const Resources = {
             Resource: ['arn:aws:cloudformation:*']
           }]
         }
+      }],
+      RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
+    }
+  },
+  TaskingManagerDatabaseDumpAccessRole: {
+    Condition: 'DatabaseDumpFileGiven',
+    Type: 'AWS::IAM::Role',
+    Properties: {
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [{
+          Effect: "Allow",
+          Principal: {
+             Service: [ "ec2.amazonaws.com" ]
+          },
+          Action: [ "sts:AssumeRole" ]
+        }]
+      },
+      Policies: [{
+        PolicyName: "RDSPolicy",
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement:[{
+            Action: ['rds:DescribeDBInstances'],
+            Effect: 'Allow',
+            Resource: ['arn:aws:rds:*']
+          }]
+        }
+      }, {
+        PolicyName: "CloudFormationPermissions",
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement:[{
+            Action: [
+              'cloudformation:SignalResource',
+              'cloudformation:DescribeStackResource'
+            ],
+            Effect: 'Allow',
+            Resource: ['arn:aws:cloudformation:*']
+          }]
+        }
       }, {
         PolicyName: "AccessToDatabaseDump",
         PolicyDocument: {
@@ -259,7 +295,7 @@ const Resources = {
           Statement:[{
             Action: [ 's3:ListBucket'],
             Effect: 'Allow',
-            Resource: [cf.join('',
+            Resource: [ cf.join('',
               ['arn:aws:s3:::',
                 cf.select(0,
                   cf.split('/',
@@ -287,13 +323,13 @@ const Resources = {
           }]
         }
       }],
-      RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
+      RoleName: cf.join('-', [cf.stackName, 'ec2', 'database-dump-access', 'role'])
     }
   },
   TaskingManagerEC2InstanceProfile: {
      Type: "AWS::IAM::InstanceProfile",
      Properties: {
-        Roles: [cf.ref('TaskingManagerEC2Role')],
+        Roles: cf.if('DatabaseDumpFileGiven', [cf.ref('TaskingManagerDatabaseDumpAccessRole')], [cf.ref('TaskingManagerEC2Role')]),
         InstanceProfileName: cf.join('-', [cf.stackName, 'ec2', 'instance', 'profile'])
      }
   },
