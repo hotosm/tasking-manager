@@ -209,7 +209,7 @@ workflows:
             - develop
         requires:
         - build
-    - deploy-prod:
+    - deploy-production:
         filters:
           branches:
             only: 
