@@ -74,7 +74,7 @@ jobs:
         - client/node_modules
         - env
   deploy-staging:
-    working_directory: /home/circleci/app
+    working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3-stretch
     steps:
@@ -131,12 +131,12 @@ jobs:
     - deploy:
         name: Deploy to staging
         command: sudo cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
-          -f -c hot-cfn-config -t hot-cfn-config
+          -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION
     - run:
         name: Cleanup
         command: aws rds delete-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-temp
   deploy-production:
-    working_directory: /home/circleci/app
+    working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3-stretch
     steps:
@@ -186,14 +186,14 @@ jobs:
         name: Create config file
         command: |
           touch $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
-          echo {\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"tm3-production-deployment-snapshot-latest\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_PRODUCTION\", \"PostgresUser\":\"$POSTGRES_USER_PRODUCTION\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_PRODUCTION\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASEURL_PRODUCTION\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_PRODUCTION\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_PRODUCTION\", \"TaskingManagerSecret\":\"$TM_SECRET_PRODUCTION\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_PRODUCTION\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_PRODUCTION\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_PRODUCTION\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_PRODUCTION\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_PRODUCTION\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_PRODUCTION\",  \"DatabaseSize\":\"$DATABASE_SIZE_PRODUCTION\",\"ELBSubnets\":\"$ELB_SUBNETS_PRODUCTION\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_PRODUCTION\"} > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
+          echo {\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"tm3-production-deployment-snapshot-latest\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_PRODUCTION\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_PRODUCTION\", \"PostgresUser\":\"$POSTGRES_USER_PRODUCTION\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASE_URL_PRODUCTION\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_PRODUCTION\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_PRODUCTION\", \"TaskingManagerSecret\":\"$TM_SECRET_PRODUCTION\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_PRODUCTION\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_PRODUCTION\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_PRODUCTION\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_PRODUCTION\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_PRODUCTION\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_PRODUCTION\",  \"DatabaseSize\":\"$DATABASE_SIZE_PRODUCTION\",\"ELBSubnets\":\"$ELB_SUBNETS_PRODUCTION\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_PRODUCTION\"} > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
     - run:
         name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
         command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
     - deploy:
         name: Deploy to production
-        command: sudo cfn-config update production $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
-          -f -c hot-cfn-config -t hot-cfn-config
+        command: cfn-config update production $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
+          -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION
     - run:
         name: Cleanup
         command: aws rds delete-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-temp
