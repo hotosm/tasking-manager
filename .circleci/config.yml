@@ -130,7 +130,7 @@ jobs:
         command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
     - deploy:
         name: Deploy to staging
-        command: sudo cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
+        command: cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
           -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION
     - run:
         name: Cleanup
