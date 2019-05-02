@@ -5,9 +5,9 @@ SELECT
     projects.id
 INTO TEMPORARY TABLE
     invalid_geom
-FROM 
+FROM
      projects
-WHERE 
+WHERE
     ST_XMin(geometry) < -180
     or ST_XMax(geometry) > 180
     or ST_YMin(geometry) < -90
@@ -16,12 +16,12 @@ WHERE
 -- Filter out projects with low mappig rates
 -- Stores results in a temporary table `stale_projects`
 -- Last updated in 2016 and < 10% mapped tasks
-SELECT 
-   projects.id 
+SELECT
+   projects.id
 INTO TEMPORARY TABLE
    stale_projects
-FROM 
-   projects 
+FROM
+   projects
 WHERE
    extract(year FROM last_updated) < 2017
    AND tasks_mapped/total_tasks < 0.1;
@@ -45,6 +45,7 @@ BEGIN
       DELETE FROM public.task_history WHERE project_id = proj;
       DELETE FROM public.task_invalidation_history WHERE project_id = proj;
       DELETE FROM public.tasks WHERE project_id = proj;
+      DELETE FROM public.projects WHERE id = proj;
       RETURN NEXT proj;
       -- RAISE NOTICE 'Project: %', proj;
    END LOOP;
