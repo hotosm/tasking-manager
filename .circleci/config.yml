@@ -131,24 +131,19 @@ jobs:
           # create new aws rds snapshot
           aws rds create-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-latest --db-instance-identifier $RDS_ID
           sleep 2m
-    - run:
-        name: Create config file
-        command: |
-          touch $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
-          echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
-    - run:
-        name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
-        command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
     - deploy:
         name: Deploy to staging
         command: echo $JSON_CONFIG & cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
+        when: always
         command: |
           DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --query "DBSnapshots[? DBSnapshotIdentifier=='tm3-staging-deployment-snapshot-temp']" --output text`
           # Copy old snapshot to temporary
           if [ -z "$DESCRIBE_SNAPSHOT" ]
           then
+            echo "temporary snapshot doesn't exist, nothing to cleanup."
+          else
             aws rds delete-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-temp
           fi
   deploy-production:
@@ -209,24 +204,19 @@ jobs:
           # create new aws rds snapshot
           aws rds create-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-latest --db-instance-identifier $RDS_ID
           sleep 2m
-    - run:
-        name: Create config file
-        command: |
-          touch $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
-          echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
-    - run:
-        name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
-        command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
     - deploy:
         name: Deploy to production
         command: echo $JSON_CONFIG & cfn-config update production $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
+        when: always
         command: |
           DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --query "DBSnapshots[? DBSnapshotIdentifier=='tm3-production-deployment-snapshot-temp']" --output text`
           # Copy old snapshot to temporary
           if [ -z "$DESCRIBE_SNAPSHOT" ]
           then
+            echo "temporary snapshot doesn't exist, nothing to cleanup."
+          else
             aws rds delete-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-temp
           fi
 workflows:
