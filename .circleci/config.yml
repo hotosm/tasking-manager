@@ -80,10 +80,10 @@ jobs:
     steps:
     - checkout
     - setup_remote_docker
-    - run: 
+    - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"staging\", \"DBSnapshot\":\"tm3-staging-deployment-snapshot-latest\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_STAGING\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_STAGING\", \"PostgresUser\":\"$POSTGRES_USER_STAGING\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASE_URL_STAGING\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_STAGING\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TM_SECRET_STAGING\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_STAGING\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_STAGING\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_STAGING\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_STAGING\",  \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"staging\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_STAGING\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_STAGING\", \"PostgresUser\":\"$POSTGRES_USER_STAGING\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASE_URL_STAGING\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_STAGING\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TM_SECRET_STAGING\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_STAGING\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_STAGING\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_STAGING\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_STAGING\",  \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -158,10 +158,10 @@ jobs:
     steps:
     - checkout
     - setup_remote_docker
-    - run: 
+    - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"tm3-production-deployment-snapshot-latest\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_PRODUCTION\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_PRODUCTION\", \"PostgresUser\":\"$POSTGRES_USER_PRODUCTION\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASE_URL_PRODUCTION\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_PRODUCTION\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_PRODUCTION\", \"TaskingManagerSecret\":\"$TM_SECRET_PRODUCTION\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_PRODUCTION\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_PRODUCTION\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_PRODUCTION\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_PRODUCTION\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_PRODUCTION\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_PRODUCTION\",  \"DatabaseSize\":\"$DATABASE_SIZE_PRODUCTION\",\"ELBSubnets\":\"$ELB_SUBNETS_PRODUCTION\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_PRODUCTION\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_PRODUCTION\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_PRODUCTION\", \"PostgresUser\":\"$POSTGRES_USER_PRODUCTION\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASE_URL_PRODUCTION\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_PRODUCTION\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_PRODUCTION\", \"TaskingManagerSecret\":\"$TM_SECRET_PRODUCTION\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_PRODUCTION\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_PRODUCTION\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_PRODUCTION\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_PRODUCTION\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_PRODUCTION\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_PRODUCTION\",  \"DatabaseSize\":\"$DATABASE_SIZE_PRODUCTION\",\"ELBSubnets\":\"$ELB_SUBNETS_PRODUCTION\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_PRODUCTION\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -244,7 +244,7 @@ workflows:
     - deploy-production:
         filters:
           branches:
-            only: 
+            only:
               - master
               - cloudformation
         requires:
