@@ -80,6 +80,10 @@ jobs:
     steps:
     - checkout
     - setup_remote_docker
+    - run: 
+        name: Set Environment Variables
+        command: |
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"staging\", \"DBSnapshot\":\"tm3-staging-deployment-snapshot-latest\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_STAGING\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_STAGING\", \"PostgresUser\":\"$POSTGRES_USER_STAGING\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASE_URL_STAGING\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_STAGING\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TM_SECRET_STAGING\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_STAGING\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_STAGING\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_STAGING\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_STAGING\",  \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -106,6 +110,12 @@ jobs:
         command: |
           aws configure set region $AWS_REGION \
           --profile default
+    - run:
+        name: Get RDS Instance ID
+        command: |
+          chmod +x .circleci/rdsid.sh
+          RDS_ID=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-staging"}')
+          echo "export RDS_ID=$RDS_ID" >> $BASH_ENV
     - run:
         name: Remove last snapshot and backup database
         command: |
@@ -119,22 +129,28 @@ jobs:
               aws rds delete-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-latest
           fi
           # create new aws rds snapshot
-          aws rds create-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-latest --db-instance-identifier tasking-manager-staging
+          aws rds create-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-latest --db-instance-identifier $RDS_ID
+          sleep 2m
     - run:
         name: Create config file
         command: |
           touch $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
-          echo {\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"staging\", \"DBSnapshot\":\"tm3-staging-deployment-snapshot-latest\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_STAGING\", \"PostgresUser\":\"$POSTGRES_USER_STAGING\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_STAGING\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASEURL_STAGING\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_STAGING\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_STAGING\", \"TaskingManagerSecret\":\"$TM_SECRET_STAGING\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_STAGING\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_STAGING\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_STAGING\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_STAGING\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_STAGING\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_STAGING\",  \"DatabaseSize\":\"$DATABASE_SIZE_STAGING\",\"ELBSubnets\":\"$ELB_SUBNETS_STAGING\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_STAGING\"} > $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
+          echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json
     - run:
         name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
         command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
     - deploy:
         name: Deploy to staging
-        command: cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
-          -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION
+        command: echo $JSON_CONFIG & cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
-        command: aws rds delete-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-temp
+        command: |
+          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --query "DBSnapshots[? DBSnapshotIdentifier=='tm3-staging-deployment-snapshot-temp']" --output text`
+          # Copy old snapshot to temporary
+          if [ -z "$DESCRIBE_SNAPSHOT" ]
+          then
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-staging-deployment-snapshot-temp
+          fi
   deploy-production:
     working_directory: /home/circleci/tasking-manager
     docker:
@@ -142,6 +158,10 @@ jobs:
     steps:
     - checkout
     - setup_remote_docker
+    - run: 
+        name: Set Environment Variables
+        command: |
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"tm3-production-deployment-snapshot-latest\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_PRODUCTION\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_PRODUCTION\", \"PostgresUser\":\"$POSTGRES_USER_PRODUCTION\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASE_URL_PRODUCTION\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_PRODUCTION\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_PRODUCTION\", \"TaskingManagerSecret\":\"$TM_SECRET_PRODUCTION\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_PRODUCTION\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_PRODUCTION\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_PRODUCTION\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_PRODUCTION\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_PRODUCTION\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_PRODUCTION\",  \"DatabaseSize\":\"$DATABASE_SIZE_PRODUCTION\",\"ELBSubnets\":\"$ELB_SUBNETS_PRODUCTION\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_PRODUCTION\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -169,6 +189,12 @@ jobs:
           aws configure set region $AWS_REGION \
           --profile default
     - run:
+        name: Get RDS Instance ID
+        command: |
+          chmod +x .circleci/rdsid.sh
+          RDS_ID=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-production"}')
+          echo "export RDS_ID=$RDS_ID" >> $BASH_ENV
+    - run:
         name: Remove last snapshot and backup database
         command: |
           DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --query "DBSnapshots[? DBSnapshotIdentifier=='tm3-production-deployment-snapshot-latest']" --output text`
@@ -181,22 +207,28 @@ jobs:
               aws rds delete-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-latest
           fi
           # create new aws rds snapshot
-          aws rds create-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-latest --db-instance-identifier tasking-manager-production
+          aws rds create-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-latest --db-instance-identifier $RDS_ID
+          sleep 2m
     - run:
         name: Create config file
         command: |
           touch $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
-          echo {\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"production\", \"DBSnapshot\":\"tm3-production-deployment-snapshot-latest\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"$NEW_RELIC_LICENSE\", \"PostgresDB\":\"$POSTGRES_DB_PRODUCTION\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"$POSTGRES_PASSWORD_PRODUCTION\", \"PostgresUser\":\"$POSTGRES_USER_PRODUCTION\", \"TaskingManagerAppBaseUrl\":\"$TM_APP_BASE_URL_PRODUCTION\", \"TaskingManagerConsumerKey\":\"$TM_CONSUMER_KEY_PRODUCTION\", \"TaskingManagerConsumerSecret\":\"$TM_CONSUMER_SECRET_PRODUCTION\", \"TaskingManagerSecret\":\"$TM_SECRET_PRODUCTION\", \"TaskingManagerEmailFromAddress\":\"$TM_EMAIL_FROM_ADDRESS_PRODUCTION\", \"TaskingManagerSMTPHost\":\"$TM_SMTP_HOST_PRODUCTION\", \"TaskingManagerSMTPPassword\":\"$TM_SMTP_PASSWORD_PRODUCTION\", \"TaskingManagerSMTPUser\":\"$TM_SMTP_USER_PRODUCTION\", \"TaskingManagerSMTPPort\":\"$TM_SMTP_PORT_PRODUCTION\", \"TaskingManagerLogDirectory\":\"$TM_LOG_DIR_PRODUCTION\",  \"DatabaseSize\":\"$DATABASE_SIZE_PRODUCTION\",\"ELBSubnets\":\"$ELB_SUBNETS_PRODUCTION\", \"SSLCertificateIdentifier\":\"$SSL_CERTIFICATE_ID_PRODUCTION\"} > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
+          echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json
     - run:
         name: S3 Copy $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json -> s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
         command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
     - deploy:
         name: Deploy to production
-        command: cfn-config update production $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js
-          -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION
+        command: echo $JSON_CONFIG & cfn-config update production $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
-        command: aws rds delete-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-temp
+        command: |
+          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --query "DBSnapshots[? DBSnapshotIdentifier=='tm3-production-deployment-snapshot-temp']" --output text`
+          # Copy old snapshot to temporary
+          if [ -z "$DESCRIBE_SNAPSHOT" ]
+          then
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-production-deployment-snapshot-temp
+          fi
 workflows:
   version: 2
   build-deploy:
