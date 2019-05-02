@@ -1008,12 +1008,11 @@
                 //A fundamental refactor of this controller should be considered at some stage.
                 vm.resetErrors();
                 vm.resetStatusFlags();
-                vm.resetTaskData();
                 refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
-                vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
+                setUpSelectedTask(data);
 
             }, function (error) {
                 onUnLockError(projectId, error);
@@ -1075,7 +1074,6 @@
                 vm.resetTaskData();
                 refreshProject(projectId);
                 updateMappedTaskPerUser(projectId);
-                vm.clearCurrentSelection();
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
             }, function (error) {
