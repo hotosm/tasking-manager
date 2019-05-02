@@ -403,7 +403,6 @@ const Resources = {
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresPassword')),
         AllocatedStorage: cf.ref('DatabaseSize'),
         StorageType: 'gp2',
-        DBInstanceIdentifier: cf.stackName,
         DBInstanceClass: 'db.m3.large', //rethink here
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
