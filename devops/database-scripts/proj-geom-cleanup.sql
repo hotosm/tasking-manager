@@ -43,6 +43,8 @@ BEGIN
       DELETE FROM public.project_info WHERE project_id = proj;
       DELETE FROM public.project_chat WHERE project_id = proj;
       DELETE FROM public.task_history WHERE project_id = proj;
+      DELETE FROM public.project_priority_areas WHERE project_id = proj;
+      DELETE FROM public.messages WHERE project_id = proj;
       DELETE FROM public.task_invalidation_history WHERE project_id = proj;
       DELETE FROM public.tasks WHERE project_id = proj;
       DELETE FROM public.projects WHERE id = proj;
