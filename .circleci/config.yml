@@ -60,7 +60,8 @@ jobs:
           # Run Python tests
           cd $CIRCLE_WORKING_DIRECTORY
           mkdir $CIRCLE_WORKING_DIRECTORY/tests/server/results
-          sudo env/bin/nosetests ./tests/server --with-xunit \
+          find ./tests/server -name "test*.py" -exec chmod -x {} \;
+          env/bin/nosetests ./tests/server --with-xunit \
             --xunit-file $CIRCLE_WORKING_DIRECTORY/tests/server/results/unitresults.xml \
             --with-coverage --cover-erase --cover-package=./server
           env/bin/coverage xml -o $CIRCLE_WORKING_DIRECTORY/tests/server/results/coverage.xml
