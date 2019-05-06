@@ -402,6 +402,7 @@ const Resources = {
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresUser')),
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresPassword')),
         AllocatedStorage: cf.ref('DatabaseSize'),
+        BackupRetentionPeriod: 10,
         StorageType: 'gp2',
         DBInstanceClass: 'db.m3.large', //rethink here
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),

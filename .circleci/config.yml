@@ -146,7 +146,7 @@ jobs:
         command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-staging.json s3://hot-cfn-config/tasking-manager/tasking-manager-staging-us-east-1.cfn.json
     - deploy:
         name: Deploy to staging
-        command: echo $JSON_CONFIG & cfn-config update staging $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
+        command: echo $JSON_CONFIG & cfn-config update staging $CIRCLE_WORKING_DIRECTORY/devops/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
         when: always
@@ -231,7 +231,7 @@ jobs:
         command: aws s3 cp $CIRCLE_WORKING_DIRECTORY/cfn-config-production.json s3://hot-cfn-config/tasking-manager/tasking-manager-production-us-east-1.cfn.json
     - deploy:
         name: Deploy to production
-        command: echo $JSON_CONFIG & cfn-config update production $CIRCLE_WORKING_DIRECTORY/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
+        command: echo $JSON_CONFIG & cfn-config update production $CIRCLE_WORKING_DIRECTORY/devops/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
         when: always
@@ -261,6 +261,5 @@ workflows:
           branches:
             only:
               - master
-              - cloudformation
         requires:
         - build
