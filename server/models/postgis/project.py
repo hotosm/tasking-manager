@@ -82,6 +82,7 @@ class Project(db.Model):
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
+    project_chat = db.relationship(ProjectChat, lazy='dynamic', cascade='all')
     author = db.relationship(User)
     allowed_users = db.relationship(User, secondary=project_allowed_users)
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
@@ -368,12 +369,12 @@ class Project(db.Model):
         current_app.logger.debug(unique_validators)
         summary.total_tasks = self.total_tasks
         summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
-        
+
         summary.entities_to_map = self.entities_to_map
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
-        
+
         summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
         summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
         summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
@@ -416,7 +417,7 @@ class Project(db.Model):
             total_validation_seconds = int(datetime.timedelta(hours=total_validation_time.hour,
                                                     minutes=total_validation_time.minute,
                                                     seconds=total_validation_time.second,
-                                                    microseconds=total_validation_time.microsecond).total_seconds())                                       
+                                                    microseconds=total_validation_time.microsecond).total_seconds())
             current_app.logger.debug(total_mapping_seconds)
             current_app.logger.debug(total_validation_seconds)
             if unique_mappers:
@@ -425,12 +426,12 @@ class Project(db.Model):
             if unique_validators:
                 average_validation_time = total_validation_seconds/unique_validators
                 summary.average_validation_time = str(datetime.timedelta(seconds=average_validation_time))
-            
+
             summary.total_mapping_time = total_mapping_time.time().isoformat()
             summary.total_validation_time = total_validation_time.time().isoformat()
             summary.total_time_spent = total_time_spent.time().isoformat()
 
-            
+
         return summary
 
     def get_project_title(self, preferred_locale):
