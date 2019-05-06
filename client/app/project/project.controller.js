@@ -1604,6 +1604,15 @@
             else if (editor === 'fieldpapers') {
                 editorService.launchFieldPapersEditor(center);
             }
+            else if (editor === 'rapid') {
+                editorService.launchRapidEditor(
+                    center,
+                    changesetComment,
+                    imageryUrl,
+                    vm.projectData.projectId,
+                    vm.getSelectTaskIds()
+                );
+            }
             else if (editor === 'josm') {
 
                 if (taskCount > 1) {
@@ -2106,6 +2115,12 @@
                 result.push({
                     "name": "Field Papers",
                     "value": "fieldpapers"
+                });
+            }
+            if (editors.includes("RAPID")) {
+                result.push({
+                    "name": "RapiD",
+                    "value": "rapid"
                 });
             }
             return result;
