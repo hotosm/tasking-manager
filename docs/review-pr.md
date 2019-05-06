@@ -1,3 +1,79 @@
+
+# Review of Pull Requests
+
+All team members are encouraged to regularly review Pull Requests. Within the team we are open to assign people we feel are the best for a certain topic to be checked. The person who opens a PR should initially assign reviewers. A best practice is to have two reviewers, one that looks more on the code and one that has an overview of behaviour and functionality. 
+
+## Pre-review
+
+1. Check naming convention of the PR branch
+   For all team Pull Requests make sure they follow the established naming schema:
+   * `feature/ISSUENUMBER-SOME-DESCRIPTION` for all new features
+   * `hotfix/ISSUENUMBER-SOME-DESCRIPTION` for urgent bugs
+
+  In case the branch name doesn’t fit. Ask the PR contributor to adjust the naming to our 
+git flow model.
+
+  PRs from external people are exempted to this best practice and you can continue with 
+the next step.
+
+2. Check out the pull request
+
+  Team PRs: `git fetch origin && git checkout BRANCHNAME`
+
+  Outside collaboration PRs: `git fetch origin pull/PRNUMBER/head:feature/PRNUMBER-SOME-DISCRIPTION git checkout BRANCHNAME`
+
+3. Check whether PR is up-to-date with `develop`
+
+  `git fetch origin && git rebase origin/develop`
+
+  * In case there is no rebase happening, you can just continue with the next step.
+  * In case of rebasing worked fine, just update the branch with git push -f and continue with the next step.
+  * In case of any conflicts, make a comment and ask the PR contributor to fix the comments.
+
+4. Check the commit messages
+
+  Review the commit messages. Usually there should be only one commit per Pull Request. Only more extensive ones or one PR that had to tackle two different topics may contain more. Check whether the commit messages are short and meaningful and describe the changes introduced with it.
+
+5. Check whether there are usable testing instructions
+
+  The description of the Pull Request needs to contain testing instructions. These shall be comprehensive and complete. They should serve you to get started easily and understand what to test and how.
+
+  In case there are no testing instructions or they are not enough. Ask the PR contributor to provide these.
+
+6. Check whether Continuous Integration runs without errors
+
+  Have a look on the CircleCI results. In case they fail, give the PR back to the contributor 
+and ask the person to check on the error.
+  In case they run through, you are good to go with the next step.
+
+## Code review
+
+1. Test behaviour and edge cases
+  Install the PR on your local setup, make sure you run
+  a. backend dependency installation: `pip install requirements.txt`
+  b. introduced database migrations: `python manage.py db upgrade`
+  c. frontend dependency installation: `cd client && npm install && cd ..`
+  d. rebuild the frontend: `cd client && gulp build && cd ..`
+
+  Then test the behaviour of the introduced changes. Try to hack it! Use edge cases and find where the new changes will cause errors.
+
+2. Review code
+
+  Check on the code and following these criterias:
+  a. Is the code of a good quality?
+  b. Are there any typos included?
+  c. Is the code commented?
+  d. Are there unit tests related to new functionality?
+
+3. Merge a PR
+
+  a. Squash commit messages eventually into one (make sure you include the issue number in the commit message)
+  b. Merge into `develop`
+  c. Delete the merged branch
+
+
+## Some step by step instructions 
+
 Assumptions:
 1. You have set all [environment variables](./setup-development.md#configuration) related to database, consumer key, and so forth.
 2. You are in the `tasking-manager` base directory.
