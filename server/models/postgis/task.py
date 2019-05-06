@@ -111,6 +111,7 @@ class TaskHistory(db.Model):
     action_text = db.Column(db.String)
     action_date = db.Column(db.DateTime, nullable=False, default=timestamp)
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
+    invalidation_history = db.relationship(TaskInvalidationHistory, lazy='dynamic', cascade='all')
 
     actioned_by = db.relationship(User)
 
