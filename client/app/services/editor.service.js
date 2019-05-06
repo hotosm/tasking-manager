@@ -18,7 +18,11 @@
             launchFieldPapersEditor: launchFieldPapersEditor,
             launchPotlatch2Editor: launchPotlatch2Editor,
             launchIdEditor: launchIdEditor,
+<<<<<<< HEAD
             launchCustomIdEditor: launchCustomIdEditor,
+=======
+            launchRapidEditor: launchRapidEditor,
+>>>>>>> Added RapiD  editor to the list of editors
             getGPXUrl: getGPXUrl,
             getOSMXMLUrl: getOSMXMLUrl,
             idPresetCategories: idPresetCategories,
@@ -129,8 +133,8 @@
          * @param projectId
          * @param taskId
          */
-        function launchRapid(centroid, changesetComment, imageryUrl, projectId, taskId){
-            var base = "https://mapwith.ai/rapid?";
+        function launchRapidEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
+            var base = 'https://www.mapwith.ai/rapid?';
             var zoom = mapService.getOSMMap().getView().getZoom();
             var url = base + '#map=' +
                         [zoom, centroid[1], centroid[0]].join('/');
@@ -153,7 +157,6 @@
             }
             $window.open(url);
         }
-
 
         /**
          * Round to a certain amount of decimals
