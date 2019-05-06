@@ -18,6 +18,7 @@
             launchFieldPapersEditor: launchFieldPapersEditor,
             launchPotlatch2Editor: launchPotlatch2Editor,
             launchIdEditor: launchIdEditor,
+            launchRapidEditor: launchRapidEditor,
             getGPXUrl: getGPXUrl,
             getOSMXMLUrl: getOSMXMLUrl
         };
@@ -56,6 +57,39 @@
          */
         function launchIdEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
             var base = 'http://www.openstreetmap.org/edit?editor=id&';
+            var zoom = mapService.getOSMMap().getView().getZoom();
+            var url = base + '#map=' +
+                        [zoom, centroid[1], centroid[0]].join('/');
+            // Add changeset comment
+            var changeset = ''; // default to empty string
+            if (changesetComment && changesetComment !== ''){
+                changeset = changesetComment;
+            }
+            url += '&comment=' + encodeURIComponent(changeset);
+            // Add imagery
+            if (imageryUrl && imageryUrl !== '') {
+                // url is supposed to look like tms[22]:http://hiu...
+                var urlForImagery = imageryUrl.substring(imageryUrl.indexOf('http'));
+                urlForImagery = urlForImagery.replace('zoom', 'z');
+                url += "&background=custom:" + encodeURIComponent(urlForImagery);
+            }
+            // Add GPX
+            if (projectId && projectId !== '' && taskId && taskId !== '') {
+                url += "&gpx=" + getGPXUrl(projectId, taskId);
+            }
+            $window.open(url);
+        }
+
+        /**
+         * Launch the RapiD editor
+         * @param centroid
+         * @param changesetComment
+         * @param imageryUrl
+         * @param projectId
+         * @param taskId
+         */
+        function launchRapidEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
+            var base = 'https://www.mapwith.ai/rapid?'; 
             var zoom = mapService.getOSMMap().getView().getZoom();
             var url = base + '#map=' +
                         [zoom, centroid[1], centroid[0]].join('/');
