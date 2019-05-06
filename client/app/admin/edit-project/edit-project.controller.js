@@ -45,7 +45,8 @@
             id: false,
             josm: false,
             potlatch2: false,
-            fieldpapers: false
+            fieldpapers: false,
+            rapid: false
         };
 
         // Editors for validation
@@ -53,7 +54,8 @@
             id: false,
             josm: false,
             potlatch2: false,
-            fieldpapers: false
+            fieldpapers: false,
+            rapid: false
         };
 
         // Tags
@@ -970,6 +972,7 @@
                 vm.mappingEditors.josm = vm.project.mappingEditors.indexOf("JOSM") != -1;
                 vm.mappingEditors.potlatch2 = vm.project.mappingEditors.indexOf("POTLATCH_2") != -1;
                 vm.mappingEditors.fieldpapers = vm.project.mappingEditors.indexOf("FIELD_PAPERS") != -1;
+                vm.mappingEditors.rapid = vm.project.mappingEditors.indexOf("RAPID") != -1;
             }
         }
 
@@ -990,6 +993,9 @@
             if (vm.mappingEditors.fieldpapers){
                 mappingEditorsArray.push("FIELD_PAPERS");
             }
+            if (vm.mappingEditors.rapid){
+                mappingEditorsArray.push("RAPID");
+            }
             return mappingEditorsArray;
         }
 
@@ -1004,6 +1010,7 @@
                 vm.validationEditors.josm = vm.project.validationEditors.indexOf("JOSM") != -1;
                 vm.validationEditors.potlatch2 = vm.project.validationEditors.indexOf("POTLATCH_2") != -1;
                 vm.validationEditors.fieldpapers = vm.project.validationEditors.indexOf("FIELD_PAPERS") != -1;
+                vm.validationEditors.rapid = vm.project.validationEditors.indexOf("RAPID") != -1;
             }
         }
 
@@ -1023,6 +1030,9 @@
             }
             if (vm.validationEditors.fieldpapers){
                 validationEditorsArray.push("FIELD_PAPERS");
+            }
+            if (vm.validationEditors.rapid){
+                validationEditorsArray.push("RAPID");
             }
             return validationEditorsArray;
         }

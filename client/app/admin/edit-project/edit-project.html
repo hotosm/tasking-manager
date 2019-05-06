@@ -502,6 +502,9 @@
                                     <label class="form__option">
                                         <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
                                     </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.rapid"/>{{ 'RapiD' | translate }}
+                                    </label>
                                     <p class="error" ng-show="editProjectCtrl.project.mappingEditors.length < 1">
                                         {{ 'You need at least one mapping editor.' | translate }}
                                     </p>
@@ -519,6 +522,9 @@
                                     </label>
                                     <label class="form__option">
                                         <input type="checkbox" ng-model="editProjectCtrl.validationEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.rapid"/>{{ 'RapiD' | translate }}
                                     </label>
                                     <p class="error" ng-show="editProjectCtrl.project.validationEditors.length < 1">
                                         {{ 'You need at least one validation editor.' | translate }}
