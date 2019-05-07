@@ -367,6 +367,9 @@ class Project(db.Model):
         current_app.logger.debug(unique_mappers)
         current_app.logger.debug(unique_validators)
         summary.total_tasks = self.total_tasks
+        summary.tasks_mapped = self.tasks_mapped
+        summary.tasks_validated = self.tasks_validated
+        summary.tasks_bad_imagery = self.tasks_bad_imagery
         summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
         
         summary.entities_to_map = self.entities_to_map
@@ -467,6 +470,10 @@ class Project(db.Model):
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
         base_dto.entities_to_map = self.entities_to_map
+        base_dto.total_tasks = self.total_tasks
+        base_dto.tasks_mapped = self.tasks_mapped
+        base_dto.tasks_validated = self.tasks_validated
+        base_dto.tasks_bad_imagery = self.tasks_bad_imagery
         base_dto.changeset_comment = self.changeset_comment
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
