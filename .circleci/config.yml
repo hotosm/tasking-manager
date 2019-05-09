@@ -186,7 +186,7 @@ jobs:
           echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
     - deploy:
         name: Deploy to << parameters.stack_name >>
-        command: echo $JSON_CONFIG & cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/devops/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
+        command: cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/devops/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
         when: always
