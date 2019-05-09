@@ -1,0 +1,47 @@
+# To use this file, run `docker-compose up`.
+version: '3'
+
+services:
+  # Main application
+  app:
+    image: hotosm/tasking-manager
+    container_name: app
+    env_file: tasking-manager.env
+    environment:
+      - POSTGRES_ENDPOINT=postgresql
+    depends_on:
+      - postgresql
+    expose:
+      - "5000"
+    ports:
+      - "5000:5000"
+    links:
+      - postgresql
+    volumes:
+      - node_modules:/usr/src/app/client/node_modules
+
+  # Migration service
+  migration:
+    image: hotosm/tasking-manager
+    env_file: tasking-manager.env
+    restart: on-failure
+    environment:
+      - POSTGRES_ENDPOINT=postgresql
+    depends_on:
+      - postgresql
+    links:
+      - postgresql
+    command: python manage.py db upgrade
+
+  # Database
+  postgresql:
+    image: mdillon/postgis:9.6
+    container_name: postgresql
+    env_file: tasking-manager.env
+    # logging:
+    #   driver: none
+    expose:
+      - "5432"
+
+volumes:
+  node_modules:

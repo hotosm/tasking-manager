@@ -60,7 +60,7 @@
                             </div>
                             <div>
                                 <h4>Stats</h4>
-                                <span>Time Spent Mapping (TM3 only)</span>
+                                <span>{{ 'Time Spent Mapping (on this instance)' | translate }}</span>
                                 <span class="pull-right">{{ profileCtrl.userStats.timeSpentMapping | amDurationFormat : 'second' }}</span>
                                 <hr/>
                             </div>
@@ -99,7 +99,7 @@
                                     <li>
                                         <label class="form__label"
                                                ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.editDetails">
-                                            Email (only visible to you):
+                                            {{ 'Email (only visible to you):' | translate }}
                                         </label>
                                         <span ng-hide="profileCtrl.editDetails">
                                             {{ profileCtrl.userDetails.emailAddress }}
@@ -114,7 +114,7 @@
                                         </span>
                                         <span ng-show="profileCtrl.userDetails.emailAddress && !profileCtrl.userDetails.isEmailVerified && !profileCtrl.editDetails">
                                             <button class="button button--achromic button--small"
-                                                    ng-click="profileCtrl.resendVerificationEmail()">Resend validation email</button>
+                                                    ng-click="profileCtrl.resendVerificationEmail()">{{ 'Resend validation email' | translate }}</button>
                                         </span>
                                     </li>
                                     <li>
@@ -167,11 +167,17 @@
                                     </li>
                                 </ul>
                                 <div ng-show="profileCtrl.userDetails.username === profileCtrl.currentlyLoggedInUser.username">
+                                    <div ng-show="!profileCtrl.userDetails.emailAddress && !profileCtrl.editDetails"
+                                         class="important-message">
+                                      <span class="important-message__icon fa fa-exclamation-circle"></span>
+                                      {{ "Please provide an email address to receive notifications about your mapping" | translate }}
+                                    </div>
+
                                     <button class="button button--achromic" type="button"
                                             ng-click="profileCtrl.editDetails = !profileCtrl.editDetails"
                                             ng-show="!profileCtrl.editDetails">
                                         <i class="hot-ds-icon-pencil" title="Edit Twitter URL"></i>
-                                        <span>{{ 'Add/edit contact details' | translate}}</span>
+                                        <span>{{ 'Add/edit contact details' | translate }}</span>
                                     </button>
                                     <button class="button button--achromic" type="button"
                                             ng-click="profileCtrl.setContactDetails()"
@@ -215,7 +221,7 @@
                                             </button>
                                             <button class="button button--achromic"
                                                     ng-class="profileCtrl.userDetails.role === 'PROJECT_MANAGER'? 'button--active' : ''"
-                                                    ng-hide="profileCtrl.userDetails.role === 'ADMIN' && profileCtrl.currentlyLoggedInUser.role === 'PROJECT_MANAGER'"
+                                                    ng-show="profileCtrl.currentlyLoggedInUser.role === 'ADMIN'"
                                                     ng-click="profileCtrl.setRole('PROJECT_MANAGER')">{{ 'Project Manager' | translate }}
                                             </button>
                                             <button class="button button--achromic"
@@ -311,6 +317,61 @@
                     </div>
                     <div>
                         <div id="map" class="map-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body section__body--secondary">
+                <div class="inner">
+                    <h2>{{ profileCtrl.isOwnProfile() ? ('Your' | translate) : profileCtrl.username + "'s" }} {{ 'Invalidated Tasks' | translate
+ }}</h2>
+                    <div class="profile-invalidated-tasks-list">
+                        <table ng-table="profileCtrl.invalidatedTasksAsMapperTableSettings" class="table">
+                            <tr ng-repeat="invalidatedTask in $data">
+                                <td title="'Project' | translate" sortable="'projectId'">
+                                    <a ng-href="/project/{{ invalidatedTask.projectId }}">
+                                        {{ invalidatedTask.projectName }}
+                                    </a>
+                                </td>
+                                <td title="'Task' | translate">
+                                  <a ng-href="/project/{{ invalidatedTask.projectId }}?task={{ invalidatedTask.taskId }}&history={{ invalidatedTask.historyId }}">
+                                        {{ 'Task' | translate }} {{ invalidatedTask.taskId }}
+                                    </a>
+                                </td>
+                                <td title="'State' | translate" filter="{closed: 'select'}"
+                                    filter-data="profileCtrl.mapperClosedFilterOptions">
+                                    {{ (invalidatedTask.closed ? 'Closed' : 'Open') | translate }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                  <h2>{{ 'Tasks' | translate }} {{ profileCtrl.isOwnProfile() ? 'You' : profileCtrl.username }} {{ 'Invalidated' | translate}}</h2>
+                    <div class="profile-invalidated-tasks-list">
+                        <table ng-table="profileCtrl.invalidatedTasksAsValidatorTableSettings" class="table">
+                            <tr ng-repeat="invalidatedTask in $data">
+                                <td title="'Project' | translate" sortable="'projectId'">
+                                    <a ng-href="/project/{{ invalidatedTask.projectId }}">
+                                        {{ invalidatedTask.projectName }}
+                                    </a>
+                                </td>
+                                <td title="'Task' | translate">
+                                  <a ng-href="/project/{{ invalidatedTask.projectId }}?task={{ invalidatedTask.taskId }}&history={{ invalidatedTask.historyId }}">
+                                        {{ 'Task' | translate }} {{ invalidatedTask.taskId }}
+                                    </a>
+                                </td>
+                                <td title="'State' | translate" filter="{closed: 'select'}"
+                                    filter-data="profileCtrl.validatorClosedFilterOptions">
+                                    {{ (invalidatedTask.closed ? 'Closed' : 'Open') | translate }}
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>

@@ -1,10 +1,10 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
+from schematics.types import StringType, BaseType, FloatType, IntType, BooleanType, DateTimeType, FloatType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode, Editors
 
 
 def is_known_project_status(value):
@@ -40,6 +40,19 @@ def is_known_mapping_type(value):
         raise ValidationError(f'Unknown mappingType: {value} Valid values are {MappingTypes.ROADS.name}, '
                               f'{MappingTypes.BUILDINGS.name}, {MappingTypes.WATERWAYS.name}, '
                               f'{MappingTypes.LAND_USE.name}, {MappingTypes.OTHER.name}')
+
+
+def is_known_editor(value):
+    """ Validates Editor is known value"""
+    if type(value) == list:
+        return  # Don't validate the entire list, just the individual values
+
+    try:
+        Editors[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown editor: {value} Valid values are {Editors.ID.name}, '
+                              f'{Editors.JOSM.name}, {Editors.POTLATCH_2.name}, '
+                              f'{Editors.FIELD_PAPERS.name}')
 
 
 def is_known_task_creation_mode(value):
@@ -105,6 +118,8 @@ class ProjectDTO(Model):
     active_mappers = IntType(serialized_name='activeMappers')
     task_creation_mode = StringType(required=True, serialized_name='taskCreationMode',
                                     validators=[is_known_task_creation_mode], serialize_when_none=False)
+    mapping_editors = ListType(StringType, min_size=1, required=True, serialized_name='mappingEditors', validators=[is_known_editor])
+    validation_editors = ListType(StringType, min_size=1, required=True, serialized_name='validationEditors', validators=[is_known_editor])
 
 
 class ProjectSearchDTO(Model):
@@ -118,6 +133,8 @@ class ProjectSearchDTO(Model):
     page = IntType(required=True)
     text_search = StringType()
     is_project_manager = BooleanType(required=True, default=False)
+    mapping_editors = ListType(StringType, validators=[is_known_editor])
+    validation_editors = ListType(StringType, validators=[is_known_editor])
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
@@ -129,9 +146,17 @@ class ProjectSearchDTO(Model):
         if self.project_statuses:
             for project_status in self.project_statuses:
                 hashable_project_statuses = hashable_project_statuses + project_status
+        hashable_mapping_editors = ''
+        if self.mapping_editors:
+            for mapping_editor in self.mapping_editors:
+                hashable_mapping_editors = hashable_mapping_editors + mapping_editor
+        hashable_validation_editors = ''
+        if self.validation_editors:
+            for validation_editor in self.validation_editors:
+                hashable_validation_editors = hashable_validation_editors + validation_editor
 
         return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, hashable_project_statuses,
-                     self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager))
+                     self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager, hashable_mapping_editors, hashable_validation_editors))
 
 
 class ProjectSearchBBoxDTO(Model):
@@ -196,16 +221,34 @@ class ProjectCommentsDTO(Model):
 class ProjectSummary(Model):
     """ Model used for PM dashboard """
     project_id = IntType(required=True, serialized_name='projectId')
+    area = FloatType(serialized_name='projectArea(in sq.km)')
     name = StringType()
+    author = StringType(serialized_name='createdBy')
+    created = DateTimeType()
+    due_date = DateTimeType()
+    last_updated = DateTimeType(serialized_name='lastUpdated')
+    priority = StringType(serialized_name='projectPriority')
     campaign_tag = StringType(serialized_name='campaignTag')
+    organisation_tag = StringType(serialized_name='organisationTag')
+    entities_to_map = StringType(serialized_name='entitiesToMap')
+    changeset_comment = StringType(serialized_name='changesetComment')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
-    created = DateTimeType()
-    last_updated = DateTimeType(serialized_name='lastUpdated')
+    percent_bad_imagery = IntType(serialized_name='percentBadImagery')
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
     mapper_level = StringType(serialized_name='mapperLevel')
-    organisation_tag = StringType(serialized_name='organisationTag')
+    mapper_level_enforced = BooleanType(serialized_name='mapperLevelEnforced')
+    validator_level_enforced = BooleanType(serialized_name='validatorLevelEnforced')
     short_description = StringType(serialized_name='shortDescription')
+    total_mappers = IntType(serialized_name='totalMappers')
+    total_tasks = IntType(serialized_name='totalTasks')
+    total_comments = IntType(serialized_name='totalComments')
+    total_mapping_time = IntType(serialized_name='totalMappingTime')
+    total_validation_time = IntType(serialized_name='totalValidationTime')
+    total_time_spent = StringType(serialized_name='totalTimeSpent')
+    average_mapping_time=StringType(serialized_name='averageMappingTime')
+    average_validation_time=StringType(serialized_name='averageValidationTime')
+    
     status = StringType()
 
 

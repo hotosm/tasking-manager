@@ -7,17 +7,26 @@ from flask import current_app
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
+from geoalchemy2.shape import to_shape
+from shapely.geometry import Polygon
+from shapely.ops import transform
+from functools import partial
+import pyproj
+import dateutil.parser
+import datetime
 
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode
+from server.models.postgis.project_chat import ProjectChat
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode, Editors
 from server.models.postgis.tags import Tags
-from server.models.postgis.task import Task
+from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.user import User
-from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound
+
+from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound, ST_Area, ST_Transform
 from server.services.grid.grid_service import GridService
 
 # Secondary table defining many-to-many join for private projects that only defined users can map on
@@ -64,6 +73,20 @@ class Project(db.Model):
     organisation_tag = db.Column(db.String, index=True)
     campaign_tag = db.Column(db.String, index=True)
 
+    # Editors
+    mapping_editors = db.Column(ARRAY(db.Integer), default=[
+                                                            Editors.ID.value,
+                                                            Editors.JOSM.value,
+                                                            Editors.POTLATCH_2.value,
+                                                            Editors.FIELD_PAPERS.value],
+                                                            index=True, nullable=False)
+    validation_editors = db.Column(ARRAY(db.Integer), default=[
+                                                               Editors.ID.value,
+                                                               Editors.JOSM.value,
+                                                               Editors.POTLATCH_2.value,
+                                                               Editors.FIELD_PAPERS.value],
+                                                               index=True, nullable=False)
+
     # Stats
     total_tasks = db.Column(db.Integer, nullable=False)
     tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
@@ -73,6 +96,7 @@ class Project(db.Model):
     # Mapped Objects
     tasks = db.relationship(Task, backref='projects', cascade="all, delete, delete-orphan", lazy='dynamic')
     project_info = db.relationship(ProjectInfo, lazy='dynamic', cascade='all')
+    project_chat = db.relationship(ProjectChat, lazy='dynamic', cascade='all')
     author = db.relationship(User)
     allowed_users = db.relationship(User, secondary=project_allowed_users)
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
@@ -102,7 +126,7 @@ class Project(db.Model):
     def set_default_changeset_comment(self):
         """ Sets the default changeset comment"""
         default_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
-        self.changeset_comment = f'{default_comment}-{self.id}'
+        self.changeset_comment = f'{default_comment}-{self.id} {self.changeset_comment}' if self.changeset_comment is not None else f'{default_comment}-{self.id}'
         self.save()
 
     def create(self):
@@ -154,6 +178,31 @@ class Project(db.Model):
         for user in original_project.allowed_users:
             cloned_project.allowed_users.append(user)
 
+        # Add other project metadata
+        cloned_project.priority = original_project.priority
+        cloned_project.default_locale = original_project.default_locale
+        cloned_project.mapper_level = original_project.mapper_level
+        cloned_project.enforce_mapper_level = original_project.enforce_mapper_level
+        cloned_project.enforce_validator_role = original_project.enforce_validator_role
+        cloned_project.private = original_project.private
+        cloned_project.entities_to_map = original_project.entities_to_map
+        cloned_project.due_date = original_project.due_date
+        cloned_project.imagery = original_project.imagery
+        cloned_project.josm_preset = original_project.josm_preset
+        cloned_project.license_id = original_project.license_id
+        cloned_project.mapping_types = original_project.mapping_types
+        cloned_project.organisation_tag = original_project.organisation_tag
+        cloned_project.campaign_tag = original_project.campaign_tag
+
+        # We try to remove the changeset comment referencing the old project. This
+        #  assumes the default changeset comment has not changed between the old
+        #  project and the cloned. This is a best effort basis.
+        default_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
+        changeset_comments = original_project.changeset_comment.split(' ')
+        if f'{default_comment}-{original_project.id}' in changeset_comments:
+            changeset_comments.remove(f'{default_comment}-{original_project.id}')
+        cloned_project.changeset_comment = " ".join(changeset_comments)
+
         db.session.add(cloned_project)
         db.session.commit()
 
@@ -202,6 +251,17 @@ class Project(db.Model):
         for mapping_type in project_dto.mapping_types:
             type_array.append(MappingTypes[mapping_type].value)
         self.mapping_types = type_array
+
+        # Cast Editor strings to int array
+        mapping_editors_array = []
+        for mapping_editor in project_dto.mapping_editors:
+            mapping_editors_array.append(Editors[mapping_editor].value)
+        self.mapping_editors = mapping_editors_array
+
+        validation_editors_array = []
+        for validation_editor in project_dto.validation_editors:
+            validation_editors_array.append(Editors[validation_editor].value)
+        self.validation_editors = validation_editors_array
 
         # Add list of allowed users, meaning the project can only be mapped by users in this list
         if hasattr(project_dto, 'allowed_users'):
@@ -289,22 +349,113 @@ class Project(db.Model):
         """ Create Project Summary model for postgis project object"""
         summary = ProjectSummary()
         summary.project_id = self.id
+        priority = self.priority
+        if priority == 0:
+            summary.priority = 'URGENT'
+        elif priority == 1:
+            summary.priority = 'HIGH'
+        elif priority == 2:
+            summary.priority = 'MEDIUM'
+        else:
+            summary.priority = 'LOW'
+        summary.author = User().get_by_id(self.author_id).username
+        polygon = to_shape(self.geometry)
+        polygon_aea = transform(
+                            partial(
+                            pyproj.transform,
+                            pyproj.Proj(init='EPSG:4326'),
+                            pyproj.Proj(
+                                proj='aea',
+                                lat1=polygon.bounds[1],
+                                lat2=polygon.bounds[3])),
+                            polygon)
+        area = polygon_aea.area/1000000
+        summary.area = area
         summary.campaign_tag = self.campaign_tag
+        summary.changeset_comment = self.changeset_comment
         summary.created = self.created
         summary.last_updated = self.last_updated
+        summary.due_date = self.due_date
         summary.mapper_level = MappingLevel(self.mapper_level).name
+        summary.mapper_level_enforced = self.enforce_mapper_level
+        summary.validator_level_enforced = self.enforce_validator_role
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
+        summary.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
+        unique_mappers = TaskHistory.query.filter(
+                TaskHistory.action == 'LOCKED_FOR_MAPPING',
+                TaskHistory.project_id == self.id
+            ).distinct(TaskHistory.user_id).count()
+        unique_validators = TaskHistory.query.filter(
+                TaskHistory.action == 'LOCKED_FOR_VALIDATION',
+                TaskHistory.project_id == self.id
+            ).distinct(TaskHistory.user_id).count()
+        current_app.logger.debug(unique_mappers)
+        current_app.logger.debug(unique_validators)
+        summary.total_tasks = self.total_tasks
+        summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
+
+        summary.entities_to_map = self.entities_to_map
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
         summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
         summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
-
+        summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
+
+        users_durations = TaskHistory.query.filter(
+                TaskHistory.action_text != '',
+                TaskHistory.project_id == self.id
+            ).all()
+        total_mapping_time = datetime.datetime.min
+        total_validation_time = datetime.datetime.min
+        total_time_spent = datetime.datetime.min
+        for user_duration in users_durations:
+            try:
+                duration = dateutil.parser.parse(user_duration.action_text)
+                total_time_spent += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+                if user_duration.action == 'LOCKED_FOR_MAPPING':
+                    total_mapping_time += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+                elif user_duration.action == 'LOCKED_FOR_VALIDATION':
+                    total_validation_time += datetime.timedelta(hours=duration.hour,
+                                                    minutes=duration.minute,
+                                                    seconds=duration.second,
+                                                    microseconds=duration.microsecond)
+            except ValueError:
+                current_app.logger.info('Invalid duration specified')
+            current_app.logger.debug(total_mapping_time)
+            current_app.logger.debug(total_validation_time)
+            total_mapping_seconds = int(datetime.timedelta(hours=total_mapping_time.hour,
+                                                    minutes=total_mapping_time.minute,
+                                                    seconds=total_mapping_time.second,
+                                                    microseconds=total_mapping_time.microsecond).total_seconds())
+            total_validation_seconds = int(datetime.timedelta(hours=total_validation_time.hour,
+                                                    minutes=total_validation_time.minute,
+                                                    seconds=total_validation_time.second,
+                                                    microseconds=total_validation_time.microsecond).total_seconds())
+            current_app.logger.debug(total_mapping_seconds)
+            current_app.logger.debug(total_validation_seconds)
+            if unique_mappers:
+                average_mapping_time = total_mapping_seconds/unique_mappers
+                summary.average_mapping_time = str(datetime.timedelta(seconds=average_mapping_time))
+            if unique_validators:
+                average_validation_time = total_validation_seconds/unique_validators
+                summary.average_validation_time = str(datetime.timedelta(seconds=average_validation_time))
+
+            summary.total_mapping_time = total_mapping_time.time().isoformat()
+            summary.total_validation_time = total_validation_time.time().isoformat()
+            summary.total_time_spent = total_time_spent.time().isoformat()
+
 
         return summary
 
@@ -369,6 +520,20 @@ class Project(db.Model):
 
             base_dto.mapping_types = mapping_types
 
+        if self.mapping_editors:
+            mapping_editors = []
+            for mapping_editor in self.mapping_editors:
+                mapping_editors.append(Editors(mapping_editor).name)
+
+            base_dto.mapping_editors = mapping_editors
+
+        if self.validation_editors:
+            validation_editors = []
+            for validation_editor in self.validation_editors:
+                validation_editors.append(Editors(validation_editor).name)
+
+            base_dto.validation_editors = validation_editors
+
         if self.priority_areas:
             geojson_areas = []
             for priority_area in self.priority_areas:
@@ -378,11 +543,14 @@ class Project(db.Model):
 
         return self, base_dto
 
-    def as_dto_for_mapping(self, locale: str) -> Optional[ProjectDTO]:
+    def as_dto_for_mapping(self, locale: str, abbrev: bool) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         project, project_dto = self._get_project_and_base_dto()
 
-        project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+        if abbrev == False:
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+        else:
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection_no_geom(self.id)
         project_dto.project_info = ProjectInfo.get_dto_for_locale(self.id, locale, project.default_locale)
 
         return project_dto
@@ -426,7 +594,6 @@ class Project(db.Model):
         tags_dto = TagsDTO()
         tags_dto.tags = [r[1] for r in query]
         return tags_dto
-
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

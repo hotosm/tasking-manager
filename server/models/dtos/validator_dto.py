@@ -1,9 +1,9 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, DateTimeType
+from schematics.types import StringType, IntType, DateTimeType, BooleanType
 from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import TaskStatus
-
+from server.models.dtos.stats_dto import Pagination
 
 def is_valid_validated_status(value):
     """ Validates that Task Status is in correct range for after validation """
@@ -64,6 +64,25 @@ class MappedTasksByUser(Model):
     mapping_level = StringType(required=True, serialized_name='mappingLevel')
     date_registered = DateTimeType(serialized_name='dateRegistered')
     last_validation_date = DateTimeType(serialized_name='lastValidationDate')
+
+
+class InvalidatedTask(Model):
+    """ Describes invalidated tasks with which user is involved """
+    task_id = IntType(required=True, serialized_name='taskId')
+    project_id = IntType(required=True, serialized_name='projectId')
+    project_name = StringType(serialized_name='projectName')
+    history_id = IntType(serialized_name='historyId')
+    closed = BooleanType()
+    updated_date = DateTimeType(serialized_name='updatedDate')
+
+class InvalidatedTasks(Model):
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.invalidated_tasks = []
+
+    invalidated_tasks = ListType(ModelType(InvalidatedTask), serialized_name='invalidatedTasks')
+    pagination = ModelType(Pagination)
 
 
 class MappedTasks(Model):

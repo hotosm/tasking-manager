@@ -32,6 +32,7 @@ module.exports = function(config) {
       'node_modules/angular-chart.js/dist/angular-chart.js',
       'node_modules/ng-tags-input/build/ng-tags-input.js',
       'node_modules/ment.io/dist/mentio.js',
+      'node_modules/ng-table/bundles/ng-table.js',
       'node_modules/angular-translate/dist/angular-translate.js',
       'node_modules/angular-translate/dist/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
       'node_modules/angular-socialshare/dist/angular-socialshare.js',
@@ -49,8 +50,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {},
-    
-    
+
+
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
@@ -60,10 +61,10 @@ module.exports = function(config) {
     // Junit Reporter can be used to output test info for CI system, see homepage for config
     // https://github.com/karma-runner/karma-junit-reporter
     junitReporter: {
-      outputDir: '../shippable/testresults',
+      outputDir: '../testresults',
       useBrowserName: true
     },
-    
+
 
     // web server port
     port: 9876,

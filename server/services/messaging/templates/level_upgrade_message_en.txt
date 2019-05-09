@@ -1,0 +1,9 @@
+Hi [USERNAME],<br />
+<br />
+Congratulations! Your'e now an [LEVEL] mapper.<br />
+Thank you very much for mapping!<br />
+We encourage you to continue your contribution to HOT.<br />
+You can now begin validating tasks across projects. <br />
+<br />
+Many thanks <br />
+HOT Mapping Team
