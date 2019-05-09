@@ -163,18 +163,18 @@ jobs:
     - run:
         name: Remove last snapshot and backup database
         command: |
-          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-deployment-snapshot-latest --db-instance-identifier $RDS_ID --output text`
+          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID --output text`
           # Copy old snapshot to temporary
           if [ -z "$DESCRIBE_SNAPSHOT" ]
           then
               echo "Snapshot does not exist, creating one now."
           else
-              aws rds copy-db-snapshot --source-db-snapshot tm3-<< parameters.stack_name >>-deployment-snapshot-latest --target-db-snapshot tm3-<< parameters.stack_name >>-deployment-snapshot-temp
-              aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-deployment-snapshot-latest
+              aws rds copy-db-snapshot --source-db-snapshot tm3-<< parameters.stack_name >>-$RDS_ID-latest --target-db-snapshot tm3-<< parameters.stack_name >>-$RDS_ID-temp
+              aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest
           fi
           # create new aws rds snapshot
-          aws rds create-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-deployment-snapshot-latest --db-instance-identifier $RDS_ID
-          aws rds wait db-snapshot-completed --db-snapshot-identifier tm3-<< parameters.stack_name >>-deployment-snapshot-latest --db-instance-identifier $RDS_ID
+          aws rds create-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID
+          aws rds wait db-snapshot-completed --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID
           if [[ $? -eq 255 ]]; then
             echo "Production snapshot creation failed. Exiting with exit-code 125"
             exit 125
@@ -191,13 +191,13 @@ jobs:
         name: Cleanup
         when: always
         command: |
-          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-deployment-snapshot-temp --db-instance-identifier $RDS_ID --output text`
+          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-temp --db-instance-identifier $RDS_ID --output text`
           # Copy old snapshot to temporary
           if [ -z "$DESCRIBE_SNAPSHOT" ]
           then
             echo "temporary snapshot doesn't exist, nothing to cleanup."
           else
-            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-deployment-snapshot-temp
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-temp
           fi
 workflows:
   version: 2
