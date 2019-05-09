@@ -300,7 +300,7 @@ class TaskHistory(db.Model):
             .filter(TaskHistory.project_id == project_id,
                     TaskHistory.task_id == task_id,
                     TaskHistory.action == TaskAction.STATE_CHANGE.name,
-                    TaskHistory.action_text == TaskStatus.MAPPED.name) \
+                    TaskHistory.action_text.in_([TaskStatus.BADIMAGERY.name, TaskStatus.MAPPED.name])) \
             .order_by(TaskHistory.action_date.desc()).first()
 
 class Task(db.Model):
