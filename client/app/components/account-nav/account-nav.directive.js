@@ -60,7 +60,7 @@
                 if (vm.account.username) {
                     checkIfUserHasMessages();
                 }
-            }, 10000);
+            }, 60000);
 
             // Catch clicks and check if it was outside of the menu element. If so, close the dropdown menu.
             $document.bind('click', function(event){
