@@ -15,12 +15,22 @@
                             #{{ projectCtrl.projectData.projectId }}
                             - {{ projectCtrl.projectData.projectInfo.name }}
                         </h2>
-                        <div ng-show="projectCtrl.user.role === 'ADMIN' || projectCtrl.projectData.author === projectCtrl.user.username"
-                            class="edit-project-button">
-                            <a ng-href="/admin/edit-project/{{ projectCtrl.id }}"
-                            class="button button--secondary">{{ 'Edit project' | translate }}
-                            </a>
-                        </div>
+                        <ul class="list-type--none buttons--sidebyside">
+                            <li ng-show="projectCtrl.user.role === 'ADMIN' || projectCtrl.projectData.author === projectCtrl.user.username">
+                                <div class="edit-project-button">
+                                    <a ng-href="/admin/edit-project/{{ projectCtrl.id }}"
+                                      class="button button--secondary">{{ 'Edit project' | translate }}
+                                    </a>
+                                </div>
+                            </li>
+                            <li ng-show="projectCtrl.showOSMCha">
+                                <button class="button"
+                                        title="{{ 'See the changesets in OSMCha for this project' | translate }}"
+                                        ng-click="projectCtrl.viewProjectOSMCha()">
+                                    {{ 'View in OSMCha' | translate }}
+                                </button>
+                            </li>
+                        </ul>
                         <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'">
                             <p>
                                 {{ 'Download:' | translate }} {{ 'AoI as' | translate }}
@@ -1080,6 +1090,13 @@
                                                     title="{{ 'See the changesets in Overpass Turbo for this area.' | translate }}"
                                                     ng-click="projectCtrl.viewOverpassTurbo()">
                                                 {{ 'View in Overpass Turbo' | translate }}
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="button button--achromic"
+                                                    title="{{ 'See the changesets in OSMCha for this area.' | translate }}"
+                                                    ng-click="projectCtrl.viewTaskOSMCha()">
+                                                {{ 'View in OSMCha' | translate }}
                                             </button>
                                         </li>
                                     </ul>
