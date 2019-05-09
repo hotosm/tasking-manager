@@ -8,9 +8,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'mappingIssueService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'mappingIssueService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', 'osmchaService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, mappingIssueService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, mappingIssueService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService, osmchaService) {
         var vm = this;
         vm.id = 0;
         vm.selectedIssueCategory = null;
@@ -30,6 +30,7 @@
         vm.validatingStep = '';
         vm.userCanMap = true;
         vm.userCanValidate = true;
+        vm.showOSMCha = false;
 
         //error control
         vm.taskErrorMapping = '';
@@ -536,6 +537,9 @@
                 vm.selectedValidationEditor = vm.validationEditors[0].value;
                 vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
                 vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.user.mappingLevel, vm.projectData.enforceValidatorRole, vm.projectData.allowNonBeginners);
+                // If validator role enforced, show validator+ OSMCha buttons; otherwise show experts too
+                vm.showOSMCha = vm.projectData.enforceValidatorRole ? vm.userCanValidate :
+                                (projectService.userCanValidateProject(vm.user.role, true) || vm.user.isExpert);
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
@@ -1485,6 +1489,36 @@
         };
 
         /**
+         * View task-level changesets in OSMCha filtered by task bbox, start
+         * date of first edit, changeset comment, and participating usernames.
+         * We don't support a custom filter for tasks because we can't override
+         * the filter settings and provide a smaller bbox
+         */
+        vm.viewTaskOSMCha = function () {
+            osmchaService.viewOSMCha({
+                bbox: vm.osmBBox(),
+                usernames: vm.participantUsernames(),
+                startDate: vm.earliestHistoryActionDate(),
+                comment: vm.projectData.changesetComment,
+            });
+        };
+
+        /**
+         * View project-level changesets in OSMCha filtered by project AOI,
+         * creation date, and changeset comment -- or instead by custom filter
+         * id, if one has been set on the project
+         */
+        vm.viewProjectOSMCha = function() {
+            osmchaService.viewOSMCha({
+                filterId: vm.projectData.osmchaFilterId,
+                bbox: vm.projectData.aoiBBOX,
+                bboxSize: 2,  // Filter out global-scale changesets
+                startDate: moment.utc(vm.projectData.created),
+                comment: vm.projectData.changesetComment,
+            });
+        };
+
+        /**
          * View changes in Overpass Turbo
          */
         vm.viewOverpassTurbo = function () {
@@ -1655,6 +1689,22 @@
 
             return userList;
         }
+
+        /**
+         * Inspects the task history of the currently selected task and, if
+         * available, returns a moment instance representing the earliest
+         * action date in the history or null otherwise
+         */
+        vm.earliestHistoryActionDate = function() {
+            var history = vm.selectedTaskData.taskHistory;
+            if (history && history.length > 0) {
+                return moment.min(history.map(function(entry) {
+                    return moment.utc(entry.actionDate);
+                }));
+            }
+
+            return null;
+        };
 
         /**
          * Returns a Moment instance representing the action date of the given
