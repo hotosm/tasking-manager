@@ -199,6 +199,12 @@ jobs:
           else
             aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-temp
           fi
+          # Delete manual snapshot if database ID changed
+          RDS_ID_NEW=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-<< parameters.stack_name >>"}')
+          if [ "$RDS_ID" != "$RDS_ID_NEW" ]
+          then
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest
+          fi
 workflows:
   version: 2
   build-deploy:
