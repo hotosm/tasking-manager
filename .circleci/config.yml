@@ -162,6 +162,7 @@ jobs:
           echo "export RDS_ID=$RDS_ID" >> $BASH_ENV
     - run:
         name: Remove last snapshot and backup database
+        no_output_timeout: 15m
         command: |
           DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID --output text`
           # Copy old snapshot to temporary
