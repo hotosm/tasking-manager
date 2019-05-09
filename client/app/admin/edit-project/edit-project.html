@@ -358,6 +358,13 @@
                                         {{ 'Please make sure you only have one campaign tag.' | translate }}
                                     </p>
                                 </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'OSMCha Filter Id' | translate }}</label>
+                                    <input type="text" class="form__control" ng-model="editProjectCtrl.project.osmchaFilterId"/>
+                                    <p>
+                                        {{ 'Optional id of a saved OSMCha filter to apply when viewing the project in OSMCha, if you desire custom filtering. Note that this replaces all standard filters. Example: 095e8b31-b3cb-4b36-a106-02826fb6a109 (for convenience, you can also paste an OSMCha URL here that uses a saved filter and the filter id will be extracted for you).' | translate }}
+                                    </p>
+                                </div>
                             </fieldset>
                         </div>
                         <!--/ metadata section -->
