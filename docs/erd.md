@@ -2,4 +2,4 @@
 
 _[Collaborate over draw.io](https://www.draw.io/#G17julelLWpYwOptKBFhBJ-Uz4PJdKubzL)_
 
-_[Draw.io Source file](https://github.com/hotosm/tasking-manager/blob/master/docs/assets/TM%20ERD.drawio)_
+_[Draw.io Source file](./assets/TM%20ERD.drawio)_
