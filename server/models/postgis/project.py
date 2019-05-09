@@ -198,7 +198,9 @@ class Project(db.Model):
         #  assumes the default changeset comment has not changed between the old
         #  project and the cloned. This is a best effort basis.
         default_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
-        changeset_comments = original_project.changeset_comment.split(' ')
+        changeset_comments = []
+        if original_project.changeset_comment is not None:
+            changeset_comments = original_project.changeset_comment.split(' ')
         if f'{default_comment}-{original_project.id}' in changeset_comments:
             changeset_comments.remove(f'{default_comment}-{original_project.id}')
         cloned_project.changeset_comment = " ".join(changeset_comments)
