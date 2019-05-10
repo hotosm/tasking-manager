@@ -39,6 +39,7 @@
             createProject: createProject,
             setAOI: setAOI,
             getAOI: getAOI,
+            getAOIServer: getAOIServer,
             splitTasks: splitTasks,
             getProject: getProject,
             getProjectMetadata: getProjectMetadata,
@@ -212,6 +213,27 @@
          */
         function getAOI() {
             return aoi;
+        }
+
+        function getAOIServer(id) {
+
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + id + '/aoi?as_file=false',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+
         }
 
         /**
