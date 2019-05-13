@@ -1,4 +1,4 @@
-# Localisation
+# Contributions to the localization
 
 The Tasking Manager is localised using the Transifex. Transifex is included in the requirements.txt so you should be
 able to use the Transifex commands once you have set up your server side code. The Tasking Manager is using Transifex's
@@ -30,4 +30,3 @@ In this example we are adding support for German.
 * Add a new .json file with the appropriate language code as the name of the file, so in this case de.json.
 * Configure local mapping by using Transifex's set command: ```tx set -r tasking-manager-3.master -l de client/locale/de.json```
 * Add the new language and language code to the config file so it shows up in dropdowns etc. in server/config.py
-
