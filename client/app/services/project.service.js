@@ -681,12 +681,17 @@
          * @param enforceValidateRole*
          * @returns {boolean}
          */
-        function userCanValidateProject(userRole, enforceValidateRole) {
+        function userCanValidateProject(userRole, mappingLevel, enforceValidateRole, allowNonBeginners) {
+            var userCanValidate = true
             if (enforceValidateRole) {
                 var validatorRoles = ['ADMIN', 'PROJECT_MANAGER', 'VALIDATOR'];
-                return validatorRoles.indexOf(userRole) != -1;
+                userCanValidate = (validatorRoles.indexOf(userRole) != -1);
+            } 
+            if (allowNonBeginners) {
+                var allowedLevels = ['INTERMEDIATE','ADVANCED']
+                userCanValidate = (allowedLevels.indexOf(mappingLevel) != -1);
             }
-            return true;
+            return userCanValidate;
         }
 
         /**

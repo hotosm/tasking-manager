@@ -70,7 +70,7 @@
                                             <span class="missing-email-indicator fa fa-exclamation"></span>
                                         </span>
                                     </a>
-                                    
+
                                 </li>
                                 <li>
                                     <a title="{{ 'Project wide actions' | translate }}" ng-click="editProjectCtrl.currentSection = 'actions'"
@@ -414,19 +414,23 @@
                         <div ng-show="editProjectCtrl.currentSection === 'permissions'">
                             <fieldset class="form__fieldset">
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Mapper Level' | translate }}</label>
+                                    <label class="form__label">{{ 'Mappers' | translate }}</label>
                                     <label class="form__option">
-                                        <input ng-model="editProjectCtrl.project.enforceMapperLevel" type="checkbox"/>{{ 'Only mappers with level' | translate }} {{ editProjectCtrl.project.mapperLevel }} {{ 'or higher can map' | translate }}
+                                        <input ng-model="editProjectCtrl.project.enforceMapperLevel" type="checkbox"/>{{ 'Only mappers with experience level' | translate }} {{ editProjectCtrl.project.mapperLevel }} {{ 'or higher can map' | translate }}
                                     </label>
                                     <p>{{ 'If checked, only users with the listed mapper experience level will be able to contribute to this project. If unchecked, anyone can contribute. Go to the Metadata panel to change the mapper experience level for this project.' | translate }}
                                     </p>
                                 </div>
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Validator Level' | translate }}</label>
+                                    <label class="form__label">{{ 'Validators' | translate }}</label>
                                     <label class="form__option">
-                                        <input ng-model="editProjectCtrl.project.enforceValidatorRole" type="checkbox"/>{{ 'Only Validators can validate on this project' | translate }}
+                                        <input ng-model="editProjectCtrl.project.enforceValidatorRole" type="checkbox" />{{ 'Require users to be validators' | translate }}
                                     </label>
                                     <p>{{ 'If checked, only users with the Validator role will be able to validate tasks in this project. If unchecked, anyone can validate or invalidate tasks.' | translate }}</p>
+                                    <label class="form__option">
+                                        <input ng-model="editProjectCtrl.project.allowNonBeginners" type="checkbox"/>{{ 'Require experience level INTERMEDIATE or ADVANCED' | translate }}
+                                    </label>
+                                    <p>{{ ' If checked, only users with the experience level of Intermediate and Advanced will be able to validate tasks in this project.' | translate }}</p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Private Project' | translate }}</label>
