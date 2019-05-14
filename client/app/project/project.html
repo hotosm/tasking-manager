@@ -15,13 +15,13 @@
                             #{{ projectCtrl.projectData.projectId }}
                             - {{ projectCtrl.projectData.projectInfo.name }}
                         </h2>
-                        <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'"
+                        <div ng-show="projectCtrl.user.username === projectCtrl.projectData.author || projectCtrl.user.role === 'ADMIN'"
                             class="edit-project-button">
                             <a ng-href="/admin/edit-project/{{ projectCtrl.id }}"
                             class="button button--secondary">{{ 'Edit project' | translate }}
                             </a>
                         </div>
-                        <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'">
+                        <div ng-show="projectCtrl.user.username === projectCtrl.projectData.author || projectCtrl.user.role === 'ADMIN'">
                             <p>
                                 {{ 'Download:' | translate }} {{ 'AoI as' | translate }}
                                 <a href="/api/v1/project/{{ projectCtrl.id }}/aoi?as_file=true" target="_blank">.geojson</a>, {{ 'Tasks as' | translate }}

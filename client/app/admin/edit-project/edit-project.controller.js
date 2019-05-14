@@ -115,20 +115,6 @@
 
             // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
             var session = authService.getSession();
-            if (session){
-                var resultsPromise = accountService.getUser(session.username);
-                resultsPromise.then(function (user) {
-                    vm.userRole = user.role;
-                    // Returned the user successfully. Check the user's role
-                    if (user.role !== 'PROJECT_MANAGER' && user.role !== 'ADMIN'){
-                        $location.path('/');
-                    }
-                }, function(){
-                    // an error occurred, navigate to homepage
-                    $location.path('/');
-                });
-            }
-
             var id = $routeParams.id;
 
             // Initialise the map and add interactions
@@ -139,6 +125,22 @@
             setCampaignTags();
 
             getProjectMetadata(id);
+            if (session){
+                var resultsPromise = accountService.getUser(session.username);
+                resultsPromise.then(function (user) {
+                    vm.userRole = user.role;
+                    // Returned the user successfully. Check the user's role
+                    if (user.role !== 'PROJECT_MANAGER' && user.role !== 'ADMIN'){
+                        $location.path('/');
+                    }
+                    if (user.role === 'PROJECT_MANAGER' && user.username !== vm.project.author){
+                        $location.path('/');
+                    }
+                }, function(){
+                    // an error occurred, navigate to homepage
+                    $location.path('/');
+                });
+            }
 
             vm.currentSection = 'description';
         }
