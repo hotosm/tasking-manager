@@ -71,19 +71,19 @@ def upgrade():
 
         # Update message with assigned classification
         if message_type is not None or project_id is not None:
+            if task_id is None:
+                task_id = 'null'
+            if project_id is None:
+                project_id = 'null'
+            if message_type is None:
+                message_type = 'null'
             # If we haven't checked yet if this project exists, check now and cache result
             if project_id not in project_existence:
-                project = Project.query.filter(Project.id == project_id).first()
+                project = conn.execute('select * from projects where id = ' + str(project_id)).first()
                 project_existence[project_id] = (project is not None)
 
             # Only process messages from projects that still exist
             if project_existence[project_id]:
-                if task_id is None:
-                    task_id = 'null'
-                if project_id is None:
-                    project_id = 'null'
-                if message_type is None:
-                    message_type = 'null'
                 query = 'update messages ' + \
                         'set message_type=' + str(message_type) + \
                             ', project_id=' + str(project_id) + \
