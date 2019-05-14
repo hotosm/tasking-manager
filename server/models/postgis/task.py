@@ -397,7 +397,7 @@ class Task(db.Model):
     @staticmethod
     def get_tasks(project_id: int, task_ids: List[int]):
         """ Get all tasks that match supplied list """
-        return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids))
+        return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
 
     @staticmethod
     def get_all_tasks(project_id: int):
