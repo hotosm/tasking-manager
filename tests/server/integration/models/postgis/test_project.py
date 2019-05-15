@@ -68,7 +68,7 @@ class TestProject(unittest.TestCase):
         self.update_project_with_info()
 
         # Act
-        project_dto = self.test_project.as_dto_for_mapping('en')
+        project_dto = self.test_project.as_dto_for_mapping('en', False)
 
         # Assert
         self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)
@@ -109,10 +109,12 @@ class TestProject(unittest.TestCase):
         test_dto.project_info_locales = locales
         test_dto.mapper_level = 'BEGINNER'
         test_dto.mapping_types = ['ROADS']
+        test_dto.mapping_editors = ['JOSM', 'ID']
+        test_dto.validation_editors = ['JOSM']
 
         # Act - Create empty italian translation
         self.test_project.update(test_dto)
-        dto = self.test_project.as_dto_for_mapping('it')
+        dto = self.test_project.as_dto_for_mapping('it', False)
 
         # Assert
         self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
@@ -156,5 +158,6 @@ class TestProject(unittest.TestCase):
         test_dto.project_info_locales = locales
         test_dto.mapper_level = 'BEGINNER'
         test_dto.mapping_types = ['ROADS']
-
+        test_dto.mapping_editors = ['JOSM', 'ID']
+        test_dto.validation_editors = ['JOSM']
         self.test_project.update(test_dto)
