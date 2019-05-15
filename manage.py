@@ -12,7 +12,7 @@ import os
 import warnings
  
 # Load configuration from file
-load_dotenv(os.path.join(os.path.dirname(__file__), 'tasking-manager.env'))
+load_dotenv(os.path.join(os.path.dirname(__file__), 'local.env'))
 
 # Temporarily here - to support backwards compatibility with TM_DB key.
 if os.getenv('TM_DB', False):
