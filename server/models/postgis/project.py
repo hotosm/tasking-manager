@@ -21,7 +21,7 @@ from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.project_chat import ProjectChat
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode, Editors
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.user import User
@@ -56,6 +56,7 @@ class Project(db.Model):
     mapper_level = db.Column(db.Integer, default=1, nullable=False, index=True)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
+    allow_non_beginners = db.Column(db.Boolean, default=False)
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
     entities_to_map = db.Column(db.String)
     changeset_comment = db.Column(db.String)
@@ -72,6 +73,20 @@ class Project(db.Model):
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
     organisation_tag = db.Column(db.String, index=True)
     campaign_tag = db.Column(db.String, index=True)
+
+    # Editors
+    mapping_editors = db.Column(ARRAY(db.Integer), default=[
+                                                            Editors.ID.value,
+                                                            Editors.JOSM.value,
+                                                            Editors.POTLATCH_2.value,
+                                                            Editors.FIELD_PAPERS.value],
+                                                            index=True, nullable=False)
+    validation_editors = db.Column(ARRAY(db.Integer), default=[
+                                                               Editors.ID.value,
+                                                               Editors.JOSM.value,
+                                                               Editors.POTLATCH_2.value,
+                                                               Editors.FIELD_PAPERS.value],
+                                                               index=True, nullable=False)
 
     # Stats
     total_tasks = db.Column(db.Integer, nullable=False)
@@ -184,7 +199,9 @@ class Project(db.Model):
         #  assumes the default changeset comment has not changed between the old
         #  project and the cloned. This is a best effort basis.
         default_comment = current_app.config['DEFAULT_CHANGESET_COMMENT']
-        changeset_comments = original_project.changeset_comment.split(' ')
+        changeset_comments = []
+        if original_project.changeset_comment is not None:
+            changeset_comments = original_project.changeset_comment.split(' ')
         if f'{default_comment}-{original_project.id}' in changeset_comments:
             changeset_comments.remove(f'{default_comment}-{original_project.id}')
         cloned_project.changeset_comment = " ".join(changeset_comments)
@@ -210,6 +227,7 @@ class Project(db.Model):
         self.default_locale = project_dto.default_locale
         self.enforce_mapper_level = project_dto.enforce_mapper_level
         self.enforce_validator_role = project_dto.enforce_validator_role
+        self.allow_non_beginners = project_dto.allow_non_beginners
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
         self.entities_to_map = project_dto.entities_to_map
@@ -237,6 +255,17 @@ class Project(db.Model):
         for mapping_type in project_dto.mapping_types:
             type_array.append(MappingTypes[mapping_type].value)
         self.mapping_types = type_array
+
+        # Cast Editor strings to int array
+        mapping_editors_array = []
+        for mapping_editor in project_dto.mapping_editors:
+            mapping_editors_array.append(Editors[mapping_editor].value)
+        self.mapping_editors = mapping_editors_array
+
+        validation_editors_array = []
+        for validation_editor in project_dto.validation_editors:
+            validation_editors_array.append(Editors[validation_editor].value)
+        self.validation_editors = validation_editors_array
 
         # Add list of allowed users, meaning the project can only be mapped by users in this list
         if hasattr(project_dto, 'allowed_users'):
@@ -465,6 +494,7 @@ class Project(db.Model):
         base_dto.area_of_interest = self.get_aoi_geometry_as_geojson()
         base_dto.enforce_mapper_level = self.enforce_mapper_level
         base_dto.enforce_validator_role = self.enforce_validator_role
+        base_dto.allow_non_beginners = self.allow_non_beginners
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
         base_dto.entities_to_map = self.entities_to_map
@@ -495,6 +525,20 @@ class Project(db.Model):
 
             base_dto.mapping_types = mapping_types
 
+        if self.mapping_editors:
+            mapping_editors = []
+            for mapping_editor in self.mapping_editors:
+                mapping_editors.append(Editors(mapping_editor).name)
+
+            base_dto.mapping_editors = mapping_editors
+
+        if self.validation_editors:
+            validation_editors = []
+            for validation_editor in self.validation_editors:
+                validation_editors.append(Editors(validation_editor).name)
+
+            base_dto.validation_editors = validation_editors
+
         if self.priority_areas:
             geojson_areas = []
             for priority_area in self.priority_areas:
@@ -504,11 +548,14 @@ class Project(db.Model):
 
         return self, base_dto
 
-    def as_dto_for_mapping(self, locale: str) -> Optional[ProjectDTO]:
+    def as_dto_for_mapping(self, locale: str, abbrev: bool) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         project, project_dto = self._get_project_and_base_dto()
 
-        project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+        if abbrev == False:
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+        else:
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection_no_geom(self.id)
         project_dto.project_info = ProjectInfo.get_dto_for_locale(self.id, locale, project.default_locale)
 
         return project_dto
@@ -552,7 +599,6 @@ class Project(db.Model):
         tags_dto = TagsDTO()
         tags_dto.tags = [r[1] for r in query]
         return tags_dto
-
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

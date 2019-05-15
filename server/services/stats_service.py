@@ -285,8 +285,8 @@ class StatsService:
         tasks_validated_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 4"""
         tasks_validated_result = db.engine.execute(tasks_validated_sql)
         for rowproxy in tasks_validated_result:
-            for tup in rowproxy:
-                tasks_validated_area += tup
+            sum_proxy = [tup for tup in rowproxy if tup is not None]
+            tasks_validated_area += sum(sum_proxy)
         dto.total_validated_area = tasks_validated_area
     
         campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\

@@ -4,7 +4,7 @@ from schematics.types import StringType, BaseType, IntType, BooleanType, DateTim
 from schematics.types.compound import ListType, ModelType, DictType
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode, Editors
 
 
 def is_known_project_status(value):
@@ -40,6 +40,19 @@ def is_known_mapping_type(value):
         raise ValidationError(f'Unknown mappingType: {value} Valid values are {MappingTypes.ROADS.name}, '
                               f'{MappingTypes.BUILDINGS.name}, {MappingTypes.WATERWAYS.name}, '
                               f'{MappingTypes.LAND_USE.name}, {MappingTypes.OTHER.name}')
+
+
+def is_known_editor(value):
+    """ Validates Editor is known value"""
+    if type(value) == list:
+        return  # Don't validate the entire list, just the individual values
+
+    try:
+        Editors[value.upper()]
+    except KeyError:
+        raise ValidationError(f'Unknown editor: {value} Valid values are {Editors.ID.name}, '
+                              f'{Editors.JOSM.name}, {Editors.POTLATCH_2.name}, '
+                              f'{Editors.FIELD_PAPERS.name}')
 
 
 def is_known_task_creation_mode(value):
@@ -87,6 +100,7 @@ class ProjectDTO(Model):
     mapper_level = StringType(required=True, serialized_name='mapperLevel', validators=[is_known_mapping_level])
     enforce_mapper_level = BooleanType(required=True, default=False, serialized_name='enforceMapperLevel')
     enforce_validator_role = BooleanType(required=True, default=False, serialized_name='enforceValidatorRole')
+    allow_non_beginners = BooleanType(required=True, default=False, serialized_name='allowNonBeginners')
     private = BooleanType(required=True)
     entities_to_map = StringType(serialized_name='entitiesToMap')
     changeset_comment = StringType(serialized_name='changesetComment')
@@ -105,6 +119,8 @@ class ProjectDTO(Model):
     active_mappers = IntType(serialized_name='activeMappers')
     task_creation_mode = StringType(required=True, serialized_name='taskCreationMode',
                                     validators=[is_known_task_creation_mode], serialize_when_none=False)
+    mapping_editors = ListType(StringType, min_size=1, required=True, serialized_name='mappingEditors', validators=[is_known_editor])
+    validation_editors = ListType(StringType, min_size=1, required=True, serialized_name='validationEditors', validators=[is_known_editor])
 
 
 class ProjectSearchDTO(Model):
@@ -118,6 +134,8 @@ class ProjectSearchDTO(Model):
     page = IntType(required=True)
     text_search = StringType()
     is_project_manager = BooleanType(required=True, default=False)
+    mapping_editors = ListType(StringType, validators=[is_known_editor])
+    validation_editors = ListType(StringType, validators=[is_known_editor])
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
@@ -129,9 +147,17 @@ class ProjectSearchDTO(Model):
         if self.project_statuses:
             for project_status in self.project_statuses:
                 hashable_project_statuses = hashable_project_statuses + project_status
+        hashable_mapping_editors = ''
+        if self.mapping_editors:
+            for mapping_editor in self.mapping_editors:
+                hashable_mapping_editors = hashable_mapping_editors + mapping_editor
+        hashable_validation_editors = ''
+        if self.validation_editors:
+            for validation_editor in self.validation_editors:
+                hashable_validation_editors = hashable_validation_editors + validation_editor
 
         return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, hashable_project_statuses,
-                     self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager))
+                     self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager, hashable_mapping_editors, hashable_validation_editors))
 
 
 class ProjectSearchBBoxDTO(Model):

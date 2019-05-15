@@ -39,6 +39,7 @@
             createProject: createProject,
             setAOI: setAOI,
             getAOI: getAOI,
+            getAOIServer: getAOIServer,
             splitTasks: splitTasks,
             getProject: getProject,
             getProjectMetadata: getProjectMetadata,
@@ -215,6 +216,27 @@
             return aoi;
         }
 
+        function getAOIServer(id) {
+
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/project/' + id + '/aoi?as_file=false',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+
+        }
+
         /**
          * Validate a candidate AOI.
          * Supports Polygons and MultiPolygons
@@ -386,16 +408,17 @@
         /**
          * Get a project JSON
          * @param id - project id
+         * @param abbreviated - abbreviated project info or not
          * @returns {!jQuery.Promise|*|!jQuery.deferred|!jQuery.jqXHR}
          */
-        function getProject(id) {
+        function getProject(id, abbreviated) {
 
             var preferredLanguage = languageService.getLanguageCode();
 
             // Returns a promise
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/project/' + id,
+                url: configService.tmAPI + '/project/' + id + '?abbreviated=' + abbreviated,
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8',
                     'Accept-Language': preferredLanguage
@@ -659,12 +682,17 @@
          * @param enforceValidateRole*
          * @returns {boolean}
          */
-        function userCanValidateProject(userRole, enforceValidateRole) {
+        function userCanValidateProject(userRole, mappingLevel, enforceValidateRole, allowNonBeginners) {
+            var userCanValidate = true
             if (enforceValidateRole) {
                 var validatorRoles = ['ADMIN', 'PROJECT_MANAGER', 'VALIDATOR'];
-                return validatorRoles.indexOf(userRole) != -1;
+                userCanValidate = (validatorRoles.indexOf(userRole) != -1);
+            } 
+            if (allowNonBeginners) {
+                var allowedLevels = ['INTERMEDIATE','ADVANCED']
+                userCanValidate = (allowedLevels.indexOf(mappingLevel) != -1);
             }
-            return true;
+            return userCanValidate;
         }
 
         /**

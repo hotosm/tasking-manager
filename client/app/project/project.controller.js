@@ -60,7 +60,10 @@
 
         //editor
         vm.editorStartError = '';
-        vm.selectedEditor = 'ideditor';
+        vm.selectedMappingEditor = 'ideditor';
+        vm.selectedValidationEditor = 'josm';
+        vm.mappingEditors = [];
+        vm.validationEditors = [];
 
         //interaction
         vm.selectInteraction = null;
@@ -100,7 +103,8 @@
             vm.currentTab = 'instructions';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
-            vm.selectedEditor = 'ideditor'; // default to iD editor
+            vm.selectedMappingEditor = 'ideditor'; // default to iD editor
+            vm.selectedValidationEditor = 'josm';
             mapService.createOSMMap('map');
             mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
@@ -132,13 +136,15 @@
 
             //start up a timer for autorefreshing the project.
             autoRefresh = $interval(function () {
-                refreshProject(vm.id);
+                refreshAbbreviatedProject(vm.id);
                 updateMappedTaskPerUser(vm.id);
                 //TODO do a selected task refresh too
             }, 10000);
 
             // set up the preferred editor from user preferences
-            vm.selectedEditor = userPreferencesService.getFavouriteEditor();
+            
+            vm.selectedMappingEditor = userPreferencesService.getFavouriteEditor();
+            vm.selectedValidationEditor = userPreferencesService.getFavouriteEditor();
         }
 
         // listen for navigation away from the page event and stop the autrefresh timer
@@ -173,14 +179,15 @@
         };
 
         vm.updatePreferedEditor = function () {
-            userPreferencesService.setFavouriteEditor(vm.selectedEditor);
+            userPreferencesService.setFavouriteEditor(vm.selectedMappingEditor);
         };
 
         /**
          * Reset the user's selected editor back to the default
          */
         vm.resetSelectedEditor = function() {
-          vm.selectedEditor = 'ideditor';
+          vm.selectedMappingEditor = vm.mappingEditors[0].value;
+          vm.selectedValidationEditor = vm.validationEditors[0].value;
           vm.editorStartError = '';
         };
 
@@ -404,23 +411,23 @@
                 if (days > 0)
                 {
                     if (days === 1){
-                        eventDurationString += " " + days + ' day'  
+                        eventDurationString += " " + days + ' day'
                     } else {
                         eventDurationString += " " + days + ' days'
                     }
-                } 
+                }
                 if (hours > 0)
                 {
                     if (hours === 1){
-                        eventDurationString += " " + hours + ' hour'  
+                        eventDurationString += " " + hours + ' hour'
                     } else {
                         eventDurationString += " " + hours + ' hours'
                     }
-                } 
+                }
                 if (minutes > 0)
                 {
                     if (minutes === 1){
-                        eventDurationString += " " + minutes + ' minute'  
+                        eventDurationString += " " + minutes + ' minute'
                     } else {
                         eventDurationString += " " + minutes + ' minutes'
                     }
@@ -438,19 +445,40 @@
          */
         function initialiseProject(id) {
             vm.errorGetProject = false;
-            var resultsPromise = projectService.getProject(id);
+            var resultsPromise = projectService.getProject(id, false);
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.loaded = true;
                 vm.projectData = data;
+                vm.mappingEditors = createEditorList(vm.projectData.mappingEditors);
+                vm.selectedMappingEditor = vm.mappingEditors[0].value;
+                vm.validationEditors = createEditorList(vm.projectData.validationEditors);
+                vm.selectedValidationEditor = vm.validationEditors[0].value;
                 vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
-                vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.projectData.enforceValidatorRole);
+                vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.user.mappingLevel, vm.projectData.enforceValidatorRole, vm.projectData.allowNonBeginners);
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
                 loadAnnotations(id);
                 // Add OpenLayers interactions
                 addInteractions();
+
+
+                // set up the preferred editor from user preferences
+                // check if their preferred editor is in the allowed editors otherwise, pick first of allowed editors
+                if (vm.mappingEditors.filter(function(e) { return e.value === userPreferencesService.getFavouriteEditor() }).length > 0) {
+                    vm.selectedMappingEditor = userPreferencesService.getFavouriteEditor();
+                }
+                else {
+                    vm.selectedMappingEditor = vm.mappingEditors[0].value;
+                }
+                if (vm.validationEditors.filter(function(e) { return e.value === userPreferencesService.getFavouriteEditor() }).length > 0) {
+                    vm.selectedValidationEditor = userPreferencesService.getFavouriteEditor();
+                }
+                else {
+                    vm.selectedValidationEditor = vm.validationEditors[0].value;
+                }
+
                 //add a layer for users locked tasks
                 if (!vm.lockedByCurrentUserVectorLayer) {
                     var source = new ol.source.Vector();
@@ -493,7 +521,7 @@
          */
         function updateDescriptionAndInstructions(id) {
             vm.errorGetProject = false;
-            var resultsPromise = projectService.getProject(id);
+            var resultsPromise = projectService.getProject(id, false);
             resultsPromise.then(function (data) {
                 vm.projectData = data;
             }, function () {
@@ -507,7 +535,8 @@
          * @param id - id of project to be refreshed
          */
         function refreshProject(id) {
-            var resultsPromise = projectService.getProject(id);
+            vm.errorGetProject = false;
+            var resultsPromise = projectService.getProject(id, false);
             resultsPromise.then(function (data) {
                 //project returned successfully
                 vm.errorGetProject = false;
@@ -536,6 +565,32 @@
             }, function () {
                 // project not returned successfully
                 vm.errorGetProject = true;
+            });
+        }
+
+        /**
+         * Gets abbreviated project data from server and updates the map
+         * @param id - id of project to be refreshed
+         */
+        function refreshAbbreviatedProject(id) {
+            vm.errorGetProject = false;
+            var resultsPromise = projectService.getProject(id, true);
+            resultsPromise.then(function (data) {
+                //project returned successfully
+                if (vm.projectData.tasks.features.length == data.tasks.features.length) {
+                    // length of tasks is the same; we can assume only states changed
+                    var source = vm.taskVectorLayer.getSource();
+                    var features = source.getFeatures();
+                    updateProjectTasksOnMap(features, data.tasks);
+                } else {
+                    // length of tasks has changed since last update; likely a split occurred.
+                    // fall back to full update
+                    refreshProject(id);
+                }
+
+            }, function () {
+               // project not returned successfully
+               vm.errorGetProject = true;
             });
         }
 
@@ -597,6 +652,21 @@
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
             }
+        }
+
+        /**
+         * Updates the map task properties (colors, locked status)
+         * @param oldTasks
+         * @param newTasks
+         */
+        function updateProjectTasksOnMap(oldTasks, newTasks) {
+            var newFeatures = geospatialService.getFeaturesFromGeoJSON(newTasks);
+
+            for (var i=0; i < newFeatures.length; i++) {
+                var feature = taskService.getTaskFeatureById(oldTasks, newFeatures[i].getProperties()['taskId']);
+                feature.setProperties({"taskStatus": newFeatures[i].getProperties()['taskStatus']});
+            }
+            // for each task in features, update source
         }
 
         /**
@@ -947,7 +1017,7 @@
             //
             // Use of the title attribute is a hack, but the sanitizer allows it
             // through and it's important these comments get properly sanitized.
-            if (event.target.tagName === 'A' && vm.selectedEditor === 'josm') {
+            if (event.target.tagName === 'A' && (vm.selectedMappingEditor === 'josm' || vm.selectedValidationEditor === 'josm')) {
                 var title = event.target.getAttribute("title");
                 var editorCommand = null;
                 var params = null;
@@ -1613,7 +1683,7 @@
 
           // Try sending to JOSM if it's user's chosen editor, otherwise Overpass Turbo.
           var overpassApiURL = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
-          if (vm.selectedEditor === 'josm') {
+          if (vm.selectedMappingEditor === 'josm' || vm.selectedValidationEditor === 'josm') {
             editorService.sendJOSMCmd('http://127.0.0.1:8111/import', {
                                         new_layer: 'true',
                                         layer_name: adjustedDateString,
@@ -1908,6 +1978,39 @@
             // Format the user tag by wrapping into brackets so it is easier to detect that it is a username
             // especially when there are spaces in the username
             return '@[' + item.username + ']';
+        };
+
+        /**
+         * Creates json objects for editors 
+         * @params editors
+         */
+        function createEditorList(editors) {
+            var result = [];
+            if (editors.includes("ID")) {
+                result.push({
+                    "name": "iD Editor",
+                    "value": "ideditor"
+                });
+            }
+            if (editors.includes("JOSM")) {
+                result.push({
+                    "name": "JOSM",
+                    "value": "josm"
+                });
+            }
+            if (editors.includes("POTLATCH_2")) {
+                result.push({
+                    "name": "Potlatch 2",
+                    "value": "potlatch2"
+                });
+            }
+            if (editors.includes("FIELD_PAPERS")) {
+                result.push({
+                    "name": "Field Papers",
+                    "value": "fieldpapers"
+                });
+            }
+            return result;
         };
     }
 })
