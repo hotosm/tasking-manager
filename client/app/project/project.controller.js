@@ -902,7 +902,7 @@
                 var domain = vm.projectData.annotations.tasks.map(function (task) {
                     return task.properties.building_area_diff;
                 });
-                domain.sort();
+                domain.sort(function(a, b){ return a - b;});
                 styleService.setD3Scale([domain[0], domain[domain.length - 1]]);
                 // add a new layer
                 source = new ol.source.Vector();
