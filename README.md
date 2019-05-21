@@ -42,7 +42,7 @@ And you can check the logs with `docker-compose logs -f`
 ## Get involved!
 
 * Review our [Contributor guidelines](./docs/contributing.md)
-* And help us to [translate the TM](./docs/localise.md)
+* And help us to [translate the TM](./docs/contributing-translation.md)
 * Come, attend the [working group meetings](./docs/working-group.md)
 * Make sure you are aware of our [Code of Conduct](./docs/code_of_conduct.md)
 
