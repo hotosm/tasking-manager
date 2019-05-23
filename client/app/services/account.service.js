@@ -68,6 +68,12 @@
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
+
+                // If the data is for our account user, refresh the account data
+                if (response.data.username === account.username) {
+                    account = response.data;
+                }
+
                 return response.data;
             }, function errorCallback() {
                 // called asynchronously if an error occurs
