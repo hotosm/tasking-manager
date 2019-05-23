@@ -61,6 +61,7 @@ class TaskDTO(Model):
     project_id = IntType(serialized_name='projectId')
     task_status = StringType(serialized_name='taskStatus')
     lock_holder = StringType(serialized_name='lockHolder', serialize_when_none=False)
+    assigned_to = StringType(serialized_name='assignedTo', serialize_when_none=False)
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
     per_task_instructions = StringType(serialized_name='perTaskInstructions', serialize_when_none=False)
     is_undoable = BooleanType(serialized_name='isUndoable', default=False)

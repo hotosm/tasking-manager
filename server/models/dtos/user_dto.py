@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, EmailType, LongType, BooleanType
+from schematics.types import StringType, IntType, EmailType, LongType, BooleanType, DateTimeType
 
 from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.dtos.stats_dto import Pagination
@@ -123,3 +123,41 @@ class UserFilterDTO(Model):
     pagination = ModelType(Pagination)
     usernames = ListType(StringType)
     users = ListType(ModelType(ProjectParticipantUser))
+
+
+class AssignTasksDTO(Model):
+    """ DTO used to assign tasks to a user """
+    assignee_id = IntType(required=True, serialized_name='assigneeId')
+    assigner_id = IntType(required=True, serialized_name='assignerId')
+    project_id = IntType(required=True, serialized_name='projectId')
+    task_ids = ListType(IntType, required=True, serialized_name='taskIds')
+    preferred_locale = StringType(default='en', serialized_name='preferredLocale')
+
+
+class UnassignTasksDTO(Model):
+    """ DTO used to unassign tasks """
+    project_id = IntType(required=True, serialized_name='projectId')
+    task_ids = ListType(IntType, required=True, serialized_name='taskIds')
+    assigner_id = IntType(required=True, serialized_name='assignerId')
+
+
+class AssignedTask(Model):
+    """ Describes an assigned task with which user is involved """
+    task_id = IntType(required=True, serialized_name='taskId')
+    project_id = IntType(required=True, serialized_name='projectId')
+    project_name = StringType(serialized_name='projectName')
+    history_id = IntType(serialized_name='historyId')
+    closed = BooleanType()
+    assigned_date = DateTimeType(serialized_name='assignedDate')
+    task_status = StringType(serialized_name='taskStatus')
+
+
+class AssignedTasksDTO(Model):
+    """ DTO to get assigned tasks with which a user is involved """
+    def __init__(self):
+        """ Initialise all arrays to empty """
+        super().__init__()
+        self.assigned_tasks = []
+
+    assigned_tasks = ListType(ModelType(AssignedTask), serialized_name='assignedTasks')
+    pagination = ModelType(Pagination)
