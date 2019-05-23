@@ -138,6 +138,22 @@
                                                ng-model="profileCtrl.userDetails.facebookId"/>
                                     </li>
                                     <li>
+                                    <label class="form_label" 
+                                           ng-show="profileCtrl.userDetails.gender || profileCtrl.editDetails">Gender:</label>
+                                    <input ng-show="profileCtrl.editDetails" type="radio" class="form__control form__control__inline" 
+                                    ng-model="profileCtrl.userDetails.gender" value="Female"/>Female
+                                    <input ng-show="profileCtrl.editDetails" type="radio" class="form__control form__control__inline" 
+                                    ng-model="profileCtrl.userDetails.gender" value="Male"/>Male
+                                    <input ng-show="profileCtrl.editDetails" type="radio" class="form__control form__control__inline" 
+                                    ng-model="profileCtrl.userDetails.gender" value="Prefer Not to Say"/>Prefer Not to Say
+                                    <input ng-show="profileCtrl.editDetails" type="radio" class="form__control form__control__inline" 
+                                    ng-model="profileCtrl.userDetails.gender" value="Prefer to Self-Describe"/>Prefer to Self-Describe
+                                    <input ng-show="profileCtrl.userDetails.gender == 'Prefer to Self-Describe'" type="text" size="30"
+                                               class="form__control form__control__inline"
+                                               placeholder="Type your gender here"
+                                               ng-model="profileCtrl.userDetails.gender"/> 
+                                    </li>
+                                    <li>
                                         <label class="form__label"
                                                ng-show="profileCtrl.userDetails.twitterId || profileCtrl.editDetails">Twitter:</label>
                                         <a ng-hide="profileCtrl.editDetails"
