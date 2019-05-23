@@ -108,7 +108,8 @@ def init_flask_restful_routes(app):
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
-        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI, AssignTasksAPI, UnassignTasksAPI,\
+        UserAssignedTasks
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
         MappedTasksByUser, UserInvalidatedTasks
     from server.api.grid.grid_apis import IntersectingTilesAPI
@@ -180,3 +181,6 @@ def init_flask_restful_routes(app):
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')
     api.add_resource(SplitTaskAPI,                  '/api/v1/project/<int:project_id>/task/<int:task_id>/split')
     api.add_resource(LanguagesAPI,                  '/api/v1/settings')
+    api.add_resource(AssignTasksAPI,                '/api/v1/project/<int:project_id>/assign')
+    api.add_resource(UnassignTasksAPI,              '/api/v1/project/<int:project_id>/unassign')
+    api.add_resource(UserAssignedTasks,             '/api/v1/user/<string:username>/assigned-tasks')

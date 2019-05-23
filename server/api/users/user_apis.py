@@ -1,9 +1,12 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from server.models.dtos.user_dto import UserSearchQuery, UserDTO
+from server.models.dtos.user_dto import UserSearchQuery, UserDTO, AssignTasksDTO, UnassignTasksDTO
 from server.services.users.authentication_service import token_auth, tm
 from server.services.users.user_service import UserService, UserServiceError, NotFound
+from server.services.mapping_service import MappingServiceError, MappingService
+from server.services.validator_service import ValidatatorServiceError
+from server.models.postgis.utils import UserLicenseError
 
 
 class UserAPI(Resource):
@@ -537,3 +540,277 @@ class UserAcceptLicense(Resource):
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class AssignTasksAPI(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Manually assign tasks to a user
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - name: username
+              in: query
+              description: The username to assign the task to
+              required: true
+              type: string
+              default: Thinkwhere
+            - in: body
+              name: tasks
+              required: true
+              description: JSON object for locking task(s)
+              schema:
+                  properties:
+                      taskIds:
+                          type: array
+                          items:
+                              type: integer
+                          description: Array of taskIds for locking
+                          default: [1,2]
+        responses:
+            200:
+                description: Task(s) assigned to user
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Task(s) or User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            assign_tasks_dto = AssignTasksDTO(request.get_json())
+            assign_tasks_dto.assigner_id = tm.authenticated_user_id
+            user_id = UserService.get_user_by_username(request.args.get('username')).id
+            assign_tasks_dto.assignee_id = user_id
+            assign_tasks_dto.project_id = project_id
+            assign_tasks_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            assign_tasks_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            task = MappingService.assign_tasks(assign_tasks_dto)
+            return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
+        except (MappingServiceError, ValidatatorServiceError) as e:
+            return {"Error": str(e)}, 403
+        except UserLicenseError:
+            return {"Error": "User not accepted license terms"}, 409
+        except Exception as e:
+            error_msg = f'Task Assign API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class UnassignTasksAPI(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Manually unassign tasks
+        ---
+        tags:
+            - project-admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: tasks
+              required: true
+              description: JSON object for unassigning task(s)
+              schema:
+                  properties:
+                      taskIds:
+                          type: array
+                          items:
+                              type: integer
+                          description: Array of taskIds for unassigning
+                          default: [1,2]
+        responses:
+            200:
+                description: Task(s) unassigned
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Task(s) not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            unassign_tasks_dto = UnassignTasksDTO(request.get_json())
+            unassign_tasks_dto.project_id = project_id
+            unassign_tasks_dto.assigner_id = tm.authenticated_user_id
+            unassign_tasks_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            unassign_tasks_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+            return str(e), 400
+
+        try:
+            task = MappingService.unassign_tasks(unassign_tasks_dto)
+            return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
+        except (MappingServiceError, ValidatatorServiceError) as e:
+            return {"Error": str(e)}, 403
+        except UserLicenseError:
+            return {"Error": "User not accepted license terms"}, 409
+        except Exception as e:
+            error_msg = f'Task UnAssign API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class UserAssignedTasks(Resource):
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self, username):
+        """
+        Get assigned tasks either assigned to or assigned by user
+        ---
+        tags:
+            - user
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: username
+              in: path
+              description: The users username
+              required: true
+              type: string
+            - in: query
+              name: asAssigner
+              description: treats user as assigner, rather than assignee, if true
+              type: string
+            - in: query
+              name: sortBy
+              description: field to sort by, defaults to assigned_date
+              type: string
+            - in: query
+              name: sortDirection
+              description: direction of sort, defaults to desc
+              type: string
+            - in: query
+              name: page
+              description: Page of results user requested
+              type: integer
+            - in: query
+              name: pageSize
+              description: Size of page, defaults to 10
+              type: integer
+            - in: query
+              name: project
+              description: Optional project filter
+              type: integer
+            - in: query
+              name: closed
+              description: Optional filter for open/closed assignments
+              type: boolean
+        responses:
+            200:
+                description: User's assigned tasks
+            404:
+                description: No assigned tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            sort_column_map = {
+                'assignedDate': 'assigned_date',
+                'projectId': 'project_id'
+            }
+            sort_column = sort_column_map.get(request.args.get('sortBy'), sort_column_map['assignedDate'])
+
+            # closed needs to be set to True, False, or None
+            closed = None
+            if request.args.get('closed') == 'true':
+                closed = True
+            elif request.args.get('closed') == 'false':
+                closed = False
+
+            # task status needs to be set to None or one of the statuses
+            task_status = request.args.get('taskStatus') or None
+
+            # sort direction should only be desc or asc
+            if request.args.get('sortDirection') in ('asc', 'desc'):
+                sort_direction = request.args.get('sortDirection')
+            else:
+                sort_direction = 'desc'
+
+            assigned_tasks = UserService.get_user_assigned_tasks(
+                request.args.get('asAssigner') == 'true',
+                username,
+                request.environ.get('HTTP_ACCEPT_LANGUAGE'),
+                closed,
+                task_status,
+                request.args.get('project', None, type=int),
+                request.args.get('page', None, type=int),
+                request.args.get('pageSize', None, type=int),
+                sort_column,
+                sort_direction
+            )
+            return assigned_tasks.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No assigned tasks"}, 404
+        except Exception as e:
+            error_msg = f'Assigned Tasks API - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
