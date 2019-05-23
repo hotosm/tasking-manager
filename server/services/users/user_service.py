@@ -5,12 +5,14 @@ import dateutil.parser
 import datetime
 
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
-    UserStatsDTO
-from server.models.postgis.task import TaskHistory
+    UserStatsDTO, AssignedTask, AssignedTasksDTO
+from server.models.postgis.task import TaskHistory, TaskAssignmentHistory, TaskStatus
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
+from server.models.postgis.project_info import ProjectInfo
+from server.models.dtos.stats_dto import Pagination
 
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
@@ -312,3 +314,51 @@ class UserService:
             users_updated += 1
 
         return users_updated
+
+    @staticmethod
+    def get_user_assigned_tasks(
+        as_assigner,
+        username: str,
+        preferred_locale: str,
+        closed=None,
+        task_status=None,
+        project_id=None,
+        page=1,
+        page_size=10,
+        sort_by="assigned_date",
+        sort_direction="desc"
+    ) -> AssignedTasksDTO:
+        """ Get assigned tasks either assigned to or assigned by the user """
+        user = UserService.get_user_by_username(username)
+        query = TaskAssignmentHistory.query.filter_by(assigner_id=user.id) if as_assigner else \
+                TaskAssignmentHistory.query.filter_by(assignee_id=user.id)
+
+        if closed is not None:
+            query = query.filter_by(is_closed=closed)
+
+        if project_id is not None:
+            query = query.filter_by(project_id=project_id)
+
+        if task_status is not None:
+            query = query.filter_by(task_status=task_status)
+
+        results = query.order_by(sort_by + " " + sort_direction).paginate(page, page_size, True)
+
+        project_names = {}
+        assigned_tasks_dto = AssignedTasksDTO()
+        for entry in results.items:
+            dto = AssignedTask()
+            dto.task_id = entry.task_id
+            dto.project_id = entry.project_id
+            dto.history_id = entry.assignment_history_id
+            dto.closed = entry.is_closed
+            dto.assigned_date = entry.assigned_date
+            dto.task_status = TaskStatus(entry.task_status).name
+            if dto.project_id not in project_names:
+                project_names[dto.project_id] = ProjectInfo.get_dto_for_locale(dto.project_id, preferred_locale).name
+            dto.project_name = project_names[dto.project_id]
+
+            assigned_tasks_dto.assigned_tasks.append(dto)
+
+        assigned_tasks_dto.pagination = Pagination(results)
+        return assigned_tasks_dto
