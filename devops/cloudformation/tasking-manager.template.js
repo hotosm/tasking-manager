@@ -118,9 +118,9 @@ const Resources = {
             Version: 1
           },
           Overrides: [{
-            InstanceType: 't2.medium'
+            InstanceType: 'c5d.large'
           }, {
-            InstanceType: 't3.medium'
+            InstanceType: 'c4.large'
           }]
         }
       },
@@ -157,7 +157,7 @@ const Resources = {
           Arn: cf.getAtt('TaskingManagerEC2InstanceProfile', 'Arn')
         },
         ImageId: 'ami-0565af6e282977273',
-        InstanceType: 'c5d.large',
+        InstanceType: 'c3.large',
         SecurityGroupIds: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region, 'id']))],
         UserData: cf.userData([
           '#!/bin/bash',
