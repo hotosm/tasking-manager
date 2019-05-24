@@ -9,6 +9,7 @@
      */
         .factory('configService', ['EnvironmentConfig', function (EnvironmentConfig) {
             var config = EnvironmentConfig;
+            if (typeof config.matomoSiteID !== 'undefined') {window.site_id=config.matomoSiteID;}
             return config;
         }])
 

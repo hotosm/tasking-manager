@@ -120,6 +120,8 @@ jobs:
         type: env_var_name
       ssl_cert:
         type: env_var_name
+      matomo_site_id:
+        type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3-stretch
@@ -129,7 +131,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"<< parameters.environment_name >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"<< parameters.environment_name >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -240,6 +242,7 @@ workflows:
         elb_subnets: ELB_SUBNETS_STAGING
         ssl_cert: SSL_CERTIFICATE_ID_STAGING
         tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_STAGING
+        matomo_site_id: MATOMO_SITE_ID_STAGING
     - deploy:
         name: production
         filters:
@@ -267,6 +270,7 @@ workflows:
         elb_subnets: ELB_SUBNETS_PRODUCTION
         ssl_cert: SSL_CERTIFICATE_ID_PRODUCTION
         tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_PRODUCTION
+        matomo_site_id: MATOMO_SITE_ID_PRODUCTION
     - deploy:
         name: teachosm
         filters:
@@ -294,6 +298,7 @@ workflows:
         elb_subnets: ELB_SUBNETS_TEACHOSM
         ssl_cert: SSL_CERTIFICATE_ID_TEACHOSM
         tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_TEACHOSM
+        matomo_site_id: MATOMO_SITE_ID_TEACHOSM
     - deploy:
         name: assisted
         filters:
@@ -321,3 +326,4 @@ workflows:
         elb_subnets: ELB_SUBNETS_ASSISTED
         ssl_cert: SSL_CERTIFICATE_ID_ASSISTED
         tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_ASSISTED
+        matomo_site_id: MATOMO_SITE_ID_ASSISTED

@@ -184,6 +184,7 @@ const Resources = {
         'sudo apt-get -y install libjson-c-dev',
         'sudo apt-get -y install git',
         'sudo apt-get -y install awscli',
+        'sudo apt-get -y install jq'
         'git clone --recursive https://github.com/hotosm/tasking-manager.git',
         'cd tasking-manager/',
         cf.sub('git reset --hard ${GitSha}'),
@@ -215,6 +216,7 @@ const Resources = {
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
         'cd client/',
+        'cat <<< "$(jq \'. + {release: {EnvironmentConfig: (.release.EnvironmentConfig + {matomoSiteID: 9})}}\'< client/taskingmanager.config.json)" > client/taskingmanager.config.json ',
         'npm install',
         'gulp build',
         'cd ../',
