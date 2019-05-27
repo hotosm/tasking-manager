@@ -261,6 +261,10 @@ class TaskHistory(db.Model):
             # We're looking for the previous status, however, there isn't any so we'll return Ready
             return TaskStatus.READY
 
+        if for_undo and result[0][0] in [TaskStatus.MAPPED.name, TaskStatus.BADIMAGERY.name]:
+            # We need to return a READY when last status of the task is badimagery or mapped.
+            return TaskStatus.READY
+
         if for_undo:
             # Return the second last status which was status the task was previously set to
             return TaskStatus[result[1][0]]
