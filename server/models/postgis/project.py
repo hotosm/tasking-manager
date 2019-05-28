@@ -339,9 +339,13 @@ class Project(db.Model):
         return locked_tasks
 
     @staticmethod
-    def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
+    def get_projects_for_admin(admin_id: int, preferred_locale: str, all_projects = False) -> PMDashboardDTO:
         """ Get projects for admin """
-        admins_projects = Project.query.filter_by(author_id=admin_id).all()
+        project_query = Project.query
+        if not all_projects:
+          project_query = project_query.filter_by(author_id=admin_id)
+
+        admins_projects = project_query.all()
 
         if admins_projects is None:
             raise NotFound('No projects found for admin')
@@ -503,6 +507,14 @@ class Project(db.Model):
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
+        summary.total_tasks = self.total_tasks
+
+        # get (status, count) tuples for count of tasks in each task status
+        task_status_counts = Task.get_status_counts(self.id)
+        for status_count_tuple in task_status_counts:
+            status_count_field = "tasks_" + TaskStatus(status_count_tuple[0]).name.lower()
+            if hasattr(summary, status_count_field):
+                setattr(summary, status_count_field, status_count_tuple[1])
 
         summary.percent_mapped = Project.calculate_tasks_percent('mapped', self.total_tasks,
                                                                  self.tasks_mapped, self.tasks_validated,
@@ -665,11 +677,13 @@ class Project(db.Model):
     def calculate_tasks_percent(target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery):
         """ Calculates percentages of contributions """
         if target == 'mapped':
-            return int((tasks_mapped + tasks_validated) / (total_tasks - tasks_bad_imagery) * 100)
+            return 0 if total_tasks == 0 else int((tasks_mapped + tasks_validated) /
+                                                  (total_tasks - tasks_bad_imagery) * 100)
         elif target == 'validated':
-            return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
+            return 0 if total_tasks == 0 else int(tasks_validated /
+                                                  (total_tasks - tasks_bad_imagery) * 100)
         elif target == 'bad_imagery':
-            return int((tasks_bad_imagery / total_tasks) * 100)
+            return 0 if total_tasks == 0 else int((tasks_bad_imagery / total_tasks) * 100)
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

@@ -7,38 +7,115 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectDashboardController', ['$routeParams', 'mapService', 'projectMapService', 'projectService', 'statsService', projectDashboardController]);
+        .controller('projectDashboardController', ['$scope', '$routeParams', 'NgTableParams', 'mapService', 'projectMapService', 'projectService', 'statsService', 'configService', 'TaskStatus', projectDashboardController]);
 
-    function projectDashboardController($routeParams, mapService, projectMapService, projectService, statsService) {
+
+
+    function projectDashboardController($scope, $routeParams, NgTableParams, mapService, projectMapService, projectService, statsService, configService, TaskStatus) {
         var vm = this;
+        $scope.TaskStatus = TaskStatus;
+        $scope.tmAPI = configService.tmAPI;
         vm.projectId = 0;
 
         vm.project = {};
-        vm.projectActivityPagination = [];
-        vm.projectActivity = [];
         vm.projectContributions = [];
         vm.projectComments = [];
+        vm.statusStats = [];
+
+        // Setup tables for Status Overview and Last Activity
+        vm.projectActivityPagination = [];
+        vm.projectActivity = [];
+        vm.projectOverviewPagination = [];
+        vm.projectOverview = [];
+
+        vm.statusFilterLabels = [
+            { title: 'All', id: '' },
+        ].concat([
+            TaskStatus.MAPPED, TaskStatus.VALIDATED, TaskStatus.INVALIDATED, TaskStatus.BADIMAGERY,
+            TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION, TaskStatus.READY,
+        ].map(function(status) {
+            return { title: status.title, id: status.value };
+        }));
+
+        vm.statusFilterDefinition = {
+            status: { id: "select" },
+        };
+
+        vm.overviewTableSettings = new NgTableParams({
+            sorting: { updatedDate: "desc", taskId: "asc" },
+            count: 10,
+        }, {
+            counts: [10, 25, 50, 100],
+            filterOptions: { filterLayout: "horizontal" },
+            getData: function(params) {
+                var sortBy = Object.keys(params.sorting())[0]
+                return statsService.getProjectOverview(
+                    vm.projectId, params.page(), params.count(),
+                    sortBy, sortBy ? params.sorting()[sortBy] : undefined,
+                    params.filter().mapperName,
+                    params.filter().validatorName,
+                    params.filter().status,
+                    vm.projectId > 0 ? undefined : params.filter().projectTitle // for all-projects filtering
+                ).then(function(data) {
+                    // Return the tasks successfully
+                    vm.projectOverviewPagination = data.pagination;
+                    vm.projectOverview = data.tasks
+                    params.total(data.pagination.total)
+
+                    return vm.projectOverview
+                }, function(e) {
+                    // an error occurred
+                    vm.projectOverviewPagination = [];
+                    vm.projectOverview = [];
+                });
+            },
+        });
+
+        vm.activityTableSettings = new NgTableParams({
+            sorting: { actionDate: "desc" },
+            count: 10,
+        }, {
+            counts: [10, 25, 50, 100],
+            filterOptions: { filterLayout: "horizontal" },
+            getData: function(params) {
+                var sortBy = Object.keys(params.sorting())[0]
+                return statsService.getProjectActivity(
+                    vm.projectId, params.page(), params.count(),
+                    sortBy, sortBy ? params.sorting()[sortBy] : undefined,
+                    params.filter().actionBy,
+                    params.filter().status,
+                    vm.projectId > 0 ? undefined : params.filter().projectTitle // for all-projects filtering
+                ).then(function(data) {
+                    // Return the projects successfully
+                    vm.projectActivityPagination = data.pagination;
+                    vm.projectActivity = data.activity
+                    params.total(data.pagination.total)
+
+                    return vm.projectActivity
+                }, function(e) {
+                    // an error occurred
+                    vm.projectActivityPagination = [];
+                    vm.projectActivity = [];
+                });
+            },
+        });
 
         activate();
 
         function activate(){
             vm.projectId = $routeParams.id;
-            mapService.createOSMMap('map');
-            vm.map = mapService.getOSMMap();
-            getProjectStats(vm.projectId);
-            getComments(vm.projectId);
-            getProjectContributions(vm.projectId);
-            getProjectActivity(vm.projectId);
-            projectMapService.initialise(vm.map);
-        }
+            vm.singleProject = vm.projectId > 0;
 
-        /**
-         * Get last activity with page number
-         * @param page
-         */
-        vm.getLastActivity = function(page){
-            getProjectActivity(vm.projectId, page)
-        };
+            if (vm.singleProject) {
+              mapService.createOSMMap('map');
+              vm.map = mapService.getOSMMap();
+
+              getProjectStats(vm.projectId);
+              getComments(vm.projectId);
+              getProjectContributions(vm.projectId);
+              projectMapService.initialise(vm.map);
+            }
+        }
 
         /**
          * Get project stats
@@ -51,6 +128,7 @@
                 var customColours = false;
                 var zoomToProject = true;
                 projectMapService.showProjectOnMap(vm.project, vm.project.aoiCentroid, customColours, zoomToProject);
+                vm.statusStats = taskStatusStats();
             }, function(data){
                // TODO
             });
@@ -84,20 +162,27 @@
         }
 
         /**
-         * Get project activity
-         * @param projectId
-         * @param page - optional
+         * Package up basic stats for each appropriate task status based on the
+         * project data, including the count and percentage of tasks in each
+         * status
          */
-        function getProjectActivity(projectId, page){
-            var resultsPromise = statsService.getProjectActivity(projectId, page);
-            resultsPromise.then(function (data) {
-               // Return the projects successfully
-                vm.projectActivityPagination = data.pagination;
-                vm.projectActivity = data.activity;
-            }, function(){
-                // an error occurred
-                vm.projectActivityPagination = [];
-                vm.projectActivity = [];
+        function taskStatusStats(){
+            return [
+                TaskStatus.READY, TaskStatus.MAPPED, TaskStatus.VALIDATED, TaskStatus.INVALIDATED,
+                TaskStatus.BADIMAGERY, TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION,
+            ].map(function(status) {
+                var fieldName = "tasks" + status.title.replace(/\s/g, '');
+                var stats = {
+                  title: status.title,
+                  count: vm.project[fieldName],
+                  percent: null,
+                };
+
+                if (typeof stats.count !== 'undefined' && vm.project.totalTasks > 0) {
+                  stats.percent = ((stats.count / vm.project.totalTasks) * 100.0).toFixed(1);
+                }
+
+                return stats;
             });
         }
     }

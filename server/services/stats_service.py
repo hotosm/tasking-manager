@@ -1,15 +1,16 @@
 from cachetools import TTLCache, cached
-
-from sqlalchemy import func, text
+from sqlalchemy import func, text, or_
+from sqlalchemy.orm import aliased
 from server import db
 from server.models.dtos.stats_dto import (
     ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO,
-    ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO,
-    CampaignStatsDTO
+    ProjectActivityDTO, ProjectOverviewDTO, TaskOverviewDTO, HomePageStatsDTO,
+    OrganizationStatsDTO, CampaignStatsDTO
     )
 from server.models.postgis.project import Project
-from server.models.postgis.statuses import TaskStatus
+from server.models.postgis.statuses import ProjectStatus, TaskStatus
 from server.models.postgis.task import TaskHistory, User, Task
+from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
@@ -78,19 +79,151 @@ class StatsService:
                 user.tasks_invalidated -= 1
 
     @staticmethod
-    def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
+    def get_latest_overview(project_id: int, locale='en', page=1, page_size=10, sort_by=None, sort_direction=None, mapper_name=None, validator_name=None, status=None, project_name=None, all_results=False) -> ProjectOverviewDTO:
+        """ Gets the latest overview of project tasks status """
+        sort_column = None if not sort_by else Task.__table__.columns.get(sort_by)
+        if sort_column is None:
+            sort_column = TaskHistory.action_date
+
+        if sort_direction is not None and sort_direction.lower() == "asc":
+            sort_column = sort_column.asc()
+        else:
+            sort_column = sort_column.desc()
+        sort_column = sort_column.nullslast()
+
+        mapper = aliased(User, name="mapper")
+        lock_holder = aliased(User, name="lock_holder")
+        validator = aliased(User, name="validator")
+        latest_history = aliased(TaskHistory, name='latest')
+        latest_history_id = (db.session.query(latest_history.id) \
+                                       .filter(latest_history.task_id == Task.id) \
+                                       .filter(latest_history.project_id == Task.project_id) \
+                                       .order_by(latest_history.action_date.desc()) \
+                                       .order_by(latest_history.id.desc()) \
+                                       .limit(1) \
+                                       .correlate(Task) \
+                                       .as_scalar())
+
+        query = db.session.query(Task.id, Task.project_id, Task.task_status, \
+                                 mapper.username.label("mapper_name"), validator.username.label("validator_name"), \
+                                 lock_holder.username.label("lock_holder_name"), TaskHistory.action_date) \
+                          .outerjoin(TaskHistory, Task.task_history) \
+                          .filter(or_(TaskHistory.id == latest_history_id, TaskHistory.id.is_(None))) \
+                          .outerjoin((mapper, Task.mapper), (validator, Task.validator), (lock_holder, Task.lock_holder))
+
+        if project_id is not None:
+            query = query.filter(Task.project_id == project_id)
+        else:
+            # Include project name. Ignore draft and archived projects
+            query = query.join(Project, Task.project_id == Project.id) \
+                         .filter(Project.status == ProjectStatus.PUBLISHED.value) \
+                         .add_columns(ProjectInfo.name.label('project_title')) \
+                         .filter(Project.id == ProjectInfo.project_id) \
+                         .filter(ProjectInfo.locale.in_([locale, 'en'])) \
+
+            if project_name is not None:
+                query = query.filter(ProjectInfo.name.ilike('%' + project_name.lower() + '%'))
+
+        if status is not None:
+            query = query.filter(Task.task_status == status)
+
+        if mapper_name is not None:
+            # Filter on mapper, but also include lock holder if task is locked for mapping
+            query = query.filter((mapper.username.ilike(mapper_name.lower() + '%')) | \
+                                 ((Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value) & \
+                                  (lock_holder.username.ilike(mapper_name.lower() + '%'))))
+
+        if validator_name is not None:
+            # Filter on validator, but also include lock holder if task is locked for validation
+            query = query.filter((validator.username.ilike(validator_name.lower() + '%')) | \
+                                 ((Task.task_status == TaskStatus.LOCKED_FOR_VALIDATION.value) & \
+                                  (lock_holder.username.ilike(validator_name.lower() + '%'))))
+
+        query = query.order_by(sort_column)
+        paginated_results = query.paginate(page, page_size, True) if not all_results else None
+        items = paginated_results.items if paginated_results else query.all()
+        if len(items) == 0:
+            raise NotFound()
+
+        overview_dto = ProjectOverviewDTO()
+        for item in items:
+            task = TaskOverviewDTO()
+            if 'project_title' in item.keys():
+                task.project_title = item.project_title
+            task.project_id = item.project_id
+            task.task_id = item.id
+
+            task.task_status = item.task_status
+            task.status_name = TaskStatus(item.task_status).name
+            task.updated_date = item.action_date
+
+            if item.task_status == TaskStatus.LOCKED_FOR_MAPPING.value:
+                task.mapper_name = item.lock_holder_name
+            else:
+                task.mapper_name = item.mapper_name
+
+            if item.task_status == TaskStatus.LOCKED_FOR_VALIDATION.value:
+                task.validator_name = item.lock_holder_name
+            else:
+                task.validator_name = item.validator_name
+
+            overview_dto.tasks.append(task)
+
+        overview_dto.pagination = Pagination(paginated_results) if paginated_results else None
+        return overview_dto
+
+
+    @staticmethod
+    def get_latest_activity(project_id: int, locale='en', page=1, page_size=10, sort_by=None, sort_direction=None, username=None, status=None, project_name=None) -> ProjectActivityDTO:
         """ Gets all the activity on a project """
+        sort_column = None if not sort_by else TaskHistory.__table__.columns.get(sort_by)
+        if sort_column is None:
+            sort_column = TaskHistory.action_date
 
-        results = db.session.query(
-                TaskHistory.id, TaskHistory.task_id, TaskHistory.action, TaskHistory.action_date,
-                TaskHistory.action_text, User.username
-            ).join(User).filter(
-                TaskHistory.project_id == project_id,
-                TaskHistory.action != 'COMMENT'
-            ).order_by(
-                TaskHistory.action_date.desc()
-            ).paginate(page, 10, True)
+        if sort_direction is not None and sort_direction.lower() == "asc":
+            sort_column = sort_column.asc()
+        else:
+            sort_column = sort_column.desc()
+        sort_column = sort_column.nullslast()
 
+        relevant_actions = ('STATE_CHANGE', 'LOCKED_FOR_MAPPING', 'LOCKED_FOR_VALIDATION')
+
+        query = db.session.query(TaskHistory.id, TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action,
+                                 TaskHistory.action_date, TaskHistory.action_text, User.username) \
+                          .join(User) \
+                          .filter(TaskHistory.action.in_(relevant_actions))
+
+        if project_id is not None:
+            query = query.filter(TaskHistory.project_id == project_id)
+        else:
+            # Include project name. Ignore draft and archived projects
+            query = query.join(Project, TaskHistory.project_id == Project.id) \
+                         .filter(Project.status == ProjectStatus.PUBLISHED.value) \
+                         .add_columns(ProjectInfo.name.label('project_title')) \
+                         .filter(Project.id == ProjectInfo.project_id) \
+                         .filter(ProjectInfo.locale.in_([locale, 'en'])) \
+
+            if project_name is not None:
+                query = query.filter(ProjectInfo.name.ilike('%' + project_name.lower() + '%'))
+
+        if username is not None:
+            query = query.filter(User.username.ilike(username.lower() + '%'))
+
+        if status is not None:
+            if status == TaskStatus.LOCKED_FOR_MAPPING.value:
+                query = query.filter(TaskHistory.action == 'LOCKED_FOR_MAPPING')
+            elif status == TaskStatus.LOCKED_FOR_VALIDATION.value:
+                query = query.filter(TaskHistory.action == 'LOCKED_FOR_VALIDATION')
+            elif status == TaskStatus.MAPPED.value:
+                query = query.filter(TaskHistory.action == 'STATE_CHANGE', TaskHistory.action_text == 'MAPPED')
+            elif status == TaskStatus.VALIDATED.value:
+                query = query.filter(TaskHistory.action == 'STATE_CHANGE', TaskHistory.action_text == 'VALIDATED')
+            elif status == TaskStatus.INVALIDATED.value:
+                query = query.filter(TaskHistory.action == 'STATE_CHANGE', TaskHistory.action_text == 'INVALIDATED')
+            elif status == TaskStatus.BADIMAGERY.value:
+                query = query.filter(TaskHistory.action == 'STATE_CHANGE', TaskHistory.action_text == 'BADIMAGERY')
+
+        results = query.order_by(sort_column).paginate(page, page_size, True)
         if results.total == 0:
             raise NotFound()
 
@@ -98,6 +231,10 @@ class StatsService:
         for item in results.items:
             history = TaskHistoryDTO()
             history.history_id = item.id
+            history.project_id = item.project_id
+            if 'project_title' in item.keys():
+                history.project_title = item.project_title
+
             history.task_id = item.task_id
             history.action = item.action
             history.action_text = item.action_text

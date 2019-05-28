@@ -21,7 +21,8 @@ class TestStatsService(unittest.TestCase):
         self.assertEqual(test_project.tasks_mapped, 1)
         self.assertEqual(test_user.tasks_mapped, 1)
 
-    def test_update_after_validating_increments_counter(self):
+    @patch.object(TaskHistory, 'get_last_status')
+    def test_update_after_validating_increments_counter(self, last_status):
         # Arrange
         test_project = Project()
         test_project.tasks_mapped = 1
@@ -29,6 +30,8 @@ class TestStatsService(unittest.TestCase):
 
         test_user = User()
         test_user.tasks_validated = 0
+
+        last_status.return_value = TaskStatus.MAPPED
 
         # Act
         StatsService._update_tasks_stats(test_project, test_user, TaskStatus.MAPPED, TaskStatus.VALIDATED)
@@ -38,9 +41,33 @@ class TestStatsService(unittest.TestCase):
         self.assertEqual(test_project.tasks_validated, 1)
         self.assertEqual(test_user.tasks_validated, 1)
 
+    @patch.object(TaskHistory, 'get_last_status')
+    def test_update_after_validating_bad_imagery_increments_counter(self, last_status):
+        # Arrange
+        test_project = Project()
+        test_project.tasks_validated = 0
+        test_project.tasks_mapped = 0
+        test_project.tasks_bad_imagery = 1
+
+        test_user = User()
+        test_user.tasks_validated = 0
+
+        last_status.return_value = TaskStatus.BADIMAGERY
+
+        # Act
+        StatsService._update_tasks_stats(test_project, test_user, TaskStatus.VALIDATED, TaskStatus.BADIMAGERY)
+
+        # Assert
+        self.assertEqual(test_project.tasks_validated, 1)
+        self.assertEqual(test_project.tasks_mapped, 1) # ensure mapping credit is awarded
+        self.assertEqual(test_project.tasks_bad_imagery, 0)
+        self.assertEqual(test_user.tasks_validated, 1)
+
     def test_update_after_flagging_bad_imagery(self):
         # Arrange
         test_project = Project()
+        test_project.tasks_mapped = 0
+        test_project.tasks_validated = 0
         test_project.tasks_bad_imagery = 0
 
         test_user = User()
@@ -51,6 +78,8 @@ class TestStatsService(unittest.TestCase):
 
         # Assert
         self.assertEqual(test_project.tasks_bad_imagery, 1)
+        self.assertEqual(test_project.tasks_mapped, 0) # no mapping credit
+        self.assertEqual(test_project.tasks_validated, 0)
 
     def test_update_after_invalidating_mapped_task_sets_counters_correctly(self):
         # Arrange

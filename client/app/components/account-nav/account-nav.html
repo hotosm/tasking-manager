@@ -60,6 +60,11 @@
                         {{ 'Project dashboard' | translate }}
                     </a>
                 </li>
+                <li ng-show="accountNavCtrl.account.role === 'VALIDATOR' || accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="{{ 'Activity accross all projects' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToAllActivity()">
+                        {{ 'All Activity' | translate }}
+                    </a>
+                </li>
                 <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
                     <a title="{{ 'New project' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToCreateNewProject()">
                         {{ 'Create new Project' | translate }}
