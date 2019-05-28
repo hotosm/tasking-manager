@@ -5,7 +5,10 @@ import json
 from enum import Enum
 from flask import current_app
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy.schema import ForeignKeyConstraint
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import make_transient
+from sqlalchemy.sql.expression import func
 from geoalchemy2 import Geometry
 from server import db
 from typing import List
@@ -16,6 +19,7 @@ from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
 from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
+from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, parse_duration, NotFound
 from server.models.postgis.task_annotation import TaskAnnotation
 
@@ -28,7 +32,6 @@ class TaskAction(Enum):
     COMMENT = 4
     AUTO_UNLOCKED_FOR_MAPPING = 5
     AUTO_UNLOCKED_FOR_VALIDATION = 6
-
 
 class TaskInvalidationHistory(db.Model):
     """ Describes the most recent history of task invalidation and subsequent validation """
@@ -152,9 +155,13 @@ class TaskHistory(db.Model):
 
     actioned_by = db.relationship(User)
     task_mapping_issues = db.relationship(TaskMappingIssue, cascade="all")
+    ForeignKeyConstraint(['task_id', 'project_id'], ['task.id', 'task.project_id'])
+    task = relationship("Task", back_populates="task_history")
+    invalidation_history = db.relationship(TaskInvalidationHistory, lazy='dynamic', cascade='all')
 
     __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
-                      db.Index('idx_task_history_composite', 'task_id', 'project_id'), {})
+                      db.Index('idx_task_history_composite', 'task_id', 'project_id'),
+                      db.Index('idx_action_action_text_composite', 'action', 'action_text'), {})
 
     def __init__(self, task_id, project_id, user_id):
         self.task_id = task_id
@@ -335,6 +342,8 @@ class TaskHistory(db.Model):
             project_id, task_id,
             [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name,
              TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name])
+
+    @staticmethod
     def get_last_mapped_action(project_id: int, task_id: int):
         """Gets the most recent mapped action, if any, in the task history"""
         return db.session.query(TaskHistory) \
@@ -358,16 +367,17 @@ class Task(db.Model):
     # Tasks need to be split differently if created from an arbitrary grid or were clipped to the edge of the AOI
     is_square = db.Column(db.Boolean, default=True)
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
-    task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
+    task_status = db.Column(db.Integer, default=TaskStatus.READY.value, index=True)
     locked_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_locked'))
     mapped_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_mapper'))
     validated_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_validator'))
 
     # Mapped objects
-    task_history = db.relationship(TaskHistory, cascade="all")
+    task_history = db.relationship(TaskHistory, cascade="all", back_populates="task")
+    lock_holder = db.relationship(User, primaryjoin="Task.locked_by == User.id", foreign_keys=[locked_by])
+    mapper = db.relationship(User, primaryjoin="Task.mapped_by == User.id", foreign_keys=[mapped_by])
+    validator = db.relationship(User, primaryjoin="Task.validated_by == User.id", foreign_keys=[validated_by])
     task_annotations = db.relationship(TaskAnnotation, cascade="all")
-    lock_holder = db.relationship(User, foreign_keys=[locked_by])
-    mapper = db.relationship(User, foreign_keys=[mapped_by])
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -443,6 +453,13 @@ class Task(db.Model):
     def get_all_tasks(project_id: int):
         """ Get all tasks for a given project """
         return Task.query.filter(Task.project_id == project_id).all()
+
+    @staticmethod
+    def get_status_counts(project_id: int):
+        """ Get counts of all tasks in each status for a given project"""
+        return db.session.query(Task.task_status, func.count(Task.task_status)) \
+                         .filter(Task.project_id == project_id) \
+                         .group_by(Task.task_status).all()
 
     @staticmethod
     def auto_unlock_delta():
@@ -580,10 +597,11 @@ class Task(db.Model):
         elif new_state == TaskStatus.VALIDATED:
             TaskInvalidationHistory.record_validation(self.project_id, self.id, user_id, history)
             self.validated_by = user_id
+            if not self.mapped_by:
+                self.mapped_by = user_id
         elif new_state == TaskStatus.INVALIDATED:
             TaskInvalidationHistory.record_invalidation(self.project_id, self.id, user_id, history)
-            self.mapped_by = None
-            self.validated_by = None
+            self.validated_by = user_id
 
         if not undo:
             # Using a slightly evil side effect of Actions and Statuses having the same name here :)

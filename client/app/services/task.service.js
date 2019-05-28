@@ -4,6 +4,18 @@
      * @fileoverview This file provides a service for task operations.
      */
 
+    // TaskStatus constants; values match the constants on the server
+    angular.module('taskingManager').constant('TaskStatus', {
+        READY: { value: 0, title: "Ready" },
+        LOCKED_FOR_MAPPING: { value: 1, title: "Locked For Mapping" },
+        MAPPED: { value: 2, title: "Mapped" },
+        LOCKED_FOR_VALIDATION: { value: 3, title: "Locked For Validation" },
+        VALIDATED: { value: 4, title: "Validated" },
+        INVALIDATED: { value: 5, title: "Invalidated" },
+        BADIMAGERY: { value: 6, title: "Bad Imagery" },
+        SPLIT: { value: 7, title: "Split" },
+    });
+
     angular
         .module('taskingManager')
         .service('taskService', ['$http', '$httpParamSerializer', '$q', 'configService', 'authService', taskService]);

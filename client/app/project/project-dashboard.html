@@ -6,97 +6,44 @@
                     <h1 class="section__title">
                     {{ 'Activity and Stats' | translate }}
                     </h1>
-                    <a
+                    <a ng-if="projectDashboardCtrl.singleProject"
                         class="heading-alt">#{{ projectDashboardCtrl.projectId }} - {{ projectDashboardCtrl.project.name }}
                     </a>
+                    <h3 ng-if="!projectDashboardCtrl.singleProject">
+                        {{ 'All Published Projects' | translate }}
+                    </h3>
                 </div>
-                <a class="button button--outline pull-right" ng-href="/project/{{ projectDashboardCtrl.projectId }}">
+                <a ng-if="projectDashboardCtrl.singleProject"
+                   class="button button--outline pull-right" ng-href="/project/{{ projectDashboardCtrl.projectId }}">
                      {{ 'Return to project' | translate }}
                 </a>
             </div>
         </header>
-        <div class="section-container">
+        <div ng-if="projectDashboardCtrl.singleProject" class="section-container">
             <div class="section__body">
                 <div class="inner">
                     <div class="dashboard-container">
-                        <div class="left">
-                            <h2>{{ 'Last activity' | translate }}</h2>
-                            <div class="content">
-                                <p ng-show="!projectDashboardCtrl.projectActivity.length > 0">{{ 'No activity (yet).' | translate }}</p>
-                                <table ng-show="projectDashboardCtrl.projectActivity.length > 0" class="table table-dashboard-project-activity">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ 'Action' | translate }}</th>
-                                            <th>{{ 'User' | translate }}</th>
-                                            <th>{{ 'When' | translate }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="item in projectDashboardCtrl.projectActivity">
-                                            <td>
-                                                <span class="status-marker-locked-for-mapping" ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Task locked for mapping' | translate }}</span>
-                                                <span class="status-marker-locked-for-validation" ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Task locked for validation' | translate }}</span>
-                                                <span class="status-marker-auto-unlocked-for-mapping" ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Task automatically unlocked for mapping' | translate }}</span>
-                                                <span class="status-marker-auto-unlocked-for-validation" ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Task automatically unlocked for validation' | translate }}</span>
-                                                <span class="status-marker-badimagery" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Task marked as bad imagery' | translate }}</span>
-                                                <span class="status-marker-mapped" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Task mapped' | translate }}</span>
-                                                <span class="status-marker-validated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Task validated' | translate }}</span>
-                                                <span class="status-marker-invalidated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Task invalidated' | translate }}</span>
-                                                <span class="status-marker-split" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'SPLIT'">{{ 'Task split' | translate }}</span>
-                                                <span class="status-marker-ready" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Task marked as ready' | translate }}</span>
-                                            </td>
-                                            <td>
-                                                <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a>
-                                            </td>
-                                            <td>
-                                                <span tm-timestamp="item.actionDate"></span>
-                                            </td>
-                                        </tr>
-                                  </tbody>
-                                </table>
-                                <button class="button button--achromic"
-                                    ng-class="!projectDashboardCtrl.projectActivityPagination.hasPrev ? 'disabled' : ''"
-                                    ng-click="projectDashboardCtrl.getLastActivity(projectDashboardCtrl.projectActivityPagination.prevNum)">
-                                    {{ 'Newer' | translate }}
-                                </button>
-                                <button class="button button--achromic"
-                                    ng-class="!projectDashboardCtrl.projectActivityPagination.hasNext ? 'disabled' : ''"
-                                    ng-click="projectDashboardCtrl.getLastActivity(projectDashboardCtrl.projectActivityPagination.nextNum)">
-                                    {{ 'Older' | translate }}
-                                </button>
-                            </div>
-                        </div>
-                        <div class="right">
-                            <h2>{{ 'Contributions' | translate }}</h2>
-                            <div class="content">
-                                <p ng-show="!projectDashboardCtrl.projectContributions.length > 0">{{ 'No contributions (yet).' | translate }}</p>
-                                <table ng-show="projectDashboardCtrl.projectContributions.length > 0" class="table table-dashboard-comments">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ 'User' | translate }}</th>
-                                            <th>{{ 'Mapped' | translate }}</th>
-                                            <th>{{ 'Validated' | translate }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="item in projectDashboardCtrl.projectContributions | orderBy: '-mapped'">
-                                            <td><a ng-href="/user/{{ item.username }}">{{ item.username }}</a></td>
-                                            <td>{{ item.mapped }}</td>
-                                            <td>{{ item.validated }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="section-container">
-            <div class="section__body">
-                <div class="inner">
-                    <div class="dashboard-container">
+                        <a ng-href="{{ tmAPI }}/stats/project/{{ projectDashboardCtrl.projectId }}?as_csv=true"
+                           target="_blank"
+                           class="button button--sm button--outline--secondary pull-right">
+                            {{ 'Export CSV' | translate }}
+                        </a>
                         <h2>{{ 'Stats' | translate }}</h2>
+                        <div class="clearfix"></div>
+
+                        <p class="metadata">
+                            {{ "Note: stats may be up to 10 minutes old" | translate }}
+                        </p>
+
+                        <ul class="list-type--none">
+                            <li>
+                                <strong>{{ "Total Tasks:" | translate }} {{ projectDashboardCtrl.project.totalTasks }}</strong>
+                            </li>
+                            <li>
+                                {{ "Tasks Removed:" | translate }} {{ projectDashboardCtrl.project.tasksDeleted }}
+                            </li>
+                        </ul>
+
                         <div class="left">
                             <div class="section__project-dashboard--stats">
                                 <span class="label">{{ projectDashboardCtrl.project.percentMapped }}{{ '% Mapped' | translate }}</span>
@@ -107,12 +54,144 @@
                         </div>
                         <div class="right">
                             <div id="map" class="map-container"></div>
+
+                        </div>
+
+                        <div class="content">
+                            <table class="table table-dashboard-comments">
+                                <thead>
+                                    <tr>
+                                        <th>{{ 'Current Status' | translate }}</th>
+                                        <th>{{ 'Count' | translate }}</th>
+                                        <th>{{ 'Percent' | translate }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="statusStats in projectDashboardCtrl.statusStats">
+                                        <td>{{ statusStats.title | translate }}</td>
+                                        <td>{{ statusStats.count }}</td>
+                                        <td>{{ statusStats.percent === null ? '--' : statusStats.percent }}%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div class="dashboard-container">
+                        <a ng-href="{{ tmAPI }}/stats/project/{{ projectDashboardCtrl.singleProject ? projectDashboardCtrl.projectId : 'all' }}/overview?as_csv=true"
+                           target="_blank"
+                           class="button button--sm button--outline--secondary pull-right">
+                            {{ 'Export CSV' | translate }}
+                        </a>
+                        <h2>{{ 'Status Overview' | translate }}</h2>
+                        <div class="clearfix"></div>
+
+                        <table ng-table="projectDashboardCtrl.overviewTableSettings" class="table table-dashboard-status-overview">
+                            <tr ng-repeat="item in $data">
+                              <td ng-if="!projectDashboardCtrl.singleProject" title="'Project' | translate" filter="{projectTitle: 'text'}">
+                                  <a ng-href="/project/{{ item.projectId }}?tab=chat">{{ item.projectTitle }}</a>
+                              </td>
+                              <td title="'Status' | translate" filter="projectDashboardCtrl.statusFilterDefinition" filter-data="projectDashboardCtrl.statusFilterLabels">
+                                <span class="status-marker-locked-for-mapping" ng-show="item.taskStatus === TaskStatus.LOCKED_FOR_MAPPING.value">{{ TaskStatus.LOCKED_FOR_MAPPING.title | translate }}</span>
+                                <span class="status-marker-locked-for-validation" ng-show="item.taskStatus === TaskStatus.LOCKED_FOR_VALIDATION.value">{{ TaskStatus.LOCKED_FOR_VALIDATION.title | translate }}</span>
+                                <span class="status-marker-badimagery" ng-show="item.taskStatus === TaskStatus.BADIMAGERY.value">{{ TaskStatus.BADIMAGERY.title | translate }}</span>
+                                <span class="status-marker-mapped"ng-show="item.taskStatus === TaskStatus.MAPPED.value">{{ TaskStatus.MAPPED.title | translate }}</span>
+                                <span class="status-marker-validated" ng-show="item.taskStatus === TaskStatus.VALIDATED.value">{{ TaskStatus.VALIDATED.title | translate }}</span>
+                                <span class="status-marker-invalidated" ng-show="item.taskStatus === TaskStatus.INVALIDATED.value">{{ TaskStatus.INVALIDATED.title | translate }}</span>
+                                  <span class="status-marker-ready" ng-show="item.taskStatus === TaskStatus.READY.value">{{ TaskStatus.READY.title | translate }}</span>
+                                  <span class="status-marker-split" ng-show="item.taskStatus === TaskStatus.SPLIT.value">{{ TaskStatus.SPLIT.title | translate }}</span>
+                              </td>
+                              <td title="'Mapper' | translate" filter="{mapperName: 'text'}">
+                                <a href="/user/{{ item.mapperName }}">{{ item.mapperName }}</a>
+                              </td>
+                              <td title="'Validator' | translate" filter="{validatorName: 'text'}">
+                                  <a href="/user/{{ item.validatorName }}">{{ item.validatorName }}</a>
+                              </td>
+                              <td title="'Updated' | translate" sortable="'updatedDate'">
+                                  <span ng-show="item.updatedDate !== null" am-time-ago="item.updatedDate | amUtc | amLocal" />
+                              </td>
+                              <td title="'Task Link' | translate" sortable="'taskId'">
+                                  <a href="/project/{{ item.projectId }}?task={{ item.taskId}}" target="_blank" rel="noopener">Task {{ item.taskId }}</a>
+                              </td>
+                            </tr>
+                        </table>
+                        <p ng-show="!projectDashboardCtrl.projectOverview.length > 0">{{ 'No tasks.' | translate }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div class="dashboard-container">
+                        <h2>{{ 'Last activity' | translate }}</h2>
+                        <table ng-table="projectDashboardCtrl.activityTableSettings" class="table table-dashboard-project-activity">
+                            <tr ng-repeat="item in $data">
+                              <td ng-if="!projectDashboardCtrl.singleProject" title="'Project' | translate" filter="{projectTitle: 'text'}">
+                                  <a ng-href="/project/{{ item.projectId }}?tab=chat">{{ item.projectTitle }}</a>
+                              </td>
+                              <td title="'Action' | translate" filter="projectDashboardCtrl.statusFilterDefinition" filter-data="projectDashboardCtrl.statusFilterLabels">
+                                  <span class="status-marker-locked-for-mapping" ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Task locked for mapping' | translate }}</span>
+                                  <span class="status-marker-locked-for-validation" ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Task locked for validation' | translate }}</span>
+                                      <span class="status-marker-auto-unlocked-for-mapping" ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Task automatically unlocked for mapping' | translate }}</span>
+                                      <span class="status-marker-auto-unlocked-for-validation" ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Task automatically unlocked for validation' | translate }}</span>
+                                  <span class="status-marker-badimagery" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Task marked as bad imagery' | translate }}</span>
+                                  <span class="status-marker-mapped"ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Task mapped' | translate }}</span>
+                                  <span class="status-marker-validated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Task validated' | translate }}</span>
+                                  <span class="status-marker-invalidated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Task invalidated' | translate }}</span>
+                                  <span class="status-marker-ready" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Task marked as ready' | translate }}</span>
+                                  <span class="status-marker-split" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'SPLIT'">{{ 'Task created via split' | translate }}</span>
+                              </td>
+                              <td title="'By User' | translate" filter="{actionBy: 'text'}">
+                                  <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a>
+                              </td>
+                              <td title="'When' | translate" sortable="'actionDate'">
+                                  <span am-time-ago="item.actionDate | amUtc | amLocal" />
+                              </td>
+                              <td title="'Task Link' | translate">
+                                  <a href="/project/{{ item.projectId }}?task={{ item.taskId}}" target="_blank" rel="noopener">Task {{ item.taskId }}</a>
+                              </td>
+                            </tr>
+                        </table>
+                        <p ng-show="!projectDashboardCtrl.projectActivity.length > 0">{{ 'No activity.' | translate }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="projectDashboardCtrl.singleProject" class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <div class="dashboard-container">
+                        <h2>{{ 'Contributions' | translate }}</h2>
+                        <div class="content">
+                            <p ng-show="!projectDashboardCtrl.projectContributions.length > 0">{{ 'No contributions (yet).' | translate }}</p>
+                            <table ng-show="projectDashboardCtrl.projectContributions.length > 0" class="table table-dashboard-comments">
+                                <thead>
+                                    <tr>
+                                        <th>{{ 'User' | translate }}</th>
+                                        <th>{{ 'Mapped' | translate }}</th>
+                                        <th>{{ 'Validated' | translate }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in projectDashboardCtrl.projectContributions | orderBy: '-mapped'">
+                                        <td><a ng-href="/user/{{ item.username }}">{{ item.username }}</a></td>
+                                        <td>{{ item.mapped }}</td>
+                                        <td>{{ item.validated }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="projectDashboardCtrl.singleProject" class="section-container">
             <div class="section__body">
                 <div class="inner">
                     <h2>{{ 'Comments by users' | translate }}</h2>

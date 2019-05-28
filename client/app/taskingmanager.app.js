@@ -179,6 +179,12 @@
                     title: 'Dashboard'
                 })
 
+                .when('/projects/activity', {
+                    templateUrl: 'app/project/project-dashboard.html',
+                    controller: 'projectDashboardController',
+                    controllerAs: 'projectDashboardCtrl'
+                })
+
                 .when('/project/:id/dashboard', {
                     templateUrl: 'app/project/project-dashboard.html',
                     controller: 'projectDashboardController',

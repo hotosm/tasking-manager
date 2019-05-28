@@ -1,6 +1,7 @@
 from schematics import Model
-from schematics.types import StringType, IntType, FloatType, BooleanType
+from schematics.types import StringType, IntType, FloatType, BooleanType, DateTimeType
 from schematics.types.compound import ListType, ModelType
+from schematics.transforms import blacklist
 from server.models.dtos.mapping_dto import TaskHistoryDTO
 
 
@@ -57,6 +58,31 @@ class ProjectActivityDTO(Model):
     pagination = ModelType(Pagination)
     activity = ListType(ModelType(TaskHistoryDTO))
 
+class TaskOverviewDTO(Model):
+    """ DTO that provides an overview of a task """
+    project_title = StringType(serialized_name='projectTitle')
+    project_id = IntType(serialized_name='projectId')
+    task_id = IntType(serialized_name='taskId')
+    task_status = StringType(serialized_name='taskStatus')
+    status_name = StringType(serialized_name='statusName')
+    mapper_name = StringType(serialized_name='mapperName')
+    validator_name = StringType(serialized_name='validatorName')
+    updated_date = DateTimeType(serialized_name='updatedDate')
+
+    class Options:
+        roles = {
+            'csv-single': blacklist('project_title', 'task_status'),
+            'csv-multi': blacklist('task_status')
+        }
+
+class ProjectOverviewDTO(Model):
+    """ DTO for the overview of project tasks """
+    def __init__(self):
+        super().__init__()
+        self.tasks = []
+
+    pagination = ModelType(Pagination)
+    tasks = ListType(ModelType(TaskOverviewDTO))
 
 class OrganizationStatsDTO(Model):
     def __init__(self, tup):
@@ -98,4 +124,3 @@ class HomePageStatsDTO(Model):
     # avg_completion_time = IntType(serialized_name='averageCompletionTime')
     organizations = ListType(ModelType(OrganizationStatsDTO))
     campaigns = ListType(ModelType(CampaignStatsDTO))
-    

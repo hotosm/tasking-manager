@@ -59,17 +59,6 @@ class TestValidationService(unittest.TestCase):
         self.assertEqual(0, self.test_project.tasks_mapped)
         self.assertEqual(0, self.test_project.tasks_validated)
 
-    def test_mapped_by_and_validated_by_are_null_after_invalidating_all(self):
-        if self.skip_tests:
-            return
-
-        ValidatorService.validate_all_tasks(self.test_project.id, self.test_user.id)
-        ValidatorService.invalidate_all_tasks(self.test_project.id, self.test_user.id)
-
-        for task in self.test_project.tasks:
-            self.assertIsNone(task.mapped_by)
-            self.assertIsNone(task.validated_by)
-
     def test_mapped_by_and_validated_by_is_set_after_validating_all(self):
         if self.skip_tests:
             return

@@ -129,6 +129,14 @@
         };
 
         /**
+         * Navigate to the activity page for all projects
+         */
+        vm.goToAllActivity = function () {
+            $location.path('projects/activity');
+            vm.showDropdown = false;
+        };
+
+        /**
          * Navigate to the user list page
          */
         vm.goToUserList = function () {

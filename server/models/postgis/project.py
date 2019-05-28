@@ -336,9 +336,13 @@ class Project(db.Model):
         return locked_tasks
 
     @staticmethod
-    def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
+    def get_projects_for_admin(admin_id: int, preferred_locale: str, all_projects = False) -> PMDashboardDTO:
         """ Get projects for admin """
-        admins_projects = Project.query.filter_by(author_id=admin_id).all()
+        project_query = Project.query
+        if not all_projects:
+          project_query = project_query.filter_by(author_id=admin_id)
+
+        admins_projects = project_query.all()
 
         if admins_projects is None:
             raise NotFound('No projects found for admin')
@@ -411,10 +415,18 @@ class Project(db.Model):
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
+        summary.total_tasks = self.total_tasks
 
-        summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
-        summary.percent_validated = int((self.tasks_validated / self.total_tasks) * 100)
-        summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
+        # get (status, count) tuples for count of tasks in each task status
+        task_status_counts = Task.get_status_counts(self.id)
+        for status_count_tuple in task_status_counts:
+            status_count_field = "tasks_" + TaskStatus(status_count_tuple[0]).name.lower()
+            if hasattr(summary, status_count_field):
+                setattr(summary, status_count_field, status_count_tuple[1])
+
+        summary.percent_mapped = 0 if self.total_tasks == 0 else int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
+        summary.percent_validated = 0 if self.total_tasks == 0 else int((self.tasks_validated  / self.total_tasks) * 100)
+        summary.percent_bad_imagery = 0 if self.total_tasks == 0 else int((self.tasks_bad_imagery / self.total_tasks) * 100)
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description

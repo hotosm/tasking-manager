@@ -2,9 +2,10 @@ from schematics import Model
 from schematics.exceptions import ValidationError
 from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
 from schematics.types.compound import ListType, ModelType, DictType
-from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
+from schematics.transforms import whitelist
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
+from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode, Editors
 
 
@@ -233,6 +234,20 @@ class ProjectSummary(Model):
     last_updated = DateTimeType(serialized_name='lastUpdated')
     priority = StringType(serialized_name='projectPriority')
     campaign_tag = StringType(serialized_name='campaignTag')
+    total_tasks = IntType(serialized_name='totalTasks')
+    percent_mapped = IntType(serialized_name='percentMapped')
+    percent_validated = IntType(serialized_name='percentValidated')
+    tasks_ready = IntType(serialized_name='tasksReady', default=0)
+    tasks_mapped = IntType(serialized_name='tasksMapped', default=0)
+    tasks_validated = IntType(serialized_name='tasksValidated', default=0)
+    tasks_invalidated = IntType(serialized_name='tasksInvalidated', default=0)
+    tasks_partially_mapped = IntType(serialized_name='tasksPartiallyMapped', default=0)
+    tasks_review_requested = IntType(serialized_name='tasksReviewRequested', default=0)
+    tasks_badimagery = IntType(serialized_name='tasksBadImagery', default=0)
+    tasks_locked_for_mapping = IntType(serialized_name='tasksLockedForMapping', default=0)
+    tasks_locked_for_validation = IntType(serialized_name='tasksLockedForValidation', default=0)
+    created = DateTimeType()
+    last_updated = DateTimeType(serialized_name='lastUpdated')
     organisation_tag = StringType(serialized_name='organisationTag')
     entities_to_map = StringType(serialized_name='entitiesToMap')
     changeset_comment = StringType(serialized_name='changesetComment')
@@ -253,6 +268,14 @@ class ProjectSummary(Model):
     average_mapping_time = IntType(serialized_name='averageMappingTime')
     average_validation_time = IntType(serialized_name='averageValidationTime')
     status = StringType()
+
+    class Options:
+        roles = {
+            'csv': whitelist('project_id', 'total_tasks', 'percent_mapped', 'percent_validated', \
+                             'tasks_ready', 'tasks_mapped', 'tasks_partially_mapped', 'tasks_review_requested', \
+                             'tasks_validated', 'tasks_invalidated', 'tasks_badimagery', \
+                             'tasks_locked_for_mapping', 'tasks_locked_for_validation'),
+        }
 
 
 class PMDashboardDTO(Model):
