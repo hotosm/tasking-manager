@@ -220,7 +220,7 @@ const Resources = {
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
         'cd client/',
-        cf.sub('cat <<< "$(jq \'. + {release: {EnvironmentConfig: (.release.EnvironmentConfig + {matomoSiteID: ${}})}}\'< client/taskingmanager.config.json)" > client/taskingmanager.config.json ',
+        cf.sub('cat <<< "$(jq \'. + {release: {EnvironmentConfig: (.release.EnvironmentConfig + {matomoSiteID: ${MatomoSiteID}})}}\'< client/taskingmanager.config.json)" > client/taskingmanager.config.json ',
         'npm install',
         'gulp build',
         'cd ../',
