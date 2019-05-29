@@ -69,6 +69,10 @@ const Parameters = {
     Description: 'TM_SMTP_PORT environment variable',
     Type: 'String'
   },
+  TaskingManagerDefaultChangesetComment: {
+    Description: 'TM_DEFAULT_CHANGESET_COMMENT= environment variable',
+    Type: 'String'
+  },
   TaskingManagerLogDirectory: {
     Description: 'TM_LOG_DIR environment variable',
     Type: 'String'
@@ -206,6 +210,7 @@ const Resources = {
         cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
         cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
         cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
+        cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
         'cd client/',
