@@ -42,8 +42,15 @@
                 <div class="inner">
                     <div class="profile-container">
                         <div class="details">
-                            <div>
-                                <h4>{{ profileCtrl.username }}'s {{ 'Progress' | translate }}</h4>
+                            <div class="mapping-progress">
+                                <h4>
+                                  <span class="header">{{ profileCtrl.username }}'s {{ 'Progress' | translate }}</span>
+                                  <mapper-level-indicator ng-if="profileCtrl.userDetails.mappingLevel"
+                                                          username="{{ profileCtrl.username }}"
+                                                          level="{{ profileCtrl.userDetails.mappingLevel }}"
+                                                          label="true"></mapper-level-indicator>
+                                </h4>
+                                <mapper-encouragement></mapper-encouragement>
                                 <div ng-show="profileCtrl.mapperLevelIntermediate > profileCtrl.osmUserDetails.changesetCount">
                                     <span class="label">{{ profileCtrl.mapperLevelIntermediate - profileCtrl.osmUserDetails.changesetCount }} {{ 'OSM changeset(s) to intermediate mapper' | translate }}</span>
                                     <uib-progressbar value="profileCtrl.osmUserDetails.changesetCount" max="profileCtrl.mapperLevelIntermediate"></uib-progressbar>

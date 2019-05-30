@@ -123,6 +123,8 @@
   list-style: none;
   @include media(large-up) {
     float: right;
+    display: flex;
+    align-items: center;
   }
 }
 
