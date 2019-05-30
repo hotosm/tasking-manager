@@ -1216,6 +1216,8 @@
                 updateMappedTaskPerUser(projectId);
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
+                vm.selectedTaskData = data[0];
+                formatHistoryComments(vm.selectedTaskData.taskHistory);
             }, function (error) {
                 onUnLockError(projectId, error);
             });

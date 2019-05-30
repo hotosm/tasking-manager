@@ -100,6 +100,8 @@ jobs:
         type: env_var_name
       tm_secret:
         type: env_var_name
+      tm_default_changeset_comment:
+        type: env_var_name
       email_from_address:
         type: env_var_name
       smtp_host:
@@ -127,7 +129,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"<< parameters.environment_name >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"<< parameters.environment_name >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -237,6 +239,7 @@ workflows:
         db_size: DATABASE_SIZE_STAGING
         elb_subnets: ELB_SUBNETS_STAGING
         ssl_cert: SSL_CERTIFICATE_ID_STAGING
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_STAGING
     - deploy:
         name: production
         filters:
@@ -263,6 +266,7 @@ workflows:
         db_size: DATABASE_SIZE_PRODUCTION
         elb_subnets: ELB_SUBNETS_PRODUCTION
         ssl_cert: SSL_CERTIFICATE_ID_PRODUCTION
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_PRODUCTION
     - deploy:
         name: teachosm
         filters:
@@ -289,6 +293,7 @@ workflows:
         db_size: DATABASE_SIZE_TEACHOSM
         elb_subnets: ELB_SUBNETS_TEACHOSM
         ssl_cert: SSL_CERTIFICATE_ID_TEACHOSM
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_TEACHOSM
     - deploy:
         name: assisted
         filters:
@@ -315,3 +320,4 @@ workflows:
         db_size: DATABASE_SIZE_ASSISTED
         elb_subnets: ELB_SUBNETS_ASSISTED
         ssl_cert: SSL_CERTIFICATE_ID_ASSISTED
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_ASSISTED
