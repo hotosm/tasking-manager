@@ -1,0 +1,323 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: /home/circleci/app
+    docker:
+    - image: circleci/python:3-stretch-browsers
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Install Node and modules
+        command: |
+          sudo apt-get update
+          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+          sudo pip3 install awscli --upgrade
+    - run:
+        name: Set folder permissions
+        command: |
+          chown -R circleci:circleci $CIRCLE_WORKING_DIRECTORY
+          chmod -R 755 $CIRCLE_WORKING_DIRECTORY
+    - restore_cache:
+        keys:
+        - cached-dependencies
+        paths:
+        - client/node_modules
+        - env
+    - run:
+        name: Install requirements
+        command: |
+          # Install NPM packages and build client from gulpfile
+          cd $CIRCLE_WORKING_DIRECTORY/client
+          npm install
+          ./node_modules/.bin/gulp build
+          cd $CIRCLE_WORKING_DIRECTORY
+          # Install Python dependencies
+          pip install virtualenv
+          virtualenv env
+          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install --upgrade pip
+          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install -r requirements.txt
+    - run:
+        name: Run JS Unit tests
+        command: |
+          # JS Unit Tests
+          cd $CIRCLE_WORKING_DIRECTORY/tests/client
+          mkdir $CIRCLE_WORKING_DIRECTORY/tests/client/junit
+          $CIRCLE_WORKING_DIRECTORY/client/node_modules/.bin/karma start ./karma.conf.js \
+            --single-run --browsers PhantomJS --reporters junit
+        environment:
+            JUNIT_REPORT_PATH: $CIRCLE_WORKING_DIRECTORY/tests/client/junit/
+            JUNIT_REPORT_NAME: test-results.xml
+    - store_test_results:
+        path: tests/client/junit
+    - store_artifacts:
+          path: tests/client/junit
+    - run:
+        name: Run Python Tests
+        command: |
+          # Run Python tests
+          cd $CIRCLE_WORKING_DIRECTORY
+          mkdir $CIRCLE_WORKING_DIRECTORY/tests/server/results
+          find ./tests/server -name "test*.py" -exec chmod -x {} \;
+          env/bin/nosetests ./tests/server --with-xunit \
+            --xunit-file $CIRCLE_WORKING_DIRECTORY/tests/server/results/unitresults.xml \
+            --with-coverage --cover-erase --cover-package=./server
+          env/bin/coverage xml -o $CIRCLE_WORKING_DIRECTORY/tests/server/results/coverage.xml
+    - store_test_results:
+        path: tests/server/results
+    - store_artifacts:
+          path: tests/server/results
+    - save_cache:
+        key: cached-dependencies
+        paths:
+        - client/node_modules
+        - env
+  deploy:
+    parameters:
+      stack_name:
+        description: "the name of the stack for cfn-config"
+        type: string
+      environment_name:
+        description: "The environment (staging or production) on AWS"
+        type: enum
+        enum: ["staging", "production"]
+      new_relic_license:
+        type: env_var_name
+        default: NEW_RELIC_LICENSE
+      postgres_db:
+        type: env_var_name
+      postgres_password:
+        type: env_var_name
+      postgres_user:
+        type: env_var_name
+      base_url:
+        type: env_var_name
+      consumer_key:
+        type: env_var_name
+      consumer_secret:
+        type: env_var_name
+      tm_secret:
+        type: env_var_name
+      tm_default_changeset_comment:
+        type: env_var_name
+      email_from_address:
+        type: env_var_name
+      smtp_host:
+        type: env_var_name
+      smtp_password:
+        type: env_var_name
+      smtp_user:
+        type: env_var_name
+      smtp_port:
+        type: env_var_name
+      log_dir:
+        type: env_var_name
+      db_size:
+        type: env_var_name
+      elb_subnets:
+        type: env_var_name
+      ssl_cert:
+        type: env_var_name
+    working_directory: /home/circleci/tasking-manager
+    docker:
+    - image: circleci/python:3-stretch
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Set Environment Variables
+        command: |
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"<< parameters.environment_name >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\"}'" >> $BASH_ENV
+    - run:
+        name: Install Node and modules
+        command: |
+          sudo apt-get update
+          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+          npm install
+          sudo pip3 install awscli --upgrade
+    - run:
+        name: Configure AWS Access Key ID
+        command: |
+          aws configure set aws_access_key_id \
+          $AWS_ACCESS_KEY_ID \
+          --profile default
+    - run:
+        name: Configure AWS Secret Access Key
+        command: |
+          aws configure set aws_secret_access_key \
+          $AWS_SECRET_ACCESS_KEY \
+          --profile default
+    - run:
+        name: Configure AWS default region
+        command: |
+          aws configure set region $AWS_REGION \
+          --profile default
+    - run:
+        name: Get RDS Instance ID
+        command: |
+          chmod +x .circleci/rdsid.sh
+          RDS_ID=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-<< parameters.stack_name >>"}')
+          echo "export RDS_ID=$RDS_ID" >> $BASH_ENV
+    - run:
+        name: Remove last snapshot and backup database
+        no_output_timeout: 15m
+        command: |
+          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID --output text`
+          # Copy old snapshot to temporary
+          if [ -z "$DESCRIBE_SNAPSHOT" ]
+          then
+              echo "Snapshot does not exist, creating one now."
+          else
+              aws rds copy-db-snapshot --source-db-snapshot tm3-<< parameters.stack_name >>-$RDS_ID-latest --target-db-snapshot tm3-<< parameters.stack_name >>-$RDS_ID-temp
+              aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest
+          fi
+          # create new aws rds snapshot
+          aws rds create-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID
+          aws rds wait db-snapshot-completed --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID
+          if [[ $? -eq 255 ]]; then
+            echo "Production snapshot creation failed. Exiting with exit-code 125"
+            exit 125
+          fi
+    - run:
+        name: Create config file
+        command: |
+          touch $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
+          echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
+    - deploy:
+        name: Deploy to << parameters.stack_name >>
+        command: cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/devops/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
+    - run:
+        name: Cleanup
+        when: always
+        command: |
+          DESCRIBE_SNAPSHOT=`aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-temp --db-instance-identifier $RDS_ID --output text`
+          # Copy old snapshot to temporary
+          if [ -z "$DESCRIBE_SNAPSHOT" ]
+          then
+            echo "temporary snapshot doesn't exist, nothing to cleanup."
+          else
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-temp
+          fi
+          # Delete manual snapshot if database ID changed
+          RDS_ID_NEW=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-<< parameters.stack_name >>"}')
+          if [ "$RDS_ID" != "$RDS_ID_NEW" ]
+          then
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest
+          fi
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+    - build
+    - deploy:
+        name: staging
+        filters:
+          branches:
+            only:
+            - develop
+        requires:
+        - build
+        stack_name: "staging"
+        environment_name: "staging"
+        postgres_db: POSTGRES_DB_STAGING
+        postgres_password: POSTGRES_PASSWORD_STAGING
+        postgres_user: POSTGRES_USER_STAGING
+        base_url: TM_APP_BASE_URL_STAGING
+        consumer_key: TM_CONSUMER_KEY_STAGING
+        consumer_secret: TM_CONSUMER_SECRET_STAGING
+        tm_secret: TM_SECRET_STAGING
+        email_from_address: TM_EMAIL_FROM_ADDRESS_STAGING
+        smtp_host: TM_SMTP_HOST_STAGING
+        smtp_password: TM_SMTP_PASSWORD_STAGING
+        smtp_user: TM_SMTP_USER_STAGING
+        smtp_port: TM_SMTP_PORT_STAGING
+        log_dir: TM_LOG_DIR_STAGING
+        db_size: DATABASE_SIZE_STAGING
+        elb_subnets: ELB_SUBNETS_STAGING
+        ssl_cert: SSL_CERTIFICATE_ID_STAGING
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_STAGING
+    - deploy:
+        name: production
+        filters:
+          branches:
+            only:
+              - master
+        requires:
+          - build
+        stack_name: "production"
+        environment_name: "production"
+        postgres_db: POSTGRES_DB_PRODUCTION
+        postgres_password: POSTGRES_PASSWORD_PRODUCTION
+        postgres_user: POSTGRES_USER_PRODUCTION
+        base_url: TM_APP_BASE_URL_PRODUCTION
+        consumer_key: TM_CONSUMER_KEY_PRODUCTION
+        consumer_secret: TM_CONSUMER_SECRET_PRODUCTION
+        tm_secret: TM_SECRET_PRODUCTION
+        email_from_address: TM_EMAIL_FROM_ADDRESS_PRODUCTION
+        smtp_host: TM_SMTP_HOST_PRODUCTION
+        smtp_password: TM_SMTP_PASSWORD_PRODUCTION
+        smtp_user: TM_SMTP_USER_PRODUCTION
+        smtp_port: TM_SMTP_PORT_PRODUCTION
+        log_dir: TM_LOG_DIR_PRODUCTION
+        db_size: DATABASE_SIZE_PRODUCTION
+        elb_subnets: ELB_SUBNETS_PRODUCTION
+        ssl_cert: SSL_CERTIFICATE_ID_PRODUCTION
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_PRODUCTION
+    - deploy:
+        name: teachosm
+        filters:
+          branches:
+            only:
+              - teachosm
+        requires:
+          - build
+        stack_name: "teachosm"
+        environment_name: "production"
+        postgres_db: POSTGRES_DB_TEACHOSM
+        postgres_password: POSTGRES_PASSWORD_TEACHOSM
+        postgres_user: POSTGRES_USER_TEACHOSM
+        base_url: TM_APP_BASE_URL_TEACHOSM
+        consumer_key: TM_CONSUMER_KEY_TEACHOSM
+        consumer_secret: TM_CONSUMER_SECRET_TEACHOSM
+        tm_secret: TM_SECRET_TEACHOSM
+        email_from_address: TM_EMAIL_FROM_ADDRESS_TEACHOSM
+        smtp_host: TM_SMTP_HOST_TEACHOSM
+        smtp_password: TM_SMTP_PASSWORD_TEACHOSM
+        smtp_user: TM_SMTP_USER_TEACHOSM
+        smtp_port: TM_SMTP_PORT_TEACHOSM
+        log_dir: TM_LOG_DIR_TEACHOSM
+        db_size: DATABASE_SIZE_TEACHOSM
+        elb_subnets: ELB_SUBNETS_TEACHOSM
+        ssl_cert: SSL_CERTIFICATE_ID_TEACHOSM
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_TEACHOSM
+    - deploy:
+        name: assisted
+        filters:
+          branches:
+            only:
+              - machine-learning
+        requires:
+          - build
+        stack_name: "assisted"
+        environment_name: "staging"
+        postgres_db: POSTGRES_DB_ASSISTED
+        postgres_password: POSTGRES_PASSWORD_ASSISTED
+        postgres_user: POSTGRES_USER_ASSISTED
+        base_url: TM_APP_BASE_URL_ASSISTED
+        consumer_key: TM_CONSUMER_KEY_ASSISTED
+        consumer_secret: TM_CONSUMER_SECRET_ASSISTED
+        tm_secret: TM_SECRET_ASSISTED
+        email_from_address: TM_EMAIL_FROM_ADDRESS_ASSISTED
+        smtp_host: TM_SMTP_HOST_ASSISTED
+        smtp_password: TM_SMTP_PASSWORD_ASSISTED
+        smtp_user: TM_SMTP_USER_ASSISTED
+        smtp_port: TM_SMTP_PORT_ASSISTED
+        log_dir: TM_LOG_DIR_ASSISTED
+        db_size: DATABASE_SIZE_ASSISTED
+        elb_subnets: ELB_SUBNETS_ASSISTED
+        ssl_cert: SSL_CERTIFICATE_ID_ASSISTED
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_ASSISTED

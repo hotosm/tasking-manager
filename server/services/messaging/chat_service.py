@@ -3,6 +3,8 @@ from cachetools import TTLCache, cached
 from server.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
 from server.models.postgis.project_chat import ProjectChat
 from server.services.messaging.message_service import MessageService
+from server.services.users.authentication_service import tm
+from server.services.users.user_service import UserService
 from server import db
 
 
@@ -15,6 +17,9 @@ class ChatService:
     def post_message(chat_dto: ChatMessageDTO) -> ProjectChatDTO:
         """ Save message to DB and return latest chat"""
         current_app.logger.debug('Posting Chat Message')
+        if UserService.is_user_blocked(tm.authenticated_user_id):
+            return 'User is on read only mode', 403
+
         chat_message = ProjectChat.create_from_dto(chat_dto)
         MessageService.send_message_after_chat(chat_dto.user_id, chat_message.message, chat_dto.project_id)
         db.session.commit()

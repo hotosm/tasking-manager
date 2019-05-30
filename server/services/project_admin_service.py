@@ -148,6 +148,7 @@ class ProjectAdminService:
         project = ProjectAdminService._get_project_by_id(project_id)
         project.tasks_mapped = 0
         project.tasks_validated = 0
+        project.tasks_bad_imagery = 0
         project.save()
 
     @staticmethod

@@ -1,5 +1,5 @@
 from schematics import Model
-from schematics.types import StringType, IntType, BooleanType
+from schematics.types import StringType, IntType, FloatType, BooleanType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.mapping_dto import TaskHistoryDTO
 
@@ -9,6 +9,9 @@ class UserContribution(Model):
     username = StringType()
     mapped = IntType()
     validated = IntType()
+    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
+    time_spent_validating = IntType(serialized_name='timeSpentValidating')
+    total_time_spent = IntType(serialized_name='totalTimeSpent')
 
 
 class ProjectContributionsDTO(Model):
@@ -64,17 +67,35 @@ class OrganizationStatsDTO(Model):
     tag = StringType()
     projects_created = IntType(serialized_name='projectsCreated')
 
+class CampaignStatsDTO(Model):
+    def __init__(self, tup):
+        super().__init__()
+        self.tag = tup[0]
+        self.projects_created = tup[1]
+    
+    tag = StringType()
+    projects_created = IntType(serialized_name='projectsCreated')
 
 class HomePageStatsDTO(Model):
     """ DTO for stats we want to display on the homepage """
     def __init__(self):
         super().__init__()
         self.organizations = []
+        self.campaigns = []
 
     mappers_online = IntType(serialized_name='mappersOnline')
+    total_area = IntType(serialized_name='totalArea')
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
     total_mappers = IntType(serialized_name='totalMappers')
     total_validators = IntType(serialized_name='totalValidators')
+    total_projects = IntType(serialized_name='totalProjects')
+    # total_area = FloatType(serialized_name='totalArea')
+    total_mapped_area = FloatType(serialized_name='totalMappedArea')
+    total_validated_area = FloatType(serialized_name='totalValidatedArea')
+    total_organizations = IntType(serialized_name='totalOrganizations')
+    total_campaigns = IntType(serialized_name='totalCampaigns')
     # avg_completion_time = IntType(serialized_name='averageCompletionTime')
     organizations = ListType(ModelType(OrganizationStatsDTO))
+    campaigns = ListType(ModelType(CampaignStatsDTO))
+    

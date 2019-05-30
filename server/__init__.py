@@ -30,13 +30,10 @@ def create_app(env=None):
     """
     app = Flask(__name__)
 
-    if env is None:
-        env = os.getenv('TM_ENV', 'Dev')  # default to Dev if config environment var not set
-
-    app.config.from_object(f'server.config.{env}Config')
+    app.config.from_object(f'server.config.EnvironmentConfig')
 
     initialise_logger(app)
-    app.logger.info(f'HOT Tasking Manager App Starting Up, Environment = {env}')
+    app.logger.info(f'Tasking Manager App Starting Up, Environment = {env}')
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -101,7 +98,7 @@ def init_flask_restful_routes(app):
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
         CommentOnTaskAPI, TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
     from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
-        ResendEmailValidationAPI
+        DeleteMultipleMessages, ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
         ProjectValidateAll, ProjectMapAll, ProjectResetAll, ProjectResetBadImagery, ProjectsForAdminAPI
@@ -113,7 +110,7 @@ def init_flask_restful_routes(app):
     from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
         UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
-        MappedTasksByUser
+        MappedTasksByUser, UserInvalidatedTasks
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
@@ -139,6 +136,7 @@ def init_flask_restful_routes(app):
     api.add_resource(HasNewMessages,                '/api/v1/messages/has-new-messages')
     api.add_resource(GetAllMessages,                '/api/v1/messages/get-all-messages')
     api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
+    api.add_resource(DeleteMultipleMessages,        '/api/v1/messages/delete-multiple', methods=['DELETE'])
     api.add_resource(ResendEmailValidationAPI,      '/api/v1/messages/resend-email-verification')
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')
@@ -165,7 +163,7 @@ def init_flask_restful_routes(app):
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
     api.add_resource(StatsUserAPI,                  '/api/v1/stats/user/<string:username>')
-    api.add_resource(HomePageStatsAPI,              '/api/v1/stats/home-page')
+    api.add_resource(HomePageStatsAPI,              '/api/v1/stats/summary')
     api.add_resource(CampaignsTagsAPI,              '/api/v1/tags/campaigns')
     api.add_resource(OrganisationTagsAPI,           '/api/v1/tags/organisations')
     api.add_resource(UserSearchAllAPI,              '/api/v1/user/search-all')
@@ -174,6 +172,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UserUpdateAPI,                 '/api/v1/user/update-details')
     api.add_resource(UserSetExpertMode,             '/api/v1/user/set-expert-mode/<string:is_expert>')
     api.add_resource(UserMappedProjects,            '/api/v1/user/<string:username>/mapped-projects')
+    api.add_resource(UserInvalidatedTasks,          '/api/v1/user/<string:username>/invalidated-tasks')
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')

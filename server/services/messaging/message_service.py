@@ -5,9 +5,11 @@ from cachetools import TTLCache, cached
 from typing import List
 from flask import current_app
 
-from server import create_app
-from server.models.dtos.message_dto import MessageDTO
-from server.models.postgis.message import Message, NotFound
+from server import create_app, db
+from server.models.dtos.message_dto import MessageDTO, MessagesDTO
+from server.models.dtos.stats_dto import Pagination
+from server.models.postgis.message import Message, MessageType, NotFound
+from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.task import TaskStatus
 from server.services.messaging.smtp_service import SMTPService
 from server.services.messaging.template_service import get_template, get_profile_url
@@ -36,6 +38,7 @@ class MessageService:
         text_template = text_template.replace('[PROFILE_LINK]', get_profile_url(user.username))
 
         welcome_message = Message()
+        welcome_message.message_type = MessageType.SYSTEM.value
         welcome_message.to_user_id = user.id
         welcome_message.subject = 'Welcome to the HOT Tasking Manager'
         welcome_message.message = text_template
@@ -62,6 +65,9 @@ class MessageService:
         text_template = text_template.replace('[TASK_LINK]', task_link)
 
         validation_message = Message()
+        validation_message.message_type = MessageType.INVALIDATION_NOTIFICATION.value if status == TaskStatus.INVALIDATED else MessageType.VALIDATION_NOTIFICATION.value
+        validation_message.project_id = project_id
+        validation_message.task_id = task_id
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
         validation_message.subject = f'Your mapping in Project {project_id} on {task_link} has just been {status_text}'
@@ -87,6 +93,8 @@ class MessageService:
             msg_count = 0
             for contributor in contributors:
                 message = Message.from_dto(contributor[0], message_dto)
+                message.message_type = MessageType.BROADCAST.value
+                message.project_id = project_id
                 message.save()
                 user = UserService.get_user_by_id(contributor[0])
                 SMTPService.send_email_alert(user.email_address, user.username)
@@ -113,6 +121,9 @@ class MessageService:
                 continue  # If we can't find the user, keep going no need to fail
 
             message = Message()
+            message.message_type = MessageType.MENTION_NOTIFICATION.value
+            message.project_id = project_id
+            message.task_id = task_id
             message.from_user_id = comment_from
             message.to_user_id = user.id
             message.subject = f'You were mentioned in a comment in Project {project_id} on {task_link}'
@@ -140,6 +151,8 @@ class MessageService:
                 continue  # If we can't find the user, keep going no need to fail
 
             message = Message()
+            message.message_type = MessageType.MENTION_NOTIFICATION.value
+            message.project_id = project_id
             message.from_user_id = chat_from
             message.to_user_id = user.id
             message.subject = f'You were mentioned in Project Chat on {link}'
@@ -181,9 +194,48 @@ class MessageService:
         return dict(newMessages=new_messages, unread=count)
 
     @staticmethod
-    def get_all_messages(user_id: int):
+    def get_all_messages(user_id: int, locale: str, page: int, page_size=10, sort_by=None, sort_direction=None, message_type=None, from_username=None, project=None, task_id=None):
         """ Get all messages for user """
-        return Message.get_all_messages(user_id)
+        sort_column = Message.__table__.columns.get(sort_by)
+        if sort_column is None:
+            sort_column = Message.date
+        sort_column = sort_column.asc() if sort_direction.lower() == "asc" else sort_column.desc()
+        query = Message.query
+
+        if project is not None:
+            query = db.session.query(Message, ProjectInfo) \
+                              .filter(Message.project_id == ProjectInfo.project_id) \
+                              .filter(ProjectInfo.locale.in_([locale, 'en'])) \
+                              .filter(ProjectInfo.name.ilike('%' + project.lower() + '%'))
+
+        if task_id is not None:
+            query = query.filter(Message.task_id == task_id)
+
+        if message_type is not None:
+            query = query.filter(Message.message_type == message_type)
+
+        if from_username is not None:
+            query = query.join(Message.from_user).filter(User.username.ilike(from_username + '%'))
+
+        results = query.filter(Message.to_user_id == user_id).order_by(sort_column).paginate(page, page_size, True)
+        if results.total == 0:
+            raise NotFound()
+
+        messages_dto = MessagesDTO()
+        for item in results.items:
+            message_dto = None
+            if isinstance(item, tuple):
+                message_dto = item[0].as_dto()
+                message_dto.project_title = item[1].name
+            else:
+                message_dto = item.as_dto()
+                if item.project_id is not None:
+                    message_dto.project_title = item.project.get_project_title(locale)
+
+            messages_dto.user_messages.append(message_dto)
+
+        messages_dto.pagination = Pagination(results)
+        return messages_dto
 
     @staticmethod
     def get_message(message_id: int, user_id: int) -> Message:
@@ -210,6 +262,11 @@ class MessageService:
         """ Deletes the specified message """
         message = MessageService.get_message(message_id, user_id)
         message.delete()
+
+    @staticmethod
+    def delete_multiple_messages(message_ids: list, user_id: int):
+        """ Deletes the specified messages to the user """
+        Message.delete_multiple_messages(message_ids, user_id)
 
     @staticmethod
     def get_task_link(project_id: int, task_id: int, base_url=None) -> str:

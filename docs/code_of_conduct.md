@@ -1,3 +1,5 @@
+# Code of conduct
+
 (The latest version can be found at https://www.hotosm.org/code-of-conduct)
 
 Welcome to Humanitarian OpenStreetMap Team. HOT is committed to providing a welcoming and safe environment for people of all races, gender identities, gender expressions, sexual orientations, physical abilities, physical appearances, socio-economic backgrounds, nationalities, ages, religions, and beliefs.
