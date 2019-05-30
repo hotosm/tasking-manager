@@ -74,3 +74,11 @@ class UserRole(Enum):
     ADMIN = 1
     PROJECT_MANAGER = 2
     VALIDATOR = 4
+
+
+class Editors(Enum):
+    """ Enum describing the possible editors for projects """
+    ID = 0
+    JOSM = 1
+    POTLATCH_2 = 2
+    FIELD_PAPERS = 3

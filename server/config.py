@@ -7,7 +7,7 @@ class EnvironmentConfig:
     """ Most settings can be defined through environment variables. """
 
     # Load configuration from file
-    load_dotenv(os.path.join(os.path.dirname(__file__), 'tasking-manager.env'))
+    load_dotenv(os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'tasking-manager.env')))
 
     # The base url the application is reachable
     APP_BASE_URL = os.getenv('TM_APP_BASE_URL', 'http://127.0.0.1:5000')
@@ -26,6 +26,7 @@ class EnvironmentConfig:
     POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', None)
     POSTGRES_ENDPOINT = os.getenv('POSTGRES_ENDPOINT', 'postgresql')
     POSTGRES_DB = os.getenv('POSTGRES_DB', None)
+    POSTGRES_PORT = os.getenv('POSTGRES_PORT', '5432')
 
     # Assamble the database uri
     if os.getenv('TM_DB', False):
@@ -33,8 +34,9 @@ class EnvironmentConfig:
     else:
         SQLALCHEMY_DATABASE_URI = f'postgresql://{POSTGRES_USER}' +  \
                                         f':{POSTGRES_PASSWORD}' + \
-                                            f'@{POSTGRES_ENDPOINT}' + \
-                                                f'/{POSTGRES_DB}'
+                                            f'@{POSTGRES_ENDPOINT}:' + \
+                                                f'{POSTGRES_PORT}' + \
+                                                    f'/{POSTGRES_DB}'
    
     # Logging settings
     LOG_LEVEL = os.getenv('TM_LOG_LEVEL', logging.DEBUG)

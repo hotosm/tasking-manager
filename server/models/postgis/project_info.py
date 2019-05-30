@@ -19,7 +19,7 @@ class ProjectInfo(db.Model):
     text_searchable = db.Column(TSVECTOR)  # This contains searchable text and is populated by a DB Trigger
     per_task_instructions = db.Column(db.String)
 
-    __table_args__ = (db.Index('idx_project_info composite', 'locale', 'project_id'),
+    __table_args__ = (db.Index('idx_project_info_composite', 'locale', 'project_id'),
                       db.Index('textsearch_idx', 'text_searchable'), {})
 
     @classmethod

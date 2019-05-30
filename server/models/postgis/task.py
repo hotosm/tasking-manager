@@ -74,6 +74,9 @@ class TaskInvalidationHistory(db.Model):
         TaskInvalidationHistory.close_all_for_task(project_id, task_id)
 
         last_mapped = TaskHistory.get_last_mapped_action(project_id, task_id)
+        if last_mapped is None:
+            return
+
         entry = TaskInvalidationHistory(project_id, task_id)
         entry.invalidation_history_id = history.id
         entry.mapper_id = last_mapped.user_id
@@ -111,6 +114,7 @@ class TaskHistory(db.Model):
     action_text = db.Column(db.String)
     action_date = db.Column(db.DateTime, nullable=False, default=timestamp)
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
+    invalidation_history = db.relationship(TaskInvalidationHistory, lazy='dynamic', cascade='all')
 
     actioned_by = db.relationship(User)
 
@@ -257,6 +261,10 @@ class TaskHistory(db.Model):
             # We're looking for the previous status, however, there isn't any so we'll return Ready
             return TaskStatus.READY
 
+        if for_undo and result[0][0] in [TaskStatus.MAPPED.name, TaskStatus.BADIMAGERY.name]:
+            # We need to return a READY when last status of the task is badimagery or mapped.
+            return TaskStatus.READY
+
         if for_undo:
             # Return the second last status which was status the task was previously set to
             return TaskStatus[result[1][0]]
@@ -298,7 +306,7 @@ class TaskHistory(db.Model):
             .filter(TaskHistory.project_id == project_id,
                     TaskHistory.task_id == task_id,
                     TaskHistory.action == TaskAction.STATE_CHANGE.name,
-                    TaskHistory.action_text == TaskStatus.MAPPED.name) \
+                    TaskHistory.action_text.in_([TaskStatus.BADIMAGERY.name, TaskStatus.MAPPED.name])) \
             .order_by(TaskHistory.action_date.desc()).first()
 
 class Task(db.Model):
@@ -393,7 +401,7 @@ class Task(db.Model):
     @staticmethod
     def get_tasks(project_id: int, task_ids: List[int]):
         """ Get all tasks that match supplied list """
-        return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids))
+        return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
 
     @staticmethod
     def get_all_tasks(project_id: int):
@@ -577,6 +585,27 @@ class Task(db.Model):
                                    taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name)
 
             feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
+            tasks_features.append(feature)
+
+        return geojson.FeatureCollection(tasks_features)
+
+    @staticmethod
+    def get_tasks_as_geojson_feature_collection_no_geom(project_id):
+        """
+        Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID without geometry
+        :param project_id: Owning project ID
+        :return: geojson.FeatureCollection
+        """
+        project_tasks = \
+            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status) \
+                             .filter(Task.project_id == project_id).all()
+
+        tasks_features = []
+        for task in project_tasks:
+            task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
+                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name)
+
+            feature = geojson.Feature(properties=task_properties)
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)

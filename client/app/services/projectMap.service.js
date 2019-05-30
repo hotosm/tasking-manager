@@ -153,7 +153,7 @@
             if (type) {
                 typeOfProject = type;
             }
-            if (!dontClear) {
+            if (!dontClear && projectVectorSource) {
                 projectVectorSource.clear();
             }
 

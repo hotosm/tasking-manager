@@ -96,7 +96,7 @@
             console.log('In service');
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/stats/home-page'
+                url: configService.tmAPI + '/stats/summary'
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
