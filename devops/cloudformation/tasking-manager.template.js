@@ -70,7 +70,7 @@ const Parameters = {
     Type: 'String'
   },
   TaskingManagerDefaultChangesetComment: {
-    Description: 'TM_DEFAULT_CHANGESET_COMMENT= environment variable',
+    Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
     Type: 'String'
   },
   TaskingManagerLogDirectory: {
