@@ -9,7 +9,7 @@
         .module('taskingManager')
         .controller('profileController', ['$routeParams', '$location', '$window', 'NgTableParams', 'accountService','authService','mapService', 'projectService', 'projectMapService','userService', 'taskService', 'geospatialService', 'messageService','settingsService', profileController]);
 
-    function profileController($routeParams, $location, $window, NgTableParams, accountService, authService, mapService, projectService, projectMapService, userService, taskService, geospatialService, messageService, settingsService) {
+    function profileController($routeParams, $location, $window,  NgTableParams, accountService, authService, mapService, projectService, projectMapService, userService, taskService, geospatialService, messageService, settingsService) {
 
         var vm = this;
         vm.username = '';
@@ -269,6 +269,51 @@
             });
         };
 
+        /**
+         * Calculate duration for user profile
+         */
+        function humanizeDuration(eventDuration) {
+          var eventDurationString = ''
+          var eventMDuration = moment.duration(eventDuration, 'seconds');
+          var years = eventMDuration.years();
+          var days = eventMDuration.days();
+          var hours = eventMDuration.hours();
+          var minutes = eventMDuration.minutes();
+          eventDurationString = "";
+          if (years > 0)
+          {
+              if (years === 1){
+                  eventDurationString += " " + years + ' year'
+              } else {
+                  eventDurationString += " " + years + ' years'
+              }
+          }
+          if (days > 0)
+          {
+              if (days === 1){
+                  eventDurationString += " " + days + ' day'
+              } else {
+                  eventDurationString += " " + days + ' days'
+              }
+          }
+          if (hours > 0)
+          {
+              if (hours === 1){
+                  eventDurationString += " " + hours + ' hour'
+              } else {
+                  eventDurationString += " " + hours + ' hours'
+              }
+          }
+          if (minutes > 0)
+          {
+              if (minutes === 1){
+                  eventDurationString += " " + minutes + ' minute'
+              } else {
+                  eventDurationString += " " + minutes + ' minutes'
+              }
+          }
+          return eventDurationString
+        }
 
         /**
          * Get the settings for the levels
@@ -289,6 +334,7 @@
             resultsPromise.then(function (data) {
                 // On success, set the detailed stats for this user
                 vm.userStats = data;
+                vm.userStats.timeSpentMapping = humanizeDuration(vm.userStats.timeSpentMapping)
             });
         }
 
