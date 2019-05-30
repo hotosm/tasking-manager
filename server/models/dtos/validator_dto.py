@@ -26,17 +26,26 @@ class LockForValidationDTO(Model):
     preferred_locale = StringType(default='en')
 
 
+class ValidationMappingIssue(Model):
+    """ Describes one or more occurences of an identified mapping problem during validation """
+    mapping_issue_category_id = IntType(required=True, serialized_name='mappingIssueCategoryId')
+    issue = StringType(required=True)
+    count = IntType(required=True)
+
+
 class ValidatedTask(Model):
     """ Describes the model used to update the status of one task after validation """
     task_id = IntType(required=True, serialized_name='taskId')
     status = StringType(required=True, validators=[is_valid_validated_status])
     comment = StringType()
+    issues = ListType(ModelType(ValidationMappingIssue), serialized_name='validationIssues')
 
 
 class ResetValidatingTask(Model):
     """ Describes the model used to stop validating and reset the status of one task """
     task_id = IntType(required=True, serialized_name='taskId')
     comment = StringType()
+    issues = ListType(ModelType(ValidationMappingIssue), serialized_name='validationIssues')
 
 
 class UnlockAfterValidationDTO(Model):
