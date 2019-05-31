@@ -94,7 +94,8 @@ const Parameters = {
 
 const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
-  DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), '')
+  DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
+  IsTaskingManagerProduction: cf.equals(cf.stackName, 'tasking-manager-production')
 };
 
 const Resources = {
@@ -417,7 +418,7 @@ const Resources = {
         AllocatedStorage: cf.ref('DatabaseSize'),
         BackupRetentionPeriod: 10,
         StorageType: 'gp2',
-        DBInstanceClass: 'db.m3.large', //rethink here
+        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.m3.large', 'db.t2.micro'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
     }
