@@ -93,6 +93,7 @@ class ProjectDTO(Model):
     project_priority = StringType(required=True, serialized_name='projectPriority',
                                   validators=[is_known_project_priority], serialize_when_none=False)
     area_of_interest = BaseType(serialized_name='areaOfInterest')
+    aoi_bbox = ListType(FloatType, serialized_name='aoiBBOX')
     tasks = BaseType(serialize_when_none=False)
     default_locale = StringType(required=True, serialized_name='defaultLocale', serialize_when_none=False)
     project_info = ModelType(ProjectInfoDTO, serialized_name='projectInfo', serialize_when_none=False)
@@ -105,6 +106,7 @@ class ProjectDTO(Model):
     private = BooleanType(required=True)
     entities_to_map = StringType(serialized_name='entitiesToMap')
     changeset_comment = StringType(serialized_name='changesetComment')
+    osmcha_filter_id = StringType(serialized_name='osmchaFilterId')
     due_date = DateTimeType(serialized_name='dueDate')
     imagery = StringType()
     josm_preset = StringType(serialized_name='josmPreset', serialize_when_none=False)
@@ -247,10 +249,9 @@ class ProjectSummary(Model):
     total_comments = IntType(serialized_name='totalComments')
     total_mapping_time = IntType(serialized_name='totalMappingTime')
     total_validation_time = IntType(serialized_name='totalValidationTime')
-    total_time_spent = StringType(serialized_name='totalTimeSpent')
-    average_mapping_time=StringType(serialized_name='averageMappingTime')
-    average_validation_time=StringType(serialized_name='averageValidationTime')
-
+    total_time_spent = IntType(serialized_name='totalTimeSpent')
+    average_mapping_time = IntType(serialized_name='averageMappingTime')
+    average_validation_time = IntType(serialized_name='averageValidationTime')
     status = StringType()
 
 

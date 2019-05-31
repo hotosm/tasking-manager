@@ -114,6 +114,14 @@
         };
 
         /**
+         * Navigate to the mapping-issue category management page
+         */
+        vm.goToManageMappingIssueCategories = function () {
+            $location.path('admin/mapping-issues/categories');
+            vm.showDropdown = false;
+        };
+
+        /**
          * Navigate to the project dashboard page
          */
         vm.goToProjectDashboard = function () {

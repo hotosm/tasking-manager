@@ -1,10 +1,12 @@
 import json
+import re
 from typing import Optional
 from cachetools import TTLCache, cached
 
 import geojson
 from flask import current_app
 from geoalchemy2 import Geometry
+from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2.shape import to_shape
@@ -60,6 +62,7 @@ class Project(db.Model):
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
     entities_to_map = db.Column(db.String)
     changeset_comment = db.Column(db.String)
+    osmcha_filter_id = db.Column(db.String)  # Optional custom filter id for filtering on OSMCha
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
@@ -238,6 +241,13 @@ class Project(db.Model):
         self.last_updated = timestamp()
         self.license_id = project_dto.license_id
 
+        if project_dto.osmcha_filter_id:
+            # Support simple extraction of OSMCha filter id from OSMCha URL
+            match = re.search('aoi=([\w-]+)', project_dto.osmcha_filter_id)
+            self.osmcha_filter_id = match.group(1) if match else project_dto.osmcha_filter_id
+        else:
+            self.osmcha_filter_id = None
+
         if project_dto.organisation_tag:
             org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
             self.organisation_tag = org_tag
@@ -415,51 +425,41 @@ class Project(db.Model):
                 TaskHistory.action_text != '',
                 TaskHistory.project_id == self.id
             ).all()
-        total_mapping_time = datetime.datetime.min
-        total_validation_time = datetime.datetime.min
-        total_time_spent = datetime.datetime.min
+
+        total_mapping_time = 0
+        total_validation_time = 0
+        total_time_spent = 0
+
         for user_duration in users_durations:
             try:
                 duration = dateutil.parser.parse(user_duration.action_text)
                 total_time_spent += datetime.timedelta(hours=duration.hour,
-                                                    minutes=duration.minute,
-                                                    seconds=duration.second,
-                                                    microseconds=duration.microsecond)
+                                         minutes=duration.minute,
+                                         seconds=duration.second,
+                                         microseconds=duration.microsecond).total_seconds()
                 if user_duration.action == 'LOCKED_FOR_MAPPING':
                     total_mapping_time += datetime.timedelta(hours=duration.hour,
-                                                    minutes=duration.minute,
-                                                    seconds=duration.second,
-                                                    microseconds=duration.microsecond)
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond).total_seconds()
                 elif user_duration.action == 'LOCKED_FOR_VALIDATION':
                     total_validation_time += datetime.timedelta(hours=duration.hour,
-                                                    minutes=duration.minute,
-                                                    seconds=duration.second,
-                                                    microseconds=duration.microsecond)
+                                             minutes=duration.minute,
+                                             seconds=duration.second,
+                                             microseconds=duration.microsecond).total_seconds()
             except ValueError:
-                current_app.logger.info('Invalid duration specified')
-            current_app.logger.debug(total_mapping_time)
-            current_app.logger.debug(total_validation_time)
-            total_mapping_seconds = int(datetime.timedelta(hours=total_mapping_time.hour,
-                                                    minutes=total_mapping_time.minute,
-                                                    seconds=total_mapping_time.second,
-                                                    microseconds=total_mapping_time.microsecond).total_seconds())
-            total_validation_seconds = int(datetime.timedelta(hours=total_validation_time.hour,
-                                                    minutes=total_validation_time.minute,
-                                                    seconds=total_validation_time.second,
-                                                    microseconds=total_validation_time.microsecond).total_seconds())
-            current_app.logger.debug(total_mapping_seconds)
-            current_app.logger.debug(total_validation_seconds)
-            if unique_mappers:
-                average_mapping_time = total_mapping_seconds/unique_mappers
-                summary.average_mapping_time = str(datetime.timedelta(seconds=average_mapping_time))
-            if unique_validators:
-                average_validation_time = total_validation_seconds/unique_validators
-                summary.average_validation_time = str(datetime.timedelta(seconds=average_validation_time))
+                pass
 
-            summary.total_mapping_time = total_mapping_time.time().isoformat()
-            summary.total_validation_time = total_validation_time.time().isoformat()
-            summary.total_time_spent = total_time_spent.time().isoformat()
+        if unique_mappers:
+            average_mapping_time = total_mapping_time/unique_mappers
+            summary.average_mapping_time = average_mapping_time
+        if unique_validators:
+            average_validation_time = total_validation_time/unique_validators
+            summary.average_validation_time = average_validation_time
 
+        summary.total_mapping_time = total_mapping_time
+        summary.total_validation_time = total_validation_time
+        summary.total_time_spent = total_time_spent
 
         return summary
 
@@ -492,6 +492,7 @@ class Project(db.Model):
         base_dto.default_locale = self.default_locale
         base_dto.project_priority = ProjectPriority(self.priority).name
         base_dto.area_of_interest = self.get_aoi_geometry_as_geojson()
+        base_dto.aoi_bbox = shape(base_dto.area_of_interest).bounds
         base_dto.enforce_mapper_level = self.enforce_mapper_level
         base_dto.enforce_validator_role = self.enforce_validator_role
         base_dto.allow_non_beginners = self.allow_non_beginners
@@ -499,6 +500,7 @@ class Project(db.Model):
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
         base_dto.entities_to_map = self.entities_to_map
         base_dto.changeset_comment = self.changeset_comment
+        base_dto.osmcha_filter_id = self.osmcha_filter_id
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset

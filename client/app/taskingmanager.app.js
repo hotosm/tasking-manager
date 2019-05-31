@@ -167,6 +167,18 @@
                     title: 'Edit Licenses'
                 })
 
+                .when('/admin/mapping-issues/categories', {
+                    templateUrl: 'app/admin/mapping-issues/mapping-issue-categories.html',
+                    controller: 'mappingIssueCategoriesController',
+                    controllerAs: 'mappingIssueCategoriesCtrl'
+                })
+
+                .when('/admin/mapping-issues/categories/edit/:id', {
+                    templateUrl: 'app/admin/mapping-issues/mapping-issue-categories-edit.html',
+                    controller: 'mappingIssueCategoriesEditController',
+                    controllerAs: 'mappingIssueCategoriesEditCtrl'
+                })
+
                 .when('/admin/dashboard', {
                     templateUrl: 'app/admin/dashboard/dashboard.html',
                     controller: 'dashboardController',

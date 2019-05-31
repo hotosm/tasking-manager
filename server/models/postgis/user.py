@@ -260,7 +260,7 @@ class User(db.Model):
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
         user_dto.validation_message = self.validation_message
-        
+
         sql = """select action, action_text
                       from task_history
                      where user_id = {0}
@@ -268,9 +268,9 @@ class User(db.Model):
                        and action != 'COMMENT'""".format(self.id)
 
         results = db.engine.execute(sql)
-        total_time = datetime.datetime.min
-        total_mapping_time = datetime.datetime.min
-        total_validation_time = datetime.datetime.min
+        total_time = 0
+        total_mapping_time = 0
+        total_validation_time = 0
 
         for row in results:
             try:
@@ -279,31 +279,31 @@ class User(db.Model):
                     total_mapping_time += datetime.timedelta(hours=duration.hour,
                                              minutes=duration.minute,
                                              seconds=duration.second,
-                                             microseconds=duration.microsecond)
+                                             microseconds=duration.microsecond).total_seconds()
                     total_time += datetime.timedelta(hours=duration.hour,
                                              minutes=duration.minute,
                                              seconds=duration.second,
-                                             microseconds=duration.microsecond)                                            
+                                             microseconds=duration.microsecond).total_seconds()
                 elif row[0] == 'LOCKED_FOR_VALIDATION':
                     duration = dateutil.parser.parse(row[1])
                     total_validation_time += datetime.timedelta(hours=duration.hour,
                                              minutes=duration.minute,
                                              seconds=duration.second,
-                                             microseconds=duration.microsecond)
+                                             microseconds=duration.microsecond).total_seconds()
                     total_time += datetime.timedelta(hours=duration.hour,
                                              minutes=duration.minute,
                                              seconds=duration.second,
-                                             microseconds=duration.microsecond)
+                                             microseconds=duration.microsecond).total_seconds()
             except:
                 pass
-           
+
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
-        
-        user_dto.total_time_spent = total_time.time().strftime('%H:%M:%S')
-        user_dto.time_spent_mapping = total_mapping_time.time().strftime('%H:%M:%S')
-        user_dto.time_spent_validating = total_validation_time.time().strftime('%H:%M:%S')
-        
+
+        user_dto.total_time_spent = total_time
+        user_dto.time_spent_mapping = total_mapping_time
+        user_dto.time_spent_validating = total_validation_time
+
         return user_dto

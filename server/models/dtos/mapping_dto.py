@@ -5,6 +5,8 @@ from schematics.types import StringType, IntType, \
 from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import TaskStatus
 from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
+from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
+
 
 def is_valid_mapped_status(value):
     """ Validates that Task Status is in correct range for after mapping """
@@ -54,6 +56,7 @@ class TaskHistoryDTO(Model):
     action_text = StringType(serialized_name='actionText')
     action_date = DateTimeType(serialized_name='actionDate')
     action_by = StringType(serialized_name='actionBy')
+    issues = ListType(ModelType(TaskMappingIssueDTO))
 
 class TaskDTO(Model):
     """ Describes a Task DTO """
