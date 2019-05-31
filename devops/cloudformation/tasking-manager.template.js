@@ -105,9 +105,9 @@ const Resources = {
     Properties: {
       AutoScalingGroupName: cf.stackName,
       Cooldown: 300,
-      MinSize: 1,
-      DesiredCapacity: 1,
-      MaxSize: 1,
+      MinSize: cf.if('IsTaskingManagerProduction', 3, 1),
+      DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
+      MaxSize: cf.if('IsTaskingManagerProduction', 12, 1),
       HealthCheckGracePeriod: 300,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
