@@ -74,7 +74,7 @@
                             <div>
                                 <h4>OSM details</h4>
                                 <div ng-show="profileCtrl.osmUserDetails">
-                                    <p>{{ 'Joined OSM' | translate }} <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
+                                    <p>{{ 'Joined OSM' | translate }} <span tm-timestamp="profileCtrl.osmUserDetails.accountCreated"></span></p>
                                     <p>{{ profileCtrl.osmUserDetails.changesetCount}} {{ 'Total OSM changesets' | translate }}</p>
                                 </div>
                                 <p>
