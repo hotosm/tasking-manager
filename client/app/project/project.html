@@ -88,7 +88,7 @@
                     <dd><a href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></dd>
 
                     <dt>{{ 'Last updated' | translate }}: </dt>
-                    <dd am-time-ago="projectCtrl.projectData.lastUpdated | amUtc | amLocal"></dd>
+                    <dd tm-timestamp="projectCtrl.projectData.lastUpdated"></dd>
 
                     <dt>{{ 'Difficulty' | translate }}: </dt>
                     <dd>{{ projectCtrl.projectData.mapperLevel }}</dd>
@@ -676,10 +676,10 @@
                                                 <td ng-show="doneTasks.mappingLevel === 'INTERMEDIATE'">{{ 'Intermediate' | translate }}</td>
                                                 <td ng-show="doneTasks.mappingLevel === 'ADVANCED'">{{ 'Advanced' | translate }}</td>
                                                 <td>{{ doneTasks.mappedTaskCount }}</td>
-                                                <td><span am-time-ago="doneTasks.dateRegistered | amUtc | amLocal"></span>
+                                                <td><span tm-timestamp="doneTasks.dateRegistered"></span>
                                                 </td>
                                                 <td><span
-                                                        am-time-ago="doneTasks.lastValidationDate | amUtc | amLocal"></span>
+                                                        tm-timestamp="doneTasks.lastValidationDate"></span>
                                                 </td>
                                                 <td>
                                                     <a class="normallink"
@@ -1007,8 +1007,8 @@
                                                     <span class="status-marker-split" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'SPLIT'">{{ 'Split' | translate }}</span>
                                                     <span class="status-marker-ready" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready' | translate }}</span>
                                                 </td>
-                                                <td>
-                                                    <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                                <td class="timestamp">
+                                                    <span tm-timestamp="item.actionDate"></span>
                                                     <span ng-if="projectCtrl.user.isExpert">
                                                     <a ng-show="projectCtrl.isAtticDateLive(item)" class="diff-control {{projectCtrl.selectedItem.actionDate === item.actionDate ? 'selected' : ''}}" ng-click="projectCtrl.selectItemForDiff(item)" title="{{ 'Choose two entries for diff or same once twice for attic data' | translate }}"></a>
                                                     </span>
