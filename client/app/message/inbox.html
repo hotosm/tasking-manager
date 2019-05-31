@@ -25,16 +25,16 @@
                                            ng-checked="inboxCtrl.allVisibleMessagesSelected || inboxCtrl.selectedIndividualMessages[message.messageId]"
                                            ng-click="inboxCtrl.toggleIndividualMessageSelection(message.messageId)" />
                                 </td>
-                                <td title="'Type' | translate" filter="{messageType: 'select'}" filter-data="inboxCtrl.messageTypeLabels">
+                                <td title="{{'Type' | translate}}" filter="{messageType: 'select'}" filter-data="inboxCtrl.messageTypeLabels">
                                   {{ inboxCtrl.messageTypeLabelFor(message.messageType) }}
                                 </td>
-                                <td title="'From' | translate" filter="{username: 'text'}">
+                                <td title="{{'From' | translate}}" filter="{username: 'text'}">
                                     <a ng-href="user/{{ message.fromUsername }}">{{ message.fromUsername }}</a>
                                 </td>
-                                <td title="'Subject' | translate">
+                                <td title="{{'Subject' | translate}}">
                                     <a ng-href="message/{{ message.messageId }}" ng-bind-html="message.subject"></a>
                                 </td>
-                                <td title="'Project' | translate" filter="{projectTitle: 'text'}">
+                                <td title="{{'Project' | translate}}" filter="{projectTitle: 'text'}">
                                     <a ng-if="message.projectId && message.taskId" ng-href="/project/{{ message.projectId + (message.taskId ? '?task=' + message.taskId : '') }}">
                                         {{ message.projectTitle }}
                                     </a>
@@ -42,12 +42,12 @@
                                         {{ message.projectTitle }}
                                     </a>
                                 </td>
-                                <td title="'Task' | translate" filter="{taskId: 'number'}">
+                                <td title="{{'Task' | translate}}" filter="{taskId: 'number'}">
                                   <a ng-if="message.taskId" ng-href="/project/{{ message.projectId }}?task={{ message.taskId }}">
                                       {{ 'Task' | translate }} {{ message.taskId }}
                                   </a>
                                 </td>
-                                <td title="'Sent' | translate" sortable="'sentDate'">
+                                <td title="{{'Sent' | translate}}" sortable="'sentDate'">
                                     <span am-time-ago="message.sentDate | amUtc | amLocal"></span>
                                 </td>
                                 <td>
