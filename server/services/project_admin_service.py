@@ -222,3 +222,14 @@ class ProjectAdminService:
     def get_projects_for_admin(admin_id: int, preferred_locale: str):
         """ Get all projects for provided admin """
         return Project.get_projects_for_admin(admin_id, preferred_locale)
+        
+    @staticmethod
+    def transfer_project_to(project_id: int, author_id: int, username: str):
+        """ Transfers project from old owner (author_id) to new owner (username) """
+        project = Project.get(project_id)
+        if project.author_id == author_id:
+            new_owner = UserService.get_user_by_username(username)
+            project.author_id = new_owner.id
+            project.save()
+        else:
+            raise Exception("Invalid owner_id")
