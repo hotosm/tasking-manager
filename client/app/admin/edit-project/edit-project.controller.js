@@ -75,6 +75,10 @@
         // Delete
         vm.showDeleteConfirmationModal = false;
 
+        // Transfer 
+        vm.showTransferConfirmationModal = false;
+        vm.transferProjectTo= []; //it's a list because it uses the tag input
+
         // Reset
         vm.showResetConfirmationModal = false;
 
@@ -84,6 +88,9 @@
         // Error messages
         vm.deleteProjectFail = false;
         vm.deleteProjectSuccess = false;
+        vm.transferProjectFail = false;
+        vm.transferProjectSuccess = false;
+        vm.showTransferEmptyUserError = false;
         vm.resetProjectFail = false;
         vm.resetProjectSuccess = false;
         vm.invalidateTasksFail = false;
@@ -364,6 +371,42 @@
                 // Project not deleted successfully
                 vm.deleteProjectFail = true;
                 vm.deleteProjectSuccess = false;
+            });
+        };
+
+        /**
+         * Set the transfer confirmation modal to visible/invisible
+         * @param showModal
+         */
+        vm.showTransferConfirmation = function(showModal){
+            if (vm.transferProjectTo.length){
+                vm.showTransferConfirmationModal = showModal;
+                vm.showTransferEmptyUserError = false;
+                if (!showModal && vm.transferProjectSuccess){
+                    $location.path('/');
+                }
+            } else {
+                vm.showTransferEmptyUserError = true;
+            }
+        };
+
+        /**
+         * Transfer a project
+         */
+        vm.transferProject = function(){
+            vm.transferProjectFail = false;
+            vm.transferProjectSuccess = false;
+            var resultsPromise = projectService.transferProject(vm.project.projectId, vm.transferProjectTo[0].text);
+            resultsPromise.then(function () {
+                // Project deleted successfully
+                vm.transferProjectFail = false;
+                vm.transferProjectSuccess = true;
+                // Reset the page elements
+                getProjectMetadata(vm.project.projectId);
+            }, function(){
+                // Project not deleted successfully
+                vm.transferProjectFail = true;
+                vm.transferProjectSuccess = false;
             });
         };
 
