@@ -394,8 +394,6 @@ class Project(db.Model):
                 TaskHistory.action == 'LOCKED_FOR_VALIDATION',
                 TaskHistory.project_id == self.id
             ).distinct(TaskHistory.user_id).count()
-        current_app.logger.debug(unique_mappers)
-        current_app.logger.debug(unique_validators)
         summary.total_tasks = self.total_tasks
         summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
 
@@ -405,61 +403,42 @@ class Project(db.Model):
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
         summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
-        summary.percent_validated = int((self.tasks_validated  / self.total_tasks) * 100)
+        summary.percent_validated = int((self.tasks_validated / self.total_tasks) * 100)
         summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
+        summary.total_time_spent = 0
+        summary.total_mapping_time = 0
+        summary.total_validation_time = 0
+        summary.average_mapping_time = 0
+        summary.average_validation_time = 0
 
-        users_durations = TaskHistory.query.filter(
-                TaskHistory.action_text != '',
-                TaskHistory.project_id == self.id
-            ).all()
-        total_mapping_time = datetime.datetime.min
-        total_validation_time = datetime.datetime.min
-        total_time_spent = datetime.datetime.min
-        for user_duration in users_durations:
-            try:
-                duration = dateutil.parser.parse(user_duration.action_text)
-                total_time_spent += datetime.timedelta(hours=duration.hour,
-                                                    minutes=duration.minute,
-                                                    seconds=duration.second,
-                                                    microseconds=duration.microsecond)
-                if user_duration.action == 'LOCKED_FOR_MAPPING':
-                    total_mapping_time += datetime.timedelta(hours=duration.hour,
-                                                    minutes=duration.minute,
-                                                    seconds=duration.second,
-                                                    microseconds=duration.microsecond)
-                elif user_duration.action == 'LOCKED_FOR_VALIDATION':
-                    total_validation_time += datetime.timedelta(hours=duration.hour,
-                                                    minutes=duration.minute,
-                                                    seconds=duration.second,
-                                                    microseconds=duration.microsecond)
-            except ValueError:
-                current_app.logger.info('Invalid duration specified')
-            current_app.logger.debug(total_mapping_time)
-            current_app.logger.debug(total_validation_time)
-            total_mapping_seconds = int(datetime.timedelta(hours=total_mapping_time.hour,
-                                                    minutes=total_mapping_time.minute,
-                                                    seconds=total_mapping_time.second,
-                                                    microseconds=total_mapping_time.microsecond).total_seconds())
-            total_validation_seconds = int(datetime.timedelta(hours=total_validation_time.hour,
-                                                    minutes=total_validation_time.minute,
-                                                    seconds=total_validation_time.second,
-                                                    microseconds=total_validation_time.microsecond).total_seconds())
-            current_app.logger.debug(total_mapping_seconds)
-            current_app.logger.debug(total_validation_seconds)
-            if unique_mappers:
-                average_mapping_time = total_mapping_seconds/unique_mappers
-                summary.average_mapping_time = str(datetime.timedelta(seconds=average_mapping_time))
-            if unique_validators:
-                average_validation_time = total_validation_seconds/unique_validators
-                summary.average_validation_time = str(datetime.timedelta(seconds=average_validation_time))
+        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                 WHERE action='LOCKED_FOR_MAPPING'and project_id = {0};'''.format(self.id)
+        total_mapping_time = db.engine.execute(sql)
+        for row in total_mapping_time:
+            total_mapping_time = row[0]
+            if total_mapping_time:
+                total_mapping_seconds = total_mapping_time.total_seconds()
+                summary.total_mapping_time = total_mapping_seconds
+                summary.total_time_spent += summary.total_mapping_time
+                if unique_mappers:
+                    average_mapping_time = total_mapping_seconds/unique_mappers
+                    summary.average_mapping_time = average_mapping_time
 
-            summary.total_mapping_time = total_mapping_time.time().isoformat()
-            summary.total_validation_time = total_validation_time.time().isoformat()
-            summary.total_time_spent = total_time_spent.time().isoformat()
-
+        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_VALIDATION' and project_id = {0};'''.format(self.id)
+        total_validation_time = db.engine.execute(sql)
+        for row in total_validation_time:
+            total_validation_time = row[0]
+            if total_validation_time:
+                total_validation_seconds = total_validation_time.total_seconds()
+                summary.total_validation_time = total_validation_seconds
+                summary.total_time_spent += summary.total_validation_time
+                if unique_validators:
+                    average_validation_time = total_validation_seconds/unique_validators
+                    summary.average_validation_time = average_validation_time
 
         return summary
 
