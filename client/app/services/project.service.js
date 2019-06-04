@@ -45,6 +45,7 @@
             getProjectMetadata: getProjectMetadata,
             updateProject: updateProject,
             deleteProject: deleteProject,
+            transferProject: transferProject,
             mapAllTasks: mapAllTasks,
             resetBadImageryTasks: resetBadImageryTasks,
             invalidateAllTasks: invalidateAllTasks,
@@ -492,6 +493,31 @@
             return $http({
                 method: 'DELETE',
                 url: configService.tmAPI + '/admin/project/' + id,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Transfers a project to another user
+         * @param id
+         * @param user_id
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function transferProject(id, username) {
+
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                data: {username: username},
+                url: configService.tmAPI + '/admin/project/' + id + '/transfer',
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
