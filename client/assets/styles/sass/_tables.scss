@@ -35,6 +35,15 @@
     border: 2px solid $darkest-grey;
   }
 
+  td.timestamp {
+    min-width: 145px;
+    text-align: right;
+
+    a.disabled {
+      padding-right: 25px; // since no diff control
+    }
+  }
+
   td.comment-text {
     word-break: break-word;
   }

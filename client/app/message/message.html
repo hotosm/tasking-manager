@@ -21,7 +21,7 @@
                     <div class="inbox-message">
                         <h3 ng-bind-html="messageCtrl.message.subject"></h3>
                         <p>{{ 'From' | translate }}: <a ng-href="user/{{ messageCtrl.message.fromUsername }}">{{ messageCtrl.message.fromUsername }}</a></p>
-                        <p><em am-time-ago="messageCtrl.message.sentDate | amUtc | amLocal"></em></p>
+                        <p><em tm-timestamp="messageCtrl.message.sentDate"></em></p>
                         <div>
                             <p ng-bind-html="messageCtrl.message.message"></p>
                         </div>
