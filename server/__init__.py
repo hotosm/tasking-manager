@@ -110,8 +110,9 @@ def init_flask_restful_routes(app):
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.mapping_issues_apis import MappingIssueCategoryAPI, MappingIssueCategoriesAPI
-    from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
-        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+    from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, \
+                                           UserSetRole, UserSetLevel, UserSetExpertMode, UserAcceptLicense, \
+                                           UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI, UserTasksAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
         MappedTasksByUser, UserInvalidatedTasks
     from server.api.grid.grid_apis import IntersectingTilesAPI
@@ -187,6 +188,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UserOSMAPI,                    '/api/v1/user/<string:username>/osm-details')
     api.add_resource(UserSetRole,                   '/api/v1/user/<string:username>/set-role/<string:role>')
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')
+    api.add_resource(UserTasksAPI,                  '/api/v1/user/tasks')
     api.add_resource(UserAcceptLicense,             '/api/v1/user/accept-license/<int:license_id>')
     api.add_resource(UserIdAPI,                     '/api/v1/user-id/<int:userid>')
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')

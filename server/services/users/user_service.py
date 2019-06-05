@@ -1,5 +1,6 @@
 from cachetools import TTLCache, cached
 from flask import current_app
+from sqlalchemy import func
 from functools import reduce
 import dateutil.parser
 import datetime
@@ -7,9 +8,11 @@ import datetime
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
     UserStatsDTO
 from server.models.dtos.message_dto import MessageDTO
+from server.models.dtos.mapping_dto import TaskDTO, TaskDTOs 
 from server.models.postgis.message import Message
-from server.models.postgis.task import TaskHistory
+from server.models.postgis.task import TaskHistory, Task
 from server.models.postgis.user import User, UserRole, MappingLevel
+from server.models.postgis.statuses import TaskStatus 
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
@@ -94,6 +97,40 @@ class UserService:
         requested_user = UserService.get_user_by_id(requested_user)
 
         return requested_user.as_dto(requested_user.username)
+        
+    @staticmethod
+    def get_tasks_dto(user_id: int, 
+                      min_action_date: datetime.datetime = None,
+                      max_action_date: datetime.datetime = None,
+                      status: str = None, 
+                      project_id: int = None) -> TaskDTOs:
+        user = UserService.get_user_by_id(user_id)
+        base_query = TaskHistory.query.with_entities(
+                          TaskHistory.task_id,
+                          func.count(TaskHistory.task_id)).group_by(TaskHistory.task_id)
+
+        if min_action_date:
+            base_query = base_query.filter(TaskHistory.action_date>=min_action_date) 
+
+        if max_action_date:
+            base_query = base_query.filter(TaskHistory.action_date<=max_action_date) 
+            
+        task_dtos = TaskDTOs()
+        task_id_list = [a[0] for a in base_query.filter(TaskHistory.user_id==user.id).all()]
+        tasks = Task.get_tasks_query_from_ids(task_id_list)
+
+        if status:
+            tasks = tasks.filter_by(task_status=TaskStatus[status.upper()].value)
+            
+        if project_id:
+            tasks = tasks.filter_by(project_id=project_id)
+            
+        task_list = []
+
+        for task in tasks.all():
+            task_list.append(task.as_dto())
+        task_dtos.tasks = task_list
+        return task_dtos
 
     @staticmethod
     def get_detailed_stats(username: str):
@@ -339,6 +376,7 @@ class UserService:
         user.save()
         return user
 
+    @staticmethod
     def notify_level_upgrade(user_id: int, username: str, level: str):
         text_template = get_template('level_upgrade_message_en.txt')
 

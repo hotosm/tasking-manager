@@ -1,5 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
+from dateutil.parser import parse as date_parse
 
 from server.models.dtos.user_dto import UserSearchQuery, UserDTO
 from server.services.users.authentication_service import token_auth, tm
@@ -533,6 +534,79 @@ class UserAcceptLicense(Resource):
             return {"Success": "Terms Accepted"}, 200
         except NotFound:
             return {"Error": "User or mapping not found"}, 404
+        except Exception as e:
+            error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class UserTasksAPI(Resource):
+
+    @token_auth.login_required
+    def get(self):
+        """
+        Gets tasks users has interacted
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: query 
+              name: status 
+              description: Project Status filter 
+              required: false 
+              type: string
+              default: null 
+            - in: query 
+              name: project_id 
+              description: Project id 
+              required: false 
+              type: integer 
+              default: null 
+            - in: query 
+              name: min_action_date 
+              description: Date to filter as minimum 
+              required: false 
+              type: string 
+              default: null 
+            - in: query 
+              name: max_action_date 
+              description: Date to filter as maximum 
+              required: false 
+              type: string 
+              default: null 
+        responses:
+            200:
+                description: Mapped projects found
+            404:
+                description: No mapped projects found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            status = request.args.get('status') 
+            project_id = int(request.args.get('project_id', 0)) 
+            min_action_date = date_parse(request.args.get('min_action_date')) \
+                                         if request.args.get('min_action_date') else None
+            max_action_date = date_parse(request.args.get('max_action_date')) \
+                                         if request.args.get('max_action_date') else None
+
+            tasks = UserService.get_tasks_dto(tm.authenticated_user_id, 
+                                              project_id=project_id,
+                                              status=status,
+                                              min_action_date=min_action_date,
+                                              max_action_date=max_action_date
+                                              )
+            return tasks.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User or tasks not found"}, 404
         except Exception as e:
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
