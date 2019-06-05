@@ -5,6 +5,7 @@ import datetime
 from cachetools import TTLCache, cached
 from typing import List
 from flask import current_app
+from sqlalchemy import func
 
 from server import create_app, db
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
@@ -184,6 +185,22 @@ class MessageService:
         return messages_sent
 
     @staticmethod
+    def send_weekly_mappers_email():
+        """ Sends a weekly project activity summary for a mapper contributions """
+        min_date =  datetime.datetime.now() - datetime.timedelta(days=7)
+        max_date = datetime.datetime.now()
+        query = db.session.query(func.count(TaskHistory.user_id), 
+                                 TaskHistory.user_id).filter(TaskHistory.action_date.between(min_date, max_date)).group_by('user_id').all()
+        messages_sent = 0
+        for count, user_id in filter(lambda x: x[0] > 0, query):
+            user = User.query.get(user_id)
+            subject = f'Weekly summary for {user.username}'
+            sent = MessageService._send_mappers_project_email(user, subject, min_date, max_date)
+            if sent:
+                messages_sent += 1
+        return messages_sent
+
+    @staticmethod
     def _send_managers_project_email(project: Project, subject: str, min_date: datetime.datetime, max_date=datetime.datetime.now()):
         """ Sends a weekly project activity summary. """
         project_info = project.project_info.first()
@@ -233,6 +250,29 @@ class MessageService:
         else:
             return False
 
+    @staticmethod
+    def _send_mappers_project_email(user: User, subject: str, 
+                                    min_date: datetime.datetime, 
+                                    max_date=datetime.datetime.now()):
+        """ Sends a weekly mapper activity summary. """
+        if user.email_address:
+            task_histories_query = TaskHistory.query.filter_by(actioned_by=user).filter(TaskHistory.action_date.between(min_date, max_date)).order_by(TaskHistory.project_id, TaskHistory.action_date.desc())
+            message = ''
+            num_contributions = 0
+            for task_history in task_histories_query.all():
+                project_info = task_history.project.project_info.first()
+                message += f'Project: {project_info.name}, {task_history.action_text} on {task_history.action_date} \n'
+                num_contributions += 1
+
+            context = {
+                'USERNAME': user.username,
+                'CONTRIBUTION_LIST': message,
+                'NUM_CONTRIBUTIONS': str(num_contributions),
+            }
+            SMTPService.send_templated_email(user.email_address, subject, 'weekly_email_mappers_en', context)
+            return True
+        else:
+            return False
 
     @staticmethod
     def _parse_message_for_username(message: str) -> List[str]:

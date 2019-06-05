@@ -2,6 +2,7 @@ import logging
 import os
 from dotenv import load_dotenv
 
+
 class EnvironmentConfig:
     """ Base class for configuration. """
     """ Most settings can be defined through environment variables. """

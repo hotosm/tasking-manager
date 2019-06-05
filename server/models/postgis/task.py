@@ -155,6 +155,9 @@ class TaskHistory(db.Model):
 
     __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
                       db.Index('idx_task_history_composite', 'task_id', 'project_id'), {})
+                      
+    # Mapped objects
+    project = db.relationship("Project")
 
     def __init__(self, task_id, project_id, user_id):
         self.task_id = task_id

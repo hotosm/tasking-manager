@@ -1,0 +1,7 @@
+Hi [USERNAME]
+
+This is the weekly update for your project: [PROJECT_NAME]
+
+[PROJECT_NAME] had [NUM_CONTRIBUTIONS] contributions this week.
+
+[CONTRIBUTION_LIST]
