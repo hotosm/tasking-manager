@@ -1,8 +1,10 @@
 from cachetools import TTLCache, cached
 from flask import current_app
 
+from server import db
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary
+from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary,\
+    ProjectContribsDTO, ProjectContribDTO
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task
@@ -30,6 +32,33 @@ class ProjectService:
             raise NotFound()
 
         return project
+
+    @staticmethod
+    def get_contribs_by_day(project_id: int) -> ProjectContribsDTO:
+        ''' Returns contributions by day on a project '''
+        query = '''SELECT action, date_trunc('day', action_date)::date AS date, COUNT(action) AS count from task_history
+                   WHERE project_id={0} AND (action='LOCKED_FOR_VALIDATION' OR action='LOCKED_FOR_MAPPING')
+                   GROUP BY date, action
+                   ORDER BY date, action'''.format(project_id)
+        contributions = db.engine.execute(query)
+        contribs_dto = ProjectContribsDTO()
+
+        if contributions.rowcount == 0:
+            raise NotFound()
+
+        results = [r for r in contributions]
+
+        mapped_contribs = [ProjectContribDTO(dict(date=str(r[1]), total=int(r[2]))) for r in results
+            if r[0] == 'LOCKED_FOR_MAPPING']
+
+        validated_contribs = [ProjectContribDTO(dict(date=str(r[1]), total=int(r[2]))) for r in results
+            if r[0] == 'LOCKED_FOR_VALIDATION']
+
+        contribs_dto.mapping = mapped_contribs
+        contribs_dto.validation = validated_contribs
+
+        return contribs_dto
+
 
     @staticmethod
     def auto_unlock_tasks(project_id: int):
