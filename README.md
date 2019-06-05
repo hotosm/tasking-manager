@@ -23,7 +23,7 @@ The Tasking Manager uses OpenStreetMap accounts for users to login.
 
 In order to configure this connection you have to go to `https://www.openstreetmap.org/user/<Your_OSM_UserName>/oauth_clients/new` and fill in the form:
 
-<img width="300" alt="screen shot 2019-01-08 at 10 58 26 pm" src="https://user-images.githubusercontent.com/3166852/50847977-f81b3480-1398-11e9-9cfd-771f58efefb0.png">
+<img width="300" alt="Required OSM OAuth settings" src="docs/assets/osm-oauth-settings.jpg">
 
 Afterwards copy the consumer key and secret from OpenStreetMap into your configuration file `tasking-manager.env`, and set the two variables: `TM_CONSUMER_KEY` and `TM_CONSUMER_SECRET`.
 
