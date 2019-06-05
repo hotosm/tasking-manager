@@ -14,6 +14,17 @@
       @include column(4/12);
     }
   }
+
+  .mapping-progress {
+    h4 {
+      display: flex;
+      align-items: center;
+
+      .header {
+        margin-right: 2em;
+      }
+    }
+  }
 }
 
 .profile-projects-list {

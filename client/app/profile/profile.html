@@ -42,8 +42,15 @@
                 <div class="inner">
                     <div class="profile-container">
                         <div class="details">
-                            <div>
-                                <h4>{{ profileCtrl.username }}'s {{ 'Progress' | translate }}</h4>
+                            <div class="mapping-progress">
+                                <h4>
+                                  <span class="header">{{ profileCtrl.username }}'s {{ 'Progress' | translate }}</span>
+                                  <mapper-level-indicator ng-if="profileCtrl.userDetails.mappingLevel"
+                                                          username="{{ profileCtrl.username }}"
+                                                          level="{{ profileCtrl.userDetails.mappingLevel }}"
+                                                          label="true"></mapper-level-indicator>
+                                </h4>
+                                <mapper-encouragement></mapper-encouragement>
                                 <div ng-show="profileCtrl.mapperLevelIntermediate > profileCtrl.osmUserDetails.changesetCount">
                                     <span class="label">{{ profileCtrl.mapperLevelIntermediate - profileCtrl.osmUserDetails.changesetCount }} {{ 'OSM changeset(s) to intermediate mapper' | translate }}</span>
                                     <uib-progressbar value="profileCtrl.osmUserDetails.changesetCount" max="profileCtrl.mapperLevelIntermediate"></uib-progressbar>
@@ -61,13 +68,13 @@
                             <div>
                                 <h4>Stats</h4>
                                 <span>{{ 'Time Spent Mapping (on this instance)' | translate }}</span>
-                                <span class="pull-right">{{ profileCtrl.userStats.timeSpentMapping | amDurationFormat : 'second' }}</span>
+                                <span class="pull-right">{{ profileCtrl.userStats.timeSpentMapping }}</span>
                                 <hr/>
                             </div>
                             <div>
                                 <h4>OSM details</h4>
                                 <div ng-show="profileCtrl.osmUserDetails">
-                                    <p>{{ 'Joined OSM' | translate }} <span am-time-ago="profileCtrl.osmUserDetails.accountCreated | amUtc | amLocal"></span></p>
+                                    <p>{{ 'Joined OSM' | translate }} <span tm-timestamp="profileCtrl.osmUserDetails.accountCreated"></span></p>
                                     <p>{{ profileCtrl.osmUserDetails.changesetCount}} {{ 'Total OSM changesets' | translate }}</p>
                                 </div>
                                 <p>

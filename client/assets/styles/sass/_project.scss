@@ -172,6 +172,25 @@
   font-size: smaller;
 }
 
+.mapping-issues {
+  .form-field {
+    label {
+      display: inline-block;
+      width: 175px;
+    }
+
+    input[type="number"] {
+      max-width: 4em;
+      text-align: right;
+      margin: 0 0.5em;
+    }
+  }
+
+  &__add-mapping-issue {
+    margin-top: 1.5em;
+  }
+}
+
 .chat--individual {
   margin-bottom: 1.5em;
 }

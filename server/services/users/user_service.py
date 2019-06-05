@@ -58,7 +58,7 @@ class UserService:
     @staticmethod
     def register_user(osm_id, username, changeset_count):
         """
-        Creates user in DB 
+        Creates user in DB
         :param osm_id: Unique OSM user id
         :param username: OSM Username
         :param changeset_count: OSM changeset count
@@ -148,10 +148,10 @@ class UserService:
 
         return stats_dto
 
-    
+
     @staticmethod
     def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
-        """ Update user with info supplied by user, if they add or change their email address a verification mail 
+        """ Update user with info supplied by user, if they add or change their email address a verification mail
             will be sent """
         user = UserService.get_user_by_id(user_id)
 
@@ -228,7 +228,7 @@ class UserService:
     def add_role_to_user(admin_user_id: int, username: str, role: str):
         """
         Add role to user
-        :param admin_user_id: ID of admin attempting to add the role 
+        :param admin_user_id: ID of admin attempting to add the role
         :param username: Username of user the role should be added to
         :param role: The requested role
         :raises UserServiceError
@@ -254,7 +254,7 @@ class UserService:
     def set_user_mapping_level(username: str, level: str) -> User:
         """
         Sets the users mapping level
-        :raises: UserServiceError 
+        :raises: UserServiceError
         """
         try:
             requested_level = MappingLevel[level.upper()]
@@ -330,11 +330,11 @@ class UserService:
 
         user.save()
         return user
-        
+
     def notify_level_upgrade(user_id: int, username: str, level: str):
         text_template = get_template('level_upgrade_message_en.txt')
 
-        if username is not None: 
+        if username is not None:
             text_template = text_template.replace('[USERNAME]', username)
 
         text_template = text_template.replace('[LEVEL]', level)

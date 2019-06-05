@@ -358,6 +358,13 @@
                                         {{ 'Please make sure you only have one campaign tag.' | translate }}
                                     </p>
                                 </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'OSMCha Filter Id' | translate }}</label>
+                                    <input type="text" class="form__control" ng-model="editProjectCtrl.project.osmchaFilterId"/>
+                                    <p>
+                                        {{ 'Optional id of a saved OSMCha filter to apply when viewing the project in OSMCha, if you desire custom filtering. Note that this replaces all standard filters. Example: 095e8b31-b3cb-4b36-a106-02826fb6a109 (for convenience, you can also paste an OSMCha URL here that uses a saved filter and the filter id will be extracted for you).' | translate }}
+                                    </p>
+                                </div>
                             </fieldset>
                         </div>
                         <!--/ metadata section -->
@@ -576,6 +583,23 @@
                                     </button>
                                 </div>
                                 <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Transfer project' | translate }}</label>
+                                    <div class="alert alert--warning" role="alert">
+                                        <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'This cannot be undone.' | translate }}</p>
+                                    </div>
+                                    <div style="margin-top: 5px">
+                                        <tags-input ng-model="editProjectCtrl.transferProjectTo"
+                                        name="projectTransferTo" placeholder="{{ 'Search for username' | translate }}"
+                                        replace-spaces-with-dashes="false" max-tags="1">
+                                        <auto-complete source="editProjectCtrl.getUser($query)"></auto-complete> 
+                                        <p class="error" ng-show="editProjectCtrl.showTransferEmptyUserError">{{ 'Please enter a valid username' | translate }}</p>
+                                    </div>
+                                    <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.showTransferConfirmation(true)">
+                                        {{ 'Transfer project' | translate }}
+                                    </button>
+                                </div>
+                                <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Reset tasks' | translate }}</label>
                                     <p>{{ 'Reset all tasks in the project to ready to map, preserving history.' | translate }}</p>
                                     <div class="alert alert--warning" role="alert">
@@ -683,6 +707,43 @@
         </footer>
     </div>`
     <button class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showDeleteConfirmation(false)">
+        {{ 'Dismiss' | translate }}
+    </button>
+</section>
+<!-- delete project confirmation modal -->
+
+<!-- transter project confirmation modal -->
+<section class="modal modal-tm" ng-show="editProjectCtrl.showTransferConfirmationModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">{{ 'Transfer project' | translate }}</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <p ng-hide="editProjectCtrl.transferProjectSuccess">
+                {{ 'Are you sure you want to transfer this project? You cannot undo transfering a project.' | translate }}
+            </p>
+            <p ng-show="editProjectCtrl.transferProjectSuccess">{{ 'The project was transfered successfully.' | translate }}</p>
+            <p ng-show="editProjectCtrl.transferProjectFail" class="error">{{ 'The project was not transfered successfully.' | translate }}</p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="editProjectCtrl.transferProjectSuccess">
+                <button class="button button--achromic" type="button"
+                        ng-click="editProjectCtrl.showTransferConfirmation(false)">{{ 'Cancel' | translate }}
+                </button>
+                <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.transferProject()">{{ 'Transfer' | translate }}
+                </button>
+            </div>
+            <div ng-show="editProjectCtrl.transferProjectSuccess">
+                 <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.goToHome()">{{ 'Go to the homepage' | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>`
+    <button class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showTransferConfirmation(false)">
         {{ 'Dismiss' | translate }}
     </button>
 </section>

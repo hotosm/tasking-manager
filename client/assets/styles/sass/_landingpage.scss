@@ -16,6 +16,22 @@
     padding-top: 5rem;
     padding-bottom: 5rem;
   }
+  .mapper-encouragement__message {
+    padding: 0 0.5em 0.5em 0.5em;
+    color: #fff;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: $base-font-regular;
+
+    p {
+      margin: 0 auto;
+    }
+
+    a {
+      color: #fff;
+      font-weight: $base-font-bold;
+    }
+  }
 }
 
 /* ==========================================================================
