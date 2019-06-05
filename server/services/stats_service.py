@@ -179,50 +179,36 @@ class StatsService:
 
         contrib_dto = ProjectContributionsDTO()
         for row in results:
-            user_contrib = UserContribution()
-            user_contrib.username = row[1] if row[1] else row[4]
-            user_contrib.mapped = row[2] if row[2] else 0
-            user_contrib.validated = row[5] if row[5] else 0
-            users_durations = TaskHistory.query.filter(
-                TaskHistory.user_id == row[0],
-                TaskHistory.action_text != '',
-                TaskHistory.project_id == project_id
-            ).all()
+            if row[0]:
+                user_contrib = UserContribution()
+                user_contrib.username = row[1] if row[1] else row[4]
+                user_contrib.mapped = row[2] if row[2] else 0
+                user_contrib.validated = row[5] if row[5] else 0
+                user_contrib.total_time_spent = 0
+                user_contrib.time_spent_mapping = 0
+                user_contrib.time_spent_validating = 0
 
-            total_mapping_time = datetime.datetime.min
-            total_validating_time = datetime.datetime.min
-            total_time_spent = datetime.datetime.min
+                sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                        WHERE action='LOCKED_FOR_MAPPING'
+                        and user_id = {0} and project_id = {1};""".format(row[0], project_id)
+                total_mapping_time = db.engine.execute(sql)
+                for time in total_mapping_time:
+                    total_mapping_time = time[0]
+                    if total_mapping_time:
+                        user_contrib.time_spent_mapping = total_mapping_time.total_seconds()
+                        user_contrib.total_time_spent += user_contrib.time_spent_mapping
 
-            for user_duration in users_durations:
-                try:
-                    duration = dateutil.parser.parse(user_duration.action_text)
-                    total_time_spent += datetime.timedelta(
-                        hours=duration.hour,
-                        minutes=duration.minute,
-                        seconds=duration.second,
-                        microseconds=duration.microsecond
-                        )
-                    if user_duration.action == 'LOCKED_FOR_MAPPING':
-                        total_mapping_time += datetime.timedelta(
-                            hours=duration.hour,
-                            minutes=duration.minute,
-                            seconds=duration.second,
-                            microseconds=duration.microsecond
-                            )
-                    elif user_duration.action == 'LOCKED_FOR_VALIDATION':
-                        total_validating_time += datetime.timedelta(
-                            hours=duration.hour,
-                            minutes=duration.minute,
-                            seconds=duration.second,
-                            microseconds=duration.microsecond
-                            )
-                except ValueError:
-                    current_app.logger.info('Invalid duration specified')
+                sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                        WHERE action='LOCKED_FOR_VALIDATION'
+                        and user_id = {0} and project_id = {1};""".format(row[0], project_id)
+                total_validation_time = db.engine.execute(sql)
+                for time in total_validation_time:
+                    total_validation_time = time[0]
+                    if total_validation_time:
+                        user_contrib.time_spent_validating = total_validation_time.total_seconds()
+                        user_contrib.total_time_spent += user_contrib.time_spent_validating
 
-            user_contrib.time_spent_mapping = total_mapping_time.time().isoformat()
-            user_contrib.time_spent_validating = total_validating_time.time().isoformat()
-            user_contrib.total_time_spent = total_time_spent.time().isoformat()
-            contrib_dto.user_contributions.append(user_contrib)
+                contrib_dto.user_contributions.append(user_contrib)
 
         return contrib_dto
 
@@ -257,11 +243,11 @@ class StatsService:
         untagged_count = 0
 
         # total_area = 0
-     
-       
-       
+
+
+
        # dto.total_area = 0
-        
+
         # total_area_sql = """select sum(ST_Area(geometry)) from public.projects as area"""
 
         # total_area_result = db.engine.execute(total_area_sql)
@@ -288,7 +274,7 @@ class StatsService:
             sum_proxy = [tup for tup in rowproxy if tup is not None]
             tasks_validated_area += sum(sum_proxy)
         dto.total_validated_area = tasks_validated_area
-    
+
         campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
             .group_by(Project.campaign_tag).all()
         no_campaign_count = 0
@@ -301,7 +287,7 @@ class StatsService:
                 unique_campaigns += 1
             else:
                 no_campaign_count += campaign_stats.projects_created
-        
+
         if no_campaign_count:
             no_campaign_proj = CampaignStatsDTO(('Untagged', no_campaign_count))
             dto.campaigns.append(no_campaign_proj)
@@ -311,7 +297,7 @@ class StatsService:
         org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
             .group_by(Project.organisation_tag).all()
         no_org_count = 0
-        unique_orgs = 0 
+        unique_orgs = 0
 
         for tup in org_proj_count:
             org_stats = OrganizationStatsDTO(tup)

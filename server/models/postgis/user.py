@@ -260,50 +260,34 @@ class User(db.Model):
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
         user_dto.validation_message = self.validation_message
-        
-        sql = """select action, action_text
-                      from task_history
-                     where user_id = {0}
-                       and action != 'STATE_CHANGE'
-                       and action != 'COMMENT'""".format(self.id)
+        user_dto.total_time_spent = 0
+        user_dto.time_spent_mapping = 0
+        user_dto.time_spent_validating = 0
 
-        results = db.engine.execute(sql)
-        total_time = datetime.datetime.min
-        total_mapping_time = datetime.datetime.min
-        total_validation_time = datetime.datetime.min
+        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_VALIDATION'
+                and user_id = {0};""".format(self.id)
+        total_validation_time = db.engine.execute(sql)
+        for row in total_validation_time:
+            total_validation_time = row[0]
+            if total_validation_time:
+                total_validation_seconds = total_validation_time.total_seconds()
+                user_dto.time_spent_validating = total_validation_seconds
+                user_dto.total_time_spent += user_dto.time_spent_validating
 
-        for row in results:
-            try:
-                if row[0] == 'LOCKED_FOR_MAPPING':
-                    duration = dateutil.parser.parse(row[1])
-                    total_mapping_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)
-                    total_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)                                            
-                elif row[0] == 'LOCKED_FOR_VALIDATION':
-                    duration = dateutil.parser.parse(row[1])
-                    total_validation_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)
-                    total_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)
-            except:
-                pass
-           
+        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_MAPPING'
+                and user_id = {0};""".format(self.id)
+        total_mapping_time = db.engine.execute(sql)
+        for row in total_mapping_time:
+            total_mapping_time = row[0]
+            if total_mapping_time:
+                total_mapping_seconds = total_mapping_time.total_seconds()
+                user_dto.time_spent_mapping = total_mapping_seconds
+                user_dto.total_time_spent += user_dto.time_spent_mapping
+
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
-        
-        user_dto.total_time_spent = total_time.time().strftime('%H:%M:%S')
-        user_dto.time_spent_mapping = total_mapping_time.time().strftime('%H:%M:%S')
-        user_dto.time_spent_validating = total_validation_time.time().strftime('%H:%M:%S')
-        
         return user_dto
