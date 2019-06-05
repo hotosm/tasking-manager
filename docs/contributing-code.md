@@ -1,4 +1,4 @@
-# Code constributions
+# Code contributions
 
 Project and code leads are experienced HOT volunteer and staff developers and the main points of contact for the project. They are also the final reviewers of issues and pull requests. Code leads will review pull requests and provide feedback. The purpose of this role is to help contributors,
 provide consistency and ensure code quality.
