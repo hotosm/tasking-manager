@@ -33,7 +33,7 @@ class Message(db.Model):
     # Relationships
     from_user = db.relationship(User, foreign_keys=[from_user_id])
     to_user = db.relationship(User, foreign_keys=[to_user_id], backref='messages')
-    project=db.relationship(Project, foreign_keys=[project_id])
+    project = db.relationship(Project, foreign_keys=[project_id], backref='messages', cascade='all,delete')
 
 
     @classmethod

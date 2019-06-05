@@ -1,4 +1,5 @@
 from flask import current_app
+from sqlalchemy import text
 
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.stats_dto import Pagination
@@ -214,9 +215,8 @@ class ValidatorService:
 
         if project_id is not None:
             query = query.filter_by(project_id=project_id)
-
-        results = query.order_by(sort_by + " " + sort_direction).paginate(page, page_size, True)
-
+    
+        results = query.order_by(text(sort_by + " " + sort_direction)).paginate(page, page_size, True)
         project_names = {}
         invalidated_tasks_dto = InvalidatedTasks()
         for entry in results.items:
