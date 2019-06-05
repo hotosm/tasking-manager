@@ -87,6 +87,9 @@ class TaskDTO(Model):
     )
     is_undoable = BooleanType(serialized_name="isUndoable", default=False)
     auto_unlock_seconds = IntType(serialized_name="autoUnlockSeconds")
+    last_updated = DateTimeType(
+        serialized_name="lastUpdated", serialize_when_none=False
+    )
 
 
 class TaskDTOs(Model):
