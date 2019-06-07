@@ -5,6 +5,7 @@ from functools import reduce
 import dateutil.parser
 import datetime
 
+from server import db
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
     UserStatsDTO
 from server.models.dtos.message_dto import MessageDTO
@@ -155,42 +156,33 @@ class UserService:
             TaskHistory.action == 'STATE_CHANGE'
         ).distinct(TaskHistory.project_id).count()
 
-        total_time = 0
-        total_mapping_time = 0
-        total_validation_time = 0
-
-        for action in actions:
-            try:
-                if action.action == 'LOCKED_FOR_MAPPING':
-                    duration = dateutil.parser.parse(action.action_text)
-                    total_mapping_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond).total_seconds()
-                    total_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond).total_seconds()
-
-                elif action.action == 'LOCKED_FOR_VALIDATION':
-                    duration = dateutil.parser.parse(action.action_text)
-                    total_validation_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond).total_seconds()
-                    total_time +=  datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond).total_seconds()
-            except:
-                pass
-
-        stats_dto.total_time_spent = total_time
-        stats_dto.time_spent_mapping = total_mapping_time
-        stats_dto.time_spent_validating = total_validation_time
         stats_dto.tasks_mapped = tasks_mapped
         stats_dto.tasks_validated = tasks_validated
         stats_dto.projects_mapped = projects_mapped
+        stats_dto.total_time_spent = 0
+        stats_dto.time_spent_mapping = 0
+        stats_dto.time_spent_validating = 0
+
+        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_VALIDATION'
+                and user_id = {0};""".format(user.id)
+        total_validation_time = db.engine.execute(sql)
+        for time in total_validation_time:
+            total_validation_time = time[0]
+            if total_validation_time:
+                stats_dto.time_spent_validating = total_validation_time.total_seconds()
+                stats_dto.total_time_spent += stats_dto.time_spent_validating
+
+        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_MAPPING'
+                and user_id = {0};""".format(user.id)
+        total_mapping_time = db.engine.execute(sql)
+        for time in total_mapping_time:
+            total_mapping_time = time[0]
+            if total_mapping_time:
+                stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
+                stats_dto.total_time_spent += stats_dto.time_spent_mapping
+
         return stats_dto
 
 
