@@ -839,6 +839,6 @@ class Task(db.Model):
 
         return copies
 
-    def is_assigned_to(self, user_id):
+    def can_assign_to(self, user_id):
         """ Determines if task can be assigned to user """
         return self.assigned_to in (user_id, None)
