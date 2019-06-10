@@ -412,9 +412,22 @@ class Project(db.Model):
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
-        summary.percent_validated = int((self.tasks_validated / self.total_tasks) * 100)
-        summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
+        sql = '''SELECT task_status, count(task_status) FROM tasks
+                 WHERE project_id={0} GROUP BY task_status'''.format(self.id)
+        tasks_statuses = db.engine.execute(sql)
+
+        tasks_statuses = [r for r in tasks_statuses]
+        mapped_statuses = [TaskStatus.BADIMAGERY.value, TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value]
+
+        total_mapped = sum([n for s, n in tasks_statuses if s in mapped_statuses])
+        summary.percent_mapped = int(100 * total_mapped / self.total_tasks)
+
+        total_validated = sum([n for s, n in tasks_statuses if s == TaskStatus.VALIDATED.value])
+        summary.percent_validated = int(100 * total_validated / self.total_tasks)
+
+        total_badimagery = sum([n for s, n in tasks_statuses if s == TaskStatus.BADIMAGERY.value])
+        summary.percent_validated = int(100 * total_badimagery / self.total_tasks)
+
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
