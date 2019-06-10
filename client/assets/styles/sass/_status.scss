@@ -63,6 +63,10 @@ $status-marker-border-color: rgba(84, 84, 84, 0.7);          // medium grey, 0.7
   @include status-marker-icon('\f0e5');
 }
 
+.status-marker-assign {
+  @include status-marker-icon('\f007');
+}
+
 .status-marker-auto-unlocked-for-mapping, .status-marker-auto-unlocked-for-validation {
   @include status-marker-icon('\f017');
 }

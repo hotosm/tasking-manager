@@ -5,11 +5,21 @@
     /**
      * Project controller which manages activating a project the UI for user task selection and contribution
      * TODO: refactor this controller. It is getting big!
+     * added a custom directive so autofocus can work with the modals
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
-
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController])
+        .directive('autofocus', ['$timeout', function($timeout) {
+            return {
+                restrict: 'A',
+                link : function($scope, $element) {
+                  $timeout(function() {
+                    $element[0].focus();
+                  });
+                }
+              }
+        }]);
     function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
         var vm = this;
         vm.id = 0;
@@ -41,6 +51,8 @@
         vm.taskCommentError = false;
         vm.taskCommentErrorMessage = '';
         vm.wasAutoUnlocked = false;
+        vm.taskUnAssignError = false;
+        vm.taskAssignError = false;
 
         //authorization
         vm.isAuthorized = false;
@@ -78,6 +90,9 @@
         // License
         vm.showLicenseModal = false;
         vm.lockingReason = '';
+
+        // Assign
+        vm.showAssignModal = false;
 
         // Augmented diff or attic query selection
         vm.selectedItem = null;
@@ -208,6 +223,8 @@
             vm.taskCommentError = false;
             vm.taskCommentErrorMessage = '';
             vm.wasAutoUnlocked = false;
+            vm.taskUnAssignError = false;
+            vm.taskAssignError = false;
         };
 
         /**
@@ -582,7 +599,7 @@
                 source.clear();
             }
 
-            var taskFeatures = geospatialService.getFeaturesFromGeoJSON(tasks);
+            var taskFeatures = featuresWithAssignment(geospatialService.getFeaturesFromGeoJSON(tasks));
             source.addFeatures(taskFeatures);
 
             //add locked tasks to the locked tasks vector layer
@@ -594,6 +611,19 @@
             if (fitToProject) {
                 vm.map.getView().fit(source.getExtent());
             }
+        }
+
+        function featuresWithAssignment(features) {
+            return features.map(function(f) {
+                if (f.get('assignedTo')) {
+                    if (f.get('assignedTo') === vm.user.id) {
+                        f.set('assignment', 'current');
+                    } else {
+                        f.set('assignment', 'other');
+                    }
+                }
+                return f;
+            });
         }
 
         /**
@@ -1709,6 +1739,76 @@
                 vm.taskUnLockErrorMessage = error.data.Error;
             }
         }
+
+        /**
+         * Unassign one task
+         */
+        vm.unAssignTask = function() {
+            vm.taskUnAssignError = false;
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var resultsPromise = taskService.unAssignTask(projectId, taskId);
+            resultsPromise.then(function (data) {
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                setUpSelectedTask(data);
+                refreshProject(vm.projectData.projectId);
+            }, function (error) {
+                // TODO - show message
+                vm.taskUnAssignError = true;
+            });
+        }
+
+        /**
+         * Assign one task to a user
+         */
+        vm.assignTask = function(username) {
+            vm.taskAssignError = false;
+            var projectId = vm.projectData.projectId;
+            var taskId = vm.selectedTaskData.taskId;
+            var resultsPromise = taskService.assignTask(projectId, taskId, username);
+            resultsPromise.then(function (data) {
+                vm.showAssignModal = false;
+                vm.resetErrors();
+                vm.resetStatusFlags();
+                vm.resetTaskData();
+                setUpSelectedTask(data);
+                refreshProject(vm.projectData.projectId);
+            }, function (error) {
+                // TODO - show message
+                vm.taskAssignError = true;
+            });
+        }
+
+        /**
+         * Set the assign user modal to visible/invisible
+         * @param showModal
+         */
+        vm.setShowAssignModal = function (showModal) {
+            vm.showAssignModal = showModal;
+        };
+
+        /**
+         * Get the user for a search value
+         * @param searchValue
+         */
+        vm.getUser = function(searchValue){
+            var resultsPromise = userService.searchUser(searchValue, vm.projectId);
+            return resultsPromise.then(function (data) {
+                // On success
+                return data.usernames;
+            }, function(){
+                // On error
+            });
+        };
+
+        /**
+         * Enable assigning a user
+         */
+        vm.enableAssignUser = function(enabled){
+            vm.assignUserEnabled = enabled;
+        };
 
         /**
          * Convenience method to get comma separated list of currently selected tasks ids

@@ -31,6 +31,10 @@
         var FILL_COLOUR_LOCKED_FOR_MAPPING = [18, 89, 240, 0.4];//blue, 0.4 opacity
         var FILL_COLOUR_LOCKED_FOR_VALIDATION = [18, 89, 240, 0.4];//blue, 0.4 opacity
         var FILL_COLOUR_BADIMAGERY = [0, 0, 0, 0.4];//black, 0.4 opacity
+        var FILL_COLOUR_ASSIGNED_TO_CURRENT = [0, 128, 0, 0.4];//green, 0.4 opacity
+        var FILL_COLOUR_ASSIGNED_TO_OTHER = [0, 0, 0, 0.4];//black, 0.4 opacity
+
+        var STROKE_COLOUR_ASSIGNED_TO_YOU = [18, 89, 240, 0.4]; //blue, 0.4 opacity
 
         var STROKE_COLOUR = [84, 84, 84, 0.7];//grey, 0.7 opacity
         var STROKE_WIDTH = 1;
@@ -64,6 +68,7 @@
 
             // Get the feature's properties that control styling
             var status = feature.get('taskStatus');
+            var assignment = feature.get('assignment');
 
             // calculate the fill colour and opacity settings based on status, use rgba because this is the way to
             // set opacity in OL3, but also better for cross browser than named colors
@@ -78,22 +83,22 @@
                 fillColor = FILL_COLOUR_READY;
             }
             else if (status === 'INVALIDATED') {
-                fillColor = FILL_COLOUR_INVALIDATED
+                fillColor = FILL_COLOUR_INVALIDATED;
             }
             else if (status === 'MAPPED') {
-                fillColor = FILL_COLOUR_MAPPED
+                fillColor = FILL_COLOUR_MAPPED;
             }
             else if (status === 'VALIDATED') {
-                fillColor = FILL_COLOUR_VALIDATED
+                fillColor = FILL_COLOUR_VALIDATED;
             }
             else if (status === 'BADIMAGERY') {
-                fillColor = FILL_COLOUR_BADIMAGERY
+                fillColor = FILL_COLOUR_BADIMAGERY;
             }
             else {
                 return DEAFAULT_STYLE;
             }
-
-            return new ol.style.Style({
+            
+            var options = {
                 fill: new ol.style.Fill({
                     color: fillColor
                 }),
@@ -101,7 +106,33 @@
                     color: STROKE_COLOUR,
                     width: STROKE_WIDTH
                 })
-            });
+            };
+
+            if (assignment === 'current') {
+                options.text = new ol.style.Text({
+                    text: '\uf007',
+                    font: 'normal 18px FontAwesome',
+                    scale: .7,
+                    fill: new ol.style.Fill({
+                        color: FILL_COLOUR_ASSIGNED_TO_CURRENT
+                    }),
+                    stroke: new ol.style.Stroke({
+                        width: 3,
+                        color: STROKE_COLOUR
+                    })
+                });
+            }
+            else if (assignment == 'other') {
+                options.text = new ol.style.Text({
+                    text: '\uf007',
+                    font: 'normal 18px FontAwesome',
+                    scale: .6,
+                    fill: new ol.style.Fill({
+                        color: FILL_COLOUR_ASSIGNED_TO_OTHER
+                    })
+                });
+            }
+            return new ol.style.Style(options);
         }
 
         /**

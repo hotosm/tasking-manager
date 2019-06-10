@@ -30,7 +30,10 @@
             getLockedTaskDetailsForCurrentUser: getLockedTaskDetailsForCurrentUser,
             splitTask: splitTask,
             getTaskFeaturesByIdAndStatus: getTaskFeaturesByIdAndStatus,
-            undo: undo
+            undo: undo,
+            assignTask: assignTask,
+            unAssignTask: unAssignTask,
+            getUserAssignedTasks: getUserAssignedTasks
         };
 
         return service;
@@ -92,6 +95,88 @@
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 return $q.reject(error);
+            });
+        }
+
+        /**
+         * Requests to Assign one task
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @param username - username to assign task to
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function assignTask(projectId, taskId, username) {
+            return $http({
+                method: 'POST',
+                data: {
+                    taskIds: [taskId]
+                },
+                url: configService.tmAPI + '/project/' + projectId + '/assign?username=' + username,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                return response.data.tasks[0];
+            }, function errorCallback(error) {
+                return $q.reject(error);
+            });
+        }
+
+        /**
+         * Requests to unAssign one task
+         * @param projectId - id of the task project
+         * @param taskId - id of the task
+         * @returns {!jQuery.jqXHR|!jQuery.Promise|*|!jQuery.deferred}
+         */
+        function unAssignTask(projectId, taskId) {
+            return $http({
+                method: 'POST',
+                data: {
+                    taskIds: [taskId]
+                },
+                url: configService.tmAPI + '/project/' + projectId + '/unassign',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                return (response.data.tasks[0]);
+            }, function errorCallback(error) {
+                return $q.reject(error);
+            });
+        }
+
+        /**
+         * Gets assigned tasks either assigned to or assigned by user (depending
+         * on asAssigner parameter), and returns promise
+         * @param asAssigner - whether to get tasks assigned TO the user or assigned BY the user
+         * @param username - user to filter tasks by
+         * @param page - which paginated page to get
+         * @param pageSize - size of pages to get
+         * @param sortBy - which value to sort by
+         * @param sortDirection - whether to sort ascending or descending
+         * @param closedFilter - whether to retrieve closed or open tasks
+         * @param projectFilter - filter for which projects to retrieve
+         * @param taskStatusFilter - filter based on status of tasks
+         * @returns {!jQuery.jqXHR|*|!jQuery.Promise|!jQuery.deferred}
+         */
+        function getUserAssignedTasks(asAssigner, username, page, pageSize,
+                                         sortBy, sortDirection, closedFilter, projectFilter, taskStatusFilter) {
+            var params = $httpParamSerializer({
+              asAssigner: asAssigner,
+              page: page,
+              pageSize: pageSize,
+              closed: closedFilter,
+              project: projectFilter,
+              sortBy: sortBy,
+              sortDirection: sortDirection,
+              taskStatus: taskStatusFilter
+            });
+            
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/user/' + username + '/assigned-tasks' +
+                     (params.length > 0 ? '?' + params : ''),
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                return (response.data);
+            }, function errorCallback() {
+                return $q.reject("error");
             });
         }
 

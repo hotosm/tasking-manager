@@ -397,6 +397,35 @@
                                                     </button> -->
                                                 </div>
                                             </div>
+                                            <div>
+                                                <div ng-show="projectCtrl.selectedTaskData.assignedTo">
+                                                    <p style="display: inline-block; float: bottom;">
+                                                        <i class="fa fa-user"></i>
+                                                        {{ 'Assigned to ' | translate }}
+                                                        <a href="/user/{{ projectCtrl.selectedTaskData.assignedTo }}">
+                                                            <strong>
+                                                                {{ projectCtrl.selectedTaskData.assignedTo === projectCtrl.user.username ? 'you' : projectCtrl.selectedTaskData.assignedTo }}
+                                                            </strong>
+                                                        </a>
+                                                    </p>
+                                                    <button ng-show="projectCtrl.user.role === 'ADMIN' || projectCtrl.user.role === 'PROJECT_MANAGER'"
+                                                        class="button button--small"
+                                                        ng-click="projectCtrl.unAssignTask()">
+                                                        {{ 'Un-Assign' | translate }}
+                                                    </button>
+                                                </div>
+                                                <div ng-hide="projectCtrl.selectedTaskData.assignedTo">
+                                                    <p style="display: inline-block; float: bottom;">
+                                                        <i class="fa fa-user"></i>
+                                                        {{ 'Not assigned yet' | translate }}
+                                                    <button ng-show="projectCtrl.user.role === 'ADMIN' || projectCtrl.user.role === 'PROJECT_MANAGER'"
+                                                            class="button button--small"
+                                                            ng-click="projectCtrl.setShowAssignModal(true)">
+                                                        {{ 'Assign' | translate }}
+                                                    </button>
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -699,7 +728,7 @@
                                     <!-- task information -->
 
                                     <div ng-show="projectCtrl.taskLockError && projectCtrl.isAuthorized">
-                                        <div class="alert alert--danger" role="alert">
+                                        <div class="error" role="alert">
                                             <p>{{ 'The task could not be locked for validation.' | translate }} {{ projectCtrl.taskLockErrorMessage }}</p>
                                         </div>
                                     </div>
@@ -775,6 +804,35 @@
                                                         ng-click="projectCtrl.resetToSelectingStep()">
                                                     {{ 'Cancel' | translate }}
                                                 </button> -->
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div ng-show="projectCtrl.selectedTaskData.assignedTo">
+                                                <p style="display: inline-block; float: bottom;">
+                                                    <i class="fa fa-user"></i>
+                                                    {{ 'Assigned to ' | translate }}
+                                                    <a href="/user/{{ projectCtrl.selectedTaskData.assignedTo }}">
+                                                        <strong>
+                                                            {{ projectCtrl.selectedTaskData.assignedTo === projectCtrl.user.username ? 'you' : projectCtrl.selectedTaskData.assignedTo }}
+                                                        </strong>
+                                                    </a>
+                                                </p>
+                                                <button ng-show="projectCtrl.user.role === 'ADMIN' || projectCtrl.user.role === 'PROJECT_MANAGER'"
+                                                    class="button button--small"
+                                                    ng-click="projectCtrl.unAssignTask()">
+                                                    {{ 'Un-Assign' | translate }}
+                                                </button>
+                                            </div>
+                                            <div ng-hide="projectCtrl.selectedTaskData.assignedTo">
+                                                <p style="display: inline-block; float: bottom;">
+                                                    <i class="fa fa-user"></i>
+                                                    {{ 'Not assigned yet' | translate }}
+                                                <button ng-show="projectCtrl.user.role === 'ADMIN' || projectCtrl.user.role === 'PROJECT_MANAGER'"
+                                                        class="button button--small"
+                                                        ng-click="projectCtrl.setShowAssignModal(true)">
+                                                    {{ 'Assign' | translate }}
+                                                </button>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -970,6 +1028,8 @@
                                           <tr class="action-row {{ item.action | lowercase }} {{ projectCtrl.highlightHistory && projectCtrl.highlightHistory === item.historyId ? 'highlighted' : '' }}">
                                               <td class="action">
                                                   <span class="status-marker-comment" ng-show="item.action === 'COMMENT'">{{ 'Commented' | translate }}</span>
+                                                  <span class="status-marker-assign" ng-show="item.action === 'ASSIGN'">{{ 'Assigned to' | translate }}</span>                                                    
+                                                  <span class="status-marker-assign" ng-show="item.action === 'UNASSIGN'">{{ 'Unassigned' | translate }}</span>                                                    
                                                   <span class="status-marker-locked-for-mapping" ng-show="item.action === 'LOCKED_FOR_MAPPING'">{{ 'Locked for mapping' | translate }}</span>
                                                   <span class="status-marker-locked-for-validation" ng-show="item.action === 'LOCKED_FOR_VALIDATION'">{{ 'Locked for validation' | translate }}</span>
                                                   <span class="status-marker-auto-unlocked-for-mapping" ng-show="item.action === 'AUTO_UNLOCKED_FOR_MAPPING'">{{ 'Automatically unlocked for mapping' | translate }}</span>
@@ -988,7 +1048,7 @@
                                                  </span>
                                               </td>
                                           </tr>
-                                          <tr ng-show="item.action === 'COMMENT'">
+                                          <tr ng-show="item.action === 'COMMENT' || item.action === 'ASSIGN'">
                                             <td colspan="2" class="comment-text">
                                               <span markdown-to-html="item.actionText" ng-click="projectCtrl.onShortCodeClick($event)"></span>
                                             </td>
@@ -1117,7 +1177,7 @@
     </section>
 </div>
 
--<!-- accept license modal -->
+<!-- accept license modal -->
 <section class="modal modal-tm" ng-show="projectCtrl.showLicenseModal">
     <div class="modal__inner">
         <header class="modal__header">
@@ -1183,3 +1243,48 @@
     </a>
 </section>
 <!-- JOSM editor failed modal -->
+
+<!-- assign user modal -->
+<section class="modal modal-tm" ng-if="projectCtrl.showAssignModal">
+        <div class="modal__inner">
+            <header class="modal__header">
+                <div class="modal__headline">
+                    <h1 class="modal__title">
+                        {{ 'Assign task #' | translate }}
+                        {{ projectCtrl.selectedTaskData.taskId }}
+                        {{ ' to someone'}}
+                    </h1>
+                </div>
+            </header>
+            <div class="modal__body">
+                <div class="form__input-group">
+                    <input type="text" ng-model="user" placeholder="{{ 'Type a username' | translate }}"
+                                ng-change="projectCtrl.enableAssignUser(false)"
+                            class="form__control form__control--medium"
+                            uib-typeahead="user for user in projectCtrl.getUser($viewValue)"
+                            typeahead-loading="loadingUsers"
+                            typeahead-no-results="noResults"
+                            typeahead-on-select="projectCtrl.enableAssignUser(true)"
+                            autofocus>
+                </div>
+            </div>
+            <footer class="modal__footer">
+                <div ng-hide="projectCtrl.validateTasksSuccess">
+                    <button class="button button--achromic" type="button"
+                            ng-click="projectCtrl.setShowAssignModal(false)">
+                        {{ 'Cancel' | translate }}
+                    </button>
+                    <button class="button button--base" type="button"
+                            ng-class="!projectCtrl.assignUserEnabled ? 'disabled' : ''"
+                            ng-click="projectCtrl.assignTask(user)">
+                        {{ 'Assign' | translate }}
+                    </button>
+                </div>
+            </footer>
+        </div>
+        <button class="modal__button-dismiss" title="{{ 'Close' | translate }}"
+                ng-click="projectCtrl.setShowAssignModal(false)">
+            {{ 'Dismiss' | translate }}
+        </button>
+    </section>
+    <!-- accept license modal -->
