@@ -42,6 +42,9 @@ class ValidatorService:
             if not ValidatorService._user_can_validate_task(validation_dto.user_id, task.mapped_by):
                 raise ValidatatorServiceError(f'Tasks cannot be validated by the same user who marked task as mapped or badimagery')
 
+            if not task.is_assigned_to(validation_dto.user_id):
+                raise ValidatatorServiceError('Task assigned to another user')
+
             tasks_to_lock.append(task)
 
         user_can_validate, error_reason = ProjectService.is_user_permitted_to_validate(validation_dto.project_id,
