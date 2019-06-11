@@ -3,6 +3,7 @@ from flask import current_app
 from enum import Enum
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.postgis.user import User
+from server.models.postgis.task import Task
 from server.models.postgis.project import Project
 from server.models.postgis.utils import timestamp
 from server.models.postgis.utils import NotFound
@@ -19,6 +20,10 @@ class Message(db.Model):
     """ Describes an individual Message a user can send """
     __tablename__ = "messages"
 
+    __table_args__ = (
+        db.ForeignKeyConstraint(['task_id', 'project_id'], ['tasks.id', 'tasks.project_id']),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String)
     subject = db.Column(db.String)
@@ -33,8 +38,9 @@ class Message(db.Model):
     # Relationships
     from_user = db.relationship(User, foreign_keys=[from_user_id])
     to_user = db.relationship(User, foreign_keys=[to_user_id], backref='messages')
-    project = db.relationship(Project, foreign_keys=[project_id], backref='messages', cascade='all,delete')
-
+    project = db.relationship(Project, foreign_keys=[project_id], backref='messages')
+    task = db.relationship(Task, primaryjoin="and_(Task.id == foreign(Message.task_id), Task.project_id == Message.project_id)",
+        backref='messages')
 
     @classmethod
     def from_dto(cls, to_user_id: int, dto: MessageDTO):
