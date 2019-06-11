@@ -3,6 +3,7 @@ from flask import current_app
 from enum import Enum
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.postgis.user import User
+from server.models.postgis.task import Task
 from server.models.postgis.project import Project
 from server.models.postgis.utils import timestamp
 from server.models.postgis.utils import NotFound
@@ -25,7 +26,7 @@ class Message(db.Model):
     from_user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     to_user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), index=True)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True)
-    task_id = db.Column(db.Integer, index=True)
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), index=True)
     message_type = db.Column(db.Integer, index=True)
     date = db.Column(db.DateTime, default=timestamp)
     read = db.Column(db.Boolean, default=False)
@@ -35,6 +36,11 @@ class Message(db.Model):
     to_user = db.relationship(User, foreign_keys=[to_user_id], backref='messages')
     project = db.relationship(Project, foreign_keys=[project_id], backref='messages')
 
+    # it creates a not unique constraint error when migration is running.
+    task = db.relationship(Task, foreign_keys=[task_id], backref='messages')
+
+    #OPTION 2- USE PRIMARY JOIN
+    # task = db.relationship('tasks', foreign_keys=[task_id], primaryjoin='tasks.id == messages.task_id', backref='messages')
 
     @classmethod
     def from_dto(cls, to_user_id: int, dto: MessageDTO):
