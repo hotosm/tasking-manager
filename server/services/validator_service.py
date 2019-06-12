@@ -116,11 +116,10 @@ class ValidatorService:
             prev_status = TaskHistory.get_last_status(project_id, task.id)
             if prev_status != task_to_unlock['new_state']:
                 StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
-                                                                  task_to_unlock['new_state'], task.id)
-
+                                                                  prev_status, task_to_unlock['new_state'])
             task_mapping_issues = ValidatorService.get_task_mapping_issues(task_to_unlock)
-            task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'], issues=task_mapping_issues)
-
+            task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'],
+                             issues=task_mapping_issues)
             dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
 
         task_dtos = TaskDTOs()
