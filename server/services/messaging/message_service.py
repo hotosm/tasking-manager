@@ -260,13 +260,13 @@ class MessageService:
     @staticmethod
     def delete_message(message_id: int, user_id: int):
         """ Deletes the specified message """
-        # message = MessageService.get_message(message_id, user_id)
-        # message.delete()
+        message = MessageService.get_message(message_id, user_id)
+        message.delete()
 
     @staticmethod
     def delete_multiple_messages(message_ids: list, user_id: int):
         """ Deletes the specified messages to the user """
-       #  Message.delete_multiple_messages(message_ids, user_id)
+        Message.delete_multiple_messages(message_ids, user_id)
 
     @staticmethod
     def get_task_link(project_id: int, task_id: int, base_url=None) -> str:
