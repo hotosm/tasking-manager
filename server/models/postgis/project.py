@@ -39,6 +39,14 @@ project_allowed_users = db.Table(
     db.Column('user_id', db.BigInteger, db.ForeignKey('users.id'))
 )
 
+# Secondary table defining many-to-many join for private projects that only defined users can map on
+project_favorites = db.Table(
+    'project_favorites',
+    db.metadata,
+    db.Column('project_id', db.Integer, db.ForeignKey('projects.id')),
+    db.Column('user_id', db.BigInteger, db.ForeignKey('users.id'))
+)
+
 # cache mapper counts for 30 seconds
 active_mappers_cache = TTLCache(maxsize=1024, ttl=30)
 
@@ -105,6 +113,7 @@ class Project(db.Model):
     allowed_users = db.relationship(User, secondary=project_allowed_users)
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
+    favorited = db.relationship(User, secondary=project_favorites)
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -213,6 +222,25 @@ class Project(db.Model):
         db.session.commit()
 
         return cloned_project
+
+    def is_favorited(self, user_id: int) -> bool:
+        user = User.query.get(user_id)
+        if user not in self.favorited:
+            return False
+
+        return True
+
+    def favorite(self, user_id: int):
+        user = User.query.get(user_id)
+        self.favorited.append(user)
+        db.session.commit()
+
+    def unfavorite(self, user_id: int):
+        user = User.query.get(user_id)
+        if user not in self.favorited:
+            raise ValueError("Project not been favorited by user")
+        self.favorited.remove(user)
+        db.session.commit()
 
     @staticmethod
     def get(project_id: int):

@@ -126,6 +126,15 @@ class ProjectDTO(Model):
     validation_editors = ListType(StringType, min_size=1, required=True, serialized_name='validationEditors', validators=[is_known_editor])
 
 
+class ProjectFavoritesDTO(Model):
+    """ DTO for projects a user has mapped """
+    def __init__(self):
+        super().__init__()
+        self.favorited_projects = []
+
+    favorited_projects = ListType(ModelType(ProjectDTO), serialized_name='favoritedProjects')
+
+
 class ProjectSearchDTO(Model):
     """ Describes the criteria users use to filter active projects"""
     preferred_locale = StringType(required=True, default='en')
@@ -161,6 +170,12 @@ class ProjectSearchDTO(Model):
 
         return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, hashable_project_statuses,
                      self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager, hashable_mapping_editors, hashable_validation_editors))
+
+
+class ProjectFavoriteDTO(Model):
+    """ DTO used to define project favorite by user """
+    project_id = IntType(required=True)
+    user_id = IntType(required=True)
 
 
 class ProjectSearchBBoxDTO(Model):

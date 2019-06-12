@@ -36,6 +36,7 @@ class User(db.Model):
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
+    favorites = db.relationship('Project', secondary='project_favorites')
 
     def create(self):
         """ Creates and saves the current model to the DB """

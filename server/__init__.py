@@ -105,13 +105,13 @@ def init_flask_restful_routes(app):
         ProjectValidateAll, ProjectMapAll, ProjectResetAll, ProjectResetBadImagery, ProjectsForAdminAPI,\
         ProjectTransfer
     from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
-        HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI, TaskAnnotationsAPI
+        HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI, TaskAnnotationsAPI, ProjectFavoriteAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.mapping_issues_apis import MappingIssueCategoryAPI, MappingIssueCategoriesAPI
     from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
-        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI, UserFavoritesAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
         MappedTasksByUser, UserInvalidatedTasks
     from server.api.grid.grid_apis import IntersectingTilesAPI
@@ -137,6 +137,7 @@ def init_flask_restful_routes(app):
     api.add_resource(LoginAPI,                      '/api/v1/auth/login')
     api.add_resource(OAuthAPI,                      '/api/v1/auth/oauth-callback')
     api.add_resource(AuthEmailAPI,                  '/api/auth/email')
+    api.add_resource(UserFavoritesAPI,              '/api/v1/favorites')
     api.add_resource(LicenseAPI,                    '/api/v1/license', endpoint="create_license", methods=['PUT'])
     api.add_resource(LicenseAPI,                    '/api/v1/license/<int:license_id>', methods=['GET', 'POST', 'DELETE'])
     api.add_resource(LicenceListAPI,                '/api/v1/license/list')
@@ -166,6 +167,7 @@ def init_flask_restful_routes(app):
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')
     api.add_resource(UnlockTasksAfterValidationAPI, '/api/v1/project/<int:project_id>/unlock-after-validation')
     api.add_resource(StopValidatingAPI,             '/api/v1/project/<int:project_id>/stop-validating')
+    api.add_resource(ProjectFavoriteAPI,           '/api/v1/project/<int:project_id>/favorite', methods=['GET', 'PUT', 'DELETE'])
     api.add_resource(StatsContributionsAPI,         '/api/v1/stats/project/<int:project_id>/contributions')
     api.add_resource(TaskAnnotationsAPI, '/api/v1/project/<int:project_id>/task-annotations/<string:annotation_type>', '/api/v1/project/<int:project_id>/task-annotations', methods=['GET', 'POST'])
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')

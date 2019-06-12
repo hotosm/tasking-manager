@@ -166,6 +166,22 @@ class ProjectService:
         return True, 'User allowed to validate'
 
     @staticmethod
+    def is_favorited(project_id: int, user_id: int) -> bool:
+        project = ProjectService.get_project_by_id(project_id)
+
+        return project.is_favorited(user_id)
+
+    @staticmethod
+    def favorite(project_id: int, user_id: int):
+        project = ProjectService.get_project_by_id(project_id)
+        project.favorite(user_id)
+
+    @staticmethod
+    def unfavorite(project_id: int, user_id: int):
+        project = ProjectService.get_project_by_id(project_id)
+        project.unfavorite(user_id)
+
+    @staticmethod
     @cached(summary_cache)
     def get_project_summary(project_id: int, preferred_locale: str = 'en') -> ProjectSummary:
         """ Gets the project summary DTO """
