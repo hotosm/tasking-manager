@@ -245,7 +245,7 @@ workflows:
         filters:
           branches:
             only:
-              - master
+              - deployment/hot-tasking-manager
         requires:
           - build
         stack_name: "production"
@@ -272,7 +272,7 @@ workflows:
         filters:
           branches:
             only:
-              - teachosm
+              - deployment/teachosm-tasking-manager
         requires:
           - build
         stack_name: "teachosm"
@@ -299,7 +299,7 @@ workflows:
         filters:
           branches:
             only:
-              - machine-learning
+              - deployment/assisted-tasking-manager
         requires:
           - build
         stack_name: "assisted"
