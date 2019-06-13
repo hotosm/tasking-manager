@@ -37,6 +37,7 @@ class TaskAction(Enum):
     COMMENT = 4
     AUTO_UNLOCKED_FOR_MAPPING = 5
     AUTO_UNLOCKED_FOR_VALIDATION = 6
+    ARCHIVED = 7
 
 
 class TaskInvalidationHistory(db.Model):
@@ -214,6 +215,9 @@ class TaskHistory(db.Model):
             raise ValueError("Invalid Action")
 
         self.action = task_action.name
+
+    def set_task_archived_action(self):
+        self.action = TaskAction.ARCHIVED.name
 
     def set_comment_action(self, comment):
         self.action = TaskAction.COMMENT.name
@@ -491,6 +495,9 @@ class Task(db.Model):
     locked_by = db.Column(
         db.BigInteger, db.ForeignKey("users.id", name="fk_users_locked")
     )
+    archived_by = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users_archived")
+    )
     mapped_by = db.Column(
         db.BigInteger, db.ForeignKey("users.id", name="fk_users_mapper")
     )
@@ -660,6 +667,8 @@ class Task(db.Model):
             history.set_task_locked_action(action)
         elif action == TaskAction.COMMENT:
             history.set_comment_action(comment)
+        elif action == TaskAction.ARCHIVED:
+            history.set_task_archived_action()
         elif action == TaskAction.STATE_CHANGE:
             history.set_state_change_action(new_state)
         elif action in [
@@ -684,6 +693,60 @@ class Task(db.Model):
         self.set_task_history(TaskAction.LOCKED_FOR_VALIDATION, user_id)
         self.task_status = TaskStatus.LOCKED_FOR_VALIDATION.value
         self.locked_by = user_id
+        self.update()
+
+    def archive_task(self, user_id: int):
+        self.set_task_history(TaskAction.ARCHIVED, user_id)
+        self.task_status = TaskStatus.ARCHIVED.value
+        self.archived_by = user_id
+        self.update()
+
+    def unarchive_task(
+        self, user_id, new_state=None, comment=None, undo=False, issues=None
+    ):
+        """ Unarchive task and ensure duration task archived is saved in History """
+
+        if comment:
+            self.set_task_history(
+                action=TaskAction.COMMENT,
+                comment=comment,
+                user_id=user_id,
+                mapping_issues=issues,
+            )
+
+        history = self.set_task_history(
+            action=TaskAction.STATE_CHANGE,
+            new_state=new_state,
+            user_id=user_id,
+            mapping_issues=issues,
+        )
+
+        if (
+            new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]
+            and TaskStatus(self.task_status) != TaskStatus.ARCHIVED
+        ):
+            # Don't set mapped if state being set back to mapped after validation
+            self.mapped_by = user_id
+        elif new_state == TaskStatus.VALIDATED:
+            TaskInvalidationHistory.record_validation(
+                self.project_id, self.id, user_id, history
+            )
+            self.validated_by = user_id
+        elif new_state == TaskStatus.INVALIDATED:
+            TaskInvalidationHistory.record_invalidation(
+                self.project_id, self.id, user_id, history
+            )
+            self.mapped_by = None
+            self.validated_by = None
+
+        if not undo:
+            # Using a slightly evil side effect of Actions and Statuses having the same name here :)
+            TaskHistory.update_task_locked_with_duration(
+                self.id, self.project_id, TaskStatus(self.task_status), user_id
+            )
+
+        self.task_status = new_state.value
+        self.archived_by = None
         self.update()
 
     def reset_task(self, user_id: int):

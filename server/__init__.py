@@ -137,6 +137,8 @@ def add_api_endpoints(app):
         TasksAsGPX,
         TasksAsOSM,
         UndoMappingAPI,
+        ArchiveTaskAPI,
+        UnarchiveTaskAPI,
     )
     from server.api.messaging.message_apis import (
         ProjectsMessageAll,
@@ -387,6 +389,13 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         UserSetLevel, "/api/v1/user/<string:username>/set-level/<string:level>"
+    )
+    api.add_resource(
+        ArchiveTaskAPI, "/api/v1/project/<int:project_id>/task/<int:task_id>/archive"
+    )
+    api.add_resource(
+        UnarchiveTaskAPI,
+        "/api/v1/project/<int:project_id>/task/<int:task_id>/unarchive",
     )
     api.add_resource(UserAcceptLicense, "/api/v1/user/accept-license/<int:license_id>")
     api.add_resource(UserIdAPI, "/api/v1/user-id/<int:userid>")

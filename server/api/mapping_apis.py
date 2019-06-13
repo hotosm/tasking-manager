@@ -10,6 +10,7 @@ from server.models.dtos.mapping_dto import (
     LockTaskDTO,
     StopMappingTaskDTO,
     TaskCommentDTO,
+    ArchiveTaskDTO,
 )
 from server.services.mapping_service import (
     MappingService,
@@ -666,5 +667,180 @@ class UndoMappingAPI(Resource):
             return {"Error": "User not permitted to undo task"}, 403
         except Exception as e:
             error_msg = f"Task GET API - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class ArchiveTaskAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self, project_id, task_id):
+        """
+        Archives the task
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - name: task_id
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Task Archived
+            400:
+                description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            404:
+                description: Task not found
+            409:
+                description: User has not accepted license terms of project
+            500:
+                description: Internal Server Error
+        """
+        try:
+            archive_task_dto = ArchiveTaskDTO()
+            archive_task_dto.user_id = tm.authenticated_user_id
+            archive_task_dto.project_id = project_id
+            archive_task_dto.task_id = task_id
+            archive_task_dto.preferred_locale = request.environ.get(
+                "HTTP_ACCEPT_LANGUAGE"
+            )
+            archive_task_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f"Error validating request: {str(e)}")
+            return str(e), 400
+
+        try:
+            task = MappingService.archive_task(archive_task_dto)
+            return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
+        except MappingServiceError as e:
+            return {"Error": str(e)}, 403
+        except UserLicenseError:
+            return {"Error": "User not accepted license terms"}, 409
+        except Exception as e:
+            error_msg = f"Task Lock API - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class UnarchiveTaskAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self, project_id, task_id):
+        """
+        Archives the task
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - name: task_id
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for unlocking a task
+              schema:
+                  id: TaskUpdateUnarchive
+                  required:
+                      - status
+                  properties:
+                      status:
+                          type: string
+                          description: The new status for the task
+                          default: MAPPED
+                      comment:
+                          type: string
+                          description: Optional user comment about the task
+                          default: Comment about the mapping
+        responses:
+            200:
+                description: Task Unarchived
+            400:
+                description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            404:
+                description: Task not found
+            409:
+                description: User has not accepted license terms of project
+            500:
+                description: Internal Server Error
+        """
+        try:
+            mapped_task = MappedTaskDTO(request.get_json())
+            mapped_task.user_id = tm.authenticated_user_id
+            mapped_task.task_id = task_id
+            mapped_task.project_id = project_id
+            mapped_task.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            mapped_task.validate()
+        except DataError as e:
+            current_app.logger.error(f"Error validating request: {str(e)}")
+            return str(e), 400
+
+        try:
+            task = MappingService.unarchive_task(mapped_task)
+            return task.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Task Not Found"}, 404
+        except MappingServiceError as e:
+            return {"Error": str(e)}, 403
+        except UserLicenseError:
+            return {"Error": "User not accepted license terms"}, 409
+        except Exception as e:
+            error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
