@@ -5,7 +5,8 @@ from flask import current_app
 from geoalchemy2 import shape
 
 from server import db
-from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO, TaskCommentDTO
+from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, \
+                                           ArchiveTaskDTO, StopMappingTaskDTO, TaskCommentDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
@@ -108,6 +109,49 @@ class MappingService:
         return task.as_dto_with_instructions(mapped_task.preferred_locale)
 
     @staticmethod
+    def archive_task(archive_task_dto: ArchiveTaskDTO) -> TaskDTO:
+        """ Archives the task and sets the task history appropriately """
+        task = MappingService.get_task(archive_task_dto.task_id, archive_task_dto.project_id)
+
+        if not task.is_mappable():
+            raise MappingServiceError('Task in invalid state for mapping')
+
+        user_can_map, error_reason = ProjectService.is_user_permitted_to_map(archive_task_dto.project_id,
+                                                                             archive_task_dto.user_id)
+        if not user_can_map:
+            if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
+                raise UserLicenseError('User must accept license to map this task')
+            else:
+                raise MappingServiceError(f'Mapping not allowed because: {error_reason.name}')
+
+        task.archive_task(archive_task_dto.user_id)
+        return task.as_dto_with_instructions(archive_task_dto.preferred_locale)
+
+    @staticmethod
+    def unarchive_task(mapped_task: MappedTaskDTO) -> TaskDTO:
+        """ Unarchives the task and sets the task history appropriately """
+        task = MappingService.get_task_archived_by_user(mapped_task.project_id, mapped_task.task_id,
+                                                        mapped_task.user_id)
+
+        new_state = TaskStatus[mapped_task.status.upper()]
+
+        if new_state not in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY, TaskStatus.READY]:
+            raise MappingServiceError('Can only set status to MAPPED, BADIMAGERY, READY after archived')
+
+        StatsService.update_stats_after_task_state_change(mapped_task.project_id, mapped_task.user_id, new_state,
+                                                          mapped_task.task_id)
+
+        if mapped_task.comment:
+            # Parses comment to see if any users have been @'d
+            MessageService.send_message_after_comment(mapped_task.user_id, mapped_task.comment, task.id,
+                                                      mapped_task.project_id)
+
+        task.unarchive_task(mapped_task.user_id, new_state, mapped_task.comment)
+
+        return task.as_dto_with_instructions(mapped_task.preferred_locale)
+
+
+    @staticmethod
     def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
         """ Unlocks the task and sets the task history appropriately """
         task = MappingService.get_task_locked_by_user(stop_task.project_id, stop_task.task_id, stop_task.user_id)
@@ -137,11 +181,27 @@ class MappingService:
         return task
 
     @staticmethod
+    def get_task_archived_by_user(project_id: int, task_id: int, user_id: int) -> Task:
+        """
+        Returns task specified by project id and task id if found and locked for mapping by user
+        :raises: MappingServiceError
+        """
+        task = MappingService.get_task(task_id, project_id)
+        if task is None:
+            raise MappingServiceError(f'Task {task_id} not found')
+        current_state = TaskStatus(task.task_status)
+        if current_state != TaskStatus.ARCHIVED:
+            raise MappingServiceError('Status must be ARCHIVED to unarchive')
+        if task.archived_by != user_id:
+            raise MappingServiceError('Attempting to unlock a task owned by another user')
+        return task
+
+    @staticmethod
     def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
         """ Adds the comment to the task history """
         task = Task.get(task_comment.task_id, task_comment.project_id)
         if task is None:
-            raise MappingServiceError(f'Task {task_id} not found')
+            raise MappingServiceError(f'Task {task_comment.task_id} not found')
 
         task.set_task_history(TaskAction.COMMENT, task_comment.user_id, task_comment.comment)
 

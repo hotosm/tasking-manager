@@ -97,7 +97,7 @@ def init_flask_restful_routes(app):
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
     from server.api.mapping_apis import MappingTaskAPI, LockTaskForMappingAPI, UnlockTaskForMappingAPI, StopMappingAPI,\
-        CommentOnTaskAPI, TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
+        CommentOnTaskAPI, TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI, ArchiveTaskAPI, UnarchiveTaskAPI 
     from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
         DeleteMultipleMessages, ResendEmailValidationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
@@ -161,6 +161,8 @@ def init_flask_restful_routes(app):
     api.add_resource(UndoMappingAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/undo-mapping')
     api.add_resource(MappingTaskAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>')
     api.add_resource(UnlockTaskForMappingAPI,       '/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping')
+    api.add_resource(ArchiveTaskAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/archive')
+    api.add_resource(UnarchiveTaskAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/unarchive')
     api.add_resource(StopMappingAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/stop-mapping')
     api.add_resource(CommentOnTaskAPI,              '/api/v1/project/<int:project_id>/task/<int:task_id>/comment')
     api.add_resource(LockTasksForValidationAPI,     '/api/v1/project/<int:project_id>/lock-for-validation')

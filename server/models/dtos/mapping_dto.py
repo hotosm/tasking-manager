@@ -27,6 +27,12 @@ class LockTaskDTO(Model):
     project_id = IntType(required=True)
     preferred_locale = StringType(default='en')
 
+class ArchiveTaskDTO(Model):
+    """ DTO used to archive a task for mapping """
+    user_id = IntType(required=True)
+    task_id = IntType(required=True)
+    project_id = IntType(required=True)
+    preferred_locale = StringType(default='en')
 
 class MappedTaskDTO(Model):
     """ Describes the model used to update the status of one task after mapping """
