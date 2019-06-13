@@ -72,6 +72,8 @@ You can check the [Dockerfile](../devops/docker/tasking-manager/Dockerfile) to h
   - `POSTGRES_DB`=tasking-manager-database-name
   - `POSTGRES_USER`=database-user-name
   - `POSTGRES_PASSWORD`=database-user-password
+  - `POSTGRES_ENDPOINT`=database-endpoint-can-be-localhost
+  - `POSTGRES_PORT`=database-port
   - `TM_SECRET`=define-freely-any-number-and-letter-combination
   - `TM_CONSUMER_KEY`=oauth-consumer-key-from-openstreetmap
   - `TM_CONSUMER_SECRET`=oauth-consumer-secret-key-from-openstreetmap
