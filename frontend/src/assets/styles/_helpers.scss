@@ -1,0 +1,205 @@
+.pull-right {
+  float: right !important;
+}
+
+.pull-center {
+  text-align: center;
+  margin: auto;
+}
+
+.error {
+  color: $danger-color;
+  background-color: rgba(234, 79, 84, .2);
+  width: 100%;
+  padding: .3em .5em;
+  border: 1px solid rgba(234, 79, 84, .4);
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 1.5em;
+  p {
+    margin-bottom: 0;
+    max-width: none;
+  }
+}
+
+.error--below {
+  margin-top: 2em;
+}
+
+.important-message {
+  color: $darker-red;
+  margin-bottom: 1em;
+  line-height: 1.5em;
+
+  &__icon {
+    margin-right: 0.25em;
+    vertical-align: text-bottom;
+    font-size: 1.5em;
+  }
+}
+
+/** Override the OSM design system **/
+
+hr {
+  width: 100%;
+  max-width: 50rem;
+}
+
+.tr-hover:hover {
+  background-color: rgba($medium-grey, 0.1);
+}
+
+.tr-darker {
+  background-color: rgba($medium-grey, 0.1);
+}
+
+.pagination {
+    list-style: none;
+  > li {
+    > a {
+      cursor: pointer;
+      padding: 0.8rem;
+    }
+    display: inline;
+    padding: 0.5rem;
+    a {
+      color: black;
+    }
+  }
+  > li.active {
+  }
+}
+
+/** For using Angular UI's typeahead dropdown **/
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, .15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+.dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+}
+
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
+  color: #fff;
+  text-decoration: none;
+  background-color: $primary-color;
+  outline: 0;
+}
+
+/** Bootstrap's badge class **/
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 0 7px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: $medium-grey;
+  border-radius: 10px;
+}
+
+.form__control__inline {
+  width: auto;
+  display: inline;
+}
+
+.button[disabled]{
+  cursor: not-allowed;
+}
+
+/* Float options */
+.inline { display: inline !important; }
+.block { display: block !important; }
+.inline-block { display: inline-block !important; }
+.none { display: none !important; }
+
+/* Position options */
+.fixed { position: fixed !important; }
+.absolute { position: absolute !important; }
+.relative { position: relative !important; }
+.static { position: static !important; }
+
+.top { top: 0 !important; }
+.right { right: 0 !important; }
+.left { left: 0 !important; }
+.bottom { bottom: 0 !important; }
+
+/* Border options */
+.border {
+  border-style: solid;
+  border-width: 1px;
+}
+.border-t {
+  border-top-style: solid;
+  border-top-width: 1px;
+}
+.border-r {
+  border-right-style: solid;
+  border-right-width: 1px;
+}
+.border-b {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+.border-l {
+  border-left-style: solid;
+  border-left-width: 1px;
+}
+
+/**
+ *Make a border zero pixels wide. Class set includes `*-mm`, `*-ml`, and `*-mxl` variations to target screen sizes.
+ */
+.border--0 { border-width: 0 !important; }
+.border-t--0 { border-top-width: 0 !important; }
+.border-r--0 { border-right-width: 0 !important; }
+.border-b--0 { border-bottom-width: 0 !important; }
+.border-l--0 { border-left-width: 0 !important; }
+
+/**
+ *Make a border two pixels wide.
+ */
+.border--2 { border-width: 2px !important; }
+.border-t--2 { border-top-width: 2px !important; }
+.border-r--2 { border-right-width: 2px !important; }
+.border-b--2 { border-bottom-width: 2px !important; }
+.border-l--2 { border-left-width: 2px !important; }
+
+/**
+ *Make a border dashed instead of solid.
+ */
+.border--dash { border-style: dashed !important; }
+
+/**
+* Border colors options
+*/
+.border-b--lightgray {
+  border-bottom-color: $lightgrey;
+}

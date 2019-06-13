@@ -9,6 +9,12 @@ client/app/taskingmanager.config.js
 client/package-lock.json
 client/yarn.lock
 
+# New frontend #
+frontend/node_modules/
+frontend/assets/styles/
+frontend/package-lock.json
+frontend/yarn.lock
+
 # Ignore dist folder as this contains the minimized build for deploy
 server/web/static/dist
 server/web/static/dist/

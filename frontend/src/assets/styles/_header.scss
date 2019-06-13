@@ -1,0 +1,56 @@
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+}
+
+header {
+  grid-template-rows: 2em 4em;
+  grid-row-gap: 1em;
+  grid-template-areas:
+    "l1 l1 l1 l1 l1 l1 r1 r1 r1 r1 r1 r1"
+    "l2 l2 l2 c c c c c r2 r2 r2 r2";
+}
+
+.header-slogan {
+  grid-area: l1;
+  text-align: left;
+}
+
+.header-org-link {
+  grid-area: r1;
+  text-align: right;
+}
+
+.header-brand {
+  grid-area: l2;
+}
+
+.header-menu {
+  grid-area: c;
+}
+
+.header-menu > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  float: left;
+}
+
+.header-menu > ul > li {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 24px;
+  text-transform: uppercase;
+  line-height: $line-height-l;
+  padding: 0 1rem;
+}
+
+.header-user {
+  grid-area: r2;
+}
+
+.tm-title {
+  font-size: 24px;
+  line-height: $line-height-l;
+  font-weight: $base-font-semi-bold;
+}
