@@ -1,10 +1,8 @@
-import psycopg2
-
 
 def rows_to_dict(rows, columns):
     out = []
     for row in rows:
-        r = {columns[idx]:row[idx] for idx in xrange(len(columns))}
+        r = {columns[idx]: row[idx] for idx in xrange(len(columns))}
         out.append(r)
 
     return out
@@ -12,7 +10,8 @@ def rows_to_dict(rows, columns):
 
 def get_project_name(cur, project_id):
     query = """
-        select project_name from junderwood.all_task_stats where project_id=%s limit 1;
+        select project_name from junderwood.all_task_stats where project_id=%s
+        limit 1;
     """
     cur.execute(query, (project_id,))
     rows = cur.fetchall()
@@ -61,7 +60,8 @@ def get_project_geometry(cur, project_id):
                         SELECT
                             t.id as task_id,
                             t.project_id as project_id,
-                            round(extract(epoch from ts.total_time)) as total_time,
+                            round(extract(epoch from ts.total_time))
+                                as total_time,
                             ts.new_ways_count,
                             ts.difficulty,
                             t.extra_properties::json ->> 'task_osm' as xml_path
@@ -124,7 +124,8 @@ def get_all_tasks(cur):
                             t.id as task_id,
                             t.project_id as project_id,
                             t.id || ':' || t.project_id as unique_key,
-                            round(extract(epoch from ts.total_time)) as total_time,
+                            round(extract(epoch from ts.total_time))
+                                as total_time,
                             ts.new_ways_count,
                             ts.difficulty,
                             t.extra_properties::json ->> 'task_osm' as xml_path
@@ -135,12 +136,33 @@ def get_all_tasks(cur):
                     JOIN project_translation p
                         ON t.project_id=p.id AND p.locale='en'
                     WHERE
-                        --- t.project_id in (SELECT DISTINCT(project_id) from task where task.date > now() - interval '20 days') AND
                         ts.task_type='Editing' AND
                         p.name ilike '%thailand%'
             ) as f
         ) as fc
     """)
+
+
+def get_finished_tasks(cur, num_days=1):
+    query = """
+        SELECT
+            tm.done_date, tm.task_id, tm.project_id
+        FROM junderwood.tm_report tm
+        JOIN task
+            ON tm.task_id=task.id and tm.project_id=task.project_id
+        WHERE tm.done_date is not null
+            AND tm.done_date > current_date - %s
+            AND task.extra_properties::json ->> 'task_osm' is not null
+        ORDER BY tm.done_date asc
+    """
+
+    cur.execute(query, (num_days,))
+    rows = cur.fetchall()
+    return rows_to_dict(rows, [
+        'done_date',
+        'task_id',
+        'project_id'
+    ])
 
 
 def get_longest_edits(cur):
@@ -159,15 +181,19 @@ def get_longest_edits(cur):
                 row_number() over (
                     PARTITION BY split_part(t.project_name, '_', 1)
                     ORDER BY t.total_time DESC
-                )
+                ),
+                tes.data as edit_data
             from junderwood.all_task_stats t
             JOIN task
                 ON t.task_id=task.id and t.project_id=task.project_id
+            JOIN task_edit_stats tes
+                ON t.task_id=tes.task_id and t.project_id=tes.project_id
             WHERE
                 t.project_name like '%prod%' AND
                 t.task_type like 'Editing' AND
-                t.date > now() - interval '1 week' AND
-                t.total_time < '4 hour'
+                t.date > now() - interval '4 weeks' AND
+                t.total_time < '4 hour' AND
+                tes.data is not NULL
         )
         SELECT * from ranked WHERE row_number < 8
     """
@@ -183,12 +209,14 @@ def get_longest_edits(cur):
         'total_time',
         'date',
         'difficulty',
-        'task_osm'
+        'task_osm',
+        'rank',
+        'edit_data'
     ])
 
 
 def get_latest_xml(cur, base_xml):
-    ''' retrieves xml of latest edit'''
+    """retrieves xml of latest edit"""
     out = []
     cur.execute("""
         SELECT
@@ -215,13 +243,15 @@ def get_latest_xml(cur, base_xml):
 
 
 def get_edits(cur, base_xml, only_role_changes=False, include_data=False):
-    '''retrieves all map edits from the xml that share the same xml base path
+    """retrieves all map edits from the xml that share the same xml base path
 
     returns the edits asceding time order
 
     note: this is not the same as listing all the edits and is a better view
     into when each role is actually modifying the graph
-    '''
+    """
+    if not base_xml:
+        raise ValueError('base xml cannot be empty')
 
     edits_query = """
         select
@@ -277,7 +307,7 @@ def get_edits(cur, base_xml, only_role_changes=False, include_data=False):
 
 
 def extract_last_edits(edits):
-    '''the edit right before each role change'''
+    """the edit right before each role change"""
     out = []
     last_edit = edits[0]
 
@@ -301,7 +331,9 @@ def get_xmls(upload_ids, cur):
     out = []
     cur.execute("""
         SELECT upload_id, upload_time, split_part(permalink, '/', 1), data
-        from osm_xml_uploads where upload_id IN %s
+        FROM osm_xml_uploads
+        WHERE upload_id IN %s
+        ORDER BY upload_id ASC
     """, (tuple(upload_ids),))
     rows = cur.fetchall()
     for row in rows:
@@ -337,7 +369,7 @@ def list_states(base_xml, cur):
     cur.execute("""
         SELECT
             ts.state, ts.user_id, ts.date
-        from junderwood.task_state ts
+        from task_state ts
         JOIN task t
         ON t.id=ts.task_id AND t.project_id=ts.project_id
         WHERE
@@ -345,7 +377,7 @@ def list_states(base_xml, cur):
         ORDER BY ts.date desc
     """, (base_xml,))
     rows = cur.fetchall()
-    STATES = [
+    states = [
         'init',
         'rejected',
         'editing done',
@@ -354,7 +386,7 @@ def list_states(base_xml, cur):
     ]
 
     for (state, user_id, date) in rows:
-        print '{}\t{}\t{}'.format(date.isoformat(), user_id, STATES[state])
+        print '{}\t{}\t{}'.format(date.isoformat(), user_id, states[state])
 
 
 def get_task_osm_xml(task_id, project_id, cur):
@@ -402,6 +434,6 @@ def get_task_details(base_xml, cur):
     }
 
 
-def get_task(base_xml, cur):
+def get_task_url(base_xml, cur):
     (id, project_id) = get_task_id(base_xml, cur)
     return 'https://tm.nsosm.com/project/{}#task/{}'.format(project_id, id)

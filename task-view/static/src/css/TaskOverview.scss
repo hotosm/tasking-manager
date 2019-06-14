@@ -1,0 +1,19 @@
+.task-overview {
+
+    td {
+        vertical-align: middle;
+    }
+    .task-cell {
+        h2 {
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+        h3 {
+            font-size: 12px;
+        }
+        span {
+            margin-right: 5px;
+            font-weight: bold;
+        }
+    }
+}

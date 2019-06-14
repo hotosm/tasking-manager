@@ -1,0 +1,14 @@
+.task-edit-graph {
+    width: 200px;
+    height: 30px;
+
+    circle {
+        fill: #eee;
+        // stroke: black;
+    }
+    text {
+        // fill: #222;
+        text-anchor: middle;
+        font-size: 10px;
+    }
+}

@@ -1,39 +1,44 @@
 import os
-import psycopg2
 
 from flask import Flask, jsonify, render_template, g
-
-from datetime import datetime
+from flask.json import JSONEncoder
+from db import get_northstar_db, get_osmtm_db
+from datetime import datetime, timedelta
 from edits import (
     get_edits, extract_last_edits, get_xmls, get_longest_edits,
-    get_task_id, get_task_osm_xml, get_task_details, get_latest_xml,
+    get_task_osm_xml, get_task_details, get_latest_xml,
     get_project_geometry, get_project_name, get_all_tasks, get_priority_areas,
     get_projects
 )
 
 app = Flask(__name__, static_url_path='/static')
-northstar_db_password = os.getenv('NORTHSTAR_DB_PASSWORD', None)
-osmtm_db_password = os.getenv('OSMTM_DB_PASSWORD', None)
+
+
+class CustomJSONEncoder(JSONEncoder):
+
+    def default(self, obj):
+        try:
+            if isinstance(obj, timedelta):
+                return obj.total_seconds()
+        except TypeError:
+            pass
+        return JSONEncoder.default(self, obj)
+
+
+app.json_encoder = CustomJSONEncoder
+
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        if os.environ['FLASK_ENV'] == 'production':
-            db = g._database = psycopg2.connect("""
-                dbname='northstar'
-                user='northstar'
-                host='northstar-pg-west-1.cwzginpfnhup.us-west-1.rds.amazonaws.com'
-                password={}}
-            """.format(northstar_db_password))
-        else:
-            db = g._database = psycopg2.connect("""
-                dbname='northstar'
-                user='northstar'
-                host='127.0.0.1'
-                port='5433'
-                password={}
-            """.format(northstar_db_password))
+        db = g.database = get_northstar_db()
+    return db
 
+
+def get_tm_db():
+    db = getattr(g, '_tm_database', None)
+    if db is None:
+        db = g.database = get_osmtm_db()
     return db
 
 
@@ -42,24 +47,6 @@ def get_server_prefix():
         return '/osm-xml-webapp/taskview'
     return ''
 
-
-def get_tm_db():
-    db = getattr(g, '_tm_database', None)
-    if db is None:
-        if os.environ['FLASK_ENV'] == 'production':
-            db = g._tm_database = psycopg2.connect("""
-                dbname='osmtm'
-                user='postgres'
-            """)
-        else:
-            db = g._database = psycopg2.connect("""
-                dbname='osmtm'
-                user='taskview'
-                host='127.0.0.1'
-                port='5434'
-                password={}
-            """.format(osmtm_db_password))
-    return db
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -73,12 +60,16 @@ def close_connection(exception):
 
 @app.route('/')
 def home():
-    db = get_tm_db().cursor()
-    rows = get_longest_edits(db)
     return render_template(
         'index.html',
-        rows=rows,
         SERVER_PREFIX=get_server_prefix())
+
+
+@app.route('/longest_tasks')
+def longest_tasks():
+    db = get_tm_db().cursor()
+    rows = get_longest_edits(db)
+    return jsonify(rows)
 
 
 @app.route('/project/<int:project_id>/geometry')
@@ -87,12 +78,12 @@ def project_geom(project_id):
     geom = get_project_geometry(tm_db, project_id)
     project_name = get_project_name(tm_db, project_id)
     return jsonify({
-            "project_id": project_id,
-            "project_name": project_name,
-            "geometry": geom
-            })
+        "project_id": project_id,
+        "project_name": project_name,
+        "geometry": geom
+    })
 
-#
+
 @app.route('/tasks')
 def tasks():
     tm_db = get_tm_db().cursor()
@@ -118,7 +109,6 @@ def project_overview():
         SERVER_PREFIX=get_server_prefix())
 
 
-
 @app.route('/project/<int:project_id>/task/<int:task_id>/json')
 def task_json(project_id, task_id):
     # returns information about the task and all the edits
@@ -142,7 +132,6 @@ def task_json(project_id, task_id):
 @app.route('/edit/<int:edit_id>')
 def edit_json(edit_id):
     return 'this the xml file endpoint'
-
 
 
 def mock_data():
@@ -173,23 +162,23 @@ def mock_data():
 
     return edits
 
+
 @app.route('/task/<string:xml>')
 def task_page_xml(xml):
-
-    # bypass db
     """
     edits
+
         role
         upload_time
         xml
     """
+    # bypass db
     # return render_template(
     #     'task.html',
     #     edits=mock_data(),
     #     task_number=1,
     #     project_number=1
     # )
-
     cur = get_db().cursor()
     tm_cur = get_tm_db().cursor()
 

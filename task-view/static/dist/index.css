@@ -131,7 +131,8 @@
 .infopanel .section {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #eee;
-}.thumb {
+}
+.thumb {
   display: inline-block;
   border: 2px solid #a9a9a9;
   width: 180px;
@@ -176,7 +177,8 @@
   line-height: 18px;
   left: 23px;
   position: absolute;
-}.header {
+}
+.header {
   position: absolute;
   height: 80px;
   width: 100%;
@@ -186,7 +188,8 @@
 
 .header h2 {
   margin-right: 20px;
-}.legend p {
+}
+.legend p {
   font-size: 14px;
   margin-bottom: 0.5rem;
 }
@@ -218,136 +221,39 @@
 
 .unimportant {
   color: #d5d5d5;
-}.unimportant {
+}
+.unimportant {
   color: #d5d5d5;
 }
 
 .selected-feature .table {
   font-size: 0.75rem;
   width: 100%;
-}#tooltip {
-  position: absolute;
-  color: white;
-  z-index: 100;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 10px;
+}
+.task-overview td {
+  vertical-align: middle;
+}
+.task-overview .task-cell h2 {
+  text-transform: uppercase;
+  font-size: 10px;
+}
+.task-overview .task-cell h3 {
+  font-size: 12px;
+}
+.task-overview .task-cell span {
+  margin-right: 5px;
+  font-weight: bold;
+}
+.task-edit-graph {
+  width: 200px;
+  height: 30px;
+}
+.task-edit-graph circle {
+  fill: #eee;
+}
+.task-edit-graph text {
+  text-anchor: middle;
+  font-size: 10px;
 }
 
-#project-overview .fullscreen-container {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-#project-overview .sidepane {
-  display: none;
-  position: absolute;
-  top: 80px;
-  bottom: 0px;
-  width: 400px;
-  padding: 5px;
-  box-sizing: border-box;
-  border-right: 1px solid #eee;
-}
-#project-overview .sidepane-header {
-  position: absolute;
-  top: 0;
-  height: 40px;
-  width: 100%;
-  padding: 10px 20px;
-  font-size: 12px;
-  border-bottom: 1px solid #eee;
-}
-#project-overview .sidepane-header .button-container {
-  margin-top: -3px;
-}
-#project-overview .sidepane-content {
-  position: absolute;
-  width: 100%;
-  top: 40px;
-  bottom: 0px;
-  padding: 10px;
-  overflow-y: scroll;
-}
-#project-overview .sidepane-content::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #F5F5F5;
-}
-#project-overview .sidepane-content::-webkit-scrollbar {
-  width: 6px;
-  background-color: #F5F5F5;
-}
-#project-overview .sidepane-content::-webkit-scrollbar-thumb {
-  background-color: #bfbfbf;
-}
-#project-overview .main {
-  position: absolute;
-  left: 0;
-  top: 80px;
-  right: 0;
-  bottom: 0;
-  /* padding: 20px; */
-  display: flex;
-  flex-direction: column;
-}
-#project-overview .main-header {
-  height: 40px;
-  order: 1;
-  padding-left: 10px;
-  padding-top: 6px;
-  font-size: 12px;
-  border-bottom: 1px solid #eee;
-}
-#project-overview .main-header .timestamp {
-  margin-top: 2px;
-}
-#project-overview .main-header label {
-  display: inline-block;
-  margin-top: 4px;
-}
-#project-overview .main-header .inline-buttons {
-  display: inline-block;
-  margin-right: 10px;
-}
-#project-overview .main-toolbar {
-  height: 40px;
-  order: 2;
-  padding-left: 10px;
-  padding-top: 6px;
-  border-bottom: 1px solid #eee;
-}
-#project-overview .main-content {
-  order: 3;
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-}
-#project-overview #vector-map {
-  flex: 1;
-}
-#project-overview .infopanel {
-  width: 350px;
-  background: white;
-  padding: 0;
-  border-left: 1px solid #eee;
-  overflow-y: scroll;
-}
-#project-overview .panel-section-title {
-  font-size: 14px;
-  text-transform: uppercase;
-  font-weight: bold;
-  background: #f7f7f7;
-  border-bottom: 1px solid #eee;
-  line-height: 24px;
-  padding-left: 1rem;
-}
-#project-overview .infopanel .section {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #eee;
-}
-#project-overview .map-container {
-  background: #333;
-  width: 100%;
-  height: 100%;
-}
+/*# sourceMappingURL=/index.css.map */
