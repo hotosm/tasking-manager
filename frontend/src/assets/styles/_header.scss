@@ -3,12 +3,22 @@
   grid-template-columns: repeat(12, 1fr);
 }
 
-header {
-  grid-template-rows: 2em 4em;
-  grid-row-gap: 1em;
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.top-header {
+  grid-template-areas: "l1 r1";
+}
+
+.nav {
   grid-template-areas:
-    "l1 l1 l1 l1 l1 l1 r1 r1 r1 r1 r1 r1"
     "l2 l2 l2 c c c c c r2 r2 r2 r2";
+}
+
+.nav > div {
+  margin: auto 0;
 }
 
 .header-slogan {
@@ -41,8 +51,7 @@ header {
   vertical-align: middle;
   font-size: 24px;
   text-transform: uppercase;
-  line-height: $line-height-l;
-  padding: 0 1rem;
+  padding: 0 1.1rem;
 }
 
 .header-user {

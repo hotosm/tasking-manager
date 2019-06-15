@@ -11,6 +11,7 @@ client/yarn.lock
 
 # New frontend #
 frontend/node_modules/
+frontend/build/
 frontend/assets/styles/
 frontend/package-lock.json
 frontend/yarn.lock
