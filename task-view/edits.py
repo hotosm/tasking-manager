@@ -275,6 +275,9 @@ def get_edits(cur, base_xml, only_role_changes=False, include_data=False):
             'role': permalink.split('/')[0]
         })
 
+    if not edits:
+        return []
+
     grouped_edits = {}
 
     # from the first three edits, pickout the machine edit
