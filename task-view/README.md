@@ -233,4 +233,4 @@ python xml-info.py --num-days 1 --stats --fileout stats.csv
 bash upload_task_edit_stats.sh stats.csv
 ```
 
-To run this process once per day, a daily script `daily_stats.sh` is provided that combines these commands.
+To run this process once per day, an example daily script `example_daily_stats.sh` is provided that combines these commands and can be called from a cronjob.
