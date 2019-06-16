@@ -61,9 +61,9 @@ will copy the directory to the aws server.
 
 ### Running server in production
 
-The server is run through gunicorn in production. Only the northstar db `NORTHSTAR_DB_PASSWORD` needs to provided in an environment variable as the tasking manager db shares the same user in production. The path to the gunicorn log file should also be supplied as `TASK_VIEW_LOG_FILE`.
+The server is run through gunicorn in production. Only the northstar db `NORTHSTAR_DB_PASSWORD` needs to provided in an environment variable as the tasking manager db shares the same user in production. The path to the gunicorn access and error logs supplied:
 
-`NORTHSTAR_DB_PASSWORD='xxx' TASK_VIEW_LOG_FILE=/home/andrewwong1/task-view.log bash runprod.sh`
+`NORTHSTAR_DB_PASSWORD='xxx' TASK_VIEW_ACCESS_LOG_FILE=/home/user/task-view.log TASK_VIEW_ERROR_LOG_FILE=/home/user/task-view.error.log bash runprod.sh`
 
 
 ## CLI tools
