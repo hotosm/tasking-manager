@@ -29,7 +29,7 @@ export NORTHSTAR_DB_PASSWORD=[password]
 export OSMTM_DB_PASSWORD=[password]
 ```
 
-To setup the tunnels for database access, you should also supply the environment variable for sshing into the aws host
+To setup the tunnels for database access in development mode, you should also supply the environment variable for sshing into the aws host
 
 ```
 export SSH_AWS_HOST=username@aws-tm
@@ -61,9 +61,9 @@ will copy the directory to the aws server.
 
 ### Running server in production
 
-The server is run through gunicorn in production. Only the northstar db `NORTHSTAR_DB_PASSWORD` needs to provided in an environment variable as the tasking manager db shares the same user in production
+The server is run through gunicorn in production. Only the northstar db `NORTHSTAR_DB_PASSWORD` needs to provided in an environment variable as the tasking manager db shares the same user in production. The path to the gunicorn log file should also be supplied as `TASK_VIEW_LOG_FILE`.
 
-`bash runprod.sh`
+`NORTHSTAR_DB_PASSWORD='xxx' TASK_VIEW_LOG_FILE=/home/andrewwong1/task-view.log bash runprod.sh`
 
 
 ## CLI tools
