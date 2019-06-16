@@ -219,3 +219,18 @@ $ python xml-info.py --stats --task 3 --project 1023
     }
 ]
 ```
+
+## Task Edit Stats
+
+Task View stores additional statistics at the edit level per task in the table `task_edit_stats`.
+
+The script `upload_task_edit_stats.sh` can be used to upload rows of stats in bulk to the table during an etl process. The script accepts a csv file as input with format `task_id, project_id, json`.
+
+As a convenience, `xml-info.py` can output this data file for a given number of days in the past.
+
+```
+python xml-info.py --num-days 1 --stats --fileout stats.csv
+bash upload_task_edit_stats.sh stats.csv
+```
+
+To run this process once per day, a daily script `daily_stats.sh` is provided that combines these commands.
