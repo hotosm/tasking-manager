@@ -4,6 +4,7 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { ORG_URL, ORG_NAME } from '../config';
 import logo from '../assets/img/main-logo.svg';
+import { Dropdown } from './dropdown';
 
 
 export class Header extends React.Component {
@@ -16,7 +17,7 @@ export class Header extends React.Component {
           </div>
           <div className="header-org-link">
             <a className="txt--red txt-m mr24" href={`http://${ORG_URL}`}>
-              {ORG_URL} <FontAwesomeIcon icon={faExternalLinkAlt}/>
+              {ORG_URL} <FontAwesomeIcon icon={faExternalLinkAlt} />
           </a>
         </div>
       </div>
@@ -37,7 +38,15 @@ export class Header extends React.Component {
             <li>Help</li>
           </ul>
         </nav>
-        <div className="header-user btn-group align-r">
+        <div className="header-user btn-group align-r mr24">
+          <Dropdown
+            onAdd={() => {}}
+            onRemove={() => {}}
+            onChange={() => {}}
+            value={'en'}
+            options={[{label: 'en'}, {label: 'pt'}]}
+            display={'Order by'}
+          />
           <button className="btn btn-tertiary">Log in</button>
           <button className="btn btn-secondary">Sign in</button>
         </div>

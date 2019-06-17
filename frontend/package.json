@@ -9,6 +9,7 @@
     "@fortawesome/react-fontawesome": "^0.1.4",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
+    "react-click-outside": "^3.0.1",
     "react-dom": "^16.8.6",
     "react-intl": "^2.9.0",
     "react-redux": "^7.0.3",
@@ -37,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-test-renderer": "^16.8.6"
   }
 }
