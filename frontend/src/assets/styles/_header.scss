@@ -54,6 +54,10 @@
   padding: 0 1.1rem;
 }
 
+.header-menu > ul > li > a {
+  color: $secondary-color;
+}
+
 .header-user {
   grid-area: r2;
 }
