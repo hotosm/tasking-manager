@@ -1,19 +1,11 @@
 .btn-group {
   line-height: 2.5 em;
   margin: auto 0;
-  a {
-    &:first-of-type {
-      margin-right: 1em;
-    }
-  }
 }
 
-.btn-group--sidebyside {
-  li {
-    display: inline-block;
-    margin-right: 1em;
-    margin-top: 1em;
-  }
+.btn-group--sidebyside > li, .btn-group--sidebyside > button, .btn-group--sidebyside > div {
+  display: inline-block;
+  margin-left: 1em;
 }
 
 
@@ -23,7 +15,7 @@
 
 button, .btn {
   font-family: $base-font-family;
-  border-radius: 1px;
+  border-radius: 2px;
   border-color: transparent;
   padding: .7em 1.4em;
   display: inline-block;
