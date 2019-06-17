@@ -48,7 +48,7 @@ class DropdownContent extends React.PureComponent {
   render() {
     return (
       <div
-        className="dropdown-content wmin96 round wmax240"
+        className={`dropdown-content wmin96 round ${this.props.widthClass || ''}`}
         style={{ display: 'block' }}
       >
         {this.props.options.map((i, k) =>
@@ -110,6 +110,7 @@ class DropdownContent extends React.PureComponent {
 export class _Dropdown extends React.PureComponent {
   props: {
     className: string,
+    widthClass: string,
     disabled: boolean,
     value: Array<Object>,
     onChange: (Array<Object>) => any,
@@ -144,21 +145,20 @@ export class _Dropdown extends React.PureComponent {
   };
   render() {
     return (
-      <div className={`dropdown mr3 pointer ${this.props.className || ''}`}>
+      <div className={`dropdown pointer border border--lightgray ${this.props.className || ''}`}>
         <Button
           icon={faChevronDown}
           onClick={this.toggleDropdown}
-          className="wmin96"
+          className={`${this.props.widthClass || ''} ${this.props.className || ''}`}
         >
-          <span>
-            {this.props.display}
-          </span>
+          {this.props.display}
         </Button>
         {this.state.display &&
           <DropdownContent
             {...this.props}
             eventTypes={['click', 'touchend']}
             toggleDropdown={this.toggleDropdown}
+            widthClass={this.props.widthClass}
           />}
       </div>
     );

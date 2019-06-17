@@ -5,6 +5,7 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { ORG_URL, ORG_NAME } from '../config';
 import logo from '../assets/img/main-logo.svg';
 import { Dropdown } from './dropdown';
+import { Button } from './button';
 
 
 export class Header extends React.Component {
@@ -38,17 +39,19 @@ export class Header extends React.Component {
             <li>Help</li>
           </ul>
         </nav>
-        <div className="header-user btn-group align-r mr24">
+        <div className="header-user btn-group btn-group--sidebyside align-r mr24">
           <Dropdown
             onAdd={() => {}}
             onRemove={() => {}}
             onChange={() => {}}
-            value={'en'}
-            options={[{label: 'en'}, {label: 'pt'}]}
-            display={'Order by'}
+            value={'English'}
+            options={[{label: 'English'}, {label: 'Portuguese (pt)'}]}
+            display={'Language'}
+            className="btn-tertiary"
+            widthClass="w160"
           />
-          <button className="btn btn-tertiary">Log in</button>
-          <button className="btn btn-secondary">Sign in</button>
+          <Button className="btn-tertiary">Log in</Button>
+          <Button className="btn-secondary">Sign in</Button>
         </div>
       </div>
     </header>

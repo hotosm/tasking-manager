@@ -6,10 +6,10 @@ export function Button({ onClick, children, className, icon }: Object) {
   return (
     <button
       onClick={onClick}
-      className={`${className || ''} btn`}
+      className={`${className || ''} btn wmin96`}
     >
-      {children}
-      {icon && <FontAwesomeIcon icon={icon} />}
+      {icon ? <span className="pull-left">{ children }</span> : children}
+      {icon && <FontAwesomeIcon icon={icon} className="ml18 txt-s pull-right"/>}
     </button>
   );
 }
