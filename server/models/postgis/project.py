@@ -28,6 +28,7 @@ from server.models.postgis.statuses import ProjectStatus, ProjectPriority, Mappi
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.user import User
+from server.models.postgis.campaign import Campaign, campaign_projects
 
 from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound, ST_Area, ST_Transform
 from server.services.grid.grid_service import GridService
@@ -78,7 +79,7 @@ class Project(db.Model):
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
     organisation_tag = db.Column(db.String, index=True)
     campaign_tag = db.Column(db.String, index=True)
-
+    
     # Editors
     mapping_editors = db.Column(ARRAY(db.Integer), default=[
                                                             Editors.ID.value,
@@ -107,6 +108,7 @@ class Project(db.Model):
     allowed_users = db.relationship(User, secondary=project_allowed_users)
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
+    campaign = db.relationship(Campaign, secondary=campaign_projects, backref='project')
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """

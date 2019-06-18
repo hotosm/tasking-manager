@@ -4,8 +4,10 @@ from shapely.geometry import Polygon, box
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResultsDTO, ListSearchResultDTO, \
     Pagination, ProjectSearchBBoxDTO
 from server.models.postgis.project import Project, ProjectInfo
+from server.models.postgis.campaign import Campaign
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
 from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform, ST_Area
+from server.services.campaign_service import CampaignService
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -66,7 +68,8 @@ class ProjectSearchService:
             # TODO would be nice to get this for an array rather than individually would be more efficient
             project_info_dto = ProjectInfo.get_dto_for_locale(project.id, search_dto.preferred_locale,
                                                               project.default_locale)
-
+            project_campaigns_dto = CampaignService.get_project_campaigns_as_dto(project.id)
+            
             list_dto = ListSearchResultDTO()
             list_dto.project_id = project.id
             list_dto.locale = project_info_dto.locale
@@ -75,7 +78,7 @@ class ProjectSearchService:
             list_dto.mapper_level = MappingLevel(project.mapper_level).name
             list_dto.short_description = project_info_dto.short_description
             list_dto.organisation_tag = project.organisation_tag
-            list_dto.campaign_tag = project.campaign_tag
+            list_dto.campaigns = project_campaigns_dto.campaigns
             list_dto.percent_mapped = Project.calculate_tasks_percent('mapped', project.total_tasks,
                                                                       project.tasks_mapped, project.tasks_validated,
                                                                       project.tasks_bad_imagery)
@@ -84,7 +87,7 @@ class ProjectSearchService:
                                                                          project.tasks_bad_imagery)
             list_dto.status = ProjectStatus(project.status).name
             list_dto.active_mappers = Project.get_active_mappers(project.id)
-
+            print(list_dto.campaigns)
             dto.results.append(list_dto)
 
         dto.pagination = Pagination(paginated_results)
@@ -99,12 +102,11 @@ class ProjectSearchService:
                                  Project.default_locale,
                                  Project.centroid.ST_AsGeoJSON().label('centroid'),
                                  Project.organisation_tag,
-                                 Project.campaign_tag,
                                  Project.tasks_bad_imagery,
                                  Project.tasks_mapped,
                                  Project.tasks_validated,
                                  Project.status,
-                                 Project.total_tasks).join(ProjectInfo) \
+                                 Project.total_tasks,).join(ProjectInfo) \
             .filter(ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])) \
             .filter(Project.private != True)
 
@@ -126,9 +128,9 @@ class ProjectSearchService:
         if search_dto.organisation_tag:
             query = query.filter(Project.organisation_tag == search_dto.organisation_tag)
 
-        if search_dto.campaign_tag:
-            query = query.filter(Project.campaign_tag == search_dto.campaign_tag)
-
+        if search_dto.campaign:
+            query = query.join(Campaign, Project.campaign).filter(Campaign.name==search_dto.campaign)
+    
         if search_dto.mapping_types:
             # Construct array of mapping types for query
             mapping_type_array = []

@@ -134,7 +134,7 @@ class ProjectSearchDTO(Model):
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     project_statuses = ListType(StringType, validators=[is_known_project_status])
     organisation_tag = StringType()
-    campaign_tag = StringType()
+    campaign = StringType()
     page = IntType(required=True)
     text_search = StringType()
     is_project_manager = BooleanType(required=True, default=False)
@@ -161,7 +161,7 @@ class ProjectSearchDTO(Model):
                 hashable_validation_editors = hashable_validation_editors + validation_editor
 
         return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, hashable_project_statuses,
-                     self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager, hashable_mapping_editors, hashable_validation_editors))
+                     self.organisation_tag, self.campaign, self.page, self.text_search, self.is_project_manager, hashable_mapping_editors, hashable_validation_editors))
 
 
 class ProjectSearchBBoxDTO(Model):
@@ -180,7 +180,7 @@ class ListSearchResultDTO(Model):
     mapper_level = StringType(required=True, serialized_name='mapperLevel')
     priority = StringType(required=True)
     organisation_tag = StringType(serialized_name='organisationTag')
-    campaign_tag = StringType(serialized_name='campaignTag')
+    campaigns = DictType(StringType, serialized_name='campaigns')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
     status = StringType(serialized_name='status')

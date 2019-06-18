@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('contributeController', ['$scope', '$location', '$anchorScroll', 'mapService', 'searchService', 'projectMapService', 'tagService', 'languageService', contributeController]);
+        .controller('contributeController', ['$scope', '$location', '$anchorScroll', 'mapService', 'searchService', 'projectMapService', 'campaignService', 'tagService', 'languageService', contributeController]);
 
-    function contributeController($scope, $location, $anchorScroll, mapService, searchService, projectMapService, tagService, languageService) {
+    function contributeController($scope, $location, $anchorScroll, mapService, searchService, projectMapService, campaignService, tagService, languageService) {
 
         var vm = this;
 
@@ -73,7 +73,7 @@
             var clickIdentify = true;
             projectMapService.addPopupOverlay(hoverIdentify, clickIdentify);
             setOrganisationTags();
-            setCampaignTags();
+            setCampaigns();
         }
 
         /**
@@ -133,7 +133,7 @@
                 searchParams.organisationTag = vm.searchOrganisation;
             }
             if (vm.searchCampaign) {
-                searchParams.campaignTag = vm.searchCampaign;
+                searchParams.campaign = vm.searchCampaign;
             }
             if (vm.searchText) {
                 searchParams.textSearch = vm.searchText;
@@ -196,11 +196,11 @@
         /**
          * Set campaign tags
          */
-        function setCampaignTags() {
-            var resultsPromise = tagService.getCampaignTags();
+        function setCampaigns() {
+            var resultsPromise = campaignService.getCampaigns();
             resultsPromise.then(function (data) {
                 // On success, set the projects results
-                vm.campaigns = data.tags;
+                vm.campaigns = data.campaigns;
             }, function () {
                 // On error
                 vm.campaigns = [];
@@ -214,7 +214,7 @@
         function setURLParams(searchParams) {
             $location.search('difficulty', searchParams.mapperLevel);
             $location.search('organisation', searchParams.organisationTag);
-            $location.search('campaign', searchParams.campaignTag);
+            $location.search('campaign', searchParams.campaign);
             $location.search('statuses', searchParams.projectStatuses);
             $location.search('types', searchParams.mappingTypes);
             $location.search('page', searchParams.page);

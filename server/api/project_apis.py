@@ -321,7 +321,7 @@ class ProjectSearchAPI(Resource):
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             search_dto.mapper_level = request.args.get('mapperLevel')
             search_dto.organisation_tag = request.args.get('organisationTag')
-            search_dto.campaign_tag = request.args.get('campaignTag')
+            search_dto.campaign = request.args.get('campaign')
             search_dto.page = int(request.args.get('page')) if request.args.get('page') else 1
             search_dto.text_search = request.args.get('textSearch')
 
@@ -346,6 +346,7 @@ class ProjectSearchAPI(Resource):
 
         try:
             results_dto = ProjectSearchService.search_projects(search_dto)
+            # print(results_dto.campaign)
             return results_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "No projects found"}, 404

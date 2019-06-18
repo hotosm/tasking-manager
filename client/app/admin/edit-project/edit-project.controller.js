@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'campaignService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
+    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, campaignService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
 
         var vm = this;
         vm.currentSection = '';
@@ -58,10 +58,12 @@
 
         // Tags
         vm.organisationTags = [];
-        vm.campaignsTags = [];
         vm.projectOrganisationTag = [];
-        vm.projectCampaignTag = [];
 
+        vm.projectCampaigns = [];
+        vm.projectCampaign = '';
+        vm.campaign = '';
+        vm.campaigns = [];
         vm.project = {};
         vm.project.defaultLocale = 'en';
         vm.descriptionLanguage = 'en';
@@ -143,8 +145,6 @@
             vm.map = mapService.getOSMMap();
             addInteractions();
             setOrganisationTags();
-            setCampaignTags();
-
             getProjectMetadata(id);
 
             vm.currentSection = 'description';
@@ -180,9 +180,6 @@
             vm.project.campaignTag = null;
             if (vm.projectOrganisationTag[0]) {
                 vm.project.organisationTag = vm.projectOrganisationTag[0].text;
-            }
-            if (vm.projectCampaignTag[0]) {
-                vm.project.campaignTag = vm.projectCampaignTag[0].text;
             }
             if (vm.projectLicense){
                 vm.project.licenseId = vm.projectLicense.licenseId;
@@ -224,6 +221,45 @@
                 });
             }
         };
+
+
+         /**
+         *  Delete campaign for the project
+         */
+        vm.deleteProjectCampaign = function(){   
+            var campaign_id = null;
+            Object.keys(vm.projectCampaigns).map(function(key) {
+                if(vm.projectCampaigns[key] === vm.projectCampaign)
+                    campaign_id = key;
+            });
+            
+            if(campaign_id != null){    
+                var resultsPromise = campaignService.deleteProjectCampaign(vm.project.projectId, campaign_id);
+                resultsPromise.then(function (data) {
+                    // On success, set the projects results
+                    vm.projectCampaigns = data.campaigns;
+                }, function () {
+                    // On error
+                });
+            }
+        }
+
+        /**
+         *  Set campaign for the project
+         */
+        vm.setCampaign = function(){   
+            var campaign_id = null;
+            Object.keys(vm.campaigns).map(function(key) {
+                if(vm.campaigns[key] === vm.campaign)
+                    campaign_id = key;
+            });
+            if(campaign_id != null){
+                var resultsPromise = campaignService.setCampaignForProject(campaign_id, vm.project.projectId);
+                resultsPromise.then(function(data){
+                    vm.projectCampaigns = data.campaigns;
+                })
+            }
+        }
 
         /**
          * Change the language of the description
@@ -624,17 +660,6 @@
         };
 
         /**
-         * Get campaign tags
-          * @returns {Array|*}
-          * @returns {Array|*}
-         */
-        vm.getCampaignTags = function(query){
-            return vm.campaignTags.filter(function (item) {
-                return (item && item.toLowerCase().indexOf(query.toLowerCase()) > -1);
-            });
-        };
-
-        /**
          * Get the user for a search value
          * @param searchValue
          */
@@ -689,6 +714,39 @@
         vm.enableAddUser = function(boolean){
             vm.addUserEnabled = boolean;
         };
+
+        /**
+         *  Get all the campaigns 
+        */
+        function getCampaign(){
+            var resultsPromise = campaignService.getCampaigns();
+            resultsPromise.then(function (data) {
+                // On success, set the projects results
+                vm.campaigns = data.campaigns;
+                console.log(vm.project);
+                console.log(data);
+            }, function () {
+                // On error
+                vm.campaigns = [];
+            });
+        }
+
+         /**
+         *  Get campaigns for the project
+         */
+        function getProjectCampaigns(){   
+            var resultsPromise = campaignService.getProjectCampaigns(vm.project.projectId);
+            resultsPromise.then(function (data) {
+                // On success, set the projects results
+                vm.projectCampaigns = data.campaigns;
+                console.log(vm.project);
+                console.log(vm.project.projectId);
+                console.log(vm.projectCampaigns);
+            }, function () {
+                // On error
+                vm.projectCampaigns = [];
+            });
+        }
 
         /**
          * Check the required fields for the default locale
@@ -877,11 +935,10 @@
                 populateEditorsForValidation();
                 addAOIToMap();
                 addPriorityAreasToMap();
+                getCampaign();
+                getProjectCampaigns();
                 if (vm.project.organisationTag) {
                     vm.projectOrganisationTag = [vm.project.organisationTag];
-                }
-                if (vm.project.campaignTag) {
-                    vm.projectCampaignTag = [vm.project.campaignTag];
                 }
             }, function(){
                 vm.errorReturningProjectMetadata = true;
@@ -1091,20 +1148,6 @@
             }, function () {
                 // On error
                 vm.organisationTags = [];
-            });
-        }
-
-        /**
-         * Set campaign tags
-         */
-        function setCampaignTags(){
-            var resultsPromise = tagService.getCampaignTags();
-            resultsPromise.then(function (data) {
-                // On success, set the projects results
-                vm.campaignTags = data.tags;
-            }, function () {
-                // On error
-                vm.campaignTags = [];
             });
         }
 

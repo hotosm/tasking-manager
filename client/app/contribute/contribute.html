@@ -164,9 +164,11 @@
                                                         <dd ng-show="!project.organisationTag">{{ 'N/A' | translate }}</dd>
                                                         <dd ng-show="project.organisationTag">{{ project.organisationTag }}</dd>
 
-                                                        <dt>{{ 'Campaign' | translate }}:</dt>
-                                                        <dd ng-show="!project.campaignTag">{{ 'N/A' | translate }}</dd>
-                                                        <dd ng-show="project.campaignTag">{{ project.campaignTag }}</dd>
+                                                        <dt>{{ 'Campaigns' | translate }}:</dt>
+                                                        <dd ng-show="!project.campaigns">{{ 'N/A' | translate }}</dd>
+                                                        <dd ng-show="project.campaigns" ng-repeat="campaign in project.campaigns">{{ campaign }}
+                                                            {{$last ? null : ',&nbsp;'}}
+                                                            </dd>
 
                                                         <dt>{{ 'Level' | translate }}:</dt>
                                                         <dd>{{ project.mapperLevel }}</dd>
