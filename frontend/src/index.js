@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { IntlProvider, addLocaleData } from 'react-intl';
+import { Router } from "react-router-dom";
+import { Provider } from "react-redux";
+import createHistory from "history/createHashHistory";
 import WebFont from 'webfontloader';
+import { IntlProvider, addLocaleData } from 'react-intl';
 import de from 'react-intl/locale-data/de'
 import en from 'react-intl/locale-data/en'
 import es from 'react-intl/locale-data/es'
@@ -11,7 +14,10 @@ import ko from 'react-intl/locale-data/ko'
 import pt from 'react-intl/locale-data/pt'
 
 import App from './App';
+import { store } from './store';
 import * as serviceWorker from './serviceWorker';
+
+const history = createHistory();
 
 WebFont.load({
   google: {
@@ -29,13 +35,17 @@ export const ConnectedIntl = props => (
 );
 
 ReactDOM.render(
-  <ConnectedIntl locale={'pt'} >
-    <App />
-  </ConnectedIntl>,
+  <Provider store={store}>
+    <Router history={history}>
+      <ConnectedIntl locale={'pt'} >
+        <App />
+      </ConnectedIntl>
+    </Router>
+  </Provider>,
   document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+serviceWorker.register();
