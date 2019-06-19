@@ -1632,6 +1632,16 @@
                     vm.projectData.idPresets
                 );
             }
+            else if (editor === 'rapid') {
+                editorService.launchRapid(
+                    center,
+                    changesetComment,
+                    imageryUrl,
+                    vm.projectData.projectId,
+                    vm.getSelectTaskIds()
+                );
+            }
+
             else if (editor === 'potlatch2') {
                 editorService.launchPotlatch2Editor(center);
             }
