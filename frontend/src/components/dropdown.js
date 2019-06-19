@@ -71,24 +71,25 @@ class DropdownContent extends React.PureComponent {
                   target={'_blank'}
                   href={i.href}
                   onClick={this.props.toggleDropdown}
-                  className={`txt-nowrap flex-child--grow cursor-pointer color-gray ${this.isActive(
-                    i
-                  )
-                    ? 'is-active txt-bold'
-                    : ''}`}
+                  className={
+                    `txt-nowrap flex-child--grow cursor-pointer color-gray ${this.isActive(
+                      i
+                    ) && 'is-active txt-bold'}`
+                  }
                 >
                   {i.label}
                 </a>
               : <a
                   onClick={this.props.toggleDropdown}
-                  className={`txt-nowrap flex-child--grow cursor-pointer color-gray ${this.isActive(
+                  className={
+                    `txt-nowrap flex-child--grow cursor-pointer color-gray ${this.isActive(
                     i
-                  )
-                    ? 'is-active txt-bold'
-                    : ''}`}
+                  ) && 'is-active txt-bold'}`
+                }
                 >
                   {i.label}
-                </a>}
+                </a>
+            }
             {this.props.deletable &&
               <a
                 onClick={e => {
