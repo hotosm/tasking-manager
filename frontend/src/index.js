@@ -2,22 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from "react-router-dom";
 import { Provider } from "react-redux";
-import createHistory from "history/createHashHistory";
+import { createHashHistory } from "history";
 import WebFont from 'webfontloader';
 import { IntlProvider, addLocaleData } from 'react-intl';
-import de from 'react-intl/locale-data/de'
-import en from 'react-intl/locale-data/en'
-import es from 'react-intl/locale-data/es'
-import fr from 'react-intl/locale-data/fr'
-import ja from 'react-intl/locale-data/ja'
-import ko from 'react-intl/locale-data/ko'
-import pt from 'react-intl/locale-data/pt'
+import de from 'react-intl/locale-data/de';
+import en from 'react-intl/locale-data/en';
+import es from 'react-intl/locale-data/es';
+import fr from 'react-intl/locale-data/fr';
+import ja from 'react-intl/locale-data/ja';
+import ko from 'react-intl/locale-data/ko';
+import pt from 'react-intl/locale-data/pt';
 
 import App from './App';
 import { store } from './store';
 import * as serviceWorker from './serviceWorker';
 
-const history = createHistory();
+const history = createHashHistory();
 
 WebFont.load({
   google: {
@@ -27,7 +27,7 @@ WebFont.load({
   }
 });
 
-addLocaleData([...en, ...fr, ...es, ...de, ...ja, ...ko, ...pt])
+addLocaleData([...en, ...fr, ...es, ...de, ...ja, ...ko, ...pt]);
 export const ConnectedIntl = props => (
   <IntlProvider key={props.locale} locale={props.locale} messages={props.messages}>
     {props.children}
