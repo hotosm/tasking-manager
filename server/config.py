@@ -2,6 +2,7 @@ import logging
 import os
 from dotenv import load_dotenv
 
+
 class EnvironmentConfig:
     """ Base class for configuration. """
     """ Most settings can be defined through environment variables. """
@@ -13,7 +14,7 @@ class EnvironmentConfig:
     APP_BASE_URL = os.getenv('TM_APP_BASE_URL', 'http://127.0.0.1:5000')
     
     # The default tag used in the OSM changeset comment
-    DEFAULT_CHANGESET_COMMENT = os.getenv('TM_DEFAULT_CHANGESET_COMMENT', '#tm-project')
+    DEFAULT_CHANGESET_COMMENT = os.getenv('TM_DEFAULT_CHANGESET_COMMENT', None)
     
     # The address to use as the sender on auto generated emails
     EMAIL_FROM_ADDRESS = os.getenv('TM_EMAIL_FROM_ADDRESS', None)
