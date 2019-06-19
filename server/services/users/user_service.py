@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 from flask import current_app
-from sqlalchemy import func
+from sqlalchemy import func, or_, and_
 from functools import reduce
 import dateutil.parser
 import datetime
@@ -103,33 +103,48 @@ class UserService:
     def get_tasks_dto(user_id: int, 
                       min_action_date: datetime.datetime = None,
                       max_action_date: datetime.datetime = None,
-                      status: str = None, 
+                      sort_by: str = None, 
+                      contribution_type: str = None, 
                       project_id: int = None) -> TaskDTOs:
         user = UserService.get_user_by_id(user_id)
-        base_query = TaskHistory.query.with_entities(
-                          TaskHistory.task_id,
-                          func.count(TaskHistory.task_id)).group_by(TaskHistory.task_id)
+        base_query = TaskHistory.query.with_entities(TaskHistory.project_id, 
+                                                     TaskHistory.task_id).filter(TaskHistory.user_id==user.id)
 
+        if project_id:
+            base_query = base_query.filter(TaskHistory.project_id==project_id)
+            
         if min_action_date:
             base_query = base_query.filter(TaskHistory.action_date>=min_action_date) 
 
         if max_action_date:
             base_query = base_query.filter(TaskHistory.action_date<=max_action_date) 
-            
+        
         task_dtos = TaskDTOs()
-        task_id_list = [a[0] for a in base_query.filter(TaskHistory.user_id==user.id).all()]
-        tasks = Task.get_tasks_query_from_ids(task_id_list)
-
-        if status:
-            tasks = tasks.filter_by(task_status=TaskStatus[status.upper()].value)
-            
-        if project_id:
-            tasks = tasks.filter_by(project_id=project_id)
-            
+        #validates sort by options
+        query_data = base_query.distinct('project_id', 'task_id').all()
         task_list = []
+        project_data = {}
+        for project_id, task_id in query_data:
+            task_id_list = project_data.get(project_id, [])
+            task_id_list.append(task_id)
+            project_data[project_id] = task_id_list
+
+        filters = []
+        for project_id, task_id_list in project_data.items():
+            filters.append(and_(Task.project_id==project_id, Task.id.in_(task_id_list)))
+
+        tasks = Task.query.join(TaskHistory).filter(or_(*filters))
+        
+        #get a query here, filter and let go
+        if contribution_type:
+            tasks = tasks.filter_by(task_status=TaskStatus[contribution_type.upper()].value)
+
+        if sort_by in ('project_id', 'action_date', 'task_id'):
+            tasks = tasks.order_by(sort_by)
 
         for task in tasks.all():
             task_list.append(task.as_dto())
+
         task_dtos.tasks = task_list
         return task_dtos
 

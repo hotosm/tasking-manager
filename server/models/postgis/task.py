@@ -437,18 +437,13 @@ class Task(db.Model):
     @staticmethod
     def get_tasks(project_id: int, task_ids: List[int]):
         """ Get all tasks that match supplied list and project_id """
-        return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
+        return Task.get_tasks_query(project_id, task_ids).all()
+
+    @staticmethod
+    def get_tasks_query(project_id: int, task_ids: List[int]):
+        """ Get all tasks that match supplied list and project_id """
+        return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids))
         
-    @staticmethod
-    def get_tasks_query_from_ids(task_ids: List[int]):
-        """ Get the query for tasks that match supplied list """
-        return Task.query.filter(Task.id.in_(task_ids))
-
-    @staticmethod
-    def get_tasks_from_ids(task_ids: List[int]):
-        """ Get all tasks that match supplied list """
-        return Task.query.filter(Task.id.in_(task_ids)).all()
-
     @staticmethod
     def get_all_tasks(project_id: int):
         """ Get all tasks for a given project """

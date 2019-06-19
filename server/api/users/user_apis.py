@@ -559,12 +559,6 @@ class UserTasksAPI(Resource):
               type: string
               default: Token sessionTokenHere==
             - in: query 
-              name: status 
-              description: Project Status filter 
-              required: false 
-              type: string
-              default: null 
-            - in: query 
               name: project_id 
               description: Project id 
               required: false 
@@ -582,6 +576,18 @@ class UserTasksAPI(Resource):
               required: false 
               type: string 
               default: null 
+            - in: query 
+              name: contribution_type 
+              description: contribution type to filter by 
+              required: false 
+              type: string 
+              default: null 
+            - in: query 
+              name: sort_by 
+              description: field to sort by, possible values: task_id, project_id, action_date
+              required: false 
+              type: string 
+              default: task_id 
         responses:
             200:
                 description: Mapped projects found
@@ -591,16 +597,22 @@ class UserTasksAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            status = request.args.get('status') 
-            project_id = int(request.args.get('project_id', 0)) 
+            project_id = int(request.args['project_id']) \
+                             if request.args.get('project_id') else None
             min_action_date = date_parse(request.args.get('min_action_date')) \
                                          if request.args.get('min_action_date') else None
             max_action_date = date_parse(request.args.get('max_action_date')) \
                                          if request.args.get('max_action_date') else None
+            contribution_type = request.args.get('contribution_type')
+            sort_by = request.args.get('sort_by', 'task_id')
+
+            if contribution_type not in ('MAPPED', 'VALIDATED'):
+                contribution_type = None
 
             tasks = UserService.get_tasks_dto(tm.authenticated_user_id, 
                                               project_id=project_id,
-                                              status=status,
+                                              sort_by=sort_by,
+                                              contribution_type=contribution_type,
                                               min_action_date=min_action_date,
                                               max_action_date=max_action_date
                                               )
