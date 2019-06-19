@@ -90,7 +90,7 @@
             resultsPromise.then(function (data) {
                 vm.messages = data.chat;
                 for (var i = 0; i < vm.messages.length; i++) {
-                    vm.messages[i].message = messageService.formatUserNamesToLink(vm.messages[i].message);
+                    vm.messages[i].message = messageService.formatShortCodes(vm.messages[i].message);
                 }
                 // set the location.hash to the id of the element to scroll to
                 $timeout(function () {
@@ -150,7 +150,7 @@
             resultsPromise.then(function (data) {
                 vm.messages = data.chat;
                 for (var i = 0; i < vm.messages.length; i++) {
-                    vm.messages[i].message = messageService.formatUserNamesToLink(vm.messages[i].message);
+                    vm.messages[i].message = messageService.formatShortCodes(vm.messages[i].message);
                 }
                 // set the location.hash to the id of the element to scroll to
                 $timeout(function () {

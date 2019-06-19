@@ -4,7 +4,7 @@ set -xev # halt script on error
 # demo and stage branch are set via environment variables in CircleCI
 # DEMO_BRANCH="testing branch"
 # STAGE_BRANCH="develop"
-PROD_BRANCH="master"
+PROD_BRANCH="kaart"
 
 DEMO_ENV="taskingmanager-demo"
 STAGE_ENV="taskingmanager-stage"
@@ -27,7 +27,7 @@ if [[ $CIRCLE_BRANCH =~ ^($DEMO_BRANCH|$STAGE_BRANCH|$PROD_BRANCH)$ ]];
   then
     # Install AWS requirements
     pip install -r requirements.aws.txt
-    printf '1\nn\n' | eb init taskingmanager --region us-east-1
+    printf '1\nn\n' | eb init kaart-tasking-manager --region us-west-2
   else
     echo "$CIRCLE_BRANCH does not match"
 fi

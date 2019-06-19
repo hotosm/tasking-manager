@@ -84,7 +84,7 @@ class TestTask(unittest.TestCase):
         test_task.x = 1
         test_task.y = 2
         test_task.zoom = 3
-        test_task.splittable = True
+        test_task.is_square = True
 
         # Act
         instructions = test_task.format_per_task_instructions('Test Url is http://test.com/{x}/{y}/{z}')
@@ -97,7 +97,7 @@ class TestTask(unittest.TestCase):
         test_task.x = 1
         test_task.y = 2
         test_task.zoom = 3
-        test_task.splittable = True
+        test_task.is_square = True
 
         # Act
         instructions = test_task.format_per_task_instructions('Test Url is http://test.com/{x}_{y}_{z}')
@@ -105,13 +105,13 @@ class TestTask(unittest.TestCase):
         # Assert
         self.assertEqual(instructions, 'Test Url is http://test.com/1_2_3')
 
-    def test_per_task_instructions_returns_instructions_when_no_dynamic_url_and_task_splittable(self):
+    def test_per_task_instructions_returns_instructions_when_no_dynamic_url_and_task_not_splittable(self):
         # Arrange
         test_task = Task()
         test_task.x = 1
         test_task.y = 2
         test_task.zoom = 3
-        test_task.splittable = True
+        test_task.is_square = False
 
         # Act
         instructions = test_task.format_per_task_instructions('Use map box')
@@ -123,6 +123,10 @@ class TestTask(unittest.TestCase):
         # Arrange
         test_task = Task()
         test_task.extra_properties = '{"foo": "bar"}'
+        test_task.x = 1
+        test_task.y = 2
+        test_task.zoom = 3
+        test_task.is_square = True
 
         # Act
         instructions = test_task.format_per_task_instructions('Foo is replaced by {foo}')

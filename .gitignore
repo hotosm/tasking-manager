@@ -1,6 +1,9 @@
 #Pycharm
 .idea/
 
+# Configuration file
+tasking-manager.env
+
 # Dev artifacts
 client/node_modules/
 client/assets/styles/css
@@ -33,3 +36,7 @@ venv_aws/
 
 # VSCode
 .vscode
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

@@ -65,7 +65,6 @@ class MappedProject(Model):
     tasks_validated = IntType(serialized_name='tasksValidated')
     status = StringType()
     centroid = BaseType()
-    aoi = BaseType()
 
 
 class UserMappedProjectsDTO(Model):

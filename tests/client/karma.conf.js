@@ -32,6 +32,7 @@ module.exports = function(config) {
       'node_modules/angular-chart.js/dist/angular-chart.js',
       'node_modules/ng-tags-input/build/ng-tags-input.js',
       'node_modules/ment.io/dist/mentio.js',
+      'node_modules/ng-table/bundles/ng-table.js',
       'node_modules/angular-translate/dist/angular-translate.js',
       'node_modules/angular-translate/dist/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
       'node_modules/angular-socialshare/dist/angular-socialshare.js',

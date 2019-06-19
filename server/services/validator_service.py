@@ -1,10 +1,12 @@
 from flask import current_app
 
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks, StopValidationDTO
+from server.models.dtos.stats_dto import Pagination
+from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, MappedTasks, StopValidationDTO, InvalidatedTask, InvalidatedTasks
 from server.models.postgis.statuses import ValidatingNotAllowed
-from server.models.postgis.task import Task, TaskStatus, TaskHistory
+from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskInvalidationHistory
 from server.models.postgis.utils import NotFound, UserLicenseError, timestamp
+from server.models.postgis.project_info import ProjectInfo
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
@@ -194,6 +196,43 @@ class ValidatorService:
         """ Get all mapped tasks on the project grouped by user"""
         mapped_tasks = Task.get_mapped_tasks_by_user(project_id)
         return mapped_tasks
+
+    @staticmethod
+    def get_user_invalidated_tasks(as_validator, username: str, preferred_locale: str,
+                                   closed=None, project_id=None,
+                                   page=1, page_size=10,
+                                   sort_by="updated_date", sort_direction="desc") -> InvalidatedTasks:
+        """ Get invalidated tasks either mapped or invalidated by the user """
+        user = UserService.get_user_by_username(username)
+        query = TaskInvalidationHistory.query.filter_by(invalidator_id=user.id) if as_validator else \
+                TaskInvalidationHistory.query.filter_by(mapper_id=user.id)
+
+        if closed is not None:
+            query = query.filter_by(is_closed=closed)
+
+        if project_id is not None:
+            query = query.filter_by(project_id=project_id)
+
+        results = query.order_by(sort_by + " " + sort_direction).paginate(page, page_size, True)
+
+        project_names = {}
+        invalidated_tasks_dto = InvalidatedTasks()
+        for entry in results.items:
+            dto = InvalidatedTask()
+            dto.task_id = entry.task_id
+            dto.project_id = entry.project_id
+            dto.history_id = entry.invalidation_history_id
+            dto.closed = entry.is_closed
+            dto.updated_date = entry.updated_date
+
+            if not dto.project_id in project_names:
+                project_names[dto.project_id] = ProjectInfo.get_dto_for_locale(dto.project_id, preferred_locale).name
+            dto.project_name = project_names[dto.project_id]
+
+            invalidated_tasks_dto.invalidated_tasks.append(dto)
+
+        invalidated_tasks_dto.pagination = Pagination(results)
+        return invalidated_tasks_dto
 
     @staticmethod
     def invalidate_all_tasks(project_id: int, user_id: int):

@@ -315,5 +315,60 @@
                 </div>
             </div>
         </div>
+        <div class="section-container">
+            <div class="section__body section__body--secondary">
+                <div class="inner">
+                    <h2>{{ profileCtrl.isOwnProfile() ? ('Your' | translate) : profileCtrl.username + "'s" }} {{ 'Invalidated Tasks' | translate
+ }}</h2>
+                    <div class="profile-invalidated-tasks-list">
+                        <table ng-table="profileCtrl.invalidatedTasksAsMapperTableSettings" class="table">
+                            <tr ng-repeat="invalidatedTask in $data">
+                                <td title="'Project' | translate" sortable="'projectId'">
+                                    <a ng-href="/project/{{ invalidatedTask.projectId }}">
+                                        {{ invalidatedTask.projectName }}
+                                    </a>
+                                </td>
+                                <td title="'Task' | translate">
+                                  <a ng-href="/project/{{ invalidatedTask.projectId }}?task={{ invalidatedTask.taskId }}&history={{ invalidatedTask.historyId }}">
+                                        {{ 'Task' | translate }} {{ invalidatedTask.taskId }}
+                                    </a>
+                                </td>
+                                <td title="'State' | translate" filter="{closed: 'select'}"
+                                    filter-data="profileCtrl.mapperClosedFilterOptions">
+                                    {{ (invalidatedTask.closed ? 'Closed' : 'Open') | translate }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                  <h2>{{ 'Tasks' | translate }} {{ profileCtrl.isOwnProfile() ? 'You' : profileCtrl.username }} {{ 'Invalidated' | translate}}</h2>
+                    <div class="profile-invalidated-tasks-list">
+                        <table ng-table="profileCtrl.invalidatedTasksAsValidatorTableSettings" class="table">
+                            <tr ng-repeat="invalidatedTask in $data">
+                                <td title="'Project' | translate" sortable="'projectId'">
+                                    <a ng-href="/project/{{ invalidatedTask.projectId }}">
+                                        {{ invalidatedTask.projectName }}
+                                    </a>
+                                </td>
+                                <td title="'Task' | translate">
+                                  <a ng-href="/project/{{ invalidatedTask.projectId }}?task={{ invalidatedTask.taskId }}&history={{ invalidatedTask.historyId }}">
+                                        {{ 'Task' | translate }} {{ invalidatedTask.taskId }}
+                                    </a>
+                                </td>
+                                <td title="'State' | translate" filter="{closed: 'select'}"
+                                    filter-data="profileCtrl.validatorClosedFilterOptions">
+                                    {{ (invalidatedTask.closed ? 'Closed' : 'Open') | translate }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>

@@ -11,4 +11,11 @@
               ng-model="projectCtrl.comment"></textarea>
     <p>{{ projectCtrl.maxlengthComment - projectCtrl.comment.length }}
         {{ 'characters remaining' | translate }}</p>
+    <p><strong>{{ 'Tip' | translate }}:</strong> {{ 'You can use Markdown. (HTML is not allowed)' | translate }}</p>
+    <button class="button button--secondary button--small"
+            ng-click="projectCtrl.showPreviewComment = !projectCtrl.showPreviewComment">
+        {{ 'Preview' | translate }}
+    </button>
+    <p class="textblock--fulltext" ng-show="projectCtrl.showPreviewComment"
+       markdown-to-html="projectCtrl.formattedComment(projectCtrl.comment)"></p>
 </div>

@@ -80,7 +80,7 @@ class SwaggerDocsAPI(Resource):
                             zoom:
                                 type: integer
                                 default: 12
-                            splittable:
+                            isSquare:
                                 type: boolean
                                 default: true
             - schema:
