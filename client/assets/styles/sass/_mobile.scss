@@ -8,6 +8,9 @@
   background: #d34143;
   color: white;
   text-align: center;
+  .button--outline--white:hover {
+    color: #d34143;
+  }
   @include media(large-up) {
   	display: none;
   }

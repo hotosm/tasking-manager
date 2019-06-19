@@ -90,10 +90,6 @@
   bottom: 6.5em;
 }
 
-.priority-areas {
-  left: 10em !important;
-}
-
 .map-container {
   position: relative;
 }
@@ -151,6 +147,7 @@
     height: 1.5em;
 }
 
-.ol-viewport {
+.map-container > .ol-viewport {
   min-height: 700px;
+  max-height: 700px;
 }

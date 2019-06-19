@@ -1,6 +1,9 @@
 #Pycharm
 .idea/
 
+# Configuration file
+tasking-manager.env
+
 # Dev artifacts
 client/node_modules/
 client/assets/styles/css
