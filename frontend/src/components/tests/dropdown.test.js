@@ -6,36 +6,59 @@ import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 
 
-it('dropdown behaviour', () => {
+const createTestDropdown = (options) => {
   const testElement = TestRenderer.create(
     <Dropdown
       value={'English'}
-      options={[{label: 'English'}, {label: 'Portuguese (pt)'}]}
+      options={options}
       display={'Language'}
       className="btn-tertiary"
       widthClass="w160"
     />
   );
-  const elementInstance = testElement.root;
-  // dropdown icon must be faChevronDown
+  return testElement.root;
+}
+
+
+it('dropdown icon is faChevronDown', () => {
+  let elementInstance = createTestDropdown(
+    [{label: 'English'}, {label: 'Portuguese (pt)'}]
+  );
   expect(elementInstance.findByType(Button).props.icon).toBe(faChevronDown);
-  // dropdown-content is not rendered before the user clicks on the button
+});
+
+
+it('dropdown-content is not rendered before the user clicks on the button', () => {
+  let elementInstance = createTestDropdown(
+    [{label: 'English'}, {label: 'Portuguese (pt)'}]
+  );
   expect(
     () => elementInstance.findByProps({'className': 'dropdown-content wmin96 round w160'})
-  ).toThrow(new Error('No instances found with props: {"className":"dropdown-content wmin96 round w160"}'));
+  ).toThrow(
+    new Error(
+      'No instances found with props: {"className":"dropdown-content wmin96 round w160"}'
+    )
+  );
+});
+
+
+it('dropdown-content show/hide with clicks', () => {
+  let elementInstance = createTestDropdown(
+    [{label: 'English'}, {label: 'Portuguese (pt)'}]
+  );
   elementInstance.findByType(Button).props.onClick();
-  // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps(
       {'className': 'dropdown-content wmin96 round w160'}
     ).type
   ).toBe('div');
-  // number of dropdown options should be 3
+  // number of dropdown options should be 2
   expect(
     elementInstance.findAllByProps(
       {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
     ).length
   ).toBe(2);
+  // dropdown options should be an <a> element
   expect(
     elementInstance.findAllByProps(
       {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
@@ -50,36 +73,19 @@ it('dropdown behaviour', () => {
   elementInstance.findByType(Button).props.onClick();
   expect(
     () => elementInstance.findByProps({'className': 'dropdown-content wmin96 round w160'})
-  ).toThrow(new Error('No instances found with props: {"className":"dropdown-content wmin96 round w160"}'));
-});
-
-
-it('dropdown-content disappear after click on option', () => {
-  const testElement = TestRenderer.create(
-    <Dropdown
-      value={'English'}
-      options={[{label: 'English'}, {label: 'Portuguese (pt)'}]}
-      display={'Language'}
-      className="btn-tertiary"
-      widthClass="w160"
-    />
-  );
-  const elementInstance = testElement.root;
-  // dropdown-content is not rendered before the user clicks on the button
-  expect(
-    () => elementInstance.findByProps({'className': 'dropdown-content wmin96 round w160'})
   ).toThrow(
     new Error(
       'No instances found with props: {"className":"dropdown-content wmin96 round w160"}'
     )
   );
+});
+
+
+it('dropdown-content disappear after click on option', () => {
+  const elementInstance = createTestDropdown(
+    [{label: 'English'}, {label: 'Portuguese (pt)'}]
+  );
   elementInstance.findByType(Button).props.onClick();
-  // dropdown-content must be rendered after the click
-  expect(
-    elementInstance.findByProps(
-      {'className': 'dropdown-content wmin96 round w160'}
-    ).type
-  ).toBe('div');
   elementInstance.findAllByProps(
     {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
   )[0].children[0].props.onClick();
@@ -95,30 +101,11 @@ it('dropdown-content disappear after click on option', () => {
 
 
 it('dropdown behaviour with href props', () => {
-  const testElement = TestRenderer.create(
-    <Dropdown
-      value={'A'}
-      options={[
-        {label: 'A', href: 'http://a.co'},
-        {label: 'B', href: 'http://b.co'},
-        {label: 'C', href: 'http://c.co'}
-      ]}
-      display={'Options'}
-      className="btn-tertiary"
-      widthClass="w160"
-    />
-  );
-  const elementInstance = testElement.root;
-  // dropdown icon must be faChevronDown
-  expect(elementInstance.findByType(Button).props.icon).toBe(faChevronDown);
-  // dropdown-content is not rendered before the user clicks on the button
-  expect(
-    () => elementInstance.findByProps({'className': 'dropdown-content wmin96 round w160'})
-  ).toThrow(
-    new Error(
-      'No instances found with props: {"className":"dropdown-content wmin96 round w160"}'
-    )
-  );
+  const elementInstance = createTestDropdown([
+    {label: 'A', href: 'http://a.co'},
+    {label: 'B', href: 'http://b.co'},
+    {label: 'C', href: 'http://c.co'}
+  ]);
   elementInstance.findByType(Button).props.onClick();
   // dropdown-content must be rendered after the click
   expect(
@@ -132,11 +119,13 @@ it('dropdown behaviour with href props', () => {
       {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
     ).length
   ).toBe(3);
+  // dropdown options type should be an <a>
   expect(
     elementInstance.findAllByProps(
       {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
     )[0].children[0].type
   ).toBe('a');
+  // a elements should have the href property filled
   expect(
     elementInstance.findAllByProps(
       {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
@@ -157,16 +146,6 @@ it('dropdown behaviour with multi enabled', () => {
     />
   );
   const elementInstance = testElement.root;
-  // dropdown icon must be faChevronDown
-  expect(elementInstance.findByType(Button).props.icon).toBe(faChevronDown);
-  // dropdown-content is not rendered before the user clicks on the button
-  expect(
-    () => elementInstance.findByProps({'className': 'dropdown-content wmin96 round w160'})
-  ).toThrow(
-    new Error(
-      'No instances found with props: {"className":"dropdown-content wmin96 round w160"}'
-    )
-  );
   elementInstance.findByType(Button).props.onClick();
   // dropdown-content must be rendered after the click
   expect(
