@@ -127,9 +127,9 @@ const Resources = {
         AutoScalingGroupName: cf.ref('TaskingManagerASG'),
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
-          TargetValue: 85,
+          TargetValue: 400,
           PredefinedMetricSpecification: {
-            PredefinedMetricType: 'ASGAverageCPUUtilization'
+            PredefinedMetricType: 'ALBRequestCountPerTarget'
           }
         },
         Cooldown: 300
