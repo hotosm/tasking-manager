@@ -1,3 +1,4 @@
+import sys
 import datetime
 import os
 import subprocess
@@ -325,7 +326,7 @@ class MappingService:
         osm_files = []
         for poly in os.listdir(dir):
             """ Extract from osm file into a file for each poly file """
-            task_cmd = './server/tools/osmosis/bin/osmosis -q --rx file={xml} enableDateParsing=no --bp completeWays=yes file={task_poly} --wx file={task_xml}'.format(
+            task_cmd = './server/tools/osmosis/bin/osmosis  --rx file={xml} enableDateParsing=no --bp completeWays=yes clipIncompleteEntities=true file={task_poly} --wx file={task_xml}'.format(
                     xml=os.path.join(dto.path, dto.file_name),
                     task_poly=os.path.join(dir, poly),
                     task_xml=os.path.join(dir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0]))
