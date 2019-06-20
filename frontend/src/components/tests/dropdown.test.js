@@ -58,12 +58,12 @@ it('dropdown-content show/hide with clicks', () => {
       {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
     ).length
   ).toBe(2);
-  // dropdown options should be an <a> element
+  // dropdown options should be an <span> element
   expect(
     elementInstance.findAllByProps(
       {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
     )[0].children[0].type
-  ).toBe('a');
+  ).toBe('span');
   expect(
     elementInstance.findAllByProps(
       {'className': 'flex-parent flex-parent--row flex-parent--center-cross py6 px12'}
