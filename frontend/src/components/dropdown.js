@@ -79,7 +79,7 @@ class DropdownContent extends React.PureComponent {
                 >
                   {i.label}
                 </a>
-              : <a
+              : <span
                   onClick={this.props.toggleDropdown}
                   className={
                     `txt-nowrap flex-child--grow cursor-pointer color-gray ${this.isActive(
@@ -88,10 +88,10 @@ class DropdownContent extends React.PureComponent {
                 }
                 >
                   {i.label}
-                </a>
+                </span>
             }
             {this.props.deletable &&
-              <a
+              <span
                 onClick={e => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -100,7 +100,7 @@ class DropdownContent extends React.PureComponent {
                 }}
               >
                 x
-              </a>}
+              </span>}
           </span>
         )}
       </div>
