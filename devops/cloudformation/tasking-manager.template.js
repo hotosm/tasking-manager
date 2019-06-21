@@ -127,9 +127,21 @@ const Resources = {
         AutoScalingGroupName: cf.ref('TaskingManagerASG'),
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
-          TargetValue: 400,
+          TargetValue: 500,
           PredefinedMetricSpecification: {
-            PredefinedMetricType: 'ALBRequestCountPerTarget'
+            PredefinedMetricType: 'ALBRequestCountPerTarget',
+            ResourceLabel: cf.join('/', [
+              cf.select(1,
+                cf.split('loadbalancer/',
+                  cf.select(5,
+                    cf.split(':', cf.ref("TaskingManagerLoadBalancer"))
+                  )
+                )
+              ),
+              cf.select(5,
+                cf.split(':', cf.ref("TaskingManagerTargetGroup"))
+              )
+            ])
           }
         },
         Cooldown: 300
