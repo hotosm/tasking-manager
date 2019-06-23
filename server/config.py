@@ -60,8 +60,8 @@ class EnvironmentConfig:
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
     SUPPORTED_LANGUAGES = {
-        'codes': os.getenv('TM_SUPPORTED_LANGUAGES_CODES', 'ar, cs, da, de, en, es, fa_IR, fi, fr, hu, gl, id, it, ja, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, vi, zh_TW'),
-        'languages': os.getenv('TM_SUPPORTED_LANGUAGES', 'Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文')
+        'codes': os.getenv('TM_SUPPORTED_LANGUAGES_CODES', 'ar, cs, da, de, en, es, fa_IR, fi, fr, hu, gl, id, it, ja, ko, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, vi, zh_TW'),
+        'languages': os.getenv('TM_SUPPORTED_LANGUAGES', 'Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, 한국어, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文')
     }
 
     # Connection to OSM authentification system
