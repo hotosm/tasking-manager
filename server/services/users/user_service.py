@@ -137,7 +137,7 @@ class UserService:
         
         #get a query here, filter and let go
         if contribution_type:
-            tasks = tasks.filter_by(task_status=TaskStatus[contribution_type.upper()].value)
+            tasks = tasks.filter(Task.task_status==TaskStatus[contribution_type.upper()].value)
 
         if sort_by in ('project_id', 'action_date', 'task_id'):
             tasks = tasks.order_by(sort_by)
