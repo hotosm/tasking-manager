@@ -574,7 +574,7 @@ class TaskAnnotationsAPI(Resource):
             return {"error": "No token supplied"}, 500
 
         try:
-            annotations = request.get_json() or {} 
+            annotations = request.get_json() or {}
         except DataError as e:
             current_app.logger.error(f'Error validating request: {str(e)}')
 

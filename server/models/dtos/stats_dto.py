@@ -9,9 +9,6 @@ class UserContribution(Model):
     username = StringType()
     mapped = IntType()
     validated = IntType()
-    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
-    time_spent_validating = IntType(serialized_name='timeSpentValidating')
-    total_time_spent = IntType(serialized_name='totalTimeSpent')
 
 
 class ProjectContributionsDTO(Model):
@@ -72,7 +69,7 @@ class CampaignStatsDTO(Model):
         super().__init__()
         self.tag = tup[0]
         self.projects_created = tup[1]
-    
+
     tag = StringType()
     projects_created = IntType(serialized_name='projectsCreated')
 
@@ -98,4 +95,3 @@ class HomePageStatsDTO(Model):
     # avg_completion_time = IntType(serialized_name='averageCompletionTime')
     organizations = ListType(ModelType(OrganizationStatsDTO))
     campaigns = ListType(ModelType(CampaignStatsDTO))
-    

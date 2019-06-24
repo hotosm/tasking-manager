@@ -18,7 +18,7 @@ import dateutil.parser
 import datetime
 
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
+from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO, ProjectStatsDTO, ProjectUserStatsDTO
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
@@ -362,6 +362,101 @@ class Project(db.Model):
 
         return admin_projects_dto
 
+    def get_project_user_stats(self, user_id: int) -> ProjectUserStatsDTO:
+        """Compute project specific stats for a given user"""
+        stats_dto = ProjectUserStatsDTO()
+        stats_dto.time_spent_mapping = 0
+        stats_dto.time_spent_validating = 0
+        stats_dto.total_time_spent = 0
+
+        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_MAPPING'
+                and user_id = {0} and project_id = {1};""".format(user_id, self.id)
+        total_mapping_time = db.engine.execute(query)
+        for time in total_mapping_time:
+            total_mapping_time = time[0]
+            if total_mapping_time:
+                stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
+                stats_dto.total_time_spent += stats_dto.time_spent_mapping
+
+        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                        WHERE action='LOCKED_FOR_VALIDATION'
+                        and user_id = {0} and project_id = {1};""".format(user_id, self.id)
+        total_validation_time = db.engine.execute(query)
+        for time in total_validation_time:
+            total_validation_time = time[0]
+            if total_validation_time:
+                stats_dto.time_spent_validating = total_validation_time.total_seconds()
+                stats_dto.total_time_spent += stats_dto.time_spent_validating
+
+        return stats_dto
+
+    def get_project_stats(self) -> ProjectStatsDTO:
+        """ Create Project Summary model for postgis project object"""
+        project_stats = ProjectStatsDTO()
+        project_stats.project_id = self.id
+        polygon = to_shape(self.geometry)
+        polygon_aea = transform(
+                            partial(
+                            pyproj.transform,
+                            pyproj.Proj(init='EPSG:4326'),
+                            pyproj.Proj(
+                                proj='aea',
+                                lat1=polygon.bounds[1],
+                                lat2=polygon.bounds[3])),
+                            polygon)
+        area = polygon_aea.area/1000000
+        project_stats.area = area
+        project_stats.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
+        project_stats.total_tasks = self.total_tasks
+        project_stats.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
+        project_stats.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
+        project_stats.percent_validated = int((self.tasks_validated / self.total_tasks) * 100)
+        project_stats.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
+        centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
+        project_stats.aoi_centroid = geojson.loads(centroid_geojson)
+        unique_mappers = TaskHistory.query.filter(
+                TaskHistory.action == 'LOCKED_FOR_MAPPING',
+                TaskHistory.project_id == self.id
+            ).distinct(TaskHistory.user_id).count()
+        unique_validators = TaskHistory.query.filter(
+                TaskHistory.action == 'LOCKED_FOR_VALIDATION',
+                TaskHistory.project_id == self.id
+            ).distinct(TaskHistory.user_id).count()
+        project_stats.total_time_spent = 0
+        project_stats.total_mapping_time = 0
+        project_stats.total_validation_time = 0
+        project_stats.average_mapping_time = 0
+        project_stats.average_validation_time = 0
+
+        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                 WHERE action='LOCKED_FOR_MAPPING'and project_id = {0};'''.format(self.id)
+        total_mapping_time = db.engine.execute(sql)
+        for row in total_mapping_time:
+            total_mapping_time = row[0]
+            if total_mapping_time:
+                total_mapping_seconds = total_mapping_time.total_seconds()
+                project_stats.total_mapping_time = total_mapping_seconds
+                project_stats.total_time_spent += project_stats.total_mapping_time
+                if unique_mappers:
+                    average_mapping_time = total_mapping_seconds/unique_mappers
+                    project_stats.average_mapping_time = average_mapping_time
+
+        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_VALIDATION' and project_id = {0};'''.format(self.id)
+        total_validation_time = db.engine.execute(sql)
+        for row in total_validation_time:
+            total_validation_time = row[0]
+            if total_validation_time:
+                total_validation_seconds = total_validation_time.total_seconds()
+                project_stats.total_validation_time = total_validation_seconds
+                project_stats.total_time_spent += project_stats.total_validation_time
+                if unique_validators:
+                    average_validation_time = total_validation_seconds/unique_validators
+                    project_stats.average_validation_time = average_validation_time
+
+        return project_stats
+
     def get_project_summary(self, preferred_locale) -> ProjectSummary:
         """ Create Project Summary model for postgis project object"""
         summary = ProjectSummary()
@@ -398,18 +493,6 @@ class Project(db.Model):
         summary.validator_level_enforced = self.enforce_validator_role
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
-        summary.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
-        unique_mappers = TaskHistory.query.filter(
-                TaskHistory.action == 'LOCKED_FOR_MAPPING',
-                TaskHistory.project_id == self.id
-            ).distinct(TaskHistory.user_id).count()
-        unique_validators = TaskHistory.query.filter(
-                TaskHistory.action == 'LOCKED_FOR_VALIDATION',
-                TaskHistory.project_id == self.id
-            ).distinct(TaskHistory.user_id).count()
-        summary.total_tasks = self.total_tasks
-        summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
-
         summary.entities_to_map = self.entities_to_map
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
@@ -422,37 +505,7 @@ class Project(db.Model):
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
-        summary.total_time_spent = 0
-        summary.total_mapping_time = 0
-        summary.total_validation_time = 0
-        summary.average_mapping_time = 0
-        summary.average_validation_time = 0
 
-        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                 WHERE action='LOCKED_FOR_MAPPING'and project_id = {0};'''.format(self.id)
-        total_mapping_time = db.engine.execute(sql)
-        for row in total_mapping_time:
-            total_mapping_time = row[0]
-            if total_mapping_time:
-                total_mapping_seconds = total_mapping_time.total_seconds()
-                summary.total_mapping_time = total_mapping_seconds
-                summary.total_time_spent += summary.total_mapping_time
-                if unique_mappers:
-                    average_mapping_time = total_mapping_seconds/unique_mappers
-                    summary.average_mapping_time = average_mapping_time
-
-        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_VALIDATION' and project_id = {0};'''.format(self.id)
-        total_validation_time = db.engine.execute(sql)
-        for row in total_validation_time:
-            total_validation_time = row[0]
-            if total_validation_time:
-                total_validation_seconds = total_validation_time.total_seconds()
-                summary.total_validation_time = total_validation_seconds
-                summary.total_time_spent += summary.total_validation_time
-                if unique_validators:
-                    average_validation_time = total_validation_seconds/unique_validators
-                    summary.average_validation_time = average_validation_time
 
         return summary
 

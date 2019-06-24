@@ -135,37 +135,12 @@ class StatsService:
 
         contrib_dto = ProjectContributionsDTO()
         for row in results:
-            if row[0]:
-                user_contrib = UserContribution()
-                user_contrib.username = row[1] if row[1] else row[4]
-                user_contrib.mapped = row[2] if row[2] else 0
-                user_contrib.validated = row[5] if row[5] else 0
-                user_contrib.total_time_spent = 0
-                user_contrib.time_spent_mapping = 0
-                user_contrib.time_spent_validating = 0
-
-                sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                        WHERE action='LOCKED_FOR_MAPPING'
-                        and user_id = {0} and project_id = {1};""".format(row[0], project_id)
-                total_mapping_time = db.engine.execute(sql)
-                for time in total_mapping_time:
-                    total_mapping_time = time[0]
-                    if total_mapping_time:
-                        user_contrib.time_spent_mapping = total_mapping_time.total_seconds()
-                        user_contrib.total_time_spent += user_contrib.time_spent_mapping
-
-                sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                        WHERE action='LOCKED_FOR_VALIDATION'
-                        and user_id = {0} and project_id = {1};""".format(row[0], project_id)
-                total_validation_time = db.engine.execute(sql)
-                for time in total_validation_time:
-                    total_validation_time = time[0]
-                    if total_validation_time:
-                        user_contrib.time_spent_validating = total_validation_time.total_seconds()
-                        user_contrib.total_time_spent += user_contrib.time_spent_validating
-
-                contrib_dto.user_contributions.append(user_contrib)
-
+            user_id = row[0] or row[3]
+            user_contrib = UserContribution()
+            user_contrib.username = row[1] if row[1] else row[4]
+            user_contrib.mapped = row[2] if row[2] else 0
+            user_contrib.validated = row[5] if row[5] else 0
+            contrib_dto.user_contributions.append(user_contrib)
         return contrib_dto
 
     @staticmethod
@@ -242,7 +217,6 @@ class StatsService:
             no_campaign_proj = CampaignStatsDTO(('Untagged', no_campaign_count))
             dto.campaigns.append(no_campaign_proj)
         dto.total_campaigns = unique_campaigns
-
 
         org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
             .group_by(Project.organisation_tag).all()
