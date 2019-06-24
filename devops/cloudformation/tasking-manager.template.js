@@ -127,9 +127,21 @@ const Resources = {
         AutoScalingGroupName: cf.ref('TaskingManagerASG'),
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
-          TargetValue: 85,
+          TargetValue: 500,
           PredefinedMetricSpecification: {
-            PredefinedMetricType: 'ASGAverageCPUUtilization'
+            PredefinedMetricType: 'ALBRequestCountPerTarget',
+            ResourceLabel: cf.join('/', [
+              cf.select(1,
+                cf.split('loadbalancer/',
+                  cf.select(5,
+                    cf.split(':', cf.ref("TaskingManagerLoadBalancer"))
+                  )
+                )
+              ),
+              cf.select(5,
+                cf.split(':', cf.ref("TaskingManagerTargetGroup"))
+              )
+            ])
           }
         },
         Cooldown: 300
@@ -418,6 +430,8 @@ const Resources = {
         AllocatedStorage: cf.ref('DatabaseSize'),
         BackupRetentionPeriod: 10,
         StorageType: 'gp2',
+        DBParameterGroupName: 'tm3-logging-postgres11',
+        EnableCloudwatchLogsExports: ['postgresql'],
         DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.m3.large', 'db.t2.small'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],

@@ -17,6 +17,10 @@ depends_on = None
 
 
 def upgrade():
+    # Remove all task ids in messages for tasks that don't exists anynmore
+    query = 'UPDATE messages SET task_id = NULL WHERE task_id NOT IN (SELECT id FROM tasks WHERE project_id = messages.project_id);'
+    op.execute(query)
+
     op.create_foreign_key('messages_tasks', 'messages', 'tasks', ['task_id', 'project_id'], ['id', 'project_id'])
 
 
