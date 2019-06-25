@@ -6,6 +6,8 @@ export function Button({ onClick, children, className, icon }: Object) {
   return (
     <button
       onClick={onClick}
+      aria-pressed="false"
+      focusindex="0"
       className={`${className || ''} btn wmin96`}
     >
       {icon ? <span className="pull-left">{ children }</span> : children}

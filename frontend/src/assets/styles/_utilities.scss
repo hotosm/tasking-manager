@@ -35,6 +35,34 @@
   visibility: hidden;
 }
 
+.hidden-on-xlarge-down {
+  @include media(xlarge-down) {
+    display: none !important;
+    visibility: hidden;
+  }
+}
+
+.hidden-on-large-up {
+  @include media(large-up) {
+    display: none !important;
+    visibility: hidden;
+  }
+}
+
+.hidden-on-large-down {
+  @include media(large-down) {
+    display: none !important;
+    visibility: hidden;
+  }
+}
+
+.hidden-on-xsmall-only {
+  @include media(xsmall-only) {
+    display: none !important;
+    visibility: hidden;
+  }
+}
+
 /* Hide only visually, but have it available for screenreaders */
 
 .visually-hidden {

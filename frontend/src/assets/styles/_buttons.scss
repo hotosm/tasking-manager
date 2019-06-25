@@ -3,9 +3,16 @@
   margin: auto 0;
 }
 
-.btn-group--sidebyside > li, .btn-group--sidebyside > button, .btn-group--sidebyside > div {
+.btn-group--sidebyside > li,
+.btn-group--sidebyside > a,
+.btn-group--sidebyside > button,
+.btn-group--sidebyside > svg,
+.btn-group--sidebyside > div {
   display: inline-block;
-  margin-left: 1em;
+  margin-left: 0.5em;
+  @include media(medium-down) {
+    margin-left: 0.2em !important;
+  }
 }
 
 
@@ -17,10 +24,13 @@ button, .btn {
   font-family: $base-font-family;
   border-radius: 2px;
   border-color: transparent;
-  padding: .7em 1.4em;
   display: inline-block;
+  padding: .7em 1.4em;
   font-weight: 600;
   cursor: pointer;
+  @include media(medium-down) {
+    padding: .7em 1.2em !important;
+  }
 }
 
 .btn-primary {
@@ -46,4 +56,28 @@ button, .btn {
 .btn-tertiary-disabled {
   background-color: #fff;
   color: $secondary-light-color;
+}
+
+.burger-menu {
+  cursor: pointer;
+  position: relative;
+  padding: 10px;
+  line-height: 20px;
+  background-color: #fff;
+}
+
+.burger-menu, .bar1,
+.bar2,
+.bar3 {
+  background-color: $secondary-color;
+  width: 25px;
+  height: 4px;
+  transition: 0.4s;
+}
+
+.bar1 {
+  margin-bottom: 4px;
+}
+.bar3 {
+  margin-top: 4px;
 }

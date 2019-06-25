@@ -5,6 +5,7 @@ import './assets/styles/index.scss';
 import { Header } from './components/header';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
+import { Login } from './views/login';
 
 function App() {
   return (
@@ -12,7 +13,8 @@ function App() {
       <Header />
       <div>
         <Route exact path="/" component={ Home } />
-        <Route exact path="/about" component={ AboutPage } />
+        <Route path="/about" component={ AboutPage } />
+        <Route path="/login" component={ Login } />
       </div>
     </div>
   );
