@@ -222,9 +222,9 @@ class ProjectAdminAPI(Resource):
                       campaignTag:
                           type: string
                           default: malaria
-                      organisationTag:
+                      organisation:
                           type: string
-                          default: red cross
+                          default: HOT
                       licenseId:
                           type: integer
                           default: 1
@@ -247,6 +247,11 @@ class ProjectAdminAPI(Resource):
                       taskCreationMode:
                           type: integer
                           default: GRID
+                      projectTeams:
+                        type: array
+                        items:
+                            schema:
+                                $ref: "#/definitions/ProjectTeams"
         responses:
             200:
                 description: Project updated
@@ -272,12 +277,12 @@ class ProjectAdminAPI(Resource):
             return {"Status": "Updated"}, 200
         except InvalidGeoJson as e:
             return {"Invalid GeoJson": str(e)}, 400
-        except NotFound:
-            return {"Error": "Project Not Found"}, 404
+        except NotFound as e:
+            return {"Error": str(e) or "Project Not Found"}, 404
         except ProjectAdminServiceError as e:
             return {"error": str(e)}, 400
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f'Project POST - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 

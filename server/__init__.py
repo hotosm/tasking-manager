@@ -100,6 +100,7 @@ def init_flask_restful_routes(app):
         CommentOnTaskAPI, TasksAsJson, TasksAsGPX, TasksAsOSM, UndoMappingAPI
     from server.api.messaging.message_apis import ProjectsMessageAll, HasNewMessages, GetAllMessages, MessagesAPI,\
         DeleteMultipleMessages, ResendEmailValidationAPI
+    from server.api.organisation_api import OrganisationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import ProjectAdminAPI, ProjectCommentsAPI, ProjectInvalidateAll,\
         ProjectValidateAll, ProjectMapAll, ProjectResetAll, ProjectResetBadImagery, ProjectsForAdminAPI,\
@@ -117,6 +118,7 @@ def init_flask_restful_routes(app):
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
+    from server.api.team_api import TeamAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
@@ -145,6 +147,9 @@ def init_flask_restful_routes(app):
     api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
     api.add_resource(DeleteMultipleMessages,        '/api/v1/messages/delete-multiple', methods=['DELETE'])
     api.add_resource(ResendEmailValidationAPI,      '/api/v1/messages/resend-email-verification')
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation', endpoint='create_organisation', methods=['PUT'])
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation/<string:organisation_name>', endpoint='get_organisation', methods=['GET'])
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation/<int:organisation_id>', methods=['POST', 'DELETE'])
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
@@ -175,6 +180,8 @@ def init_flask_restful_routes(app):
     api.add_resource(HomePageStatsAPI,              '/api/v1/stats/summary')
     api.add_resource(CampaignsTagsAPI,              '/api/v1/tags/campaigns')
     api.add_resource(OrganisationTagsAPI,           '/api/v1/tags/organisations')
+    api.add_resource(TeamAPI,                       '/api/v1/team', endpoint='create_team', methods=['PUT'])
+    api.add_resource(TeamAPI,                       '/api/v1/team/<int:team_id>', methods=['GET', 'POST', 'DELETE'])
     api.add_resource(MappingIssueCategoryAPI,       '/api/v1/mapping-issue-category', endpoint="create_mapping_issue_category", methods=['POST'])
     api.add_resource(MappingIssueCategoryAPI,       '/api/v1/mapping-issue-category/<int:category_id>', methods=['GET', 'PUT', 'DELETE'])
     api.add_resource(MappingIssueCategoriesAPI,     '/api/v1/mapping-issue-categories')
