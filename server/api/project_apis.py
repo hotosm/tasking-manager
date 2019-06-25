@@ -545,6 +545,8 @@ class TaskAnnotationsAPI(Resource):
                                 required: true
                             annotationSource:
                                 type: string
+                            annotationMarkdown:
+                                type: string
                             properties:
                                 description: JSON object with properties
         responses:

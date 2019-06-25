@@ -12,17 +12,19 @@ class TaskAnnotation(db.Model):
     task_id = db.Column(db.Integer, nullable=False)
     annotation_type = db.Column(db.String, nullable=False)
     annotation_source = db.Column(db.String)
+    annotation_markdown = db.Column(db.String)
     updated_timestamp = db.Column(db.DateTime, nullable=False, default=timestamp)
     properties = db.Column(db.JSON, nullable=False)
 
     __table_args__ = (
         db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_task_annotations'), db.Index('idx_task_annotations_composite', 'task_id', 'project_id'), {})
 
-    def __init__(self, task_id, project_id, annotation_type, annotation_source, properties):
+    def __init__(self, task_id, project_id, annotation_type, properties, annotation_source=None, annotation_markdown=None):
         self.task_id = task_id
         self.project_id = project_id
         self.annotation_type = annotation_type
         self.annotation_source = annotation_source
+        self.annotation_markdown = annotation_markdown
         self.properties = properties
 
     def create(self):
@@ -51,6 +53,7 @@ class TaskAnnotation(db.Model):
         task_annotation_dto.properties = self.properties
         task_annotation_dto.annotation_type = self.annotation_type
         task_annotation_dto.annotation_source = self.annotation_source
+        task_annotation_dto.annotation_markdown = self.annotation_markdown
         return task_annotation_dto
 
     @staticmethod
@@ -67,6 +70,7 @@ class TaskAnnotation(db.Model):
                 task_annotation_dto.properties = row.properties
                 task_annotation_dto.annotation_type = row.annotation_type
                 task_annotation_dto.annotation_source = row.annotation_source
+                task_annotation_dto.annotation_markdown = self.annotation_markdown
                 project_task_annotations_dto.tasks.append(task_annotation_dto)
 
             return project_task_annotations_dto
