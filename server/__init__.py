@@ -210,6 +210,15 @@ def add_api_endpoints(app):
     # Countries API endpoint
     from server.api.countries.resources import CountriesRestAPI
 
+    # Teams API endpoint
+    from server.api.team_api import (
+        TeamAPI,
+        ListTeamsAPI,
+        TeamMembersAPI,
+        TeamProjectsAPI,
+        DeleteMultipleTeamMembers,
+    )
+    
     # Notifications API endpoint
     from server.api.notifications.resources import (
         NotificationsRestAPI,
@@ -564,3 +573,15 @@ def add_api_endpoints(app):
         endpoint="check_application",
         methods=["PATCH"],
     )
+    api.add_resource(LanguagesAPI, "/api/v1/settings")
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation', endpoint='create_organisation', methods=['PUT'])
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation/<string:organisation_name>', endpoint='get_organisation', methods=['GET'])
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation/<int:organisation_id>', methods=['POST', 'DELETE'])
+    api.add_resource(TeamAPI, '/api/v1/team', endpoint='create_team', methods=['PUT'])
+    api.add_resource(TeamAPI, '/api/v1/team/<int:team_id>', methods=['GET', 'POST', 'DELETE'])
+    api.add_resource(ListTeamsAPI, '/api/v1/teams', methods=['GET'])
+    api.add_resource(TeamMembersAPI, '/api/v1/team/request-join', methods=['POST'])
+    api.add_resource(TeamMembersAPI, '/api/v1/team/leave', endpoint='leave_team', methods=['DELETE'])
+    api.add_resource(DeleteMultipleTeamMembers, '/api/v1/team/remove-user', endpoint='remove_user_from_team', methods=['DELETE'])
+    api.add_resource(TeamProjectsAPI, '/api/v1/team/project', methods=['POST', 'DELETE', 'PUT'])
+    
