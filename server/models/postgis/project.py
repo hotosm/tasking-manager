@@ -21,12 +21,14 @@ import datetime
 from server import db
 from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO, ProjectStatsDTO, ProjectUserStatsDTO
 from server.models.dtos.tags_dto import TagsDTO
+from server.models.postgis.organisation import Organisation
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.project_chat import ProjectChat
-from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode, Editors
+from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingLevel, TaskStatus, MappingTypes, TaskCreationMode, Editors, TeamRoles
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task, TaskHistory
+from server.models.postgis.team import Team
 from server.models.postgis.user import User
 
 from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound, ST_Area, ST_Transform
@@ -39,6 +41,23 @@ project_allowed_users = db.Table(
     db.Column('project_id', db.Integer, db.ForeignKey('projects.id')),
     db.Column('user_id', db.BigInteger, db.ForeignKey('users.id'))
 )
+
+
+class ProjectTeams(db.Model):
+    __tablename__ = 'project_teams'
+    team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), primary_key=True)
+    role = db.Column(db.Integer, nullable=False)
+
+    project = db.relationship(
+        'Project',
+        backref=db.backref('teams', cascade='all, delete-orphan')
+    )
+    team = db.relationship(
+        Team,
+        backref=db.backref('projects', cascade='all, delete-orphan')
+    )
+
 
 # cache mapper counts for 30 seconds
 active_mappers_cache = TTLCache(maxsize=1024, ttl=30)
@@ -74,9 +93,10 @@ class Project(db.Model):
     centroid = db.Column(Geometry('POINT', srid=4326))
     task_creation_mode = db.Column(db.Integer, default=TaskCreationMode.GRID.value, nullable=False)
 
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisations.id', name='fk_organisations'), index=True)
+
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
-    organisation_tag = db.Column(db.String, index=True)
     campaign_tag = db.Column(db.String, index=True)
 
     # Editors
@@ -107,6 +127,7 @@ class Project(db.Model):
     allowed_users = db.relationship(User, secondary=project_allowed_users)
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
+    organisation = db.relationship(Organisation, backref='projects')
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -252,11 +273,11 @@ class Project(db.Model):
         else:
             self.osmcha_filter_id = None
 
-        if project_dto.organisation_tag:
-            org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
-            self.organisation_tag = org_tag
-        else:
-            self.organisation_tag = None  # Set to none, for cases where a tag could have been removed
+        if project_dto.organisation:
+            org = Organisation.get_organisation_by_name(project_dto.organisation)
+            if org is None:
+                raise NotFound("Organisation does not exist")
+            self.organisation = org
 
         if project_dto.campaign_tag:
             camp_tag = Tags.upsert_campaign_tag(project_dto.campaign_tag)
@@ -286,6 +307,23 @@ class Project(db.Model):
             self.allowed_users = []  # Clear existing relationships then re-insert
             for user in project_dto.allowed_users:
                 self.allowed_users.append(user)
+
+        if project_dto.project_teams and self.get_project_teams() != self.teams:
+            # Clear out all current teams to update with new list
+            for team in self.teams:
+                db.session.delete(team)
+
+            for project_team in project_dto.project_teams:
+
+                team = Team.get(project_team['teamId'])
+
+                if team is None:
+                    raise NotFound(f'Team not found')
+
+                new_project_team = ProjectTeams()
+                new_project_team.project = self
+                new_project_team.team = team
+                new_project_team.role = TeamRoles[project_team['role']].value
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
@@ -498,7 +536,7 @@ class Project(db.Model):
         summary.mapper_level = MappingLevel(self.mapper_level).name
         summary.mapper_level_enforced = self.enforce_mapper_level
         summary.validator_level_enforced = self.enforce_validator_role
-        summary.organisation_tag = self.organisation_tag
+        summary.organisation_id = self.organisation_id
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
 
@@ -529,6 +567,18 @@ class Project(db.Model):
         """ Helper which returns the AOI geometry as a geojson object """
         aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
         return geojson.loads(aoi_geojson)
+
+    def get_project_teams(self):
+        """ Helper to return teams with members so we can handle permissions """
+        project_teams = []
+        for t in self.teams:
+            project_teams.append({
+                'name': t.team.name,
+                'role': t.role,
+                'members': [m.member.username for m in t.team.members]
+            })
+
+        return project_teams
 
     @staticmethod
     @cached(active_mappers_cache)
@@ -564,13 +614,14 @@ class Project(db.Model):
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
         base_dto.campaign_tag = self.campaign_tag
-        base_dto.organisation_tag = self.organisation_tag
+        base_dto.organisation_id = self.organisation_id
         base_dto.license_id = self.license_id
         base_dto.created = self.created
         base_dto.last_updated = self.last_updated
         base_dto.author = User().get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
+        base_dto.project_teams = self.get_project_teams()
 
         if self.private:
             # If project is private it should have a list of allowed users
@@ -626,23 +677,6 @@ class Project(db.Model):
         project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
 
         return project_tasks
-
-    @staticmethod
-    def get_all_organisations_tag(preferred_locale='en'):
-        query = db.session.query(Project.id,
-                                 Project.organisation_tag,
-                                 Project.private,
-                                 Project.status)\
-            .join(ProjectInfo)\
-            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
-            .filter(Project.private != True)\
-            .filter(Project.organisation_tag.isnot(None))\
-            .filter(Project.organisation_tag != '')
-        query = query.distinct(Project.organisation_tag)
-        query = query.order_by(Project.organisation_tag)
-        tags_dto = TagsDTO()
-        tags_dto.tags = [r[1] for r in query]
-        return tags_dto
 
     @staticmethod
     def get_all_campaign_tag(preferred_locale='en'):
