@@ -11,6 +11,7 @@ from server.models.dtos.project_dto import (
     ProjectContribsDTO,
     ProjectContribDTO,
 )
+from server.models.postgis.organisation import Organisation
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task, TaskHistory, TaskAction
@@ -263,3 +264,19 @@ class ProjectService:
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_username(username)
         return project.get_project_user_stats(user.id)
+    def get_project_teams(project_id: int):
+        project = ProjectService.get_project_by_id(project_id)
+
+        if project is None:
+            raise NotFound()
+
+        return project.teams
+
+    @staticmethod
+    def get_project_organisation(project_id: int) -> Organisation:
+        project = ProjectService.get_project_by_id(project_id)
+
+        if project is None:
+            raise NotFound()
+
+        return project.organisation

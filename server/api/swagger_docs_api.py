@@ -104,6 +104,25 @@ class SwaggerDocsAPI(Resource):
                     comment:
                         type: string
                         default: Work in progress
+            - schema:
+                id: ProjectTeams
+                properties:
+                    teamId:
+                        type: integer
+                        default: 1
+                    role:
+                        type: string
+                        default: MAPPER
+            - schema:
+                id: TeamMembers
+                properties:
+                    userName:
+                        type: string
+                        default: the_node_less_traveled
+                    function:
+                        type: string
+                        default: MANAGER
+
 
         """
         swag = swagger(current_app)

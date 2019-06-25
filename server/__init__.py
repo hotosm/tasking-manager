@@ -146,6 +146,7 @@ def add_api_endpoints(app):
         DeleteMultipleMessages,
         ResendEmailValidationAPI,
     )
+    from server.api.organisation_api import OrganisationAPI
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import (
         ProjectAdminAPI,
@@ -204,6 +205,14 @@ def add_api_endpoints(app):
         MappedTasksByUser,
         UserInvalidatedTasks,
     )
+    from server.api.team_api import (
+        TeamAPI,
+        ListTeamsAPI,
+        TeamMembersAPI,
+        TeamProjectsAPI,
+        DeleteMultipleTeamMembers,
+    )
+    from server.api.organisation_api import OrganisationAPI
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
@@ -396,3 +405,14 @@ def add_api_endpoints(app):
         SplitTaskAPI, "/api/v1/project/<int:project_id>/task/<int:task_id>/split"
     )
     api.add_resource(LanguagesAPI, "/api/v1/settings")
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation', endpoint='create_organisation', methods=['PUT'])
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation/<string:organisation_name>', endpoint='get_organisation', methods=['GET'])
+    api.add_resource(OrganisationAPI,               '/api/v1/organisation/<int:organisation_id>', methods=['POST', 'DELETE'])
+    api.add_resource(TeamAPI, '/api/v1/team', endpoint='create_team', methods=['PUT'])
+    api.add_resource(TeamAPI, '/api/v1/team/<int:team_id>', methods=['GET', 'POST', 'DELETE'])
+    api.add_resource(ListTeamsAPI, '/api/v1/teams', methods=['GET'])
+    api.add_resource(TeamMembersAPI, '/api/v1/team/request-join', methods=['POST'])
+    api.add_resource(TeamMembersAPI, '/api/v1/team/leave', endpoint='leave_team', methods=['DELETE'])
+    api.add_resource(DeleteMultipleTeamMembers, '/api/v1/team/remove-user', endpoint='remove_user_from_team', methods=['DELETE'])
+    api.add_resource(TeamProjectsAPI, '/api/v1/team/project', methods=['POST', 'DELETE', 'PUT'])
+    
