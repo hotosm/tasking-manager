@@ -233,6 +233,15 @@ class UserService:
         return False
 
     @staticmethod
+    def is_user_an_admin(user_id: int) -> bool:
+        """ Is the user an admin """
+        user = UserService.get_user_by_id(user_id)
+        if UserRole(user.role) == UserRole.ADMIN:
+            return True
+
+        return False
+
+    @staticmethod
     def get_mapping_level(user_id: int):
         """ Gets mapping level user is at"""
         user = UserService.get_user_by_id(user_id)
