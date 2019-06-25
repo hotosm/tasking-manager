@@ -107,8 +107,7 @@ class UserService:
                       contribution_type: str = None, 
                       project_id: int = None) -> TaskDTOs:
         user = UserService.get_user_by_id(user_id)
-        base_query = TaskHistory.query.with_entities(TaskHistory.project_id, 
-                                                     TaskHistory.task_id).filter(TaskHistory.user_id==user.id)
+        base_query = Task.query.join(TaskHistory).filter(TaskHistory.user_id==user.id)
 
         if project_id:
             base_query = base_query.filter(TaskHistory.project_id==project_id)
@@ -120,29 +119,16 @@ class UserService:
             base_query = base_query.filter(TaskHistory.action_date<=max_action_date) 
         
         task_dtos = TaskDTOs()
-        #validates sort by options
-        query_data = base_query.distinct('project_id', 'task_id').all()
         task_list = []
-        project_data = {}
-        for project_id, task_id in query_data:
-            task_id_list = project_data.get(project_id, [])
-            task_id_list.append(task_id)
-            project_data[project_id] = task_id_list
 
-        filters = []
-        for project_id, task_id_list in project_data.items():
-            filters.append(and_(Task.project_id==project_id, Task.id.in_(task_id_list)))
-
-        tasks = Task.query.join(TaskHistory).filter(or_(*filters))
-        
-        #get a query here, filter and let go
         if contribution_type:
-            tasks = tasks.filter(Task.task_status==TaskStatus[contribution_type.upper()].value)
+            #base_query = base_query.filter(Task.status==TaskStatus[contribution_type.upper()].value)
+            base_query = base_query.filter(TaskHistory.action_text==TaskStatus[contribution_type.upper()].name)
 
         if sort_by in ('project_id', 'action_date', 'task_id'):
-            tasks = tasks.order_by(sort_by)
+            base_query = base_query.order_by(sort_by)
 
-        for task in tasks.all():
+        for task in base_query.all():
             task_list.append(task.as_dto())
 
         task_dtos.tasks = task_list
