@@ -124,6 +124,9 @@ class UserService:
         if contribution_type:
             #base_query = base_query.filter(Task.status==TaskStatus[contribution_type.upper()].value)
             base_query = base_query.filter(TaskHistory.action_text==TaskStatus[contribution_type.upper()].name)
+        else:
+            default_statuses = [TaskStatus.BADIMAGERY.name, TaskStatus.MAPPED.name, TaskStatus.VALIDATED.name]
+            base_query = base_query.filter(TaskHistory.action_text.in_(default_statuses))
 
         if sort_by in ('project_id', 'action_date', 'task_id'):
             base_query = base_query.order_by(sort_by)
