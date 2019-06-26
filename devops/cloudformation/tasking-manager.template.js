@@ -430,7 +430,9 @@ const Resources = {
         AllocatedStorage: cf.ref('DatabaseSize'),
         BackupRetentionPeriod: 10,
         StorageType: 'gp2',
-        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.m3.large', 'db.t2.small'),
+        DBParameterGroupName: 'tm3-logging-postgres11',
+        EnableCloudwatchLogsExports: ['postgresql'],
+        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.m5.large', 'db.t2.small'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
     }
