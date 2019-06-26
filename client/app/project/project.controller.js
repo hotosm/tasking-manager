@@ -44,6 +44,7 @@
         vm.taskCommentError = false;
         vm.taskCommentErrorMessage = '';
         vm.wasAutoUnlocked = false;
+        vm.randomTaskSelectionError = false;
 
         //authorization
         vm.isAuthorized = false;
@@ -332,6 +333,10 @@
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
             }
+
+            if (vm.enforceRandomTaskSelection()) {
+                vm.randomTaskSelectionError = false;
+            }
         };
 
         vm.selectRandomTaskValidate = function () {
@@ -409,6 +414,9 @@
             vm.map.addInteraction(vm.selectInteraction);
             vm.selectInteraction.on('select', function (event) {
                 $scope.$apply(function () {
+                    if (vm.enforceRandomTaskSelection()) {
+                        vm.randomTaskSelectionError = true;
+                    }
                     var feature = event.selected[0];
                     onTaskSelection(feature);
                 });
@@ -591,6 +599,10 @@
                 if ($location.search().task) {
                     selectTaskById($location.search().task);
                 }
+
+                if (vm.projectData.enforceRandomTaskSelection && vm.user.role !== 'ADMIN' && vm.user.role !== 'PROJECT_MANAGER') {
+                    vm.randomTaskSelectionError = true;
+                }
             }, function () {
                 // project not returned successfully
                 vm.loaded = true;
@@ -750,6 +762,10 @@
             }
             // for each task in features, update source
         }
+
+        vm.enforceRandomTaskSelection = function() {
+            return vm.projectData && vm.projectData.enforceRandomTaskSelection && vm.user.role !== 'ADMIN' && vm.user.role !== 'PROJECT_MANAGER';
+        };
 
         /**
          * Updates the data for mapped tasks by user

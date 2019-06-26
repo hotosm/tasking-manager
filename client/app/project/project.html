@@ -262,7 +262,7 @@
                                                 role="alert">
                                             <p>{{ 'You cannot select tasks for mapping on this project because you do not have the required mapper experience level.' | translate }}</p>
                                         </div>
-                                        <div ng-show="projectCtrl.user && projectCtrl.userCanMap">
+                                        <div ng-show="projectCtrl.user && projectCtrl.userCanMap && !projectCtrl.enforceRandomTaskSelection()">
                                             <p>{{ 'Choose a task for mapping:' | translate }}</p>
 
                                             <dl class="definition-list--options">
@@ -282,6 +282,13 @@
                                                     <p>{{ 'There are no tasks currently available for mapping.' | translate }}</p>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div ng-show="projectCtrl.user && projectCtrl.userCanMap && projectCtrl.enforceRandomTaskSelection()">
+                                            <p>{{ 'You must randomly select tasks' | translate }}</p>
+                                            <button ng-click="projectCtrl.selectRandomTaskMap()"
+                                                    class="button pull-center">
+                                            {{ 'Select a random task' | translate }}
+                                            </button>
                                         </div>
                                         <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'"
                                                 class="alert alert--danger"
@@ -347,7 +354,7 @@
                                         </div>
                                         <div ng-hide="projectCtrl.taskLockError">
                                             <div ng-show="projectCtrl.selectedTaskData ">
-                                                <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
+                                                <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap && !projectCtrl.enforceRandomTaskSelection()"
                                                         class="alert alert--success"
                                                         role="alert">
                                                     <p>{{ 'This task is available for mapping.' | translate }}</p>
@@ -380,7 +387,7 @@
                                         </div>
                                         <!-- task action buttons -->
                                         <div class="form__group form__group--section">
-                                            <div>
+                                            <div ng-show="!(projectCtrl.enforceRandomTaskSelection() && projectCtrl.randomTaskSelectionError)">
                                                 <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
                                                         class="button button--large"
                                                         ng-click="projectCtrl.lockSelectedTaskMapping()">
@@ -393,7 +400,8 @@
                                             </div>
                                             <div>
                                                 <div class="button-group button-group--horizontal" role="group"
-                                                        aria-label="{{ 'Other options' | translate }}">
+                                                        aria-label="{{ 'Other options' | translate }}"
+                                                        ng-show="!projectCtrl.enforceRandomTaskSelection()">
                                                     <button ng-hide="projectCtrl.taskErrorMapping === 'none-available' || !projectCtrl.userCanMap"
                                                             ng-click="projectCtrl.selectRandomTaskMap()"
                                                             class="button button--achromic">
@@ -410,6 +418,13 @@
                                                     </button> -->
                                                 </div>
                                             </div>
+                                            <div ng-show="projectCtrl.randomTaskSelectionError">
+                                                <p class="error" role="alert">{{ 'Tasks must be randomly selected' | translate }}</p>
+                                                <button ng-click="projectCtrl.selectRandomTaskMap()"
+                                                        class="button pull-center">
+                                                {{ 'Select a random task' | translate }}
+                                                </button>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
