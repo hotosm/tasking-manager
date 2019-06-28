@@ -1,5 +1,5 @@
 from cachetools import TTLCache, cached
-from sqlalchemy import func
+from sqlalchemy import func, text
 from geoalchemy2.shape import to_shape
 from shapely.geometry import Polygon
 from shapely.ops import transform
@@ -259,21 +259,15 @@ class StatsService:
                 # current_app.logger.debug(total_area)
         # dto.total_area = total_area
 
-        tasks_mapped_area = 0
-        tasks_mapped_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 2"""
-        tasks_mapped_result = db.engine.execute(tasks_mapped_sql)
-        for rowproxy in tasks_mapped_result:
-            for tup in rowproxy:
-                tasks_mapped_area += tup
-        dto.total_mapped_area = tasks_mapped_area
+        tasks_mapped_sql = "select coalesce(sum(ST_Area(geometry)), 0) as sum from public.tasks where task_status = :task_status"
+        tasks_mapped_result = db.engine.execute(text(tasks_mapped_sql), task_status=TaskStatus.MAPPED.value)
 
-        tasks_validated_area = 0
-        tasks_validated_sql = """select sum(ST_Area(geometry)) from public.tasks where task_status = 4"""
-        tasks_validated_result = db.engine.execute(tasks_validated_sql)
-        for rowproxy in tasks_validated_result:
-            sum_proxy = [tup for tup in rowproxy if tup is not None]
-            tasks_validated_area += sum(sum_proxy)
-        dto.total_validated_area = tasks_validated_area
+        dto.total_mapped_area = tasks_mapped_result.fetchone()['sum']
+
+        tasks_validated_sql = "select coalesce(sum(ST_Area(geometry)), 0) as sum from public.tasks where task_status = :task_status"
+        tasks_validated_result = db.engine.execute(text(tasks_validated_sql), task_status=TaskStatus.VALIDATED.value)
+
+        dto.total_validated_area = tasks_validated_result.fetchone()['sum']
 
         campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
             .group_by(Project.campaign_tag).all()
