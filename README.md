@@ -51,4 +51,4 @@ And you can check the logs with `docker-compose logs -f`
 * See how you can [customize your instance of the TM](./docs/customize.md)
 * Learn how to [setup the TM for development](./docs/setup-development.md)
 * Feel free to submit [pull requests](https://github.com/hotosm/tasking-manager/pulls)!
-* Need an upgrade? Check out the [Migration from TM2 to TM3](./docs/migration-tm2-to-tm3.md)
+* Need an upgrade? Check out the [Migration coming from TM2](./docs/migration-from-tm2.md)
