@@ -6,6 +6,7 @@ from cachetools import TTLCache, cached
 import geojson
 from flask import current_app
 from geoalchemy2 import Geometry
+from sqlalchemy import text
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
@@ -370,9 +371,9 @@ class Project(db.Model):
         stats_dto.total_time_spent = 0
 
         query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_MAPPING'
-                and user_id = {0} and project_id = {1};""".format(user_id, self.id)
-        total_mapping_time = db.engine.execute(query)
+                   WHERE action='LOCKED_FOR_MAPPING'
+                   and user_id = :user_id and project_id = :project_id;"""
+        total_mapping_time = db.engine.execute(text(query), user_id=user_id, project_id=self.id)
         for time in total_mapping_time:
             total_mapping_time = time[0]
             if total_mapping_time:
@@ -380,9 +381,9 @@ class Project(db.Model):
                 stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
         query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                        WHERE action='LOCKED_FOR_VALIDATION'
-                        and user_id = {0} and project_id = {1};""".format(user_id, self.id)
-        total_validation_time = db.engine.execute(query)
+                   WHERE action='LOCKED_FOR_VALIDATION'
+                   and user_id = :user_id and project_id = :project_id;"""
+        total_validation_time = db.engine.execute(text(query), user_id=user_id, project_id=self.id)
         for time in total_validation_time:
             total_validation_time = time[0]
             if total_validation_time:
@@ -435,9 +436,9 @@ class Project(db.Model):
         project_stats.average_mapping_time = 0
         project_stats.average_validation_time = 0
 
-        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                 WHERE action='LOCKED_FOR_MAPPING'and project_id = {0};'''.format(self.id)
-        total_mapping_time = db.engine.execute(sql)
+        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                   WHERE action='LOCKED_FOR_MAPPING' and project_id = :project_id;"""
+        total_mapping_time = db.engine.execute(text(query), project_id=self.id)
         for row in total_mapping_time:
             total_mapping_time = row[0]
             if total_mapping_time:
@@ -448,9 +449,9 @@ class Project(db.Model):
                     average_mapping_time = total_mapping_seconds/unique_mappers
                     project_stats.average_mapping_time = average_mapping_time
 
-        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_VALIDATION' and project_id = {0};'''.format(self.id)
-        total_validation_time = db.engine.execute(sql)
+        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                   WHERE action='LOCKED_FOR_VALIDATION' and project_id = :project_id;"""
+        total_validation_time = db.engine.execute(text(query), project_id=self.id)
         for row in total_validation_time:
             total_validation_time = row[0]
             if total_validation_time:
@@ -517,7 +518,6 @@ class Project(db.Model):
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
-
 
         return summary
 

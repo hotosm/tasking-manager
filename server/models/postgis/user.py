@@ -2,7 +2,7 @@ import geojson
 import datetime
 import dateutil.parser
 from server import db
-from sqlalchemy import desc
+from sqlalchemy import desc, text
 from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
     UserSearchQuery, UserSearchDTO, ProjectParticipantUser, ListedUser
 from server.models.postgis.licenses import License, users_licenses_table
@@ -143,17 +143,17 @@ class User(db.Model):
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
         """ Adds projects to mapped_projects if it doesn't exist """
-        sql = "select * from users where id = {0} and projects_mapped @> '{{{1}}}'".format(user_id, project_id)
-        result = db.engine.execute(sql)
+        sql = "select * from users where id = :user_id and projects_mapped @> '{{:project_id}}'"
+        result = db.engine.execute(text(sql), user_id=user_id, project_id=project_id)
 
         if result.rowcount > 0:
             return  # User has previously mapped this project so return
 
         sql = '''update users
-                    set projects_mapped = array_append(projects_mapped, {0})
-                  where id = {1}'''.format(project_id, user_id)
+                    set projects_mapped = array_append(projects_mapped, :project_id)
+                  where id = :user_id'''
 
-        db.engine.execute(sql)
+        db.engine.execute(text(sql), project_id=project_id, user_id=user_id)
 
     @staticmethod
     def get_mapped_projects(user_id: int, preferred_locale: str) -> UserMappedProjectsDTO:
@@ -175,20 +175,20 @@ class User(db.Model):
                           FROM (SELECT t.project_id,
                                        count (t.validated_by) validated
                                   FROM tasks t
-                                 WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = {0})
-                                   AND t.validated_by = {0}
+                                 WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = :user_id)
+                                   AND t.validated_by = :user_id
                                  GROUP BY t.project_id, t.validated_by) v
                          FULL OUTER JOIN
                         (SELECT t.project_id,
                                 count(t.mapped_by) mapped
                            FROM tasks t
-                          WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = {0})
-                            AND t.mapped_by = {0}
+                          WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = :user_id)
+                            AND t.mapped_by = :user_id
                           GROUP BY t.project_id, t.mapped_by) m
                          ON v.project_id = m.project_id) c
-                   WHERE p.id = c.project_id ORDER BY p.id DESC'''.format(user_id)
+                   WHERE p.id = c.project_id ORDER BY p.id DESC'''
 
-        results = db.engine.execute(sql)
+        results = db.engine.execute(text(sql), user_id=user_id)
 
         if results.rowcount == 0:
             raise NotFound()
@@ -266,8 +266,8 @@ class User(db.Model):
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
                 WHERE action='LOCKED_FOR_VALIDATION'
-                and user_id = {0};""".format(self.id)
-        total_validation_time = db.engine.execute(sql)
+                and user_id = :user_id;"""
+        total_validation_time = db.engine.execute(text(sql), user_id=self.id)
         for row in total_validation_time:
             total_validation_time = row[0]
             if total_validation_time:
@@ -277,8 +277,8 @@ class User(db.Model):
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
                 WHERE action='LOCKED_FOR_MAPPING'
-                and user_id = {0};""".format(self.id)
-        total_mapping_time = db.engine.execute(sql)
+                and user_id = :user_id;"""
+        total_mapping_time = db.engine.execute(text(sql), user_id=self.id)
         for row in total_mapping_time:
             total_mapping_time = row[0]
             if total_mapping_time:
