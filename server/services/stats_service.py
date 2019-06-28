@@ -1,14 +1,6 @@
 from cachetools import TTLCache, cached
 from sqlalchemy import func, text, or_
 from sqlalchemy.orm import aliased
-from geoalchemy2.shape import to_shape
-from shapely.geometry import Polygon
-from shapely.ops import transform
-from functools import partial
-import pyproj
-import dateutil.parser
-import datetime
-import math
 from flask import current_app
 
 from server import db
@@ -20,7 +12,7 @@ from server.models.dtos.stats_dto import (
 
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import ProjectStatus, TaskStatus
-from server.models.postgis.task import TaskHistory, User, Task, TaskAction
+from server.models.postgis.task import TaskHistory, User, Task
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
