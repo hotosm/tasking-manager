@@ -344,6 +344,13 @@
         };
 
         /**
+         * Navigate to the project detail 
+         */
+        vm.goToProjectDetail = function(){
+            $location.path('/project/' + vm.project.projectId);
+        };
+
+        /**
          * Set the delete confirmation modal to visible/invisible
          * @param showModal
          */
@@ -379,11 +386,11 @@
          * @param showModal
          */
         vm.showTransferConfirmation = function(showModal){
-            if (vm.transferProjectTo.length){
+            if (vm.transferProjectTo.length && vm.editForm.$valid){
                 vm.showTransferConfirmationModal = showModal;
                 vm.showTransferEmptyUserError = false;
                 if (!showModal && vm.transferProjectSuccess){
-                    $location.path('/');
+                    $location.path('/project/' + vm.project.projectId);
                 }
             } else {
                 vm.showTransferEmptyUserError = true;
@@ -631,8 +638,11 @@
          * Get the user for a search value
          * @param searchValue
          */
-        vm.getUser = function(searchValue){
-            var resultsPromise = userService.searchUser(searchValue, vm.project.id);
+        vm.getUser = function(searchValue, isProjectManager){
+            if (typeof isProjectManager === undefined){
+                isProjectManager = false;
+            }
+            var resultsPromise = userService.searchUser(searchValue, vm.project.id, isProjectManager);
             return resultsPromise.then(function (data) {
                 // On success
                 return data.usernames;
