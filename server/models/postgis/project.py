@@ -6,6 +6,7 @@ from cachetools import TTLCache, cached
 import geojson
 from flask import current_app
 from geoalchemy2 import Geometry
+from sqlalchemy import text
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
@@ -425,8 +426,8 @@ class Project(db.Model):
         summary.average_validation_time = 0
 
         sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                 WHERE action='LOCKED_FOR_MAPPING'and project_id = {0};'''.format(self.id)
-        total_mapping_time = db.engine.execute(sql)
+                 WHERE action='LOCKED_FOR_MAPPING' and project_id = :project_id;'''
+        total_mapping_time = db.engine.execute(text(sql), project_id=self.id)
         for row in total_mapping_time:
             total_mapping_time = row[0]
             if total_mapping_time:
@@ -438,8 +439,8 @@ class Project(db.Model):
                     summary.average_mapping_time = average_mapping_time
 
         sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_VALIDATION' and project_id = {0};'''.format(self.id)
-        total_validation_time = db.engine.execute(sql)
+                WHERE action='LOCKED_FOR_VALIDATION' and project_id = :project_id;'''
+        total_validation_time = db.engine.execute(text(sql), project_id=self.id)
         for row in total_validation_time:
             total_validation_time = row[0]
             if total_validation_time:

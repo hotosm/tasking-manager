@@ -4,6 +4,7 @@ import geojson
 import json
 from enum import Enum
 from flask import current_app
+from sqlalchemy import text
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
@@ -461,11 +462,11 @@ class Task(db.Model):
             AND t.task_status IN (1,3)
             AND th.action IN ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
             AND th.action_text IS NULL
-            AND t.project_id = {0}
-            AND th.action_date <= '{1}'
-            '''.format(project_id, str(expiry_date))
+            AND t.project_id = :project_id
+            AND th.action_date <= :expiry_date
+            '''
 
-        old_tasks = db.engine.execute(old_locks_query)
+        old_tasks = db.engine.execute(text(old_locks_query), project_id=project_id, expiry_date=str(expiry_date))
 
         if old_tasks.rowcount == 0:
             # no tasks older than the delta found, return without further processing
@@ -664,12 +665,12 @@ class Task(db.Model):
                      where t.project_id = th.project_id
                        and t.id = th.task_id
                        and t.mapped_by = u.id
-                       and t.project_id = {0}
+                       and t.project_id = :project_id
                        and t.task_status = 2
                        and th.action_text = 'MAPPED'
-                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date""".format(project_id)
+                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date"""
 
-        results = db.engine.execute(sql)
+        results = db.engine.execute(text(sql), project_id=project_id)
         if results.rowcount == 0:
             raise NotFound()
 
@@ -691,8 +692,8 @@ class Task(db.Model):
     @staticmethod
     def get_max_task_id_for_project(project_id: int):
         """Gets the nights task id currently in use on a project"""
-        sql = """select max(id) from tasks where project_id = {0} GROUP BY project_id""".format(project_id)
-        result = db.engine.execute(sql)
+        sql = """select max(id) from tasks where project_id = :project_id GROUP BY project_id"""
+        result = db.engine.execute(text(sql), project_id=project_id)
         if result.rowcount == 0:
             raise NotFound()
         for row in result:

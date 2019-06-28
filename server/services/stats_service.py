@@ -160,20 +160,20 @@ class StatsService:
                                      from tasks t,
                                           users u
                                     where t.mapped_by = u.id
-                                      and t.project_id = {0}
+                                      and t.project_id = :project_id
                                       and t.mapped_by is not null
                                     group by t.mapped_by, u.username) m FULL OUTER JOIN
                                   (select t.validated_by, u.username, count(t.validated_by) validated
                                      from tasks t,
                                           users u
                                     where t.validated_by = u.id
-                                      and t.project_id = {0}
+                                      and t.project_id = :project_id
                                       and t.validated_by is not null
                                     group by t.validated_by, u.username) v
                                        ON m.mapped_by = v.validated_by
-        '''.format(project_id)
+        '''
 
-        results = db.engine.execute(contrib_query)
+        results = db.engine.execute(text(contrib_query), project_id=project_id)
         if results.rowcount == 0:
             raise NotFound()
 
@@ -190,8 +190,8 @@ class StatsService:
 
                 sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
                         WHERE action='LOCKED_FOR_MAPPING'
-                        and user_id = {0} and project_id = {1};""".format(row[0], project_id)
-                total_mapping_time = db.engine.execute(sql)
+                        and user_id = :user_id and project_id = :project_id;"""
+                total_mapping_time = db.engine.execute(text(sql), user_id=row[0], project_id=project_id)
                 for time in total_mapping_time:
                     total_mapping_time = time[0]
                     if total_mapping_time:
@@ -200,8 +200,8 @@ class StatsService:
 
                 sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
                         WHERE action='LOCKED_FOR_VALIDATION'
-                        and user_id = {0} and project_id = {1};""".format(row[0], project_id)
-                total_validation_time = db.engine.execute(sql)
+                        and user_id = :user_id and project_id = :project_id;"""
+                total_validation_time = db.engine.execute(text(sql), user_id=row[0], project_id=project_id)
                 for time in total_validation_time:
                     total_validation_time = time[0]
                     if total_validation_time:

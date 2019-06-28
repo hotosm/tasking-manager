@@ -1,3 +1,5 @@
+from sqlalchemy import text
+
 from server import db
 from flask import current_app
 from enum import Enum
@@ -88,11 +90,11 @@ class Message(db.Model):
     @staticmethod
     def get_all_contributors(project_id: int):
         """ Get all contributors to a project """
-        query = '''SELECT mapped_by as contributors from tasks where project_id = {0} and  mapped_by is not null
+        query = '''SELECT mapped_by as contributors from tasks where project_id = :project_id and mapped_by is not null
                    UNION
-                   SELECT validated_by from tasks where tasks.project_id = {0} and validated_by is not null'''.format(project_id)
+                   SELECT validated_by from tasks where tasks.project_id = :project_id and validated_by is not null'''
 
-        contributors = db.engine.execute(query)
+        contributors = db.engine.execute(text(query), project_id=project_id)
         return contributors
 
     def mark_as_read(self):
