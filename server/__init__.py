@@ -105,9 +105,9 @@ def init_flask_restful_routes(app):
         ProjectValidateAll, ProjectMapAll, ProjectResetAll, ProjectResetBadImagery, ProjectsForAdminAPI,\
         ProjectTransfer
     from server.api.project_apis import ProjectAPI, ProjectAOIAPI, ProjectSearchAPI, HasUserTaskOnProject,\
-        HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectSummaryAPI, TaskAnnotationsAPI
+        HasUserTaskOnProjectDetails, ProjectSearchBBoxAPI, ProjectTasksAPI, ProjectSummaryAPI, TaskAnnotationsAPI
     from server.api.swagger_docs_api import SwaggerDocsAPI
-    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsActivityAllProjectsAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI, StatsProjectUserAPI, StatsOverviewAPI
+    from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsActivityAllProjectsAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI, StatsProjectUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.mapping_issues_apis import MappingIssueCategoryAPI, MappingIssueCategoriesAPI
     from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
@@ -150,12 +150,13 @@ def init_flask_restful_routes(app):
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
     api.add_resource(ProjectAOIAPI,                 '/api/v1/project/<int:project_id>/aoi')
     api.add_resource(ProjectChatAPI,                '/api/v1/project/<int:project_id>/chat')
+    api.add_resource(ProjectTasksAPI,               '/api/v1/project/<int:project_id>/tasks')
     api.add_resource(HasUserTaskOnProject,          '/api/v1/project/<int:project_id>/has-user-locked-tasks')
     api.add_resource(HasUserTaskOnProjectDetails,   '/api/v1/project/<int:project_id>/has-user-locked-tasks/details')
     api.add_resource(MappedTasksByUser,             '/api/v1/project/<int:project_id>/mapped-tasks-by-user')
     api.add_resource(ProjectSummaryAPI,             '/api/v1/project/<int:project_id>/summary')
-    api.add_resource(TasksAsJson,                   '/api/v1/project/<int:project_id>/tasks')
-    api.add_resource(TasksAsGPX,                    '/api/v1/project/<int:project_id>/tasks_as_gpx')
+    api.add_resource(TasksAsJson,                   '/api/v1/project/<int:project_id>/tasks-as-geojson')
+    api.add_resource(TasksAsGPX,                    '/api/v1/project/<int:project_id>/tasks-as-gpx')
     api.add_resource(TasksAsOSM,                    '/api/v1/project/<int:project_id>/tasks-as-osm-xml')
     api.add_resource(LockTaskForMappingAPI,         '/api/v1/project/<int:project_id>/task/<int:task_id>/lock-for-mapping')
     api.add_resource(UndoMappingAPI,                '/api/v1/project/<int:project_id>/task/<int:task_id>/undo-mapping')
@@ -170,7 +171,6 @@ def init_flask_restful_routes(app):
     api.add_resource(TaskAnnotationsAPI, '/api/v1/project/<int:project_id>/task-annotations/<string:annotation_type>', '/api/v1/project/<int:project_id>/task-annotations', methods=['GET', 'POST'])
     api.add_resource(StatsActivityAllProjectsAPI,   '/api/v1/stats/project/all/activity')
     api.add_resource(StatsActivityAPI,              '/api/v1/stats/project/<int:project_id>/activity')
-    api.add_resource(StatsOverviewAPI,              '/api/v1/stats/project/<project>/overview')
     api.add_resource(StatsProjectAPI,               '/api/v1/stats/project/<int:project_id>')
     api.add_resource(StatsProjectUserAPI,           '/api/v1/stats/project/<int:project_id>/user/<string:username>')
     api.add_resource(StatsUserAPI,                  '/api/v1/stats/user/<string:username>')

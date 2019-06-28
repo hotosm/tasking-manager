@@ -1,7 +1,7 @@
 """empty message
 
 Revision ID: 6ae2a7d54b50
-Revises: e36f1d0c4947
+Revises: a43b9748ceee
 Create Date: 2019-05-29 10:43:42.104432
 
 """
@@ -11,9 +11,10 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '6ae2a7d54b50'
-down_revision = 'e36f1d0c4947'
+down_revision = 'a43b9748ceee'
 branch_labels = None
 depends_on = None
+
 
 def state_change_user(conn, task, action_text):
   query = "select user_id from task_history where project_id=" + str(task['project_id']) + " " + \
@@ -22,11 +23,17 @@ def state_change_user(conn, task, action_text):
 
   return conn.execute(query).fetchone()
 
+
 def upgrade():
+
+    conn = op.get_bind()
+
+    # Make sure action_texts are not too long
+    conn.execute('update task_history set action_text = substring(action_text from 1 for 5000) ' +
+                 'where length(action_text) > 5000;')
     op.create_index('idx_action_action_text_composite', 'task_history', ['action', 'action_text'], unique=False)
     op.create_index(op.f('ix_tasks_task_status'), 'tasks', ['task_status'], unique=False)
 
-    conn = op.get_bind()
     invalidated_tasks = conn.execute('select * from tasks where task_status = 5')
     for task in invalidated_tasks:
         validated_by = state_change_user(conn, task, "INVALIDATED")

@@ -1,5 +1,6 @@
 import unittest
-from server.services.stats_service import StatsService, TaskStatus
+from unittest.mock import patch
+from server.services.stats_service import StatsService, TaskStatus, TaskHistory
 from server.models.postgis.project import Project
 from server.models.postgis.user import User
 

@@ -1,14 +1,19 @@
 from cachetools import TTLCache, cached
 from flask import current_app
-
+from server import db
+from sqlalchemy import or_
+from sqlalchemy.orm import aliased
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary, ProjectStatsDTO, ProjectUserStatsDTO
-from server.models.postgis.project import Project, ProjectStatus, MappingLevel
+from server.models.dtos.stats_dto import Pagination
+from server.models.dtos.project_dto import (
+    ProjectDTO, LockedTasksForUser, ProjectSummary, ProjectStatsDTO,
+    ProjectUserStatsDTO, ProjectTasksDTO, TaskOverviewDTO
+)
+from server.models.postgis.project import Project, ProjectInfo, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
-from server.models.postgis.task import Task
-from server.models.postgis.task_annotation import TaskAnnotation
+from server.models.postgis.task import Task, TaskStatus, TaskHistory
 from server.models.postgis.utils import NotFound
-from server.services.users.user_service import UserService
+from server.services.users.user_service import User, UserService
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -68,6 +73,100 @@ class ProjectService:
 
         tasks_dto = LockedTasksForUser()
         tasks_dto.locked_tasks = tasks
+        return tasks_dto
+
+    @staticmethod
+    def get_latest_tasks(project_id: int, locale='en', page=1, page_size=10, sort_by=None, sort_direction=None, mapper_name=None, validator_name=None, status=None, project_name=None, all_results=False) -> ProjectTasksDTO:
+        """ Gets the latest overview of project tasks status """
+        sort_column = None if not sort_by else Task.__table__.columns.get(sort_by)
+        if sort_column is None:
+            sort_column = TaskHistory.action_date
+
+        if sort_direction is not None and sort_direction.lower() == "asc":
+            sort_column = sort_column.asc()
+        else:
+            sort_column = sort_column.desc()
+        sort_column = sort_column.nullslast()
+
+        mapper = aliased(User, name="mapper")
+        lock_holder = aliased(User, name="lock_holder")
+        validator = aliased(User, name="validator")
+        latest_history = aliased(TaskHistory, name='latest')
+        latest_history_id = (db.session.query(latest_history.id)
+                                       .filter(latest_history.task_id == Task.id)
+                                       .filter(latest_history.project_id == Task.project_id)
+                                       .order_by(latest_history.action_date.desc())
+                                       .order_by(latest_history.id.desc())
+                                       .limit(1)
+                                       .correlate(Task)
+                                       .as_scalar())
+
+        query = db.session.query(Task.id, Task.project_id, Task.task_status,
+                                 mapper.username.label("mapper_name"), validator.username.label("validator_name"),
+                                 lock_holder.username.label("lock_holder_name"), TaskHistory.action_date) \
+                          .outerjoin(TaskHistory, Task.task_history) \
+                          .filter(or_(TaskHistory.id == latest_history_id, TaskHistory.id.is_(None))) \
+                          .outerjoin((mapper, Task.mapper), (validator, Task.validator), (lock_holder, Task.lock_holder))
+
+        if project_id is not None:
+            query = query.filter(Task.project_id == project_id)
+        else:
+            # Include project name. Ignore draft and archived projects
+            query = query.join(Project, Task.project_id == Project.id) \
+                         .filter(Project.status == ProjectStatus.PUBLISHED.value) \
+                         .add_columns(ProjectInfo.name.label('project_title')) \
+                         .filter(Project.id == ProjectInfo.project_id) \
+                         .filter(ProjectInfo.locale.in_([locale, 'en'])) \
+
+            if project_name is not None:
+                query = query.filter(ProjectInfo.name.ilike('%' + project_name.lower() + '%'))
+
+        if status is not None:
+            query = query.filter(Task.task_status == status)
+
+        if mapper_name is not None:
+            # Filter on mapper, but also include lock holder if task is locked for mapping
+            query = query.filter((mapper.username.ilike(mapper_name.lower() + '%')) | \
+                                 ((Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value) & \
+                                  (lock_holder.username.ilike(mapper_name.lower() + '%'))))
+
+        if validator_name is not None:
+            # Filter on validator, but also include lock holder if task is locked for validation
+            query = query.filter((validator.username.ilike(validator_name.lower() + '%')) | \
+                                 ((Task.task_status == TaskStatus.LOCKED_FOR_VALIDATION.value) & \
+                                  (lock_holder.username.ilike(validator_name.lower() + '%'))))
+
+        query = query.order_by(sort_column)
+        paginated_results = query.paginate(page, page_size, True) if not all_results else None
+        items = paginated_results.items if paginated_results else query.all()
+        if len(items) == 0:
+            raise NotFound()
+
+        tasks_dto = ProjectTasksDTO()
+        for item in items:
+            task = TaskOverviewDTO()
+            if 'project_title' in item.keys():
+                task.project_title = item.project_title
+            task.project_id = item.project_id
+            task.task_id = item.id
+
+            task.task_status = item.task_status
+            task.status_name = TaskStatus(item.task_status).name
+            task.updated_date = item.action_date
+
+            if item.task_status == TaskStatus.LOCKED_FOR_MAPPING.value:
+                task.mapper_name = item.lock_holder_name
+            else:
+                task.mapper_name = item.mapper_name
+
+            if item.task_status == TaskStatus.LOCKED_FOR_VALIDATION.value:
+                task.validator_name = item.lock_holder_name
+            else:
+                task.validator_name = item.validator_name
+
+            tasks_dto.tasks.append(task)
+
+        tasks_dto.pagination = Pagination(paginated_results) if paginated_results else None
         return tasks_dto
 
     @staticmethod

@@ -7,11 +7,11 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectDashboardController', ['$scope', '$routeParams', 'NgTableParams', 'mapService', 'projectMapService', 'projectService', 'statsService', 'configService', 'TaskStatus', projectDashboardController]);
+        .controller('projectDashboardController', ['$scope', '$routeParams', 'NgTableParams', 'projectService', 'statsService', 'configService', 'TaskStatus', projectDashboardController]);
 
 
 
-    function projectDashboardController($scope, $routeParams, NgTableParams, mapService, projectMapService, projectService, statsService, configService, TaskStatus) {
+    function projectDashboardController($scope, $routeParams, NgTableParams, projectService, statsService, configService, TaskStatus) {
         var vm = this;
         $scope.TaskStatus = TaskStatus;
         $scope.tmAPI = configService.tmAPI;
@@ -107,13 +107,9 @@
             vm.singleProject = vm.projectId > 0;
 
             if (vm.singleProject) {
-              mapService.createOSMMap('map');
-              vm.map = mapService.getOSMMap();
-
               getProjectStats(vm.projectId);
               getComments(vm.projectId);
               getProjectContributions(vm.projectId);
-              projectMapService.initialise(vm.map);
             }
         }
 
@@ -127,7 +123,6 @@
                 vm.project = data;
                 var customColours = false;
                 var zoomToProject = true;
-                projectMapService.showProjectOnMap(vm.project, vm.project.aoiCentroid, customColours, zoomToProject);
                 vm.statusStats = taskStatusStats();
             }, function(data){
                // TODO
