@@ -58,6 +58,7 @@ class Project(db.Model):
     mapper_level = db.Column(db.Integer, default=1, nullable=False, index=True)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
+    enforce_random_task_selection = db.Column(db.Boolean, default=False)  # Force users to edit at random to avoid mapping "easy" tasks
     allow_non_beginners = db.Column(db.Boolean, default=False)
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
     entities_to_map = db.Column(db.String)
@@ -188,6 +189,7 @@ class Project(db.Model):
         cloned_project.mapper_level = original_project.mapper_level
         cloned_project.enforce_mapper_level = original_project.enforce_mapper_level
         cloned_project.enforce_validator_role = original_project.enforce_validator_role
+        cloned_project.enforce_random_task_selection = original_project.enforce_random_task_selection
         cloned_project.private = original_project.private
         cloned_project.entities_to_map = original_project.entities_to_map
         cloned_project.due_date = original_project.due_date
@@ -230,6 +232,7 @@ class Project(db.Model):
         self.default_locale = project_dto.default_locale
         self.enforce_mapper_level = project_dto.enforce_mapper_level
         self.enforce_validator_role = project_dto.enforce_validator_role
+        self.enforce_random_task_selection = project_dto.enforce_random_task_selection
         self.allow_non_beginners = project_dto.allow_non_beginners
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
@@ -484,6 +487,7 @@ class Project(db.Model):
         base_dto.aoi_bbox = shape(base_dto.area_of_interest).bounds
         base_dto.enforce_mapper_level = self.enforce_mapper_level
         base_dto.enforce_validator_role = self.enforce_validator_role
+        base_dto.enforce_random_task_selection = self.enforce_random_task_selection
         base_dto.allow_non_beginners = self.allow_non_beginners
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
