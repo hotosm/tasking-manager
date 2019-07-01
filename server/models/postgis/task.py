@@ -335,6 +335,7 @@ class TaskHistory(db.Model):
             project_id, task_id,
             [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name,
              TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name])
+
     def get_last_mapped_action(project_id: int, task_id: int):
         """Gets the most recent mapped action, if any, in the task history"""
         return db.session.query(TaskHistory) \
@@ -343,6 +344,7 @@ class TaskHistory(db.Model):
                     TaskHistory.action == TaskAction.STATE_CHANGE.name,
                     TaskHistory.action_text.in_([TaskStatus.BADIMAGERY.name, TaskStatus.MAPPED.name])) \
             .order_by(TaskHistory.action_date.desc()).first()
+
 
 class Task(db.Model):
     """ Describes an individual mapping Task """

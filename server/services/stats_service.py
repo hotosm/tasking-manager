@@ -1,22 +1,12 @@
 from cachetools import TTLCache, cached
-from sqlalchemy import func, text
-from geoalchemy2.shape import to_shape
-from shapely.geometry import Polygon
-from shapely.ops import transform
-from functools import partial
-import pyproj
-import dateutil.parser
-import datetime
-import math
-from flask import current_app
 
+from sqlalchemy import func, text
 from server import db
 from server.models.dtos.stats_dto import (
     ProjectContributionsDTO, UserContribution, Pagination, TaskHistoryDTO,
     ProjectActivityDTO, HomePageStatsDTO, OrganizationStatsDTO,
     CampaignStatsDTO
     )
-
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User, Task
@@ -29,24 +19,19 @@ homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
 
 class StatsService:
+
     @staticmethod
-    def update_stats_after_task_state_change(project_id: int, user_id: int, new_state: TaskStatus, task_id: int):
+    def update_stats_after_task_state_change(project_id: int, user_id: int, last_state: TaskStatus,
+                                             new_state: TaskStatus, action='change'):
         """ Update stats when a task has had a state change """
+
         if new_state in [TaskStatus.READY, TaskStatus.LOCKED_FOR_VALIDATION, TaskStatus.LOCKED_FOR_MAPPING]:
             return  # No stats to record for these states
 
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_id(user_id)
 
-        if new_state == TaskStatus.MAPPED:
-            StatsService._set_counters_after_mapping(project, user)
-        elif new_state == TaskStatus.INVALIDATED:
-            StatsService._set_counters_after_invalidated(task_id, project, user)
-        elif new_state == TaskStatus.VALIDATED:
-            StatsService._set_counters_after_validated(project, user)
-        elif new_state == TaskStatus.BADIMAGERY:
-            StatsService._set_counters_after_bad_imagery(project)
-
+        StatsService._update_tasks_stats(project, user, last_state, new_state, action)
         UserService.upsert_mapped_projects(user_id, project_id)
         project.last_updated = timestamp()
 
@@ -54,72 +39,43 @@ class StatsService:
         return project, user
 
     @staticmethod
-    def _set_counters_after_mapping(project: Project, user: User):
-        """ Set counters after user has mapped a task """
-        project.tasks_mapped += 1
-        user.tasks_mapped += 1
+    def _update_tasks_stats(project: Project, user: User, last_state: TaskStatus, new_state: TaskStatus,
+                            action='change'):
 
-    @staticmethod
-    def _set_counters_after_validated(project: Project, user: User):
-        """ Set counters after user has validated a task """
-        # TODO - There is a potential problem with the counters if people mark bad imagery tasks validated
-        project.tasks_validated += 1
-        user.tasks_validated += 1
+        # Make sure you are aware that users table has it as incrementing counters,
+        # while projects table reflect the actual state, and both increment and decrement happens
 
-    @staticmethod
-    def _set_counters_after_bad_imagery(project: Project):
-        """ Set counters after user has marked a task as Bad Imagery """
-        project.tasks_bad_imagery += 1
-
-    @staticmethod
-    def set_counters_after_undo(project_id: int, user_id: int, current_state: TaskStatus, undo_state: TaskStatus):
-        """ Resets counters after a user undoes their task"""
-        project = ProjectService.get_project_by_id(project_id)
-        user = UserService.get_user_by_id(user_id)
-
-        # This is best endeavours to reset the stats and may have missed some edge cases, hopefully majority of
-        # cases will be Mapped to Ready
-        if current_state == TaskStatus.MAPPED and undo_state == TaskStatus.READY:
-            project.tasks_mapped -= 1
-            user.tasks_mapped -= 1
-        if current_state == TaskStatus.MAPPED and undo_state == TaskStatus.INVALIDATED:
-            user.tasks_mapped -= 1
-            project.tasks_mapped -= 1
-        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.READY:
-            project.tasks_bad_imagery -= 1
-        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.MAPPED:
+        # Set counters for new state
+        if new_state == TaskStatus.MAPPED:
             project.tasks_mapped += 1
-            project.tasks_bad_imagery -= 1
-        elif current_state == TaskStatus.BADIMAGERY and undo_state == TaskStatus.INVALIDATED:
-            project.tasks_bad_imagery -= 1
-        elif current_state == TaskStatus.INVALIDATED and undo_state == TaskStatus.MAPPED:
-            user.tasks_invalidated -= 1
-            project.tasks_mapped += 1
-        elif current_state == TaskStatus.INVALIDATED and undo_state == TaskStatus.VALIDATED:
-            user.tasks_invalidated -= 1
+        elif new_state == TaskStatus.VALIDATED:
             project.tasks_validated += 1
-        elif current_state == TaskStatus.VALIDATED and undo_state == TaskStatus.MAPPED:
-            user.tasks_validated -= 1
-            project.tasks_validated -= 1
-        elif current_state == TaskStatus.VALIDATED and undo_state == TaskStatus.BADIMAGERY:
-            user.tasks_validated -= 1
-            project.tasks_validated -= 1
+        elif new_state == TaskStatus.BADIMAGERY:
+            project.tasks_bad_imagery += 1
 
-    @staticmethod
-    def _set_counters_after_invalidated(task_id: int, project: Project, user: User):
-        """ Set counters after user has validated a task """
+        if action == 'change':
+            if new_state == TaskStatus.MAPPED:
+                user.tasks_mapped += 1
+            elif new_state == TaskStatus.VALIDATED:
+                user.tasks_validated += 1
+            elif new_state == TaskStatus.INVALIDATED:
+                user.tasks_invalidated += 1
 
-        last_state = TaskHistory.get_last_status(project.id, task_id)
-
-        if last_state == TaskStatus.BADIMAGERY:
-            project.tasks_bad_imagery -= 1
-        elif last_state == TaskStatus.MAPPED:
+        # Remove counters for old state
+        if last_state == TaskStatus.MAPPED:
             project.tasks_mapped -= 1
         elif last_state == TaskStatus.VALIDATED:
-            project.tasks_mapped -= 1
             project.tasks_validated -= 1
+        elif last_state == TaskStatus.BADIMAGERY:
+            project.tasks_bad_imagery -= 1
 
-        user.tasks_invalidated += 1
+        if action == 'undo':
+            if last_state == TaskStatus.MAPPED:
+                user.tasks_mapped -= 1
+            elif last_state == TaskStatus.VALIDATED:
+                user.tasks_validated -= 1
+            elif last_state == TaskStatus.INVALIDATED:
+                user.tasks_invalidated -= 1
 
     @staticmethod
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:

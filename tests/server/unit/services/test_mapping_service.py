@@ -113,14 +113,16 @@ class TestMappingService(unittest.TestCase):
     @patch.object(Task, 'get_per_task_instructions')
     @patch.object(StatsService, 'update_stats_after_task_state_change')
     @patch.object(Task, 'update')
+    @patch.object(TaskHistory, 'get_last_status')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
     @patch.object(MappingService, 'get_task')
-    def test_unlock_with_comment_sets_history(self, mock_task, mock_history, mock_update, mock_stats, mock_instructions):
+    def test_unlock_with_comment_sets_history(self, mock_task, mock_history, mock_update, mock_stats,
+                                              mock_instructions, mock_state):
         # Arrange
         self.task_stub.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
-        mock_task.return_value = self.task_stub
-
         self.mapped_task_dto.comment = 'Test comment'
+        mock_task.return_value = self.task_stub
+        mock_state.return_value = TaskStatus.LOCKED_FOR_MAPPING
 
         # Act
         test_task = MappingService.unlock_task_after_mapping(self.mapped_task_dto)
@@ -132,12 +134,15 @@ class TestMappingService(unittest.TestCase):
     @patch.object(Task, 'get_per_task_instructions')
     @patch.object(StatsService, 'update_stats_after_task_state_change')
     @patch.object(Task, 'update')
+    @patch.object(TaskHistory, 'get_last_status')
     @patch.object(TaskHistory, 'update_task_locked_with_duration')
     @patch.object(MappingService, 'get_task')
-    def test_unlock_with_status_change_sets_history(self, mock_task, mock_history, mock_update, mock_stats, mock_instructions):
+    def test_unlock_with_status_change_sets_history(self, mock_task, mock_history, mock_update, mock_stats,
+                                                    mock_instructions, mock_state):
         # Arrange
         self.task_stub.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
         mock_task.return_value = self.task_stub
+        mock_state.return_value = TaskStatus.LOCKED_FOR_MAPPING
 
         # Act
         test_task = MappingService.unlock_task_after_mapping(self.mapped_task_dto)
