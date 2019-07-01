@@ -17,7 +17,7 @@ class ProjectAdminAPI(Resource):
         Creates a tasking-manager project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -100,7 +100,7 @@ class ProjectAdminAPI(Resource):
         Retrieves a Tasking-Manager project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -143,7 +143,7 @@ class ProjectAdminAPI(Resource):
         Updates a Tasking-Manager project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -288,7 +288,7 @@ class ProjectAdminAPI(Resource):
         Deletes a Tasking-Manager project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -336,7 +336,7 @@ class ProjectCommentsAPI(Resource):
         Gets all comments for project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -376,7 +376,7 @@ class ProjectInvalidateAll(Resource):
         Invalidate all mapped tasks on a project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -418,7 +418,7 @@ class ProjectValidateAll(Resource):
         Validate all mapped tasks on a project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -459,7 +459,7 @@ class ProjectResetAll(Resource):
         Reset all tasks on project back to ready, preserving history.
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -501,7 +501,7 @@ class ProjectMapAll(Resource):
         Map all tasks on a project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -543,7 +543,7 @@ class ProjectResetBadImagery(Resource):
         Mark all bad imagery tasks ready for mapping
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -585,7 +585,7 @@ class ProjectsForAdminAPI(Resource):
         Get all projects for logged in admin
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -632,7 +632,7 @@ class ProjectTransfer(Resource):
         Transfers a project to a new user.
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
