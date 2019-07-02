@@ -15,6 +15,7 @@ import pt from 'react-intl/locale-data/pt';
 
 import App from './App';
 import { store } from './store';
+import getTranslatedMessages from './utils/translatedMessages';
 import * as serviceWorker from './serviceWorker';
 
 const history = createBrowserHistory();
@@ -28,8 +29,8 @@ WebFont.load({
 });
 
 addLocaleData([...en, ...fr, ...es, ...de, ...ja, ...ko, ...pt]);
-export const ConnectedIntl = props => (
-  <IntlProvider key={props.locale} locale={props.locale} messages={props.messages}>
+const ConnectedIntl = props => (
+  <IntlProvider key={props.locale} locale={props.locale} messages={getTranslatedMessages(props.locale)}>
     {props.children}
   </IntlProvider>
 );
@@ -37,7 +38,7 @@ export const ConnectedIntl = props => (
 ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
-      <ConnectedIntl locale={'pt'} >
+      <ConnectedIntl locale={navigator.language} >
         <App />
       </ConnectedIntl>
     </Router>
