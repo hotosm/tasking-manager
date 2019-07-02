@@ -410,9 +410,15 @@ class Project(db.Model):
         project_stats.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
         project_stats.total_tasks = self.total_tasks
         project_stats.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
-        project_stats.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
-        project_stats.percent_validated = int((self.tasks_validated / self.total_tasks) * 100)
-        project_stats.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
+        project_stats.percent_mapped = Project.calculate_tasks_percent('mapped', self.total_tasks,
+                                                                       self.tasks_mapped, self.tasks_validated,
+                                                                       self.tasks_bad_imagery)
+        project_stats.percent_validated = Project.calculate_tasks_percent('validated', self.total_tasks,
+                                                                          self.tasks_mapped, self.tasks_validated,
+                                                                          self.tasks_bad_imagery)
+        project_stats.percent_bad_imagery = Project.calculate_tasks_percent('bad_imagery', self.total_tasks,
+                                                                            self.tasks_mapped, self.tasks_validated,
+                                                                            self.tasks_bad_imagery)
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         project_stats.aoi_centroid = geojson.loads(centroid_geojson)
         unique_mappers = TaskHistory.query.filter(
@@ -498,10 +504,16 @@ class Project(db.Model):
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = int((self.tasks_mapped + self.tasks_validated) /
-                                     (self.total_tasks - self.tasks_bad_imagery) * 100)
-        summary.percent_validated = int(self.tasks_validated / (self.total_tasks - self.tasks_bad_imagery) * 100)
-        summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
+        summary.percent_mapped = Project.calculate_tasks_percent('mapped', self.total_tasks,
+                                                                 self.tasks_mapped, self.tasks_validated,
+                                                                 self.tasks_bad_imagery)
+        summary.percent_validated = Project.calculate_tasks_percent('validated', self.total_tasks,
+                                                                    self.tasks_mapped, self.tasks_validated,
+                                                                    self.tasks_bad_imagery)
+        summary.percent_bad_imagery = Project.calculate_tasks_percent('bad_imagery', self.total_tasks,
+                                                                      self.tasks_mapped, self.tasks_validated,
+                                                                      self.tasks_bad_imagery)
+
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
@@ -648,6 +660,16 @@ class Project(db.Model):
         tags_dto = TagsDTO()
         tags_dto.tags = [r[1] for r in query]
         return tags_dto
+
+    @staticmethod
+    def calculate_tasks_percent(target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery):
+        """ Calculates percentages of contributions """
+        if target == 'mapped':
+            return int((tasks_mapped + tasks_validated) / (total_tasks - tasks_bad_imagery) * 100)
+        elif target == 'validated':
+            return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
+        elif target == 'bad_imagery':
+            return int((tasks_bad_imagery / total_tasks) * 100)
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

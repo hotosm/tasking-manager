@@ -6,7 +6,6 @@ from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResult
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
 from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform, ST_Area
-from server.services.users.user_service import UserService
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -77,10 +76,12 @@ class ProjectSearchService:
             list_dto.short_description = project_info_dto.short_description
             list_dto.organisation_tag = project.organisation_tag
             list_dto.campaign_tag = project.campaign_tag
-            list_dto.percent_mapped = round(
-                ((project.tasks_mapped + project.tasks_validated) / (project.total_tasks - project.tasks_bad_imagery)) * 100, 0)
-            list_dto.percent_validated = round(
-                (project.tasks_validated / (project.total_tasks + project.tasks_bad_imagery)) * 100, 0)
+            list_dto.percent_mapped = Project.calculate_tasks_percent('mapped', project.total_tasks,
+                                                                      project.tasks_mapped, project.tasks_validated,
+                                                                      project.tasks_bad_imagery)
+            list_dto.percent_validated = Project.calculate_tasks_percent('validated', project.total_tasks,
+                                                                         project.tasks_mapped, project.tasks_validated,
+                                                                         project.tasks_bad_imagery)
             list_dto.status = ProjectStatus(project.status).name
             list_dto.active_mappers = Project.get_active_mappers(project.id)
 
