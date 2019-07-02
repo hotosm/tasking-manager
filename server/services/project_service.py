@@ -2,7 +2,7 @@ from cachetools import TTLCache, cached
 from flask import current_app
 
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary
+from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary, ProjectStatsDTO, ProjectUserStatsDTO
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task
@@ -177,3 +177,17 @@ class ProjectService:
         """ Gets the project title DTO """
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_title(preferred_locale)
+
+    @staticmethod
+    def get_project_stats(project_id: int) -> ProjectStatsDTO:
+        """ Gets the project stats DTO """
+        project = ProjectService.get_project_by_id(project_id)
+        return project.get_project_stats()
+
+    @staticmethod
+    def get_project_user_stats(project_id: int, username: str) -> ProjectUserStatsDTO:
+        """ Gets the user stats for a specific project """
+        print(project_id)
+        project = ProjectService.get_project_by_id(project_id)
+        user = UserService.get_user_by_username(username)
+        return project.get_project_user_stats(user.id)

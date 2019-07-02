@@ -712,7 +712,7 @@
             if (enforceValidateRole) {
                 var validatorRoles = ['ADMIN', 'PROJECT_MANAGER', 'VALIDATOR'];
                 userCanValidate = (validatorRoles.indexOf(userRole) != -1);
-            } 
+            }
             if (allowNonBeginners) {
                 var allowedLevels = ['INTERMEDIATE','ADVANCED']
                 userCanValidate = (allowedLevels.indexOf(mappingLevel) != -1);
@@ -804,5 +804,6 @@
                 return $q.reject("error");
             });
         }
+
     }
 })();

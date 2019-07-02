@@ -245,14 +245,6 @@ class ProjectSummary(Model):
     mapper_level_enforced = BooleanType(serialized_name='mapperLevelEnforced')
     validator_level_enforced = BooleanType(serialized_name='validatorLevelEnforced')
     short_description = StringType(serialized_name='shortDescription')
-    total_mappers = IntType(serialized_name='totalMappers')
-    total_tasks = IntType(serialized_name='totalTasks')
-    total_comments = IntType(serialized_name='totalComments')
-    total_mapping_time = IntType(serialized_name='totalMappingTime')
-    total_validation_time = IntType(serialized_name='totalValidationTime')
-    total_time_spent = IntType(serialized_name='totalTimeSpent')
-    average_mapping_time = IntType(serialized_name='averageMappingTime')
-    average_validation_time = IntType(serialized_name='averageValidationTime')
     status = StringType()
 
 
@@ -279,3 +271,27 @@ class ProjectTaskAnnotationsDTO(Model):
 
     project_id = IntType(required=True, serialized_name='projectId')
     tasks = ListType(ModelType(TaskAnnotationDTO), required=True, serialized_name='tasks')
+
+class ProjectStatsDTO(Model):
+    """ DTO for detailed stats on a project """
+    project_id = IntType(required=True, serialized_name='projectId')
+    area = FloatType(serialized_name='projectArea(in sq.km)')
+    total_mappers = IntType(serialized_name='totalMappers')
+    total_tasks = IntType(serialized_name='totalTasks')
+    total_comments = IntType(serialized_name='totalComments')
+    total_mapping_time = IntType(serialized_name='totalMappingTime')
+    total_validation_time = IntType(serialized_name='totalValidationTime')
+    total_time_spent = IntType(serialized_name='totalTimeSpent')
+    average_mapping_time = IntType(serialized_name='averageMappingTime')
+    average_validation_time = IntType(serialized_name='averageValidationTime')
+    percent_mapped = IntType(serialized_name='percentMapped')
+    percent_validated = IntType(serialized_name='percentValidated')
+    percent_bad_imagery = IntType(serialized_name='percentBadImagery')
+    aoi_centroid = BaseType(serialized_name='aoiCentroid')
+
+
+class ProjectUserStatsDTO(Model):
+    """ DTO for time spent by users on a project """
+    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
+    time_spent_validating = IntType(serialized_name='timeSpentValidating')
+    total_time_spent = IntType(serialized_name='totalTimeSpent')

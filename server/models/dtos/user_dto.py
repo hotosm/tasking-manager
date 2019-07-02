@@ -38,7 +38,7 @@ class UserDTO(Model):
     date_registered = StringType(serialized_name='dateRegistered')
     total_time_spent = IntType(serialized_name='totalTimeSpent')
     time_spent_mapping = IntType(serialized_name='timeSpentMapping')
-    time_spent_validating = IntType(serialized_name='timeSpentValidating') 
+    time_spent_validating = IntType(serialized_name='timeSpentValidating')
     projects_mapped = IntType(serialized_name='projectsMapped')
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
@@ -55,7 +55,7 @@ class UserStatsDTO(Model):
     """ DTO containing statistics about the user """
     total_time_spent = IntType(serialized_name='totalTimeSpent')
     time_spent_mapping = IntType(serialized_name='timeSpentMapping')
-    time_spent_validating = IntType(serialized_name='timeSpentValidating') 
+    time_spent_validating = IntType(serialized_name='timeSpentValidating')
     projects_mapped = IntType(serialized_name='projectsMapped')
     tasks_mapped = IntType(serialized_name='tasksMapped')
     tasks_validated = IntType(serialized_name='tasksValidated')
