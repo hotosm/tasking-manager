@@ -5,7 +5,9 @@
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
     "instance_type": "t2.micro",
     "instance_region": "us-east-1",
-    "ssh_username": "ubuntu"
+    "ssh_username": "ubuntu",
+    "created_by": "{{env `PACKER_RUN_OWNER`}}",
+    "name": "tasking-manager-{{timestamp}}"
   },
   "builders": [{
     "access_key": "{{user `aws_access_key`}}",
@@ -15,7 +17,7 @@
     "region": "{{user `instance_region`}}",
     "instance_type": "{{user `instance_type`}}",
     "ssh_username": "{{user `ssh_username`}}",
-    "ami_name": "tasking-manager-{{timestamp}}",
+    "ami_name": "{{user `name`}}",
     "source_ami_filter": {
       "filters": {
         "virtualization-type": "hvm",
@@ -26,7 +28,10 @@
       "most_recent": true
     },
     "tags": {
-      "component": "tasking_manager"
+      "component": "tasking_manager",
+      "built_by": "packer",
+      "created_by": "{{user `created_by`}}",
+      "Name": "{{user `name`}}"
     }
   }],
   "provisioners": [{
@@ -69,7 +74,7 @@
       "echo \"make directory\"",
       "sudo mkdir -p /usr/local/ec2",
       "echo \"unzip tools\"",
-      "sudo unzip ec2-ami-tools.zip -d /usr/local/ec2",
+      "sudo unzip -qq ec2-ami-tools.zip -d /usr/local/ec2",
       "echo \"Create /etc/profile.d/myenvvars.sh\"",
       "sudo touch /etc/profile.d/myenvvars.sh",
       "echo \"add to etc/profile.d/myenvvars.sh export variable EC2_AMITOOL_HOME\"",
