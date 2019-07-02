@@ -13,3 +13,6 @@ it('exports ORG_NAME', () => {
 it('exports ORG_CODE', () => {
   expect(typeof(config.ORG_CODE)).toBe('string');
 });
+it('exports DEFAULT locale to be english', () => {
+  expect(config.DEFAULT_LOCALE).toBe('en');
+});
