@@ -19,7 +19,12 @@ const org_code = process.env.ORG_CODE || 'HOT';
 const org_url = process.env.ORG_URL || 'hotosm.org'; // don't use http or https on this var
 
 
+// DEFAULT locale
+const default_locale = process.env.TM_DEFAULT_LOCALE || 'en';
+
+
 export const API_URL = api_url;
 export const ORG_NAME = org_name;
 export const ORG_CODE = org_code;
 export const ORG_URL = org_url;
+export const DEFAULT_LOCALE = default_locale;

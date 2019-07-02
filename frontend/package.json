@@ -23,6 +23,7 @@
     "webfontloader": "^1.6.28"
   },
   "scripts": {
+    "build-locales": "combine-messages -i './src/**/messages.js' -o './src/locales/en.json'",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src",
@@ -45,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "combine-react-intl-messages": "^2.0.2",
     "react-test-renderer": "^16.8.6"
   }
 }
