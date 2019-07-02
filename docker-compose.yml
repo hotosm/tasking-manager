@@ -35,13 +35,18 @@ services:
 
   # Database
   postgresql:
-    image: mdillon/postgis:9.6
+    image: mdillon/postgis:11
     container_name: postgresql
     env_file: tasking-manager.env
     # logging:
     #   driver: none
     expose:
       - "5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./tests/database:/dump
 
 volumes:
   node_modules:
+  pg_data:
+
