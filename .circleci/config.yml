@@ -138,6 +138,8 @@ jobs:
           sudo apt-get install -y nodejs libgeos-dev # Required for shapely
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
           npm install
+          wget https://releases.hashicorp.com/packer/1.4.2/packer_1.4.2_linux_amd64.zip
+          unzip packer_1.4.2_linux_amd64.zip -d packer
           sudo pip3 install awscli --upgrade
     - run:
         name: Configure AWS Access Key ID
@@ -156,6 +158,10 @@ jobs:
         command: |
           aws configure set region $AWS_REGION \
           --profile default
+    - run:
+        name: Create AMI
+        command: |
+          ./packer/packer build devops/cloudformation/ami.json
     - run:
         name: Get RDS Instance ID
         command: |
@@ -213,6 +219,13 @@ workflows:
   build-deploy:
     jobs:
     - build
+    - packer_ami:
+        requires:
+          - build
+        filters: 
+          branches:
+            only:
+              - deployment/*
     - deploy:
         name: staging
         filters:
