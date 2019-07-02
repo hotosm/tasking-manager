@@ -33,8 +33,13 @@ us-east-1: ami-045d92b3f02d57737
 
 3. The AMI ID at the end
 
-For machine readable output, add the `-machine-readable` switch like so:
+For machine readable output[1], add the `-machine-readable` switch like so:
 
 ```
 $ packer -machine-readable build ami.json
 ```
+
+
+## References
+
+1. Packer Machine Readable outputs - https://www.packer.io/docs/commands/index.html
