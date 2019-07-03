@@ -116,20 +116,20 @@ class StatsService:
                                      from tasks t,
                                           users u
                                     where t.mapped_by = u.id
-                                      and t.project_id = {0}
+                                      and t.project_id = :project_id
                                       and t.mapped_by is not null
                                     group by t.mapped_by, u.username) m FULL OUTER JOIN
                                   (select t.validated_by, u.username, count(t.validated_by) validated
                                      from tasks t,
                                           users u
                                     where t.validated_by = u.id
-                                      and t.project_id = {0}
+                                      and t.project_id = :project_id
                                       and t.validated_by is not null
                                     group by t.validated_by, u.username) v
                                        ON m.mapped_by = v.validated_by
-        '''.format(project_id)
+        '''
 
-        results = db.engine.execute(contrib_query)
+        results = db.engine.execute(text(contrib_query), project_id=project_id)
         if results.rowcount == 0:
             raise NotFound()
 

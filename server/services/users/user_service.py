@@ -4,6 +4,8 @@ from functools import reduce
 import dateutil.parser
 import datetime
 
+from sqlalchemy import text
+
 from server import db
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
     UserStatsDTO
@@ -128,8 +130,8 @@ class UserService:
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
                 WHERE action='LOCKED_FOR_VALIDATION'
-                and user_id = {0};""".format(user.id)
-        total_validation_time = db.engine.execute(sql)
+                and user_id = :user_id;"""
+        total_validation_time = db.engine.execute(text(sql), user_id=user.id)
         for time in total_validation_time:
             total_validation_time = time[0]
             if total_validation_time:
@@ -138,8 +140,8 @@ class UserService:
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
                 WHERE action='LOCKED_FOR_MAPPING'
-                and user_id = {0};""".format(user.id)
-        total_mapping_time = db.engine.execute(sql)
+                and user_id = :user_id;"""
+        total_mapping_time = db.engine.execute(text(sql), user_id=user.id)
         for time in total_mapping_time:
             total_mapping_time = time[0]
             if total_mapping_time:
