@@ -20,6 +20,7 @@ import * as serviceWorker from './serviceWorker';
 
 const history = createBrowserHistory();
 
+
 WebFont.load({
   google: {
     families: [
@@ -27,6 +28,7 @@ WebFont.load({
     ]
   }
 });
+
 
 addLocaleData([...en, ...fr, ...es, ...de, ...ja, ...ko, ...pt]);
 const ConnectedIntl = props => (
