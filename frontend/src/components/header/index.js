@@ -3,12 +3,11 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import Popup from "reactjs-popup";
 import { FormattedMessage } from 'react-intl';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import messages from './messages';
 import { ORG_URL, ORG_NAME, API_URL } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
+import LinkIcon from '../svgIcons/link';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { BurgerMenu } from './burgerMenu';
@@ -55,15 +54,17 @@ class Header extends React.Component {
   }
 
   render() {
+    console.log(LinkIcon);
     return (
       <header className="w-100">
         <div className="cf ph2 bb b--grey-light red pt3 pb2">
           <div className="fl w-50">
             <span className="barlow-condensed f5 ml2 "><FormattedMessage {...messages.slogan}/></span>
           </div>
-          <div className="tr">
+          <div className="tr red">
             <a className="link red f6 mr2" href={`http://${ORG_URL}`}>
-              {ORG_URL} <FontAwesomeIcon icon={faExternalLinkAlt} />
+              {ORG_URL}
+              <LinkIcon className="pl2 v-btm" style={{height: "15px"}}/>
             </a>
           </div>
         </div>
