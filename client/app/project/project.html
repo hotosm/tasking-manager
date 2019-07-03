@@ -389,7 +389,7 @@
                                         <div class="form__group form__group--section">
                                             <div ng-show="!(projectCtrl.enforceRandomTaskSelection() && projectCtrl.randomTaskSelectionError)">
                                                 <div ng-show="projectCtrl.showWarning">
-                                                    <p class="error"><a href="/user/{{projectCtrl.user.username}}">{{ 'Add your email address' | translate }}</a>
+                                                    <p class="error"><a class="email-warning" href="/user/{{projectCtrl.user.username}}">{{ 'Add your email address' | translate }}</a>
                                                         {{ 'to continue mapping' | translate }}</p>
                                                 </div>
                                                 <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
@@ -595,7 +595,7 @@
                                         <p>{{ 'You cannot select tasks for validation on this project because you do not have the Validator role.' | translate }}</p>
                                     </div>
                                     <div ng-show="projectCtrl.showWarning">
-                                            <p class="error"><a href="/user/{{projectCtrl.user.username}}">{{'Add your email address' | translate}}</a>
+                                            <p class="error"><a class="email-warning" href="/user/{{projectCtrl.user.username}}">{{'Add your email address' | translate}}</a>
                                                 {{ 'to continue validation' | translate }}</p>
                                     </div>
                                     <div ng-show="projectCtrl.userCanValidate && !project.showWarning">
@@ -780,7 +780,7 @@
                                     <div class="form__group form__group--section">
                                         <div>
                                             <div ng-show="projectCtrl.showWarning">
-                                                <p class="error"><a href="/user/{{projectCtrl.user.username}}">{{'Add your email address' | translate}}</a>
+                                                <p class="error"><a class="email-warning" href="/user/{{projectCtrl.user.username}}">{{'Add your email address' | translate}}</a>
                                                     {{ 'to continue validation' | translate }}</p>
                                             </div>
                                             <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate"
@@ -1005,7 +1005,7 @@
                                             project-author="projectCtrl.projectData.author" role="projectCtrl.user.role"></project-chat>
                             </div>
                             <div class='error' ng-hide="projectCtrl.user.isEmailVerified">
-                                <a href="/user/{{ projectCtrl.user.username }}">{{ 'Add your email address' | translate }}</a>
+                                <a class="email-warning" href="/user/{{ projectCtrl.user.username }}">{{ 'Add your email address' | translate }}</a>
                                 {{ 'to continue' | translate }}
                             </div>
                         </div>
