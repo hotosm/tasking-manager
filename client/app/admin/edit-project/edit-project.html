@@ -593,12 +593,16 @@
                                     <label class="form__label">{{ 'Transfer project' | translate }}</label>
                                     <div class="alert alert--warning" role="alert">
                                         <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'This cannot be undone.' | translate }}</p>
+                                        <p>{{ 'The selected user needs to be project manager or administratror role assigned'  | translate }}</p>
                                     </div>
                                     <div style="margin-top: 5px">
                                         <tags-input ng-model="editProjectCtrl.transferProjectTo"
                                         name="projectTransferTo" placeholder="{{ 'Search for username' | translate }}"
                                         replace-spaces-with-dashes="false" max-tags="1">
-                                        <auto-complete source="editProjectCtrl.getUser($query)"></auto-complete> 
+                                        <auto-complete source="editProjectCtrl.getUser($query, true)"></auto-complete> 
+                                        <p class="error" ng-show="!editProjectCtrl.editForm.projectTransferTo.$valid">
+                                            {{ 'Please make sure you only have one user.' | translate }}
+                                        </p>
                                         <p class="error" ng-show="editProjectCtrl.showTransferEmptyUserError">{{ 'Please enter a valid username' | translate }}</p>
                                     </div>
                                     <button class="button button--secondary" type="button"
@@ -745,7 +749,7 @@
             </div>
             <div ng-show="editProjectCtrl.transferProjectSuccess">
                  <button class="button button--base" type="button"
-                        ng-click="editProjectCtrl.goToHome()">{{ 'Go to the homepage' | translate }}
+                        ng-click="editProjectCtrl.goToProjectDetail()">{{ 'Go back to the project' | translate }}
                 </button>
             </div>
         </footer>

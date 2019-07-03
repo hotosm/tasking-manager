@@ -114,16 +114,23 @@ class User(db.Model):
 
 
     @staticmethod
-    def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
+    def filter_users(user_filter: str, project_id: int, page: int, 
+                     is_project_manager:bool=False) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
         returned ahead of those who have not.
         """
         # Note that the projects_mapped column includes both mapped and validated projects.
-        results = db.session.query(User.username, User.projects_mapped.any(project_id).label("participant")) \
+        query = db.session.query(User.username, User.projects_mapped.any(project_id).label("participant")) \
             .filter(User.username.ilike(user_filter.lower() + '%')) \
-            .order_by(desc("participant").nullslast(), User.username).paginate(page, 20, True)
+            .order_by(desc("participant").nullslast(), User.username)
+
+        if is_project_manager:
+            query = query.filter(User.role.in_([UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value]))
+
+        results = query.paginate(page, 20, True)
+            
         if results.total == 0:
             raise NotFound()
 
