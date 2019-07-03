@@ -1,7 +1,7 @@
 import React from 'react';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import onClickOutside from 'react-click-outside';
 
+import ChevronDownIcon from './svgIcons/chevron-down';
 import { Button } from './button';
 
 
@@ -136,11 +136,10 @@ export class _Dropdown extends React.PureComponent {
     return (
       <div className={`dib pointer ba b--grey-light ${this.props.className || ''}`}>
         <Button
-          icon={faChevronDown}
           onClick={this.toggleDropdown}
           className={`${this.props.className || ''}`}
         >
-          {this.props.display}
+          {this.props.display} <ChevronDownIcon style={{height: "20px"}} className="pl2 v-btm"/>
         </Button>
         {this.state.display &&
           <DropdownContent
