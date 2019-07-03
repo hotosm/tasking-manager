@@ -1,6 +1,5 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
@@ -19,11 +18,11 @@ const createTestDropdown = (options) => {
 }
 
 
-it('dropdown icon is faChevronDown', () => {
+it('dropdown svg icon exists and height is 15px', () => {
   let elementInstance = createTestDropdown(
     [{label: 'English'}, {label: 'Portuguese (pt)'}]
   );
-  expect(elementInstance.findByType(Button).props.icon).toBe(faChevronDown);
+  expect(elementInstance.findByType('svg').props.height).toBe("15px");
 });
 
 
