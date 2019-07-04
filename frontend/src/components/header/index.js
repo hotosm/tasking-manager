@@ -7,26 +7,29 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { ORG_URL, ORG_NAME, API_URL } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
-import LinkIcon from '../svgIcons/link';
+import { LinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { BurgerMenu } from './burgerMenu';
 
 
+const menuItems = [
+  {label: messages.exploreProjects, link: "/projects"},
+  {label: messages.howItWorks, link: "/learn"},
+  {label: messages.about, link: "/about"},
+  {label: messages.help, link: "/help"}
+];
+
 class Header extends React.Component {
-  menuItems = [
-    {label: messages.exploreProjects, link: "/projects"},
-    {label: messages.howItWorks, link: "/learn"},
-    {label: messages.about, link: "/about"},
-    {label: messages.help, link: "/help"}
-  ];
+  menuItems = menuItems;
+  linkCombo = "link ph3 barlow-condensed blue-dark f4 ttu";
+
 
   renderMenuItems() {
-    const linkCombo = "link ph3 barlow-condensed blue-dark f4 ttu";
     return(
       <div className="v-mid">
         {this.menuItems.map((item, n) =>
-          <Link to={item.link} key={n} className={ linkCombo }>
+          <Link to={item.link} key={n} className={ this.linkCombo }>
             <FormattedMessage {...item.label} />
           </Link>
         )}
@@ -35,12 +38,11 @@ class Header extends React.Component {
   }
 
   renderPopupItems() {
-    const linkCombo = "link ph3 barlow-condensed blue-dark f4 ttu";
     return(
       <div className="v-mid tc">
         {this.menuItems.map((item, n) =>
           <p key={n}>
-            <Link to={item.link} className={ linkCombo }>
+            <Link to={item.link} className={ this.linkCombo }>
               <FormattedMessage {...item.label} />
             </Link>
           </p>
@@ -54,7 +56,6 @@ class Header extends React.Component {
   }
 
   render() {
-    console.log(LinkIcon);
     return (
       <header className="w-100">
         <div className="cf ph2 bb b--grey-light red pt3 pb2">
@@ -119,4 +120,4 @@ const mapStateToProps = state => ({
 
 Header = connect(mapStateToProps)(Header);
 
-export { Header };
+export { Header , menuItems };
