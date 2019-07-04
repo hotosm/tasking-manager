@@ -9,3 +9,19 @@
     padding-left: 8rem;
   }
 }
+
+@media screen and (max-width: 60em) {
+  .mw-20rem {
+    max-width: 20rem;
+  }
+}
+
+.bg-jumbotron {
+  background: url('../img/hero_banner.jpg') left;
+}
+
+@media screen and (min-width: 60em) {
+  .f-4rem-l {
+    font-size: 4rem;
+  }
+}

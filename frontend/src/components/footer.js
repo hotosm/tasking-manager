@@ -28,14 +28,14 @@ export function Footer() {
         </div>
         <div className="pt2 mb2 w-50-l w-100 tl tr-l fr">
           {menuItems.map((item, n) =>
-            <Link to={item.link}
+            <Link key={n} to={item.link}
             className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m pl4-l w-100 w-auto-l">
               <FormattedMessage {...item.label} />
             </Link>
           )}
           <p className="pt5-l pt4 pb3">
             {socialNetworks.map((item ,n) =>
-              <a href={item.link} className="link barlow-condensed white f4 ttu di-l dib ph2">
+              <a key={n} href={item.link} className="link barlow-condensed white f4 ttu di-l dib ph2">
                 { item.icon }
               </a>
             )}
