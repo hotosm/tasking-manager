@@ -1,10 +1,15 @@
 import React from 'react';
 
+import { Jumbotron } from '../components/homepage/jumbotron';
+
 
 export class Home extends React.Component {
   render() {
     return(
-      <div className="pt180 pull-center">This is the homepage</div>
+      <div className="pull-center">
+
+        <Jumbotron />
+      </div>
     );
   }
 }
