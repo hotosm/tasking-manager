@@ -1,7 +1,7 @@
 import React from 'react';
 import onClickOutside from 'react-click-outside';
 
-import ChevronDownIcon from './svgIcons/chevron-down';
+import { ChevronDownIcon } from './svgIcons';
 import { Button } from './button';
 
 

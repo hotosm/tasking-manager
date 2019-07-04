@@ -3,6 +3,7 @@ import { Route } from "react-router-dom";
 
 import './assets/styles/index.scss';
 import { Header } from './components/header';
+import { Footer } from './components/footer';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { Login } from './views/login';
@@ -16,6 +17,7 @@ function App() {
         <Route path="/about" component={ AboutPage } />
         <Route path="/login" component={ Login } />
       </div>
+      <Footer />
     </div>
   );
 }
