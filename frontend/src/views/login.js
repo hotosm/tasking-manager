@@ -1,11 +1,13 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom'
 import { connect } from "react-redux";
+import { API_URL } from '../config';
 
 class Login extends React.Component {
   render() {
-    console.log(this.props.location);
+    let login_url = API_URL + 'auth/login'; 
     return(
-      <div className="pt180 pull-center">This is the login page</div>
+      <Redirect to={login_url} strict={true}/>
     );
   }
 }

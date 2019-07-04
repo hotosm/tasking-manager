@@ -5,7 +5,7 @@ import Popup from "reactjs-popup";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { ORG_URL, ORG_NAME, API_URL } from '../config';
+import { ORG_URL, ORG_NAME} from '../config';
 import logo from '../assets/img/main-logo.svg';
 import { Dropdown } from './dropdown';
 import { Button } from './button';
@@ -60,8 +60,8 @@ class Header extends React.Component {
               className="btn-tertiary hidden-on-xlarge-down"
               widthClass="w160"
             />
-          <a href={`${API_URL}auth/login?redirect_to=/login/`} className="hidden-on-xsmall-only">
-            <Button className="btn-tertiary">Log in</Button>
+          <a href='/login' className="hidden-on-xsmall-only">
+            <Button className="btn-tertiary">Log in {this.props.username } { this.props.token }</Button>
           </a>
           <Button className="btn-secondary hidden-on-xsmall-only">Sign in</Button>
           <div className="hidden-on-large-up">
@@ -79,9 +79,11 @@ class Header extends React.Component {
     );
   }
 }
-
+//Temporal
 const mapStateToProps = state => ({
-  userPreferences: state.preferences
+  userPreferences: state.preferences,
+  username: state.auth.username,
+  token: state.auth.token
 });
 
 Header = connect(mapStateToProps)(Header);
