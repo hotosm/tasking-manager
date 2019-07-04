@@ -5,11 +5,11 @@ import reducers from "./reducers";
 
 
 const persistedState = {
-  // auth: {userDetails: {
-  //   id: safeStorage.getItem('username'),
-  //   username: safeStorage.getItem('username'),
-  //   token: safeStorage.getItem('password'),
-  // }},
+  auth: {userDetails: {
+     id: safeStorage.getItem('username'),
+     username: safeStorage.getItem('username'),
+     token: safeStorage.getItem('token'),
+  }},
   preferences: {
     language: safeStorage.getItem('language'),
   }
