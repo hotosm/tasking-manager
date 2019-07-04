@@ -1,6 +1,5 @@
 import { defineMessages } from 'react-intl'
 
-
 /**
  * Internationalized messages for use on header.
  */

@@ -14,7 +14,7 @@ import { BurgerMenu } from './burgerMenu';
 
 
 const menuItems = [
-  {label: messages.exploreProjects, link: "/projects"},
+  {label: messages.exploreProjects, link: "/contribute"},
   {label: messages.howItWorks, link: "/learn"},
   {label: messages.about, link: "/about"},
   {label: messages.help, link: "/help"}
@@ -23,7 +23,6 @@ const menuItems = [
 class Header extends React.Component {
   menuItems = menuItems;
   linkCombo = "link ph3 barlow-condensed blue-dark f4 ttu";
-
 
   renderMenuItems() {
     return(
@@ -57,7 +56,7 @@ class Header extends React.Component {
 
   render() {
     return (
-      <header className="w-100">
+      <header className="w-100 mb1 mb2-ns">
         <div className="cf ph2 bb b--grey-light red pt3 pb2">
           <div className="fl w-50">
             <span className="barlow-condensed f5 ml2 "><FormattedMessage {...messages.slogan}/></span>
@@ -97,7 +96,7 @@ class Header extends React.Component {
             <a href={`${API_URL}auth/login?redirect_to=/login/`} className="mh1 v-mid dn dib-ns">
               <Button className="blue-dark bg-white"><FormattedMessage {...messages.logIn}/></Button>
             </a>
-            <Button className="bg-blue-dark white ml1 v-mid dn dib-ns"><FormattedMessage {...messages.logIn}/></Button>
+            <Button className="bg-blue-dark white ml1 v-mid dn dib-ns"><FormattedMessage {...messages.signIn}/></Button>
             <div className="dib v-mid dn-l">
               <Popup
                 trigger={<BurgerMenu />}
