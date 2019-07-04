@@ -11,20 +11,21 @@ if (isProd) {
 } else {
   api_url = process.env.API_URL || 'http://localhost:5000/api/v1/';
 }
+export const API_URL = api_url;
 
 
 // ORGANIZATION CONFIG
-const org_name = process.env.ORG_NAME || 'Humanitarian OpenStreetMap Team';
-const org_code = process.env.ORG_CODE || 'HOT';
-const org_url = process.env.ORG_URL || 'hotosm.org'; // don't use http or https on this var
+export const ORG_NAME = process.env.ORG_NAME || 'Humanitarian OpenStreetMap Team';
+export const ORG_CODE = process.env.ORG_CODE || 'HOT';
+export const ORG_URL = process.env.ORG_URL || 'hotosm.org'; // don't use http or https on this var
+
+// ORGANIZATION SOCIAL NETWORKS
+export const ORG_TWITTER = process.env.ORG_TWITTER || 'http://twitter.com/hotosm/';
+export const ORG_FB = process.env.ORG_FB || 'https://www.facebook.com/hotosm';
+export const ORG_INSTAGRAM = process.env.ORG_INSTAGRAM || 'https://www.instagram.com/hot.osm/';
+export const ORG_YOUTUBE = process.env.ORG_YOUTUBE || 'https://www.youtube.com/user/hotosm';
+export const ORG_GITHUB = process.env.ORG_GITHUB || 'https://github.com/hotosm/';
 
 
 // DEFAULT locale
-const default_locale = process.env.TM_DEFAULT_LOCALE || 'en';
-
-
-export const API_URL = api_url;
-export const ORG_NAME = org_name;
-export const ORG_CODE = org_code;
-export const ORG_URL = org_url;
-export const DEFAULT_LOCALE = default_locale;
+export const DEFAULT_LOCALE = process.env.TM_DEFAULT_LOCALE || 'en';
