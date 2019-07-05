@@ -2,7 +2,7 @@ export const isStaging = process.env.REACT_APP_STACK === 'STAGING';
 export const isProd = process.env.REACT_APP_STACK === 'PRODUCTION';
 
 
-// API CONFIG
+// APIs CONFIG
 let api_url;
 if (isProd) {
   api_url = 'https://tasks.hotosm.org/api/v1/';
@@ -12,6 +12,8 @@ if (isProd) {
   api_url = process.env.API_URL || 'http://localhost:5000/api/v1/';
 }
 export const API_URL = api_url;
+
+export const EDITS_API_URL = process.env.EDITS_API_URL || 'https://osm-stats-production-api.azurewebsites.net/stats/hotosm';
 
 
 // ORGANIZATION CONFIG

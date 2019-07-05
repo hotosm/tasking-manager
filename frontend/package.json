@@ -16,6 +16,7 @@
     "reactjs-popup": "^1.4.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "short-number": "^1.0.7",
     "tachyons": "^4.11.1",
     "webfontloader": "^1.6.28"
   },
