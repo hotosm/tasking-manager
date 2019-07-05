@@ -20,5 +20,25 @@ export default defineMessages({
   joinButton: {
     id: 'home.mainSection.button.join',
     defaultMessage: 'Join the community'
+  },
+  buildingsStats: {
+    id: 'home.stats.buildings',
+    defaultMessage: 'Buildings Mapped'
+  },
+  roadsStats: {
+    id: 'home.stats.roads',
+    defaultMessage: 'Mapped Roads (Km)'
+  },
+  editsStats: {
+    id: 'home.stats.edits',
+    defaultMessage: 'Total Map Edits'
+  },
+  communityStats: {
+    id: 'home.stats.community',
+    defaultMessage: 'Community Mappers'
+  },
+  mappersStats: {
+    id: 'home.stats.mappers',
+    defaultMessage: 'Mappers Online'
   }
 });
