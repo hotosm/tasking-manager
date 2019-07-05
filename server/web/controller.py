@@ -32,7 +32,7 @@ def app(path):
     return send_from_directory(main.static_folder, 'app/' + path)
 
 
-@main.route('/api-docs')
+@main.route('/api-docs/')
 def api():
     """
     Route for API Docs welcome page
