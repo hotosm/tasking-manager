@@ -10,7 +10,7 @@ ifndef DOCKER_COMPOSE_VERSION
 endif
 
 build:
-	docker-compose build app
+	docker-compose build --no-cache app
 
 up:
 	docker-compose up -d
@@ -20,6 +20,12 @@ down:
 
 list:
 	docker-compose ps
+
+refresh-translatables:
+	docker-compose exec app sh -c "python manage.py refresh_translatables"
+
+refresh-translations:
+	docker-compose exec app sh -c "tx pull -af"
 
 tests:test-client test-server
 

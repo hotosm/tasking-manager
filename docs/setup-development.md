@@ -98,6 +98,13 @@ The project includes a suite of Unit and Integration tests that you should run a
 python3 -m unittest discover tests/server
 ```
 
+#### Export translatable strings to en.json source file
+
+```
+python3 manage.py refresh_translatables
+```
+
+
 ### Database
 
 #### Create a fresh database
