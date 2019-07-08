@@ -19,6 +19,7 @@ flask-swagger==0.2.14
 GeoAlchemy2==0.4.0
 geojson==1.3.4
 gevent==1.4.0
+glob2==0.7
 greenlet==0.4.15
 gunicorn==19.7.1
 html5lib==0.999999999
