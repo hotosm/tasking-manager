@@ -49,6 +49,9 @@
         //authorization
         vm.isAuthorized = false;
 
+        //Email warning modal
+        vm.showWarning = false;
+
         //status flags
         vm.isSelectedMappable = false;
         vm.isSelectedValidatable = false;
@@ -104,7 +107,7 @@
         activate();
 
         function activate() {
-
+            vm.showWarning = false;
             vm.currentTab = 'instructions';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
@@ -1374,34 +1377,40 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskMapping = function () {
-            vm.lockingReason = 'MAPPING';
-            var projectId = vm.projectData.projectId;
-            var taskId = vm.selectedTaskData.taskId;
-            // - try to lock the task, call returns a promise
-            var lockPromise = taskService.lockTaskMapping(projectId, taskId);
-            lockPromise.then(function (data) {
-                //TODO - The following reset lines are repeated in several places in this file.
-                //Refactoring to a single function call was considered, however it was decided that the ability to
-                //call the resets individually was desirable and would help readability.
-                //The downside is that any change will have to be replicated in several places.
-                //A fundamental refactor of this controller should be considered at some stage.
-                vm.resetErrors();
-                vm.resetStatusFlags();
-                vm.resetTaskData();
-                // refresh the project, to ensure we catch up with any status changes that have happened meantime
-                // on the server
-                refreshProject(projectId);
-                updateMappedTaskPerUser(projectId);
-                vm.currentTab = 'mapping';
-                vm.mappingStep = 'locked';
-                vm.selectedTaskData = data;
-                vm.isSelectedMappable = true;
-                vm.lockedTaskData = data;
-                vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
-                formatHistoryComments(vm.selectedTaskData.taskHistory);
-            }, function (error) {
-                onLockError(projectId, error);
-            });
+            console.log(vm.user);
+            if(vm.user.isEmailVerified){
+                vm.lockingReason = 'MAPPING';
+                var projectId = vm.projectData.projectId;
+                var taskId = vm.selectedTaskData.taskId;
+                // - try to lock the task, call returns a promise
+                var lockPromise = taskService.lockTaskMapping(projectId, taskId);
+                lockPromise.then(function (data) {
+                    //TODO - The following reset lines are repeated in several places in this file.
+                    //Refactoring to a single function call was considered, however it was decided that the ability to
+                    //call the resets individually was desirable and would help readability.
+                    //The downside is that any change will have to be replicated in several places.
+                    //A fundamental refactor of this controller should be considered at some stage.
+                    vm.resetErrors();
+                    vm.resetStatusFlags();
+                    vm.resetTaskData();
+                    // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                    // on the server
+                    refreshProject(projectId);
+                    updateMappedTaskPerUser(projectId);
+                    vm.currentTab = 'mapping';
+                    vm.mappingStep = 'locked';
+                    vm.selectedTaskData = data;
+                    vm.isSelectedMappable = true;
+                    vm.lockedTaskData = data;
+                    vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
+                    vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
+                    formatHistoryComments(vm.selectedTaskData.taskHistory);
+                }, function (error) {
+                    onLockError(projectId, error);
+                });
+            }
+            else
+                vm.showWarning = true;
         };
 
 
@@ -1439,35 +1448,39 @@
          * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
-            vm.lockingReason = 'VALIDATION';
-            var projectId = vm.projectData.projectId;
-            var taskId = vm.selectedTaskData.taskId;
-            var taskIds = [taskId];
-            // - try to lock the task, call returns a promise
-            var lockPromise = taskService.lockTasksValidation(projectId, taskIds);
-            lockPromise.then(function (tasks) {
-                //TODO - The following reset lines are repeated in several places in this file.
-                //Refactoring to a single function call was considered, however it was decided that the ability to
-                //call the resets individually was desirable and would help readability.
-                //The downside is that any change will have to be replicated in several places.
-                //A fundamental refactor of this controller should be considered at some stage.
-                vm.resetErrors();
-                vm.resetStatusFlags();
-                vm.resetTaskData();
-                // refresh the project, to ensure we catch up with any status changes that have happened meantime
-                // on the server
-                refreshProject(projectId);
-                updateMappedTaskPerUser(projectId);
-                vm.currentTab = 'validation';
-                vm.validatingStep = 'locked';
-                vm.selectedTaskData = tasks[0];
-                vm.isSelectedValidatable = true;
-                vm.lockedTaskData = tasks[0];
-                vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
-                formatHistoryComments(vm.selectedTaskData.taskHistory);
-            }, function (error) {
-                onLockError(projectId, error);
-            });
+            if(vm.user.isEmailVerified){
+                vm.lockingReason = 'VALIDATION';
+                var projectId = vm.projectData.projectId;
+                var taskId = vm.selectedTaskData.taskId;
+                var taskIds = [taskId];
+                // - try to lock the task, call returns a promise
+                var lockPromise = taskService.lockTasksValidation(projectId, taskIds);
+                lockPromise.then(function (tasks) {
+                    //TODO - The following reset lines are repeated in several places in this file.
+                    //Refactoring to a single function call was considered, however it was decided that the ability to
+                    //call the resets individually was desirable and would help readability.
+                    //The downside is that any change will have to be replicated in several places.
+                    //A fundamental refactor of this controller should be considered at some stage.
+                    vm.resetErrors();
+                    vm.resetStatusFlags();
+                    vm.resetTaskData();
+                    // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                    // on the server
+                    refreshProject(projectId);
+                    updateMappedTaskPerUser(projectId);
+                    vm.currentTab = 'validation';
+                    vm.validatingStep = 'locked';
+                    vm.selectedTaskData = tasks[0];
+                    vm.isSelectedValidatable = true;
+                    vm.lockedTaskData = tasks[0];
+                    vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
+                    formatHistoryComments(vm.selectedTaskData.taskHistory);
+                }, function (error) {
+                    onLockError(projectId, error);
+                });
+            }
+            else
+                vm.showWarning = true;
         };
 
         vm.josmBBoxFromViewport = function(zoom, lat, lon) {
@@ -1952,46 +1965,50 @@
          * @param doneTaskIds - array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
-            vm.selectInteraction.getFeatures().clear();
+            if(vm.user.isEmailVerified){
+                vm.selectInteraction.getFeatures().clear();
 
-            //use doneTaskIds to get corresponding subset of tasks for selection from the project
-            var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
-                var i = doneTaskIds.indexOf(task.properties.taskId);
-                if (i !== -1)
-                    return doneTaskIds[i];
-            });
-
-            //select each one by one
-            tasksForSelection.forEach(function (feature) {
-                var feature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), feature.properties.taskId);
-                vm.selectInteraction.getFeatures().push(feature);
-            });
-
-            //put the UI in to locked for multi validation mode
-            var lockPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
-            lockPromise.then(function (tasks) {
-                // refresh the project, to ensure we catch up with any status changes that have happened meantime
-                // on the server
-                // TODO - The following reset lines are repeated in several places in this file.
-                // Refactoring to a single function call was considered, however it was decided that the ability to
-                // call the resets individually was desirable and would help readability.
-                // The downside is that any change will have to be replicated in several places.
-                // A fundamental refactor of this controller should be considered at some stage.
-                vm.resetErrors();
-                vm.resetStatusFlags();
-                vm.resetTaskData();
-                refreshProject(vm.projectData.projectId);
-                vm.currentTab = 'validation';
-                vm.validatingStep = 'multi-locked';
-                vm.multiSelectedTasksData = tasks;
-                vm.multiLockedTasks = tasks;
-                vm.isSelectedValidatable = true;
-                vm.multiLockedTasks.forEach(function(task) {
-                    vm.lockTime[task.taskId] = getLastLockedAction(task).actionDate;
+                //use doneTaskIds to get corresponding subset of tasks for selection from the project
+                var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
+                    var i = doneTaskIds.indexOf(task.properties.taskId);
+                    if (i !== -1)
+                        return doneTaskIds[i];
                 });
-            }, function (error) {
-                onLockError(vm.projectData.projectId, error);
-            });
+
+                //select each one by one
+                tasksForSelection.forEach(function (feature) {
+                    var feature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), feature.properties.taskId);
+                    vm.selectInteraction.getFeatures().push(feature);
+                });
+
+                //put the UI in to locked for multi validation mode
+                var lockPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
+                lockPromise.then(function (tasks) {
+                    // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                    // on the server
+                    // TODO - The following reset lines are repeated in several places in this file.
+                    // Refactoring to a single function call was considered, however it was decided that the ability to
+                    // call the resets individually was desirable and would help readability.
+                    // The downside is that any change will have to be replicated in several places.
+                    // A fundamental refactor of this controller should be considered at some stage.
+                    vm.resetErrors();
+                    vm.resetStatusFlags();
+                    vm.resetTaskData();
+                    refreshProject(vm.projectData.projectId);
+                    vm.currentTab = 'validation';
+                    vm.validatingStep = 'multi-locked';
+                    vm.multiSelectedTasksData = tasks;
+                    vm.multiLockedTasks = tasks;
+                    vm.isSelectedValidatable = true;
+                    vm.multiLockedTasks.forEach(function(task) {
+                        vm.lockTime[task.taskId] = getLastLockedAction(task).actionDate;
+                    });
+                }, function (error) {
+                    onLockError(vm.projectData.projectId, error);
+                });
+            }
+            else
+                vm.showWarning = true;
         };
 
         vm.resetToSelectingStep = function () {

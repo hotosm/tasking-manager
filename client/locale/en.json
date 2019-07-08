@@ -32,6 +32,7 @@
 	"Activity and Stats": "Activity and Stats",
 	"Add layer": "Add layer",
 	"Add user": "Add user",
+	"Add your email address": "Add your email address",
 	"Add/edit contact details": "Add/edit contact details",
 	"Admin": "Admin",
 	"Administrator": "Administrator",
@@ -690,6 +691,9 @@
 	"read more in the what is new section.": "read more in the what is new section.",
 	"tasks.": "tasks.",
 	"this task as a gpx file to see its boundary.": "this task as a gpx file to see its boundary.",
+	"to continue": "to continue",
+	"to continue mapping": "to continue mapping",
+	"to continue validation": "to continue validation",
 	"will be deleted right before launch. All data will be replaced with existing TM2 projects as soon as the switch happens.": "will be deleted right before launch. All data will be replaced with existing TM2 projects as soon as the switch happens.",
 	"with any questions.": "with any questions."
 }
