@@ -13,6 +13,22 @@ export default defineMessages({
     id: 'home.mainSection.lead',
     defaultMessage: "Join a global community that is helping to put the world's most vulnerable people and places on the map towards humanitarian aid and sustainable development."
   },
+  secJumbotronTitle: {
+    id: 'home.callToAction.title',
+    defaultMessage: "We can't do it without you"
+  },
+  secJumbotronHeadLine: {
+    id: 'home.callToAction.firstLeadLine',
+    defaultMessage: "If you have never mapped before and would like to help, don't worry it's easy. Visit our {link} page to get started mapping in less than 30 minutes.",
+  },
+  secJumbotronHeadLine2: {
+    id: 'home.callToAction.secondLeadLine',
+    defaultMessage: "Seasoned mapper? Pick up one of our many projects and start contributing."
+  },
+  howItWorks: {
+    id: 'home.callToAction.learnLink',
+    defaultMessage: 'How it works'
+  },
   startButton: {
     id: 'home.mainSection.button.start',
     defaultMessage: 'Start mapping'
@@ -40,5 +56,13 @@ export default defineMessages({
   mappersStats: {
     id: 'home.stats.mappers',
     defaultMessage: 'Mappers Online'
+  },
+  mappingFlowTitle: {
+    id: 'home.mappingFlow.title',
+    defaultMessage: "Each year, disasters around the world kill nearly {number} and affect or displace 200 million people. We're on a mission to change that. Here's how."
+  },
+  mappingFlowHeadline: {
+    id: 'home.mappingFlow.headLine',
+    defaultMessage: "Through the Tasking Manager this mapping  projects are divided into smaller tasks allowing them to be completed by many different people working in the same area in a more streamlined and quick way."
   }
 });
