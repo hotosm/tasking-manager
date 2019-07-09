@@ -89,7 +89,7 @@ export class StatsSection extends React.Component {
   }
   render() {
     return(
-      <div className="cf pv5 bg-white">
+      <div className="cf pv5 ph5-l ph4 bg-white">
         {this.renderStatsCol(messages.buildingsStats, this.state.buildings, true)}
         {this.renderStatsCol(messages.roadsStats, this.state.roads, true)}
         {this.renderStatsCol(messages.editsStats, this.state.edits)}
