@@ -20,6 +20,11 @@
   background: url('../img/hero_banner.jpg') left;
 }
 
+.bg-sec-jumbotron {
+  background: rgba(0, 0, 0, .5) url('../img/children.jpg') left;
+  background-blend-mode: darken;
+}
+
 @media screen and (min-width: 60em) {
   .f-4rem-l {
     font-size: 4rem;
