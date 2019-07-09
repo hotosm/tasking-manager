@@ -1,12 +1,5 @@
 {
   "description": "Packer template for tasking-manager host instance.",
-  "_readme": [
-      "Operating system: Ubuntu 16.04",
-      "Region: us-east-1",
-      "Instance Type: t2.micro",
-      "TODO: Move to Debian Stretch / Buster",
-      "TODO: Switch to NodeJS v10"
-  ],
   "variables": {
     "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
@@ -43,7 +36,7 @@
   "provisioners": [
     {
     "type": "shell",
-    "script": "boostrap.sh" 
+    "script": "bootstrap.sh"
     }
   ]
 }

@@ -1,6 +1,11 @@
 #!/bin/bash -e
-
 #
+# Node.JS 10
+# PostgreSQL 9.5
+
+# Do not prompt to trust Github.com
+/usr/bin/ssh-keyscan -t rsa github.com | sudo /usr/bin/tee -a /etc/ssh/ssh_known_hosts
+
 # Do not prompt for answers
 export DEBIAN_FRONTEND=noninteractive
 export LC_ALL="en_US.UTF-8"
@@ -14,33 +19,41 @@ sudo dpkg-reconfigure --frontend=noninteractive locales
 sudo add-apt-repository ppa:jonathonf/python-3.6 -y
 sudo apt-get -y update
 
-sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" dist-upgrade
+echo "Upgrade Ubuntu packages.."
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold" upgrade
 
-sudo apt-get -y install \   # Install basic utilities
-    awscli \                # AWS CLI
-    curl \                  # Downloading stuff
-    git \                   # Pull code for deployment
-    ruby \                  # Dependency for AWS tools
-    unzip \                 # AWS tools are usually zip'd
-    wget \                  # Downloading stuff
+echo "Install basic utilities.."
+sudo apt-get -y install \
+    awscli \
+    curl \
+    git \
+    ruby \
+    unzip \
+    wget \
     grub kpartx             # Dependencies for ec2-ami-tools
 
-sudo apt-get -y install \      # Install all things Python
-    python3.6 python3.6-dev \  # Python 3.6 from the third-party repo
-    python3.6-venv \           # Python virtualenv
+sudo apt-get -y install \
+    python3.6 python3.6-dev \
+    python3.6-venv \
     python-pip                 # Default python pip (why?)
 
-sudo apt-get -y install \        # Install Mapping related stuff
-    libgdal1-dev \               # Geospatial Data Abstraction Library (GDAL)
-    libgeos-3.5.0 libgeos-dev \  # Geometry engine
-    libproj9 libproj-dev \       # Cartographic projects & translations between CRS
-    libxml2 libxml2-dev \        # XML parsing and such
-    libjson-c-dev                # Construct JSON objects in C
+# Install mapping related stuff
+# libgdal1* - Geospatial Data Abstraction Library (GDAL)
+# libgeos* - Geometry engine
+# libproj* - Cartographic projects & translations between CRS
+sudo apt-get -y install \
+    libgdal1-dev \
+    libgeos-3.5.0 libgeos-dev \
+    libproj9 libproj-dev \
+    libxml2 libxml2-dev \
+    libjson-c-dev
 
 sudo apt-get -y install \
-    postgresql-9.5 \             # PostgreSQL server
-    libpq-dev \                  # PostgreSQL Library to C
-    postgresql-server-dev-9.5    # PostgreSQL server (development headers)
+    postgresql-9.5 \
+    postgresql-server-dev-9.5 \
+    libpq-dev                    # PostgreSQL Library to C
 
 # Setup Node.JS v10.x
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
@@ -48,7 +61,7 @@ sudo apt-get -y install nodejs
 
 # Install dependencies
 sudo npm install gulp -g
-npm install browser-sync --save # Probably add this to package.json?
+sudo npm install browser-sync --save # Probably add this to package.json?
 
 sudo git clone --recursive https://github.com/hotosm/tasking-manager.git /tasking-manager
 
@@ -57,7 +70,7 @@ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
 
 # Local install of aws-cfn-bootstrap template
 wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-pip2 install aws-cfn-bootstrap-latest.tar.gz
+sudo pip2 install aws-cfn-bootstrap-latest.tar.gz
 
 # EC2 AMI tools installation (why?)
 wget https://s3.amazonaws.com/ec2-downloads/ec2-ami-tools.zip
