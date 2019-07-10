@@ -92,7 +92,7 @@ const Parameters = {
   },
   RDSInstanceType: {
     Type: 'String',
-    Default : 't2.micro',
+    Default : 'db.t2.small',
     AllowedValues : ['db.m4.4xlarge', 'db.t2.small'],
     Description : "Enter db.m5.xlarge or db.t2.small"
   }
