@@ -75,7 +75,7 @@
         // Delete
         vm.showDeleteConfirmationModal = false;
 
-        // Transfer 
+        // Transfer
         vm.showTransferConfirmationModal = false;
         vm.transferProjectTo= []; //it's a list because it uses the tag input
 
@@ -120,14 +120,14 @@
                 }
             });
 
-            // Check if the user has the PROJECT_MANAGER or ADMIN role. If not, redirect
+            // Check if the user is the PROJECT AUTHOR or ADMIN. If not, redirect
             var session = authService.getSession();
             if (session){
                 var resultsPromise = accountService.getUser(session.username);
                 resultsPromise.then(function (user) {
                     vm.userRole = user.role;
                     // Returned the user successfully. Check the user's role
-                    if (user.role !== 'PROJECT_MANAGER' && user.role !== 'ADMIN'){
+                    if (user.role !== 'ADMIN' && user.id !== vm.project.author_id ){
                         $location.path('/');
                     }
                 }, function(){
@@ -344,7 +344,7 @@
         };
 
         /**
-         * Navigate to the project detail 
+         * Navigate to the project detail
          */
         vm.goToProjectDetail = function(){
             $location.path('/project/' + vm.project.projectId);
