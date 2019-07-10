@@ -89,6 +89,12 @@ const Parameters = {
   SSLCertificateIdentifier: {
     Type: 'String',
     Description: 'SSL certificate for HTTPS protocol'
+  },
+  RDSInstanceType: {
+    Type: 'String',
+    Default : 't2.micro',
+    AllowedValues : ['db.m4.4xlarge', 'db.t2.small'],
+    Description : "Enter db.m5.xlarge or db.t2.small"
   }
 };
 
@@ -432,7 +438,7 @@ const Resources = {
         StorageType: 'gp2',
         DBParameterGroupName: 'tm3-logging-postgres11',
         EnableCloudwatchLogsExports: ['postgresql'],
-        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.m5.xlarge', 'db.t2.small'),
+        DBInstanceClass: cf.ref('RDSInstanceType'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
     }
